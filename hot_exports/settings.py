@@ -55,6 +55,7 @@ THIRD_PARTY_APPS = (
 )
 
 LOCAL_APPS = (
+    'jobs',
     'tasks',
     'api',
     'ui',
@@ -82,6 +83,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
+        'api.renderers.HOTExportApiRenderer',
     ),
 }
 
@@ -90,7 +92,7 @@ ROOT_URLCONF = 'hot_exports.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['api/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -171,6 +173,11 @@ LOGGING = {
             'level':'INFO',
         },
         'api': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'tasks': {
             'handlers': ['file'],
             'propagate': True,
             'level': 'DEBUG',
