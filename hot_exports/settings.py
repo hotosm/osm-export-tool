@@ -85,6 +85,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'api.renderers.HOTExportApiRenderer',
     ),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
+    'DEFAULT_VERSION': '1.0',
 }
 
 ROOT_URLCONF = 'hot_exports.urls'
@@ -109,7 +111,7 @@ WSGI_APPLICATION = 'hot_exports.wsgi.application'
 
 # session settings
 SESSION_COOKIE_NAME='hot_exports_sessionid'
-SESSION_COOKIE_DOMAIN='geoweb.io'
+SESSION_COOKIE_DOMAIN='hot.geoweb.io'
 SESSION_COOKIE_PATH='/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 

@@ -13,7 +13,8 @@ from api.urls import router
 urlpatterns = []
 
 urlpatterns += i18n_patterns('ui.views',
-    url(r'^$', include(ui_urls)),
+    url(r'^$', TemplateView.as_view(template_name='ui/index.html'), name='index'),
+    url(r'^jobs/', include(ui_urls)),
 )
 
 urlpatterns += i18n_patterns(
