@@ -4,6 +4,7 @@ from rest_framework import serializers
 from datetime import datetime
 from jobs.models import Job, ExportFormat
 from django.contrib.auth.models import User, Group
+from django.utils import timezone
 
 
 try:
@@ -37,7 +38,7 @@ class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class ExportFormatSerializer(serializers.HyperlinkedModelSerializer):
+class ExportFormatSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
        view_name='api:formats-detail',
     )
@@ -57,6 +58,8 @@ class JobSerializer(serializers.ModelSerializer):
         queryset = ExportFormat.objects.all()
     )
     """
+    
+    #formats = ExportFormatSerializer()
 
     url = serializers.HyperlinkedIdentityField(
         view_name='api:jobs-detail',
@@ -65,11 +68,12 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = ('id', 'name', 'url', 'description',
-                  'created', 'formats', 'status')
+                  'created_at', 'formats', 'status')
 
     def to_internal_value(self, data):
         request = self.context['request']
         user = request.user
         job_name = data['name']
         description = data['description']
-        return {'name': job_name, 'description': description, 'user': user}
+        updated_at = timezone.now()
+        return {'name': job_name, 'description': description, 'user': user, 'updated_at': updated_at}

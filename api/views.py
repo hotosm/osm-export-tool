@@ -66,8 +66,8 @@ class JobViewSet(viewsets.ModelViewSet):
         if (serializer.is_valid()):
             job = serializer.save()
             # add the export formats
-            for id in formats:
-                export_format = ExportFormat.objects.get(id=id)
+            for name in formats:
+                export_format = ExportFormat.objects.get(name=name)
                 job.formats.add(export_format)
             # now add the job to the queue..
             # could have logic here to determine which task to run
