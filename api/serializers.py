@@ -54,14 +54,6 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
     """
     Job Serializer
     """
-    """
-    formats = serializers.HyperlinkedRelatedField(
-        view_name='api:formats-detail',
-        many=True,
-        queryset = ExportFormat.objects.all(),
-        lookup_field = 'slug'
-    )
-    """
     
     formats = ExportFormatSerializer(many=True)
 
