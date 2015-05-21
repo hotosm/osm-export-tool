@@ -20,15 +20,24 @@ class LowerCaseCharField(CharField):
         return getattr(model_instance, self.attname)
 
 
-class ExportFormat(models.Model):
+class TimeStampedModelMixin(models.Model):
+    """
+    Mixin for timestamped models.
+    """
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(default=timezone.now, editable=False)
+    
+    class Meta:
+        abstract = True
+
+
+class ExportFormat(TimeStampedModelMixin):
     """Model for a ExportFormat"""
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     slug = LowerCaseCharField(max_length=7, unique=True, default='')
     description = models.CharField(max_length=255)
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
-    updated_at = models.DateTimeField(default=timezone.now, editable=False)
     cmd = models.TextField(max_length=1000)
     objects = models.Manager()
     class Meta:
@@ -40,15 +49,12 @@ class ExportFormat(models.Model):
     def __unicode__(self, ):
         return '{0}'.format(self.slug)
     
-   
 
-class Job(models.Model):
+class Job(TimeStampedModelMixin):
     """Model for a Job"""
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, related_name='user')
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
-    updated_at = models.DateTimeField(default=timezone.now, editable=False)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=65000)
     status = models.CharField(max_length=30)
@@ -61,12 +67,10 @@ class Job(models.Model):
         return '{0}'.format(self.name)
     
     
-class ExportTask(models.Model):
+class ExportTask(TimeStampedModelMixin):
     "Model for an ExportTask"
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(blank=True) # celery task id
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
-    updated_at = models.DateTimeField(default=timezone.now, editable=False)
     job = models.ForeignKey(Job, related_name='job')
     
 

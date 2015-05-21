@@ -25,10 +25,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
 from .renderers import HOTExportApiRenderer
-
 from jobs.models import Job, ExportFormat
 from serializers import JobSerializer, ExportFormatSerializer
-
+from .errors import MissingFormatErrorAPIResponse
 from tasks.export_tasks import run_export_job
 
 # Get an instance of a logger
@@ -43,17 +42,7 @@ class JSONResponse(HttpResponse):
     """
     def __init__(self, data, **kwargs):
         content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
-
-
-class JSONErrorResponse(JSONResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
+        kwargs['content_type'] = 'application/json; version=1.0'
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
@@ -72,6 +61,9 @@ class JobViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         formats = request.data.getlist('formats')
+        if len(formats) == 0:
+            logger.warn('No formats specified')
+            return MissingFormatErrorAPIResponse(request=request, status=status.HTTP_406_NOT_ACCEPTABLE)
         logger.debug(formats)
         serializer = JobSerializer(data=request.data,
                                    context={'request': request})
