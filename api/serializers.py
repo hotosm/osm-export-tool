@@ -4,6 +4,7 @@ from rest_framework import serializers
 from datetime import datetime
 from jobs.models import Job, ExportFormat
 from django.contrib.auth.models import User, Group
+from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 
 
@@ -65,12 +66,17 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Job
         fields = ('uid', 'name', 'url', 'description', 'formats',
-                  'created_at', 'status')
+                  'created_at', 'updated_at', 'status')
 
     def to_internal_value(self, data):
         request = self.context['request']
         user = request.user
         job_name = data['name']
         description = data['description']
-        updated_at = timezone.now()
-        return {'name': job_name, 'description': description, 'user': user, 'updated_at': updated_at}
+        bbox_wkt = data['bbox']
+        logger.debug(bbox_wkt)
+        the_geom = GEOSGeometry(bbox_wkt, srid=4326)
+        the_geog = GEOSGeometry(bbox_wkt)
+        the_geom_mercator = the_geom.transform(ct=3857, clone=True)
+        return {'name': job_name, 'description': description, 'user': user,
+                'the_geom': the_geom, 'the_geom_mercator': the_geom_mercator, 'the_geog': the_geog}

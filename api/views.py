@@ -50,6 +50,8 @@ class JobViewSet(viewsets.ModelViewSet):
     """
     ## Job API Endpoint.
     Endpoint for job creation and managment.
+    
+    More docs here...
     """
     serializer_class = JobSerializer
     permission_classes = (permissions.AllowAny,)
@@ -63,7 +65,8 @@ class JobViewSet(viewsets.ModelViewSet):
         formats = request.data.getlist('formats')
         if len(formats) == 0:
             logger.warn('No formats specified')
-            return MissingFormatErrorAPIResponse(request=request, status=status.HTTP_406_NOT_ACCEPTABLE)
+            return MissingFormatErrorAPIResponse(request=request,
+                                                 status=status.HTTP_406_NOT_ACCEPTABLE)
         logger.debug(formats)
         serializer = JobSerializer(data=request.data,
                                    context={'request': request})
