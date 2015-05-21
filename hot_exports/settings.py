@@ -205,3 +205,6 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Celery settings
+#CELERY_IMPORT='tasks.export_tasks.run_export_job'

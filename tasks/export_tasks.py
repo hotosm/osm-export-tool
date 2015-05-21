@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 
-import logging, time
-
-from celery import shared_task, Task
-
+import logging
+import time
+from celery import app, shared_task, Task
+from celery.utils.log import get_task_logger
 from jobs.models import Job
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+logger = get_task_logger(__name__)
 
 
 class HOTExportTask(Task):
@@ -15,7 +15,8 @@ class HOTExportTask(Task):
     abstract = True
         
     def on_success(self, retval, task_id, args, kwargs):
-        job = Job.objects.get(task_id=task_id)
+        job_uid = kwargs['job_uid']
+        job = Job.objects.get(uid=job_uid)
         job.status = 'SUCCESS'
         job.save()
 
@@ -28,13 +29,13 @@ class HOTExportTask(Task):
 
 
 @shared_task(base=HOTExportTask)
-def run_export_job(job_id):
-    logger.debug('Running Job with id: {0}'.format(job_id))
-    job = Job.objects.get(id=job_id)
+def run_export_job(job_uid=None):
+    logger.debug('Running Job with id: {0}'.format(job_uid))
+    job = Job.objects.get(uid=job_uid)
     job.status = 'RUNNING'
     job.save()
-    time.sleep(30)
-    logger.debug('Job ran {0}'.format(job_id))
+    time.sleep(10)
+    logger.debug('Job ran {0}'.format(job_uid))
    
 
 

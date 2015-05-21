@@ -47,9 +47,20 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
+class JSONErrorResponse(JSONResponse):
+    """
+    An HttpResponse that renders its content into JSON.
+    """
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+
+
 class JobViewSet(viewsets.ModelViewSet):
     """
-    Job API Endpoint
+    ## Job API Endpoint.
+    Endpoint for job creation and managment.
     """
     serializer_class = JobSerializer
     permission_classes = (permissions.AllowAny,)
@@ -67,13 +78,12 @@ class JobViewSet(viewsets.ModelViewSet):
         if (serializer.is_valid()):
             job = serializer.save()
             # add the export formats
-            for name in formats:
-                export_format = ExportFormat.objects.get(name=name)
+            for format_uid in formats:
+                export_format = ExportFormat.objects.get(uid=format_uid)
                 job.formats.add(export_format)
             # now add the job to the queue..
-            # could have logic here to determine which task to run
-            res = run_export_job.delay(job.id)
-            job.task_id = res.id
+            # need logic here to determine which task to run
+            res = run_export_job.delay(job_uid=str(job.uid))
             job.status = res.state
             job.save()
             running = JobSerializer(job, context={'request': request})
@@ -88,6 +98,7 @@ class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ### ExportFormat API endpoint.
     Endpoint exposing the supported export formats.
+    
     """
     serializer_class = ExportFormatSerializer
     permission_classes = (permissions.AllowAny,)
