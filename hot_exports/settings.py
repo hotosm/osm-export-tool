@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os, settings_private
+import os
+import sys
+import settings_private
 from django.utils.translation import ugettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -167,6 +169,11 @@ LOGGING = {
             'filename': 'debug.log',
             'formatter': 'verbose'
         },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'simple'
+        },
     },
     'loggers': {
         'django': {
@@ -181,6 +188,11 @@ LOGGING = {
         },
         'tasks': {
             'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'jobs.tests': {
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },

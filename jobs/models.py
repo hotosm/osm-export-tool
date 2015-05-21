@@ -7,8 +7,10 @@ from django.contrib.auth.models import User, Group
 
 class ExportFormat(models.Model):
     """Model for a ExportFormat"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=50)
+    id = models.AutoField(primary_key=True, editable=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=7, unique=True)
     description = models.CharField(max_length=255)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -23,7 +25,8 @@ class ExportFormat(models.Model):
 
 class Job(models.Model):
     """Model for a Job"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.AutoField(primary_key=True, editable=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, related_name='user')
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -41,10 +44,10 @@ class Job(models.Model):
     
 class ExportTask(models.Model):
     "Model for an ExportTask"
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.AutoField(primary_key=True, editable=False)
+    uid = models.UUIDField(blank=True) # celery task id
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
-    task_id = models.CharField(max_length=36, default='')
     job = models.ForeignKey(Job, related_name='job')
     
 
