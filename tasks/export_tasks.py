@@ -4,6 +4,7 @@ import logging
 import time
 from celery import app, shared_task, Task
 from celery.utils.log import get_task_logger
+from django.utils import timezone
 from jobs.models import Job
 
 # Get an instance of a logger
@@ -12,12 +13,14 @@ logger = get_task_logger(__name__)
 
 class HOTExportTask(Task):
     
-    abstract = True
+    class Meta:
+        abstract = True
         
     def on_success(self, retval, task_id, args, kwargs):
         job_uid = kwargs['job_uid']
         job = Job.objects.get(uid=job_uid)
         job.status = 'SUCCESS'
+        job.updated_at = timezone.now()
         job.save()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):

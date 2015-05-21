@@ -13,6 +13,14 @@ class Migration(migrations.Migration):
                                     slug='OBF')
         ExportFormat.objects.create(name='ESRI Shapefile Format', description='ESRI Shapefile Export Format.',
                                     slug='ShP')
+        ExportFormat.objects.create(name='KML Format', description='KML Export Format.',
+                                    slug='KML')
+        ExportFormat.objects.create(name='SQLITE Format', description='SQLITE Export Format.',
+                                    slug='SQLITE')
+        ExportFormat.objects.create(name='Garmin Map Format', description='Garmin Map Export Format.',
+                                    slug='GARMIN')
+        ExportFormat.objects.create(name='PGDump Format', description='PGDump Export Format.',
+                                    slug='PGDUMP')
 
     dependencies = [
         ('jobs', '0001_initial'),

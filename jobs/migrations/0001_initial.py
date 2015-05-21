@@ -2,9 +2,10 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-from django.conf import settings
+import django.contrib.gis.db.models.fields
 import django.utils.timezone
 import jobs.models
+from django.conf import settings
 import uuid
 
 
@@ -18,13 +19,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ExportFormat',
             fields=[
+                ('created_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('updated_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
                 ('uid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
                 ('name', models.CharField(max_length=100)),
                 ('slug', jobs.models.LowerCaseCharField(default='', unique=True, max_length=7)),
                 ('description', models.CharField(max_length=255)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
-                ('updated_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ('cmd', models.TextField(max_length=1000)),
             ],
             options={
@@ -35,22 +36,28 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ExportTask',
             fields=[
-                ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
-                ('uid', models.UUIDField(blank=True)),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ('updated_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
+                ('uid', models.UUIDField(blank=True)),
             ],
+            options={
+                'abstract': False,
+            },
         ),
         migrations.CreateModel(
             name='Job',
             fields=[
-                ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
-                ('uid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ('updated_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
+                ('uid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
                 ('name', models.CharField(max_length=100)),
-                ('description', models.CharField(max_length=65000)),
+                ('description', models.CharField(max_length=1000)),
                 ('status', models.CharField(max_length=30)),
+                ('the_geom', django.contrib.gis.db.models.fields.PolygonField(default='', srid=4326, verbose_name='Extent for export')),
+                ('the_geom_mercator', django.contrib.gis.db.models.fields.PolygonField(default='', srid=3857, verbose_name='Mercator extent for export')),
+                ('the_geog', django.contrib.gis.db.models.fields.PolygonField(default='', srid=4326, verbose_name='Geographic extent for export', geography=True)),
                 ('formats', models.ManyToManyField(related_name='formats', to='jobs.ExportFormat')),
                 ('user', models.ForeignKey(related_name='user', to=settings.AUTH_USER_MODEL)),
             ],

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import uuid
-from django.db import models
+#from django.db import models
+from django.contrib.gis.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from django.db.models.fields import CharField
@@ -56,10 +57,13 @@ class Job(TimeStampedModelMixin):
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, related_name='user')
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=65000)
+    description = models.CharField(max_length=1000)
     status = models.CharField(max_length=30)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
-    objects = models.Manager()
+    the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
+    the_geom_mercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
+    the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='') # create geog column
+    objects = models.GeoManager()
     class Meta:
         managed = True
         db_table = 'jobs'
