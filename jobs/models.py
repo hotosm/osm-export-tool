@@ -3,6 +3,21 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
+from django.db.models.fields import CharField
+
+class LowerCaseCharField(CharField):
+    """
+    Defines a charfield which automatically converts all inputs to
+    lowercase and saves.
+    """
+
+    def pre_save(self, model_instance, add):
+        """
+        Converts the string to lowercase before saving.
+        """
+        current_value = getattr(model_instance, self.attname)
+        setattr(model_instance, self.attname, current_value.lower())
+        return getattr(model_instance, self.attname)
 
 
 class ExportFormat(models.Model):
@@ -10,7 +25,7 @@ class ExportFormat(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    code = models.CharField(max_length=7, unique=True)
+    slug = LowerCaseCharField(max_length=7, unique=True, default='')
     description = models.CharField(max_length=255)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -21,6 +36,10 @@ class ExportFormat(models.Model):
         db_table = 'export_formats'
     def __str__(self):
         return '{0}'.format(self.name)
+    
+    def __unicode__(self, ):
+        return '{0}'.format(self.slug)
+    
    
 
 class Job(models.Model):

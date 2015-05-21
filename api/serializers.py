@@ -39,36 +39,41 @@ class UserSerializer(serializers.Serializer):
 
 
 class ExportFormatSerializer(serializers.ModelSerializer):
+    
     url = serializers.HyperlinkedIdentityField(
        view_name='api:formats-detail',
+       lookup_field='slug'
     )
-
+    
     class Meta:
         model = ExportFormat
-        fields = ('id', 'url', 'name', 'description', 'cmd')
-
+        fields = ('uid', 'url', 'name', 'description')
+        
 
 class JobSerializer(serializers.HyperlinkedModelSerializer):
     """
-    Job Serializer"""
+    Job Serializer
+    """
     """
     formats = serializers.HyperlinkedRelatedField(
         view_name='api:formats-detail',
         many=True,
-        queryset = ExportFormat.objects.all()
+        queryset = ExportFormat.objects.all(),
+        lookup_field = 'slug'
     )
     """
-            
-    formats = ExportFormatSerializer()
+    
+    formats = ExportFormatSerializer(many=True)
 
     url = serializers.HyperlinkedIdentityField(
-        view_name='api:jobs-detail',
+        view_name = 'api:jobs-detail',
+        lookup_field = 'uid'
     )
 
     class Meta:
         model = Job
-        fields = ('id', 'name', 'url', 'description',
-                  'created_at', 'formats', 'status')
+        fields = ('uid', 'name', 'url', 'description', 'formats',
+                  'created_at', 'status')
 
     def to_internal_value(self, data):
         request = self.context['request']

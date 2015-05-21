@@ -2,8 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.utils.timezone
 from django.conf import settings
+import django.utils.timezone
+import jobs.models
 import uuid
 
 
@@ -20,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
                 ('uid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False)),
                 ('name', models.CharField(max_length=100)),
-                ('code', models.CharField(unique=True, max_length=7)),
+                ('slug', jobs.models.LowerCaseCharField(default='', unique=True, max_length=7)),
                 ('description', models.CharField(max_length=255)),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ('updated_at', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
