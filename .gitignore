@@ -72,4 +72,4 @@ static
 migrations
 !jobs/migrations
 nohup.out
-
+api/tests/examples

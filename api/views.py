@@ -54,6 +54,7 @@ class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobSerializer
     permission_classes = (permissions.AllowAny,)
     parser_classes = (FormParser, MultiPartParser)
+    lookup_field = 'uid'
 
     def get_queryset(self):
         return Job.objects.all()
@@ -83,10 +84,17 @@ class JobViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class ExportFormatViewSet(viewsets.ModelViewSet):
-    """ExportFormat API endpoint."""
-
+class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ### ExportFormat API endpoint.
+    Endpoint exposing the supported export formats.
+    """
     serializer_class = ExportFormatSerializer
     permission_classes = (permissions.AllowAny,)
     parser_classes = (FormParser,)
     queryset = ExportFormat.objects.all()
+    lookup_field = 'slug'
+    
+      
+    
+    

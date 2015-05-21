@@ -10,9 +10,9 @@ class Migration(migrations.Migration):
     def insert_export_formats(apps, schema_editor):
         ExportFormat = apps.get_model('jobs', 'ExportFormat')
         ExportFormat.objects.create(name='OBF Format', description='OSMAnd OBF Export Format.',
-                                    code='OBF')
+                                    slug='OBF')
         ExportFormat.objects.create(name='ESRI Shapefile Format', description='ESRI Shapefile Export Format.',
-                                    code='SHP')
+                                    slug='ShP')
 
     dependencies = [
         ('jobs', '0001_initial'),
