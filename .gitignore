@@ -63,12 +63,13 @@ docs/_build/
 target/
 
 media/*
-*/migrations/*
 
 
 # Django Settings
 settings_private.py
 static
 !ui/static
+migrations
+!jobs/migrations
 nohup.out
 

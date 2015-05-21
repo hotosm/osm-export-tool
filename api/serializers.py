@@ -48,9 +48,9 @@ class ExportFormatSerializer(serializers.ModelSerializer):
         fields = ('id', 'url', 'name', 'description', 'cmd')
 
 
-class JobSerializer(serializers.ModelSerializer):
-    """ Job Serializer"""
-
+class JobSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Job Serializer"""
     """
     formats = serializers.HyperlinkedRelatedField(
         view_name='api:formats-detail',
@@ -58,8 +58,8 @@ class JobSerializer(serializers.ModelSerializer):
         queryset = ExportFormat.objects.all()
     )
     """
-    
-    #formats = ExportFormatSerializer()
+            
+    formats = ExportFormatSerializer()
 
     url = serializers.HyperlinkedIdentityField(
         view_name='api:jobs-detail',
