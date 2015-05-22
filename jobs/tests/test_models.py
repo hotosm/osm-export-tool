@@ -3,9 +3,10 @@ import sys
 import uuid
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User
+from django.contrib.gis.geos import GEOSGeometry
 from jobs.models import ExportTask, Job, ExportFormat
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)   
     
 
 class TestExportTask(TestCase):
@@ -15,7 +16,14 @@ class TestExportTask(TestCase):
     def setUp(self,):
         formats = ExportFormat.objects.all()
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        Job.objects.create(name='TestJob', description='Test description', user=user)
+        bbox_wkt = 'POLYGON((10 10, 10 20, 20 20, 20 10, 10 10))'
+        the_geom = GEOSGeometry(bbox_wkt, srid=4326)
+        the_geog = GEOSGeometry(bbox_wkt)
+        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
+        Job.objects.create(name='TestJob',
+                                 description='Test description', user=user,
+                                 the_geom=the_geom, the_geog=the_geog,
+                                 the_geom_webmercator=the_geom_webmercator)
         job = Job.objects.all()[0]
         logger.debug('Job uid: {0}'.format(job.uid))
         # add the formats to the job
@@ -41,7 +49,6 @@ class TestExportTask(TestCase):
         task = ExportTask.objects.create(job=job, uid=uid)
         logger.debug('UUID: {0}'.format(task.uid))
         self.assertEqual(uid, task.uid)
-        
 
 class TestJob(TestCase):
     """
@@ -50,14 +57,21 @@ class TestJob(TestCase):
     def setUp(self,):
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        self.job = Job.objects.create(name='TestJob', description='Test description', user=self.user)
+        bbox_wkt = 'POLYGON((10 10, 10 20, 20 20, 20 10, 10 10))'
+        the_geom = GEOSGeometry(bbox_wkt, srid=4326)
+        the_geog = GEOSGeometry(bbox_wkt)
+        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom, the_geog=the_geog,
+                                 the_geom_webmercator=the_geom_webmercator)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
         self.job.save()
         
     
-    def test_job_creation(self, ):
+    def test_job_creation(self,):
         saved_job = Job.objects.all()[0]
         self.assertEqual(self.job, saved_job)
         self.assertEquals(self.uid, saved_job.uid)
@@ -69,4 +83,38 @@ class TestJob(TestCase):
         self.assertItemsEqual(saved_formats, self.formats)
     
     
+    def test_spatial_fields(self,):
+        bbox_wkt = 'POLYGON((10 10, 10 20, 20 20, 20 10, 10 10))'
+        the_geom = GEOSGeometry(bbox_wkt, srid=4326)
+        the_geog = GEOSGeometry(bbox_wkt)
+        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
+        job = Job.objects.all()[0]
+        self.assertIsNotNone(job)
+        geom = job.the_geom
+        geog = job.the_geog
+        geom_web = job.the_geom_webmercator
+        self.assertEqual(the_geom, geom)
+        self.assertEqual(the_geog, geog)
+        self.assertEqual(the_geom_webmercator, geom_web)
+        
+    def test_fields(self, ):
+        job = Job.objects.all()[0]
+        self.assertEquals('TestJob', job.name)
+        self.assertEquals('Test description', job.description)
+        self.assertEqual(self.user, job.user)
+        
+    def test_str(self, ):
+        job = Job.objects.all()[0]
+        self.assertEquals(str(job), 'TestJob')
+    
+
+
+class TestExportFormat(TestCase):
+    
+    def test_str(self,):
+        kml = ExportFormat.objects.get(slug='kml')
+        self.assertEquals(unicode(kml), 'kml')
+        self.assertEquals(str(kml), 'KML Format')
+        
+
 

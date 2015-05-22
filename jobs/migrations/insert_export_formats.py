@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from ..models import ExportFormat
 
 
@@ -20,12 +22,12 @@ class Migration(migrations.Migration):
         ExportFormat.objects.create(name='Garmin Map Format', description='Garmin Map Export Format.',
                                     slug='GARMIN')
         ExportFormat.objects.create(name='PGDump Format', description='PGDump Export Format.',
-                                    slug='PGDUMP')
+                                    slug='PGDUMP')  
 
     dependencies = [
         ('jobs', '0001_initial'),
     ]
 
     operations = [
-        migrations.RunPython(insert_export_formats)
+        migrations.RunPython(insert_export_formats),
     ]

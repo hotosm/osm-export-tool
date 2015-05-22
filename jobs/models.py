@@ -35,15 +35,17 @@ class TimeStampedModelMixin(models.Model):
 class ExportFormat(TimeStampedModelMixin):
     """Model for a ExportFormat"""
     id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     name = models.CharField(max_length=100)
-    slug = LowerCaseCharField(max_length=7, unique=True, default='')
+    slug = LowerCaseCharField(max_length=7, unique=True, default='')    
     description = models.CharField(max_length=255)
     cmd = models.TextField(max_length=1000)
     objects = models.Manager()
+    
     class Meta:
         managed = True
         db_table = 'export_formats'
+        
     def __str__(self):
         return '{0}'.format(self.name)
     
@@ -54,7 +56,7 @@ class ExportFormat(TimeStampedModelMixin):
 class Job(TimeStampedModelMixin):
     """Model for a Job"""
     id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     user = models.ForeignKey(User, related_name='user')
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
@@ -64,9 +66,11 @@ class Job(TimeStampedModelMixin):
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='') # create geog column
     objects = models.GeoManager()
+    
     class Meta:
         managed = True
         db_table = 'jobs'
+        
     def __str__(self):
         return '{0}'.format(self.name)
     

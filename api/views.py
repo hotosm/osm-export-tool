@@ -78,6 +78,8 @@ class JobViewSet(viewsets.ModelViewSet):
                 job.formats.add(export_format)
             # now add the job to the queue..
             # need logic here to determine which task to run
+            # decouple this.. look at command pattern..
+            # also need to mock this for unit testing
             res = run_export_job.delay(job_uid=str(job.uid))
             job.status = res.state
             job.save()
