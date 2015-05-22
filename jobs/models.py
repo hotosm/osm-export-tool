@@ -61,7 +61,7 @@ class Job(TimeStampedModelMixin):
     status = models.CharField(max_length=30)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
-    the_geom_mercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
+    the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='') # create geog column
     objects = models.GeoManager()
     class Meta:
