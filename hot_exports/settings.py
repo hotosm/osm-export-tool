@@ -186,6 +186,11 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
+        'api.tests': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
         'tasks': {
             'handlers': ['file'],
             'propagate': True,
@@ -205,6 +210,3 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Celery settings
-#CELERY_IMPORT='tasks.export_tasks.run_export_job'

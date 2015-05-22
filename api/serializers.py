@@ -77,6 +77,6 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
         logger.debug(bbox_wkt)
         the_geom = GEOSGeometry(bbox_wkt, srid=4326)
         the_geog = GEOSGeometry(bbox_wkt)
-        the_geom_mercator = the_geom.transform(ct=3857, clone=True)
+        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         return {'name': job_name, 'description': description, 'user': user,
-                'the_geom': the_geom, 'the_geom_mercator': the_geom_mercator, 'the_geog': the_geog}
+                'the_geom': the_geom, 'the_geom_webmercator': the_geom_webmercator, 'the_geog': the_geog}

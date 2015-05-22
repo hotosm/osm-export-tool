@@ -73,3 +73,5 @@ migrations
 !jobs/migrations
 nohup.out
 api/tests/examples
+cover.sh
+
