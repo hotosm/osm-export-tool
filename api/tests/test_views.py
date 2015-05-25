@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
-
+from mock import Mock, patch
+from tasks.export_tasks import ExportTaskRunner
 from jobs.models import Job, ExportFormat, ExportTask
 
 logger = logging.getLogger(__name__)
@@ -73,7 +74,11 @@ class TestJobViewSet(APITestCase):
         self.assertEquals(response['Content-Length'], '0')
         self.assertEquals(response['Content-Language'], 'en')
     
-    def test_create_job(self, ):
+    
+    @patch('tasks.export_tasks.ExportTaskRunner')
+    def test_create_job(self, mock):
+        task_runner = mock.return_value
+        logger.debug('Mocked ExportTaskRunner: %s' % task_runner)
         url = reverse('api:jobs-list')
         formats = [str(format.uid) for format in ExportFormat.objects.all()]
         logger.debug(formats)
@@ -90,12 +95,16 @@ class TestJobViewSet(APITestCase):
                                 HTTP_HOST='testserver')
         response = self.client.post(url, request_data)
         logger.debug(response)
+        job_uid = response.data['uid']
+        # test the ExportTaskRunner.run_task(job_id) method gets called.
+        task_runner.run_task.assert_called_with(job_uid=job_uid)
         
         # test the response headers
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
         logger.debug(response.data['formats'][0]['uid'])
+        
         # test significant content
         self.assertEqual(response.data['formats'][0]['uid'], request_data['formats'][0])
         self.assertEqual(response.data['formats'][1]['uid'], request_data['formats'][1])
