@@ -191,6 +191,11 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
+        'tasks.tests': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
         'tasks': {
             'handlers': ['file'],
             'propagate': True,
