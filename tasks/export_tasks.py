@@ -17,7 +17,6 @@ class TaskRunner(object):
     """
     Abstract base class for running tasks
     """
-
     class Meta:
         abstract = True
 
@@ -31,12 +30,18 @@ class ExportTaskRunner(TaskRunner):
     def run_task(self, job_uid=None):
         logger.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
-        formats = job.formats.all()
-        shp_export_task = SHPExportTask()
+        formats = [format.slug for format in job.formats.all()]
+        logger.debug(formats)
+        # pick the export task based on the format here..
+        
+        shp_export_task = ShpExportTask()
         result = shp_export_task.delay(job_uid=job_uid)
         job.status = result.state
         job.save()
+        # create ExportTask here?
 
+
+# Export task definitions
 
 class ExportTask(Task):
     """
@@ -65,11 +70,36 @@ class ExportTask(Task):
         logger.debug('Task returned: {0!r}'.format(self.request))
 
 
-class SHPExportTask(ExportTask):
-    
+class ShpExportTask(ExportTask):
+    """
+    Class defining SHP export function.
+    """
     def run(self, job_uid=None):
         
         # dummy task for now..
+        # logic for SHP export goes here..
         time.sleep(10)
         logger.debug('Job ran {0}'.format(job_uid))
+
+
+class KmlExportTask(ExportTask):
+    pass
+
+
+class ObfExportTask(ExportTask):
+    pass
+
+
+class SqliteExportTask(ExportTask):
+    pass
+
+
+class PgdumpExportTask(ExportTask):
+    pass
+
+
+class GarminExportTask():
+    pass
+
+
 
