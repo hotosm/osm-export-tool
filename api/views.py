@@ -28,7 +28,7 @@ from .renderers import HOTExportApiRenderer
 from jobs.models import Job, ExportFormat
 from serializers import JobSerializer, ExportFormatSerializer
 from .errors import MissingFormatErrorAPIResponse
-from tasks.export_tasks import run_export_job
+from tasks.export_tasks import ExportTaskRunner
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -80,9 +80,9 @@ class JobViewSet(viewsets.ModelViewSet):
             # need logic here to determine which task to run
             # decouple this.. look at command pattern..
             # also need to mock this for unit testing
-            res = run_export_job.delay(job_uid=str(job.uid))
-            job.status = res.state
-            job.save()
+            task_runner = ExportTaskRunner()
+            job_uid = str(job.uid)
+            task_runner.run_task(job_uid=job_uid)
             running = JobSerializer(job, context={'request': request})
             return Response(running.data, status=status.HTTP_201_CREATED)
         else:

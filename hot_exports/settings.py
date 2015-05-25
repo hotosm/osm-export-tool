@@ -196,6 +196,11 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
+        'celery': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        }, 
         'jobs.tests': {
             'handlers': ['console'],
             'propagate': True,
@@ -210,3 +215,11 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Celery config
+CELERY_TRACK_STARTED = True
+
+# Export task config
+EXPORT_TASKS = {
+    'shp': 'tasks.export_tasks.SHPExportTask',
+}
