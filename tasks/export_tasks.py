@@ -11,6 +11,14 @@ from jobs.models import Job
 logger = get_task_logger(__name__)
 
 
+class ExportTaskRunner(object):
+    pass
+
+    
+
+
+
+
 class HOTExportTask(Task):
     
     class Meta:
