@@ -122,7 +122,7 @@ class TestExportFormat(TestCase):
 class TestRegion(TestCase):
     
     def setUp(self,):
-        self.ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '../migrations/africa.geojson')
+        self.ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/../migrations/africa.geojson')
         
     def test_load_region(self,):
         layer = self.ds[0]
