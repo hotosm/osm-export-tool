@@ -4,9 +4,10 @@ from rest_framework import serializers
 from datetime import datetime
 from jobs.models import Job, ExportFormat, Region
 from django.contrib.auth.models import User, Group
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.utils import timezone
 from rest_framework_gis import serializers as geo_serializers
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 try:
@@ -41,6 +42,29 @@ class UserSerializer(serializers.Serializer):
     
     
 class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
+    """
+    Serializer returning GeoJSON representation of Regions.
+    """
+    url = serializers.HyperlinkedIdentityField(
+       view_name='api:regions-detail',
+       lookup_field='uid'
+    )
+    
+    id = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Region
+        geo_field = 'the_geom'
+        fields = ('id', 'uid','name','description', 'url','the_geom')
+        
+    def get_id(self, obj):
+        return obj.uid
+ 
+
+class SimpleRegionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for returning Region data without geometry.
+    """
     
     url = serializers.HyperlinkedIdentityField(
        view_name='api:regions-detail',
@@ -49,11 +73,14 @@ class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
     
     class Meta:
         model = Region
-        geo_field = 'the_geom'
-        fields = ('uid','name','description', 'url','the_geom')
+        fields = ('uid','name','description', 'url')
+    
 
 
 class ExportFormatSerializer(serializers.ModelSerializer):
+    """
+    Representation of ExportFormat.
+    """
     
     url = serializers.HyperlinkedIdentityField(
        view_name='api:formats-detail',
@@ -67,30 +94,70 @@ class ExportFormatSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.HyperlinkedModelSerializer):
     """
-    Job Serializer
+    Job Serializer.
     """
-    
     formats = ExportFormatSerializer(many=True)
+    region = SimpleRegionSerializer()
 
     url = serializers.HyperlinkedIdentityField(
         view_name = 'api:jobs-detail',
         lookup_field = 'uid'
     )
+    
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
 
     class Meta:
         model = Job
-        fields = ('uid', 'name', 'url', 'description', 'formats',
-                  'created_at', 'updated_at', 'status')
+        fields = ('uid', 'name', 'url', 'description', 'region', 'formats',
+                  'created_at', 'updated_at', 'status', 'user')
 
     def to_internal_value(self, data):
         request = self.context['request']
         user = request.user
-        job_name = data['name']
-        description = data['description']
-        bbox_wkt = data['bbox']
-        logger.debug(bbox_wkt)
-        the_geom = GEOSGeometry(bbox_wkt, srid=4326)
-        the_geog = GEOSGeometry(bbox_wkt)
+        job_name = validate_string_field('name', data)
+        description = validate_string_field('description', data)
+        bbox = validate_bbox(data)
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        the_geog = GEOSGeometry(bbox)
         the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
-        return {'name': job_name, 'description': description, 'user': user,
+        
+        # lookup job region here
+        region = Region.objects.filter(the_geom__contains=the_geom)[0]
+        logger.debug(region)
+        return {'name': job_name, 'description': description, 'region': region, 'user': user,
                 'the_geom': the_geom, 'the_geom_webmercator': the_geom_webmercator, 'the_geog': the_geog}
+    
+
+# validators
+
+def validate_formats(value, request=None):
+    pass
+
+def validate_bbox(data):
+    try:
+        xmin = data['xmin']
+        ymin = data['ymin']
+        xmax = data['xmax']
+        ymax = data['ymax']
+        bbox = Polygon.from_bbox((xmin, ymin, xmax, ymax))
+        if (bbox.valid):
+            return bbox
+        else:
+            raise serializers.ValidationError(detail={'id': 'invalid_bounds', 'message': 'Invalid bounding box.'})
+    except MultiValueDictKeyError as e:
+        param = e.message.replace("'",'')
+        detail={'id': 'missing_parameter', 'message': 'Missing parameter: {0}'.format(param), 'param': param}
+        raise serializers.ValidationError(detail)
+   
+def validate_string_field(name=None, data=None):
+    detail={'id': 'missing_parameter', 'message': 'Missing parameter: {0}'.format(name), 'param': name}
+    try:
+        value = data[name]
+        if value == None or value == '':
+            raise serializers.ValidationError(detail)
+        else:
+            return value
+    except Exception:
+        raise serializers.ValidationError(detail)

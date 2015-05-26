@@ -85,7 +85,10 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
-            'bbox': 'POLYGON((10 10, 10 20, 20 20, 20 10, 10 10))',
+            'xmin': -7.96,
+            'ymin': 22.6,
+            'xmax': -8.14,
+            'ymax': 27.12,
             'formats': formats
         }
         token = Token.objects.create(user=self.user)
@@ -111,4 +114,8 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
         #self.assertEqual(response.data['status'], 'PENDING')
+    
+    def test_validation(self, ):
+        pass
+    
         

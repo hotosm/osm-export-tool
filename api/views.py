@@ -23,11 +23,13 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.serializers import ValidationError
 
 from .renderers import HOTExportApiRenderer
+from .errors import InvalidBBOXError
 from jobs.models import Job, ExportFormat, Region
 from serializers import JobSerializer, ExportFormatSerializer, RegionSerializer
-from .errors import MissingFormatErrorAPIResponse
+from .errors import MissingFormatAPIResponse, MissingParamAPIResponse
 from tasks.export_tasks import ExportTaskRunner
 
 # Get an instance of a logger
@@ -62,16 +64,12 @@ class JobViewSet(viewsets.ModelViewSet):
         return Job.objects.all()
 
     def create(self, request, *args, **kwargs):
-        formats = request.data.getlist('formats')
-        if len(formats) == 0:
-            logger.warn('No formats specified')
-            return MissingFormatErrorAPIResponse(request=request,
-                                                 status=status.HTTP_406_NOT_ACCEPTABLE)
         serializer = JobSerializer(data=request.data,
                                    context={'request': request})
         if (serializer.is_valid()):
             job = serializer.save()
             # add the export formats
+            formats = request.data.getlist('formats')
             for format_uid in formats:
                 export_format = ExportFormat.objects.get(uid=format_uid)
                 job.formats.add(export_format)
@@ -81,7 +79,6 @@ class JobViewSet(viewsets.ModelViewSet):
             running = JobSerializer(job, context={'request': request})
             return Response(running.data, status=status.HTTP_201_CREATED)
         else:
-            logger.debug(serializer.errors)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
