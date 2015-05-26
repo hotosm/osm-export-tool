@@ -51,6 +51,27 @@ class ExportFormat(TimeStampedModelMixin):
     
     def __unicode__(self, ):
         return '{0}'.format(self.slug)
+
+
+class Region(TimeStampedModelMixin):
+    """
+    Model for a HOT Export Region.
+    """
+    id = models.AutoField(primary_key=True, editable=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, db_index=True)
+    description = models.CharField(max_length=1000, blank=True)
+    the_geom = models.PolygonField(verbose_name='HOT Export Region', srid=4326, default='')
+    the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export region', srid=3857, default='')
+    the_geog = models.PolygonField(verbose_name='Geographic extent for export region', geography=True, default='') 
+    objects = models.GeoManager()
+    
+    class Meta:
+        managed = True
+        db_table = 'regions'
+    
+    def __str__(self):
+        return '{0}'.format(self.name)
     
 
 class Job(TimeStampedModelMixin):
@@ -62,6 +83,7 @@ class Job(TimeStampedModelMixin):
     user = models.ForeignKey(User, related_name='user')
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
+    region = models.OneToOneField(Region, null=True)
     status = models.CharField(max_length=30)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
@@ -86,27 +108,4 @@ class ExportTask(TimeStampedModelMixin):
     job = models.ForeignKey(Job, related_name='job')
     
 
-class Region(TimeStampedModelMixin):
-    """
-    Model for a HOT Export Region.
-    """
-    id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, db_index=True)
-    description = models.CharField(max_length=1000, blank=True)
-    the_geom = models.PolygonField(verbose_name='HOT Export Region', srid=4326, default='')
-    the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export region', srid=3857, default='')
-    the_geog = models.PolygonField(verbose_name='Geographic extent for export region', geography=True, default='') 
-    objects = models.GeoManager()
-    
-    class Meta:
-        managed = True
-        db_table = 'regions'
-    
-    def __str__(self):
-        return '{0}'.format(self.name)
-    
-    def save(self, *args, **kwargs):
-        # pull out the_geom and update other spatial fields
-        wkt = self.the_geom.wkt
-        super(Region, self).save(*args, **kwargs)
+

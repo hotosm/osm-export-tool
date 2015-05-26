@@ -67,7 +67,6 @@ class JobViewSet(viewsets.ModelViewSet):
             logger.warn('No formats specified')
             return MissingFormatErrorAPIResponse(request=request,
                                                  status=status.HTTP_406_NOT_ACCEPTABLE)
-        logger.debug(formats)
         serializer = JobSerializer(data=request.data,
                                    context={'request': request})
         if (serializer.is_valid()):
@@ -76,10 +75,6 @@ class JobViewSet(viewsets.ModelViewSet):
             for format_uid in formats:
                 export_format = ExportFormat.objects.get(uid=format_uid)
                 job.formats.add(export_format)
-            # now add the job to the queue..
-            # need logic here to determine which task to run
-            # decouple this.. look at command pattern..
-            # also need to mock this for unit testing
             task_runner = ExportTaskRunner()
             job_uid = str(job.uid)
             task_runner.run_task(job_uid=job_uid)
