@@ -224,7 +224,14 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # Celery config
 CELERY_TRACK_STARTED = True
 
-# Export task config
+"""
+A dictionary of export formats mapped to ExportTask classes.
+"""
 EXPORT_TASKS = {
-    'shp': 'tasks.export_tasks.SHPExportTask',
+    'shp': 'ShpExportTask',
+    'obf': 'ObfExportTask',
+    'pgdump': 'PgdumpExportTask',
+    'sqlite': 'SqliteExportTask',
+    'kml': 'KmlExportTask',
+    'garmin': 'GarminExportTask'
 }

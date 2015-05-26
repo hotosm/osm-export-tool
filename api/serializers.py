@@ -2,10 +2,11 @@ import logging
 import pdb
 from rest_framework import serializers
 from datetime import datetime
-from jobs.models import Job, ExportFormat
+from jobs.models import Job, ExportFormat, Region
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
+from rest_framework_gis import serializers as geo_serializers
 
 
 try:
@@ -37,6 +38,19 @@ class UserGroupSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
+    
+    
+class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
+    
+    url = serializers.HyperlinkedIdentityField(
+       view_name='api:regions-detail',
+       lookup_field='uid'
+    )
+    
+    class Meta:
+        model = Region
+        geo_field = 'the_geom'
+        fields = ('uid','name','description', 'url','the_geom')
 
 
 class ExportFormatSerializer(serializers.ModelSerializer):

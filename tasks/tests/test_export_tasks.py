@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 class TestExportTaskRunner(TestCase):
     
     def setUp(self,):
-        self.formats = [ExportFormat.objects.get(slug='shp')] #pre-loaded by 'insert_export_formats' migration
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox_wkt = 'POLYGON((10 10, 10 20, 20 20, 20 10, 10 10))'
         the_geom = GEOSGeometry(bbox_wkt, srid=4326)
@@ -25,12 +24,66 @@ class TestExportTaskRunner(TestCase):
                                  the_geom=the_geom, the_geog=the_geog,
                                  the_geom_webmercator=the_geom_webmercator)
         self.uid = str(self.job.uid)
-        # add the formats to the job
-        self.job.formats = self.formats
-        self.job.save()
     
     @patch('tasks.export_tasks.ShpExportTask')
     def test_run_shp_export_task(self, mock):
+        format = ExportFormat.objects.get(slug='shp')
+        self.job.formats.add(format)
+        shp_export_task = mock.return_value
+        shp_export_task.delay.return_value = Mock(state='PENDING')
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        shp_export_task.delay.assert_called_with(job_uid=self.uid)
+        shp_export_task.delay.return_value.assert_called('state')
+    
+    @patch('tasks.export_tasks.ObfExportTask')
+    def test_run_obf_export_task(self, mock):
+        format = ExportFormat.objects.get(slug='obf')
+        self.job.formats.add(format)
+        obf_export_task = mock.return_value
+        obf_export_task.delay.return_value = Mock(state='PENDING')
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        obf_export_task.delay.assert_called_with(job_uid=self.uid)
+        obf_export_task.delay.return_value.assert_called('state')
+        
+    @patch('tasks.export_tasks.KmlExportTask')
+    def test_run_kml_export_task(self, mock):
+        format = ExportFormat.objects.get(slug='kml')
+        self.job.formats.add(format)
+        shp_export_task = mock.return_value
+        shp_export_task.delay.return_value = Mock(state='PENDING')
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        shp_export_task.delay.assert_called_with(job_uid=self.uid)
+        shp_export_task.delay.return_value.assert_called('state')
+    
+    @patch('tasks.export_tasks.SqliteExportTask')
+    def test_run_sqlite_export_task(self, mock):
+        format = ExportFormat.objects.get(slug='sqlite')
+        self.job.formats.add(format)
+        shp_export_task = mock.return_value
+        shp_export_task.delay.return_value = Mock(state='PENDING')
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        shp_export_task.delay.assert_called_with(job_uid=self.uid)
+        shp_export_task.delay.return_value.assert_called('state')
+        
+    @patch('tasks.export_tasks.GarminExportTask')
+    def test_run_garmin_export_task(self, mock):
+        format = ExportFormat.objects.get(slug='garmin')
+        self.job.formats.add(format)
+        shp_export_task = mock.return_value
+        shp_export_task.delay.return_value = Mock(state='PENDING')
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        shp_export_task.delay.assert_called_with(job_uid=self.uid)
+        shp_export_task.delay.return_value.assert_called('state')
+    
+    @patch('tasks.export_tasks.PgdumpExportTask')
+    def test_run_pgdump_export_task(self, mock):
+        format = ExportFormat.objects.get(slug='pgdump')
+        self.job.formats.add(format)
         shp_export_task = mock.return_value
         shp_export_task.delay.return_value = Mock(state='PENDING')
         runner = ExportTaskRunner()
