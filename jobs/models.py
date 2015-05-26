@@ -83,7 +83,7 @@ class Job(TimeStampedModelMixin):
     user = models.ForeignKey(User, related_name='user')
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
-    region = models.OneToOneField(Region, null=True)
+    region = models.ForeignKey(Region, null=True)
     status = models.CharField(max_length=30)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
