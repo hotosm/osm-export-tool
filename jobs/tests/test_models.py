@@ -1,10 +1,12 @@
 import logging
 import sys
 import uuid
+import os
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry
-from jobs.models import ExportTask, Job, ExportFormat
+from jobs.models import ExportTask, Job, ExportFormat, Region
+from django.contrib.gis.gdal import DataSource
 
 logger = logging.getLogger(__name__)   
     
@@ -117,4 +119,21 @@ class TestExportFormat(TestCase):
         self.assertEquals(str(kml), 'KML Format')
         
 
+class TestRegion(TestCase):
+    
+    def setUp(self,):
+        self.ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '../migrations/africa.geojson')
+        
+    def test_load_region(self,):
+        layer = self.ds[0]
+        geom = layer.get_geoms(geos=True)[0]
+        the_geom = GEOSGeometry(geom.wkt, srid=4326)
+        the_geog = GEOSGeometry(geom.wkt)
+        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
+        region = Region.objects.create(name="Africa", description="African export region",
+                        the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
+        )
+        logger.debug(region.uid)
+        saved_region = Region.objects.get(uid=region.uid)
+        self.assertEqual(region, saved_region)
 

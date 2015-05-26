@@ -25,8 +25,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
 from .renderers import HOTExportApiRenderer
-from jobs.models import Job, ExportFormat
-from serializers import JobSerializer, ExportFormatSerializer
+from jobs.models import Job, ExportFormat, Region
+from serializers import JobSerializer, ExportFormatSerializer, RegionSerializer
 from .errors import MissingFormatErrorAPIResponse
 from tasks.export_tasks import ExportTaskRunner
 
@@ -99,10 +99,20 @@ class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = ExportFormatSerializer
     permission_classes = (permissions.AllowAny,)
-    parser_classes = (FormParser,)
     queryset = ExportFormat.objects.all()
     lookup_field = 'slug'
     
-      
+
+class RegionViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ### Region API endpoint.
+    Endpoint exposing the supported regions.
+    """
+    
+    serializer_class = RegionSerializer
+    permission_classes = (permissions.AllowAny,)
+    queryset = Region.objects.all()
+    lookup_field = 'uid'
+    
     
     

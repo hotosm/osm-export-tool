@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 import logging
 import time
+import sys
 from celery import app, shared_task, Task
 from celery.registry import tasks
 from celery.contrib.methods import task
@@ -33,15 +34,24 @@ class ExportTaskRunner(TaskRunner):
         formats = [format.slug for format in job.formats.all()]
         logger.debug(formats)
         # pick the export task based on the format here..
-        
-        shp_export_task = ShpExportTask()
-        result = shp_export_task.delay(job_uid=job_uid)
-        job.status = result.state
-        job.save()
-        # create ExportTask here?
+        for format in formats:
+            try:
+                # see settings.EXPORT_TASKS for configuration
+                class_name = self.export_registry[format]
+                """
+                Instantiate the required class.
+                Assuming for now that ExportTasks will be in this module.
+                """
+                export_task = getattr(sys.modules[__name__], class_name)()
+                result = export_task.delay(job_uid=job_uid)
+                job.status = result.state
+                job.save()
+            except KeyError as e:
+                logger.debug(e)
+                #TODO: how to report errors here?
 
 
-# Export task definitions
+# ExportTasks abstract base class and subclasses.
 
 class ExportTask(Task):
     """
@@ -83,23 +93,64 @@ class ShpExportTask(ExportTask):
 
 
 class KmlExportTask(ExportTask):
-    pass
+    """
+    Class defining KML export function.
+    """
+    def run(self, job_uid=None):
+       
+       # dummy task for now..
+       # logic for SHP export goes here..
+       time.sleep(10)
+       logger.debug('Job ran {0}'.format(job_uid))
 
 
 class ObfExportTask(ExportTask):
-    pass
+    """
+    Class defining OBF export function.
+    """
+    def run(self, job_uid=None):
+       
+       # dummy task for now..
+       # logic for SHP export goes here..
+       time.sleep(10)
+       logger.debug('Job ran {0}'.format(job_uid))
+
 
 
 class SqliteExportTask(ExportTask):
-    pass
+    """
+    Class defining SQLITE export function.
+    """
+    def run(self, job_uid=None):
+       
+       # dummy task for now..
+       # logic for SHP export goes here..
+       time.sleep(10)
+       logger.debug('Job ran {0}'.format(job_uid))
 
 
 class PgdumpExportTask(ExportTask):
-    pass
+    """
+    Class defining PGDUMP export function.
+    """
+    def run(self, job_uid=None):
+       
+       # dummy task for now..
+       # logic for SHP export goes here..
+       time.sleep(10)
+       logger.debug('Job ran {0}'.format(job_uid))
 
 
 class GarminExportTask():
-    pass
+    """
+    Class defining GARMIN export function.
+    """
+    def run(self, job_uid=None):
+       
+       # dummy task for now..
+       # logic for SHP export goes here..
+       time.sleep(10)
+       logger.debug('Job ran {0}'.format(job_uid))
 
 
 
