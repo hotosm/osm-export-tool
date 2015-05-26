@@ -4,7 +4,7 @@ import uuid
 import os
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from jobs.models import ExportTask, Job, ExportFormat, Region
 from django.contrib.gis.gdal import DataSource
 
@@ -108,8 +108,17 @@ class TestJob(TestCase):
     def test_str(self, ):
         job = Job.objects.all()[0]
         self.assertEquals(str(job), 'TestJob')
+        
+    def test_job_region(self, ):
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12)) # africa
+        region = Region.objects.filter(the_geom__contains=bbox)[0]
+        self.assertIsNotNone(region)
+        self.assertEquals('Africa', region.name)
+        self.job.region = region
+        self.job.save()
+        saved_job = Job.objects.all()[0]
+        self.assertEqual(saved_job.region, region)
     
-
 
 class TestExportFormat(TestCase):
     
@@ -120,12 +129,10 @@ class TestExportFormat(TestCase):
         
 
 class TestRegion(TestCase):
-    
-    def setUp(self,):
-        self.ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/../migrations/africa.geojson')
-        
+            
     def test_load_region(self,):
-        layer = self.ds[0]
+        ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/../migrations/africa.geojson')
+        layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
         the_geom = GEOSGeometry(geom.wkt, srid=4326)
         the_geog = GEOSGeometry(geom.wkt)
@@ -136,4 +143,28 @@ class TestRegion(TestCase):
         logger.debug(region.uid)
         saved_region = Region.objects.get(uid=region.uid)
         self.assertEqual(region, saved_region)
-
+    
+    def test_africa_region(self, ):
+        africa = Region.objects.get(name='Africa')
+        self.assertIsNotNone(africa)
+        self.assertEquals('Africa', africa.name)
+        self.assertIsNotNone(africa.the_geom)
+        
+    def test_bbox_intersects_region(self, ):
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        self.assertIsNotNone(bbox)
+        africa = Region.objects.get(name='Africa')
+        self.assertIsNotNone(africa)
+        self.assertTrue(africa.the_geom.intersects(bbox))
+        
+    def test_get_region_for_bbox(self, ):
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        regions = Region.objects.all()
+        found = []
+        for region in regions:
+            if region.the_geom.intersects(bbox):
+                found.append(region)
+                break
+        self.assertTrue(len(found) == 1)
+        self.assertEquals('Africa', found[0].name)
+    
