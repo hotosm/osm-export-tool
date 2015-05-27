@@ -1,10 +1,12 @@
 import logging
 import pdb
+from uuid import UUID
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from datetime import datetime
 from jobs.models import Job, ExportFormat, Region
 from django.contrib.auth.models import User, Group
-from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
 from django.utils import timezone
 from rest_framework_gis import serializers as geo_serializers
 from django.utils.datastructures import MultiValueDictKeyError
@@ -116,9 +118,11 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
     def to_internal_value(self, data):
         request = self.context['request']
         user = request.user
-        job_name = validate_string_field('name', data)
-        description = validate_string_field('description', data)
-        bbox = validate_bbox(data)
+        job_name = _validate_string_field('name', data)
+        description = _validate_string_field('description', data)
+        extents = _validate_bbox_params(data)
+        bbox = _validate_bbox_extents(extents)
+        formats = _validate_formats(request)
         the_geom = GEOSGeometry(bbox, srid=4326)
         the_geog = GEOSGeometry(bbox)
         the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
@@ -132,26 +136,56 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
 
 # validators
 
-def validate_formats(value, request=None):
-    pass
+def _validate_formats(request):
+    scheme = request.scheme
+    host = request.META['HTTP_HOST']
+    formats_url = '{0}://{1}{2}'.format(scheme, host, reverse('api:formats-list'))
+    missing_id = 'missing_format'
+    missing_message = 'Export format uid required.'
+    invalid_id = 'invalid_format_uid'
+    invalid_message = 'Invalid export format uid.'
+    formats = request.data.getlist('formats')
+    if len(formats) == 0:
+        raise serializers.ValidationError(detail = {'id': missing_id,
+            'message': missing_message,
+            'formats_url': formats_url
+        })
+    for format in formats:
+        try:
+            val = UUID(format, version=4)
+        except ValueError:
+            raise serializers.ValidationError(detail = {'id': invalid_id,
+            'message': invalid_message,
+            'formats_url': formats_url
+        })
+    
+    
+    
 
-def validate_bbox(data):
+def _validate_bbox_extents(extents):
+    try:
+        bbox = Polygon.from_bbox(extents)
+        if (bbox.valid):
+            return bbox
+        else:
+            raise serializers.ValidationError(detail={'id': 'invalid_bounds', 'message': 'Invalid bounding box.'})
+    except GEOSException as e:
+        logger.debug(e)
+        raise serializers.ValidationError(detail={'id': 'invalid_bounds', 'message': 'Invalid bounding box.'}) 
+
+def _validate_bbox_params(data):
     try:
         xmin = data['xmin']
         ymin = data['ymin']
         xmax = data['xmax']
         ymax = data['ymax']
-        bbox = Polygon.from_bbox((xmin, ymin, xmax, ymax))
-        if (bbox.valid):
-            return bbox
-        else:
-            raise serializers.ValidationError(detail={'id': 'invalid_bounds', 'message': 'Invalid bounding box.'})
+        return (xmin, ymin, xmax, ymax)
     except MultiValueDictKeyError as e:
         param = e.message.replace("'",'')
         detail={'id': 'missing_parameter', 'message': 'Missing parameter: {0}'.format(param), 'param': param}
         raise serializers.ValidationError(detail)
    
-def validate_string_field(name=None, data=None):
+def _validate_string_field(name=None, data=None):
     detail={'id': 'missing_parameter', 'message': 'Missing parameter: {0}'.format(name), 'param': name}
     try:
         value = data[name]
