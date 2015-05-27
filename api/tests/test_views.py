@@ -31,6 +31,12 @@ class TestJobViewSet(APITestCase):
         format = ExportFormat.objects.get(slug='obf')
         self.job.formats.add(format)
         self.job.save()
+        token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+        
         
     def test_get_job_detail(self, ):
         expected = '/api/jobs/{0}'.format(self.job.uid)
@@ -47,10 +53,6 @@ class TestJobViewSet(APITestCase):
                 "created_at":"2015-05-21T19:46:37.163749Z",
                 "updated_at":"2015-05-21T19:46:47.207111Z",
                 "status":"SUCCESS"}
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
-                                HTTP_ACCEPT='application/json; version=1.0',
-                                HTTP_ACCEPT_LANGUAGE='en')
         response = self.client.get(url)
         # test the response headers
         self.assertEquals(response.status_code, status.HTTP_200_OK)
@@ -64,10 +66,6 @@ class TestJobViewSet(APITestCase):
     
     def test_delete_job(self, ):
         url = reverse('api:jobs-detail', args=[self.job.uid])
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
-                                HTTP_ACCEPT='application/json; version=1.0',
-                                HTTP_ACCEPT_LANGUAGE='en')
         response = self.client.delete(url)
         # test the response headers
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -76,12 +74,10 @@ class TestJobViewSet(APITestCase):
     
     
     @patch('tasks.export_tasks.ExportTaskRunner')
-    def test_create_job(self, mock):
+    def test_create_job_success(self, mock):
         task_runner = mock.return_value
-        logger.debug('Mocked ExportTaskRunner: %s' % task_runner)
         url = reverse('api:jobs-list')
         formats = [str(format.uid) for format in ExportFormat.objects.all()]
-        logger.debug(formats)
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -91,13 +87,7 @@ class TestJobViewSet(APITestCase):
             'ymax': 27.12,
             'formats': formats
         }
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
-                                HTTP_ACCEPT='application/json; version=1.0',
-                                HTTP_ACCEPT_LANGUAGE='en',
-                                HTTP_HOST='testserver')
         response = self.client.post(url, request_data)
-        logger.debug(response)
         job_uid = response.data['uid']
         # test the ExportTaskRunner.run_task(job_id) method gets called.
         task_runner.run_task.assert_called_with(job_uid=job_uid)
@@ -106,16 +96,131 @@ class TestJobViewSet(APITestCase):
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
-        logger.debug(response.data['formats'][0]['uid'])
         
-        # test significant content
+        # test significant response content
         self.assertEqual(response.data['formats'][0]['uid'], request_data['formats'][0])
         self.assertEqual(response.data['formats'][1]['uid'], request_data['formats'][1])
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
         #self.assertEqual(response.data['status'], 'PENDING')
     
-    def test_validation(self, ):
-        pass
+    @patch('tasks.export_tasks.ExportTaskRunner')
+    def test_missing_bbox_param(self, mock):
+        task_runner = mock.return_value
+        url = reverse('api:jobs-list')
+        formats = [str(format.uid) for format in ExportFormat.objects.all()]
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            #'xmin': -7.96, missing
+            'ymin': 22.6,
+            'xmax': -8.14,
+            'ymax': 27.12,
+            'formats': formats
+        }
+        response = self.client.post(url, request_data)
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals('missing_parameter', response.data['id'])
+        self.assertEquals('xmin', response.data['param'])
+        
+    @patch('tasks.export_tasks.ExportTaskRunner')
+    def test_empty_bbox_param(self, mock):
+        task_runner = mock.return_value
+        url = reverse('api:jobs-list')
+        formats = [str(format.uid) for format in ExportFormat.objects.all()]
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'xmin': '', # empty
+            'ymin': 22.6,
+            'xmax': -8.14,
+            'ymax': 27.12,
+            'formats': formats
+        }
+        response = self.client.post(url, request_data)
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals('invalid_bounds', response.data['id'])
     
+    @patch('tasks.export_tasks.ExportTaskRunner')
+    def test_invalid_bbox(self, mock):
+        task_runner = mock.return_value
+        url = reverse('api:jobs-list')
+        formats = [str(format.uid) for format in ExportFormat.objects.all()]
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'xmin': -8.14, # invalid
+            'ymin': 22.6,
+            'xmax': -8.14,
+            'ymax': 27.12,
+            'formats': formats
+        }
+        response = self.client.post(url, request_data)
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals('invalid_bounds', response.data['id'])
+    
+    @patch('tasks.export_tasks.ExportTaskRunner')
+    def test_empty_string_param(self, mock):
+        task_runner = mock.return_value
+        url = reverse('api:jobs-list')
+        formats = [str(format.uid) for format in ExportFormat.objects.all()]
+        request_data = {
+            'name': 'TestJob',
+            'description': '',  # empty
+            'xmin': -7.96,
+            'ymin': 22.6,
+            'xmax': -8.14,
+            'ymax': 27.12,
+            'formats': formats
+        }
+        response = self.client.post(url, request_data)
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals('missing_parameter', response.data['id'])
+        self.assertEquals('description', response.data['param'])
+        
+    @patch('tasks.export_tasks.ExportTaskRunner')
+    def test_missing_format_param(self, mock):
+        task_runner = mock.return_value
+        url = reverse('api:jobs-list')
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'xmin': -7.96,
+            'ymin': 22.6,
+            'xmax': -8.14,
+            'ymax': 27.12,
+            #'formats': '', # missing
+        }
+        response = self.client.post(url, request_data)
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals('missing_format', response.data['id'])
+    
+    @patch('tasks.export_tasks.ExportTaskRunner')
+    def test_invalid_format_param(self, mock):
+        task_runner = mock.return_value
+        url = reverse('api:jobs-list')
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'xmin': -7.96,
+            'ymin': 22.6,
+            'xmax': -8.14,
+            'ymax': 27.12,
+            'formats': '', # invalid
+        }
+        response = self.client.post(url, request_data)
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals('invalid_format_uid', response.data['id'])
         
