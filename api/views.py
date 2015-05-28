@@ -68,6 +68,7 @@ class JobViewSet(viewsets.ModelViewSet):
                                    context={'request': request})
         if (serializer.is_valid()):
             job = serializer.save()
+            logger.debug('Saved job')
             # add the export formats
             formats = request.data.getlist('formats')
             for format_uid in formats:

@@ -32,8 +32,7 @@ class ExportTaskRunner(TaskRunner):
         logger.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
         formats = [format.slug for format in job.formats.all()]
-        logger.debug(formats)
-        # pick the export task based on the format here..
+        # pick the export task based on the format..
         for format in formats:
             try:
                 # see settings.EXPORT_TASKS for configuration
@@ -51,7 +50,7 @@ class ExportTaskRunner(TaskRunner):
                 #TODO: how to report errors here?
 
 
-# ExportTasks abstract base class and subclasses.
+# ExportTask abstract base class and subclasses.
 
 class ExportTask(Task):
     """
