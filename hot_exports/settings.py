@@ -235,3 +235,6 @@ EXPORT_TASKS = {
     'kml': 'KmlExportTask',
     'garmin': 'GarminExportTask'
 }
+
+# maximum of (latmax-latmin) * (lonmax-lonmin)
+JOB_MAX_EXTENT = 200
