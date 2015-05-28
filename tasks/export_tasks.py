@@ -140,7 +140,7 @@ class PgdumpExportTask(ExportTask):
        logger.debug('Job ran {0}'.format(job_uid))
 
 
-class GarminExportTask():
+class GarminExportTask(ExportTask):
     """
     Class defining GARMIN export function.
     """
