@@ -220,7 +220,14 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
+"""
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-html',
+    '--cover-html-dir=cover',
+    '--cover-package=api,tasks,jobs'
+]
+"""
 # Celery config
 CELERY_TRACK_STARTED = True
 
@@ -236,5 +243,8 @@ EXPORT_TASKS = {
     'garmin': 'GarminExportTask'
 }
 
-# maximum of (latmax-latmin) * (lonmax-lonmin)
+"""
+Maximum extent of a Job
+max of (latmax-latmin) * (lonmax-lonmin)
+"""
 JOB_MAX_EXTENT = 200

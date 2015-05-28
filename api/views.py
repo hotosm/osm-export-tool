@@ -26,10 +26,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.serializers import ValidationError
 
 from .renderers import HOTExportApiRenderer
-from .errors import InvalidBBOXError
+from .validators import validate_bbox_params, validate_search_bbox
 from jobs.models import Job, ExportFormat, Region
 from serializers import JobSerializer, ExportFormatSerializer, RegionSerializer
-from .errors import MissingFormatAPIResponse, MissingParamAPIResponse
 from tasks.export_tasks import ExportTaskRunner
 
 # Get an instance of a logger
@@ -62,6 +61,28 @@ class JobViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Job.objects.all()
+    
+    def list(self, request, uid=None, *args, **kwargs):
+        params = self.request.QUERY_PARAMS.get('bbox', None)
+        if ((params == None) or (len(params.split(',')) < 4)):
+            data={'id': 'missing_bbox_parameter', 'message': 'Missing bounding box parameter'}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        extents = params.split(',')   
+        data = {'xmin': extents[0],
+                'ymin': extents[1],
+                'xmax': extents[2],
+                'ymax': extents[3]
+        }
+        try:
+            bbox_extents = validate_bbox_params(data)
+            bbox = validate_search_bbox(bbox_extents)
+            queryset = Job.objects.filter(the_geom__intersects=bbox)
+            serializer = JobSerializer(queryset,  many=True, context={'request': request})
+            return Response(serializer.data)
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+            
+        
 
     def create(self, request, *args, **kwargs):
         serializer = JobSerializer(data=request.data,
