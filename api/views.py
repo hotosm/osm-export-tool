@@ -64,24 +64,30 @@ class JobViewSet(viewsets.ModelViewSet):
     
     def list(self, request, uid=None, *args, **kwargs):
         params = self.request.QUERY_PARAMS.get('bbox', None)
-        if ((params == None) or (len(params.split(',')) < 4)):
-            data={'id': 'missing_bbox_parameter', 'message': 'Missing bounding box parameter'}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-        extents = params.split(',')   
-        data = {'xmin': extents[0],
-                'ymin': extents[1],
-                'xmax': extents[2],
-                'ymax': extents[3]
-        }
-        try:
-            bbox_extents = validate_bbox_params(data)
-            bbox = validate_search_bbox(bbox_extents)
-            queryset = Job.objects.filter(the_geom__intersects=bbox)
+        if params == None:
+            # need some pagination strategy here
+            queryset = Job.objects.all()
             serializer = JobSerializer(queryset,  many=True, context={'request': request})
             return Response(serializer.data)
-        except ValidationError as e:
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-            
+        if (len(params.split(',')) < 4):
+            data={'id': 'missing_bbox_parameter', 'message': 'Missing bounding box parameter'}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            extents = params.split(',')   
+            data = {'xmin': extents[0],
+                    'ymin': extents[1],
+                    'xmax': extents[2],
+                    'ymax': extents[3]
+            }
+            try:
+                bbox_extents = validate_bbox_params(data)
+                bbox = validate_search_bbox(bbox_extents)
+                queryset = Job.objects.filter(the_geom__intersects=bbox)
+                serializer = JobSerializer(queryset,  many=True, context={'request': request})
+                return Response(serializer.data)
+            except ValidationError as e:
+                return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+                
         
 
     def create(self, request, *args, **kwargs):
