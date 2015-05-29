@@ -386,10 +386,19 @@ class TestBBoxSearch(APITestCase):
         param = 'bbox={0},{1},{2},{3}'.format(extent[0], extent[1], extent[2], extent[3])
         response = self.client.get('{0}?{1}'.format(url, param))
         self.assertEquals(4, len(response.data))
+        
+    def test_list_jobs_no_bbox(self, ):
+        url = reverse('api:jobs-list')
+        response = self.client.get(url)
+        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals(8, len(response.data))
+    
 
     def test_bbox_search_mising_params(self, ):
         url = reverse('api:jobs-list')
-        param = '' # missing
+        param = 'bbox=' # missing params
         response = self.client.get('{0}?{1}'.format(url, param))
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
