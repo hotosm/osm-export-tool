@@ -19,6 +19,8 @@
 
 body {
   padding-top: 50px;
+  width: 100%;
+  height: 100%;
 }
 
 .navbar {
@@ -27,4 +29,10 @@ body {
 
 a.navbar-brand {
     color: #fff !important;
+}
+
+#map {
+    height: 700px;
+    width: 850px;
+    padding-right: -15px !important;
 }

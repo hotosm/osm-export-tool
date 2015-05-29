@@ -89,6 +89,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
     'DEFAULT_VERSION': '1.0',
+    #'DEFAULT_PAGINATION_CLASS': 'api.views.LinkHeaderPagination',
+    #'PAGE_SIZE': 2
 }
 
 ROOT_URLCONF = 'hot_exports.urls'

@@ -108,4 +108,14 @@ class ExportTask(TimeStampedModelMixin):
     job = models.ForeignKey(Job, related_name='job')
     
 
+class RegionMask(models.Model):
+    
+    id = models.IntegerField(primary_key=True)
+    the_geom = models.MultiPolygonField(verbose_name='Mask for export regions', srid=4326)
+    
+    class Meta:
+        managed = False
+        db_table = 'region_mask'
+    
+
 
