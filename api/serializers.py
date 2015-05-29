@@ -1,14 +1,16 @@
 import logging
 import pdb
+import json
 from uuid import UUID
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from datetime import datetime
-from jobs.models import Job, ExportFormat, Region
+from jobs.models import Job, ExportFormat, Region, RegionMask
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
 from django.utils import timezone
 from rest_framework_gis import serializers as geo_serializers
+from rest_framework_gis import fields as geo_fields
 from django.utils.datastructures import MultiValueDictKeyError
 from hot_exports import settings
 from .validators import *
@@ -43,6 +45,16 @@ class UserGroupSerializer(serializers.Serializer):
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     
+
+class RegionMaskSerializer(geo_serializers.GeoFeatureModelSerializer):
+    """
+    Returns a GeoJSON representation of the region mask.
+    """
+    class Meta:
+        model = RegionMask
+        geo_field = 'the_geom'
+        fields = ('the_geom',)
+    
     
 class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
     """
@@ -52,9 +64,7 @@ class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
        view_name='api:regions-detail',
        lookup_field='uid'
     )
-    
     id = serializers.SerializerMethodField()
-    
     class Meta:
         model = Region
         geo_field = 'the_geom'
@@ -68,12 +78,10 @@ class SimpleRegionSerializer(serializers.ModelSerializer):
     """
     Serializer for returning Region data without geometry.
     """
-    
     url = serializers.HyperlinkedIdentityField(
        view_name='api:regions-detail',
        lookup_field='uid'
     )
-    
     class Meta:
         model = Region
         fields = ('uid','name','description', 'url')
@@ -83,7 +91,6 @@ class ExportFormatSerializer(serializers.ModelSerializer):
     """
     Representation of ExportFormat.
     """
-    
     url = serializers.HyperlinkedIdentityField(
        view_name='api:formats-detail',
        lookup_field='slug'
@@ -91,10 +98,10 @@ class ExportFormatSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ExportFormat
-        fields = ('uid', 'url', 'name', 'description')
-        
+        fields = ('uid', 'url', 'name', 'description')   
 
-class JobSerializer(serializers.HyperlinkedModelSerializer):
+
+class JobSerializer(geo_serializers.GeoModelSerializer):
     """
     Job Serializer.
     """
@@ -105,15 +112,12 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
         view_name = 'api:jobs-detail',
         lookup_field = 'uid'
     )
+    bbox = serializers.SerializerMethodField()
     
-    user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
-
     class Meta:
         model = Job
         fields = ('uid', 'name', 'url', 'description', 'region', 'formats',
-                  'created_at', 'updated_at', 'status', 'user')
+                  'created_at', 'updated_at', 'status','bbox')
 
     def to_internal_value(self, data):
         request = self.context['request']
@@ -136,3 +140,14 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
         
         return {'name': job_name, 'description': description, 'region': region, 'user': user,
                 'the_geom': the_geom, 'the_geom_webmercator': the_geom_webmercator, 'the_geog': the_geog}
+    
+    def get_bbox(self, obj):
+        uid = str(obj.uid)
+        name = obj.name
+        geom = obj.the_geom
+        geometry = json.loads(GEOSGeometry(geom).geojson)
+        feature = OrderedDict()
+        feature['type'] = 'Feature'
+        feature['properties'] = {'uid': uid, 'name': name}
+        feature['geometry'] = geometry
+        return feature

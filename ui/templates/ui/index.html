@@ -1,8 +1,24 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% block css %}
+{{ block.super}}
+<link href="{% static 'ui/components/leaflet/dist/leaflet.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block container %}
 
-<h2>Front page stuff here..</h2>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-8">
+        <div id="map" class="pull-right"></div>
+    </div>
+</div>
 
+{% endblock %}
+
+{% block corejs %}
+{{ block.super}}
+<!--<script src="{% static 'ui/components/leaflet/dist/leaflet.js' %}"></script>-->
+<script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/js/map.js' %}"></script>
 {% endblock %}
