@@ -235,12 +235,12 @@ CELERY_TRACK_STARTED = True
 A dictionary of export formats mapped to ExportTask classes.
 """
 EXPORT_TASKS = {
-    'shp': 'tasks.exports.ShpExportTask',
-    'obf': 'tasks.exports.ObfExportTask',
-    'pgdump': 'tasks.exports.PgdumpExportTask',
-    'sqlite': 'tasks.exports.SqliteExportTask',
-    'kml': 'tasks.exports.KmlExportTask',
-    'garmin': 'tasks.exports.GarminExportTask'
+    'shp': 'tasks.export_tasks.ShpExportTask',
+    'obf': 'tasks.export_tasks.ObfExportTask',
+    'pgdump': 'tasks.export_tasks.PgdumpExportTask',
+    'sqlite': 'tasks.export_tasks.SqliteExportTask',
+    'kml': 'tasks.export_tasks.KmlExportTask',
+    'garmin': 'tasks.export_tasks.GarminExportTask'
 }
 
 UPDATE_TASKS = {
