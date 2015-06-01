@@ -21,12 +21,9 @@ class TestExportRun(TestCase):
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         Job.objects.create(name='TestJob',
                                  description='Test description', user=user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
+                                 the_geom=the_geom)
         job = Job.objects.all()[0]
         # add the formats to the job
         job.formats = formats
@@ -74,12 +71,9 @@ class TestExportTask(TestCase):
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         Job.objects.create(name='TestJob',
                                  description='Test description', user=user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
+                                 the_geom=the_geom)
         self.job = Job.objects.all()[0]
         # add the formats to the job
         self.job.formats = formats

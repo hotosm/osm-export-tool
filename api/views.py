@@ -3,7 +3,7 @@ import os
 import shutil
 import pdb
 from datetime import datetime
-
+from collections import OrderedDict
 from django.http import HttpResponse
 from django.contrib.auth.models import User, Group
 from django.shortcuts import get_object_or_404
@@ -31,21 +31,12 @@ from .validators import validate_bbox_params, validate_search_bbox
 from .pagination import JobLinkHeaderPagination
 from jobs.models import Job, ExportFormat, Region, RegionMask
 from serializers import JobSerializer, ExportFormatSerializer, RegionSerializer, RegionMaskSerializer
-from tasks.export_tasks import ExportTaskRunner
+from tasks.task_runners import ExportTaskRunner
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
-
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json; version=1.0'
-        super(JSONResponse, self).__init__(content, **kwargs)
 
 
 class JobViewSet(viewsets.ModelViewSet):
@@ -67,7 +58,6 @@ class JobViewSet(viewsets.ModelViewSet):
     def list(self, request, uid=None, *args, **kwargs):
         params = self.request.QUERY_PARAMS.get('bbox', None)
         if params == None:
-            # need some pagination strategy here
             queryset = Job.objects.all()
             page = self.paginate_queryset(queryset)
             if page is not None:
@@ -77,8 +67,10 @@ class JobViewSet(viewsets.ModelViewSet):
                 serializer = JobSerializer(queryset,  many=True, context={'request': request})
                 return Response(serializer.data)
         if (len(params.split(',')) < 4):
-            data={'id': 'missing_bbox_parameter', 'message': 'Missing bounding box parameter'}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            errors = OrderedDict()
+            errors['id'] = 'missing_bbox_parameter'
+            errors['message'] = 'Missing bounding box parameter'
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             extents = params.split(',')   
             data = {'xmin': extents[0],
@@ -98,6 +90,7 @@ class JobViewSet(viewsets.ModelViewSet):
                     serializer = JobSerializer(queryset,  many=True, context={'request': request})
                     return Response(serializer.data)
             except ValidationError as e:
+                logger.debug(e.detail)
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
                 
         
@@ -107,12 +100,23 @@ class JobViewSet(viewsets.ModelViewSet):
                                    context={'request': request})
         if (serializer.is_valid()):
             job = serializer.save()
-            logger.debug('Saved job')
             # add the export formats
             formats = request.data.getlist('formats')
+            export_formats = []
             for format_uid in formats:
-                export_format = ExportFormat.objects.get(uid=format_uid)
-                job.formats.add(export_format)
+                try:
+                    export_format = ExportFormat.objects.get(uid=format_uid)
+                    export_formats.append(export_format)
+                except ExportFormat.DoesNotExist as e:
+                    logger.warn('Export format with uid: {0} does not exist'.format(format_uid))
+            if len(export_formats) > 0:
+                for export_format in export_formats:
+                    job.formats.add(export_format)
+            else:
+                error_data = OrderedDict()
+                error_data['id'] = 'invalid_formats'
+                error_data['message'] = 'Invalid format uid(s).'
+                return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
             task_runner = ExportTaskRunner()
             job_uid = str(job.uid)
             task_runner.run_task(job_uid=job_uid)

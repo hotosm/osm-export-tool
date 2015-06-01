@@ -22,12 +22,9 @@ class TestJob(TestCase):
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
+                                 the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
@@ -136,12 +133,9 @@ class TestJobRegionIntersection(TestCase):
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((36.90, 13.54, 48.52, 20.24)) # overlaps africa / central asia
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
+                                 the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
@@ -187,11 +181,7 @@ class TestJobRegionIntersection(TestCase):
         job = Job.objects.all()[0]
         bbox = Polygon.from_bbox((2.74, 47.66, 21.61, 60.24)) # outside any region
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         job.the_geom = the_geom
-        job.the_geog = the_geog
-        job.the_geom_webmercator = the_geom_webmercator
         job.save()
         regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(job.the_geom, field_name='the_geom').order_by( '-intersection')
         self.assertEquals(0, len(regions))

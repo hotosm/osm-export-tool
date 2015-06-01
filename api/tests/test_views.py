@@ -1,5 +1,6 @@
 import logging
 import json
+import uuid
 from django.test import TestCase
 from unittest import skip
 from rest_framework.reverse import reverse
@@ -9,7 +10,7 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 from mock import Mock, patch
-from tasks.export_tasks import ExportTaskRunner
+from tasks.task_runners import ExportTaskRunner
 from jobs.models import Job, ExportFormat
 from tasks.models import ExportTask
 from api.pagination import JobLinkHeaderPagination
@@ -25,12 +26,9 @@ class TestJobViewSet(APITestCase):
         extents = (-3.9, 16.1, 7.0, 27.6)
         bbox = Polygon.from_bbox(extents)
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
+                                 the_geom=the_geom)
         format = ExportFormat.objects.get(slug='obf')
         self.job.formats.add(format)
         self.job.save()
@@ -267,6 +265,25 @@ class TestJobViewSet(APITestCase):
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
         self.assertEquals('invalid_format_uid', response.data['id'])
+        
+    def test_no_matching_format_uids(self, ):
+        url = reverse('api:jobs-list')
+        uid_one = str(uuid.uuid4())
+        uid_two = str(uuid.uuid4())
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'xmin': -3.9,
+            'ymin': 16.1,
+            'xmax': 7.0,
+            'ymax': 27.6,
+            'formats': [uid_one, uid_two]
+        }
+        response = self.client.post(url, request_data)
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        self.assertEquals('invalid_formats', response.data['id'])
     
     @patch('api.views.ExportTaskRunner')
     def test_get_correct_region(self, mock):
@@ -400,7 +417,7 @@ class TestBBoxSearch(APITestCase):
         self.assertEquals(2, len(response.data)) # 8 jobs in total but response is paginated
     
 
-    def test_bbox_search_mising_params(self, ):
+    def test_bbox_search_missing_params(self, ):
         url = reverse('api:jobs-list')
         param = 'bbox=' # missing params
         response = self.client.get('{0}?{1}'.format(url, param))
