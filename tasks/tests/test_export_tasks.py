@@ -5,7 +5,8 @@ import uuid
 from django.test import TestCase
 from django.contrib.auth.models import User
 from mock import Mock, patch, PropertyMock
-from ..export_tasks import ExportTaskRunner, ShpExportTask
+from ..task_runners import ExportTaskRunner
+from ..exports import ShpExportTask
 from jobs.models import ExportFormat, Job
 from django.contrib.gis.geos import GEOSGeometry
 
@@ -25,7 +26,7 @@ class TestExportTaskRunner(TestCase):
                                  the_geom_webmercator=the_geom_webmercator)
         self.uid = str(self.job.uid)
     
-    @patch('tasks.export_tasks.ShpExportTask')
+    @patch('tasks.exports.ShpExportTask')
     def test_run_shp_export_task(self, mock):
         format = ExportFormat.objects.get(slug='shp')
         self.job.formats.add(format)
@@ -36,7 +37,7 @@ class TestExportTaskRunner(TestCase):
         shp_export_task.delay.assert_called_with(job_uid=self.uid)
         shp_export_task.delay.return_value.assert_called('state')
     
-    @patch('tasks.export_tasks.ObfExportTask')
+    @patch('tasks.exports.ObfExportTask')
     def test_run_obf_export_task(self, mock):
         format = ExportFormat.objects.get(slug='obf')
         self.job.formats.add(format)
@@ -47,7 +48,7 @@ class TestExportTaskRunner(TestCase):
         obf_export_task.delay.assert_called_with(job_uid=self.uid)
         obf_export_task.delay.return_value.assert_called('state')
         
-    @patch('tasks.export_tasks.KmlExportTask')
+    @patch('tasks.exports.KmlExportTask')
     def test_run_kml_export_task(self, mock):
         format = ExportFormat.objects.get(slug='kml')
         self.job.formats.add(format)
@@ -58,7 +59,7 @@ class TestExportTaskRunner(TestCase):
         shp_export_task.delay.assert_called_with(job_uid=self.uid)
         shp_export_task.delay.return_value.assert_called('state')
     
-    @patch('tasks.export_tasks.SqliteExportTask')
+    @patch('tasks.exports.SqliteExportTask')
     def test_run_sqlite_export_task(self, mock):
         format = ExportFormat.objects.get(slug='sqlite')
         self.job.formats.add(format)
@@ -69,7 +70,7 @@ class TestExportTaskRunner(TestCase):
         shp_export_task.delay.assert_called_with(job_uid=self.uid)
         shp_export_task.delay.return_value.assert_called('state')
         
-    @patch('tasks.export_tasks.GarminExportTask')
+    @patch('tasks.exports.GarminExportTask')
     def test_run_garmin_export_task(self, mock):
         format = ExportFormat.objects.get(slug='garmin')
         self.job.formats.add(format)
@@ -80,7 +81,7 @@ class TestExportTaskRunner(TestCase):
         shp_export_task.delay.assert_called_with(job_uid=self.uid)
         shp_export_task.delay.return_value.assert_called('state')
     
-    @patch('tasks.export_tasks.PgdumpExportTask')
+    @patch('tasks.exports.PgdumpExportTask')
     def test_run_pgdump_export_task(self, mock):
         format = ExportFormat.objects.get(slug='pgdump')
         self.job.formats.add(format)

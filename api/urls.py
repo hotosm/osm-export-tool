@@ -1,7 +1,7 @@
 """
     API url configuration
 """
-from .views import JobViewSet, ExportFormatViewSet, RegionViewSet, RegionMaskViewSet, LinkHeaderPagination
+from api.views import JobViewSet, ExportFormatViewSet, RegionViewSet, RegionMaskViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter(trailing_slash=False)

@@ -18,16 +18,17 @@ from rest_framework import status
 from rest_framework import renderers
 from rest_framework import generics
 from rest_framework import filters
-from rest_framework import pagination
 from rest_framework.reverse import reverse
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.serializers import ValidationError
+from rest_framework.pagination import PageNumberPagination
 
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
+from .pagination import JobLinkHeaderPagination
 from jobs.models import Job, ExportFormat, Region, RegionMask
 from serializers import JobSerializer, ExportFormatSerializer, RegionSerializer, RegionMaskSerializer
 from tasks.export_tasks import ExportTaskRunner
@@ -58,6 +59,7 @@ class JobViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     parser_classes = (FormParser, MultiPartParser)
     lookup_field = 'uid'
+    pagination_class = JobLinkHeaderPagination
 
     def get_queryset(self):
         return Job.objects.all()
@@ -67,8 +69,13 @@ class JobViewSet(viewsets.ModelViewSet):
         if params == None:
             # need some pagination strategy here
             queryset = Job.objects.all()
-            serializer = JobSerializer(queryset,  many=True, context={'request': request})
-            return Response(serializer.data)
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True, context={'request': request})
+                return self.get_paginated_response(serializer.data)
+            else:
+                serializer = JobSerializer(queryset,  many=True, context={'request': request})
+                return Response(serializer.data)
         if (len(params.split(',')) < 4):
             data={'id': 'missing_bbox_parameter', 'message': 'Missing bounding box parameter'}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
@@ -83,8 +90,13 @@ class JobViewSet(viewsets.ModelViewSet):
                 bbox_extents = validate_bbox_params(data)
                 bbox = validate_search_bbox(bbox_extents)
                 queryset = Job.objects.filter(the_geom__intersects=bbox)
-                serializer = JobSerializer(queryset,  many=True, context={'request': request})
-                return Response(serializer.data)
+                page = self.paginate_queryset(queryset)
+                if page is not None:
+                    serializer = self.get_serializer(page, many=True, context={'request': request})
+                    return self.get_paginated_response(serializer.data)
+                else:
+                    serializer = JobSerializer(queryset,  many=True, context={'request': request})
+                    return Response(serializer.data)
             except ValidationError as e:
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
                 
@@ -105,7 +117,7 @@ class JobViewSet(viewsets.ModelViewSet):
             job_uid = str(job.uid)
             task_runner.run_task(job_uid=job_uid)
             running = JobSerializer(job, context={'request': request})
-            return Response(running.data, status=status.HTTP_201_CREATED)
+            return Response(running.data, status=status.HTTP_202_ACCEPTED)
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
@@ -128,7 +140,6 @@ class RegionViewSet(viewsets.ReadOnlyModelViewSet):
     ### Region API endpoint.
     Endpoint exposing the supported regions.
     """
-    
     serializer_class = RegionSerializer
     permission_classes = (permissions.AllowAny,)
     queryset = Region.objects.all()
@@ -143,20 +154,3 @@ class RegionMaskViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = RegionMask.objects.all()
     
-
-class LinkHeaderPagination(pagination.PageNumberPagination):
-    
-    def get_paginated_response(self, data):
-        next_url = self.get_next_link()
-        previous_url = self.get_previous_link()
-        if next_url is not None and previous_url is not None:
-            link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'
-        elif next_url is not None:
-            link = '<{next_url}; rel="next">'
-        elif previous_url is not None:
-            link = '<{previous_url}; rel="prev">'
-        else:
-            link = ''
-        link = link.format(next_url=next_url, previous_url=previous_url)
-        headers = {'Link': link} if link else {}
-        return Response(data, headers=headers)
