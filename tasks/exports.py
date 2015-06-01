@@ -8,46 +8,10 @@ from celery.registry import tasks
 from celery.contrib.methods import task
 from celery.utils.log import get_task_logger
 from django.utils import timezone
-from hot_exports import settings
-from jobs.models import Job
+
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
-
-class TaskRunner(object):
-    """
-    Abstract base class for running tasks
-    """
-    class Meta:
-        abstract = True
-
-
-class ExportTaskRunner(TaskRunner):
-    """
-    Runs HOT Export Tasks
-    """
-    export_registry = settings.EXPORT_TASKS
-    
-    def run_task(self, job_uid=None):
-        logger.debug('Running Job with id: {0}'.format(job_uid))
-        job = Job.objects.get(uid=job_uid)
-        formats = [format.slug for format in job.formats.all()]
-        # pick the export task based on the format..
-        for format in formats:
-            try:
-                # see settings.EXPORT_TASKS for configuration
-                class_name = self.export_registry[format]
-                """
-                Instantiate the required class.
-                Assuming for now that ExportTasks will be in this module.
-                """
-                export_task = getattr(sys.modules[__name__], class_name)()
-                result = export_task.delay(job_uid=job_uid)
-                job.status = result.state
-                job.save()
-            except KeyError as e:
-                logger.debug(e)
-                #TODO: how to report errors here?
 
 
 # ExportTask abstract base class and subclasses.

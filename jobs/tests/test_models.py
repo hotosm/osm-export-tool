@@ -5,51 +5,13 @@ import os
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import ExportTask, Job, ExportFormat, Region
+from jobs.models import Job, ExportFormat, Region
+from tasks.models import ExportTask, ExportRun
 from django.contrib.gis.gdal import DataSource
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)   
-    
 
-class TestExportTask(TestCase):
-    """
-    Test cases for ExportTask model
-    """
-    def setUp(self,):
-        formats = ExportFormat.objects.all()
-        user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        bbox_wkt = 'POLYGON((10 10, 10 20, 20 20, 20 10, 10 10))'
-        the_geom = GEOSGeometry(bbox_wkt, srid=4326)
-        the_geog = GEOSGeometry(bbox_wkt)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
-        Job.objects.create(name='TestJob',
-                                 description='Test description', user=user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
-        job = Job.objects.all()[0]
-        # add the formats to the job
-        job.formats = formats
-        job.save()
-
-    def test_create_export_task(self,):
-        """
-        Make sure task gets created correctly
-        """
-        job = Job.objects.all()[0]
-        uid = uuid.uuid4()
-        task = ExportTask.objects.create(job=job, uid=uid)
-        saved_task = ExportTask.objects.get(uid=uid)
-        self.assertEqual(task, saved_task)
-
-    def test_export_task_uid(self,):
-        """
-        Make sure uid gets saved correctly
-        """
-        job = Job.objects.all()[0]
-        uid = uuid.uuid4() # comes from celery task uid
-        task = ExportTask.objects.create(job=job, uid=uid)
-        self.assertEqual(uid, task.uid)
 
 class TestJob(TestCase):
     """

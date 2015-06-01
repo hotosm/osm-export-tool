@@ -33,17 +33,17 @@ var JobApp = OpenLayers.Class({
                 displayProjection: new OpenLayers.Projection("EPSG:4326"),
                 controls: [new OpenLayers.Control.Attribution(),
                            new OpenLayers.Control.ScaleLine()],
-                maxExtent: maxExtent,
-                wrapDateLine: false,                
-                restrictedExtent: maxExtent.clone(),
+                maxExtent: maxExtent,          
                 //scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
                 units: 'm',
-                sphericalMercator: true
+                sphericalMercator: true,
+                noWrap: true
         }
 
         map = new OpenLayers.Map('map', {options: mapOptions});
+        map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         
-        hotosm = new OpenLayers.Layer.OSM("OpenStreetMap");
+        hotosm = new OpenLayers.Layer.OSM("OpenStreetMap",null,{isBaseLayer: true});
         map.addLayers([hotosm]);
         
         /* Styles */
@@ -104,9 +104,9 @@ var JobApp = OpenLayers.Class({
                 "default": new OpenLayers.Style({
                 fillColor: "#fff",
                 fillOpacity: 0.7,
-                strokeColor: "#D73F3F",
-                strokeWidth: 2,
-                strokeOpacity: 0.8,
+                strokeColor: "#fff",
+                strokeWidth: .1,
+                strokeOpacity: 0.2,
                 })
             }),
         });
@@ -168,7 +168,6 @@ var JobApp = OpenLayers.Class({
                 jobs.addFeatures(bbox);
                 // add jobs info to dom here..
             });
-            map.zoomToExtent(jobs.getDataExtent());
         });
     },
     

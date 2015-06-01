@@ -10,7 +10,9 @@ from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 from mock import Mock, patch
 from tasks.export_tasks import ExportTaskRunner
-from jobs.models import Job, ExportFormat, ExportTask
+from jobs.models import Job, ExportFormat
+from tasks.models import ExportTask
+from api.pagination import JobLinkHeaderPagination
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +95,7 @@ class TestJobViewSet(APITestCase):
         task_runner.run_task.assert_called_once_with(job_uid=job_uid)
         
         # test the response headers
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
         
@@ -287,7 +289,7 @@ class TestJobViewSet(APITestCase):
         task_runner.run_task.assert_called_once_with(job_uid=job_uid)
         
         # test the response headers
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
         
@@ -377,23 +379,25 @@ class TestBBoxSearch(APITestCase):
                 'formats': formats
             }
             response = self.client.post(url, request_data)
-            self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+            self.assertEquals(status.HTTP_202_ACCEPTED, response.status_code)
         self.assertEquals(8, len(Job.objects.all()))
+        JobLinkHeaderPagination.page_size = 2
         
     def test_bbox_search_success(self, ):
         url = reverse('api:jobs-list')
         extent = (-79.5, -16.16, 7.40, 52.44)
         param = 'bbox={0},{1},{2},{3}'.format(extent[0], extent[1], extent[2], extent[3])
         response = self.client.get('{0}?{1}'.format(url, param))
-        self.assertEquals(4, len(response.data))
+        self.assertEquals(2, len(response.data)) # 8 jobs in total but response is paginated
         
     def test_list_jobs_no_bbox(self, ):
         url = reverse('api:jobs-list')
         response = self.client.get(url)
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEquals(status.HTTP_206_PARTIAL_CONTENT, response.status_code)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
-        self.assertEquals(8, len(response.data))
+        self.assertEquals(response['Link'], '<http://testserver/api/jobs?page=2; rel="next">')
+        self.assertEquals(2, len(response.data)) # 8 jobs in total but response is paginated
     
 
     def test_bbox_search_mising_params(self, ):
@@ -416,4 +420,5 @@ class TestBBoxSearch(APITestCase):
         self.assertEquals('empty_bbox_parameter', response.data['id'])
     
 
-
+class TestPagination(APITestCase):
+    pass

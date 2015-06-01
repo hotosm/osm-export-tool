@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import uuid
 #from django.db import models
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from django.db.models.fields import CharField
@@ -95,17 +96,13 @@ class Job(TimeStampedModelMixin):
         managed = True
         db_table = 'jobs'
         
+    def save(self, *args, **kwargs):
+        self.the_geog = GEOSGeometry(self.the_geom)
+        self.the_geom_webmercator = self.the_geom.transform(ct=3857, clone=True)
+        super(Job, self).save(*args, **kwargs)
+        
     def __str__(self):
         return '{0}'.format(self.name)
-    
-    
-class ExportTask(TimeStampedModelMixin):
-    """
-    Model for an ExportTask.
-    """
-    id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(blank=True) # celery task id
-    job = models.ForeignKey(Job, related_name='job')
     
 
 class RegionMask(models.Model):
@@ -116,6 +113,7 @@ class RegionMask(models.Model):
     class Meta:
         managed = False
         db_table = 'region_mask'
+
     
 
 

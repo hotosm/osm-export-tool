@@ -128,8 +128,6 @@ class JobSerializer(geo_serializers.GeoModelSerializer):
         extents = validate_bbox_params(data)
         bbox = validate_bbox(extents)
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         
         """
         Find the regions which intersect with the job.
@@ -137,9 +135,7 @@ class JobSerializer(geo_serializers.GeoModelSerializer):
         """
         regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom').order_by( '-intersection')
         region = validate_region(regions)
-        
-        return {'name': job_name, 'description': description, 'region': region, 'user': user,
-                'the_geom': the_geom, 'the_geom_webmercator': the_geom_webmercator, 'the_geog': the_geog}
+        return {'name': job_name, 'description': description, 'region': region, 'user': user, 'the_geom': the_geom}
     
     def get_bbox(self, obj):
         uid = str(obj.uid)

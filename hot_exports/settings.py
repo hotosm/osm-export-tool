@@ -89,8 +89,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
     'DEFAULT_VERSION': '1.0',
-    #'DEFAULT_PAGINATION_CLASS': 'api.views.LinkHeaderPagination',
-    #'PAGE_SIZE': 2
 }
 
 ROOT_URLCONF = 'hot_exports.urls'
@@ -237,12 +235,16 @@ CELERY_TRACK_STARTED = True
 A dictionary of export formats mapped to ExportTask classes.
 """
 EXPORT_TASKS = {
-    'shp': 'ShpExportTask',
-    'obf': 'ObfExportTask',
-    'pgdump': 'PgdumpExportTask',
-    'sqlite': 'SqliteExportTask',
-    'kml': 'KmlExportTask',
-    'garmin': 'GarminExportTask'
+    'shp': 'tasks.exports.ShpExportTask',
+    'obf': 'tasks.exports.ObfExportTask',
+    'pgdump': 'tasks.exports.PgdumpExportTask',
+    'sqlite': 'tasks.exports.SqliteExportTask',
+    'kml': 'tasks.exports.KmlExportTask',
+    'garmin': 'tasks.exports.GarminExportTask'
+}
+
+UPDATE_TASKS = {
+    # not implemented yet
 }
 
 """
