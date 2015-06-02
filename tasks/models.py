@@ -11,7 +11,7 @@ class TimeStampedModelMixin(models.Model):
     Mixin for timestamped models.
     """
     started_at = models.DateTimeField(default=timezone.now, editable=False)
-    finished_at = models.DateTimeField(default=timezone.now, editable=False)
+    finished_at = models.DateTimeField(editable=False, null=True)
     
     class Meta:
         abstract = True
@@ -23,7 +23,6 @@ class RunModelMixin(TimeStampedModelMixin):
     """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    type = models.CharField(max_length=20, db_index=True)
     
     class Meta:
         abstract = True
@@ -38,10 +37,6 @@ class ExportRun(RunModelMixin):
     class Meta:
         managed = True
         db_table = 'export_runs'
-    
-    def save(self, *args, **kwargs):
-        self.type = 'EXPORT'
-        super(ExportRun, self).save(*args, **kwargs)
         
     def __str__(self):
         return '{0}'.format(self.uid)
@@ -53,7 +48,9 @@ class ExportTask(TimeStampedModelMixin):
     """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(blank=True) # celery task id
+    name = models.CharField(max_length=50)
     run = models.ForeignKey(ExportRun, related_name='tasks')
+    status = models.CharField(blank=True, max_length=20, db_index=True)
     
     class Meta:
         managed = True
@@ -74,3 +71,9 @@ class ExportTaskResult(models.Model):
     def __str__(self):
         return 'ExportTaskResult uid: {0}'.format(self.task.uid)
     
+"""
+class TaskException(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    uid = models.UUIDField(blank=True)
+    timestamp = models.DateTimeField(default=timezone.now, editable=False)
+""" 

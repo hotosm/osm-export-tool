@@ -5,9 +5,12 @@ import uuid
 from django.test import TestCase
 from django.contrib.auth.models import User
 from mock import Mock, patch, PropertyMock
+from unittest import skip
 from ..task_runners import ExportTaskRunner
 from jobs.models import ExportFormat, Job
 from django.contrib.gis.geos import GEOSGeometry, Polygon
+from tasks.export_tasks import ShpExportTask
+from tasks.models import ExportRun, ExportTask, ExportTaskResult
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +32,12 @@ class TestExportTaskRunner(TestCase):
         celery_uid = str(uuid.uuid4())
         export_task = mock.return_value
         export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='Shapefile Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         export_task.delay.assert_called_once_with(job_uid=self.uid)
-        export_task.delay.return_value.assert_called('state')
-        export_task.delay.return_value.assert_called('id')
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
         
         run = self.job.runs.all()[0]
         self.assertIsNotNone(run)
@@ -42,7 +46,6 @@ class TestExportTaskRunner(TestCase):
         self.assertEquals(1, len(tasks)) # one shape export task
         self.assertFalse(hasattr(tasks[0], 'result')) # no result yet..
         job = Job.objects.get(uid=self.uid)
-        self.assertEquals('PENDING', job.status)
          
     @patch('tasks.export_tasks.ShpExportTask')
     def test_run_shp_export_task(self, mock):
@@ -51,13 +54,13 @@ class TestExportTaskRunner(TestCase):
         celery_uid = str(uuid.uuid4())
         export_task = mock.return_value
         export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='Shapefile Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         export_task.delay.assert_called_with(job_uid=self.uid)
-        export_task.delay.return_value.assert_called('state')
-        export_task.delay.return_value.assert_called('id')
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
-        self.assertEquals('PENDING', job.status)
     
     @patch('tasks.export_tasks.ObfExportTask')
     def test_run_obf_export_task(self, mock):
@@ -66,12 +69,12 @@ class TestExportTaskRunner(TestCase):
         celery_uid = str(uuid.uuid4())
         export_task = mock.return_value
         export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='OBF Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         export_task.delay.assert_called_with(job_uid=self.uid)
-        export_task.delay.return_value.assert_called('state')
+        export_task.delay.return_value.assert_called_once('state')
         job = Job.objects.get(uid=self.uid)
-        self.assertEquals('PENDING', job.status)
         
     @patch('tasks.export_tasks.KmlExportTask')
     def test_run_kml_export_task(self, mock):
@@ -80,13 +83,13 @@ class TestExportTaskRunner(TestCase):
         celery_uid = str(uuid.uuid4())
         export_task = mock.return_value
         export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='KML Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         export_task.delay.assert_called_with(job_uid=self.uid)
-        export_task.delay.return_value.assert_called('state')
-        export_task.delay.return_value.assert_called('id')
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
-        self.assertEquals('PENDING', job.status)
     
     @patch('tasks.export_tasks.SqliteExportTask')
     def test_run_sqlite_export_task(self, mock):
@@ -95,13 +98,13 @@ class TestExportTaskRunner(TestCase):
         celery_uid = str(uuid.uuid4())
         export_task = mock.return_value
         export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='SQLITE Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         export_task.delay.assert_called_with(job_uid=self.uid)
-        export_task.delay.return_value.assert_called('state')
-        export_task.delay.return_value.assert_called('id')
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
-        self.assertEquals('PENDING', job.status)
         
     @patch('tasks.export_tasks.GarminExportTask')
     def test_run_garmin_export_task(self, mock):
@@ -110,13 +113,13 @@ class TestExportTaskRunner(TestCase):
         celery_uid = str(uuid.uuid4())
         export_task = mock.return_value
         export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='Garmin Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         export_task.delay.assert_called_with(job_uid=self.uid)
-        export_task.delay.return_value.assert_called('state')
-        export_task.delay.return_value.assert_called('id')
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
-        self.assertEquals('PENDING', job.status)
     
     @patch('tasks.export_tasks.PgdumpExportTask')
     def test_run_pgdump_export_task(self, mock):
@@ -125,10 +128,69 @@ class TestExportTaskRunner(TestCase):
         celery_uid = str(uuid.uuid4())
         export_task = mock.return_value
         export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='PGDUMP Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         export_task.delay.assert_called_with(job_uid=self.uid)
-        export_task.delay.return_value.assert_called('state')
-        export_task.delay.return_value.assert_called('id')
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
-        self.assertEquals('PENDING', job.status)
+    
+    @patch('tasks.export_tasks.ShpExportTask')
+    def test_task_on_success(self, mock):
+        format = ExportFormat.objects.get(slug='shp')
+        self.job.formats.add(format)
+        celery_uid = str(uuid.uuid4())
+        export_task = mock.return_value
+        export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='Shapefile Export')
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        export_task.delay.assert_called_once_with(job_uid=self.uid)
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
+        
+        """
+        Call the on_success method directly to test.
+        Would be called by celery worker on successful completion of task.
+        """
+        shp_export_task = ShpExportTask()
+        output_url = 'http://testserver/some/output/file.zip'
+        shp_export_task.on_success(retval={'output_url': output_url}, task_id=celery_uid,
+                                   args={}, kwargs={'job_uid':self.uid})
+        task = ExportTask.objects.get(uid=celery_uid)
+        self.assertIsNotNone(task)
+        result = task.result
+        self.assertIsNotNone(result)
+        self.assertEqual(task, result.task)
+        self.assertEquals('SUCCESS', task.status)
+        self.assertEquals('Shapefile Export', task.name)
+        
+    @skip
+    @patch('tasks.export_tasks.ShpExportTask')
+    def test_task_on_failure(self, mock):
+        format = ExportFormat.objects.get(slug='shp')
+        self.job.formats.add(format)
+        celery_uid = str(uuid.uuid4())
+        export_task = mock.return_value
+        export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='Shapefile Export')
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        export_task.delay.assert_called_once_with(job_uid=self.uid)
+        export_task.delay.return_value.assert_called_once('state')
+        export_task.delay.return_value.assert_called_once('id')
+        
+        """
+        Call the on_success method directly to test.
+        Would be called by celery worker on successful completion of task.
+        """
+        shp_export_task = ShpExportTask()
+        output_url = 'http://testserver/some/output/file.zip'
+        shp_export_task.on_success(retval={'output_url': output_url}, task_id=celery_uid,
+                                   args={}, kwargs={'job_uid':self.uid})
+        task = ExportTask.objects.get(uid=celery_uid)
+        self.assertIsNotNone(task)
+        result = task.result
+        self.assertIsNotNone(result)
+        self.assertEqual(task, result.task)

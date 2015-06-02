@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User, Group
 from django.shortcuts import get_object_or_404
 from django.db.models import FileField
+from django.db import Error, transaction
 
 from rest_framework import views
 from rest_framework import viewsets
@@ -30,7 +31,9 @@ from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 from .pagination import JobLinkHeaderPagination
 from jobs.models import Job, ExportFormat, Region, RegionMask
-from serializers import JobSerializer, ExportFormatSerializer, RegionSerializer, RegionMaskSerializer
+from tasks.models import ExportRun, ExportTask, ExportTaskResult
+from serializers import (JobSerializer, ExportFormatSerializer,
+                         RegionSerializer, RegionMaskSerializer, ExportRunSerializer)
 from tasks.task_runners import ExportTaskRunner
 
 # Get an instance of a logger
@@ -99,7 +102,6 @@ class JobViewSet(viewsets.ModelViewSet):
         serializer = JobSerializer(data=request.data,
                                    context={'request': request})
         if (serializer.is_valid()):
-            job = serializer.save()
             # add the export formats
             formats = request.data.getlist('formats')
             export_formats = []
@@ -110,13 +112,23 @@ class JobViewSet(viewsets.ModelViewSet):
                 except ExportFormat.DoesNotExist as e:
                     logger.warn('Export format with uid: {0} does not exist'.format(format_uid))
             if len(export_formats) > 0:
-                for export_format in export_formats:
-                    job.formats.add(export_format)
+                # save the job
+                try:
+                    with transaction.atomic():
+                        job = serializer.save()
+                        job.formats = export_formats
+                except Error as e:
+                    error_data = OrderedDict()
+                    error_data['id'] = 'server_error'
+                    error_data['message'] = 'Error creating export job: {0}'.format(e)
+                    return Response(error_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 error_data = OrderedDict()
                 error_data['id'] = 'invalid_formats'
                 error_data['message'] = 'Invalid format uid(s).'
                 return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
+            # run the tasks
+            # catch exceptions here..
             task_runner = ExportTaskRunner()
             job_uid = str(job.uid)
             task_runner.run_task(job_uid=job_uid)
@@ -157,4 +169,20 @@ class RegionMaskViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RegionMaskSerializer
     permission_classes = (permissions.AllowAny,)
     queryset = RegionMask.objects.all()
+
+
+class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    View to return serialized Run data.
+    """
+    serializer_class = ExportRunSerializer
+    permission_classes = (permissions.AllowAny,)
+    lookup_field = 'uid'
     
+    def get_queryset(self):
+         return ExportRun.objects.all()
+        
+    def retrieve(self, request, uid=None, *args, **kwargs):
+        queryset = ExportRun.objects.filter(uid=uid)
+        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
