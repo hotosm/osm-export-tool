@@ -37,7 +37,6 @@ class TestJob(TestCase):
         self.assertEquals(self.uid, saved_job.uid)
         self.assertIsNotNone(saved_job.created_at)
         self.assertIsNotNone(saved_job.updated_at)
-        self.assertEquals('', saved_job.status)
         saved_formats = saved_job.formats.all()
         self.assertIsNotNone(saved_formats)
         self.assertItemsEqual(saved_formats, self.formats)

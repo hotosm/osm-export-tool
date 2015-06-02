@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+#from __future__ import absolute_import
 
 import logging
 import time
@@ -8,7 +8,6 @@ from celery.registry import tasks
 from celery.contrib.methods import task
 from celery.utils.log import get_task_logger
 from django.utils import timezone
-
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
@@ -28,55 +27,68 @@ class ExportTask(Task):
         set some environment variable before the run of the task"""
         logger.info("Starting to run")
         return self.run(*args, **kwargs)
-        
+
     def on_success(self, retval, task_id, args, kwargs):
-        job_uid = kwargs['job_uid']
-        job = Job.objects.get(uid=job_uid)
-        job.status = 'SUCCESS'
-        job.updated_at = timezone.now()
-        job.save()
+        from tasks.models import ExportTask, ExportTaskResult
+        finished = timezone.now()
+        output_url = retval['output_url']
+        task = ExportTask.objects.get(uid=task_id)
+        task.finished_at = finished
+        task.status = 'SUCCESS'
+        task.save()
+        result = ExportTaskResult.objects.create(task=task, output_url=output_url)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        logger.debug('failed')
-        
+        pass
+
     def after_return(self, *args, **kwargs):
-        logger.debug('Task returned: {0!r}'.format(self.request))
+        logger.debug('Task returned: {0}'.format(self.result))
 
 
 class ShpExportTask(ExportTask):
     """
     Class defining SHP export function.
     """
+    
+    name = 'Shapefile Export'
+    
     def run(self, job_uid=None):
         
         # dummy task for now..
         # logic for SHP export goes here..
         time.sleep(10)
         logger.debug('Job ran {0}'.format(job_uid))
-
+        return {'output_url': 'http://testserver/some/download/file.zip'}
 
 class KmlExportTask(ExportTask):
     """
     Class defining KML export function.
     """
+    
+    name = 'KML Export'
+    
     def run(self, job_uid=None):
        
        # dummy task for now..
        # logic for SHP export goes here..
        time.sleep(10)
        logger.debug('Job ran {0}'.format(job_uid))
+       return {'output_url': 'http://testserver/some/download/file.zip'}
 
 
-class ObfExportTask(ExportTask):
+class ObfExportTask(ExportTask):    
     """
     Class defining OBF export function.
     """
+    name = 'OBF Export'
+    
     def run(self, job_uid=None):
        
        # dummy task for now..
        # logic for SHP export goes here..
        time.sleep(10)
        logger.debug('Job ran {0}'.format(job_uid))
+       return {'output_url': 'http://testserver/some/download/file.zip'}
 
 
 
@@ -84,36 +96,48 @@ class SqliteExportTask(ExportTask):
     """
     Class defining SQLITE export function.
     """
+    
+    name = 'SQLITE Export'
+    
     def run(self, job_uid=None):
        
        # dummy task for now..
        # logic for SHP export goes here..
        time.sleep(10)
        logger.debug('Job ran {0}'.format(job_uid))
+       return {'output_url': 'http://testserver/some/download/file.zip'}
 
 
 class PgdumpExportTask(ExportTask):
     """
     Class defining PGDUMP export function.
     """
+    
+    name = 'PGDUMP Export'
+    
     def run(self, job_uid=None):
        
        # dummy task for now..
        # logic for SHP export goes here..
        time.sleep(10)
        logger.debug('Job ran {0}'.format(job_uid))
+       return {'output_url': 'http://testserver/some/download/file.zip'}
 
 
 class GarminExportTask(ExportTask):
     """
     Class defining GARMIN export function.
     """
+    
+    name = 'Garmin Export'
+    
     def run(self, job_uid=None):
        
        # dummy task for now..
        # logic for SHP export goes here..
        time.sleep(10)
        logger.debug('Job ran {0}'.format(job_uid))
+       return {'output_url': 'http://testserver/some/download/file.zip'}
 
 
 

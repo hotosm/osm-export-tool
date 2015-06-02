@@ -85,7 +85,6 @@ class Job(TimeStampedModelMixin):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
     region = models.ForeignKey(Region, null=True)
-    status = models.CharField(max_length=30)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')

@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from datetime import datetime
 from jobs.models import Job, ExportFormat, Region, RegionMask
+from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
 from django.utils import timezone
@@ -40,6 +41,59 @@ class UserGroupSerializer(serializers.Serializer):
     username = serializers.CharField()
     groups = GroupSerializer(many=True)
 """
+
+class ExportTaskResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExportTaskResult
+        fields = ('output_url',)
+
+
+class ExportTaskSerializer(serializers.ModelSerializer):
+    result = serializers.SerializerMethodField()
+    finished_at = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ExportTask
+        fields = ('uid', 'name', 'status', 'started_at', 'finished_at', 'result')
+
+    def get_result(self, obj):
+        try:
+            result = obj.result
+            serializer = ExportTaskResultSerializer(result, many=False, context=self.context)
+            return serializer.data
+        except ExportTaskResult.DoesNotExist as e:
+            return {}
+    
+    def get_finished_at(self, obj):
+        if (not obj.finished_at):
+            return {}
+        else:
+            return obj.finished_at
+
+
+class SimpleJobSerializer(serializers.Serializer):
+    uid = serializers.SerializerMethodField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    url = serializers.HyperlinkedIdentityField(
+       view_name='api:jobs-detail',
+       lookup_field='uid'
+    )
+    
+    def get_uid(self, obj):
+        return obj.uid
+
+
+class ExportRunSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+       view_name='api:runs-detail',
+       lookup_field='uid'
+    )
+    job = SimpleJobSerializer()
+    tasks = ExportTaskSerializer(many=True)
+    class Meta:
+        model = ExportRun
+        fields = ('uid', 'url', 'started_at', 'job', 'tasks')
 
 
 class UserSerializer(serializers.Serializer):
@@ -101,7 +155,7 @@ class ExportFormatSerializer(serializers.ModelSerializer):
         fields = ('uid', 'url', 'name', 'description')   
 
 
-class JobSerializer(geo_serializers.GeoModelSerializer):
+class JobSerializer(geo_serializers.ModelSerializer):
     """
     Job Serializer.
     """
@@ -117,7 +171,7 @@ class JobSerializer(geo_serializers.GeoModelSerializer):
     class Meta:
         model = Job
         fields = ('uid', 'name', 'url', 'description', 'region', 'formats',
-                  'created_at', 'updated_at', 'status','bbox')
+                  'created_at', 'updated_at', 'bbox')
 
     def to_internal_value(self, data):
         request = self.context['request']

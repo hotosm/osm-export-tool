@@ -27,14 +27,12 @@ class TestExportRun(TestCase):
         job = Job.objects.all()[0]
         # add the formats to the job
         job.formats = formats
-        job.save()
     
     def test_export_run(self, ):
         job = Job.objects.all()[0]
         run = ExportRun.objects.create(job=job)
         saved_run = ExportRun.objects.get(uid=str(run.uid))
         self.assertIsNotNone(saved_run)
-        self.assertEquals('EXPORT', run.type)
         self.assertEqual(run, saved_run)
         
         

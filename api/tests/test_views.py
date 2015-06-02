@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
-from mock import Mock, patch
+from mock import Mock, PropertyMock, patch
 from tasks.task_runners import ExportTaskRunner
 from jobs.models import Job, ExportFormat
 from tasks.models import ExportTask
@@ -31,7 +31,6 @@ class TestJobViewSet(APITestCase):
                                  the_geom=the_geom)
         format = ExportFormat.objects.get(slug='obf')
         self.job.formats.add(format)
-        self.job.save()
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
                                 HTTP_ACCEPT='application/json; version=1.0',
@@ -439,3 +438,58 @@ class TestBBoxSearch(APITestCase):
 
 class TestPagination(APITestCase):
     pass
+
+
+class TestExportRunViewSet(APITestCase):
+    """
+    Test cases for ExportRunViewSet
+    """
+    @patch('tasks.export_tasks.ShpExportTask')
+    def setUp(self, mock):
+        user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        token = Token.objects.create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+        export_task = mock.return_value
+        celery_uid = str(uuid.uuid4())
+        export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
+        type(export_task).name = PropertyMock(return_value='Shapefile Export')
+        url = reverse('api:jobs-list')
+        formats = [str(format.uid) for format in ExportFormat.objects.filter(slug='shp')]
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'xmin': -3.9,
+            'ymin': 16.1,
+            'xmax': 7.0,
+            'ymax': 27.6,
+            'formats': formats
+        }
+        response = self.client.post(url, request_data)
+        self.job_uid = response.data['uid']
+        
+        # test the response headers
+        self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        
+        # test significant response content
+        self.assertEqual(response.data['formats'][0]['uid'], request_data['formats'][0])
+        self.assertEqual(response.data['name'], request_data['name'])
+        self.assertEqual(response.data['description'], request_data['description'])
+        
+        export_task.delay.assert_called_once_with(job_uid=self.job_uid)
+        export_task.delay.return_value.assert_called('state')
+        export_task.delay.return_value.assert_called('id')
+        
+    def test_list_runs(self, ):
+        expected = '/api/runs/{0}'.format(self.job_uid)
+        url = reverse('api:runs-detail', args=[self.job_uid])
+        self.assertEquals(expected, url)
+        response = self.client.get(url)
+        self.assertIsNotNone(response)
+        
+        
+        

@@ -46,21 +46,20 @@ class ExportTaskRunner(TaskRunner):
             except KeyError as e:
                 logger.debug(e)
             except ImportError as e:
-                msg = 'Could not import {0} as ExportTask. {1}'.format(e.__class__.__name__, e)
+                msg = 'Error importing export task: {0}'.format(e)
                 logger.warn(msg)
         # run the tasks and persist audit info to db..
         if len(tasks) > 0:
             run = ExportRun.objects.create(job=job) # persist the run
             for task in tasks:
                 result = task.delay(job_uid=job_uid) # add task to celery queue
-                # update the job with the initial state..??? on Job or on Run?
-                job.status = result.state
-                job.save()
                 celery_uid = result.id
-                ExportTask.objects.create(run=run, uid=celery_uid) # persist task with run and celery uid
+                status = result.state
+                task_name = task.name
+                ExportTask.objects.create(run=run, uid=celery_uid, status=status, name=task_name) # persist task with run and celery uid
+            return True
         else:
-            # no tasks to run... do something here..
-            pass
+            return False
 
 
 class OSMUpdateTaskRunner(TaskRunner):
