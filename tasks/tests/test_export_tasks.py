@@ -2,6 +2,9 @@
 import logging
 import json
 import uuid
+import sys
+import cPickle
+import traceback
 from django.test import TestCase
 from django.contrib.auth.models import User
 from mock import Mock, patch, PropertyMock
@@ -9,10 +12,13 @@ from unittest import skip
 from ..task_runners import ExportTaskRunner
 from jobs.models import ExportFormat, Job
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from tasks.export_tasks import ShpExportTask
+from tasks.export_tasks import ExportTask, ShpExportTask
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
+from celery.datastructures import ExceptionInfo
+
 
 logger = logging.getLogger(__name__)
+  
 
 class TestExportTaskRunner(TestCase):
     
@@ -165,8 +171,7 @@ class TestExportTaskRunner(TestCase):
         self.assertEqual(task, result.task)
         self.assertEquals('SUCCESS', task.status)
         self.assertEquals('Shapefile Export', task.name)
-        
-    @skip
+    
     @patch('tasks.export_tasks.ShpExportTask')
     def test_task_on_failure(self, mock):
         format = ExportFormat.objects.get(slug='shp')
@@ -180,17 +185,29 @@ class TestExportTaskRunner(TestCase):
         export_task.delay.assert_called_once_with(job_uid=self.uid)
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
-        
         """
-        Call the on_success method directly to test.
-        Would be called by celery worker on successful completion of task.
+        Call the on_faillure method directly.
+        Would be called by celery worker on failure of task.
         """
         shp_export_task = ShpExportTask()
-        output_url = 'http://testserver/some/output/file.zip'
-        shp_export_task.on_success(retval={'output_url': output_url}, task_id=celery_uid,
+        exc = None
+        exc_info = None
+        try:
+            raise ValueError('some unexpected error')
+        except ValueError as e:
+            exc = e
+            exc_info = sys.exc_info()
+        einfo = ExceptionInfo(exc_info=exc_info)
+        shp_export_task.on_failure(exc, task_id=celery_uid, einfo=einfo,
                                    args={}, kwargs={'job_uid':self.uid})
         task = ExportTask.objects.get(uid=celery_uid)
         self.assertIsNotNone(task)
-        result = task.result
-        self.assertIsNotNone(result)
-        self.assertEqual(task, result.task)
+        exception = task.exceptions.all()[0]
+        exc_info = cPickle.loads(str(exception.exception)).exc_info
+        error_type, msg, tb = exc_info[0], exc_info[1], exc_info[2]
+        self.assertEquals(error_type, ValueError)
+        self.assertEquals('some unexpected error', str(msg))
+        #traceback.print_exception(error_type, msg, tb)
+        
+        
+        

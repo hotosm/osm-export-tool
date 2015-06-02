@@ -3,6 +3,7 @@
 import logging
 import time
 import sys
+import cPickle
 from celery import app, shared_task, Task
 from celery.registry import tasks
 from celery.contrib.methods import task
@@ -39,10 +40,16 @@ class ExportTask(Task):
         result = ExportTaskResult.objects.create(task=task, output_url=output_url)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        pass
+        from tasks.models import ExportTask, ExportTaskException
+        task = ExportTask.objects.get(uid=task_id)
+        task.status = 'FAILURE'
+        task.finished_at = timezone.now()
+        task.save()
+        exception = cPickle.dumps(einfo)
+        ExportTaskException.objects.create(task=task, exception=exception)
 
     def after_return(self, *args, **kwargs):
-        logger.debug('Task returned: {0}'.format(self.result))
+        logger.debug('Task returned: {0}'.format(self.request))
 
 
 class ShpExportTask(ExportTask):
@@ -53,7 +60,6 @@ class ShpExportTask(ExportTask):
     name = 'Shapefile Export'
     
     def run(self, job_uid=None):
-        
         # dummy task for now..
         # logic for SHP export goes here..
         time.sleep(10)

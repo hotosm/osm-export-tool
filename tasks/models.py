@@ -71,9 +71,16 @@ class ExportTaskResult(models.Model):
     def __str__(self):
         return 'ExportTaskResult uid: {0}'.format(self.task.uid)
     
-"""
-class TaskException(models.Model):
+
+class ExportTaskException(models.Model):
+    """
+    Model to store ExportTask exceptions for auditing.
+    """
     id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(blank=True)
+    task = models.ForeignKey(ExportTask, related_name='exceptions')
     timestamp = models.DateTimeField(default=timezone.now, editable=False)
-""" 
+    exception = models.CharField(max_length=5000, editable=False)
+
+    class Meta:
+        managed = True
+        db_table = 'export_task_exceptions'

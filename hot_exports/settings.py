@@ -201,7 +201,7 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
-        'celery': {
+        'celery.task': {
             'handlers': ['file'],
             'propagate': True,
             'level': 'DEBUG',
