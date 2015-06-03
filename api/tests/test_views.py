@@ -1,7 +1,9 @@
 import logging
 import json
 import uuid
+import os
 from django.test import TestCase
+from django.core.files import File
 from unittest import skip
 from rest_framework.reverse import reverse
 from rest_framework import status
@@ -11,9 +13,10 @@ from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 from mock import Mock, PropertyMock, patch
 from tasks.task_runners import ExportTaskRunner
-from jobs.models import Job, ExportFormat
+from jobs.models import Job, ExportFormat, ExportConfig
 from tasks.models import ExportTask
 from api.pagination import JobLinkHeaderPagination
+from api.views import ExportConfigViewSet
 
 logger = logging.getLogger(__name__)
 
@@ -491,5 +494,55 @@ class TestExportRunViewSet(APITestCase):
         response = self.client.get(url)
         self.assertIsNotNone(response)
         
+
+class TestExportConfigViewSet(APITestCase):
+    
+    def setUp(self, ):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom)
+        self.uid = self.job.uid
+        # setup token authentication
+        token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+    
+    def test_create_config(self, ):
+        url = reverse('api:configs-list')
+        path = os.path.dirname(os.path.realpath(__file__))
+        logger.debug(path)
+        f = open(path + '/files/Example Transform.sql', 'r')
+        logger.debug(f)
+        self.assertIsNotNone(f)
+        response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM'}, format='multipart')
+        logger.debug(response)
+        data = response.data
+        uid = data['uid']
+        saved_config = ExportConfig.objects.get(uid=uid)
+        self.assertIsNotNone(saved_config)
+        self.assertEquals('example_transform.sql', saved_config.filename)
+        saved_config.delete()
+        
+    @skip
+    def test_invalid_config_type(self, ):
+        url = reverse('api:configs-list')
+        path = os.path.dirname(os.path.realpath(__file__))
+        logger.debug(path)
+        f = open(path + '/files/Example Transform.sql', 'r')
+        self.assertIsNotNone(f)
+        response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM-WRONG'}, format='multipart')
+        logger.debug(response)
+        data = response.data
+        uid = data['uid']
+        saved_config = ExportConfig.objects.get(uid=uid)
+        self.assertIsNotNone(saved_config)
+        self.assertEquals('example_transform.sql', saved_config.filename)
+        saved_config.delete()
         
         

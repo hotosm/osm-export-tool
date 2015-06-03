@@ -51,6 +51,7 @@ class ExportTask(TimeStampedModelMixin):
     name = models.CharField(max_length=50)
     run = models.ForeignKey(ExportRun, related_name='tasks')
     status = models.CharField(blank=True, max_length=20, db_index=True)
+    # add models.DurationField() ?
     
     class Meta:
         managed = True

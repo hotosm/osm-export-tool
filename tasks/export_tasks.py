@@ -60,11 +60,14 @@ class ShpExportTask(ExportTask):
     name = 'Shapefile Export'
     
     def run(self, job_uid=None):
+        """
         # dummy task for now..
         # logic for SHP export goes here..
         time.sleep(10)
         logger.debug('Job ran {0}'.format(job_uid))
         return {'output_url': 'http://testserver/some/download/file.zip'}
+        """
+        raise Exception('some exception')
 
 class KmlExportTask(ExportTask):
     """

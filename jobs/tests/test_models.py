@@ -5,10 +5,11 @@ import os
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import Job, ExportFormat, Region
+from jobs.models import Job, ExportFormat, Region, ExportConfig
 from tasks.models import ExportTask, ExportRun
 from django.contrib.gis.gdal import DataSource
 from django.utils import timezone
+from django.core.files import File
 
 logger = logging.getLogger(__name__)   
 
@@ -186,4 +187,39 @@ class TestJobRegionIntersection(TestCase):
         self.assertEquals(0, len(regions))
 
 
+class TestExportConfig(TestCase):
+    
+    def setUp(self,):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom)
+        self.uid = self.job.uid
+        
+    
+    def test_create_config(self,):
+        f = open(self.path + '/files/boundary_preset.xml')
+        test_file = File(f)
+        filename = test_file.name.split('/')[-1]
+        config = ExportConfig.objects.create(filename=filename, upload=test_file, config_type='PRESET', user=self.user)
+        test_file.close()
+        self.assertIsNotNone(config)
+        uid = config.uid
+        saved_config = ExportConfig.objects.get(uid=uid)
+        self.assertEquals('PRESET', saved_config.config_type)
+        self.assertIsNotNone(saved_config)
+        self.assertEqual(config, saved_config)
+        sf = File(open(os.path.abspath('.') + '/media/export/config/preset/boundary_preset.xml'))
+        self.assertIsNotNone(sf) # check the file gets created on disk
+        saved_config.delete() # clean up
+        sf.close()
+        sf = None
+        try:
+            sf = File(open(os.path.abspath('.') + '/media/export/config/preset/boundary_preset.xml'))
+        except IOError:
+            pass # expected
+        self.assertIsNone(sf)
     

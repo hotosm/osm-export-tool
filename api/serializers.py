@@ -5,7 +5,7 @@ from uuid import UUID
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from datetime import datetime
-from jobs.models import Job, ExportFormat, Region, RegionMask
+from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
@@ -41,6 +41,36 @@ class UserGroupSerializer(serializers.Serializer):
     username = serializers.CharField()
     groups = GroupSerializer(many=True)
 """
+
+class ExportConfigSerializer(serializers.ModelSerializer):
+    upload = serializers.FileField(allow_empty_file=False, max_length=100)
+    config_type = serializers.ChoiceField(['PRESET','TRANSLATION','TRANSFORM'])
+    size = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(
+       view_name='api:configs-detail',
+       lookup_field='uid'
+    )
+    
+    class Meta:
+        model = ExportConfig
+        fields = ('uid', 'url', 'filename', 'upload', 'content_type', 'size', 'config_type')
+    
+    def to_internal_value(self, data):
+        
+        request = self.context['request']
+        #config_type = validate_config_type('config_type', data)
+        config_type = data['config_type']
+        valid_upload, content_type = validate_upload(data, config_type)
+        data['upload'] = valid_upload
+        data['content_type'] = content_type
+        data['filename'] = valid_upload.name.replace(' ','_').lower()
+        data['user'] = request.user
+        return data
+    
+    def get_size(self, obj):
+        size = obj.upload.size
+        return size
+    
 
 class ExportTaskResultSerializer(serializers.ModelSerializer):
     class Meta:
