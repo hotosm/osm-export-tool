@@ -1,11 +1,25 @@
 from __future__ import unicode_literals
 import uuid
+import logging
 #from django.db import models
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from django.db.models.fields import CharField
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
+
+logger = logging.getLogger(__name__) 
+
+# construct the upload path for export config files..
+def get_upload_path(instance, filename):
+    configtype = instance.config_type.lower()
+    # sanitize the filename here..
+    path = 'export/config/{0}/{1}'.format(configtype, instance.filename)
+    logger.debug('Saving export config to /media/{0}'.format(path))
+    return path
+
 
 class LowerCaseCharField(CharField):
     """
@@ -31,6 +45,31 @@ class TimeStampedModelMixin(models.Model):
     
     class Meta:
         abstract = True
+        
+
+class ExportConfig(TimeStampedModelMixin):
+    """
+    Model for export configuration.
+    """
+    PRESET = 'PRESET'
+    TRANSLATION = 'TRANSLATION'
+    TRANSFORM = 'TRANSFORM'
+    CONFIG_TYPES = (
+        (PRESET, 'Preset'),
+        (TRANSLATION, 'Translation'),
+        (TRANSFORM, 'Transform')
+    )
+    id = models.AutoField(primary_key=True, editable=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, related_name='user')
+    config_type = models.CharField(max_length=11, choices=CONFIG_TYPES, default=PRESET)
+    filename = models.CharField(max_length=255)
+    upload = models.FileField(max_length=255, upload_to=get_upload_path)
+    content_type = models.CharField(max_length=30, editable=False)
+    
+    class Meta:
+        managed = True
+        db_table = 'export_configurations'
 
 
 class ExportFormat(TimeStampedModelMixin):
@@ -81,11 +120,12 @@ class Job(TimeStampedModelMixin):
     """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
-    user = models.ForeignKey(User, related_name='user')
+    user = models.ForeignKey(User, related_name='owner')
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
     region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
+    configs = models.ManyToManyField(ExportConfig, related_name='configs')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
@@ -113,6 +153,10 @@ class RegionMask(models.Model):
         managed = False
         db_table = 'region_mask'
 
-    
-
+"""
+Delete the associated file when the export config is deleted.
+"""
+@receiver(post_delete, sender=ExportConfig)
+def exportconfig_delete_upload(sender, instance, **kwargs):
+    instance.upload.delete(False)
 

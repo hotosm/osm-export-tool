@@ -1,4 +1,6 @@
 import logging
+import magic
+import StringIO
 from collections import OrderedDict
 from uuid import UUID
 from rest_framework import serializers
@@ -144,3 +146,41 @@ def validate_string_field(name=None, data=None):
             return value
     except Exception:
         raise serializers.ValidationError(detail)
+    
+def validate_upload(data, config_type):
+    detail = OrderedDict()
+    detail['id'] = 'missing_file'
+    detail['message'] = 'No file uploaded.'
+    try:
+        upload = data['upload']
+        if upload == None:
+            raise serializers.ValidationError(detail)
+        else:
+            ACCEPT_MIME_TYPES = {'PRESET': ('application/xml', 'text/plain'),
+                                'TRANSFORM': ('application/x-sql', 'text/plain'),
+                                'TRANSLATION': ('text/plain',)}
+        content_type = magic.from_buffer(upload.read(1024), mime=True)
+        if (content_type not in ACCEPT_MIME_TYPES[config_type]):
+            detail = OrderedDict()
+            detail['id'] = 'invalid_content'
+            detail['message'] = 'Uploaded config file has invalid content: {0}'.format(content_type)
+            raise serializers.ValidationError(detail)
+        return (upload, content_type)
+    except Exception:
+        raise serializers.ValidationError(detail)
+
+def validate_config_type(name=None, data=None):
+    detail = OrderedDict()
+    detail['id'] = 'missing_parameter'
+    detail['message'] = 'Missing parameter: {0}'.format(name)
+    detail['param'] = name
+    try:
+        value = data[name]
+        if value == None or value == '':
+            raise serializers.ValidationError(detail)
+        else:
+            if value not in config_field.choices:
+                return value
+    except Exception:
+        raise serializers.ValidationError(detail)
+    

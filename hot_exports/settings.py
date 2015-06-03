@@ -128,6 +128,8 @@ DATABASES = settings_private.DATABASES
 
 LANGUAGE_CODE = 'en-us'
 
+DEFAULT_CHARSET = 'UTF-8'
+
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

@@ -30,10 +30,12 @@ from rest_framework.pagination import PageNumberPagination
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 from .pagination import JobLinkHeaderPagination
-from jobs.models import Job, ExportFormat, Region, RegionMask
+from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from serializers import (JobSerializer, ExportFormatSerializer,
-                         RegionSerializer, RegionMaskSerializer, ExportRunSerializer)
+                         RegionSerializer, RegionMaskSerializer,
+                         ExportRunSerializer, ExportConfigSerializer)
+
 from tasks.task_runners import ExportTaskRunner
 
 # Get an instance of a logger
@@ -50,7 +52,7 @@ class JobViewSet(viewsets.ModelViewSet):
     More docs here...
     """
     serializer_class = JobSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser)
     lookup_field = 'uid'
     pagination_class = JobLinkHeaderPagination
@@ -186,3 +188,22 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = ExportRun.objects.filter(uid=uid)
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ExportConfigViewSet(viewsets.ModelViewSet):
+    """
+    Endpoint for export configurations.
+    """
+    serializer_class = ExportConfigSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset = ExportConfig.objects.all()
+    lookup_field = 'uid'
+    
+    """    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, context={'request': request})
+        if (serializer.is_valid()):
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    """
