@@ -61,11 +61,13 @@ class ExportConfig(TimeStampedModelMixin):
     )
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, default='', db_index=True)
     user = models.ForeignKey(User, related_name='user')
     config_type = models.CharField(max_length=11, choices=CONFIG_TYPES, default=PRESET)
     filename = models.CharField(max_length=255)
     upload = models.FileField(max_length=255, upload_to=get_upload_path)
     content_type = models.CharField(max_length=30, editable=False)
+    visible = models.BooleanField(default=True)
     
     class Meta:
         managed = True

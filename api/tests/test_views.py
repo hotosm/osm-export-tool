@@ -515,11 +515,14 @@ class TestExportConfigViewSet(APITestCase):
         url = reverse('api:configs-list')
         path = os.path.dirname(os.path.realpath(__file__))
         f = File(open(path + '/files/Example Transform.sql', 'r'))
-        response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM'}, format='multipart')
+        name = 'Test Export Config'
+        response = self.client.post(url, {'name': name, 'upload': f, 'config_type': 'TRANSFORM'}, format='multipart')
         data = response.data
         uid = data['uid']
         saved_config = ExportConfig.objects.get(uid=uid)
         self.assertIsNotNone(saved_config)
+        self.assertEquals(name, saved_config.name)
+        self.assertTrue(saved_config.visible)
         self.assertEquals('example_transform.sql', saved_config.filename)
         self.assertEquals('text/plain', saved_config.content_type)
         saved_config.delete()
@@ -532,6 +535,15 @@ class TestExportConfigViewSet(APITestCase):
         response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM-WRONG'}, format='multipart')
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
         
+    def test_invalid_name(self, ):
+        url = reverse('api:configs-list')
+        path = os.path.dirname(os.path.realpath(__file__))
+        f = open(path + '/files/Example Transform.sql', 'r')
+        self.assertIsNotNone(f)
+        response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM'}, format='multipart')
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals(response.data['name'], ['This field is required.'])
+        
     def test_invalid_upload(self, ):
         url = reverse('api:configs-list')
         response = self.client.post(url, {'upload': '', 'config_type': 'TRANSFORM-WRONG'}, format='multipart')
@@ -542,7 +554,8 @@ class TestExportConfigViewSet(APITestCase):
         # create an initial config we can then update..
         path = os.path.dirname(os.path.realpath(__file__))
         f = File(open(path + '/files/Example Transform.sql', 'r'))
-        response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM'}, format='multipart')
+        name = 'Test Export Config'
+        response = self.client.post(url, {'name': name, 'upload': f, 'config_type': 'TRANSFORM'}, format='multipart')
         data = response.data
         saved_uid = data['uid']
         saved_config = ExportConfig.objects.get(uid=saved_uid)
@@ -550,7 +563,8 @@ class TestExportConfigViewSet(APITestCase):
         # update the config
         url = reverse('api:configs-detail', args=[saved_uid])
         f = File(open(path + '/files/boundary_preset.xml', 'r'))
-        response = self.client.put(url, {'upload': f, 'config_type': 'PRESET'}, format='multipart')
+        updated_name = 'Test Export Config Updated'
+        response = self.client.put(url, {'name': updated_name, 'upload': f, 'config_type': 'PRESET'}, format='multipart')
         data = response.data
         updated_uid = data['uid']
         self.assertEquals(saved_uid, updated_uid) # check its the same uid
@@ -558,6 +572,7 @@ class TestExportConfigViewSet(APITestCase):
         self.assertIsNotNone(updated_config)
         self.assertEquals('boundary_preset.xml', updated_config.filename)
         self.assertEquals('application/xml', updated_config.content_type)
+        self.assertEquals('Test Export Config Updated', updated_config.name)
         updated_config.delete()
         try:
             f = File(open(path + '/files/Example Transform.sql', 'r'))
