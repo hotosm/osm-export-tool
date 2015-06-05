@@ -204,12 +204,15 @@ class TestExportConfig(TestCase):
         f = open(self.path + '/files/boundary_preset.xml')
         test_file = File(f)
         filename = test_file.name.split('/')[-1]
-        config = ExportConfig.objects.create(filename=filename, upload=test_file, config_type='PRESET', user=self.user)
+        name = 'Test Configuration File'
+        config = ExportConfig.objects.create(name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
         test_file.close()
         self.assertIsNotNone(config)
         uid = config.uid
         saved_config = ExportConfig.objects.get(uid=uid)
         self.assertEquals('PRESET', saved_config.config_type)
+        self.assertEquals(name, saved_config.name)
+        self.assertTrue(saved_config.visible)
         self.assertIsNotNone(saved_config)
         self.assertEqual(config, saved_config)
         sf = File(open(os.path.abspath('.') + '/media/export/config/preset/boundary_preset.xml'))

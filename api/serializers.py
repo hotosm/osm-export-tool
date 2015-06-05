@@ -51,6 +51,7 @@ class ExportConfigSerializer(serializers.Serializer):
        view_name='api:configs-detail',
        lookup_field='uid'
     )
+    name = serializers.CharField(max_length=255)
     config_type = serializers.ChoiceField(['PRESET','TRANSLATION','TRANSFORM'])
     filename = serializers.CharField(max_length=255, read_only=True, default='')
     size = serializers.SerializerMethodField()
@@ -67,6 +68,7 @@ class ExportConfigSerializer(serializers.Serializer):
         instance.config_type = validated_data.get('config_type', instance.config_type)
         instance.upload.delete(False) # delete the old file..
         instance.upload = validated_data.get('upload', instance.upload)
+        instance.name = validated_data.get('name', instance.name)
         instance.filename = validated_data.get('filename', instance.filename)
         instance.content_type = validated_data.get('content_type', instance.content_type)
         instance.updated_at = timezone.now()
