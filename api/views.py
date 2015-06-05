@@ -21,7 +21,7 @@ from rest_framework import generics
 from rest_framework import filters
 from rest_framework.reverse import reverse
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.serializers import ValidationError
@@ -51,9 +51,11 @@ class JobViewSet(viewsets.ModelViewSet):
     
     More docs here...
     """
+    from serializers import JobSerializer
+    
     serializer_class = JobSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    parser_classes = (FormParser, MultiPartParser)
+    parser_classes = (FormParser, MultiPartParser, JSONParser)
     lookup_field = 'uid'
     pagination_class = JobLinkHeaderPagination
 
@@ -62,6 +64,7 @@ class JobViewSet(viewsets.ModelViewSet):
     
     def list(self, request, uid=None, *args, **kwargs):
         params = self.request.QUERY_PARAMS.get('bbox', None)
+        logger.debug(params)
         if params == None:
             queryset = Job.objects.all()
             page = self.paginate_queryset(queryset)
@@ -101,18 +104,17 @@ class JobViewSet(viewsets.ModelViewSet):
         
 
     def create(self, request, *args, **kwargs):
-        serializer = JobSerializer(data=request.data,
-                                   context={'request': request})
+        serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
             # add the export formats
             formats = request.data.getlist('formats')
             export_formats = []
-            for format_uid in formats:
+            for slug in formats:
                 try:
-                    export_format = ExportFormat.objects.get(uid=format_uid)
+                    export_format = ExportFormat.objects.get(slug=slug)
                     export_formats.append(export_format)
                 except ExportFormat.DoesNotExist as e:
-                    logger.warn('Export format with uid: {0} does not exist'.format(format_uid))
+                    logger.warn('Export format with uid: {0} does not exist'.format(slug))
             if len(export_formats) > 0:
                 # save the job
                 try:
@@ -192,18 +194,9 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ExportConfigViewSet(viewsets.ModelViewSet):
     """
-    Endpoint for export configurations.
+    Endpoint for operations on export configurations.
     """
     serializer_class = ExportConfigSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportConfig.objects.all()
     lookup_field = 'uid'
-    
-    """    
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, context={'request': request})
-        if (serializer.is_valid()):
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    """
