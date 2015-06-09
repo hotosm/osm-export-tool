@@ -13,6 +13,9 @@ from django.contrib.gis.geos import Polygon, GEOSException
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+def validate_conifg(uid):
+    pass
+
 def validate_region(regions):
     if len(regions) == 0:
         detail = OrderedDict()
@@ -24,7 +27,7 @@ def validate_region(regions):
 
 def validate_formats(data):
     formats = data['formats']
-    if len(formats) == 0:
+    if formats == None or len(formats) == 0:
         raise serializers.ValidationError({'formats': ['Select an export format.']})
 
 def validate_search_bbox(extents):
@@ -61,8 +64,8 @@ def validate_bbox_params(data):
     detail = OrderedDict()
     
     # test for number
-    lon_coords = [data['xmin'], data['xmax']]
-    lat_coords = [data['ymin'], data['ymax']]
+    lon_coords = [float(data['xmin']), float(data['xmax'])]
+    lat_coords = [float(data['ymin']), float(data['ymax'])]
     # test lat long value order
     if ((lon_coords[0] >= 0 and lon_coords[0] > lon_coords[1])
         or (lon_coords[0] < 0 and lon_coords[0] > lon_coords[1])):

@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 class TestJobViewSet(APITestCase):
     
     def setUp(self, ):
+        self.path = os.path.dirname(os.path.realpath(__file__))
         self.user = User.objects.create_user(
             username='demo', email='demo@demo.com', password='demo'
         )
@@ -40,6 +41,17 @@ class TestJobViewSet(APITestCase):
                                 HTTP_ACCEPT='application/json; version=1.0',
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
+        # create a test config
+        f = File(open(self.path + '/files/test_boundary_preset.xml'))
+        filename = f.name.split('/')[-1]
+        name = 'Test Configuration File'
+        self.config = ExportConfig.objects.create(name='Test Preset Config', filename=filename, upload=f, config_type='PRESET', user=self.user)
+        f.close()
+        self.assertIsNotNone(self.config)
+        self.job.configs.add(self.config)
+        
+    def tearDown(self,):
+        self.config.delete() # clean up
         
         
     def test_get_job_detail(self, ):
@@ -105,8 +117,42 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
-        #self.assertEqual(response.data['status'], 'PENDING')
     
+    @patch('api.views.ExportTaskRunner')
+    def test_create_job_with_config_success(self, mock):
+        task_runner = mock.return_value
+        config_uid = self.config.uid
+        url = reverse('api:jobs-list')
+        formats = [format.slug for format in ExportFormat.objects.all()]
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'xmin': -3.9,
+            'ymin': 16.1,
+            'xmax': 7.0,
+            'ymax': 27.6,
+            'formats': formats,
+            'preset': config_uid,
+            'transform':'',
+            'translate':''
+        }
+        response = self.client.post(url, request_data)
+        job_uid = response.data['uid']
+        # test the ExportTaskRunner.run_task(job_id) method gets called.
+        task_runner.run_task.assert_called_once_with(job_uid=job_uid)
+        
+        # test the response headers
+        self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        
+        # test significant response content
+        self.assertEqual(response.data['exports'][0]['slug'], request_data['formats'][0])
+        self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
+        self.assertEqual(response.data['name'], request_data['name'])
+        self.assertEqual(response.data['description'], request_data['description'])
+        configs = self.job.configs.all()
+        self.assertIsNotNone(configs[0])
     
     def test_missing_bbox_param(self, ):
         url = reverse('api:jobs-list')
@@ -405,6 +451,7 @@ class TestBBoxSearch(APITestCase):
         extent = (-79.5, -16.16, 7.40, 52.44)
         param = 'bbox={0},{1},{2},{3}'.format(extent[0], extent[1], extent[2], extent[3])
         response = self.client.get('{0}?{1}'.format(url, param))
+        self.assertEquals(status.HTTP_206_PARTIAL_CONTENT, response.status_code)
         self.assertEquals(2, len(response.data)) # 8 jobs in total but response is paginated
         
     def test_list_jobs_no_bbox(self, ):
@@ -562,7 +609,7 @@ class TestExportConfigViewSet(APITestCase):
         
         # update the config
         url = reverse('api:configs-detail', args=[saved_uid])
-        f = File(open(path + '/files/boundary_preset.xml', 'r'))
+        f = File(open(path + '/files/test_boundary_preset.xml', 'r'))
         updated_name = 'Test Export Config Updated'
         response = self.client.put(url, {'name': updated_name, 'upload': f, 'config_type': 'PRESET'}, format='multipart')
         data = response.data
@@ -570,7 +617,7 @@ class TestExportConfigViewSet(APITestCase):
         self.assertEquals(saved_uid, updated_uid) # check its the same uid
         updated_config = ExportConfig.objects.get(uid=updated_uid)
         self.assertIsNotNone(updated_config)
-        self.assertEquals('boundary_preset.xml', updated_config.filename)
+        self.assertEquals('test_boundary_preset.xml', updated_config.filename)
         self.assertEquals('application/xml', updated_config.content_type)
         self.assertEquals('Test Export Config Updated', updated_config.name)
         updated_config.delete()
