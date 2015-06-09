@@ -161,4 +161,10 @@ Delete the associated file when the export config is deleted.
 @receiver(post_delete, sender=ExportConfig)
 def exportconfig_delete_upload(sender, instance, **kwargs):
     instance.upload.delete(False)
+    
+"""
+class Tag(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+""" 
+
 

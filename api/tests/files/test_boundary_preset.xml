@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<presets xmlns="http://josm.openstreetmap.de/tagging-preset-1.0" author="Rafael Avila Coya" version="0.01" shortdescription="Boundaries only" description="Preset to download only boundaries">
+  <item name="Boundary" icon="presets/empty.png" type="relation">
+    <combo key="admin_level" text="Boundary Level" values="2,4,6,8"/>
+  </item>
+</presets>

@@ -19,6 +19,7 @@ class TestJob(TestCase):
     Test cases for Job model
     """
     def setUp(self,):
+        self.path = os.path.dirname(os.path.realpath(__file__))
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -41,6 +42,29 @@ class TestJob(TestCase):
         saved_formats = saved_job.formats.all()
         self.assertIsNotNone(saved_formats)
         self.assertItemsEqual(saved_formats, self.formats)
+        
+    def test_job_creation_with_config(self,):
+        saved_job = Job.objects.all()[0]
+        self.assertEqual(self.job, saved_job)
+        self.assertEquals(self.uid, saved_job.uid)
+        self.assertIsNotNone(saved_job.created_at)
+        self.assertIsNotNone(saved_job.updated_at)
+        saved_formats = saved_job.formats.all()
+        self.assertIsNotNone(saved_formats)
+        self.assertItemsEqual(saved_formats, self.formats)
+        # attach a configuration to a job
+        f = File(open(self.path + '/files/test_boundary_preset.xml'))
+        filename = f.name.split('/')[-1]
+        config = ExportConfig.objects.create(name='Test Preset Config', filename=filename,
+                                             upload=f, config_type='PRESET', user=self.user)
+        f.close()
+        self.assertIsNotNone(config)
+        uid = config.uid
+        saved_job.configs.add(config)
+        saved_config = saved_job.configs.all()[0]
+        self.assertEqual(config, saved_config)
+        saved_config.delete() #cleanup
+        
     
     
     def test_spatial_fields(self,):
@@ -201,7 +225,7 @@ class TestExportConfig(TestCase):
         
     
     def test_create_config(self,):
-        f = open(self.path + '/files/boundary_preset.xml')
+        f = open(self.path + '/files/test_boundary_preset.xml')
         test_file = File(f)
         filename = test_file.name.split('/')[-1]
         name = 'Test Configuration File'
@@ -215,14 +239,14 @@ class TestExportConfig(TestCase):
         self.assertTrue(saved_config.visible)
         self.assertIsNotNone(saved_config)
         self.assertEqual(config, saved_config)
-        sf = File(open(os.path.abspath('.') + '/media/export/config/preset/boundary_preset.xml'))
+        sf = File(open(os.path.abspath('.') + '/media/export/config/preset/test_boundary_preset.xml'))
         self.assertIsNotNone(sf) # check the file gets created on disk
         saved_config.delete() # clean up
         sf.close()
         sf = None
         try:
-            sf = File(open(os.path.abspath('.') + '/media/export/config/preset/boundary_preset.xml'))
+            sf = File(open(os.path.abspath('.') + '/media/export/config/preset/test_boundary_preset.xml'))
         except IOError:
             pass # expected
         self.assertIsNone(sf)
-    
+        

@@ -45,6 +45,16 @@ class UserGroupSerializer(serializers.Serializer):
     groups = GroupSerializer(many=True)
 """
 
+class SimpleExportConfigSerializer(serializers.Serializer):
+    uid = serializers.UUIDField(read_only=True)
+    name = serializers.CharField()
+    config_type = serializers.CharField()
+    url = serializers.HyperlinkedIdentityField(
+       view_name='api:configs-detail',
+       lookup_field='uid'
+    )
+
+
 class ExportConfigSerializer(serializers.Serializer):
     uid = serializers.UUIDField(read_only=True)
     url = serializers.HyperlinkedIdentityField(
@@ -241,6 +251,8 @@ class JobSerializer(serializers.Serializer):
         max_length=255,
     )
     exports = serializers.SerializerMethodField()
+    configurations = serializers.SerializerMethodField()
+    #configs = ExportConfigSerializer(many=True)
     xmin = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,
         error_messages = {
@@ -307,5 +319,11 @@ class JobSerializer(serializers.Serializer):
     def get_exports(self, obj):
         formats = [format for format in obj.formats.all()]
         serializer = ExportFormatSerializer(formats, many=True, context={'request': self.context['request']})
+        return serializer.data
+    
+    def get_configurations(self, obj):
+        configs = obj.configs.all()
+        serializer = SimpleExportConfigSerializer(configs, many=True,
+                                                  context={'request': self.context['request']})
         return serializer.data
     

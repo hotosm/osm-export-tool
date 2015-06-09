@@ -207,7 +207,12 @@ LOGGING = {
             'handlers': ['file'],
             'propagate': True,
             'level': 'DEBUG',
-        }, 
+        },
+        'jobs': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
         'jobs.tests': {
             'handlers': ['console'],
             'propagate': True,

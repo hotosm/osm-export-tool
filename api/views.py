@@ -101,13 +101,14 @@ class JobViewSet(viewsets.ModelViewSet):
                 logger.debug(e.detail)
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
                 
-        
-
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
             # add the export formats
             formats = request.data.getlist('formats')
+            preset = request.data.get('preset')
+            translation = request.data.get('translation')
+            transform = request.data.get('transform')
             export_formats = []
             for slug in formats:
                 try:
@@ -128,9 +129,18 @@ class JobViewSet(viewsets.ModelViewSet):
                     return Response(error_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 error_data = OrderedDict()
-                error_data['id'] = 'invalid_formats'
-                error_data['message'] = 'Invalid format uid(s).'
+                error_data['formats'] = ['Invalid format uid(s).']
                 return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
+            # add the configurations
+            if preset:
+                config = ExportConfig.objects.get(uid=preset)
+                job.configs.add(config)
+            if translation:
+                config = ExportConfig.objects.get(uid=translation)
+                job.configs.add(config)
+            if transform:
+                config = ExportConfig.objects.get(uid=transform)
+                job.configs.add(config)
             # run the tasks
             # catch exceptions here..
             task_runner = ExportTaskRunner()
@@ -195,8 +205,42 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
 class ExportConfigViewSet(viewsets.ModelViewSet):
     """
     Endpoint for operations on export configurations.
+    Lists all available configuration files.
     """
     serializer_class = ExportConfigSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportConfig.objects.all()
+    lookup_field = 'uid'
+    
+
+class PresetViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Returns the list of PRESET configuration files.
+    """
+    CONFIG_TYPE = 'PRESET'
+    serializer_class = ExportConfigSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
+    lookup_field = 'uid'
+
+
+class TranslationViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Returns the list of TRANSLATION configuration files.
+    """
+    CONFIG_TYPE = 'TRANSLATION'
+    serializer_class = ExportConfigSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
+    lookup_field = 'uid'
+
+
+class TransformViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Returns the list of TRANSFORM configuration files.
+    """
+    CONFIG_TYPE = 'TRANSFORM'
+    serializer_class = ExportConfigSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
     lookup_field = 'uid'
