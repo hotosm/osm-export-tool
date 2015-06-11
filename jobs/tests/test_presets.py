@@ -18,3 +18,5 @@ class TestPresetParser(TestCase):
         tags = parser.parse()
         self.assertIsNotNone(tags)
         self.assertEquals(30, len(tags))
+        logger.debug(tags)
+        logger.debug(tags.keys())
