@@ -61,6 +61,7 @@ LOCAL_APPS = (
     'tasks',
     'api',
     'ui',
+    'utils',
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -214,6 +215,16 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'jobs.tests': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'utils': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'utils.tests': {
             'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',

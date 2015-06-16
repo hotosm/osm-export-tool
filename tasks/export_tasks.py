@@ -50,6 +50,13 @@ class ExportTask(Task):
 
     def after_return(self, *args, **kwargs):
         logger.debug('Task returned: {0}'.format(self.request))
+        
+
+class OverpassExtractTask(ExportTask):
+    pass
+
+
+
 
 
 class ShpExportTask(ExportTask):
