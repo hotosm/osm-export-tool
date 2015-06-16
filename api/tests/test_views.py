@@ -42,7 +42,7 @@ class TestJobViewSet(APITestCase):
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
         # create a test config
-        f = File(open(self.path + '/files/test_boundary_preset.xml'))
+        f = File(open(self.path + '/files/hdm_presets.xml'))
         filename = f.name.split('/')[-1]
         name = 'Test Configuration File'
         self.config = ExportConfig.objects.create(name='Test Preset Config', filename=filename, upload=f, config_type='PRESET', user=self.user)
@@ -93,6 +93,7 @@ class TestJobViewSet(APITestCase):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
         formats = [format.slug for format in ExportFormat.objects.all()]
+        config_uid = self.config.uid
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -100,9 +101,11 @@ class TestJobViewSet(APITestCase):
             'ymin': 16.1,
             'xmax': 7.0,
             'ymax': 27.6,
-            'formats': formats
+            'formats': formats,
+            'preset': config_uid,
         }
         response = self.client.post(url, request_data)
+        logger.debug(response)
         job_uid = response.data['uid']
         # test the ExportTaskRunner.run_task(job_id) method gets called.
         task_runner.run_task.assert_called_once_with(job_uid=job_uid)
@@ -117,7 +120,13 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
-    
+        
+        # check we have the correct tags
+        job = Job.objects.get(uid=job_uid)
+        tags = job.tags.all()
+        self.assertIsNotNone(tags)
+        self.assertEquals(30, len(tags))
+        
     @patch('api.views.ExportTaskRunner')
     def test_create_job_with_config_success(self, mock):
         task_runner = mock.return_value
@@ -609,7 +618,7 @@ class TestExportConfigViewSet(APITestCase):
         
         # update the config
         url = reverse('api:configs-detail', args=[saved_uid])
-        f = File(open(path + '/files/test_boundary_preset.xml', 'r'))
+        f = File(open(path + '/files/hdm_presets.xml', 'r'))
         updated_name = 'Test Export Config Updated'
         response = self.client.put(url, {'name': updated_name, 'upload': f, 'config_type': 'PRESET'}, format='multipart')
         data = response.data
@@ -617,7 +626,7 @@ class TestExportConfigViewSet(APITestCase):
         self.assertEquals(saved_uid, updated_uid) # check its the same uid
         updated_config = ExportConfig.objects.get(uid=updated_uid)
         self.assertIsNotNone(updated_config)
-        self.assertEquals('test_boundary_preset.xml', updated_config.filename)
+        self.assertEquals('hdm_presets.xml', updated_config.filename)
         self.assertEquals('application/xml', updated_config.content_type)
         self.assertEquals('Test Export Config Updated', updated_config.name)
         updated_config.delete()

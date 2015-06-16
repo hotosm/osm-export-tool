@@ -5,11 +5,13 @@ import os
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import Job, ExportFormat, Region, ExportConfig
+from jobs.models import Job, ExportFormat, Region, ExportConfig, Tag
 from tasks.models import ExportTask, ExportRun
 from django.contrib.gis.gdal import DataSource
 from django.utils import timezone
 from django.core.files import File
+
+import jobs.presets as presets
 
 logger = logging.getLogger(__name__)   
 
@@ -249,4 +251,38 @@ class TestExportConfig(TestCase):
         except IOError:
             pass # expected
         self.assertIsNone(sf)
+        
+class TestTag(TestCase):
+    
+    def setUp(self, ):
+        self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom)
+        self.uid = self.job.uid
+        # add the formats to the job
+        self.job.formats = self.formats
+        self.job.save()
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        
+    def test_create_tags(self,):
+        self.default_tags = presets.DEFAULT_TAGS
+        parser = presets.PresetParser(self.path + '/files/hot_field_collection_presets.xml')
+        self.user_tags = parser.parse()
+        for key in self.user_tags:
+            tag = Tag.objects.create(
+                name = key,
+                geom_types = self.user_tags[key]
+            )
+            self.job.tags.add(tag)
+        tags = Tag.objects.all()
+        self.assertEquals(30, len(tags))
+        
+    
+        
+    
+    
         

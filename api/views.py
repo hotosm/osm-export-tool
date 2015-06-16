@@ -30,13 +30,16 @@ from rest_framework.pagination import PageNumberPagination
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 from .pagination import JobLinkHeaderPagination
-from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig
+from jobs import presets
+from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from serializers import (JobSerializer, ExportFormatSerializer,
                          RegionSerializer, RegionMaskSerializer,
-                         ExportRunSerializer, ExportConfigSerializer)
+                         ExportRunSerializer, ExportConfigSerializer, TagSerializer)
 
 from tasks.task_runners import ExportTaskRunner
+
+from hot_exports import settings
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -110,6 +113,7 @@ class JobViewSet(viewsets.ModelViewSet):
             translation = request.data.get('translation')
             transform = request.data.get('transform')
             export_formats = []
+            job = None
             for slug in formats:
                 try:
                     export_format = ExportFormat.objects.get(slug=slug)
@@ -122,6 +126,35 @@ class JobViewSet(viewsets.ModelViewSet):
                     with transaction.atomic():
                         job = serializer.save()
                         job.formats = export_formats
+                        # add the configurations
+                        if preset:
+                            config = ExportConfig.objects.get(uid=preset)
+                            job.configs.add(config)
+                            preset_path = settings.BASE_DIR + config.upload.url
+                            # TODO: check if user tags to be merged with defaults
+                            parser = presets.PresetParser(preset=preset_path)
+                            tags = parser.parse(merge_with_defaults=False)
+                            for key in tags:
+                                tag = Tag.objects.create(
+                                    name = key,
+                                    geom_types = tags[key]
+                                )
+                                job.tags.add(tag)
+                        else:
+                            # use default tags
+                            tags = presets.DEFAULT_TAGS
+                            for key in tags:
+                                tag = Tag.objects.create(
+                                    name = key,
+                                    geom_types = tags[key]
+                                )
+                                job.tags.add(tag)   
+                        if translation:
+                            config = ExportConfig.objects.get(uid=translation)
+                            job.configs.add(config)
+                        if transform:
+                            config = ExportConfig.objects.get(uid=transform)
+                            job.configs.add(config)
                 except Error as e:
                     error_data = OrderedDict()
                     error_data['id'] = 'server_error'
@@ -131,16 +164,7 @@ class JobViewSet(viewsets.ModelViewSet):
                 error_data = OrderedDict()
                 error_data['formats'] = ['Invalid format uid(s).']
                 return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
-            # add the configurations
-            if preset:
-                config = ExportConfig.objects.get(uid=preset)
-                job.configs.add(config)
-            if translation:
-                config = ExportConfig.objects.get(uid=translation)
-                job.configs.add(config)
-            if transform:
-                config = ExportConfig.objects.get(uid=transform)
-                job.configs.add(config)
+            
             # run the tasks
             # catch exceptions here..
             task_runner = ExportTaskRunner()
@@ -244,3 +268,4 @@ class TransformViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
     lookup_field = 'uid'
+        

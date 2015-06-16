@@ -8,65 +8,65 @@ from StringIO import StringIO
 logger = logging.getLogger(__name__)
 
 DEFAULT_TAGS = OrderedDict({
-        "access"             : { "point": True, "line": True },
-        "addr:housename"     : { "point": True, "line": True },
-        "addr:housenumber"   : { "point": True, "line": True },
-        "addr:interpolation" : { "point": True, "line": True },
-        "admin_level"        : { "point": True, "line": True },
-        "aerialway"          : { "point": True, "line": True },
-        "aeroway"            : { "point": True, "polygon": True},
-        "amenity"            : { "point": True, "polygon": True},
-        "barrier"            : { "point": True, "line": True},
-        "bicycle"            : { "point": True},
-        "bridge"             : { "point": True, "line": True },
-        "boundary"           : { "point": True, "line": True },
-        "building"           : { "point": True, "polygon": True },
-        "capital"            : { "point": True },
-        "construction"       : { "point": True, "line": True },
-        "covered"            : { "point": True, "line": True },
-        "cutting"            : { "point": True, "line": True },
-        "denomination"       : { "point": True, "line": True },
-        "disused"            : { "point": True, "line": True },
-        "ele"                : { "point": True },
-        "embankment"         : { "point": True, "line": True },
-        "foot"               : { "point": True, "line": True },
-        "generator:source"   : { "point": True, "line": True },
-        "harbour"            : { "point": True, "polygon": True },
-        "highway"            : { "point": True, "line": True },
-        "historic"           : { "point": True, "polygon": True },
-        "junction"           : { "point": True, "line": True },
-        "landuse"            : { "point": True, "polygon": True },
-        "layer"              : { "point": True, "line": True },
-        "leisure"            : { "point": True, "polygon": True },
-        "lock"               : { "point": True, "line": True },
-        "man_made"           : { "point": True, "polygon": True },
-        "military"           : { "point": True, "polygon": True },
-        "motorcar"           : { "point": True, "line": True },
-        "name"               : { "point": True, "line": True },
-        "natural"            : { "point": True, "polygon": True },
-        "oneway"             : { "point": True, "line": True },
-        "poi"                : { "point": True },
-        "population"         : { "point": True, "line": True },
-        "power"              : { "point": True, "polygon": True },
-        "place"              : { "point": True, "polygon": True },
-        "railway"            : { "point": True, "line": True },
-        "ref"                : { "point": True, "line": True },
-        "religion"           : { "point": True },
-        "route"              : { "point": True, "line": True },
-        "service"            : { "point": True, "line": True },
-        "shop"               : { "point": True, "polygon": True },
-        "sport"              : { "point": True, "polygon": True },
-        "surface"            : { "point": True, "line": True },
-        "toll"               : { "point": True, "line": True },
-        "tourism"            : { "point": True, "polygon": True },
-        "tower:type"         : { "point": True, "line": True },
-        "tracktype"          : { "line": True },
-        "tunnel"             : { "point": True, "line": True },
-        "water"              : { "point": True, "polygon": True },
-        "waterway"           : { "point": True, "polygon": True },
-        "wetland"            : { "point": True, "polygon": True },
-        "width"              : { "point": True, "line": True },
-        "wood"               : { "point": True, "line": True },
+        "access"             : { "point": 'true', "line": 'true' },
+        "addr:housename"     : { "point": 'true', "line": 'true' },
+        "addr:housenumber"   : { "point": 'true', "line": 'true' },
+        "addr:interpolation" : { "point": 'true', "line": 'true' },
+        "admin_level"        : { "point": 'true', "line": 'true' },
+        "aerialway"          : { "point": 'true', "line": 'true' },
+        "aeroway"            : { "point": 'true', "polygon": 'true'},
+        "amenity"            : { "point": 'true', "polygon": 'true'},
+        "barrier"            : { "point": 'true', "line": 'true'},
+        "bicycle"            : { "point": 'true'},
+        "bridge"             : { "point": 'true', "line": 'true' },
+        "boundary"           : { "point": 'true', "line": 'true' },
+        "building"           : { "point": 'true', "polygon": 'true' },
+        "capital"            : { "point": 'true' },
+        "construction"       : { "point": 'true', "line": 'true' },
+        "covered"            : { "point": 'true', "line": 'true' },
+        "cutting"            : { "point": 'true', "line": 'true' },
+        "denomination"       : { "point": 'true', "line": 'true' },
+        "disused"            : { "point": 'true', "line": 'true' },
+        "ele"                : { "point": 'true' },
+        "embankment"         : { "point": 'true', "line": 'true' },
+        "foot"               : { "point": 'true', "line": 'true' },
+        "generator:source"   : { "point": 'true', "line": 'true' },
+        "harbour"            : { "point": 'true', "polygon": 'true' },
+        "highway"            : { "point": 'true', "line": 'true' },
+        "historic"           : { "point": 'true', "polygon": 'true' },
+        "junction"           : { "point": 'true', "line": 'true' },
+        "landuse"            : { "point": 'true', "polygon": 'true' },
+        "layer"              : { "point": 'true', "line": 'true' },
+        "leisure"            : { "point": 'true', "polygon": 'true' },
+        "lock"               : { "point": 'true', "line": 'true' },
+        "man_made"           : { "point": 'true', "polygon": 'true' },
+        "military"           : { "point": 'true', "polygon": 'true' },
+        "motorcar"           : { "point": 'true', "line": 'true' },
+        "name"               : { "point": 'true', "line": 'true' },
+        "natural"            : { "point": 'true', "polygon": 'true' },
+        "oneway"             : { "point": 'true', "line": 'true' },
+        "poi"                : { "point": 'true' },
+        "population"         : { "point": 'true', "line": 'true' },
+        "power"              : { "point": 'true', "polygon": 'true' },
+        "place"              : { "point": 'true', "polygon": 'true' },
+        "railway"            : { "point": 'true', "line": 'true' },
+        "ref"                : { "point": 'true', "line": 'true' },
+        "religion"           : { "point": 'true' },
+        "route"              : { "point": 'true', "line": 'true' },
+        "service"            : { "point": 'true', "line": 'true' },
+        "shop"               : { "point": 'true', "polygon": 'true' },
+        "sport"              : { "point": 'true', "polygon": 'true' },
+        "surface"            : { "point": 'true', "line": 'true' },
+        "toll"               : { "point": 'true', "line": 'true' },
+        "tourism"            : { "point": 'true', "polygon": 'true' },
+        "tower:type"         : { "point": 'true', "line": 'true' },
+        "tracktype"          : { "line": 'true' },
+        "tunnel"             : { "point": 'true', "line": 'true' },
+        "water"              : { "point": 'true', "polygon": 'true' },
+        "waterway"           : { "point": 'true', "polygon": 'true' },
+        "wetland"            : { "point": 'true', "polygon": 'true' },
+        "width"              : { "point": 'true', "line": 'true' },
+        "wood"               : { "point": 'true', "line": 'true' },
 })
 
 
@@ -84,7 +84,7 @@ class PresetParser():
         self.preset = preset
         self.tags = {}
     
-    def parse(self, ):
+    def parse(self, merge_with_defaults=False):
         f = open(self.preset)
         xml = f.read()
         tree = etree.parse(StringIO(xml))
@@ -92,7 +92,10 @@ class PresetParser():
         for item in items:
             self.process_item_and_children(item)
         tags = OrderedDict(sorted(self.tags.items()))
-        return tags
+        if merge_with_defaults:
+            return self.merge_presets(tags)
+        else:
+            return tags
         
     def process_item_and_children(self, item, geometrytype=None):
         geometrytypes = None
@@ -107,7 +110,7 @@ class PresetParser():
                 if not key in self.tags:
                     self.tags[key] = {}
                 for geomtype in geometrytypes:
-                    self.tags[key][geomtype] = True
+                    self.tags[key][geomtype] = 'true'
         for child in list(item):
             self.process_item_and_children(child)
 
@@ -119,9 +122,10 @@ class PresetParser():
         return geometrytypes
        
     def merge_presets(self, tags):
-        x = DEFAULT_TAGS.copy()
-        tags.update(x)
-        return tags
+        merged_tags = DEFAULT_TAGS.copy()
+        user_tags = tags.copy()
+        merged_tags.update(user_tags)
+        return merged_tags
     
     def categorise_tags(self, tags):
         points = []
@@ -135,7 +139,7 @@ class PresetParser():
                     lines.append(tag)
                 if geom == 'polygon':
                     polygons.append(tag)
-        return {'points': points, 'lines': lines, 'polygons': polygons}
+        return {'points': sorted(points), 'lines': sorted(lines), 'polygons': sorted(polygons)}
                 
             
             
