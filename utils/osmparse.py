@@ -24,7 +24,7 @@ class OSMParser(object):
         if osmconf:
             self.osmconf = osmconf
         else:
-            self.osmconf = self.path + '/conf/hotosm.ini'
+            self.osmconf = self.path + '/conf/test.ini'
             logger.debug(self.osmconf)
         """
             OGR Command to run.
@@ -71,6 +71,8 @@ class OSMParser(object):
         self.update_sql = Template("spatialite $sqlite < $update_sql")
         sql_cmd = self.update_sql.safe_substitute({'sqlite': self.sqlite,
                             'update_sql': self.path + '/sql/planet_osm_schema.sql'})
+        if(self.debug):
+            print 'Running: %s' % sql_cmd
         proc = subprocess.Popen(sql_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate() 
@@ -112,7 +114,6 @@ class OSMParser(object):
         if self.spatialite:
             self.spatialite.Destroy()
     
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="""Converts OSM (xml|pbf) to Spatialite.

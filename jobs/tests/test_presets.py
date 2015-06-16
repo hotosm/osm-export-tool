@@ -4,6 +4,7 @@ import os
 from django.test import TestCase
 from django.utils import timezone
 from django.core.files import File
+from unittest import skip
 from ..presets import PresetParser, DEFAULT_TAGS
 
 logger = logging.getLogger(__name__)
@@ -18,20 +19,46 @@ class TestPresetParser(TestCase):
         tags = parser.parse()
         self.assertIsNotNone(tags)
         self.assertEquals(30, len(tags))
+        
+        logger.debug('\n\t======== USER TAGS ==========\n')
         #logger.debug('User tags: %s' % tags.keys())
+        categories = parser.categorise_tags(tags)
+        logger.debug('Points: %s\n' % sorted(categories['points']))
+        logger.debug('Lines: %s\n' % sorted(categories['lines']))
+        logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
         
     def test_merge_presets(self, ):
         parser = PresetParser(self.path + '/files/hot_field_collection_presets.xml')
         tags = parser.parse()
         merged = parser.merge_presets(tags)
-        #logger.debug('Default tags %s' % DEFAULT_TAGS.keys())
-        #logger.debug('\nMerged tags: %s' % merged)
+        
+        logger.debug('\n\t======== DEFAULT TAGS ==========\n')
+        categories = parser.categorise_tags(DEFAULT_TAGS)
+        logger.debug('Points: %s\n' % sorted(categories['points']))
+        logger.debug('Lines: %s\n' % sorted(categories['lines']))
+        logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
+        
+        logger.debug('\n\t======== MERGED TAGS ==========\n')
+        categories = parser.categorise_tags(merged)
+        logger.debug('Points: %s\n' % sorted(categories['points']))
+        logger.debug('Lines: %s\n' % sorted(categories['lines']))
+        logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
+        
+        # check merged points
+        self.assertTrue('borehole' in categories['points'])
+        self.assertTrue('emergency' in categories['points'])
+        self.assertTrue('tank' in categories['points'])
+        
+        #check lines
+        self.assertTrue('aeroway'in categories['lines'])
+        self.assertTrue('ford'in categories['lines'])
+        self.assertTrue('man_made' in categories['lines'])
+        
+        # check polygons
+        self.assertTrue('area' in categories['polygons'])
+        self.assertTrue('information' in categories['polygons'])
+        self.assertTrue('junction' in categories['polygons'])
+        self.assertTrue('office' in categories['polygons'])
+        self.assertTrue('tank' in categories['polygons'])
     
-    def test_cagegorise_tags(self, ):
-        parser = PresetParser(self.path + '/files/hot_field_collection_presets.xml')
-        tags = parser.parse()
-        categories = parser.categorise_tags(tags)
-        #logger.debug('Points: %s' % categories['points'])
-        #logger.debug('Lines: %s' % categories['lines'])
-        #logger.debug('Polygons: %s' % categories['polygons'])
         

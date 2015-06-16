@@ -3,6 +3,7 @@ import uuid
 import logging
 #from django.db import models
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import HStoreField
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
@@ -93,7 +94,7 @@ class ExportFormat(TimeStampedModelMixin):
     
     def __unicode__(self, ):
         return '{0}'.format(self.slug)
-
+    
 
 class Region(TimeStampedModelMixin):
     """
@@ -115,6 +116,22 @@ class Region(TimeStampedModelMixin):
     def __str__(self):
         return '{0}'.format(self.name)
     
+    
+class Tag(models.Model):
+    """
+    Model to represent export tags.
+    """
+    id = models.AutoField(primary_key=True, editable=False)
+    name = models.CharField(max_length=50)
+    geom_types = HStoreField()
+    
+    class Meta:
+        managed = True
+        db_table = 'tags'
+    
+    def __str__(self):
+        return '{0}: {1}'.format(self.name, self.geom_types)
+    
 
 class Job(TimeStampedModelMixin):
     """
@@ -128,6 +145,7 @@ class Job(TimeStampedModelMixin):
     region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     configs = models.ManyToManyField(ExportConfig, related_name='configs')
+    tags = models.ManyToManyField(Tag, related_name='tags')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
@@ -162,9 +180,8 @@ Delete the associated file when the export config is deleted.
 def exportconfig_delete_upload(sender, instance, **kwargs):
     instance.upload.delete(False)
     
-"""
-class Tag(models.Model):
-    id = models.AutoField(primary_key=True, editable=False)
-""" 
+
+
+
 
 

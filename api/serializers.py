@@ -45,6 +45,14 @@ class UserGroupSerializer(serializers.Serializer):
     groups = GroupSerializer(many=True)
 """
 
+class TagSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    types = serializers.SerializerMethodField()
+    
+    def get_types(self, obj):
+        return obj.geom_types
+
+
 class SimpleExportConfigSerializer(serializers.Serializer):
     uid = serializers.UUIDField(read_only=True)
     name = serializers.CharField()
@@ -286,6 +294,7 @@ class JobSerializer(serializers.Serializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
+    tags = serializers.SerializerMethodField(read_only=True)
     
     def create(self, validated_data):
         return Job.objects.create(**validated_data)
@@ -325,5 +334,10 @@ class JobSerializer(serializers.Serializer):
         configs = obj.configs.all()
         serializer = SimpleExportConfigSerializer(configs, many=True,
                                                   context={'request': self.context['request']})
+        return serializer.data
+    
+    def get_tags(self, obj):
+        tags = obj.tags.all()
+        serializer = TagSerializer(tags, many=True)
         return serializer.data
     
