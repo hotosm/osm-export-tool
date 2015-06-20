@@ -35,7 +35,8 @@ from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from serializers import (JobSerializer, ExportFormatSerializer,
                          RegionSerializer, RegionMaskSerializer,
-                         ExportRunSerializer, ExportConfigSerializer, TagSerializer)
+                         ExportRunSerializer, ExportConfigSerializer,
+                         TagSerializer, ExportTaskSerializer)
 
 from tasks.task_runners import ExportTaskRunner
 
@@ -235,6 +236,20 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportConfig.objects.all()
     lookup_field = 'uid'
+    
+class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Endpoint for ExportTasks
+    """
+    serializer_class = ExportTaskSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    queryset = ExportTask.objects.all()
+    lookup_field = 'uid'
+        
+    def retrieve(self, request, uid=None, *args, **kwargs):
+        queryset = ExportTask.objects.filter(uid=uid)
+        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 
 class PresetViewSet(viewsets.ReadOnlyModelViewSet):

@@ -24,7 +24,7 @@ def run(*script_args):
                              description='Test description', user=user,
                              the_geom=the_geom)
     # add the format(s)
-    formats = [ExportFormat.objects.get(slug='shp'), ExportFormat.objects.get(slug='kml')]
+    formats = [ExportFormat.objects.get(slug='shp'), ExportFormat.objects.get(slug='kml'), ExportFormat.objects.get(slug='obf')]
     job.formats = formats
     job.save()
     # add the tags (defaults to hdm presets)

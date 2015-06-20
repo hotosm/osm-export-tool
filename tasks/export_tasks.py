@@ -4,6 +4,7 @@ import logging
 import time
 import sys
 import cPickle
+import shutil
 from hot_exports import settings
 from celery import app, shared_task, Task
 from celery.registry import tasks
@@ -12,7 +13,8 @@ from celery.utils.log import get_task_logger
 from django.utils import timezone
 from django.db import transaction, DatabaseError
 
-from utils import overpass, osmconf, osmparse, pbf, shp, kml
+from utils import (overpass, osmconf, osmparse,
+                   pbf, shp, kml, osmand)
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
@@ -166,12 +168,19 @@ class ObfExportTask(ExportTask):
     """
     name = 'OBF Export'
     
-    def run(self, run_uid=None):
-       
-       # dummy task for now..
-       # logic for SHP export goes here..
-       time.sleep(10)
-       return {'result': 'http://testserver/some/download/file.zip'}
+    def run(self, run_uid=None, stage_dir=None):
+        self.persist_task(run_uid=run_uid)
+        pbffile = stage_dir + 'query.pbf'
+        map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
+        work_dir = stage_dir + 'osmand'
+        o2o = osmand.OSMToOBF(
+            pbffile=pbffile, work_dir=work_dir, map_creator_dir=map_creator_dir
+        )
+        out = o2o.convert()
+        obffile = stage_dir + 'query.obf'
+        shutil.move(out, obffile)
+        shutil.rmtree(work_dir)
+        return {'result': obffile}
 
 
 class SqliteExportTask(ExportTask):
