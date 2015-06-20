@@ -54,6 +54,7 @@ class Overpass(object):
         if self.debug:
             print 'Query finished at %s' % datetime.now()
             print 'Wrote overpass query results to: %s' % self.osm
+        return self.osm
 
 
 if __name__ == '__main__':

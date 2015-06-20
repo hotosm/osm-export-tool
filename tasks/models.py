@@ -80,7 +80,7 @@ class ExportTaskException(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     task = models.ForeignKey(ExportTask, related_name='exceptions')
     timestamp = models.DateTimeField(default=timezone.now, editable=False)
-    exception = models.CharField(max_length=5000, editable=False)
+    exception = models.TextField(editable=False)
 
     class Meta:
         managed = True

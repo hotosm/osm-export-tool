@@ -115,13 +115,14 @@ class JobViewSet(viewsets.ModelViewSet):
             export_formats = []
             job = None
             for slug in formats:
+                # would be good to accept either format slug or uuid here..
                 try:
                     export_format = ExportFormat.objects.get(slug=slug)
                     export_formats.append(export_format)
                 except ExportFormat.DoesNotExist as e:
                     logger.warn('Export format with uid: {0} does not exist'.format(slug))
             if len(export_formats) > 0:
-                # save the job
+                # save the job and make sure it's committed before running tasks..
                 try:
                     with transaction.atomic():
                         job = serializer.save()
@@ -162,11 +163,10 @@ class JobViewSet(viewsets.ModelViewSet):
                     return Response(error_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 error_data = OrderedDict()
-                error_data['formats'] = ['Invalid format uid(s).']
+                error_data['formats'] = ['Invalid format provided.']
                 return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
             
             # run the tasks
-            # catch exceptions here..
             task_runner = ExportTaskRunner()
             job_uid = str(job.uid)
             task_runner.run_task(job_uid=job_uid)

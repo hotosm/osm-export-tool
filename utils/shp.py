@@ -1,0 +1,82 @@
+from __future__ import with_statement
+import json
+import logging
+import shutil
+import argparse
+import subprocess
+import string
+from string import Template
+
+logger = logging.getLogger(__name__)
+
+class SQliteToShp(object):
+    """
+    Thin wrapper around ogr2ogr to convert sqlite to shp.
+    """
+    def __init__(self, sqlite=None, shapefile=None, zipped=True, debug=False):
+        self.sqlite = sqlite
+        self.shapefile = shapefile
+        self.zipped = zipped
+        if not self.shapefile:
+            # create shp path from sqlite path.
+            root = self.sqlite.split('.')[0]
+            self.shapefile = root + 'shp'
+        self.debug = debug
+        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $sqlite -lco ENCODING=UTF-8")
+        self.zip_cmd = Template("zip -r $zipfile $shp_dir")
+
+    def convert(self, ):
+        convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'sqlite': self.sqlite})
+        if(self.debug):
+            print 'Running: %s' % convert_cmd
+        proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (stdout,stderr) = proc.communicate()
+        if (stderr != None and stderr.startswith('ERROR')):
+            raise Exception, "ogr2ogr process failed with error: %s" % stderr.rstrip()   
+        returncode = proc.wait()
+        if(self.debug):
+            print 'ogr2ogr returned: %s' % returncode
+        if self.zipped and returncode == 0:
+            self._zip_shape_dir()
+            return self.shapefile + '.zip'
+        else:
+            return self.shapefile
+    
+    def _zip_shape_dir(self, ):
+        zip_cmd = self.zip_cmd.safe_substitute({'zipfile': self.shapefile, 'shp_dir': self.shapefile})
+        proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (stdout,stderr) = proc.communicate()
+        if (stderr != None and stderr.startswith('osmconvert Error')):
+            raise Exception, stderr.rstrip()  
+        returncode = proc.wait()
+        if returncode == 0:
+            # remove the shapefile directory
+            shutil.rmtree(self.shapefile)
+        if self.debug:
+            print 'Zipped shapefiles: {0}'.format(self.shapefile)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Converts a SQlite database to ESRI Shapefile.')
+    parser.add_argument('-i','--sqlite-file', required=True, dest="sqlite", help='The SQlite file to convert.')
+    parser.add_argument('-o','--shp-dir', required=True, dest="shp", help='The directory to write the Shapefile(s) to.')
+    parser.add_argument('-z','--zipped', action="store_true", help="Whether to zip the shapefile directory. Default true.")
+    parser.add_argument('-d','--debug', action="store_true", help="Turn on debug output")
+    args = parser.parse_args()
+    config = {}
+    for k,v in vars(args).items():
+        if (v == None): continue
+        else:
+           config[k] = v
+    sqlite = config['sqlite']
+    shapefile = config['shp']
+    debug = False
+    zipped = False
+    if config.get('debug'):
+        debug = True
+    if config.get('zipped'):
+        zipped = True
+    s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile, debug=debug)
+    s2s.convert()
+ 
+    

@@ -1,6 +1,6 @@
 import sys
 import os
-
+import uuid
 from django.test import TestCase
 from django.utils import timezone
 from unittest import skip
@@ -13,8 +13,7 @@ class TestOSMConf(TestCase):
     
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        #self.conf = self.path = '/'
-        parser = presets.PresetParser(self.path + '/files/hot_field_collection_presets.xml')
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
         self.tags = parser.parse(merge_with_defaults=True)
         self.assertIsNotNone(self.tags)
         self.assertEquals(70, len(self.tags))
@@ -22,4 +21,7 @@ class TestOSMConf(TestCase):
     
     def test_create_osm_conf(self,):
         conf = OSMConfig(self.categories)
-        conf.create_osm_conf()
+        path = conf.create_osm_conf(stage_dir=self.path + '/files/')
+        self.assertTrue(os.path.exists(path))
+        os.remove(path)
+        
