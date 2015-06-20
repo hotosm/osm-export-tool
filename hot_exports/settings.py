@@ -265,6 +265,8 @@ EXPORT_TASKS = {
 
 EXPORT_STAGING_ROOT = '/home/ubuntu/export_staging/'
 
+OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmand/OsmAndMapCreator'
+
 UPDATE_TASKS = {
     # not implemented yet
 }

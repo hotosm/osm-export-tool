@@ -116,10 +116,14 @@ class ExportTaskResultSerializer(serializers.ModelSerializer):
 class ExportTaskSerializer(serializers.ModelSerializer):
     result = serializers.SerializerMethodField()
     finished_at = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(
+       view_name='api:tasks-detail',
+       lookup_field='uid'
+    )
     
     class Meta:
         model = ExportTask
-        fields = ('uid', 'name', 'status', 'started_at', 'finished_at', 'result')
+        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'result')
 
     def get_result(self, obj):
         try:
