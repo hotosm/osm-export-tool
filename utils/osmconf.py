@@ -15,7 +15,7 @@ class EqualsSpaceRemover:
         self.output_file = new_output_file
 
     def write( self, what ):
-        self.output_file.write( what.replace( " = ", "=" ) )
+        self.output_file.write( what.replace( " = ", "=" ))
 
 
 class OSMConfig(object):
@@ -29,14 +29,17 @@ class OSMConfig(object):
         self.categories = categories
         self.config = ConfigParser.SafeConfigParser()
         
-    def create_osm_conf(self, ):
+    def create_osm_conf(self, stage_dir=None):
         self.config.read(self.tmpl) # read in the template
         self.config.set('points', 'attributes', ','.join(self.categories['points']))
         self.config.set('lines', 'attributes', ','.join(self.categories['lines']))
         self.config.set('multipolygons', 'attributes', ','.join(self.categories['polygons']))
         # write the out the config
-        with open(self.path + '/conf/test.ini', 'wb') as configfile:
+        config_file = stage_dir + 'osmconf.ini'
+        with open(config_file, 'wb') as configfile:
             self.config.write(EqualsSpaceRemover(configfile))
+        return config_file
+        
         
     
     

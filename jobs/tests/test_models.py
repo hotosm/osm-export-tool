@@ -33,6 +33,14 @@ class TestJob(TestCase):
         # add the formats to the job
         self.job.formats = self.formats
         self.job.save()
+        preset_parser = presets.PresetParser(preset=self.path + '/files/hdm_presets.xml')
+        tags = preset_parser.parse(merge_with_defaults=False)
+        for key in tags:
+            tag = Tag.objects.create(
+                name = key,
+                geom_types = tags[key]
+            )
+            self.job.tags.add(tag)
         
     
     def test_job_creation(self,):
@@ -55,7 +63,7 @@ class TestJob(TestCase):
         self.assertIsNotNone(saved_formats)
         self.assertItemsEqual(saved_formats, self.formats)
         # attach a configuration to a job
-        f = File(open(self.path + '/files/test_boundary_preset.xml'))
+        f = File(open(self.path + '/files/hdm_presets.xml'))
         filename = f.name.split('/')[-1]
         config = ExportConfig.objects.create(name='Test Preset Config', filename=filename,
                                              upload=f, config_type='PRESET', user=self.user)
@@ -67,8 +75,6 @@ class TestJob(TestCase):
         self.assertEqual(config, saved_config)
         saved_config.delete() #cleanup
         
-    
-    
     def test_spatial_fields(self,):
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12)) # in africa
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -102,6 +108,18 @@ class TestJob(TestCase):
         self.job.save()
         saved_job = Job.objects.all()[0]
         self.assertEqual(saved_job.region, region)
+        
+    def test_overpass_extents(self,):
+        job = Job.objects.all()[0]
+        extents = job.overpass_extents
+        self.assertIsNotNone(extents)
+        self.assertEquals(4, len(extents.split(',')))
+        
+    def test_categorised_tags(self, ):
+        job = Job.objects.all()[0]
+        categories = job.categorised_tags
+        self.assertIsNotNone(categories)
+        self.assertEqual(24, len(categories['points']))
     
 
 class TestExportFormat(TestCase):
@@ -270,7 +288,7 @@ class TestTag(TestCase):
         
     def test_create_tags(self,):
         self.default_tags = presets.DEFAULT_TAGS
-        parser = presets.PresetParser(self.path + '/files/hot_field_collection_presets.xml')
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
         self.user_tags = parser.parse()
         for key in self.user_tags:
             tag = Tag.objects.create(

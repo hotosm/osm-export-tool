@@ -12,14 +12,18 @@ class OSMToPBF(object):
     """
     Thin wrapper around osmconvert to convert osm xml to pbf.
     """
-    def __init__(self, osm=None, pbf=None, debug=False):
+    def __init__(self, osm=None, pbffile=None, debug=False):
         self.osm = osm
-        self.pbf = pbf
+        self.pbffile = pbffile
+        if not self.pbffile:
+            # create pbf path from osm path.
+            root = self.osm.split('.')[0]
+            self.pbffile = root + '.pbf'
         self.debug = debug
         self.cmd = Template('osmconvert $osm --out-pbf >$pbf')
 
     def convert(self, ):
-        convert_cmd = self.cmd.safe_substitute({'osm': self.osm,'pbf': self.pbf})
+        convert_cmd = self.cmd.safe_substitute({'osm': self.osm,'pbf': self.pbffile})
         if(self.debug):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -29,6 +33,7 @@ class OSMToPBF(object):
         returncode = proc.wait()
         if(self.debug):
             print 'Osmconvert returned: %s' % returncode
+        return self.pbffile
 
 
 if __name__ == '__main__':

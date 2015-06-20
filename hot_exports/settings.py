@@ -247,6 +247,7 @@ NOSE_ARGS = [
     '--cover-package=api,tasks,jobs'
 ]
 """
+
 # Celery config
 CELERY_TRACK_STARTED = True
 
@@ -261,6 +262,8 @@ EXPORT_TASKS = {
     'kml': 'tasks.export_tasks.KmlExportTask',
     'garmin': 'tasks.export_tasks.GarminExportTask'
 }
+
+EXPORT_STAGING_ROOT = '/home/ubuntu/export_staging/'
 
 UPDATE_TASKS = {
     # not implemented yet

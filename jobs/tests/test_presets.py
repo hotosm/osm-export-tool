@@ -15,7 +15,7 @@ class TestPresetParser(TestCase):
         self.path = os.path.dirname(os.path.realpath(__file__))
     
     def test_parse_preset(self,):
-        parser = PresetParser(self.path + '/files/hot_field_collection_presets.xml')
+        parser = PresetParser(self.path + '/files/hdm_presets.xml')
         tags = parser.parse()
         self.assertIsNotNone(tags)
         self.assertEquals(30, len(tags))
@@ -28,21 +28,21 @@ class TestPresetParser(TestCase):
         logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
         
     def test_merge_presets(self, ):
-        parser = PresetParser(self.path + '/files/hot_field_collection_presets.xml')
+        parser = PresetParser(self.path + '/files/hdm_presets.xml')
         tags = parser.parse()
         merged = parser.merge_presets(tags)
         
-        logger.debug('\n\t======== DEFAULT TAGS ==========\n')
+        #logger.debug('\n\t======== DEFAULT TAGS ==========\n')
         categories = parser.categorise_tags(DEFAULT_TAGS)
-        logger.debug('Points: %s\n' % sorted(categories['points']))
-        logger.debug('Lines: %s\n' % sorted(categories['lines']))
-        logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
+        #logger.debug('Points: %s\n' % sorted(categories['points']))
+        #logger.debug('Lines: %s\n' % sorted(categories['lines']))
+        #logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
         
-        logger.debug('\n\t======== MERGED TAGS ==========\n')
+        #logger.debug('\n\t======== MERGED TAGS ==========\n')
         categories = parser.categorise_tags(merged)
-        logger.debug('Points: %s\n' % sorted(categories['points']))
-        logger.debug('Lines: %s\n' % sorted(categories['lines']))
-        logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
+        #logger.debug('Points: %s\n' % sorted(categories['points']))
+        #logger.debug('Lines: %s\n' % sorted(categories['lines']))
+        #logger.debug('Polygons: %s\n' % sorted(categories['polygons']))
         
         # check merged points
         self.assertTrue('borehole' in categories['points'])

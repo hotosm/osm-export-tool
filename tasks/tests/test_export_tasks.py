@@ -5,16 +5,18 @@ import uuid
 import sys
 import cPickle
 import traceback
+import os
 from django.test import TestCase
 from django.contrib.auth.models import User
 from mock import Mock, patch, PropertyMock
 from unittest import skip
 from ..task_runners import ExportTaskRunner
-from jobs.models import ExportFormat, Job
+from jobs.models import ExportFormat, Job, Tag
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from tasks.export_tasks import ExportTask, ShpExportTask
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from celery.datastructures import ExceptionInfo
+from jobs.presets import PresetParser
 
 
 logger = logging.getLogger(__name__)
@@ -23,12 +25,22 @@ logger = logging.getLogger(__name__)
 class TestExportTaskRunner(TestCase):
     
     def setUp(self,):
+        self.path = os.path.dirname(os.path.realpath(__file__))
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
                                  the_geom=the_geom)
+        preset_parser = PresetParser(preset=self.path + '/files/hdm_presets.xml')
+        tags = preset_parser.parse(merge_with_defaults=False)
+        for key in tags:
+            tag = Tag.objects.create(
+                name = key,
+                geom_types = tags[key]
+            )
+            self.job.tags.add(tag)
         self.uid = str(self.job.uid)
     
     @patch('tasks.export_tasks.ShpExportTask')
@@ -41,17 +53,32 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='Shapefile Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_once_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_once_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         
-        run = self.job.runs.all()[0]
-        self.assertIsNotNone(run)
         tasks = run.tasks.all()
         self.assertIsNotNone(tasks)
         self.assertEquals(1, len(tasks)) # one shape export task
         self.assertFalse(hasattr(tasks[0], 'result')) # no result yet..
         job = Job.objects.get(uid=self.uid)
+        
+    
+    def test_run_task_debug(self,):
+        format = ExportFormat.objects.get(slug='shp')
+        self.job.formats.add(format)
+        runner = ExportTaskRunner()
+        runner.run_task(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        tasks = ExportTask.objects.filter(run__uid=run.uid)
+        
+        self.assertIsNotNone(tasks)
+        self.assertEquals(4, len(tasks)) # one shape export task
+        self.assertFalse(hasattr(tasks[0], 'result')) # no result yet..
+        
          
     @patch('tasks.export_tasks.ShpExportTask')
     def test_run_shp_export_task(self, mock):
@@ -63,7 +90,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='Shapefile Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
@@ -78,7 +107,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='OBF Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         job = Job.objects.get(uid=self.uid)
         
@@ -92,7 +123,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='KML Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
@@ -107,7 +140,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='SQLITE Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
@@ -122,7 +157,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='Garmin Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
@@ -137,7 +174,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='PGDUMP Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         job = Job.objects.get(uid=self.uid)
@@ -152,7 +191,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='Shapefile Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_once_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         
@@ -162,7 +203,7 @@ class TestExportTaskRunner(TestCase):
         """
         shp_export_task = ShpExportTask()
         output_url = 'http://testserver/some/output/file.zip'
-        shp_export_task.on_success(retval={'output_url': output_url}, task_id=celery_uid,
+        shp_export_task.on_success(retval={'result': output_url}, task_id=celery_uid,
                                    args={}, kwargs={'job_uid':self.uid})
         task = ExportTask.objects.get(uid=celery_uid)
         self.assertIsNotNone(task)
@@ -182,7 +223,9 @@ class TestExportTaskRunner(TestCase):
         type(export_task).name = PropertyMock(return_value='Shapefile Export')
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
-        export_task.delay.assert_called_once_with(job_uid=self.uid)
+        run = self.job.runs.all()[0]
+        self.assertIsNotNone(run)
+        export_task.delay.assert_called_with(run_uid=str(run.uid))
         export_task.delay.return_value.assert_called_once('state')
         export_task.delay.return_value.assert_called_once('id')
         """
