@@ -257,7 +257,6 @@ A dictionary of export formats mapped to ExportTask classes.
 EXPORT_TASKS = {
     'shp': 'tasks.export_tasks.ShpExportTask',
     'obf': 'tasks.export_tasks.ObfExportTask',
-    'pgdump': 'tasks.export_tasks.PgdumpExportTask',
     'sqlite': 'tasks.export_tasks.SqliteExportTask',
     'kml': 'tasks.export_tasks.KmlExportTask',
     'garmin': 'tasks.export_tasks.GarminExportTask'
@@ -266,6 +265,8 @@ EXPORT_TASKS = {
 EXPORT_STAGING_ROOT = '/home/ubuntu/export_staging/'
 
 OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmand/OsmAndMapCreator'
+
+GARMIN_CONFIG = '/home/ubuntu/www/hotosm/utils/conf/garmin_config.xml'
 
 UPDATE_TASKS = {
     # not implemented yet

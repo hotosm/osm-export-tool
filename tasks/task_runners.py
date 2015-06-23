@@ -34,12 +34,10 @@ class ExportTaskRunner(TaskRunner):
     export_task_registry = settings.EXPORT_TASKS
     
     def run_task(self, job_uid=None):
-        #pdb.set_trace()
         logger.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
         formats = [format.slug for format in job.formats.all()]
-        logger.debug(formats)
-        tasks = []
+        export_tasks = []
         # build a list of celery tasks based on the export formats..
         for format in formats:
             try:
@@ -51,15 +49,15 @@ class ExportTaskRunner(TaskRunner):
                 module = importlib.import_module(module_path)
                 CeleryExportTask = getattr(module, class_name)
                 export_task = CeleryExportTask()
-                logger.debug(export_task.name)
-                tasks.append(export_task)
+                export_tasks.append(export_task)
             except KeyError as e:
                 logger.debug(e)
             except ImportError as e:
                 msg = 'Error importing export task: {0}'.format(e)
                 logger.debug(msg)
         # run the tasks 
-        if len(tasks) > 0:
+        if len(export_tasks) > 0:
+            run = None
             run_uid = None
             try:
                 run = ExportRun.objects.create(job=job) # persist the run
@@ -71,7 +69,7 @@ class ExportTaskRunner(TaskRunner):
                 raise e
             
             # setup the staging directory
-            stage_dir = settings.EXPORT_STAGING_ROOT + str(job_uid) + '/'
+            stage_dir = settings.EXPORT_STAGING_ROOT + str(run_uid) + '/'
             os.makedirs(stage_dir, 6600)
             
             # pull out the tags to create the conf file
@@ -82,29 +80,51 @@ class ExportTaskRunner(TaskRunner):
             query = OverpassQueryTask()
             pbfconvert = OSMToPBFConvertTask()
             prep_schema = OSMPrepSchemaTask()
-            for task in tasks:
-                logger.debug(task.name)
+            # save initial tasks to the db with 'PENDING' state..
+            for task in [conf, query, pbfconvert, prep_schema]:
+                try:
+                    ExportTask.objects.create(run=run,
+                                              status='PENDING', name=task.name)
+                    logger.debug('Saved task: {0}'.format(task.name))
+                except DatabaseError as e:
+                    logger.error('Saving task {0} threw: {1}'.format(task.name, e))
+                    raise e
+            # save the rest of the ExportFormat tasks.
+            for task in export_tasks:
+                """
+                    Set the region name on the Garmin Export task.
+                    The region gets written to the exported '.img' file.
+                    Could set additional params here in future if required.
+                """
+                if task.name == 'Garmin Export': task.region = job.region.name
+                try:
+                    ExportTask.objects.create(run=run,
+                                              status='PENDING', name=task.name)
+                    logger.debug('Saved task: {0}'.format(task.name))
+                except DatabaseError as e:
+                    logger.error('Saving task {0} threw: {1}'.format(task.name, e))
+                    raise e
             
             """
                 Create a celery chord which runs the conf and query tasks in parallel,
                 followed by a chain of pbfconvert and prep_schema
                 which run sequentially when the others have completed.
+                Format tasks are then run in parallel afterwards.
             """
             initial_tasks = group(
                     conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid),
                     query.si(stage_dir=stage_dir, bbox=bbox, run_uid=run_uid)
             )
             format_tasks = group(
-                [task.si(run_uid=run_uid, stage_dir=stage_dir) for task in tasks]
+                task.si(run_uid=run_uid, stage_dir=stage_dir) for task in export_tasks
             )
             schema_tasks = chain(
                     pbfconvert.si(stage_dir=stage_dir, run_uid=run_uid) | 
-                    prep_schema.si(stage_dir=stage_dir, run_uid=run_uid) |
-                    format_tasks
+                    prep_schema.si(stage_dir=stage_dir, run_uid=run_uid)
             )
             result = chord(
                 header=initial_tasks,
-                body=schema_tasks
+                body=chain(schema_tasks | task.si(run_uid=run_uid, stage_dir=stage_dir) for task in export_tasks)
             ).delay()
             
             return True

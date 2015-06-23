@@ -245,7 +245,7 @@ class TestExportConfig(TestCase):
         
     
     def test_create_config(self,):
-        f = open(self.path + '/files/test_boundary_preset.xml')
+        f = open(self.path + '/files/hdm_presets.xml')
         test_file = File(f)
         filename = test_file.name.split('/')[-1]
         name = 'Test Configuration File'
@@ -259,16 +259,10 @@ class TestExportConfig(TestCase):
         self.assertTrue(saved_config.visible)
         self.assertIsNotNone(saved_config)
         self.assertEqual(config, saved_config)
-        sf = File(open(os.path.abspath('.') + '/media/export/config/preset/test_boundary_preset.xml'))
+        sf = File(open(os.path.abspath('.') + '/media/export/config/preset/hdm_presets.xml'))
         self.assertIsNotNone(sf) # check the file gets created on disk
         saved_config.delete() # clean up
         sf.close()
-        sf = None
-        try:
-            sf = File(open(os.path.abspath('.') + '/media/export/config/preset/test_boundary_preset.xml'))
-        except IOError:
-            pass # expected
-        self.assertIsNone(sf)
         
 class TestTag(TestCase):
     

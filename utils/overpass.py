@@ -7,8 +7,8 @@ from django.utils import timezone
 from django.utils import timezone
 from datetime import datetime
 from string import Template
-from urllib2 import urlopen
-from urllib2 import URLError
+import requests
+from requests import exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +20,7 @@ class Overpass(object):
     
     def __init__(self, url=None, bbox=None, osm=None, debug=False):
         self.url = 'http://localhost/interpreter' # default
-        if url:
-            self.url = url
+        if url: self.url = url
         self.query_template = Template('(node($bbox);<;);out body;')
         if bbox:
             self.bbox = bbox
@@ -30,27 +29,27 @@ class Overpass(object):
         if osm:
             self.osm = osm
         else:
-            self.osm = 'query_out.osm' # in the current directory
+            self.osm = 'query.osm' # in the current directory
         self.debug = debug
 
-    def print_query(self,):
+    def get_query(self,):
         q = self.query_template.safe_substitute({'bbox': self.bbox})
-        print q
+        return q
         
-    
     def run_query(self,):
-        q = self.query_template.safe_substitute({'bbox': self.bbox})
+        q = self.get_query()
         if self.debug:
-            print 'Query started at: %s' % datetime.now()
+            print 'Query started at: %s' % datetime.now()   
         try:
-            with open(self.osm, 'w') as fd:
-                f = urlopen(self.url, q)
-                for line in f.readlines():
-                    fd.write(line)
-                f.close()
-            fd.close()
-        except URLError as e:
-            raise Exception(e)
+            req = requests.post(self.url, data=q, stream=True)
+            logger.debug(req)
+            CHUNK = 16 * 1024 # whats the optimum here?
+            with open(self.osm, 'wb') as fd:
+                for chunk in req.iter_content(CHUNK):
+                    fd.write(chunk)
+        except exceptions.RequestException as e:
+            logger.error('Overpass query threw: {0}'.format(e))
+            raise exceptions.RequestException(e)
         if self.debug:
             print 'Query finished at %s' % datetime.now()
             print 'Wrote overpass query results to: %s' % self.osm

@@ -31,7 +31,9 @@ class UpdateBatchXML(object,):
         process_ele[0].attrib['skipExistingIndexesAt'] = self.work_dir
         updated_path = self.work_dir + '/batch.xml'
         with open(updated_path, 'wb') as updated:
-            updated.write(etree.tostring(tree))
+            updated.write(
+                etree.tostring(tree, encoding='utf-8', pretty_print=True)
+            )
         return updated_path
         
 
@@ -55,7 +57,7 @@ class OSMToOBF(object):
         """)
     
     def convert(self,):
-        # create the batch.xml file in the stageing dir
+        # create the batch.xml file in the staging dir
         batch_update = UpdateBatchXML(
             batch_xml=self.batch_xml, work_dir=self.work_dir
         )
@@ -71,7 +73,7 @@ class OSMToOBF(object):
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate()
         """
-        Need way to catch exceptions here...
+        Need a way to catch exceptions here...
         if (stderr != None and not stderr.startswith('INFO')):
                 logger.debug(stderr.rstrip())
                 raise Exception, "OsmAndMapCreator process failed with error: %s" % stderr.rstrip()
@@ -88,9 +90,12 @@ class OSMToOBF(object):
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Converts OSM PBF to OSMAnd OBF Format.")
-    parser.add_argument('-p','--pbf-file', required=True, dest="pbffile", help='The PBF file to convert')
-    parser.add_argument('-w','--work-dir', required=True, dest="work_dir", help='The path to the working directory')
-    parser.add_argument('-m','--map-creator-dir', required=True, dest="map_creator_dir", help="The path to the OsmAndMapCreator directory")
+    parser.add_argument('-p','--pbf-file', required=True,
+                        dest="pbffile", help='The PBF file to convert')
+    parser.add_argument('-w','--work-dir', required=True,
+                        dest="work_dir", help='The path to the working directory')
+    parser.add_argument('-m','--map-creator-dir', required=True,
+                        dest="map_creator_dir", help="The path to the OsmAndMapCreator directory")
     parser.add_argument('-d','--debug', action="store_true", help="Turn on debug output")
     args = parser.parse_args()
     config = {}

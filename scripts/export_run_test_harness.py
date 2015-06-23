@@ -6,7 +6,7 @@
 """
 import os
 import logging
-from jobs.models import Job, Tag, ExportFormat
+from jobs.models import Job, Tag, ExportFormat, Region
 from tasks.task_runners import ExportTaskRunner
 from django.contrib.auth.models import User
 from jobs.presets import PresetParser
@@ -18,13 +18,17 @@ def run(*script_args):
     # pull out the demo user
     user = User.objects.get(username='demo')
     # create the test job
-    bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40))
+    #bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40)) #monrovia
+    bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n)
     the_geom = GEOSGeometry(bbox, srid=4326)
     job = Job.objects.create(name='TestJob',
                              description='Test description', user=user,
                              the_geom=the_geom)
+    region = Region.objects.get(name='Africa')
+    job.region = region
+    job.save()
     # add the format(s)
-    formats = [ExportFormat.objects.get(slug='shp'), ExportFormat.objects.get(slug='kml'), ExportFormat.objects.get(slug='obf')]
+    formats = [ExportFormat.objects.get(slug='obf'), ExportFormat.objects.get(slug='garmin')]
     job.formats = formats
     job.save()
     # add the tags (defaults to hdm presets)
