@@ -237,8 +237,7 @@ class JobSerializer(serializers.Serializer):
         ('obf', 'OBF Format'),
         ('kml', 'KML Format'),
         ('garmin', 'Garmin Format'),
-        ('sqlite', 'SQLITE Format'),
-        ('pgdump', 'PGDUMP Format')
+        ('sqlite', 'SQLITE Format')
     )
     
     formats = serializers.MultipleChoiceField(

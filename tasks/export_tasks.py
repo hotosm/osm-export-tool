@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.db import transaction, DatabaseError
 
 from utils import (overpass, osmconf, osmparse,
-                   pbf, shp, kml, osmand)
+                   pbf, shp, kml, osmand, garmin)
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
@@ -34,7 +34,7 @@ class ExportTask(Task):
         logger.debug('In success... Task name: {0}'.format(self.name))
         finished = timezone.now()
         result = retval['result']
-        task = ExportTask.objects.get(uid=task_id)
+        task = ExportTask.objects.get(celery_uid=task_id)
         task.finished_at = finished
         task.status = 'SUCCESS'
         task.save()
@@ -43,7 +43,7 @@ class ExportTask(Task):
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         from tasks.models import ExportTask, ExportTaskException
         logger.debug('Task name: {0} failed, {1}'.format(self.name, einfo))
-        task = ExportTask.objects.get(uid=task_id)
+        task = ExportTask.objects.get(celery_uid=task_id)
         task.status = 'FAILURE'
         task.finished_at = timezone.now()
         task.save()
@@ -53,23 +53,37 @@ class ExportTask(Task):
     def after_return(self, *args, **kwargs):
         logger.debug('Task returned: {0}'.format(self.request))
         
-    def persist_task(self, run_uid=None):
+    def update_task_state(self, run_uid=None, name=None):
         """
-        Save the task to the database.
+        Update the task state and celery task uid.
+        Can use the celery uid for diagnostics. 
         """
-        from tasks.models import ExportRun, ExportTask
-        logger.debug('In persist task. Run uid: {0}'.format(run_uid))   
+        from tasks.models import ExportRun, ExportTask 
         celery_uid = self.request.id
-        task_name = self.name
         try:
-            run = ExportRun.objects.get(uid=run_uid)
-            ExportTask.objects.create(run=run, uid=celery_uid,
-                                      status='PENDING', name=task_name) # persist task with run and celery uid
-            logger.debug('Saved task: {0} with uid: {1}'.format(task_name, celery_uid))
+            task = ExportTask.objects.get(run__uid=run_uid, name=name)
+            celery_uid = self.request.id
+            task.celery_uid = celery_uid
+            task.status = 'RUNNING'
+            task.save()
+            logger.debug('Updated task: {0} with uid: {1}'.format(task.name, task.uid))
         except DatabaseError as e:
-            logger.error('Persist task throws: {0}'.format(e))
+            logger.error('Updating task {0} state throws: {1}'.format(task.name, e))
             raise e
 
+
+class OSMConfTask(ExportTask):
+    """
+    Task to create the ogr2ogr conf file.
+    """
+    name = 'OSMConf'
+    
+    def run(self, run_uid=None, job_uid=None, categories=None, stage_dir=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        conf = osmconf.OSMConfig(categories)
+        configfile = conf.create_osm_conf(stage_dir=stage_dir)
+        return {'result': configfile}
+   
 
 class OverpassQueryTask(ExportTask):
     """
@@ -81,7 +95,7 @@ class OverpassQueryTask(ExportTask):
         """
         Runs the query and returns the path to the generated osm file.
         """
-        self.persist_task(run_uid=run_uid)
+        self.update_task_state(run_uid=run_uid, name=self.name)
         osm = stage_dir + 'query.osm'
         op = overpass.Overpass(bbox=bbox, osm=osm)
         osmfile = op.run_query()
@@ -96,27 +110,14 @@ class OSMToPBFConvertTask(ExportTask):
     name = 'OSM2PBF'
     
     def run(self, run_uid=None, stage_dir=None):
-        self.persist_task(run_uid=run_uid)
+        self.update_task_state(run_uid=run_uid, name=self.name)
         osm = stage_dir + 'query.osm'
         pbffile = stage_dir + 'query.pbf'
         o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
         pbffile = o2p.convert()
         return {'result': pbffile}
     
-    
-class OSMConfTask(ExportTask):
-    """
-    Task to create the ogr conf file.
-    """
-    name = 'OSMConf'
-    
-    def run(self, run_uid=None, job_uid=None, categories=None, stage_dir=None):
-        self.persist_task(run_uid=run_uid)
-        conf = osmconf.OSMConfig(categories)
-        configfile = conf.create_osm_conf(stage_dir=stage_dir)
-        return {'result': configfile}
-
-    
+ 
 class OSMPrepSchemaTask(ExportTask):
     """
     Task to create the default sqlite schema.
@@ -124,7 +125,7 @@ class OSMPrepSchemaTask(ExportTask):
     name = 'OSMSchema'
     
     def run(self, run_uid=None, stage_dir=None):
-        self.persist_task(run_uid=run_uid)
+        self.update_task_state(run_uid=run_uid, name=self.name)
         osm = stage_dir + 'query.pbf'
         sqlite = stage_dir + 'query.sqlite'
         osmconf = stage_dir + 'osmconf.ini'
@@ -139,7 +140,7 @@ class ShpExportTask(ExportTask):
     name = 'Shapefile Export'
     
     def run(self, run_uid=None, stage_dir=None):
-        self.persist_task(run_uid=run_uid)
+        self.update_task_state(run_uid=run_uid, name=self.name)
         sqlite = stage_dir + 'query.sqlite'
         shapefile = stage_dir + 'shp'
         s2s = shp.SQliteToShp(sqlite=sqlite, shapefile=shapefile)
@@ -154,7 +155,7 @@ class KmlExportTask(ExportTask):
     name = 'KML Export'
     
     def run(self, run_uid=None, stage_dir=None):
-        self.persist_task(run_uid=run_uid)
+        self.update_task_state(run_uid=run_uid, name=self.name)
         sqlite = stage_dir + 'query.sqlite'
         kmlfile = stage_dir + 'query.kml'
         s2k = kml.SQliteToKml(sqlite=sqlite, kmlfile=kmlfile)
@@ -169,7 +170,7 @@ class ObfExportTask(ExportTask):
     name = 'OBF Export'
     
     def run(self, run_uid=None, stage_dir=None):
-        self.persist_task(run_uid=run_uid)
+        self.update_task_state(run_uid=run_uid, name=self.name)
         pbffile = stage_dir + 'query.pbf'
         map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
         work_dir = stage_dir + 'osmand'
@@ -198,34 +199,36 @@ class SqliteExportTask(ExportTask):
        return {'result': 'http://testserver/some/download/file.zip'}
 
 
-class PgdumpExportTask(ExportTask):
-    """
-    Class defining PGDUMP export function.
-    """
-    
-    name = 'PGDUMP Export'
-    
-    def run(self, run_uid=None):
-       
-       # dummy task for now..
-       # logic for SHP export goes here..
-       time.sleep(10)
-       return {'result': 'http://testserver/some/download/file.zip'}
-
-
 class GarminExportTask(ExportTask):
     """
     Class defining GARMIN export function.
     """
     
     name = 'Garmin Export'
+    _region = '' # set by the task_runner
     
-    def run(self, run_uid=None):
-       
-       # dummy task for now..
-       # logic for SHP export goes here..
-       time.sleep(10)
-       return {'result': 'http://testserver/some/download/file.zip'}
-
+    @property
+    def region(self,):
+        return self._region
+    
+    @region.setter
+    def region(self, value):
+        self._region = value
+    
+    def run(self, run_uid=None, stage_dir=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        work_dir = stage_dir + 'garmin'
+        config = settings.GARMIN_CONFIG # get path to garmin config
+        pbffile = stage_dir + 'query.pbf'
+        o2i = garmin.OSMToIMG(
+            pbffile=pbffile, work_dir=work_dir,
+            config=config, region=None, debug=False
+        )
+        o2i.run_splitter()
+        out = o2i.run_mkgmap()
+        imgfile = stage_dir + 'garmin.zip'
+        shutil.move(out, imgfile)
+        shutil.rmtree(work_dir)
+        return {'result': imgfile}
 
 

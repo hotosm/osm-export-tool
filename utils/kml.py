@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 class SQliteToKml(object):
     """
-    Thin wrapper around ogr2ogr to convert sqlite to shp.
+    Thin wrapper around ogr2ogr to convert sqlite to KML.
     """
     def __init__(self, sqlite=None, kmlfile=None, zipped=True, debug=False):
         self.sqlite = sqlite
         self.kmlfile = kmlfile
         self.zipped = zipped
         if not self.kmlfile:
-            # create shp path from sqlite path.
+            # create kml path from sqlite path.
             root = self.sqlite.split('.')[0]
             self.kmlfile = root + '.kml'
         self.debug = debug
@@ -27,10 +27,12 @@ class SQliteToKml(object):
         self.zip_cmd = Template("zip -j $zipfile $kmlfile")
 
     def convert(self, ):
-        convert_cmd = self.cmd.safe_substitute({'kmlfile': self.kmlfile, 'sqlite': self.sqlite})
+        convert_cmd = self.cmd.safe_substitute({'kmlfile': self.kmlfile,
+                                                'sqlite': self.sqlite})
         if(self.debug):
             print 'Running: %s' % convert_cmd
-        proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout,stderr) = proc.communicate()
         if (stderr != None and stderr.startswith('ERROR')):
             raise Exception, "ogr2ogr process failed with error: %s" % stderr.rstrip()   
@@ -45,14 +47,16 @@ class SQliteToKml(object):
     
     def _zip_kml_file(self, ):
         kmzfile = self.kmlfile.split('.')[0] + '.kmz'
-        zip_cmd = self.zip_cmd.safe_substitute({'zipfile': kmzfile, 'kmlfile': self.kmlfile})
-        proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        zip_cmd = self.zip_cmd.safe_substitute({'zipfile': kmzfile,
+                                                'kmlfile': self.kmlfile})
+        proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout,stderr) = proc.communicate()
-        if (stderr != None and stderr.startswith('osmconvert Error')):
-            raise Exception, stderr.rstrip()  
+        if returncode != 0:
+            raise Exception, 'Failed to create zipfile for {0}'.format(self.kmlfile)
         returncode = proc.wait()
         if returncode == 0:
-            # remove the shapefile directory
+            # remove the kml file
             os.remove(self.kmlfile)
         if self.debug:
             print 'Zipped KML: {0}'.format(kmzfile)
@@ -61,10 +65,14 @@ class SQliteToKml(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Converts a SQlite database to KML.')
-    parser.add_argument('-i','--sqlite-file', required=True, dest="sqlite", help='The SQlite file to convert.')
-    parser.add_argument('-k','--kml-file', required=True, dest="kmlfile", help='The KML file to write to.')
-    parser.add_argument('-z','--zipped', action="store_true", help="Whether to zip the KML. Default true.")
-    parser.add_argument('-d','--debug', action="store_true", help="Turn on debug output")
+    parser.add_argument('-i','--sqlite-file', required=True,
+                        dest="sqlite", help='The SQlite file to convert.')
+    parser.add_argument('-k','--kml-file', required=True,
+                        dest="kmlfile", help='The KML file to write to.')
+    parser.add_argument('-z','--zipped', action="store_true",
+                        help="Whether to zip the KML. Default true.")
+    parser.add_argument('-d','--debug', action="store_true",
+                        help="Turn on debug output")
     args = parser.parse_args()
     config = {}
     for k,v in vars(args).items():

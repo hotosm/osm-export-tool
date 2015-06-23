@@ -47,7 +47,8 @@ class ExportTask(TimeStampedModelMixin):
     Model for an ExportTask.
     """
     id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(blank=True) # celery task id
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    celery_uid = models.UUIDField(null=True) # celery task uid
     name = models.CharField(max_length=50)
     run = models.ForeignKey(ExportRun, related_name='tasks')
     status = models.CharField(blank=True, max_length=20, db_index=True)

@@ -27,10 +27,10 @@ class OSMToPBF(object):
         if(self.debug):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
-        if (stderr != None and stderr.startswith('osmconvert Error')):
-            raise Exception, stderr.rstrip()  
+        (stdout,stderr) = proc.communicate() 
         returncode = proc.wait()
+        if (returncode != 0):
+            raise Exception, "ogr2ogr failed with return code: {0}".format(returncode)
         if(self.debug):
             print 'Osmconvert returned: %s' % returncode
         return self.pbffile

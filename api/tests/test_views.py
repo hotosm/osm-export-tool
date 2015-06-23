@@ -53,7 +53,6 @@ class TestJobViewSet(APITestCase):
     def tearDown(self,):
         self.config.delete() # clean up
         
-        
     def test_get_job_detail(self, ):
         expected = '/api/jobs/{0}'.format(self.job.uid)
         url = reverse('api:jobs-detail', args=[self.job.uid])
@@ -105,7 +104,6 @@ class TestJobViewSet(APITestCase):
             'preset': config_uid,
         }
         response = self.client.post(url, request_data)
-        logger.debug(response)
         job_uid = response.data['uid']
         # test the ExportTaskRunner.run_task(job_id) method gets called.
         task_runner.run_task.assert_called_once_with(job_uid=job_uid)
@@ -501,18 +499,18 @@ class TestExportRunViewSet(APITestCase):
     """
     Test cases for ExportRunViewSet
     """
-    @patch('tasks.export_tasks.ShpExportTask')
+    @patch('api.views.ExportTaskRunner')
     def setUp(self, mock):
+        task_runner = mock.return_value
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         token = Token.objects.create(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
                                 HTTP_ACCEPT='application/json; version=1.0',
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
-        export_task = mock.return_value
+        
         celery_uid = str(uuid.uuid4())
-        export_task.delay.return_value = Mock(state='PENDING', id=celery_uid)
-        type(export_task).name = PropertyMock(return_value='Shapefile Export')
+        
         url = reverse('api:jobs-list')
         formats = [format.slug for format in ExportFormat.objects.filter(slug='shp')]
         request_data = {
@@ -526,7 +524,7 @@ class TestExportRunViewSet(APITestCase):
         }
         response = self.client.post(url, request_data)
         self.job_uid = response.data['uid']
-        
+        task_runner.run_task.assert_called_once_with(job_uid=self.job_uid)
         # test the response headers
         self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
@@ -536,10 +534,6 @@ class TestExportRunViewSet(APITestCase):
         self.assertEqual(response.data['exports'][0]['slug'], request_data['formats'][0])
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
-        
-        export_task.delay.assert_called_once_with(job_uid=self.job_uid)
-        export_task.delay.return_value.assert_called('state')
-        export_task.delay.return_value.assert_called('id')
         
     def test_list_runs(self, ):
         expected = '/api/runs/{0}'.format(self.job_uid)

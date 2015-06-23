@@ -12,7 +12,7 @@ class TestOSMParser(TestCase):
         self.osm = self.path + '/test.osm'
         self.sqlite = self.path + '/test.sqlite'
     
-    @skip
+    
     def test_osm_parsing(self, ):
         parser = OSMParser(osm=self.osm, sqlite=self.sqlite)
         
