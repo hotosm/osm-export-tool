@@ -108,8 +108,9 @@ class OSMParser(object):
             # update tunnel z_index
             sql = "UPDATE {0} SET z_index = z_index - 10 WHERE tunnel IN ('yes', 'true', 1)".format(layer);
             ds.ExecuteSQL(sql)
-            # close connection
-            ds.Destroy()
+        
+        # close connection
+        ds.Destroy()
             
 
 if __name__ == '__main__':

@@ -18,8 +18,8 @@ def run(*script_args):
     # pull out the demo user
     user = User.objects.get(username='demo')
     # create the test job
-    #bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40)) #monrovia
-    bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n)
+    bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40)) #monrovia
+    #bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n) horn of africa
     the_geom = GEOSGeometry(bbox, srid=4326)
     job = Job.objects.create(name='TestJob',
                              description='Test description', user=user,
@@ -28,7 +28,11 @@ def run(*script_args):
     job.region = region
     job.save()
     # add the format(s)
-    formats = [ExportFormat.objects.get(slug='obf'), ExportFormat.objects.get(slug='garmin')]
+    formats = [
+            ExportFormat.objects.get(slug='obf'),
+            ExportFormat.objects.get(slug='garmin'),
+            ExportFormat.objects.get(slug='shp')
+    ]
     job.formats = formats
     job.save()
     # add the tags (defaults to hdm presets)

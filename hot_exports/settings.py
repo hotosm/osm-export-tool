@@ -252,7 +252,7 @@ NOSE_ARGS = [
 CELERY_TRACK_STARTED = True
 
 """
-A dictionary of export formats mapped to ExportTask classes.
+A mapping of supported export formats to ExportTask handler classes
 """
 EXPORT_TASKS = {
     'shp': 'tasks.export_tasks.ShpExportTask',
@@ -262,10 +262,19 @@ EXPORT_TASKS = {
     'garmin': 'tasks.export_tasks.GarminExportTask'
 }
 
+# where exports are staged for processing
 EXPORT_STAGING_ROOT = '/home/ubuntu/export_staging/'
 
+# where exports are stored for public download
+EXPORT_DOWNLOAD_ROOT = '/home/ubuntu/export_downloads/'
+
+# the root url for export downloads
+EXPORT_MEDIA_ROOT = '/exports/'
+
+# home dir of the OSMAnd Map Creator
 OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmand/OsmAndMapCreator'
 
+# location of the garmin config file
 GARMIN_CONFIG = '/home/ubuntu/www/hotosm/utils/conf/garmin_config.xml'
 
 UPDATE_TASKS = {
