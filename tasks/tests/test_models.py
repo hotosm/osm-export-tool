@@ -30,7 +30,7 @@ class TestExportRun(TestCase):
     
     def test_export_run(self, ):
         job = Job.objects.all()[0]
-        run = ExportRun.objects.create(job=job)
+        run = ExportRun.objects.create(job=job, status='SUBMITTED')
         saved_run = ExportRun.objects.get(uid=str(run.uid))
         self.assertIsNotNone(saved_run)
         self.assertEqual(run, saved_run)
@@ -94,10 +94,10 @@ class TestExportTask(TestCase):
         self.assertEqual(task, self.task)
         self.assertFalse(hasattr(task, 'result'))
         user = self.job.user.id
-        result = ExportTaskResult.objects.create(task=task, output_url='http://testserver/media/{0}/file.txt'.format(user))
+        result = ExportTaskResult.objects.create(task=task, download_url='http://testserver/media/{0}/file.txt'.format(user))
         self.assertIsNotNone(result)
         self.assertTrue(hasattr(task, 'result'))
-        self.assertEquals('http://testserver/media/{0}/file.txt'.format(user), result.output_url)
+        self.assertEquals('http://testserver/media/{0}/file.txt'.format(user), result.download_url)
         saved_result = task.result
         self.assertIsNotNone(saved_result)
         self.assertEqual(result, saved_result)

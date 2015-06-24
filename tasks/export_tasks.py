@@ -1,10 +1,10 @@
 #from __future__ import absolute_import
-
 import logging
 import time
 import sys
 import cPickle
 import shutil
+import os
 from hot_exports import settings
 from celery import app, shared_task, Task
 from celery.registry import tasks
@@ -31,14 +31,39 @@ class ExportTask(Task):
 
     def on_success(self, retval, task_id, args, kwargs):
         from tasks.models import ExportTask, ExportTaskResult
-        logger.debug('In success... Task name: {0}'.format(self.name))
+        # update the task
         finished = timezone.now()
-        result = retval['result']
         task = ExportTask.objects.get(celery_uid=task_id)
         task.finished_at = finished
+        # get the output
+        output_url = retval['result']
+        size = os.stat(output_url).st_size / 1024 / 1024.00
+        # construct the download_path
+        download_root = settings.EXPORT_DOWNLOAD_ROOT
+        parts = output_url.split('/')
+        filename = parts[-1]
+        run_uid = parts[-2]
+        run_dir = '{0}{1}'.format(download_root, run_uid)
+        download_path = '{0}{1}/{2}'.format(download_root, run_uid, filename)
+        try:
+            if not os.path.exists(run_dir):
+                os.makedirs(run_dir)
+            shutil.copy(output_url, download_path)
+        except IOError as e:
+            logger.error('Error copying output file to: {0}'.format(download_path))
+        # construct the download url
+        download_media_root = settings.EXPORT_MEDIA_ROOT
+        download_url = '{0}{1}/{2}'.format(download_media_root, run_uid, filename)
+        # save the task and task result
         task.status = 'SUCCESS'
         task.save()
-        result = ExportTaskResult.objects.create(task=task, output_url=result)
+        result = ExportTaskResult(
+            task=task,
+            filename=filename,
+            size=size,
+            download_url=download_url
+        )
+        result.save()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         from tasks.models import ExportTask, ExportTaskException
@@ -48,7 +73,8 @@ class ExportTask(Task):
         task.finished_at = timezone.now()
         task.save()
         exception = cPickle.dumps(einfo)
-        ExportTaskException.objects.create(task=task, exception=exception)
+        ete = ExportTaskException(task=task, exception=exception)
+        ete.save()
 
     def after_return(self, *args, **kwargs):
         logger.debug('Task returned: {0}'.format(self.request))
@@ -58,6 +84,7 @@ class ExportTask(Task):
         Update the task state and celery task uid.
         Can use the celery uid for diagnostics. 
         """
+        started = timezone.now()
         from tasks.models import ExportRun, ExportTask 
         celery_uid = self.request.id
         try:
@@ -65,6 +92,7 @@ class ExportTask(Task):
             celery_uid = self.request.id
             task.celery_uid = celery_uid
             task.status = 'RUNNING'
+            task.started_at = started
             task.save()
             logger.debug('Updated task: {0} with uid: {1}'.format(task.name, task.uid))
         except DatabaseError as e:
@@ -130,6 +158,9 @@ class OSMPrepSchemaTask(ExportTask):
         sqlite = stage_dir + 'query.sqlite'
         osmconf = stage_dir + 'osmconf.ini'
         osmparser = osmparse.OSMParser(osm=osm, sqlite=sqlite, osmconf=osmconf)
+        osmparser.create_spatialite()
+        osmparser.create_default_schema()
+        osmparser.update_zindexes()
         return {'result': sqlite}
  
 
@@ -231,4 +262,28 @@ class GarminExportTask(ExportTask):
         shutil.rmtree(work_dir)
         return {'result': imgfile}
 
+
+class FinalizeRunTask(Task):
+    """
+    Finalizes export run.
+    Cleans up staging directory.
+    Updates run with finish time.
+    """
+    
+    name = 'Finalize Export Run'
+    
+    def run(self, run_uid=None, stage_dir=None):
+        from tasks.models import ExportRun
+        finished = timezone.now()
+        run =  ExportRun.objects.get(uid=run_uid)
+        run.finished_at = finished
+        run.status = 'COMPLETED'
+        run.save()
+        try:
+            shutil.rmtree(stage_dir)
+        except IOError as e:
+            logger.error('Error removing {0} during export finalize'.format(stage_dir))
+        
+        
+        
 

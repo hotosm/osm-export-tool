@@ -8,7 +8,8 @@ from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from jobs.presets import PresetParser
 from celery import chain, group, chord
 from .export_tasks import (OSMConfTask, OverpassQueryTask,
-                           OSMPrepSchemaTask, OSMToPBFConvertTask)
+                           OSMPrepSchemaTask, OSMToPBFConvertTask,
+                           FinalizeRunTask)
 from django.db import transaction, DatabaseError
 import pdb
 
@@ -60,7 +61,7 @@ class ExportTaskRunner(TaskRunner):
             run = None
             run_uid = None
             try:
-                run = ExportRun.objects.create(job=job) # persist the run
+                run = ExportRun.objects.create(job=job, status='SUBMITTED') # persist the run
                 run.save()
                 run_uid = str(run.uid)
                 logger.debug('Saved run with id: {0}'.format(run_uid))
@@ -81,28 +82,28 @@ class ExportTaskRunner(TaskRunner):
             pbfconvert = OSMToPBFConvertTask()
             prep_schema = OSMPrepSchemaTask()
             # save initial tasks to the db with 'PENDING' state..
-            for task in [conf, query, pbfconvert, prep_schema]:
+            for initial_task in [conf, query, pbfconvert, prep_schema]:
                 try:
                     ExportTask.objects.create(run=run,
-                                              status='PENDING', name=task.name)
-                    logger.debug('Saved task: {0}'.format(task.name))
+                                              status='PENDING', name=initial_task.name)
+                    logger.debug('Saved task: {0}'.format(initial_task.name))
                 except DatabaseError as e:
-                    logger.error('Saving task {0} threw: {1}'.format(task.name, e))
+                    logger.error('Saving task {0} threw: {1}'.format(initial_task.name, e))
                     raise e
             # save the rest of the ExportFormat tasks.
-            for task in export_tasks:
+            for export_task in export_tasks:
                 """
                     Set the region name on the Garmin Export task.
                     The region gets written to the exported '.img' file.
                     Could set additional params here in future if required.
                 """
-                if task.name == 'Garmin Export': task.region = job.region.name
+                if export_task.name == 'Garmin Export': export_task.region = job.region.name
                 try:
                     ExportTask.objects.create(run=run,
-                                              status='PENDING', name=task.name)
-                    logger.debug('Saved task: {0}'.format(task.name))
+                                              status='PENDING', name=export_task.name)
+                    logger.debug('Saved task: {0}'.format(export_task.name))
                 except DatabaseError as e:
-                    logger.error('Saving task {0} threw: {1}'.format(task.name, e))
+                    logger.error('Saving task {0} threw: {1}'.format(export_task.name, e))
                     raise e
             
             """
@@ -115,19 +116,26 @@ class ExportTaskRunner(TaskRunner):
                     conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid),
                     query.si(stage_dir=stage_dir, bbox=bbox, run_uid=run_uid)
             )
+            
             format_tasks = group(
                 task.si(run_uid=run_uid, stage_dir=stage_dir) for task in export_tasks
             )
+            
             schema_tasks = chain(
                     pbfconvert.si(stage_dir=stage_dir, run_uid=run_uid) | 
                     prep_schema.si(stage_dir=stage_dir, run_uid=run_uid)
             )
+            
+            finalize_task = FinalizeRunTask()
+            
             result = chord(
                 header=initial_tasks,
-                body=chain(schema_tasks | task.si(run_uid=run_uid, stage_dir=stage_dir) for task in export_tasks)
+                body=schema_tasks |
+                        format_tasks |
+                        finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)
             ).delay()
             
-            return True
+            return result
         else:
             return False
 

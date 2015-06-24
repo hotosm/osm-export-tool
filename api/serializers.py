@@ -5,7 +5,7 @@ from uuid import UUID
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
-from datetime import datetime
+from datetime import datetime, timedelta
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from django.contrib.auth.models import User, Group
@@ -108,14 +108,26 @@ class ExportConfigSerializer(serializers.Serializer):
     
 
 class ExportTaskResultSerializer(serializers.ModelSerializer):
+    
+    url = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
     class Meta:
         model = ExportTaskResult
-        fields = ('output_url',)
+        fields = ('filename', 'size', 'url',)
+    
+    def get_url(self, obj):
+        request = self.context['request']
+        return request.build_absolute_uri(obj.download_url)
+    
+    def get_size(self, obj):
+        return "{0:.3f} MB".format(obj.size)
 
 
 class ExportTaskSerializer(serializers.ModelSerializer):
     result = serializers.SerializerMethodField()
+    started_at = serializers.SerializerMethodField()
     finished_at = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
     url = serializers.HyperlinkedIdentityField(
        view_name='api:tasks-detail',
        lookup_field='uid'
@@ -123,7 +135,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ExportTask
-        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'result')
+        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'result')
 
     def get_result(self, obj):
         try:
@@ -133,11 +145,25 @@ class ExportTaskSerializer(serializers.ModelSerializer):
         except ExportTaskResult.DoesNotExist as e:
             return {}
     
+    def get_started_at(self, obj):
+        if (not obj.started_at):
+            return {}
+        else:
+            return obj.started_at
+    
     def get_finished_at(self, obj):
         if (not obj.finished_at):
             return {}
         else:
             return obj.finished_at
+        
+    def get_duration(self, obj):
+        started = obj.started_at
+        finished = obj.finished_at
+        if started and finished:
+            return  str(finished - started)
+        else:
+            return {}
 
 
 class SimpleJobSerializer(serializers.Serializer):
@@ -160,10 +186,25 @@ class ExportRunSerializer(serializers.ModelSerializer):
     )
     job = SimpleJobSerializer()
     tasks = ExportTaskSerializer(many=True)
+    finished_at = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
     class Meta:
         model = ExportRun
-        fields = ('uid', 'url', 'started_at', 'job', 'tasks')
-
+        fields = ('uid', 'url', 'started_at', 'finished_at', 'duration', 'status', 'job', 'tasks')
+    
+    def get_finished_at(self, obj):
+        if (not obj.finished_at):
+            return {}
+        else:
+            return obj.finished_at
+    
+    def get_duration(self, obj):
+        started = obj.started_at
+        finished = obj.finished_at
+        if started and finished:
+            return  str(finished - started)
+        else:
+            return {}
 
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()

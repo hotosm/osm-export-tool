@@ -106,6 +106,9 @@ class TestExportTasks(TestCase):
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
         result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
         prep_schema.instancemethod.assert_called_once()
+        prep_schema.create_spatialite.assert_called_once()
+        prep_schema.create_default_schema.assert_called_once()
+        prep_schema.upate_zindexes.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
@@ -213,8 +216,8 @@ class TestExportTasks(TestCase):
             name=shp_export_task.name
         )
         shp_export_task = ShpExportTask()
-        output_url = 'http://testserver/some/output/file.shp'
-        shp_export_task.on_success(retval={'result': output_url}, task_id=celery_uid,
+        download_url = '/exports/output/file.shp'
+        shp_export_task.on_success(retval={'result': download_url}, task_id=celery_uid,
                                    args={}, kwargs={'run_uid': str(self.run.uid)})
         task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(task)
@@ -226,7 +229,7 @@ class TestExportTasks(TestCase):
         # pull out the result and test
         result = ExportTaskResult.objects.get(task__celery_uid=celery_uid)
         self.assertIsNotNone(result)
-        self.assertEquals(output_url, result.output_url)
+        self.assertEquals(download_url, result.download_url)
     
     def test_task_on_failure(self,):
         shp_export_task = ShpExportTask()
