@@ -24,33 +24,30 @@ class OSMParser(object):
         if osmconf:
             self.osmconf = osmconf
         else:
-            self.osmconf = self.path + '/conf/test.ini'
-            logger.debug(self.osmconf)
+            self.osmconf = self.path + '/conf/hotosm.ini'
+            logger.debug('Found osmconf ini file at: {0}'.format(self.osmconf))
         """
             OGR Command to run.
             OSM_CONFIG_FILE determines which OSM keys should be translated into OGR layer fields.
             See osmconf.ini for details. See gdal config options at http://www.gdal.org/drv_osm.html
         """
-        self.ogr_cmd = Template("""ogr2ogr -f SQlite -dsco SPATIALITE=YES $sqlite $osm \
-                                    --config OSM_CONFIG_FILE $osmconf \
-                                    --config OGR_INTERLEAVED_READING YES \
-                                    --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
-                                """)
+        self.ogr_cmd = Template("""
+            ogr2ogr -f SQlite -dsco SPATIALITE=YES $sqlite $osm \
+            --config OSM_CONFIG_FILE $osmconf \
+            --config OGR_INTERLEAVED_READING YES \
+            --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
+        """)
         
         # Enable GDAL/OGR exceptions
         gdal.UseExceptions()
         self.srs = osr.SpatialReference()
         self.srs.ImportFromEPSG(4326) # configurable
         # create the output file
-        self._init_spatialite()
-        self._create_default_schema()
-        self._update_zindexes()
         if self.schema:
             # run other schema transformations here...
             pass
-        self._cleanup()
         
-    def _init_spatialite(self, ):        
+    def create_spatialite(self, ):        
         # create spatialite from osm data
         ogr_cmd = self.ogr_cmd.safe_substitute({'sqlite': self.sqlite,
                                                 'osm': self.osm, 'osmconf': self.osmconf})
@@ -58,15 +55,15 @@ class OSMParser(object):
             print 'Running: %s' % ogr_cmd
         proc = subprocess.Popen(ogr_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate()
-        if (stderr != None and stderr.startswith('ERROR')):
-                self._cleanup()
-                raise Exception, "ogr2ogr process failed with error: %s" % stderr.rstrip()   
+        (stdout, stderr) = proc.communicate()   
         returncode = proc.wait()
+        if (returncode != 0):
+                raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
             
-    def _create_default_schema(self, ):
+    def create_default_schema(self, ):
+        assert os.path.exists(self.sqlite), "No spatialite file. Run 'create_spatialite()' method first."
         # update the spatialite schema
         self.update_sql = Template("spatialite $sqlite < $update_sql")
         sql_cmd = self.update_sql.safe_substitute({'sqlite': self.sqlite,
@@ -80,8 +77,9 @@ class OSMParser(object):
         if self.debug:
             print 'spatialite returned: %s' % returncode
  
-    def _update_zindexes(self):
-        self.spatialite = ogr.Open(self.sqlite, update=True)
+    def update_zindexes(self, ):
+        assert os.path.exists(self.sqlite), "No spatialite file. Run 'create_spatialite()' method first."
+        ds = ogr.Open(self.sqlite, update=True)
         zindexes = {
             3 : ('path', 'track', 'footway', 'minor', 'road', 'service', 'unclassified', 'residential'),
             4 : ('tertiary_link', 'tertiary'),
@@ -90,30 +88,29 @@ class OSMParser(object):
             8 : ('trunk_link', 'trunk'),
             9 : ('motorway_link', 'motorway')
         }
-        for layer_idx in range(self.spatialite.GetLayerCount()):
-            layer = self.spatialite.GetLayerByIndex(layer_idx).GetName()
+        layer_count = ds.GetLayerCount()
+        assert layer_count == 4, """Incorrect number of layers found. Run 'create_default_schema()' method first."""
+        for layer_idx in range(layer_count):
+            layer = ds.GetLayerByIndex(layer_idx).GetName()
             # update highway z_indexes
             for key in zindexes.keys():
                 sql = 'UPDATE {0} SET z_index = {1} WHERE highway IN {2};'.format(layer, key, zindexes[key])
-                self.spatialite.ExecuteSQL(sql)
+                ds.ExecuteSQL(sql)
             # update railway z_indexes
             sql = "UPDATE {0} SET z_index = z_index + 5 WHERE railway <> ''".format(layer);
-            self.spatialite.ExecuteSQL(sql)
+            ds.ExecuteSQL(sql)
             # update layer
             sql = "UPDATE {0} SET z_index = z_index + 10 * cast(layer as int) WHERE layer <> ''".format(layer);
-            self.spatialite.ExecuteSQL(sql)
+            ds.ExecuteSQL(sql)
             # update bridge z_index
             sql = "UPDATE {0} SET z_index = z_index + 10 WHERE bridge IN ('yes', 'true', 1)".format(layer);
-            self.spatialite.ExecuteSQL(sql)
+            ds.ExecuteSQL(sql)
             # update tunnel z_index
             sql = "UPDATE {0} SET z_index = z_index - 10 WHERE tunnel IN ('yes', 'true', 1)".format(layer);
-            self.spatialite.ExecuteSQL(sql)
-
-    def _cleanup(self, ):
-        # flush to disk
-        if self.spatialite:
-            self.spatialite.Destroy()
-    
+            ds.ExecuteSQL(sql)
+            # close connection
+            ds.Destroy()
+            
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="""Converts OSM (xml|pbf) to Spatialite.
@@ -134,4 +131,7 @@ if __name__ == '__main__':
     sqlite = config.get('sqlite')
     debug = False
     if config.get('debug'): debug = True
-    OSMParser(osm=osm, sqlite=sqlite, debug=debug)
+    parser = OSMParser(osm=osm, sqlite=sqlite, debug=debug)
+    parser.create_spatialite()
+    parser.create_default_schema()
+    parser.update_zindexes()

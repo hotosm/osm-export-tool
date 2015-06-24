@@ -79,6 +79,8 @@ class OSMToOBF(object):
                 raise Exception, "OsmAndMapCreator process failed with error: %s" % stderr.rstrip()
         """
         returncode = proc.wait()
+        if (returncode != 0):
+            raise Exception, "{0} process failed with returncode: {1}".format(osmand_cmd, returncode)
         if self.debug:
             print 'OsmAndMapCreator returned: %s' % returncode
         obffile = None

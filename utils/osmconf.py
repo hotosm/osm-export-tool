@@ -28,7 +28,7 @@ class OSMConfig(object):
         self.tmpl = self.path + '/conf/hotosm.ini.tmpl'
         self.categories = categories
         self.config = ConfigParser.SafeConfigParser()
-        
+    
     def create_osm_conf(self, stage_dir=None):
         self.config.read(self.tmpl) # read in the template
         self.config.set('points', 'attributes', ','.join(self.categories['points']))
