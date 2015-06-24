@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 
 class TestOSMToIMG(TestCase):
     """
-    Test case to test generation of IMG files.
-    Depends on install of mkgmap.jar and splitter.jar
-    so skipping for general run of tests.
+    Test case to for garmin.OSMToIMG
     """
     
     def setUp(self,):
@@ -40,8 +38,8 @@ class TestOSMToIMG(TestCase):
         self.assertEquals('/home/ubuntu/garmin/splitter/splitter.jar', splitter)
     
     @patch('os.makedirs')
-    @patch('utils.garmin.subprocess.PIPE')
-    @patch('utils.garmin.subprocess.Popen')
+    @patch('subprocess.PIPE')
+    @patch('subprocess.Popen')
     def test_convert(self, popen, pipe, mkdirs):
         splitter_cmd = """
             java -Xmx1024m -jar /home/ubuntu/garmin/splitter/splitter.jar \
@@ -63,8 +61,8 @@ class TestOSMToIMG(TestCase):
                                 stdout=pipe, stderr=pipe)
         
     @patch('os.path.exists')
-    @patch('utils.garmin.subprocess.PIPE')
-    @patch('utils.garmin.subprocess.Popen')
+    @patch('subprocess.PIPE')
+    @patch('subprocess.Popen')
     def test_mkgmap(self, popen, pipe, exists):
         mkgmap_cmd = """
             java -Xmx1024m -jar /home/ubuntu/garmin/mkgmap/mkgmap.jar \
@@ -96,12 +94,14 @@ class TestOSMToIMG(TestCase):
         # test subprocess getting called with correct command
         popen.assert_called_once_with(mkgmap_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
+        proc.communicate.assert_called_once()
+        proc.wait.assert_called_once()
         exists.assert_called_once_with('/home/ubuntu/www/hotosm/utils/tests/files/garmin/template.args')
         self.assertEquals(imgfile, '/home/ubuntu/www/hotosm/utils/tests/files/garmin/gmapsupp.img')
     
     @patch('os.remove')
-    @patch('utils.garmin.subprocess.PIPE')
-    @patch('utils.garmin.subprocess.Popen')
+    @patch('subprocess.PIPE')
+    @patch('subprocess.Popen')
     def test_zip_img_file(self, popen, pipe, remove):
         zipfile = '/home/ubuntu/www/hotosm/utils/tests/files/garmin/garmin.zip'
         imgfile = '/home/ubuntu/www/hotosm/utils/tests/files/garmin/gmapsupp.img'
@@ -118,6 +118,8 @@ class TestOSMToIMG(TestCase):
         # test subprocess getting called with correct command
         popen.assert_called_once_with(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
+        proc.communicate.assert_called_once()
+        proc.wait.assert_called_once()
         remove.assert_called_once_with(imgfile)
         self.assertEquals(result, zipfile)
 

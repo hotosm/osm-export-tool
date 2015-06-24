@@ -17,7 +17,7 @@ class TestOSMToPBF(SimpleTestCase):
     
     @patch('utils.garmin.subprocess.PIPE')
     @patch('utils.garmin.subprocess.Popen')
-    def test_convert(self, popen, pipe ):
+    def test_convert(self, popen, pipe):
         osm = '/path/to/sample.osm'
         pbffile = '/path/to/sample.pbf'
         convert_cmd = 'osmconvert {0} --out-pbf >{1}'.format(osm, pbffile)
