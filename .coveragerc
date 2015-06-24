@@ -1,6 +1,6 @@
 [run]
 
-omit = */migrations/*
+omit = */migrations/*, api/renderers.py, */__init__.py
 
 [report]
 exclude_lines = 
@@ -9,7 +9,6 @@ exclude_lines =
 
     # Don't complain about missing debug-only code:
     def __repr__
-    def __str__
     if self\.debug
 
     # Don't complain if tests don't hit defensive assertion code:
@@ -21,7 +20,7 @@ exclude_lines =
     if __name__ == .__main__.:
     
     except ImportError:
-    pass
+    ^pass$
 
 
 ignore_errors = True

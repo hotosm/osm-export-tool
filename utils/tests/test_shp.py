@@ -14,13 +14,13 @@ from ..shp import SQliteToShp
 logger = logging.getLogger(__name__)
 
 
-class TestSQlliteToShp(SimpleTestCase):
+class TestSQliteToShp(SimpleTestCase):
     
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
     
-    @patch('utils.garmin.subprocess.PIPE')
-    @patch('utils.garmin.subprocess.Popen')
+    @patch('subprocess.PIPE')
+    @patch('subprocess.Popen')
     def test_convert(self, popen, pipe):
         sqlite = self.path + '/files/test.sqlite'
         shapefile= self.path + '/files/shp'
@@ -38,8 +38,8 @@ class TestSQlliteToShp(SimpleTestCase):
         self.assertEquals(out, shapefile)
     
     @patch('shutil.rmtree')
-    @patch('utils.garmin.subprocess.PIPE')
-    @patch('utils.garmin.subprocess.Popen')
+    @patch('subprocess.PIPE')
+    @patch('subprocess.Popen')
     def test_zip_img_file(self, popen, pipe, rmtree):
         sqlite = self.path + '/files/test.sqlite'
         shapefile = self.path + '/files/shp'

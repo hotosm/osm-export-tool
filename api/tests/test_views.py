@@ -14,7 +14,7 @@ from rest_framework.authtoken.models import Token
 from mock import Mock, PropertyMock, patch
 from tasks.task_runners import ExportTaskRunner
 from jobs.models import Job, ExportFormat, ExportConfig
-from tasks.models import ExportTask
+from tasks.models import ExportTask, ExportRun
 from api.pagination import JobLinkHeaderPagination
 from api.views import ExportConfigViewSet
 
@@ -52,6 +52,13 @@ class TestJobViewSet(APITestCase):
         
     def tearDown(self,):
         self.config.delete() # clean up
+        
+    def test_list(self, ):
+        expected = '/api/jobs'
+        url = reverse('api:jobs-list')
+        self.assertEquals(expected, url)
+        
+    
         
     def test_get_job_detail(self, ):
         expected = '/api/jobs/{0}'.format(self.job.uid)
@@ -499,52 +506,48 @@ class TestExportRunViewSet(APITestCase):
     """
     Test cases for ExportRunViewSet
     """
-    @patch('api.views.ExportTaskRunner')
-    def setUp(self, mock):
-        task_runner = mock.return_value
-        user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        token = Token.objects.create(user=user)
+    def setUp(self, ):
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
                                 HTTP_ACCEPT='application/json; version=1.0',
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
-        
-        celery_uid = str(uuid.uuid4())
-        
-        url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.filter(slug='shp')]
-        request_data = {
-            'name': 'TestJob',
-            'description': 'Test description',
-            'xmin': -3.9,
-            'ymin': 16.1,
-            'xmax': 7.0,
-            'ymax': 27.6,
-            'formats': formats
-        }
-        response = self.client.post(url, request_data)
-        self.job_uid = response.data['uid']
-        task_runner.run_task.assert_called_once_with(job_uid=self.job_uid)
-        # test the response headers
-        self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
-        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
-        self.assertEquals(response['Content-Language'], 'en')
-        
-        # test significant response content
-        self.assertEqual(response.data['exports'][0]['slug'], request_data['formats'][0])
-        self.assertEqual(response.data['name'], request_data['name'])
-        self.assertEqual(response.data['description'], request_data['description'])
-        
-    def test_list_runs(self, ):
-        expected = '/api/runs/{0}'.format(self.job_uid)
-        url = reverse('api:runs-detail', args=[self.job_uid])
+        extents = (-3.9, 16.1, 7.0, 27.6)
+        bbox = Polygon.from_bbox(extents)
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom)
+        self.job_uid = str(self.job.uid)
+        self.run = ExportRun.objects.create(job=self.job)
+        self.run_uid = str(self.run.uid)
+
+    def test_retrieve_run(self, ):
+        expected = '/api/runs/{0}'.format(self.run_uid)
+        url = reverse('api:runs-detail', args=[self.run_uid])
         self.assertEquals(expected, url)
         response = self.client.get(url)
         self.assertIsNotNone(response)
-        
+        result = response.data
+        # make sure we get the correct uid back out
+        self.assertEquals(self.run_uid, result[0].get('uid'))
+    
+    def test_list_runs(self, ):
+        expected = '/api/runs'
+        url = reverse('api:runs-list')
+        self.assertEquals(expected, url)
+        response = self.client.get(url)
+        self.assertIsNotNone(response)
+        result = response.data
+        # make sure we get the correct uid back out
+        self.assertEquals(1, len(result))
+        self.assertEquals(self.run_uid, result[0].get('uid'))
 
 class TestExportConfigViewSet(APITestCase):
-    
+    """
+    Test cases for ExportConfigViewSet
+    """
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
@@ -628,5 +631,57 @@ class TestExportConfigViewSet(APITestCase):
             f = File(open(path + '/files/Example Transform.sql', 'r'))
         except IOError:
             pass #expected.. old file has been deleted during update.
+
+
+class TestExportTaskViewSet(APITestCase):
+    """
+    Test cases for ExportTaskViewSet
+    """
+    def setUp(self, ):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom)
+        # setup token authentication
+        token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+        self.run = ExportRun.objects.create(job=self.job)
+        self.celery_uid = str(uuid.uuid4())
+        self.task = ExportTask.objects.create(run=self.run, name='Shapefile Export',
+                                              celery_uid=self.celery_uid, status='SUCCESS')
+        self.task_uid = str(self.task.uid)
+        
+    
+    def test_retrieve(self, ):
+        expected = '/api/tasks/{0}'.format(self.task_uid)
+        url = reverse('api:tasks-detail', args=[self.task_uid])
+        self.assertEquals(expected, url)
+        response = self.client.get(url)
+        self.assertIsNotNone(response)
+        self.assertEquals(200, response.status_code)
+        result = json.dumps(response.data)
+        data = json.loads(result)
+        # make sure we get the correct uid back out
+        self.assertEquals(self.task_uid, data[0].get('uid'))
+        
+    def test_list(self, ):
+        expected = '/api/tasks'.format(self.task_uid)
+        url = reverse('api:tasks-list')
+        self.assertEquals(expected, url)
+        response = self.client.get(url)
+        self.assertIsNotNone(response)
+        self.assertEquals(200, response.status_code)
+        result = json.dumps(response.data)
+        data = json.loads(result)
+        # should only be one task in the list
+        self.assertEquals(1, len(data))
+        # make sure we get the correct uid back out
+        self.assertEquals(self.task_uid, data[0].get('uid'))
         
         

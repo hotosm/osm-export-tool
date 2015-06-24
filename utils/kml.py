@@ -33,10 +33,10 @@ class SQliteToKml(object):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
-        if (stderr != None and stderr.startswith('ERROR')):
-            raise Exception, "ogr2ogr process failed with error: %s" % stderr.rstrip()   
+        (stdout,stderr) = proc.communicate()  
         returncode = proc.wait()
+        if (returncode != 0):
+            raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
         if self.zipped and returncode == 0:
@@ -52,9 +52,9 @@ class SQliteToKml(object):
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout,stderr) = proc.communicate()
+        returncode = proc.wait()
         if returncode != 0:
             raise Exception, 'Failed to create zipfile for {0}'.format(self.kmlfile)
-        returncode = proc.wait()
         if returncode == 0:
             # remove the kml file
             os.remove(self.kmlfile)
