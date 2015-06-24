@@ -57,4 +57,3 @@ class TestSQlliteToShp(SimpleTestCase):
                                 stdout=pipe, stderr=pipe)
         rmtree.assert_called_once_with(shapefile)
         self.assertEquals(result, zipfile)
-

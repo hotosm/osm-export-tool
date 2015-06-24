@@ -239,14 +239,14 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-"""
+
 NOSE_ARGS = [
     '--with-coverage',
     '--cover-html',
     '--cover-html-dir=cover',
-    '--cover-package=api,tasks,jobs'
+    '--cover-package=api,tasks,jobs,utils'
 ]
-"""
+
 
 # Celery config
 CELERY_TRACK_STARTED = True
