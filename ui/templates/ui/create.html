@@ -2,23 +2,40 @@
 {% load staticfiles %}
 {% block css %}
 {{ block.super}}
-<link href="{% static 'ui/components/leaflet-dist/leaflet.css' %}" rel="stylesheet">
-<link href="{% static 'ui/components/leaflet.draw/dist/leaflet.draw.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block container %}
 
 <div class="row">
     <div class="col-md-5">
-        <ul class="nav nav-pills">
-            <li role="presentation" class="active"><a href="#">Create New</a></li>
-            <li role="presentation"><a href="#">Upload Configuration File</a></li>
-            <li role="presentation"><a href="#">Visual Tag Chooser</a></li>
-            <li role="presentation"><a href="#">Exports</a></li>
-        </ul>
+        <div id="create-job" class="container-fluid">
+            <ul id="tabs" class="nav nav-pills">
+                <li role="presentation" class="active"><a data-toggle="tab" href="#create">Create New Export</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#upload">Upload Configuration File</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#config">Select Export Tags</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#tags">Exports</a></li>
+            </ul>
+            <form>
+                <div class="tab-content container-fluid">
+                    <div id="create" class="tab-pane fade in active">
+                      <p>Create form goes here..</p>
+                    </div>
+                    <div id="upload" class="tab-pane fade">
+                      <p>Upload config form goes here..</p>
+                    </div>
+                    <div id="config" class="tab-pane fade">
+                      <p>Tag chooser tree goes here...</p>
+                    </div>
+                    <div id="tags" class="tab-pane fade">
+                      <p>Export stuff here (?)..</p>
+                    </div>
+                </div>
+            </form>
+      </div>
     </div>
     <div id="map-column" class="col-md-7">
-       <div id="map"></div>
+        <button id="select-area" class="btn btn-lge btn-primary">Select Export Area</button>
+        <div id="map"></div>
     </div>
 </div>
 

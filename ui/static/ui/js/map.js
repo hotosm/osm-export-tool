@@ -34,7 +34,7 @@ var JobApp = OpenLayers.Class({
                 controls: [new OpenLayers.Control.Attribution(),
                            new OpenLayers.Control.ScaleLine()],
                 maxExtent: maxExtent,          
-                //scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
+                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
                 units: 'm',
                 sphericalMercator: true,
                 noWrap: true

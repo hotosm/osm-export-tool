@@ -13,6 +13,9 @@ urlpatterns = []
 
 urlpatterns += patterns('ui.views',
     url(r'^$', TemplateView.as_view(template_name='ui/index.html'), name='index'),
+    url(r'^about$', TemplateView.as_view(template_name='ui/about.html'), name='about'),
+    url(r'^help$', TemplateView.as_view(template_name='ui/help.html'), name='help'),
+    url(r'^login$', TemplateView.as_view(template_name='ui/login.html'), name='login'),
     url(r'^jobs/', include(ui_urls)),
 )
 
