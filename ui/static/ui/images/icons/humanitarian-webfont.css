@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'humanitarianfontfont';
+    /*
+    src: url('humanitarian-webfont.eot');
+    src: url('humanitarian-webfont.eot') format('embedded-opentype'), */
+     src:     url('humanitarian-webfont.woff') format('woff'),
+         url('humanitarian-webfont.ttf') format('truetype'),
+         url('humanitarian-webfont.svg#humanitarianfontfont') format('svg');
+}

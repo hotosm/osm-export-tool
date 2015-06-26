@@ -1,8 +1,32 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% block css %}
+{{ block.super}}
+<link href="{% static 'ui/components/leaflet-dist/leaflet.css' %}" rel="stylesheet">
+<link href="{% static 'ui/components/leaflet.draw/dist/leaflet.draw.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block container %}
 
-<h2>Create job here...</h2>
+<div class="row">
+    <div class="col-md-5">
+        <ul class="nav nav-pills">
+            <li role="presentation" class="active"><a href="#">Create New</a></li>
+            <li role="presentation"><a href="#">Upload Configuration File</a></li>
+            <li role="presentation"><a href="#">Visual Tag Chooser</a></li>
+            <li role="presentation"><a href="#">Exports</a></li>
+        </ul>
+    </div>
+    <div id="map-column" class="col-md-7">
+       <div id="map"></div>
+    </div>
+</div>
 
+{% endblock %}
+
+{% block corejs %}
+{{ block.super}}
+<script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/map.js' %}"></script>
 {% endblock %}

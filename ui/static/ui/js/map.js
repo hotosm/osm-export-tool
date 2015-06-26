@@ -43,8 +43,11 @@ var JobApp = OpenLayers.Class({
         map = new OpenLayers.Map('map', {options: mapOptions});
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         
-        hotosm = new OpenLayers.Layer.OSM("OpenStreetMap",null,{isBaseLayer: true});
-        map.addLayers([hotosm]);
+        osm = Layers.OSM
+        hotosm = Layers.HOT
+        osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
+        hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
+        map.addLayers([osm, hotosm]);
         
         /* Styles */
         var defaultStyle = new OpenLayers.Style({
@@ -121,7 +124,7 @@ var JobApp = OpenLayers.Class({
         selectControl.activate();
         
         
-        this.buildJobList(jobs, selectControl);
+        //this.buildJobList(jobs, selectControl);
         this.addRegionMask(mask);
         this.addRegions(regions);
         
@@ -237,19 +240,3 @@ var JobApp = OpenLayers.Class({
     }
     
 });
-
-
-
-
-
-
-
-/*
-var map = L.map('map').setView([0, 0], 1);
-
-L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' +
-    '<a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
-}).addTo(map);
-*/
-
