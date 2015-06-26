@@ -113,13 +113,37 @@ ul.nav {
 
 /* Map styles */
 
-#map-column {
-    height: 100%;
-}
-
 #map {
     position: relative;
     width: 100%;
     height: 620px;
+}
+
+#select-area {
+    position: absolute;
+    top: 12px;
+    left: 50px;
+    z-index: 100;
+}
+
+/* Create config */
+
+#create-job {
+    padding: 10px !important;
+}
+
+#create-job ul.nav-pills {
+    font-size: medium !important;
+    float: left !important;
+    font-size: small;
+    font-weight: 500;
+}
+
+#create-job {
+    font-size: medium;
+}
+
+#tab-content {
+    padding-top: 20px !important;
 }
 
