@@ -8,3 +8,4 @@ Layers.HOT = new OpenLayers.Layer.XYZ("Humanitarian DM",
                  "http://c.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"],
                 {crossOriginKeyword: null}
             );
+

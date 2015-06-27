@@ -119,6 +119,21 @@ ul.nav {
     height: 620px;
 }
 
+.btn-group {
+    position: absolute;
+    top: 12px;
+    left: 50px;
+    z-index: 100;
+}
+
+#alert-area {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    z-index: 100;
+    visibility: hidden;
+}
+/*
 #select-area {
     position: absolute;
     top: 12px;
@@ -126,7 +141,14 @@ ul.nav {
     z-index: 100;
 }
 
-/* Create config */
+#reset-map {
+    position: absolute;
+    top: 12px;
+    left: 100px;
+    z-index: 100;
+}
+*/
+/* Create form styles */
 
 #create-job {
     padding: 10px !important;
@@ -143,7 +165,17 @@ ul.nav {
     font-size: medium;
 }
 
-#tab-content {
+/*
+.tab-content {
     padding-top: 20px !important;
+}*/
+
+.tab-pane > .panel {
+    border: none;
+    clear: both;
+}
+
+.tab-pane > .panel > .panel-body {
+    padding-left: 0px !important;
 }
 
