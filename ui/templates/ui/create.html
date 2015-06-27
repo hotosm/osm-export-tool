@@ -15,26 +15,64 @@
                 <li role="presentation"><a data-toggle="tab" href="#config">Select Export Tags</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#tags">Exports</a></li>
             </ul>
-            <form>
+            <form id="create-export-job" role="form" action="" method="POST">
                 <div class="tab-content container-fluid">
                     <div id="create" class="tab-pane fade in active">
-                      <p>Create form goes here..</p>
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name">
+                            <br/>
+                            <label for="description">Description</label>
+                            <textarea type="text" rows="5" class="form-control" id="description"></textarea>
+                            <br/>
+                            <div class="form-group">
+                                <label for="formats">Select Export Formats:</label>
+                                <select multiple class="form-control" id="formats">
+                                  <option>ESRI Shapefile</option>
+                                  <option>OSMAnd OBF</option>
+                                  <option>Garmin IMG</option>
+                                  <option>KML</option>
+                                </select>
+                            </div>
+                            <label for="extents">Export extents:</label>
+                            <input type="hidden" id="xmin" name="xmin"/>
+                            <input type="hidden" id="ymin" name="ymin"/>
+                            <input type="hidden" id="xmax" name="xmax"/>
+                            <input type="hidden" id="ymax" name="ymax"/>
+                            <div id="extents"></div>
+                        </div>
+                      </div>
                     </div>
                     <div id="upload" class="tab-pane fade">
-                      <p>Upload config form goes here..</p>
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                            
+                        </div>
+                      </div>
                     </div>
                     <div id="config" class="tab-pane fade">
-                      <p>Tag chooser tree goes here...</p>
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                            
+                        </div>
+                      </div>
                     </div>
                     <div id="tags" class="tab-pane fade">
                       <p>Export stuff here (?)..</p>
                     </div>
                 </div>
+                <button type="submit" class="btn btn-lge btn-success">Create Export Job</button>
             </form>
       </div>
     </div>
     <div id="map-column" class="col-md-7">
-        <button id="select-area" class="btn btn-lge btn-primary">Select Export Area</button>
+        <div class="btn-group" role="group">
+            <button id="select-area" class="btn btn-lge btn-primary">Select Export Area</button>
+            <button id="clear-selection" class="btn btn-lge btn-primary">Clear Selection</button>
+            <button id="reset-map" class="btn btn-lge btn-primary">Reset Map</button>
+        </div>
+        <div id="alert-area" class="alert alert-danger fade in"></div>
         <div id="map"></div>
     </div>
 </div>
@@ -45,5 +83,6 @@
 {{ block.super}}
 <script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
 <script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/config.js' %}"></script>
 <script src="{% static 'ui/js/map.js' %}"></script>
 {% endblock %}

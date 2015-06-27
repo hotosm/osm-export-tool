@@ -16,6 +16,8 @@
 
 */
 
+var vectors;
+
 $(document).ready(function() {
         new JobApp();
 });
@@ -24,10 +26,13 @@ var JobApp = OpenLayers.Class({
     
     initialize: function(){
         this.map = this.initMap();
+        this.max_bounds_area = 100; // set this dynamically..
     },
     
     initMap: function() {
+        var that = this;
         
+        // set up the map
         maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         var mapOptions = {
                 displayProjection: new OpenLayers.Projection("EPSG:4326"),
@@ -43,44 +48,12 @@ var JobApp = OpenLayers.Class({
         map = new OpenLayers.Map('map', {options: mapOptions});
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         
+        // add base layers
         osm = Layers.OSM
         hotosm = Layers.HOT
         osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayers([osm, hotosm]);
-        
-        /* Styles */
-        var defaultStyle = new OpenLayers.Style({
-            strokeColor: "#db337b",
-            strokeWidth: 2.5,
-            strokeDashstyle: "dash"
-        });
-        
-        var selectStyle = new OpenLayers.Style({
-            strokeColor: "#6B9430",
-            strokeWidth: 3.5,
-            strokeDashstyle: "dash",
-            label: '${name}',
-            labelAlign: "lm",
-            labelXOffset: "20",
-            labelOutlineColor: "white",
-            labelOutlineWidth: 3,
-            fontSize: 16,
-            graphicZIndex: 10,
-        });
-        
-        var lineStyles = new OpenLayers.StyleMap(
-        {
-                "default": defaultStyle,
-                "select": selectStyle
-        });
-        
-        var regionStyle = new OpenLayers.Style({
-            strokeColor: "#D73F3F",
-            strokeWidth: 3.5,
-            strokeDashstyle: "dash",
-            fill: false
-        });
         
         /* Add the Jobs */
         var jobs = new OpenLayers.Layer.Vector('Export Jobs', {
@@ -91,8 +64,10 @@ var JobApp = OpenLayers.Class({
                 fillOpacity: 0.4,
             }
         });
+        
         /* Add the Regions */
-        var regions = new OpenLayers.Layer.Vector('HOT Export Regions', {
+        var regions = new OpenLayers.Layer.Vector('regions', {
+            displayInLayerSwitcher: false,
             style: {
                 strokeWidth: 3.5,
                 strokeColor: '#D73F3F',
@@ -101,7 +76,7 @@ var JobApp = OpenLayers.Class({
             }
         });
         
-        var mask = new OpenLayers.Layer.Vector('Mask', {
+        var mask = new OpenLayers.Layer.Vector('mask', {
             displayInLayerSwitcher: false,
             styleMap: new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
@@ -115,44 +90,116 @@ var JobApp = OpenLayers.Class({
         });
         map.addLayers([mask, jobs, regions]);
         
-        /* required to fire selection events on jobs layer */
-        
-        var selectControl = new OpenLayers.Control.SelectFeature(jobs,{
-            id: 'selectControl'
-        });
-        map.addControl(selectControl);
-        selectControl.activate();
-        
-        
+        /* add the regions and mask features */
         //this.buildJobList(jobs, selectControl);
         this.addRegionMask(mask);
         this.addRegions(regions);
         
-        /* feature selection event handling */
-        jobs.events.register("featureselected", this, function(e) {
-                var feature = e.feature;
-                var uid = feature.uid;
-                var feat = feature.clone();
-                var attrs = feat.attributes;
-                var geom = feat.geometry.transform('EPSG:3857','EPSG:4326');
-                map.zoomToExtent(feature.geometry.bounds, false);
-                
+        // add bounding box selection layer
+        bbox = new OpenLayers.Layer.Vector("bbox", {
+           displayInLayerSwitcher: false,
+           styleMap: this.getTransformStyleMap(),
+        });
+        map.addLayers([bbox]);
+        
+        // add a draw feature control for bbox selection.
+        box = new OpenLayers.Control.DrawFeature(bbox, OpenLayers.Handler.RegularPolygon, { 
+           handlerOptions: {
+              sides: 4,
+              snapAngle: 90,
+              irregular: true,
+              persist: true
+           }
+        });
+        map.addControl(box);
+       
+        transform = new OpenLayers.Control.TransformFeature(bbox, {
+           rotate: false,
+           irregular: true,
+           renderIntent: "transform",
         });
         
-        /* feature unselection event handling */
-        jobs.events.register("featureunselected", this, function(e){
+        // listen for selection box being added to bbox layer..
+        box.events.register('featureadded', this, function(e){
+            // get selection bounds
+            bounds = e.feature.geometry.bounds;
             
+            // add feature based on selection
+            bbox.removeAllFeatures(); 
+            var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+            bbox.addFeatures(feature);
+            transform.setFeature(feature);
+            box.deactivate();
+            
+            // validate the selected extents.
+            if (this.checkBounds(bounds)) {
+                //all ok
+                this.setBounds(bounds);
+                $('#alert-area').css('visibility','hidden');
+                $("#create-export-job :input").prop("disabled", false);
+            }
+            else {
+                 $('#alert-area').css('visibility','visible');
+                 $("#create-export-job :input").prop("disabled", true);
+            }
+        });
+        
+        // update the bounds when bbox is moved..
+        transform.events.register("transformcomplete", this, function(e){
+            var bounds = e.feature.geometry.bounds
+            if (this.checkBounds(bounds)) {
+                //all ok
+                this.setBounds(bounds);
+                $('#alert-area').css('visibility','hidden');
+                $("#create-export-job :input").prop("disabled", false);
+            }
+            else {
+                $('#alert-area').css('visibility','visible');
+                $("#create-export-job :input").prop("disabled", true);
+            }
+            this.setBounds(bounds);
+        });
+        map.addControl(transform);
+        
+        // handles click on select area button
+        $("#select-area").bind('click', function(e){
+            /* clear existing features and activate draw control */
+            bbox.removeAllFeatures();
+            transform.unsetFeature();
+            box.activate();
+            $('#alert-area').css('visibility','hidden');
+            $("#create-export-job :input").prop("disabled", false);
+        });
+        
+        $('#clear-selection').bind('click', function(e){
+            /*
+             * remove features and transforms
+             */
+            bbox.removeAllFeatures();
+            box.deactivate();
+            transform.unsetFeature();
+            $('#alert-area').css('visibility','hidden');
+            $("#create-export-job :input").prop("disabled", false);
         });
         
         $('#reset-map').bind('click', function(e){
-             map.zoomToExtent(routes.getDataExtent());
+            /*
+             * remove features and transforms
+             * reset map to regions extent
+             */
+            bbox.removeAllFeatures();
+            box.deactivate();
+            transform.unsetFeature();
+            map.zoomToExtent(regions.getDataExtent());
+            $("#create-export-job :input").prop("disabled", false);
         });
         
         /* Add map controls */
         map.addControl(new OpenLayers.Control.ScaleLine());
-        map.addControl(new OpenLayers.Control.LayerSwitcher());
+        //map.addControl(new OpenLayers.Control.LayerSwitcher());
         
-        map.zoomTo(2);
+        // set inital zoom to regions extent
+        map.zoomTo(regions.getDataExtent());
         
         return map;
     },
@@ -160,8 +207,7 @@ var JobApp = OpenLayers.Class({
     buildJobList: function(jobs){
         var that = this;
         var selectControl = map.getControlsBy('id','selectControl')[0];
-        // get the routes from the tracks api and build the page..
-        $.getJSON('http://hot.geoweb.io/api/jobs.json', function(data){
+        $.getJSON(Config.JOBS_URL, function(data){
             var geojson = new OpenLayers.Format.GeoJSON({
                     'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                     'externalProjection': new OpenLayers.Projection("EPSG:4326")
@@ -177,7 +223,7 @@ var JobApp = OpenLayers.Class({
     addRegions: function(regions){
        var that = this;
         // get the regions from the regions api
-        $.getJSON('http://hot.geoweb.io/api/regions.json', function(data){
+        $.getJSON(Config.REGIONS_URL, function(data){
             var geojson = new OpenLayers.Format.GeoJSON({
                     'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                     'externalProjection': new OpenLayers.Projection("EPSG:4326")
@@ -190,7 +236,7 @@ var JobApp = OpenLayers.Class({
     
     addRegionMask: function(mask){
         // get the regions from the regions api
-        $.getJSON('http://hot.geoweb.io/api/maskregions.json', function(data){
+        $.getJSON(Config.REGION_MASK_URL, function(data){
             var geojson = new OpenLayers.Format.GeoJSON({
                     'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                     'externalProjection': new OpenLayers.Projection("EPSG:4326")
@@ -200,43 +246,134 @@ var JobApp = OpenLayers.Class({
         }); 
     },
     
+    setBounds: function(bounds) {
+     
+        bounds.transform('EPSG:3857','EPSG:4326');
+     
+        z = 10000;
+     
+        var left    = Math.round(bounds.left   * z) / z;
+        var bottom  = Math.round(bounds.bottom * z) / z;
+        var right   = Math.round(bounds.right  * z) / z;
+        var top     = Math.round(bounds.top    * z) / z;
+     
+        $("#job_lonmin").val(left);
+        $("#job_latmin").val(bottom);
+        $("#job_lonmax").val(right);
+        $("#job_latmax").val(top);
+        //$("form").resetClientSideValidations();
+    },
     
-    buildDeleteDialog: function(){
-        var that = this;
-        var options = {
-            dataType: 'json',
-            beforeSubmit: function(arr, $form, options) {
-                console.log('in before submit..');
-            },
-            success: function(data, status, xhr) {
-                console.log(status);
-                if (status == 'nocontent') {
-                    routes = map.getLayersByName('Routes')[0]
-                    routes.destroyFeatures();
-                    that.buildRouteList(routes);
-                } 
-            },
-            error: function(xhr, status, error){
-                var json = xhr.responseJSON
-                errors = json.errors;
-                console.log(errors);
-            },
+    initValues2Box: function() {
+    
+       /*<% unless @job.id.nil? %>"
+       xminlon = <%= @job.lonmin %>;
+       xminlat = <%= @job.latmin %>;
+       xmaxlon = <%= @job.lonmax %>;
+       xmaxlat = <%= @job.latmax %>;*/
+    
+       bounds = new OpenLayers.Bounds(xminlon, xminlat, xmaxlon, xmaxlat);
+       bounds.transform(proj4326,projmerc);
+       draw_box(bounds);
+       /*<% end %>*/
+    },
+    
+    values2Box: function() {
+
+        xminlon = $("#job_lonmin").val(); 
+        xminlat = $("#job_latmin").val();
+        xmaxlon = $("#job_lonmax").val();
+        xmaxlat = $("#job_latmax").val();
+     
+        bounds = new OpenLayers.Bounds(xminlon, xminlat, xmaxlon, xmaxlat);
+        bo//unds.transform(proj4326,projmerc);
+        //this.drawBox(bounds);
+        //$("form").resetClientSideValidations();
+    },
+    
+    checkBounds: function(bounds) {
+        var extent = bounds.toGeometry();
+        var regions = map.getLayersByName('regions')[0].features
+        var valid_region = false;
+        for (i=0; i < regions.length; i++){
+            region = regions[i].geometry;
+            if (extent.intersects(region)){
+                valid_region = true;
+            }
         }
+        // need a check here if user is_admin.. 
+        //var max_bounds_area = "<%= @max_bounds_area.to_s %>";
+        var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getArea();
+        //bounds.transform(proj4326,projmerc);
+     
+        $("a.select_area").text("<%=t('jobs.area.select_different') %>");
         
-        var modalOpts = {
-            keyboard: true,
-            backdrop: 'static',
+        if (!valid_region) {
+           //Area is out of the covered regions
+           $('#alert-area').html('<strong>Error!</strong> Selected area is outside a valid HOT Export Region.')
+           return false;
+        } else if (area > this.max_bounds_area) {
+           //Area is too large
+           $('#alert-area').html('<strong>Error!</strong> Selected area is ' + area.toFixed(2) + '. Must be less than 100.');
+           return false;
+        } else {
+           //All ok
+           return true;
         }
-        
-        $("#btnDelete").click(function(){
-            $("#deleteRouteModal").modal(modalOpts, 'show');
-        });
-        
-        $("#deleteConfirm").click(function(){
-            $('#deleteForm').ajaxSubmit(options);
-            $("#deleteRouteModal").modal('hide');
-        });
-        
+    },
+    
+    updateMapMessage: function(msg) {
+        mapMessage = msg
+        $("#mapmessage").html(mapMessage);
+    },
+    
+    /* returns the style map for the selection bounding box */
+    getTransformStyleMap: function(){
+        return new OpenLayers.StyleMap({
+                    "default": new OpenLayers.Style({
+                        fillColor: "blue",
+                        fillOpacity: 0.05,
+                        strokeColor: "blue"
+                    }),
+                    // a nice style for the transformation box
+                    "transform": new OpenLayers.Style({
+                        display: "${getDisplay}",
+                        cursor: "${role}",
+                        pointRadius: 6,
+                        fillColor: "blue",
+                        fillOpacity: 1,
+                        strokeColor: "blue",
+                        //strokeDashstyle: "dash",
+                    },
+                    {
+                        context: {
+                            getDisplay: function(feature) {
+                                // hide the resize handles except at the south-east corner
+                                return  feature.attributes.role === "n-resize"  ||
+                                        feature.attributes.role === "ne-resize" ||
+                                        feature.attributes.role === "e-resize"  ||
+                                        feature.attributes.role === "s-resize"  ||
+                                        feature.attributes.role === "sw-resize" ||
+                                        feature.attributes.role === "w-resize"  ||
+                                        feature.attributes.role === "nw-resize" ? "none" : ""
+                            }
+                        }
+                    })
+                });
     }
+    
+    /*
+    $("form#new_job").submit(function() {
+        //Extra validation, in addition to the standard stuff from the
+        //validation plugin.
+        if (mapMessage!="" && mapMessage!="&nbsp;") {   		   
+           alert( mapMessage );
+           return false
+        } else {
+           return true;
+        }
+    });
+    */
+    
     
 });
