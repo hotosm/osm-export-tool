@@ -29,7 +29,8 @@ def run(*script_args):
     job.save()
     # add the format(s)
     formats = [
-            ExportFormat.objects.get(slug='obf')
+            ExportFormat.objects.get(slug='obf'),
+            ExportFormat.objects.get(slug='shp')
     ]
     job.formats = formats
     job.save()
