@@ -23,7 +23,7 @@ class SQliteToShp(object):
             self.shapefile = root + 'shp'
         self.debug = debug
         self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $sqlite -lco ENCODING=UTF-8")
-        self.zip_cmd = Template("zip -r $zipfile $shp_dir")
+        self.zip_cmd = Template("zip -j -r $zipfile $shp_dir")
 
     def convert(self, ):
         convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'sqlite': self.sqlite})

@@ -44,7 +44,7 @@ class TestSQliteToShp(SimpleTestCase):
         sqlite = self.path + '/files/test.sqlite'
         shapefile = self.path + '/files/shp'
         zipfile = '/home/ubuntu/www/hotosm/utils/tests/files/shp.zip'
-        zip_cmd = "zip -r {0} {1}".format(zipfile, shapefile)
+        zip_cmd = "zip -j -r {0} {1}".format(zipfile, shapefile)
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())
