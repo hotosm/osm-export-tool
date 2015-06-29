@@ -204,8 +204,15 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-
-    def test_task_on_success(self,):
+    
+    @patch('os.makedirs')
+    @patch('os.path.exists')
+    @patch('shutil.copy')
+    @patch('os.stat')
+    def test_task_on_success(self, os_stat, shutil_copy, exists, mkdirs):
+        exists.return_value = False # download dir doesn't exist
+        osstat = os_stat.return_value
+        type(osstat).st_size = PropertyMock(return_value=1234567890)
         shp_export_task = ShpExportTask()
         celery_uid = str(uuid.uuid4())
         # assume task is running
@@ -216,9 +223,14 @@ class TestExportTasks(TestCase):
             name=shp_export_task.name
         )
         shp_export_task = ShpExportTask()
-        download_url = '/exports/output/file.shp'
+        download_url = '/exports/' + str(self.run.uid) + '/file.shp'
+        download_root = settings.EXPORT_DOWNLOAD_ROOT
+        run_dir = '{0}{1}'.format(download_root, str(self.run.uid))
         shp_export_task.on_success(retval={'result': download_url}, task_id=celery_uid,
                                    args={}, kwargs={'run_uid': str(self.run.uid)})
+        os_stat.assert_called_once_with(download_url)
+        exists.assert_called_once_with(run_dir)
+        mkdirs.assert_called_once_with(run_dir)
         task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(task)
         result = task.result

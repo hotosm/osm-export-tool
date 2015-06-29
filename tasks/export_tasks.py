@@ -37,7 +37,8 @@ class ExportTask(Task):
         task.finished_at = finished
         # get the output
         output_url = retval['result']
-        size = os.stat(output_url).st_size / 1024 / 1024.00
+        stat = os.stat(output_url)
+        size = stat.st_size / 1024 / 1024.00
         # construct the download_path
         download_root = settings.EXPORT_DOWNLOAD_ROOT
         parts = output_url.split('/')
@@ -57,6 +58,8 @@ class ExportTask(Task):
         # save the task and task result
         task.status = 'SUCCESS'
         task.save()
+        logger.debug(download_url)
+        logger.debug(task)
         result = ExportTaskResult(
             task=task,
             filename=filename,
