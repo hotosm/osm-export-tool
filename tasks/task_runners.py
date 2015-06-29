@@ -2,6 +2,7 @@ import logging
 import sys
 import os
 import importlib
+from datetime import datetime, timedelta
 from hot_exports import settings
 from jobs.models import Job
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
@@ -107,18 +108,16 @@ class ExportTaskRunner(TaskRunner):
                     raise e
             
             """
-                Create a celery chord which runs the conf and query tasks in parallel,
-                followed by a chain of pbfconvert and prep_schema
+                Create a celery chord which runs the initial conf and query tasks in parallel,
+                followed by a chain of pbfconvert and prep_schema (schema_tasks)
                 which run sequentially when the others have completed.
-                Format tasks are then run in parallel afterwards.
+                The export format tasks (format_tasks) are then run in parallel afterwards.
+                The Finalize task is run at the end to clean up staging dirs,
+                update run status, email user etc..
             """
             initial_tasks = group(
                     conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid),
                     query.si(stage_dir=stage_dir, bbox=bbox, run_uid=run_uid)
-            )
-            
-            format_tasks = group(
-                task.si(run_uid=run_uid, stage_dir=stage_dir) for task in export_tasks
             )
             
             schema_tasks = chain(
@@ -126,16 +125,19 @@ class ExportTaskRunner(TaskRunner):
                     prep_schema.si(stage_dir=stage_dir, run_uid=run_uid)
             )
             
+            format_tasks = group(
+                task.si(run_uid=run_uid, stage_dir=stage_dir) for task in export_tasks
+            )
+            
             finalize_task = FinalizeRunTask()
             
-            result = chord(
+            chord(
                 header=initial_tasks,
-                body=schema_tasks |
-                        format_tasks |
+                body=schema_tasks | format_tasks |
                         finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)
-            ).delay()
+            ).apply_async(expires=datetime.now() + timedelta(days=1)) # tasks expire after one day.
             
-            return result
+            return True
         else:
             return False
 
