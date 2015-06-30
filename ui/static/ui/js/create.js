@@ -49,9 +49,10 @@ var JobApp = OpenLayers.Class({
                 scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
                 units: 'm',
                 sphericalMercator: true,
-                noWrap: true
+                noWrap: true // don't wrap world extents
         }
         map = new OpenLayers.Map('map', {options: mapOptions});
+        // restrict extent to world bounds to prevent panning..
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         
         // add base layers
@@ -145,7 +146,7 @@ var JobApp = OpenLayers.Class({
             }
         });
         
-        // update the bounds when bbox is moved / modified
+        // update the bounds after bbox is moved / modified
         transform.events.register("transformcomplete", this, function(e){
             var bounds = e.feature.geometry.bounds.clone();
             if (this.validateBounds(bounds)) {
@@ -184,7 +185,7 @@ var JobApp = OpenLayers.Class({
         });
         
         $('#zoom-selection').bind('click', function(e){
-            // zoom to the selected extent
+            // zoom to the bounding box extent
             if (bbox.features.length > 0) {
                 map.zoomToExtent(bbox.getDataExtent(), false);
             }
@@ -230,7 +231,7 @@ var JobApp = OpenLayers.Class({
      * Initialize the form validation.
      */
     initForm: function(){
-        
+        var that = this;
         $('#create-job-form').formValidation({
             framework: 'bootstrap',
             // Feedback icons
@@ -295,24 +296,42 @@ var JobApp = OpenLayers.Class({
                     }
                 }
             }
-        })/*
-        .on('err.field.fv', function(e, data) {
-            // handle validation on bounding box fields
-            if (data.field == 'xmin' || data.field == 'ymin'
-                || data.field == 'xmax' || data.field == 'ymax') {
-                $('#alert-extents').css('visibility','visible');
-                $('#alert-extents').html('<strong>Invalid Extent!</strong><br/>You must select an area to export.')
-            }
         })
-        */
         .on('success.form.fv', function(e) {
-            e.preventDefault(); // prevent form submission
-            $('#alert-extents').css('visibility','hidden');
+            /*
+             * prevent automatic form submission on successful validation. 
+             * this is done by ajax call when submit button clicked.
+             */
+            e.preventDefault(); 
+        });
+        
+         // handle form submission
+        $('#create-job-form').submit(function(e){
+            // check that the form is valid..
+            var $form = $('#create-job-form');
+            var fv = $($form).data('formValidation');
+            //that.validateBounds();
+            if (fv.$invalidFields.length > 0) {
+                e.preventDefault();
+            }
+            else {
+                $.ajax({
+                    url: Config.JOBS_URL,
+                    type: 'POST',
+                    data: $form.serialize(),
+                    success: function(result) {
+                        var uid = result.uid;
+                        var url = '/jobs/' + uid;
+                        window.location.href=url;
+                    }
+            });
+            }
         });
     },
     
     /*
      * Add the regions to the map.
+     * Calls into region api.
      */
     addRegions: function(regions){
        var that = this;
@@ -330,6 +349,7 @@ var JobApp = OpenLayers.Class({
     
     /*
      * Add the region mask to the map.
+     * Calls into region mask api.
      */
     addRegionMask: function(mask){
         // get the regions from the regions api
@@ -395,7 +415,7 @@ var JobApp = OpenLayers.Class({
     },
     
     /*
-     * triggers validation of the extents.
+     * triggers validation of the extents on the form.
      */
     validateBBox: function(){
         $('#create-job-form').data('formValidation').validateContainer('#form-group-bbox');
@@ -403,14 +423,17 @@ var JobApp = OpenLayers.Class({
     
     /*
      * Validate the selected export extent.
+     * Display error message in case of validation error.
+     * Display success message when extents are valid. 
      */
     validateBounds: function(bounds) {
         var that = this;
         if (!bounds) {
-            that.validateBBox();
+            // no extents selected..
+            that.validateBBox(); // trigger form validation.
             $('#valid-extents').css('visibility','hidden');
             $('#alert-extents').css('visibility','visible');
-            $('#alert-extents').html('<strong>Invalid Exent.</strong><br/>Select area to export.');
+            $('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-remove">&nbsp;</span>');
             return false;
         }
         var extent = bounds.toGeometry();
@@ -423,9 +446,9 @@ var JobApp = OpenLayers.Class({
                 valid_region = true;
             }
         }
-         
+        // calculate the extent area and convert to sq kilometers
         var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
-        
+        // format the area and max bounds for display..
         var area_str = numeral(area).format('0,0');
         var max_bounds_str = numeral(this.max_bounds_area).format('0,0');
         
@@ -445,6 +468,7 @@ var JobApp = OpenLayers.Class({
                                  + ' sq km.<br/> Must be less than ' + max_bounds_str + ' sq km.');
            return false;
         } else {
+            // extents are valid so display success message..
             $('#alert-extents').css('visibility','hidden');
             $('#valid-extents').css('visibility','visible');
             $('#valid-extents').html('<span>Extents are valid.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-ok">&nbsp;</span>');
@@ -462,7 +486,7 @@ var JobApp = OpenLayers.Class({
                         fillOpacity: 0.05,
                         strokeColor: "blue"
                     }),
-                    // style for the transformation box
+                    // style for the select extents box
                     "transform": new OpenLayers.Style({
                         display: "${getDisplay}",
                         cursor: "${role}",

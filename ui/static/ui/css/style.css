@@ -122,7 +122,7 @@ ul.nav {
 #alert-extents {
     position: absolute;
     top: 12px;
-    right: 20px;
+    right: 12px;
     z-index: 100;
     visibility: hidden;
 }
@@ -130,7 +130,7 @@ ul.nav {
 #valid-extents {
     position: absolute;
     top: 12px;
-    right: 20px;
+    right: 12px;
     z-index: 100;
     visibility: hidden;
 }
@@ -193,5 +193,35 @@ ul.nav {
 
 #bbox > small {
     display: none !important;
+}
+
+/* job detail styles @see job.html */
+
+#details-row {
+    padding: 15px;
+}
+
+#job {
+    margin-right: 2em;
+}
+
+#extents {
+    position: relative;
+    width: 20em;
+    height: 20em;
+    border: 1px solid lightgrey;
+}
+
+#extents .olControlZoom {
+    display: none;
+}
+
+#extents .olControlAttribution {
+    bottom: .5em !important;
+}
+
+#status .alert {
+    margin-bottom: 0px !important;
+    padding: 7px !important;
 }
 

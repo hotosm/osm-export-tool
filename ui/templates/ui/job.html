@@ -1,0 +1,64 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+
+{% block container %}
+
+<div id="details-row" class="row">
+    <div id="job" class="col-md-5">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Job Summary</h4></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr><td><strong>Job Id:</strong></td><td><div id="uid"></div></td></tr>
+                                <tr><td><strong>Name:</strong></td><td><div id="name"></div></td></tr>
+                                <tr><td><strong>Description:</strong></td><td><div id="description"></div></td></tr>
+                                <tr><td><strong>Created:</strong></td><td><div id="created"></div></td></tr>
+                                <tr><td><strong>Export Formats:</strong></td><td><div id="formats"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="extents" class="pull-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="runs" class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Export Runs</h4></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr><td><strong>Run Id:</strong></td><td><div id="ruid"></div></td></tr>
+                                <tr><td><strong>Status:</strong></td><td><div id="status"></div></td></tr>
+                                <tr><td><strong>Started:</strong></td><td><div id="started"></div></td></tr>
+                                <tr><td><strong>Finished:</strong></td><td><div id="finished"></div></td></tr>
+                                <tr><td><strong>Duration:</strong></td><td><div id="duration"></div></td></tr>
+                                <tr><td><strong>Downloads:</strong></td><td><div id="downloads"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block corejs %}
+{{ block.super}}
+<script src="{% static 'ui/components/handlebars/handlebars.min.js' %}"></script>
+<script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/components/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/components/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/config.js' %}"></script>
+<script src="{% static 'ui/js/job.js' %}"></script>
+{% endblock %}

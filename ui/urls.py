@@ -7,4 +7,5 @@ urlpatterns = patterns('ui.views',
     url(r'^create/$', TemplateView.as_view(template_name='ui/create.html'), name='create'),
     url(r'^edit/$', TemplateView.as_view(template_name='ui/edit.html'), name='edit'),
     url(r'^help/$', TemplateView.as_view(template_name='ui/edit.html'), name='edit'),
+    url(r'^(?P<uuid>[^/]+)/$', TemplateView.as_view(template_name='ui/job.html'), name='job')
 )
