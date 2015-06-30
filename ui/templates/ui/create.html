@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% block css %}
 {{ block.super}}
+    <link rel="stylesheet" href="{% static 'ui/components/formvalidation/dist/css/formValidation.css' %}"/>
 {% endblock %}
 
 {% block container %}
@@ -15,34 +16,45 @@
                 <li role="presentation"><a data-toggle="tab" href="#config">Select Export Tags</a></li>
                 <li role="presentation"><a data-toggle="tab" href="#tags">Exports</a></li>
             </ul>
-            <form id="create-export-job" role="form" action="" method="POST">
                 <div class="tab-content container-fluid">
                     <div id="create" class="tab-pane fade in active">
-                      <div class="panel panel-default">
-                        <div class="panel-body">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name">
-                            <br/>
-                            <label for="description">Description</label>
-                            <textarea type="text" rows="5" class="form-control" id="description"></textarea>
-                            <br/>
-                            <div class="form-group">
-                                <label for="formats">Select Export Formats:</label>
-                                <select multiple class="form-control" id="formats">
-                                  <option>ESRI Shapefile</option>
-                                  <option>OSMAnd OBF</option>
-                                  <option>Garmin IMG</option>
-                                  <option>KML</option>
-                                </select>
-                            </div>
-                            <label for="extents">Export extents:</label>
-                            <input type="hidden" id="xmin" name="xmin"/>
-                            <input type="hidden" id="ymin" name="ymin"/>
-                            <input type="hidden" id="xmax" name="xmax"/>
-                            <input type="hidden" id="ymax" name="ymax"/>
-                            <div id="extents"></div>
-                        </div>
-                      </div>
+                          <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <form id="create-job-form" role="form" action="" method="POST">
+                                        {% csrf_token %}
+                                        <div class="form-group row" id="form-group-name">
+                                            <div class="col-md-12">
+                                                <label class="control-label" for="name">Name</label>
+                                                <input class="form-control" type="text" name="name" id="name" value=""/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group row" id="form-group-description">
+                                            <div class="col-md-12">
+                                                <label class="control-label" for="description">Description</label>
+                                                <textarea name="description" id="description" class="form-control" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group row" id="form-group-formats">
+                                            <div class="col-md-6">
+                                                <label class="control-label" for="formats">Select Export Formats:</label>
+                                                <div id="supported-formats"></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row" id="form-group-bbox">
+                                            <div class="col-md-6" id="bbox">
+                                                <input id="xmin" name="xmin" value=""/>
+                                                <input id="ymin" name="ymin" value=""/>
+                                                <input id="xmax" name="xmax" value=""/>
+                                                <input id="ymax" name="ymax" value=""/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">Create Export Job</button>
+                                    </form>
+                                </div>
+                          </div> 
                     </div>
                     <div id="upload" class="tab-pane fade">
                       <div class="panel panel-default">
@@ -62,17 +74,17 @@
                       <p>Export stuff here (?)..</p>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-lge btn-success">Create Export Job</button>
-            </form>
       </div>
     </div>
     <div id="map-column" class="col-md-7">
         <div class="btn-group" role="group">
-            <button id="select-area" class="btn btn-lge btn-primary">Select Export Area</button>
-            <button id="clear-selection" class="btn btn-lge btn-primary">Clear Selection</button>
-            <button id="reset-map" class="btn btn-lge btn-primary">Reset Map</button>
+            <button id="select-area" class="btn btn-md btn-primary">Select Export Area</button>
+            <button id="zoom-selection" class="btn btn-md btn-primary">Zoom To Selection</button>
+            <button id="clear-selection" class="btn btn-md btn-primary">Clear Selection</button>
+            <button id="reset-map" class="btn btn-md btn-primary">Reset Map</button>
         </div>
-        <div id="alert-area" class="alert alert-danger fade in"></div>
+        <div id="alert-extents" class="alert alert-danger fade in"></div>
+        <div id="valid-extents" class="alert alert-success fade in"></div>
         <div id="map"></div>
     </div>
 </div>
@@ -82,7 +94,10 @@
 {% block corejs %}
 {{ block.super}}
 <script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/components/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
 <script src="{% static 'ui/js/layers.js' %}"></script>
 <script src="{% static 'ui/js/config.js' %}"></script>
-<script src="{% static 'ui/js/map.js' %}"></script>
+<script src="{% static 'ui/js/create.js' %}"></script>
 {% endblock %}

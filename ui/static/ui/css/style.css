@@ -119,6 +119,22 @@ ul.nav {
     height: 620px;
 }
 
+#alert-extents {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    z-index: 100;
+    visibility: hidden;
+}
+
+#valid-extents {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    z-index: 100;
+    visibility: hidden;
+}
+
 .btn-group {
     position: absolute;
     top: 12px;
@@ -126,29 +142,15 @@ ul.nav {
     z-index: 100;
 }
 
-#alert-area {
-    position: absolute;
-    top: 12px;
-    right: 20px;
-    z-index: 100;
-    visibility: hidden;
-}
-/*
-#select-area {
-    position: absolute;
-    top: 12px;
-    left: 50px;
-    z-index: 100;
+.olControlDrawFeatureActive { 
+  cursor: crosshair;
 }
 
-#reset-map {
-    position: absolute;
-    top: 12px;
-    left: 100px;
-    z-index: 100;
+#map-column {
+    border-left: 2px solid lightgrey;
 }
-*/
-/* Create form styles */
+
+/* Create export form styles */
 
 #create-job {
     padding: 10px !important;
@@ -165,10 +167,9 @@ ul.nav {
     font-size: medium;
 }
 
-/*
-.tab-content {
-    padding-top: 20px !important;
-}*/
+#supported-formats {
+    padding-left: 1em;
+}
 
 .tab-pane > .panel {
     border: none;
@@ -177,5 +178,20 @@ ul.nav {
 
 .tab-pane > .panel > .panel-body {
     padding-left: 0px !important;
+}
+
+/*
+ * hide the bbox div
+ * which contains bbox hidden fields.
+ */
+
+#bbox {
+    visibility: hidden;
+    max-height: 1px;
+    max-width: 1px;
+}
+
+#bbox > small {
+    display: none !important;
 }
 
