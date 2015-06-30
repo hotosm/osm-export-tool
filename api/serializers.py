@@ -174,9 +174,21 @@ class SimpleJobSerializer(serializers.Serializer):
        view_name='api:jobs-detail',
        lookup_field='uid'
     )
+    extent = serializers.SerializerMethodField()
     
     def get_uid(self, obj):
         return obj.uid
+    
+    def get_extent(self, obj):
+        uid = str(obj.uid)
+        name = obj.name
+        geom = obj.the_geom
+        geometry = json.loads(GEOSGeometry(geom).geojson)
+        feature = OrderedDict()
+        feature['type'] = 'Feature'
+        feature['properties'] = {'uid': uid, 'name': name}
+        feature['geometry'] = geometry
+        return feature
 
 
 class ExportRunSerializer(serializers.ModelSerializer):
@@ -302,6 +314,7 @@ class JobSerializer(serializers.Serializer):
     description = serializers.CharField(
         max_length=255,
     )
+    created_at = serializers.DateTimeField(read_only=True)
     exports = serializers.SerializerMethodField()
     configurations = serializers.SerializerMethodField()
     #configs = ExportConfigSerializer(many=True)

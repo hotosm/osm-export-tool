@@ -226,6 +226,12 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = ExportRun.objects.filter(uid=uid)
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def list(self, request, job_uid=None, *args, **kwargs):
+        job_uid = self.request.QUERY_PARAMS.get('job_uid', None)
+        queryset = ExportRun.objects.filter(job__uid=job_uid)
+        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ExportConfigViewSet(viewsets.ModelViewSet):
