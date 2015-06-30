@@ -45,6 +45,7 @@ from hot_exports import settings
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+# controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 

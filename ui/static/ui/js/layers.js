@@ -1,3 +1,6 @@
+/*
+ * Configuration for base layers.
+ */
 var Layers = {};
 
 Layers.OSM = new OpenLayers.Layer.OSM("OpenStreetMap");
