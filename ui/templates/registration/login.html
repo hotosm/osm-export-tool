@@ -1,0 +1,94 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+
+{% block container %}
+
+ {% if not user.is_authenticated %}
+    <center>
+    <div class="panel panel-default" style="width: 25%;margin-top: 2em;">
+    <div id="heading-wrap" class="panel-heading"><span class="glyphicon-heading glyphicon glyphicon-log-in pull-left">&nbsp</span>
+      <div><h4>Login to Hot Exports</h4></div>
+    </div>
+    <div class="panel-body">
+          <div id="login">
+              {% if form.errors %}
+              <div class="alert alert-danger">Your username and password didn't match. <br/>Please try again or click <a href="/accounts/password/reset">here</a> to reset your password.</div>
+              {% endif %}
+                <form method="post" action="{% url 'django.contrib.auth.views.login' %}" id="loginForm">
+                    {% csrf_token %}
+                    <div class="form-group row" id="form-group-username">
+                        <div class="col-md-12">
+                            <strong><label class="control-label pull-left" for="username">Username: </label></strong>
+                            <input class="form-control input-lg" type="text" name="username" id="username" value=""/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="form-group row" id="form-group-password">
+                        <div class="col-md-12">
+                            <strong><label class="control-label pull-left" for="password">Password: </label></strong>
+                            <input name="password" id="password" class="form-control input-lg" type="password"/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="form-group row pull-left">
+                        <div class="col-md-6">
+                            <button id="save" type="submit" class="btn btn-lg btn-success pull-left">Login</button>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'registration_register' %}"><div id="register" class="btn btn-lg btn-primary pull-right">Register</div></a>
+                        </div>
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </form>
+              <div></div>
+          </div>
+      </div>
+    </div>
+    </center>
+    {% else %}
+        <div class="panel panel-default" style="width: 25%;margin-top: 2em;">
+            <div id="heading-wrap" class="panel-heading"><span class="glyphicon-heading glyphicon glyphicon-log-in pull-left">&nbsp</span>
+                <div><h5>User Logged In</h5></div>
+            </div>
+            <div class="panel-body">You are already logged in. Return to <a href="routes">Your Routes</a> or <a href="logout">Logout</a></div>
+        </div>
+    {% endif %}
+
+{% endblock %}
+{% block corejs %}
+{{ block.super }}
+<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#loginForm').formValidation({
+                framework: 'bootstrap',
+        
+                // Feedback icons
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+        
+                // List of fields and their validation rules
+                fields: {
+                    username: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please enter your username.'
+                            },
+                        }
+                    },
+                    password: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please enter your password.'
+                            }
+                        }
+                    }
+                }
+        }); 
+    });
+</script>
+{% endblock %}

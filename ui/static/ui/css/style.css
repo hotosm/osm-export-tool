@@ -81,7 +81,7 @@ ul.nav {
 }
 
 
-/* main container */
+/* main container / bootstrap styles */
 
 .container-fluid {
     padding: 0px !important;
@@ -109,6 +109,19 @@ ul.nav {
   padding: 0px;
 }
 
+.glyphicon-heading {
+    font-size: 2em;
+    top: 8px;
+    color: #B02129;
+}
+
+.form-control-feedback {
+    top: 1.5em !important;
+}
+
+span.heading {
+    font-size: 1.5em !important;
+}
 
 
 /* Map styles */

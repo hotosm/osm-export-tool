@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     {% load staticfiles %}
+    {% load i18n %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,8 +53,18 @@
             <li><a href="/jobs/create">New Job</a></li>
             <li><a href="/about">About</a></li>
             <li><a href="/help">Help</a></li>
-            <li><a href="/login">Login</a></li>
             <li><a href="/api">API</a></li>
+            {% if user.is_authenticated %}
+              <li id="logout" class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+              <li><a href="/accounts/logout/?next=/"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
+              <li><a href="/accounts/password/change"><span class="glyphicon glyphicon-user"></span> Change Password</a></li>
+              </ul>
+              </li>
+            {% else %}
+              <li><a href="/accounts/login/">Login</a></li>
+            {% endif %}
           </ul>
         </div>
       </div>
