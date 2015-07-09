@@ -32,7 +32,10 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
-LOGIN_URL = '/login/'
+REGISTRATION_OPEN = True                
+ACCOUNT_ACTIVATION_DAYS = 7  
+REGISTRATION_AUTO_LOGIN = True
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
 
@@ -47,6 +50,7 @@ DEFAULT_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.postgres',
+    'django.contrib.sites',
 )
 
 THIRD_PARTY_APPS = (
@@ -55,6 +59,7 @@ THIRD_PARTY_APPS = (
     'rest_framework.authtoken',
     'django_nose',
     'django_extensions',
+    'registration',
 )
 
 LOCAL_APPS = (
@@ -98,7 +103,7 @@ ROOT_URLCONF = 'hot_exports.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['api/templates/'],
+        'DIRS': ['api/templates/', 'ui/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,6 +123,9 @@ SESSION_COOKIE_NAME='hot_exports_sessionid'
 SESSION_COOKIE_DOMAIN='hot.geoweb.io'
 SESSION_COOKIE_PATH='/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+SITE_ID = 1
+
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
