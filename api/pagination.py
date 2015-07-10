@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class JobLinkHeaderPagination(PageNumberPagination):
     
-    page_size = 2
+    page_size = 5
     
     def get_paginated_response(self, data):
         next_url = self.get_next_link()

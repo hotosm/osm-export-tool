@@ -1,8 +1,47 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% block css %}
+{{ block.super}}
+<link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/dataTables.bootstrap.css' %}"/>
+{% endblock %}
 
 {% block container %}
 
-<h2>List jobs here...</h2>
+<div class="row">
+    <div class="col-md-6">
+        <div id="list-jobs" class="col-md-12">
+            <div class="table-responsive">
+                <table id="jobs" class="table table-hover">
+                    <thead>
+                        <tr><th>Name</th><th>Description</th><th>Created</th><th>Region</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="pagination" class="pull-right">
+                <ul class="pagination"></ul>
+            </div>
+        </div>
+    </div>
+    <div id="map-column" class="col-md-6">
+        <div id="map"></div>
+    </div>
+</div>
 
+{% endblock %}
+{% block corejs %}
+{{ block.super}}
+<script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/components/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/components/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+
+<script src="{% static 'ui/components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ui/components/datatables/media/js/dataTables.bootstrap.js' %}"></script>
+
+<script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/config.js' %}"></script>
+<script src="{% static 'ui/js/list.js' %}"></script>
 {% endblock %}
