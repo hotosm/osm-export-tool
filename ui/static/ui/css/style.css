@@ -238,3 +238,9 @@ span.heading {
     padding: 7px !important;
 }
 
+/* jobs list page */
+
+ul.pagination {
+    margin-right: 1em;
+}
+

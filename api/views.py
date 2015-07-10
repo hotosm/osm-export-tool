@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import pdb
+import django_filters
 from datetime import datetime
 from collections import OrderedDict
 from django.http import HttpResponse
@@ -30,6 +31,8 @@ from rest_framework.pagination import PageNumberPagination
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 from .pagination import JobLinkHeaderPagination
+#from .filters import JobFilter
+
 from jobs import presets
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
@@ -49,6 +52,18 @@ logger = logging.getLogger(__name__)
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 
+class JobFilter(django_filters.FilterSet):
+    
+    name = django_filters.CharFilter(name="name",lookup_type="icontains")
+    description = django_filters.CharFilter(name="description",lookup_type="icontains")
+    created = django_filters.DateTimeFilter(name="created_at",lookup_type="exact")
+    region = django_filters.CharFilter(name="region__name")
+    
+    class Meta:
+        model = Job
+        fields = ('name','description','created','region',)
+
+
 class JobViewSet(viewsets.ModelViewSet):
     """
     ## Job API Endpoint.
@@ -56,22 +71,22 @@ class JobViewSet(viewsets.ModelViewSet):
     
     More docs here...
     """
-    from serializers import JobSerializer
     
     serializer_class = JobSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     lookup_field = 'uid'
     pagination_class = JobLinkHeaderPagination
-
-    def get_queryset(self):
-        return Job.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
+    search_fields = ('name',)
+    filter_class = JobFilter
+    queryset = Job.objects.order_by('-created_at')
+    ordering_fields = ('name', 'description', 'created_at', 'region',)
     
     def list(self, request, uid=None, *args, **kwargs):
         params = self.request.QUERY_PARAMS.get('bbox', None)
-        logger.debug(params)
         if params == None:
-            queryset = Job.objects.all()
+            queryset = self.filter_queryset(self.get_queryset())
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True, context={'request': request})
@@ -94,7 +109,7 @@ class JobViewSet(viewsets.ModelViewSet):
             try:
                 bbox_extents = validate_bbox_params(data)
                 bbox = validate_search_bbox(bbox_extents)
-                queryset = Job.objects.filter(the_geom__intersects=bbox)
+                queryset = self.filter_queryset(Job.objects.filter(the_geom__intersects=bbox))
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer = self.get_serializer(page, many=True, context={'request': request})
@@ -105,7 +120,7 @@ class JobViewSet(viewsets.ModelViewSet):
             except ValidationError as e:
                 logger.debug(e.detail)
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-                
+    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
