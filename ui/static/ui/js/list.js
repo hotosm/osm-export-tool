@@ -19,12 +19,15 @@ jobs = {};
 jobs.list = (function(){
     var map;
     var job_extents;
+    var bbox;
+    var filtering = false;
     
     return {
         init: function(){
             initListMap();
             initDataTable();
             listJobs();
+            initSearch();
         },
     }
     
@@ -86,7 +89,7 @@ jobs.list = (function(){
         map.addLayer(job_extents);
         
         // add filter selection layer
-        var bbox = new OpenLayers.Layer.Vector("filter", {
+        bbox = new OpenLayers.Layer.Vector("filter", {
            displayInLayerSwitcher: false,
            styleMap: getTransformStyleMap(),
         });
@@ -127,13 +130,20 @@ jobs.list = (function(){
             // enable bbox modification
             transform.setFeature(feature);
             
+            // filter the results by bbox
+            filtering = true;
+            filterByBBox(bounds);
+            map.zoomToExtent(bbox.getDataExtent());
             
         });
         
-        // update the bounds after bbox is moved / modified
+        // filter results after bbox is moved / modified
         transform.events.register("transformcomplete", this, function(e){
             var bounds = e.feature.geometry.bounds.clone();
-            
+            // filter the results by bbox
+            filtering = true;
+            filterByBBox(bounds);
+            map.zoomToExtent(bbox.getDataExtent());
         });
         
         // add the transform control
@@ -147,6 +157,19 @@ jobs.list = (function(){
             bbox.removeAllFeatures();
             transform.unsetFeature();
             box.activate();
+        });
+        
+        // clears the search selection area
+        $('#clear-filter').bind('click', function(e){
+            /*
+             * Unsets the bounds on the form and
+             * remove features and transforms
+             */
+            filtering = false;
+            bbox.removeAllFeatures();
+            box.deactivate();
+            transform.unsetFeature();
+            listJobs();
         });
     }
     
@@ -220,10 +243,9 @@ jobs.list = (function(){
      * page: the page number to display
      *
      */
-    function listJobs(page){
-        var url = Config.JOBS_URL;
-        if (page) {
-            url += '?page=' + page;
+    function listJobs(url){
+        if (!url) {
+            url = Config.JOBS_URL;
         }
         $.ajax(url)
         .done(function(data, textStatus, jqXHR){
@@ -245,8 +267,11 @@ jobs.list = (function(){
                 var feature = geojson.read(extent);
                 job_extents.addFeatures(feature);
             });
-            // zoom to page extents..
-            map.zoomToExtent(job_extents.getDataExtent());
+           
+            // zoom to result extents if not filtering
+            if (!filtering) {
+                map.zoomToExtent(job_extents.getDataExtent());
+            }
             
             // select bbox features based on row hovering
             $('table#jobs tbody tr').hover(
@@ -256,7 +281,6 @@ jobs.list = (function(){
                     var feature = job_extents.getFeaturesByAttribute('uid',uid)[0]
                     selectControl.unselectAll();
                     selectControl.select(feature);
-                    //map.zoomToExtent(feature.geometry.bounds);
                 },
                 function(e){
                     var selectControl = map.getControlsBy('id','selectControl')[0];
@@ -264,6 +288,8 @@ jobs.list = (function(){
                 }
             );
         });
+        
+       
     }
     
     /*
@@ -278,54 +304,59 @@ jobs.list = (function(){
         var info = $('#info');
         info.empty();
         
-        var link = jqXHR.getResponseHeader('Link');
-        var links = link.split(',');
-        var a = links[0];
-        var b = links[1];
-        
         var rangeHeader = jqXHR.getResponseHeader('Content-Range');
         var total = rangeHeader.split('/')[1];
         var range = rangeHeader.split('/')[0].split(' ')[1];
         info.append('<span>Displaying ' + range + ' of ' + total + ' results');
         
+        // check if we have link header
+        var a, b;
+        var link = jqXHR.getResponseHeader('Link');
+        if (link) {
+            var links = link.split(',');
+            a = links[0];
+            b = links[1];
+        }
+        else {
+            return;
+        }
+        
         if (b) {
-            var url = b.split(';')[0];
+            var url = b.split(';')[0].trim();
             url = url.slice(1, url.length -1);
-            var page = url.split('=')[1];
             var rel = b.split(';')[1].split('=')[1];
             rel = rel.slice(1, rel.length -1);
-            paginate.append('<li id="prev" data-page="' + page + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>&nbsp;');
+            paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>&nbsp;');
             $('li#prev').on('click', function(){
-                var p = this.dataset.page;
-                p == 'undefined' ? listJobs() : listJobs(p);  
+                var u = this.getAttribute('data-url');
+                u == 'undefined' ? listJobs() : listJobs(u);  
             });
         }
         
         if (a) {
-            var url = a.split(';')[0];
+            var url = a.split(';')[0].trim();
             url = url.slice(1, url.length -1);
-            var page = url.split('=')[1];
             var rel = a.split(';')[1].split('=')[1];
             rel = rel.slice(1, rel.length -1);
             if (rel == 'prev') {
-                paginate.append('<li id="prev" data-page="' + page + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>');
+                paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>');
                 $('li#prev').on('click', function(){
-                    var p = this.dataset.page;
-                    p == 'undefined' ? listJobs() : listJobs(p);
+                    var u = this.getAttribute('data-url');
+                    u == 'undefined' ? listJobs() : listJobs(u);
                 });
             }
             else {
-                paginate.append('<li id="next" data-page="' + page + '"><a href="#">Next <span class="glyphicon glyphicon-chevron-right"/></a></li>');
+                paginate.append('<li id="next" data-url="' + url + '"><a href="#">Next <span class="glyphicon glyphicon-chevron-right"/></a></li>');
                 $('li#next').on('click', function(){
-                    var p = this.dataset.page;
-                    p == 'undefined' ? listJobs() : listJobs(p);
+                    var u = this.getAttribute('data-url');
+                    u == 'undefined' ? listJobs() : listJobs(u);
                 });
             }
         }
     }
     
     /*
-     * Initialize the job data table.
+     * Initialize the exports list data table.
      */
     function initDataTable(){
         $('table#jobs').DataTable({
@@ -352,6 +383,35 @@ jobs.list = (function(){
            });
     }
     
+    /**
+     * Filters search results by bounding box selection.
+     */
+    function filterByBBox(bounds){
+        
+        fmt = '0.0000000000'; // format to 10 decimal places
+        bounds.transform("EPSG:3857", "EPSG:4326");
+        var xmin = numeral(bounds.left).format(fmt);
+        var ymin = numeral(bounds.bottom).format(fmt);
+        var xmax = numeral(bounds.right).format(fmt);
+        var ymax = numeral(bounds.top).format(fmt);
+        
+        var url = Config.JOBS_URL +
+                '?bbox=' + xmin + ',' + ymin +
+                ',' + xmax + ',' + ymax;
+        console.log(url);
+        listJobs(url);
+    }
+    
+    /*
+     * Search export jobs.
+     */ 
+    function initSearch(){
+        $('button#search').bind('click', function(e){
+            e.preventDefault();
+            
+        });
+    }
+    
 }());
 
 
@@ -362,7 +422,6 @@ $(document).ready(function() {
         $('#create-export-map').css('visibility', 'hidden');
         $('#create-controls').css('display','none');
         $('#list-export-map').css('visibility', 'visible');
-        $('#list-controls').css('display','block');
     });
     
     jobs.list.init();

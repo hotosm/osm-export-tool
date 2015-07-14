@@ -36,7 +36,7 @@ REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 7  
 REGISTRATION_AUTO_LOGIN = True
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/jobs/create/'
 
 
 # Application definition
