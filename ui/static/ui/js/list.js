@@ -400,10 +400,11 @@ jobs.list = (function(){
                     }
                 },
                 {data: 'description'},
+                {data: 'event'},
                 {
                     data: 'created_at',
                     render: function(data, type, row){
-                        return moment(data).format('MMMM Do YYYY, h:mm:ss a');
+                        return moment(data).format('MM-DD-YYYY, h:mm a');
                     }
                 },
                 {data: 'region.name'}

@@ -31,7 +31,7 @@ from rest_framework.pagination import PageNumberPagination
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 from .pagination import JobLinkHeaderPagination
-#from .filters import JobFilter
+from .filters import JobFilter
 
 from jobs import presets
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
@@ -50,18 +50,6 @@ logger = logging.getLogger(__name__)
 
 # controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
-
-
-class JobFilter(django_filters.FilterSet):
-    
-    name = django_filters.CharFilter(name="name",lookup_type="icontains")
-    description = django_filters.CharFilter(name="description",lookup_type="icontains")
-    created = django_filters.DateTimeFilter(name="created_at",lookup_type="exact")
-    region = django_filters.CharFilter(name="region__name")
-    
-    class Meta:
-        model = Job
-        fields = ('name','description','created','region',)
 
 
 class JobViewSet(viewsets.ModelViewSet):
