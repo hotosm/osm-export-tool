@@ -3,101 +3,127 @@
 {% block css %}
 {{ block.super}}
     <link rel="stylesheet" href="{% static 'ui/components/formvalidation/dist/css/formValidation.css' %}"/>
+    <link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/jquery.dataTables.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/dataTables.bootstrap.css' %}"/>
 {% endblock %}
 
 {% block container %}
-
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-6">
         <div id="create-job" class="container-fluid">
             <ul id="tabs" class="nav nav-pills">
-                <li role="presentation" class="active"><a data-toggle="tab" href="#create">Create New Export</a></li>
-                <li role="presentation"><a data-toggle="tab" href="#upload">Upload Configuration File</a></li>
-                <li role="presentation"><a data-toggle="tab" href="#config">Select Export Tags</a></li>
-                <li role="presentation"><a data-toggle="tab" href="#tags">Exports</a></li>
+                <li id="create-tab" role="presentation" class="active"><a data-toggle="tab" href="#create">Create New Export</a></li>
+                <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">Upload Configuration File</a></li>
+                <li id="list-tab" role="presentation"><a data-toggle="tab" href="#list">Exports</a></li>
             </ul>
-                <div class="tab-content container-fluid">
-                    <div id="create" class="tab-pane fade in active">
-                          <div class="panel panel-default">
-                                <div class="panel-body">
-                                    <form id="create-job-form" role="form" action="" method="POST">
-                                        {% csrf_token %}
-                                        <div class="form-group row" id="form-group-name">
-                                            <div class="col-md-12">
-                                                <label class="control-label" for="name">Name</label>
-                                                <input class="form-control" type="text" name="name" id="name" value=""/>
-                                            </div>
+            <div class="tab-content container-fluid">
+                <div id="create" class="tab-pane fade in active">
+                      <div class="panel panel-default">
+                            <div class="panel-body">
+                                <form id="create-job-form" role="form" action="" method="POST">
+                                    {% csrf_token %}
+                                    <div class="form-group row" id="form-group-name">
+                                        <div class="col-md-12">
+                                            <label class="control-label" for="name">Name</label>
+                                            <input class="form-control" type="text" name="name" id="name" value=""/>
                                         </div>
-                                        <br/>
-                                        <div class="form-group row" id="form-group-description">
-                                            <div class="col-md-12">
-                                                <label class="control-label" for="description">Description</label>
-                                                <textarea name="description" id="description" class="form-control" rows="3"></textarea>
-                                            </div>
+                                    </div>
+                                    <br/>
+                                    <div class="form-group row" id="form-group-description">
+                                        <div class="col-md-12">
+                                            <label class="control-label" for="description">Description</label>
+                                            <textarea name="description" id="description" class="form-control" rows="3"></textarea>
                                         </div>
-                                        <br/>
-                                        <div class="form-group row" id="form-group-formats">
-                                            <div class="col-md-6">
-                                                <label class="control-label" for="formats">Select Export Formats:</label>
-                                                <div id="supported-formats"></div>
-                                            </div>
+                                    </div>
+                                    <br/>
+                                    <div class="form-group row" id="form-group-formats">
+                                        <div class="col-md-6">
+                                            <label class="control-label" for="formats">Select Export Formats:</label>
+                                            <div id="supported-formats"></div>
                                         </div>
-                                        <div class="form-group row" id="form-group-bbox">
-                                            <div class="col-md-6" id="bbox">
-                                                <input id="xmin" name="xmin" value=""/>
-                                                <input id="ymin" name="ymin" value=""/>
-                                                <input id="xmax" name="xmax" value=""/>
-                                                <input id="ymax" name="ymax" value=""/>
-                                            </div>
+                                    </div>
+                                    <div class="form-group row" id="form-group-bbox">
+                                        <div class="col-md-6" id="bbox">
+                                            <input id="xmin" name="xmin" value=""/>
+                                            <input id="ymin" name="ymin" value=""/>
+                                            <input id="xmax" name="xmax" value=""/>
+                                            <input id="ymax" name="ymax" value=""/>
                                         </div>
-                                        <br/>
-                                        <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">Create Export Job</button>
-                                    </form>
+                                    </div>
+                                    <br/>
+                                    <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">Create Export Job</button>
+                                </form>
+                            </div>
+                      </div> 
+                </div>
+                <div id="upload" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                        <!-- upload config here -->
+                    </div>
+                  </div>
+                </div>
+                <div id="list" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="list-jobs" class="col-md-12">
+                                <div class="table-responsive">
+                                    <table id="jobs" class="table table-hover">
+                                        <thead>
+                                            <tr><th>Name</th><th>Description</th><th>Created</th><th>Region</th></tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
                                 </div>
-                          </div> 
-                    </div>
-                    <div id="upload" class="tab-pane fade">
-                      <div class="panel panel-default">
-                        <div class="panel-body">
-                            
+                                <div id="info" class="pull-left">
+                                </div>
+                                <div id="pagination" class="pull-right">
+                                    <ul class="pager"></ul>
+                                </div>
+                            </div>
                         </div>
-                      </div>
-                    </div>
-                    <div id="config" class="tab-pane fade">
-                      <div class="panel panel-default">
-                        <div class="panel-body">
-                            
-                        </div>
-                      </div>
-                    </div>
-                    <div id="tags" class="tab-pane fade">
-                      <p>Export stuff here (?)..</p>
                     </div>
                 </div>
-      </div>
-    </div>
-    <div id="map-column" class="col-md-7">
-        <div class="btn-group" role="group">
-            <button id="select-area" class="btn btn-md btn-primary">Select Export Area</button>
-            <button id="zoom-selection" class="btn btn-md btn-primary">Zoom To Selection</button>
-            <button id="clear-selection" class="btn btn-md btn-primary">Clear Selection</button>
-            <button id="reset-map" class="btn btn-md btn-primary">Reset Map</button>
+            </div>
         </div>
-        <div id="alert-extents" class="alert alert-danger fade in"></div>
-        <div id="valid-extents" class="alert alert-success fade in"></div>
-        <div id="map"></div>
+    </div>
+    <div id="map-column" class="col-md-6">
+        <div id="create-controls">
+            <div class="btn-group" role="group">
+                <button id="select-area" class="btn btn-md btn-primary">Select Export Area</button>
+                <button id="zoom-selection" class="btn btn-md btn-primary">Zoom To Selection</button>
+                <button id="clear-selection" class="btn btn-md btn-primary">Clear Selection</button>
+                <button id="reset-map" class="btn btn-md btn-primary">Reset Map</button>
+            </div>
+            <div id="alert-extents" class="alert alert-danger fade in"></div>
+            <div id="valid-extents" class="alert alert-success fade in"></div>
+        </div>
+        <div id="create-export-map"></div>
+        <div id="list-controls">
+            <div class="btn-group" role="group">
+                <button id="filter-area" class="btn btn-md btn-primary">Select Search Area</button>
+                <button id="reset-map" class="btn btn-md btn-primary">Reset Map</button>
+            </div>
+            <div id="alert-extents" class="alert alert-danger fade in"></div>
+            <div id="valid-extents" class="alert alert-success fade in"></div>
+        </div>
+        <div id="list-export-map"></div>
     </div>
 </div>
 
 {% endblock %}
 
 {% block corejs %}
-{{ block.super}}
+{{ block.super }}
 <script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
 <script src="{% static 'ui/components/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/components/moment/min/moment.min.js' %}"></script>
 <script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
 <script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script src="{% static 'ui/components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ui/components/datatables/media/js/dataTables.bootstrap.js' %}"></script>
 <script src="{% static 'ui/js/layers.js' %}"></script>
 <script src="{% static 'ui/js/config.js' %}"></script>
+<script src="{% static 'ui/js/list.js' %}"></script>
 <script src="{% static 'ui/js/create.js' %}"></script>
 {% endblock %}

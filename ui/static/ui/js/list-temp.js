@@ -19,12 +19,14 @@ jobs = {};
 jobs.list = (function(){
     var map;
     var job_extents;
+    var bbox;
     
     return {
         init: function(){
             initListMap();
             initDataTable();
             listJobs();
+            initSearch();
         },
     }
     
@@ -43,7 +45,7 @@ jobs.list = (function(){
                 sphericalMercator: true,
                 noWrap: true // don't wrap world extents
         }
-        map = new OpenLayers.Map('list-export-map', {options: mapOptions});
+        map = new OpenLayers.Map('list-export-map-temp', {options: mapOptions});
         
         // restrict extent to world bounds to prevent panning..
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
@@ -86,7 +88,7 @@ jobs.list = (function(){
         map.addLayer(job_extents);
         
         // add filter selection layer
-        var bbox = new OpenLayers.Layer.Vector("filter", {
+        bbox = new OpenLayers.Layer.Vector("filter", {
            displayInLayerSwitcher: false,
            styleMap: getTransformStyleMap(),
         });
@@ -127,13 +129,15 @@ jobs.list = (function(){
             // enable bbox modification
             transform.setFeature(feature);
             
+            // filter the results by bbox
+            filterByBBox(bounds);
             
         });
         
         // update the bounds after bbox is moved / modified
         transform.events.register("transformcomplete", this, function(e){
             var bounds = e.feature.geometry.bounds.clone();
-            
+            console.log('filter now...')
         });
         
         // add the transform control
@@ -147,6 +151,18 @@ jobs.list = (function(){
             bbox.removeAllFeatures();
             transform.unsetFeature();
             box.activate();
+        });
+        
+        // clears the search selection area
+        $('#clear-filter').bind('click', function(e){
+            /*
+             * Unsets the bounds on the form and
+             * remove features and transforms
+             */
+            bbox.removeAllFeatures();
+            box.deactivate();
+            transform.unsetFeature();
+            listJobs();
         });
     }
     
@@ -264,6 +280,8 @@ jobs.list = (function(){
                 }
             );
         });
+        
+       
     }
     
     /*
@@ -325,7 +343,7 @@ jobs.list = (function(){
     }
     
     /*
-     * Initialize the job data table.
+     * Initialize the exports list data table.
      */
     function initDataTable(){
         $('table#jobs').DataTable({
@@ -352,6 +370,89 @@ jobs.list = (function(){
            });
     }
     
+    /**
+     * Filters search results by bounding box selection
+     */
+    function filterByBBox(bounds){
+        
+        fmt = '0.0000000000'; // format to 10 decimal places
+        bounds.transform("EPSG:3857", "EPSG:4326");
+        var xmin = numeral(bounds.left).format(fmt);
+        var ymin = numeral(bounds.bottom).format(fmt);
+        var xmax = numeral(bounds.right).format(fmt);
+        var ymax = numeral(bounds.top).format(fmt);
+        
+        var url = Config.JOBS_URL +
+                '?bbox=' + xmin + ',' + ymin +
+                ',' + xmax + ',' + ymax;
+        console.log(url);
+        $.ajax(url)
+        .done(function(data, textStatus, jqXHR){
+           //paginate(jqXHR);
+           var tbody = $('table#jobs tbody');
+           var table = $('table#jobs').DataTable();
+           // clear the existing data and add new page
+           table.clear();
+           table.rows.add(data).draw();
+           // clear the existing bbox features and add the new ones..
+           job_extents.destroyFeatures();
+           $.each(data, function(idx, job){
+                var created = moment(job.created_at).format('MMMM Do YYYY, h:mm:ss');
+                var extent = job.extent;
+                var geojson = new OpenLayers.Format.GeoJSON({
+                        'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                        'externalProjection': new OpenLayers.Projection("EPSG:4326")
+                });
+                var feature = geojson.read(extent);
+                job_extents.addFeatures(feature);
+            });
+            // zoom to filter area extents
+            map.zoomToExtent(bbox.getDataExtent());
+            
+            // select bbox features based on row hovering
+            $('table#jobs tbody tr').hover(
+                function(e){
+                    var selectControl = map.getControlsBy('id','selectControl')[0];
+                    uid = $(e.currentTarget).find('a').attr('id');
+                    var feature = job_extents.getFeaturesByAttribute('uid',uid)[0]
+                    selectControl.unselectAll();
+                    selectControl.select(feature);
+                    //map.zoomToExtent(feature.geometry.bounds);
+                },
+                function(e){
+                    var selectControl = map.getControlsBy('id','selectControl')[0];
+                    selectControl.unselectAll();
+                }
+            );
+        });
+    }
+    
+    /*
+     * Search export jobs.
+     */ 
+    function initSearch(){
+        $('button#search').bind('click', function(e){
+            e.preventDefault();
+            
+        });
+    }
+    
+    /*
+     * update the bbox extents on the form.
+     */
+    function setBounds(bounds) {
+        fmt = '0.0000000000' // format to 10 decimal places
+        // fire input event here to make sure fields validate..
+        var xmin = numeral(bounds.left).format(fmt);
+        var ymin = numeral(bounds.bottom).format(fmt);
+        var xmax = numeral(bounds.right).format(fmt);
+        var ymax = numeral(bounds.top).format(fmt);
+        $('#xmin').val(xmin).trigger('input');
+        $('#ymin').val(ymin).trigger('input');
+        $('#xmax').val(xmax).trigger('input');
+        $('#ymax').val(ymax).trigger('input');
+    }
+    
 }());
 
 
@@ -362,7 +463,6 @@ $(document).ready(function() {
         $('#create-export-map').css('visibility', 'hidden');
         $('#create-controls').css('display','none');
         $('#list-export-map').css('visibility', 'visible');
-        $('#list-controls').css('display','block');
     });
     
     jobs.list.init();
