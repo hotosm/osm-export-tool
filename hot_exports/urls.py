@@ -3,6 +3,7 @@ HOT Exports URL Configuration
 """
 from django.conf.urls import include, url, patterns
 from django.conf.urls.i18n import i18n_patterns
+from django.contrib.auth.decorators import login_required
 from django.contrib import admin
 from django.contrib import auth
 from ui import urls as ui_urls
@@ -13,13 +14,12 @@ from api.urls import router
 urlpatterns = []
 
 urlpatterns += patterns('ui.views',
-    url(r'^$', TemplateView.as_view(template_name='ui/index.html'), name='index'),
-    url(r'^about$', TemplateView.as_view(template_name='ui/about.html'), name='about'),
+    url(r'^$', login_required(TemplateView.as_view(template_name='ui/index.html')), name='index'),
     url(r'^help$', TemplateView.as_view(template_name='ui/help.html'), name='help'),
     url(r'^jobs/', include(ui_urls)),
 )
 
-urlpatterns += patterns('',
+urlpatterns += patterns('registration.views',
     url(r'^accounts/', include('registration.backends.default.urls')),
 )
 
