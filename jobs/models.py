@@ -142,6 +142,7 @@ class Job(TimeStampedModelMixin):
     user = models.ForeignKey(User, related_name='owner')
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
+    event = models.CharField(max_length=100, db_index=True, default='')
     region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     configs = models.ManyToManyField(ExportConfig, related_name='configs')

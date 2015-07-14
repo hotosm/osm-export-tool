@@ -27,8 +27,8 @@ class TestJob(TestCase):
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
-                                 description='Test description', user=self.user,
-                                 the_geom=the_geom)
+                                 description='Test description', event='Nepal activation',
+                                 user=self.user, the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
@@ -93,6 +93,7 @@ class TestJob(TestCase):
         job = Job.objects.all()[0]
         self.assertEquals('TestJob', job.name)
         self.assertEquals('Test description', job.description)
+        self.assertEquals('Nepal activation', job.event)
         self.assertEqual(self.user, job.user)
         
     def test_str(self, ):
