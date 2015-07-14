@@ -16,27 +16,33 @@
 
 */
 
+$(document).ready(function() {
+        // construct the UI app
+        new JobApp();
+});
 
-create = {};
-create.job = (function(){
-    var map;
-    var regions;
-    var mask;
-    var max_bounds_area = 2500000; // sq km // set this dynamically..
+/*
+ * Application to handle Export Job Creation.
+ */
+var JobApp = OpenLayers.Class({
     
-    return {
-        init: function(){
-            initCreateMap();
-        }
-    }
+    
+    
+    initialize: function(){
+        // initialize the map and set the max extent.
+        this.map = this.initMap();
+        this.max_bounds_area = 2500000; // sq km // set this dynamically..
+    },
     
     /*
      * Initialize the map
      * and the UI controls.
      */
-    function initCreateMap() {
+    initMap: function() {
+        var that = this;
+        
         // set up the map and add the required layers
-        var maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
+        maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         var mapOptions = {
                 displayProjection: new OpenLayers.Projection("EPSG:4326"),
                 controls: [new OpenLayers.Control.Attribution(),
@@ -48,19 +54,18 @@ create.job = (function(){
                 noWrap: true // don't wrap world extents
         }
         map = new OpenLayers.Map('create-export-map', {options: mapOptions});
-        
         // restrict extent to world bounds to prevent panning..
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         
         // add base layers
-        var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
-        var hotosm = Layers.HOT
+        osm = Layers.OSM
+        hotosm = Layers.HOT
         osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayers([osm, hotosm]);
         
         // add the regions layer
-        regions = new OpenLayers.Layer.Vector('regions', {
+        var regions = new OpenLayers.Layer.Vector('regions', {
             displayInLayerSwitcher: false,
             style: {
                 strokeWidth: 3.5,
@@ -71,7 +76,7 @@ create.job = (function(){
         });
         
         // add the region mask layer
-        mask = new OpenLayers.Layer.Vector('mask', {
+        var mask = new OpenLayers.Layer.Vector('mask', {
             displayInLayerSwitcher: false,
             styleMap: new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
@@ -86,16 +91,16 @@ create.job = (function(){
         map.addLayers([regions, mask]);
         
         // add region and mask features
-        addRegionMask();
-        addRegions();
+        this.addRegionMask(mask);
+        this.addRegions(regions);
         
         // add export format checkboxes
-        buildExportFormats();
+        this.buildExportFormats();
         
         // add bounding box selection layer
         bbox = new OpenLayers.Layer.Vector("bbox", {
            displayInLayerSwitcher: false,
-           styleMap: getTransformStyleMap(),
+           styleMap: this.getTransformStyleMap(),
         });
         map.addLayers([bbox]);
         
@@ -135,33 +140,33 @@ create.job = (function(){
             transform.setFeature(feature);
             
             // validate the selected extents
-            if (validateBounds(bounds)) {
-                setBounds(bounds);
+            if (this.validateBounds(bounds)) {
+                this.setBounds(bounds);
             }
             else {
-                unsetBounds();
+                this.unsetBounds();
             }
         });
         
         // update the bounds after bbox is moved / modified
         transform.events.register("transformcomplete", this, function(e){
             var bounds = e.feature.geometry.bounds.clone();
-            if (validateBounds(bounds)) {
-                setBounds(bounds);
+            if (this.validateBounds(bounds)) {
+                this.setBounds(bounds);
             }
             else {
-                unsetBounds();
+                this.unsetBounds();
             }
         });
         
         // update bounds during bbox modification
         transform.events.register("transform", this, function(e){
             var bounds = e.object.feature.geometry.bounds.clone();
-            if (validateBounds(bounds)) {
-                setBounds(bounds);
+            if (this.validateBounds(bounds)) {
+                this.setBounds(bounds);
             }
             else {
-                unsetBounds();
+                this.unsetBounds();
             }
         });
         // add the transform control
@@ -174,11 +179,11 @@ create.job = (function(){
              * clear transform control
              * activate the draw bbox control
              */
-            unsetBounds();
+            that.unsetBounds();
             bbox.removeAllFeatures();
             transform.unsetFeature();
             box.activate();
-            validateBounds();
+            that.validateBounds();
         });
         
         $('#zoom-selection').bind('click', function(e){
@@ -196,8 +201,8 @@ create.job = (function(){
             bbox.removeAllFeatures();
             box.deactivate();
             transform.unsetFeature();
-            unsetBounds();
-            validateBounds();
+            that.unsetBounds();
+            that.validateBounds();
         });
         
         $('#reset-map').bind('click', function(e){
@@ -206,12 +211,12 @@ create.job = (function(){
              * remove features and transforms
              * reset map to regions extent
              */
-            unsetBounds();
+            that.unsetBounds();
             bbox.removeAllFeatures();
             box.deactivate();
             transform.unsetFeature();
             map.zoomToExtent(regions.getDataExtent());
-            validateBounds();
+            that.validateBounds();
         });
         
         /* Add map controls */
@@ -220,192 +225,15 @@ create.job = (function(){
         
         // set inital zoom to regions extent
         map.zoomTo(regions.getDataExtent());
-    }
-    
-    /*
-     * Add the regions to the map.
-     * Calls into region api.
-     */
-    function addRegions(){
-        // get the regions from the regions api
-        $.getJSON(Config.REGIONS_URL, function(data){
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var features = geojson.read(data);
-            regions.addFeatures(features);
-            map.zoomToExtent(regions.getDataExtent());
-        }); 
-    }
-    
-    /*
-     * Add the region mask to the map.
-     * Calls into region mask api.
-     */
-    function addRegionMask(){
-        // get the regions from the regions api
-        $.getJSON(Config.REGION_MASK_URL, function(data){
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var features = geojson.read(data);
-            mask.addFeatures(features);
-        }); 
-    }
-    
-    /*
-     * build the export format checkboxes.
-     */
-    function buildExportFormats(){
-        var formatsDiv = $('#supported-formats');
-        $.getJSON(Config.EXPORT_FORMATS_URL, function(data){
-            for (i = 0; i < data.length; i++){
-                format = data[i];
-                formatsDiv.append('<div class="checkbox"><label>'
-                                 + '<input type="checkbox"'
-                                 + 'name="formats"'
-                                 + 'value="' + format.slug + '"/>'
-                                 + format.description
-                                 + '</label></div>');
-            }
-            /*
-             * only initialize form validation when
-             * all form elements have been loaded.
-             */
-            initForm();
-        }); 
-    }
-    
-    /*
-     * update the bbox extents on the form.
-     */
-    function setBounds(bounds) {
-        fmt = '0.0000000000' // format to 10 decimal places
-        // fire input event here to make sure fields validate..
-        var xmin = numeral(bounds.left).format(fmt);
-        var ymin = numeral(bounds.bottom).format(fmt);
-        var xmax = numeral(bounds.right).format(fmt);
-        var ymax = numeral(bounds.top).format(fmt);
-        $('#xmin').val(xmin).trigger('input');
-        $('#ymin').val(ymin).trigger('input');
-        $('#xmax').val(xmax).trigger('input');
-        $('#ymax').val(ymax).trigger('input');
-    }
-    
-    /*
-     * clear extents from the form.
-     */
-    function unsetBounds(){
-        // fire input event here to make sure fields validate..
-        $('#xmin').val('').trigger('input');
-        $('#ymin').val('').trigger('input');
-        $('#xmax').val('').trigger('input');
-        $('#ymax').val('').trigger('input');
-    }
-    
-    /*
-     * triggers validation of the extents on the form.
-     */
-    function validateBBox(){
-        $('#create-job-form').data('formValidation').validateContainer('#form-group-bbox');
-    }
-    
-    /*
-     * Validate the selected export extent.
-     * Display error message in case of validation error.
-     * Display success message when extents are valid. 
-     */
-    function validateBounds(bounds) {
-        if (!bounds) {
-            // no extents selected..
-            validateBBox(); // trigger form validation.
-            $('#valid-extents').css('visibility','hidden');
-            $('#alert-extents').css('visibility','visible');
-            $('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-remove">&nbsp;</span>');
-            return false;
-        }
-        var extent = bounds.toGeometry();
-        var regions = map.getLayersByName('regions')[0].features;
-        var valid_region = false;
-        // check that we're within a HOT region.
-        for (i = 0; i < regions.length; i++){
-            region = regions[i].geometry;
-            if (extent.intersects(region)){
-                valid_region = true;
-            }
-        }
-        // calculate the extent area and convert to sq kilometers
-        var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
-        // format the area and max bounds for display..
-        var area_str = numeral(area).format('0,0');
-        var max_bounds_str = numeral(max_bounds_area).format('0,0');
         
-        if (!valid_region) {
-           // invalid region
-           validateBBox(); // trigger validation on extents
-           $('#valid-extents').css('visibility','hidden');
-           $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>Invalid Extent.</strong><br/>Selected area is outside a valid HOT Export Region.')
-           return false;
-        } else if (area > max_bounds_area) {
-           // are too large
-           validateBBox(); // trigger validation on extents
-           $('#valid-extents').css('visibility','hidden');
-           $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>Invalid Exent.</strong><br/>Selected area is ' + area_str
-                                 + ' sq km.<br/> Must be less than ' + max_bounds_str + ' sq km.');
-           return false;
-        } else {
-            // extents are valid so display success message..
-            $('#alert-extents').css('visibility','hidden');
-            $('#valid-extents').css('visibility','visible');
-            $('#valid-extents').html('<span>Extents are valid.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-ok">&nbsp;</span>');
-            return true;
-        }
-    }
-    
-    /*
-     * get the style map for the selection bounding box.
-     */
-    function getTransformStyleMap(){
-        return new OpenLayers.StyleMap({
-                    "default": new OpenLayers.Style({
-                        fillColor: "blue",
-                        fillOpacity: 0.05,
-                        strokeColor: "blue"
-                    }),
-                    // style for the select extents box
-                    "transform": new OpenLayers.Style({
-                        display: "${getDisplay}",
-                        cursor: "${role}",
-                        pointRadius: 6,
-                        fillColor: "blue",
-                        fillOpacity: 1,
-                        strokeColor: "blue",
-                    },
-                    {
-                        context: {
-                            getDisplay: function(feature) {
-                                // hide the resize handles except at the south-east corner
-                                return  feature.attributes.role === "n-resize"  ||
-                                        feature.attributes.role === "ne-resize" ||
-                                        feature.attributes.role === "e-resize"  ||
-                                        feature.attributes.role === "s-resize"  ||
-                                        feature.attributes.role === "sw-resize" ||
-                                        feature.attributes.role === "w-resize"  ||
-                                        feature.attributes.role === "nw-resize" ? "none" : ""
-                            }
-                        }
-                    })
-                });
-    }
+        return map;
+    },
     
     /*
      * Initialize the form validation.
      */
-    function initForm(){
+    initForm: function(){
+        var that = this;
         $('#create-job-form').formValidation({
             framework: 'bootstrap',
             // Feedback icons
@@ -501,18 +329,189 @@ create.job = (function(){
             });
             }
         });
+    },
+    
+    /*
+     * Add the regions to the map.
+     * Calls into region api.
+     */
+    addRegions: function(regions){
+       var that = this;
+        // get the regions from the regions api
+        $.getJSON(Config.REGIONS_URL, function(data){
+            var geojson = new OpenLayers.Format.GeoJSON({
+                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            var features = geojson.read(data);
+            regions.addFeatures(features);
+            map.zoomToExtent(regions.getDataExtent());
+        }); 
+    },
+    
+    /*
+     * Add the region mask to the map.
+     * Calls into region mask api.
+     */
+    addRegionMask: function(mask){
+        // get the regions from the regions api
+        $.getJSON(Config.REGION_MASK_URL, function(data){
+            var geojson = new OpenLayers.Format.GeoJSON({
+                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            var features = geojson.read(data);
+            mask.addFeatures(features);
+        }); 
+    },
+    
+    /*
+     * build the export format checkboxes.
+     */
+    buildExportFormats: function(){
+        var that = this;
+        var formatsDiv = $('#supported-formats');
+        $.getJSON(Config.EXPORT_FORMATS_URL, function(data){
+            for (i = 0; i < data.length; i++){
+                format = data[i];
+                formatsDiv.append('<div class="checkbox"><label>'
+                                 + '<input type="checkbox"'
+                                 + 'name="formats"'
+                                 + 'value="' + format.slug + '"/>'
+                                 + format.description
+                                 + '</label></div>');
+            }
+            /*
+             * only initialize form validation when
+             * all form elements have been loaded.
+             */
+            that.initForm();
+        }); 
+    },
+    
+    /*
+     * update the bbox extents on the form.
+     */
+    setBounds: function(bounds) {
+        fmt = '0.0000000000' // format to 10 decimal places
+        // fire input event here to make sure fields validate..
+        var xmin = numeral(bounds.left).format(fmt);
+        var ymin = numeral(bounds.bottom).format(fmt);
+        var xmax = numeral(bounds.right).format(fmt);
+        var ymax = numeral(bounds.top).format(fmt);
+        $('#xmin').val(xmin).trigger('input');
+        $('#ymin').val(ymin).trigger('input');
+        $('#xmax').val(xmax).trigger('input');
+        $('#ymax').val(ymax).trigger('input');
+    },
+    
+    /*
+     * clear extents from the form.
+     */
+    unsetBounds: function(){
+        // fire input event here to make sure fields validate..
+        $('#xmin').val('').trigger('input');
+        $('#ymin').val('').trigger('input');
+        $('#xmax').val('').trigger('input');
+        $('#ymax').val('').trigger('input');
+    },
+    
+    /*
+     * triggers validation of the extents on the form.
+     */
+    validateBBox: function(){
+        $('#create-job-form').data('formValidation').validateContainer('#form-group-bbox');
+    },
+    
+    /*
+     * Validate the selected export extent.
+     * Display error message in case of validation error.
+     * Display success message when extents are valid. 
+     */
+    validateBounds: function(bounds) {
+        var that = this;
+        if (!bounds) {
+            // no extents selected..
+            that.validateBBox(); // trigger form validation.
+            $('#valid-extents').css('visibility','hidden');
+            $('#alert-extents').css('visibility','visible');
+            $('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-remove">&nbsp;</span>');
+            return false;
+        }
+        var extent = bounds.toGeometry();
+        var regions = map.getLayersByName('regions')[0].features
+        var valid_region = false;
+        // check that we're within a HOT region.
+        for (i = 0; i < regions.length; i++){
+            region = regions[i].geometry;
+            if (extent.intersects(region)){
+                valid_region = true;
+            }
+        }
+        // calculate the extent area and convert to sq kilometers
+        var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
+        // format the area and max bounds for display..
+        var area_str = numeral(area).format('0,0');
+        var max_bounds_str = numeral(this.max_bounds_area).format('0,0');
+        
+        if (!valid_region) {
+           // invalid region
+           that.validateBBox(); // trigger validation on extents
+           $('#valid-extents').css('visibility','hidden');
+           $('#alert-extents').css('visibility','visible');
+           $('#alert-extents').html('<strong>Invalid Extent.</strong><br/>Selected area is outside a valid HOT Export Region.')
+           return false;
+        } else if (area > this.max_bounds_area) {
+           // are too large
+           that.validateBBox(); // trigger validation on extents
+           $('#valid-extents').css('visibility','hidden');
+           $('#alert-extents').css('visibility','visible');
+           $('#alert-extents').html('<strong>Invalid Exent.</strong><br/>Selected area is ' + area_str
+                                 + ' sq km.<br/> Must be less than ' + max_bounds_str + ' sq km.');
+           return false;
+        } else {
+            // extents are valid so display success message..
+            $('#alert-extents').css('visibility','hidden');
+            $('#valid-extents').css('visibility','visible');
+            $('#valid-extents').html('<span>Extents are valid.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-ok">&nbsp;</span>');
+            return true;
+        }
+    },
+
+    /*
+     * get the style map for the selection bounding box.
+     */
+    getTransformStyleMap: function(){
+        return new OpenLayers.StyleMap({
+                    "default": new OpenLayers.Style({
+                        fillColor: "blue",
+                        fillOpacity: 0.05,
+                        strokeColor: "blue"
+                    }),
+                    // style for the select extents box
+                    "transform": new OpenLayers.Style({
+                        display: "${getDisplay}",
+                        cursor: "${role}",
+                        pointRadius: 6,
+                        fillColor: "blue",
+                        fillOpacity: 1,
+                        strokeColor: "blue",
+                    },
+                    {
+                        context: {
+                            getDisplay: function(feature) {
+                                // hide the resize handles except at the south-east corner
+                                return  feature.attributes.role === "n-resize"  ||
+                                        feature.attributes.role === "ne-resize" ||
+                                        feature.attributes.role === "e-resize"  ||
+                                        feature.attributes.role === "s-resize"  ||
+                                        feature.attributes.role === "sw-resize" ||
+                                        feature.attributes.role === "w-resize"  ||
+                                        feature.attributes.role === "nw-resize" ? "none" : ""
+                            }
+                        }
+                    })
+                });
     }
     
-}());
-
-
-$(document).ready(function() {
-        // construct the UI app
-        $('li#create-tab').bind('click', function(e){
-            $('#create-export-map').css('visibility', 'visible');
-            $('#create-controls').css('display','block');
-            $('#list-export-map').css('visibility', 'hidden');
-            $('#list-controls').css('display','none');
-        });
-        create.job.init();
 });

@@ -7,18 +7,18 @@ logger = logging.getLogger(__name__)
 
 class JobLinkHeaderPagination(PageNumberPagination):
     
-    page_size = 5
+    page_size = 10
     
     def get_paginated_response(self, data):
         next_url = self.get_next_link()
         previous_url = self.get_previous_link()
         status_code = status.HTTP_206_PARTIAL_CONTENT
         if next_url is not None and previous_url is not None:
-            link = '<{next_url}; rel="next">, <{previous_url}; rel="prev">'
+            link = '<{next_url}>; rel="next", <{previous_url}>; rel="prev"'
         elif next_url is not None:
-            link = '<{next_url}; rel="next">'
+            link = '<{next_url}>; rel="next"'
         elif previous_url is not None:
-            link = '<{previous_url}; rel="prev">'
+            link = '<{previous_url}>; rel="prev"'
         else:
             link = ''
             status_code = status.HTTP_200_OK
