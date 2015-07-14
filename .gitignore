@@ -71,6 +71,8 @@ static
 !ui/static
 migrations
 !jobs/migrations
+!tasks/migrations
+
 nohup.out
 api/tests/examples
 

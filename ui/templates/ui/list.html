@@ -31,6 +31,16 @@
                     </div>
                 </div>
             </div>
+            <span>&nbsp;</span>
+            <div class="form-group" id="form-group-event">
+                <label class="control-label sr-only" for="description">Event</label>
+                <div>
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon2">Event: </span>
+                        <input id="event" type="text" class="form-control" placeholder="Filter by event" name="event">
+                    </div>
+                </div>
+            </div>
             <div class="form-group" id="form-group-bbox">
                 <div class="col-md-12" id="bbox">
                     <input id="bbox" name="bbox" value="-180,-90,180,90" type="hidden"/>
@@ -42,7 +52,7 @@
             <div class="table-responsive">
                 <table id="jobs" class="table table-hover">
                     <thead>
-                        <tr><th>Name</th><th>Description</th><th>Created</th><th>Region</th></tr>
+                        <tr><th>Name</th><th>Description</th><th>Event</th><th>Created</th><th>Region</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
