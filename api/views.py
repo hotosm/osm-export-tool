@@ -77,11 +77,11 @@ class JobViewSet(viewsets.ModelViewSet):
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     lookup_field = 'uid'
     pagination_class = JobLinkHeaderPagination
-    filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
-    search_fields = ('name',)
+    filter_backends = (filters.DjangoFilterBackend,)
     filter_class = JobFilter
-    queryset = Job.objects.order_by('-created_at')
-    ordering_fields = ('name', 'description', 'created_at', 'region',)
+    
+    def get_queryset(self,):
+        return Job.objects.order_by('-created_at')
     
     def list(self, request, uid=None, *args, **kwargs):
         params = self.request.QUERY_PARAMS.get('bbox', None)
@@ -109,7 +109,7 @@ class JobViewSet(viewsets.ModelViewSet):
             try:
                 bbox_extents = validate_bbox_params(data)
                 bbox = validate_search_bbox(bbox_extents)
-                queryset = self.filter_queryset(Job.objects.filter(the_geom__intersects=bbox))
+                queryset = self.filter_queryset(Job.objects.filter(the_geom__within=bbox).order_by('-created_at'))
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer = self.get_serializer(page, many=True, context={'request': request})

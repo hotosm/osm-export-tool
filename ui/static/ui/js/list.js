@@ -21,13 +21,14 @@ jobs.list = (function(){
     var job_extents;
     var bbox;
     var filtering = false;
+    var searchForm = $('form#search');
     
     return {
-        init: function(){
+        main: function(){
             initListMap();
             initDataTable();
-            listJobs();
             initSearch();
+            runSearch(); 
         },
     }
     
@@ -132,7 +133,7 @@ jobs.list = (function(){
             
             // filter the results by bbox
             filtering = true;
-            filterByBBox(bounds);
+            setBounds(bounds);
             map.zoomToExtent(bbox.getDataExtent());
             
         });
@@ -142,8 +143,7 @@ jobs.list = (function(){
             var bounds = e.feature.geometry.bounds.clone();
             // filter the results by bbox
             filtering = true;
-            filterByBBox(bounds);
-            map.zoomToExtent(bbox.getDataExtent());
+            setBounds(bounds);
         });
         
         // add the transform control
@@ -165,11 +165,16 @@ jobs.list = (function(){
              * Unsets the bounds on the form and
              * remove features and transforms
              */
-            filtering = false;
-            bbox.removeAllFeatures();
-            box.deactivate();
-            transform.unsetFeature();
-            listJobs();
+            if (filtering) {
+                // clear the filter extents
+                filtering = false;
+                bbox.removeAllFeatures();
+                box.deactivate();
+                transform.unsetFeature();
+                // reset the bounds and reload default search results.
+                $('input#bbox').val('-180,-90,180,90');
+                runSearch();
+            }
         });
     }
     
@@ -240,37 +245,53 @@ jobs.list = (function(){
     /**
      * Lists the jobs.
      *
-     * page: the page number to display
+     * url: the search endpoint.
      *
      */
     function listJobs(url){
         if (!url) {
+            // default search endpoint
             url = Config.JOBS_URL;
         }
         $.ajax(url)
         .done(function(data, textStatus, jqXHR){
-           paginate(jqXHR);
-           var tbody = $('table#jobs tbody');
-           var table = $('table#jobs').DataTable();
-           // clear the existing data and add new page
-           table.clear();
-           table.rows.add(data).draw();
-           // clear the existing bbox features and add the new ones..
-           job_extents.destroyFeatures();
-           $.each(data, function(idx, job){
-                var created = moment(job.created_at).format('MMMM Do YYYY, h:mm:ss');
-                var extent = job.extent;
-                var geojson = new OpenLayers.Format.GeoJSON({
-                        'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                        'externalProjection': new OpenLayers.Projection("EPSG:4326")
-                });
-                var feature = geojson.read(extent);
-                job_extents.addFeatures(feature);
-            });
+            // generate pagination on UI
+            paginate(jqXHR);
+            
+            // clear the existing data on results table and add new page
+            var tbody = $('table#jobs tbody');
+            var table = $('table#jobs').DataTable();
+            table.clear();
+            table.rows.add(data).draw();
+            
+            // clear the existing bbox features and add the new ones..
+            job_extents.destroyFeatures();
+            $.each(data, function(idx, job){
+                 var extent = job.extent;
+                 var geojson = new OpenLayers.Format.GeoJSON({
+                         'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                         'externalProjection': new OpenLayers.Projection("EPSG:4326")
+                 });
+                 var feature = geojson.read(extent);
+                 job_extents.addFeatures(feature);
+             });
            
-            // zoom to result extents if not filtering
-            if (!filtering) {
-                map.zoomToExtent(job_extents.getDataExtent());
+            /*
+             * Zoom to extents depending on whether
+             * bbox filtering is applied or not..
+             */
+            if (filtering) {
+                map.zoomToExtent(bbox.getDataExtent());
+            }
+            else {
+                var bounds = job_extents.getDataExtent();
+                if (bounds) {
+                    map.zoomToExtent(job_extents.getDataExtent());
+                }
+                else {
+                    // zoom to max if no results
+                    map.zoomToMaxExtent();
+                }
             }
             
             // select bbox features based on row hovering
@@ -287,9 +308,10 @@ jobs.list = (function(){
                     selectControl.unselectAll();
                 }
             );
+            
+            // set message if no results returned from this url..
+            $('td.dataTables_empty').html('No search results found.'); 
         });
-        
-       
     }
     
     /*
@@ -304,12 +326,13 @@ jobs.list = (function(){
         var info = $('#info');
         info.empty();
         
+        // set the content range info
         var rangeHeader = jqXHR.getResponseHeader('Content-Range');
         var total = rangeHeader.split('/')[1];
         var range = rangeHeader.split('/')[0].split(' ')[1];
         info.append('<span>Displaying ' + range + ' of ' + total + ' results');
         
-        // check if we have link header
+        // check if we have a link header
         var a, b;
         var link = jqXHR.getResponseHeader('Link');
         if (link) {
@@ -318,9 +341,14 @@ jobs.list = (function(){
             b = links[1];
         }
         else {
+            // no link header so only one page of results returned
             return;
         }
         
+        /*
+         * Configure next/prev links for pagination
+         * and handle pagination events
+         */
         if (b) {
             var url = b.split(';')[0].trim();
             url = url.slice(1, url.length -1);
@@ -381,35 +409,44 @@ jobs.list = (function(){
                 {data: 'region.name'}
             ]
            });
+        // clear the empty results message on initial draw..
+        $('td.dataTables_empty').html('');
     }
     
-    /**
-     * Filters search results by bounding box selection.
+    /*
+     * update the bbox extents on the form
+     * used in bbox filtering of results.
      */
-    function filterByBBox(bounds){
-        
-        fmt = '0.0000000000'; // format to 10 decimal places
-        bounds.transform("EPSG:3857", "EPSG:4326");
+    function setBounds(bounds) {
+        fmt = '0.0000000000' // format to 10 decimal places
+        bounds.transform('EPSG:3857', 'EPSG:4326');
         var xmin = numeral(bounds.left).format(fmt);
         var ymin = numeral(bounds.bottom).format(fmt);
         var xmax = numeral(bounds.right).format(fmt);
         var ymax = numeral(bounds.top).format(fmt);
-        
-        var url = Config.JOBS_URL +
-                '?bbox=' + xmin + ',' + ymin +
-                ',' + xmax + ',' + ymax;
-        console.log(url);
-        listJobs(url);
+        var extents = xmin + ',' + ymin + ',' + xmax + ',' + ymax;
+        // set the bbox extents on the form and trigger search..
+        $('input#bbox').val(extents).trigger('input');
     }
     
     /*
      * Search export jobs.
      */ 
     function initSearch(){
-        $('button#search').bind('click', function(e){
-            e.preventDefault();
-            
+        // run search on search form input events
+        $('form#search input').bind('input', function(e){
+            runSearch();
         });
+    }
+    
+    /*
+     * Runs a search.
+     * Takes params from serialized form inputs.
+     */
+    function runSearch(){
+        var url = Config.JOBS_URL + '?';
+        url += searchForm.serialize();
+        listJobs(url);
     }
     
 }());
@@ -417,13 +454,6 @@ jobs.list = (function(){
 
 $(document).ready(function() {
     // initialize the app..
-    
-    $('li#list-tab').on('click', function(e){
-        $('#create-export-map').css('visibility', 'hidden');
-        $('#create-controls').css('display','none');
-        $('#list-export-map').css('visibility', 'visible');
-    });
-    
-    jobs.list.init();
+    jobs.list.main();
 });
 
