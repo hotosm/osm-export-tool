@@ -314,6 +314,9 @@ class JobSerializer(serializers.Serializer):
     description = serializers.CharField(
         max_length=255,
     )
+    event = serializers.CharField(
+        max_length=100,
+    )
     created_at = serializers.DateTimeField(read_only=True)
     exports = serializers.SerializerMethodField()
     configurations = serializers.SerializerMethodField()
