@@ -432,6 +432,13 @@ create.job = (function(){
                         }
                     }
                 },
+                'event': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The event is required and cannot be empty.'
+                        }
+                    }
+                },
                 'formats': {
                     validators: {
                         choice: {

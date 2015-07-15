@@ -252,7 +252,7 @@ span.heading {
     padding: 7px !important;
 }
 
-/* jobs list page */
+/* jobs list/search page */
 
 ul.pager {
     margin-right: 1em;
@@ -274,7 +274,10 @@ table#jobs {
 
 form#search {
     padding: .7em;
-    margin-bottom: 1em;
+}
+
+span#user {
+    display: none;
 }
 
 /* login page */

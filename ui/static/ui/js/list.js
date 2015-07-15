@@ -25,9 +25,17 @@ jobs.list = (function(){
     
     return {
         main: function(){
+            // initialize the map
             initListMap();
+            // initialize the results table
             initDataTable();
+            // initialize the start / end date pickers
+            initDatePickers();
+            // load regions into search form
+            loadRegions();
+            // initialize the search callback
             initSearch();
+            // run the default search
             runSearch(); 
         },
     }
@@ -186,7 +194,8 @@ jobs.list = (function(){
                     "default": new OpenLayers.Style({
                         fillColor: "blue",
                         fillOpacity: 0.05,
-                        strokeColor: "blue"
+                        strokeColor: "blue",
+                        graphicZIndex : -1,
                     }),
                     // style for the select extents box
                     "transform": new OpenLayers.Style({
@@ -196,6 +205,7 @@ jobs.list = (function(){
                         fillColor: "blue",
                         fillOpacity: 1,
                         strokeColor: "blue",
+                        graphicZIndex : -1,
                     },
                     {
                         context: {
@@ -223,14 +233,16 @@ jobs.list = (function(){
             strokeWidth: 3.5,
             strokeColor: '#D73F3F',
             fillColor: '#D73F3F',
-            fillOpacity: 0.5,
+            fillOpacity: 0.1,
+            graphicZIndex : 50,
         });
         
         var selectStyle = new OpenLayers.Style({
             strokeWidth: 3.5,
             strokeColor: 'blue',
             fillColor: 'blue',
-            fillOpacity: 0.5,
+            fillOpacity: 0.1,
+            graphicZIndex : 100,
         });
         
         var styles = new OpenLayers.StyleMap(
@@ -404,7 +416,7 @@ jobs.list = (function(){
                 {
                     data: 'created_at',
                     render: function(data, type, row){
-                        return moment(data).format('MM-DD-YYYY, h:mm a');
+                        return moment(data).format('YYYY-MM-DD HH:MM');
                     }
                 },
                 {data: 'region.name'}
@@ -412,6 +424,43 @@ jobs.list = (function(){
            });
         // clear the empty results message on initial draw..
         $('td.dataTables_empty').html('');
+    }
+    
+    /**
+     * Initialize the start / end date pickers.
+     */
+    function initDatePickers(){
+        $('#start-date').datetimepicker({
+            showTodayButton: true,
+            defaultDate: moment().subtract(1, 'month'),
+            format: 'YYYY-MM-DD HH:MM'
+        });
+        $('#end-date').datetimepicker({
+            showTodayButton: true,
+            defaultDate: moment(),
+            format: 'YYYY-MM-DD HH:MM'
+        });
+        $("#start-date").on("dp.change", function (e) {
+            runSearch();
+        });
+        $("#end-date").on("dp.change", function (e) {
+            runSearch();
+        });
+        
+    }
+    
+    /**
+     * Populates the search form region selection input.
+     */
+    function loadRegions(){
+        $.ajax(Config.REGIONS_URL)
+        .done(function(data, textStatus, jqXHR){
+            var regionSelect = $('select#region-select');
+            $.each(data.features, function(idx, feature){
+                var name = feature.properties.name;
+                regionSelect.append('<option name="' + name + '">' + name + '</option>');
+            })
+        });
     }
     
     /*
@@ -437,6 +486,22 @@ jobs.list = (function(){
         // run search on search form input events
         $('form#search input').bind('input', function(e){
             runSearch();
+        });
+        // run search on region selection
+        $('select#region-select').bind('change', function(e){
+           runSearch(); 
+        });
+        $('input#user-check').bind('click', function(e){
+            var username = $('span#user').text();
+            var $this = $(this);
+            // $this will contain a reference to the checkbox   
+            if ($this.is(':checked')) {
+                $('input#user').val(username);
+                runSearch(); 
+            } else {
+                $('input#user').val('');
+                runSearch();
+            }
         });
     }
     
