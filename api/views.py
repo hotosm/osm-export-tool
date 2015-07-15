@@ -69,7 +69,7 @@ class JobViewSet(viewsets.ModelViewSet):
     filter_class = JobFilter
     
     def get_queryset(self,):
-        return Job.objects.order_by('-created_at')
+        return Job.objects.all()
     
     def list(self, request, uid=None, *args, **kwargs):
         params = self.request.QUERY_PARAMS.get('bbox', None)
@@ -97,7 +97,7 @@ class JobViewSet(viewsets.ModelViewSet):
             try:
                 bbox_extents = validate_bbox_params(data)
                 bbox = validate_search_bbox(bbox_extents)
-                queryset = self.filter_queryset(Job.objects.filter(the_geom__within=bbox).order_by('-created_at'))
+                queryset = self.filter_queryset(Job.objects.filter(the_geom__within=bbox))
                 page = self.paginate_queryset(queryset)
                 if page is not None:
                     serializer = self.get_serializer(page, many=True, context={'request': request})
