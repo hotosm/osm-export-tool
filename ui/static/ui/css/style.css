@@ -276,8 +276,16 @@ form#search {
     padding: .7em;
 }
 
+#form-group-bbox {
+    display: none;
+}
+
 span#user {
     display: none;
+}
+
+#filter-toggle {
+    margin: .7em;
 }
 
 /* login page */

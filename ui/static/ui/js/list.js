@@ -483,6 +483,11 @@ jobs.list = (function(){
      * Search export jobs.
      */ 
     function initSearch(){
+        // update state on filter toggle link
+        $('a#filter-toggle').click(function (e) {
+            var chevState = $(e.target).children("i.indicator").toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        });
+        
         // run search on search form input events
         $('form#search input').bind('input', function(e){
             runSearch();

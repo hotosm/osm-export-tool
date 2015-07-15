@@ -10,94 +10,100 @@
 {% block container %}
 <div class="row">
     <div id="search" class="col-md-6">
-        <form id="search" class="form-inline" role="search" method="POST">
-            {% csrf_token %}
-            <h4>Filter exports by:</h4>
-            <div class="row">
-                <div class="form-group" id="form-group-name">
-                    <label class="control-label sr-only" for="name">Name</label>
-                    <div>
-                        <div class="input-group">
-                            <span class="input-group-addon"><strong>Name:</strong></span>
-                            <input id="name" type="text" class="form-control" placeholder="Filter by name" name="name">
+        <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
+            <i class="indicator glyphicon glyphicon-chevron-down"></i> Filter Exports 
+        </a>
+        <div class="collapse" id="filterForm">
+            <form id="search" class="form-inline" role="search" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="form-group" id="form-group-name">
+                        <label class="control-label sr-only" for="name">Name</label>
+                        <div>
+                            <div class="input-group">
+                                <span class="input-group-addon"><strong>Name:</strong></span>
+                                <input id="name" type="text" class="form-control" placeholder="Filter by name" name="name">
+                            </div>
+                        </div>
+                    </div>
+                    <span>&nbsp;</span>
+                    <div class="form-group" id="form-group-description">
+                        <label class="control-label sr-only" for="description">Description</label>
+                        <div>
+                            <div class="input-group">
+                                <span class="input-group-addon"><strong>Description:</strong></span>
+                                <input id="description" type="text" class="form-control" placeholder="Filter by description" name="description">
+                            </div>
+                        </div>
+                    </div>
+                    <span>&nbsp;</span>
+                    <div class="form-group" id="form-group-event">
+                        <label class="control-label sr-only" for="description">Event</label>
+                        <div>
+                            <div class="input-group">
+                                <span class="input-group-addon"><strong>Event:</strong></span>
+                                <input id="event" type="text" class="form-control" placeholder="Filter by event" name="event">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <span>&nbsp;</span>
-                <div class="form-group" id="form-group-description">
-                    <label class="control-label sr-only" for="description">Description</label>
-                    <div>
-                        <div class="input-group">
-                            <span class="input-group-addon"><strong>Description:</strong></span>
-                            <input id="description" type="text" class="form-control" placeholder="Filter by description" name="description">
+                <br/>
+                <div class="row">
+                    <div class="form-group col-md-6" id="form-group-event">
+                        <label class="control-label sr-only" for="region">Region</label>
+                        <div>
+                            <div class="input-group">
+                                <span class="input-group-addon"><strong>Region:</strong></span>
+                                <select multiple class="form-control" id="region-select" name="region"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- start date picker -->
+                        <div class="form-group" style="margin-bottom: .5em;">
+                            <div class='input-group date' id='start-date'>
+                                <span class="input-group-addon"><strong>Start Date:</strong></span>
+                                <input type='text' class="form-control" name="start"/>
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <!-- end date picker -->
+                        <div class="form-group">
+                            <div class='input-group date' id='end-date'>
+                                <span class="input-group-addon"><strong>End Date:&nbsp;&nbsp;&nbsp;</strong></span>
+                                <input type='text' class="form-control" name="end" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="form-group-bbox">
+                        <div id="bbox">
+                            <input id="bbox" name="bbox" value="-180,-90,180,90" type="hidden"/>
                         </div>
                     </div>
                 </div>
-                <span>&nbsp;</span>
-                <div class="form-group" id="form-group-event">
-                    <label class="control-label sr-only" for="description">Event</label>
-                    <div>
-                        <div class="input-group">
-                            <span class="input-group-addon"><strong>Event:</strong></span>
-                            <input id="event" type="text" class="form-control" placeholder="Filter by event" name="event">
+                <br/>
+                <div class="row">
+                    {% if user.is_authenticated %}
+                    <div class="checkbox-inline">
+                        <label>
+                          <input id="user-check" type="checkbox"> My exports
+                        </label>
+                    </div>
+                    <div class="form-group" id="form-group-user">
+                        <div id="user">
+                            <span id="user">{{ user.username }}</span>
+                            <input id="user" name="user" value="" type="hidden"/>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="form-group col-md-6" id="form-group-event">
-                    <label class="control-label sr-only" for="region">Region</label>
-                    <div>
-                        <div class="input-group">
-                            <span class="input-group-addon"><strong>Region:</strong></span>
-                            <select multiple class="form-control" id="region-select" name="region"></select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <!-- start date picker -->
-                    <div class="form-group" style="margin-bottom: .5em;">
-                        <div class='input-group date' id='start-date'>
-                            <span class="input-group-addon"><strong>Start Date:</strong></span>
-                            <input type='text' class="form-control" name="start"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                    </div>
-                    <!-- end date picker -->
-                    <div class="form-group">
-                        <div class='input-group date' id='end-date'>
-                            <span class="input-group-addon"><strong>End Date:&nbsp;&nbsp;&nbsp;</strong></span>
-                            <input type='text' class="form-control" name="end" />
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="checkbox-inline">
-                    <label>
-                      <input id="user-check" type="checkbox"> Show my jobs only
-                    </label>
-                </div>
-                <div class="form-group" id="form-group-bbox">
-                    <div id="bbox">
-                        <input id="bbox" name="bbox" value="-180,-90,180,90" type="hidden"/>
-                    </div>
-                </div>
-                <div class="form-group" id="form-group-user">
-                    <div id="user">
-                        <span id="user">{{ user.username }}</span>
-                        <input id="user" name="user" value="" type="hidden"/>
-                    </div>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
         <div id="list-jobs" class="col-md-12 pull-left">
             <div class="table-responsive">
                 <table id="jobs" class="table table-hover">
