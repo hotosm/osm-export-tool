@@ -313,7 +313,7 @@ create.job = (function(){
     }
     
     /*
-     * Validate the selected export extent.
+     * Validate the export extent.
      * Display error message in case of validation error.
      * Display success message when extents are valid. 
      */
@@ -347,10 +347,10 @@ create.job = (function(){
            validateBBox(); // trigger validation on extents
            $('#valid-extents').css('visibility','hidden');
            $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>Invalid Extent.</strong><br/>Selected area is outside a valid HOT Export Region.')
+           $('#alert-extents').html('<strong>Invalid Extent.</strong><br/>Selected area is outside <br/>a valid HOT Export Region.')
            return false;
         } else if (area > max_bounds_area) {
-           // are too large
+           // area too large
            validateBBox(); // trigger validation on extents
            $('#valid-extents').css('visibility','hidden');
            $('#alert-extents').css('visibility','visible');
@@ -361,7 +361,7 @@ create.job = (function(){
             // extents are valid so display success message..
             $('#alert-extents').css('visibility','hidden');
             $('#valid-extents').css('visibility','visible');
-            $('#valid-extents').html('<span>Extents are valid.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-ok">&nbsp;</span>');
+            $('#valid-extents').html('<span class="glyphicon glyphicon-ok"></span>');
             return true;
         }
     }
@@ -414,7 +414,6 @@ create.job = (function(){
                 invalid: 'glyphicon glyphicon-remove',
                 validating: 'glyphicon glyphicon-refresh'
             },
-            live: 'enabled',
             excluded: ':disabled',
             // List of fields and their validation rules
             fields: {
@@ -479,15 +478,24 @@ create.job = (function(){
             }
         })
         .on('success.form.fv', function(e) {
+            console.log(e);
             /*
-             * prevent automatic form submission on successful validation. 
-             * this is done by ajax call when submit button clicked.
+             * Enable the submit button, but prevent automatic form submission
+             * on successful validation. 
+             * this is done by ajax call when submit button is clicked.
              */
-            e.preventDefault(); 
+            $('#btn-submit-job').prop('disabled', 'false');
+            e.preventDefault();
+        })
+        .on('success.field.fv', function(e) {
+            /*
+             * disable the submit button until
+             * the whole form is valid.
+             */
+            $('#btn-submit-job').prop('disabled', 'true');
         });
         
         $('#create-job-wizard').bootstrapWizard({
-            
             tabClass: 'nav nav-pills',
             onTabClick: function(tab, navigation, index) {
                 return validateTab(index);
@@ -498,14 +506,6 @@ create.job = (function(){
                 if (!isValidTab) {
                     return false;
                 }
-
-                if (index === numTabs) {
-                    // We are at the last tab
-
-                    // Uncomment the following line to submit the form using the defaultSubmit() method
-                    // $('#installationForm').formValidation('defaultSubmit');
-                }
-
                 return true;
             },
             onPrevious: function(tab, navigation, index) {  
@@ -519,32 +519,29 @@ create.job = (function(){
                 $tab = $('#create-job-form').find('.tab-pane').eq(index),
                 $bbox = $('#bbox');
     
-            // Validate the container
-            fv.validateContainer($tab);
-            fv.validateContainer($bbox);
-            
             // validate the bounding box
+            fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
-            if (isValidBBox === false) {
+            if (isValidBBox === false || isValidBBox === null) {
                 validateBounds(bbox.getDataExtent());
-                return false;
             }
             
             // validate the form panel contents
+            fv.validateContainer($tab);
             var isValidStep = fv.isValidContainer($tab);
-            if (isValidStep === false || isValidStep === null) {
-                // Do not jump to the target tab
+            if ((isValidStep === false || isValidStep === null) ||
+                (isValidBBox === false || isValidBBox === null)) {
+                // stay on this tab
                 return false;
             }
-    
             return true;
         }
         
          // handle form submission
         $('#create-job-form').submit(function(e){
             // check that the form is valid..
-            var $form = $('#create-job-form');
-            var fv = $($form).data('formValidation');
+            var $form = $('#create-job-form'),
+                fv = $($form).data('formValidation');
             if (fv.$invalidFields.length > 0) {
                 e.preventDefault();
             }
