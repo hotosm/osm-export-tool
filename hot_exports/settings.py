@@ -295,4 +295,4 @@ UPDATE_TASKS = {
 Maximum extent of a Job
 max of (latmax-latmin) * (lonmax-lonmin)
 """
-JOB_MAX_EXTENT = 200
+JOB_MAX_EXTENT = 250

@@ -52,7 +52,7 @@ def validate_bbox(extents):
         if (bbox.valid):
             if bbox.area > settings.JOB_MAX_EXTENT:
                 detail['id'] = 'invalid_extents'
-                detail['message'] = 'Job extents too large.'
+                detail['message'] = 'Job extents too large: {0}'.format(bbox.area)
                 raise serializers.ValidationError(detail)
             return bbox
         else:
