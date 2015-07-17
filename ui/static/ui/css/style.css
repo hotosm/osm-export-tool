@@ -148,7 +148,7 @@ span.heading {
 
 #alert-extents {
     position: absolute;
-    top: 12px;
+    top: 9px;
     right: 10px;
     z-index: 100;
     visibility: hidden;
@@ -156,7 +156,7 @@ span.heading {
 
 #valid-extents {
     position: absolute;
-    top: 12px;
+    top: 9px;
     right: 10px;
     z-index: 100;
     visibility: hidden;
@@ -164,7 +164,7 @@ span.heading {
 
 .btn-group {
     position: absolute;
-    top: 12px;
+    top: 9px;
     left: 50px;
     z-index: 100;
 }
@@ -179,23 +179,27 @@ span.heading {
 
 /* Create export form styles */
 
-#create-job {
+#create-job-wizard {
     padding: 10px !important;
 }
 
-#create-job ul.nav-pills {
+#create-job-wizard ul.nav-pills {
     font-size: medium !important;
     float: left !important;
     font-size: small;
     font-weight: 500;
 }
 
-#create-job {
+#create-job-wizard {
     font-size: medium;
 }
 
 #supported-formats {
     padding-left: 1em;
+}
+
+.tab-pane {
+    min-height: 50%;
 }
 
 .tab-pane > .panel {
@@ -286,6 +290,15 @@ span#user {
 
 #filter-toggle {
     margin: .7em;
+}
+
+span.check {
+    background-color: white;
+}
+
+span.tag.label.label-info {
+    background-color: #B02129;
+    border-radius: 4px !important;
 }
 
 /* login page */

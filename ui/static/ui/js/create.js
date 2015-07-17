@@ -415,7 +415,7 @@ create.job = (function(){
                 validating: 'glyphicon glyphicon-refresh'
             },
             live: 'enabled',
-    
+            excluded: ':disabled',
             // List of fields and their validation rules
             fields: {
                 'name': {
@@ -486,12 +486,65 @@ create.job = (function(){
             e.preventDefault(); 
         });
         
+        $('#create-job-wizard').bootstrapWizard({
+            
+            tabClass: 'nav nav-pills',
+            onTabClick: function(tab, navigation, index) {
+                return validateTab(index);
+            },
+            onNext: function(tab, navigation, index) {
+                var numTabs    = $('#create-job-form').find('.tab-pane').length,
+                    isValidTab = validateTab(index - 1);
+                if (!isValidTab) {
+                    return false;
+                }
+
+                if (index === numTabs) {
+                    // We are at the last tab
+
+                    // Uncomment the following line to submit the form using the defaultSubmit() method
+                    // $('#installationForm').formValidation('defaultSubmit');
+                }
+
+                return true;
+            },
+            onPrevious: function(tab, navigation, index) {  
+                return validateTab(index + 1);
+            },
+        });
+        
+        function validateTab(index) {
+            var fv = $('#create-job-form').data('formValidation'), // FormValidation instance
+                // The current tab
+                $tab = $('#create-job-form').find('.tab-pane').eq(index),
+                $bbox = $('#bbox');
+    
+            // Validate the container
+            fv.validateContainer($tab);
+            fv.validateContainer($bbox);
+            
+            // validate the bounding box
+            var isValidBBox = fv.isValidContainer($bbox);
+            if (isValidBBox === false) {
+                validateBounds(bbox.getDataExtent());
+                return false;
+            }
+            
+            // validate the form panel contents
+            var isValidStep = fv.isValidContainer($tab);
+            if (isValidStep === false || isValidStep === null) {
+                // Do not jump to the target tab
+                return false;
+            }
+    
+            return true;
+        }
+        
          // handle form submission
         $('#create-job-form').submit(function(e){
             // check that the form is valid..
             var $form = $('#create-job-form');
             var fv = $($form).data('formValidation');
-            //that.validateBounds();
             if (fv.$invalidFields.length > 0) {
                 e.preventDefault();
             }

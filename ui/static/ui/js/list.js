@@ -15,6 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+
 jobs = {};
 jobs.list = (function(){
     var map;
@@ -33,12 +35,15 @@ jobs.list = (function(){
             initDatePickers();
             // load regions into search form
             loadRegions();
+            // initialize the feature tag filter
+            //initFeatureTagFilter();
             // initialize the search callback
             initSearch();
             // run the default search
             runSearch(); 
         },
     }
+    
     
     /**
      * Initialize the job list map
@@ -70,6 +75,8 @@ jobs.list = (function(){
             displayInLayerSwitcher: false,
             styleMap: getExtentStyles()
         });
+        // add export extents to map
+        map.addLayer(job_extents);
         
         /* required to fire selection events on waypoints */
         var selectControl = new OpenLayers.Control.SelectFeature(job_extents,{
@@ -95,7 +102,7 @@ jobs.list = (function(){
             $('a#' + uid).parent().parent().css('background-color', '#FFF');
         });
         
-        map.addLayer(job_extents);
+        
         
         // add filter selection layer
         bbox = new OpenLayers.Layer.Vector("filter", {
@@ -126,9 +133,9 @@ jobs.list = (function(){
         // listen for selection box being added to bbox layer
         box.events.register('featureadded', this, function(e){
             // get selection bounds
-            bounds = e.feature.geometry.bounds;
+            bounds = e.feature.geometry.bounds.clone();
             
-            // clear existing features
+            // clear existing selection features
             bbox.removeAllFeatures();
             box.deactivate();
             
@@ -186,6 +193,7 @@ jobs.list = (function(){
         });
     }
     
+    
     /*
      * get the style map for the filter bounding box.
      */
@@ -195,7 +203,7 @@ jobs.list = (function(){
                         fillColor: "blue",
                         fillOpacity: 0.05,
                         strokeColor: "blue",
-                        graphicZIndex : -1,
+                        //graphicZIndex : -1,
                     }),
                     // style for the select extents box
                     "transform": new OpenLayers.Style({
@@ -205,7 +213,7 @@ jobs.list = (function(){
                         fillColor: "blue",
                         fillOpacity: 1,
                         strokeColor: "blue",
-                        graphicZIndex : -1,
+                        //graphicZIndex : -1,
                     },
                     {
                         context: {
@@ -226,23 +234,24 @@ jobs.list = (function(){
     
     
     /**
-     * Returns the styles for job extents.
+     * Returns the styles for job extent display.
      */
     function getExtentStyles(){
+        // default style for export extents
         var defaultStyle = new OpenLayers.Style({
             strokeWidth: 3.5,
             strokeColor: '#D73F3F',
             fillColor: '#D73F3F',
             fillOpacity: 0.1,
-            graphicZIndex : 50,
+            //graphicZIndex : 50,
         });
-        
+        // export extent selection style
         var selectStyle = new OpenLayers.Style({
             strokeWidth: 3.5,
             strokeColor: 'blue',
             fillColor: 'blue',
             fillOpacity: 0.1,
-            graphicZIndex : 100,
+            //graphicZIndex : 40,
         });
         
         var styles = new OpenLayers.StyleMap(
@@ -254,6 +263,8 @@ jobs.list = (function(){
         return styles;
         
     }
+    
+    
     /**
      * Lists the jobs.
      *
@@ -276,7 +287,7 @@ jobs.list = (function(){
             table.clear();
             table.rows.add(data).draw();
             
-            // clear the existing bbox features and add the new ones..
+            // clear the existing export extent features and add the new ones..
             job_extents.destroyFeatures();
             $.each(data, function(idx, job){
                  var extent = job.extent;
@@ -308,6 +319,7 @@ jobs.list = (function(){
             
             // select bbox features based on row hovering
             $('table#jobs tbody tr').hover(
+                // mouse in
                 function(e){
                     var selectControl = map.getControlsBy('id','selectControl')[0];
                     uid = $(e.currentTarget).find('a').attr('id');
@@ -315,6 +327,7 @@ jobs.list = (function(){
                     selectControl.unselectAll();
                     selectControl.select(feature);
                 },
+                // mouse out
                 function(e){
                     var selectControl = map.getControlsBy('id','selectControl')[0];
                     selectControl.unselectAll();
@@ -332,6 +345,7 @@ jobs.list = (function(){
      * jqXHR: the ajax xhr
      */
     function paginate(jqXHR){
+        
         // get the pagination ul
         var paginate = $('ul.pager');
         paginate.empty();
@@ -432,25 +446,27 @@ jobs.list = (function(){
     function initDatePickers(){
         $('#start-date').datetimepicker({
             showTodayButton: true,
+            // show one month of exports by default
             defaultDate: moment().subtract(1, 'month'),
             format: 'YYYY-MM-DD HH:MM'
         });
         $('#end-date').datetimepicker({
             showTodayButton: true,
+            // default end-date to now.
             defaultDate: moment(),
             format: 'YYYY-MM-DD HH:MM'
         });
-        $("#start-date").on("dp.change", function (e) {
+        $("#start-date").on("dp.change", function(e){
             runSearch();
         });
-        $("#end-date").on("dp.change", function (e) {
+        $("#end-date").on("dp.change", function(e){
             runSearch();
         });
         
     }
     
     /**
-     * Populates the search form region selection input.
+     * Populates the search form's region selection input.
      */
     function loadRegions(){
         $.ajax(Config.REGIONS_URL)
@@ -461,6 +477,66 @@ jobs.list = (function(){
                 regionSelect.append('<option name="' + name + '">' + name + '</option>');
             })
         });
+    }
+    
+    /**
+     * Initializes the feature tag filter.
+     */
+    function initFeatureTagFilter() {
+        
+        var cities = new Bloodhound({
+            /*
+            datumTokenizer: function(d) {
+                return Bloodhound.tokenizers.whitespace(d.value); 
+            },
+            */
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: {
+                url: Config.HDM_TAGS_URL,
+                /*
+                filter: function(data) {
+                    return $.map(data, function(str) {
+                        return { value: str };
+                    });
+                },
+                */
+            }
+        });
+        
+        $('#features').tagsinput({
+            typeaheadjs: {
+              name: 'cities',
+              displayKey: 'value',
+              valueKey: 'value',
+              source: cities.ttAdapter()
+            }
+        });
+        
+        
+        function lookupOSMTags(q, sync) {
+            console.log('in lookup...')
+            if (q === '') {
+                sync(osm_tags.get('Detroit Lions', 'Green Bay Packers', 'Chicago Bears'));
+            }
+            else {
+                osm_tags.search(q, sync);
+            }
+        }
+
+        var input = $('input#features');
+        /*
+        tgsinput.tagsinput({
+            typeaheadjs: {
+                name: 'tags',
+                displayKey: 'name',
+                valueKey: 'name',
+                source: tags.ttAdapter()
+            }
+        });
+        */
+        
+        $(".twitter-typeahead").css('display', 'inline');
     }
     
     /*
@@ -483,24 +559,34 @@ jobs.list = (function(){
      * Search export jobs.
      */ 
     function initSearch(){
-        // update state on filter toggle link
-        $('a#filter-toggle').click(function (e) {
-            var chevState = $(e.target).children("i.indicator").toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        // update state on filter toggle button
+        $('a#filter-toggle').click(function(e){
+            $(e.target).children("i.indicator").toggleClass(
+                'glyphicon-chevron-down glyphicon-chevron-up'
+            );
         });
         
         // run search on search form input events
+        
         $('form#search input').bind('input', function(e){
             runSearch();
         });
+        
         // run search on region selection
         $('select#region-select').bind('change', function(e){
            runSearch(); 
         });
+        $('select#features').bind('change', function(e){
+           runSearch(); 
+        });
+        // run search on user filtering state change
         $('input#user-check').bind('click', function(e){
+            // pull the username out of the dom
             var username = $('span#user').text();
             var $this = $(this);
             // $this will contain a reference to the checkbox   
             if ($this.is(':checked')) {
+                // set the username on the form input
                 $('input#user').val(username);
                 runSearch(); 
             } else {
@@ -512,12 +598,12 @@ jobs.list = (function(){
     
     /*
      * Runs a search.
-     * Takes params from serialized form inputs.
+     * Takes query params from serialized form inputs.
      */
     function runSearch(){
         var url = Config.JOBS_URL + '?';
         url += searchForm.serialize();
-        listJobs(url);
+        listJobs(url); // update results table
     }
     
 }());

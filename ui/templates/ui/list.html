@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/jquery.dataTables.min.css' %}"/>
 <link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/dataTables.bootstrap.css' %}"/>
 <link rel="stylesheet" href="{% static 'ui/components/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css' %}"/>
 {% endblock %}
 
 {% block container %}
@@ -27,6 +28,7 @@
                         </div>
                     </div>
                     <span>&nbsp;</span>
+                    
                     <div class="form-group" id="form-group-description">
                         <label class="control-label sr-only" for="description">Description</label>
                         <div>
@@ -36,6 +38,7 @@
                             </div>
                         </div>
                     </div>
+                  
                     <span>&nbsp;</span>
                     <div class="form-group" id="form-group-event">
                         <label class="control-label sr-only" for="description">Event</label>
@@ -47,6 +50,19 @@
                         </div>
                     </div>
                 </div>
+                <br/>
+                <!--
+                <div class="row">
+                    <div class="form-group" id="form-group-features">
+                        <div class="input-group">
+                            <span class="input-group-addon"><strong>Select Features:</strong></span>
+                            <select id="features" multiple name="feature">
+                                <option value="railway">railway</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                -->
                 <br/>
                 <div class="row">
                     <div class="form-group col-md-6" id="form-group-event">
@@ -71,7 +87,7 @@
                         </div>
                         <!-- end date picker -->
                         <div class="form-group">
-                            <div class='input-group date' id='end-date'>
+                            <div class="input-group date" id='end-date'>
                                 <span class="input-group-addon"><strong>End Date:&nbsp;&nbsp;&nbsp;</strong></span>
                                 <input type='text' class="form-control" name="end" />
                                 <span class="input-group-addon">
@@ -89,10 +105,17 @@
                 <br/>
                 <div class="row">
                     {% if user.is_authenticated %}
-                    <div class="checkbox-inline">
-                        <label>
-                          <input id="user-check" type="checkbox"> My exports
-                        </label>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon"><strong>My Exports</strong></span>
+                                <span class="input-group-addon check">
+                                    <div class="checkbox">
+                                        <input id="user-check" type="checkbox"/>
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group" id="form-group-user">
                         <div id="user">
@@ -143,6 +166,8 @@
 <script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
 <script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
 <script src="{% static 'ui/components/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'ui/components/typeahead/dist/typeahead.bundle.min.js' %}"></script>
+<script src="{% static 'ui/components/bootstrap-tagsinput/dist/bootstrap-tagsinput.js' %}"></script>
 
 <script src="{% static 'ui/components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'ui/components/datatables/media/js/dataTables.bootstrap.js' %}"></script>
