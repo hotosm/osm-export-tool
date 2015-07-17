@@ -6,7 +6,8 @@ from api.views import (JobViewSet, ExportFormatViewSet,
                        RegionViewSet, RegionMaskViewSet,
                        ExportRunViewSet, ExportConfigViewSet,
                        PresetViewSet, TranslationViewSet,
-                       TransformViewSet, ExportTaskViewSet)
+                       TransformViewSet, ExportTaskViewSet,
+                       HDMDataModelView)
 
 from rest_framework.routers import DefaultRouter
 

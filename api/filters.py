@@ -14,9 +14,10 @@ class JobFilter(django_filters.FilterSet):
     end = django_filters.DateTimeFilter(name="created_at", lookup_type="lte")
     region = django_filters.CharFilter(name="region__name")
     user = django_filters.CharFilter(name="user__username", lookup_type="exact")
+    feature = django_filters.CharFilter(name="tags__name", lookup_type="icontains")
     
     class Meta:
         model = Job
-        fields = ('name', 'description', 'event', 'start', 'end', 'region', 'user',)
+        fields = ('name', 'description', 'event', 'start', 'end', 'region', 'user', 'feature')
         order_by = ('-created_at',)
         

@@ -1,4 +1,5 @@
 import logging
+import json
 import os
 import shutil
 import pdb
@@ -35,6 +36,8 @@ from .filters import JobFilter
 
 from jobs import presets
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
+from jobs.hdm_tags import HOT_HDM
+from jobs.osm_tags import OSM_DM
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from serializers import (JobSerializer, ExportFormatSerializer,
                          RegionSerializer, RegionMaskSerializer,
@@ -293,4 +296,21 @@ class TransformViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
     lookup_field = 'uid'
+    
+
+class HDMDataModelView(views.APIView):
+    
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
+    def get(self, request, format='json'):
+        return Response(HOT_HDM, status=status.HTTP_200_OK)
+
+
+class OSMDataModelView(views.APIView):
+    
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
+    def get(self, request, format='json'):
+        return Response(OSM_DM, status=status.HTTP_200_OK)
+    
         

@@ -1,4 +1,5 @@
 import logging
+import json
 import sys
 import os
 from django.test import TestCase
@@ -6,6 +7,7 @@ from django.utils import timezone
 from django.core.files import File
 from unittest import skip
 from ..presets import PresetParser, DEFAULT_TAGS
+from ..hdm_tags import HOT_HDM
 
 logger = logging.getLogger(__name__)
 
@@ -60,5 +62,17 @@ class TestPresetParser(TestCase):
         self.assertTrue('junction' in categories['polygons'])
         self.assertTrue('office' in categories['polygons'])
         self.assertTrue('tank' in categories['polygons'])
+
+
+class TestHDMToJSON(TestCase):
     
+    def setUp(self, ):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+    
+    def test_hdm_to_json(self,):
+        js = json.dumps(HOT_HDM, sort_keys=False)
+        logger.debug(js)
+        f = open(self.path + '/hdm.json', 'w')
+        f.write(js)
+        f.close()
         
