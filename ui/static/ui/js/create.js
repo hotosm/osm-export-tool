@@ -22,11 +22,13 @@ create.job = (function(){
     var map;
     var regions;
     var mask;
+    var transform;
     var max_bounds_area = 2500000; // sq km // set this dynamically..
     
     return {
         init: function(){
             initCreateMap();
+            initNominatim();
         }
     }
     
@@ -45,7 +47,7 @@ create.job = (function(){
                 scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
                 units: 'm',
                 sphericalMercator: true,
-                noWrap: true // don't wrap world extents
+                noWrap: true, // don't wrap world extents  
         }
         map = new OpenLayers.Map('create-export-map', {options: mapOptions});
         
@@ -55,9 +57,15 @@ create.job = (function(){
         // add base layers
         var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
         var hotosm = Layers.HOT
-        osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
+        osm.options = {
+            //layers: "basic",
+            isBaseLayer: true,
+            visibility: true,
+            displayInLayerSwitcher: true,
+        };
+        osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors<br/>Nominatim Search Courtesy of <a href='http://www.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>";
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
-        map.addLayers([osm, hotosm]);
+        map.addLayers([osm]);
         
         // add the regions layer
         regions = new OpenLayers.Layer.Vector('regions', {
@@ -174,8 +182,10 @@ create.job = (function(){
              * clear transform control
              * activate the draw bbox control
              */
+            $('#nominatim').val('');
             unsetBounds();
             bbox.removeAllFeatures();
+            map.zoomToExtent(regions.getDataExtent());
             transform.unsetFeature();
             box.activate();
             validateBounds();
@@ -188,24 +198,13 @@ create.job = (function(){
             }
         });
         
-        $('#clear-selection').bind('click', function(e){
-            /*
-             * Unsets the bounds on the form and
-             * remove features and transforms
-             */
-            bbox.removeAllFeatures();
-            box.deactivate();
-            transform.unsetFeature();
-            unsetBounds();
-            validateBounds();
-        });
-        
         $('#reset-map').bind('click', function(e){
             /*
              * Unsets the bounds on the form
              * remove features and transforms
              * reset map to regions extent
              */
+            $('#nominatim').val('');
             unsetBounds();
             bbox.removeAllFeatures();
             box.deactivate();
@@ -336,7 +335,10 @@ create.job = (function(){
                 valid_region = true;
             }
         }
-        // calculate the extent area and convert to sq kilometers
+        /*
+         * calculate the extent area and convert to sq kilometers
+         * converts to lat long which will be proj set on form if extents are valid.
+         */
         var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
         // format the area and max bounds for display..
         var area_str = numeral(area).format('0,0');
@@ -477,27 +479,24 @@ create.job = (function(){
                 }
             }
         })
-        .on('success.form.fv', function(e) {
+        .on('success.form.fv', function(e){
+            e.preventDefault();
             console.log(e);
             /*
              * Enable the submit button, but prevent automatic form submission
-             * on successful validation. 
-             * this is done by ajax call when submit button is clicked.
+             * on successful validation as this is done by ajax call
+             * when the submit button is clicked.
              */
             $('#btn-submit-job').prop('disabled', 'false');
-            e.preventDefault();
         })
         .on('success.field.fv', function(e) {
-            /*
-             * disable the submit button until
-             * the whole form is valid.
-             */
-            $('#btn-submit-job').prop('disabled', 'true');
+            //$('#btn-submit-job').prop('disabled', 'true');
         });
+        
         
         $('#create-job-wizard').bootstrapWizard({
             tabClass: 'nav nav-pills',
-            onTabClick: function(tab, navigation, index) {
+            onTabClick: function(tab, navigation, index){
                 return validateTab(index);
             },
             onNext: function(tab, navigation, index) {
@@ -541,10 +540,24 @@ create.job = (function(){
         $('#create-job-form').submit(function(e){
             // check that the form is valid..
             var $form = $('#create-job-form'),
-                fv = $($form).data('formValidation');
+                fv = $($form).data('formValidation'),
+                $bbox = $('#bbox');
+            // validate the bounding box
+            fv.validateContainer($bbox);
+            var isValidBBox = fv.isValidContainer($bbox);
+            if (isValidBBox === false || isValidBBox === null) {
+                validateBounds(bbox.getDataExtent());
+            }
+            fv.validate();
+            var fvIsValidForm = fv.isValid();
+            if (!fvIsValidForm) {
+                e.preventDefault();
+            }
+            /*
             if (fv.$invalidFields.length > 0) {
                 e.preventDefault();
             }
+            */
             else {
                 $.ajax({
                     url: Config.JOBS_URL,
@@ -559,6 +572,163 @@ create.job = (function(){
             }
         });
     }
+    
+    /*
+     * Handles placename lookups using nominatim.
+     * Only interested relations.
+     */
+    function initNominatim(){
+        window.query_cache = {};
+        $('#nominatim').typeahead({
+            source: function (query, process) {
+                        // check if user is entering bbox coordinates manually
+                        if (checkQueryRegex(query)) {
+                            return;
+                        }
+                        else {
+                            // clear any existing features and reset the map extents
+                            bbox.removeAllFeatures();
+                            transform.unsetFeature();
+                            unsetBounds();
+                            map.zoomToExtent(regions.getDataExtent());
+                            
+                        }
+                        // if in cache use cached value
+                        if(query_cache[query]){
+                            process(query_cache[query]);
+                            return;
+                        }
+                        if( typeof searching != "undefined") {
+                            clearTimeout(searching);
+                            process([]);
+                        }
+                        searching = setTimeout(function() {
+                            return $.getJSON(
+                                Config.MAPQUEST_SEARCH_URL,
+                                {
+                                    q: query,
+                                    format: 'json',
+                                    limit: 10,
+                                },
+                                function(data){
+                                    // build list of suggestions
+                                    var suggestions = [];
+                                    $.each(data, function(i, place){
+                                        // only interested in relations
+                                        if (place.osm_type === 'relation') {
+                                            suggestions.push(place);
+                                        }
+                                    });
+                                    // save result to cache
+                                    query_cache[query] = suggestions;
+                                    return process(suggestions);
+                                }
+                            );
+                        }, 200); // ms
+            },
+            
+            displayText: function(item){
+                return item.display_name;
+            },
+            afterSelect: function(item){
+                var boundingbox = item.boundingbox;
+                var bottom = boundingbox[0], top = boundingbox[1],
+                    left = boundingbox[2], right = boundingbox[3];
+                var bounds = new OpenLayers.Bounds(left, bottom, right, top);
+                // add the bounds to the map..
+                var feature = buildBBoxFeature(bounds);
+                // allow bbox to be modified
+                if (feature){
+                    transform.setFeature(feature);
+                }
+            }
+        });
+        
+        /**
+        * Tests if the query is a float
+        */
+        function checkQueryRegex(query){
+            var reg = new RegExp('[-+]?([0-9]*.[0-9]+|[0-9]+)');
+            if (reg.test(query)){
+                return true;
+            }
+        }
+        
+        /**
+         * Construct the feature from the bounds.
+         */
+        function buildBBoxFeature(bounds){
+            // convert to web mercator
+            var merc_bounds = bounds.clone().transform('EPSG:4326', 'EPSG:3857');
+            var geom = merc_bounds.toGeometry();
+            var feature = new OpenLayers.Feature.Vector(geom);
+            // add the bbox to the map
+            bbox.addFeatures([feature]);
+            map.zoomToExtent(bbox.getDataExtent());
+            // validate the selected extents
+            if (validateBounds(merc_bounds)) {
+                setBounds(merc_bounds);
+                return feature;
+            }
+            else {
+                unsetBounds();
+            }
+        }
+        
+        /**
+         * Validate manually entered bounding box.
+         */
+        $('#nominatim').bind('input', function(e){
+            var val = $(this).val();
+            // if search field is empty, reset map
+            if (val === '') {
+                unsetBounds();
+                bbox.removeAllFeatures();
+                box.deactivate();
+                transform.unsetFeature();
+                map.zoomToExtent(regions.getDataExtent());
+                validateBounds();
+                return;
+            }
+            // if entering coordinates manually..
+            var isEnterBBox = checkQueryRegex(val);
+            if (isEnterBBox) {
+                // remove existing features
+                bbox.removeAllFeatures();
+                var coords = val.split(',');
+                // check for correct number of coords
+                if (coords.length != 4) {
+                     bbox.removeAllFeatures();
+                     validateBounds();
+                     return;
+                }
+                // test for empty invalid coords
+                for (i = 0; i < coords.length; i++){
+                     if (coords[i] === '' || !checkQueryRegex(coords[i])) {
+                         bbox.removeAllFeatures();
+                         validateBounds();
+                         return;
+                     }
+                }
+                var left = coords[0], bottom = coords[1],
+                    right = coords[2], top = coords[3];
+                // check for valid lat long extents 
+                if ((parseFloat(left) < -180 || parseFloat(left) > 180) ||
+                    (parseFloat(right) < -180 || parseFloat(right) > 180) ||
+                    (parseFloat(bottom) < -90 || parseFloat(bottom) > 90) ||
+                    (parseFloat(top) < -90 || parseFloat(top) > 90)){
+                    bbox.removeAllFeatures();
+                    validateBounds();
+                    return;
+                }
+                // add feature
+                var bounds = new OpenLayers.Bounds(left, bottom, right, top);
+                buildBBoxFeature(bounds); 
+            }
+        });
+    }
+    
+    
     
 }());
 

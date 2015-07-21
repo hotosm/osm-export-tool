@@ -173,6 +173,11 @@ span.heading {
   cursor: crosshair;
 }
 
+.olControlAttribution {
+    bottom: .5em !important;
+    right: 1em !important;
+}
+
 #map-column {
     border-left: 2px solid lightgrey;
 }
@@ -210,6 +215,36 @@ span.heading {
 .tab-pane > .panel > .panel-body {
     padding-left: 0px !important;
 }
+
+/* gazetteer lookup styles */
+
+div#gazetteer {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    z-index: 100;
+    
+}
+
+#nominatim {
+    max-width: 330px !important;
+}
+
+span.gazetteer {
+    background-color: #337AB7;
+    color: white;
+    border: 1px solid #337AB7;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.typeahead { z-index: 1051;}
+
+ul.typeahead { 
+    max-width: 500px !important;
+    overflow: hidden !important;
+}
+
 
 /*
  * hide the bbox div
@@ -299,6 +334,10 @@ span.check {
 span.tag.label.label-info {
     background-color: #B02129;
     border-radius: 4px !important;
+}
+
+.page-size {
+    margin-left: 1em;
 }
 
 /* login page */
