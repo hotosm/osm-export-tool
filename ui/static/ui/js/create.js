@@ -28,6 +28,7 @@ create.job = (function(){
     return {
         init: function(){
             initCreateMap();
+            initSelectFeaturesTree();
             initNominatim();
         }
     }
@@ -497,19 +498,8 @@ create.job = (function(){
         $('#create-job-wizard').bootstrapWizard({
             tabClass: 'nav nav-pills',
             onTabClick: function(tab, navigation, index){
-                return validateTab(index);
-            },
-            onNext: function(tab, navigation, index) {
-                var numTabs    = $('#create-job-form').find('.tab-pane').length,
-                    isValidTab = validateTab(index - 1);
-                if (!isValidTab) {
-                    return false;
-                }
-                return true;
-            },
-            onPrevious: function(tab, navigation, index) {  
-                return validateTab(index + 1);
-            },
+                //return validateTab(index); temp
+            }
         });
         
         function validateTab(index) {
@@ -517,8 +507,16 @@ create.job = (function(){
                 // The current tab
                 $tab = $('#create-job-form').find('.tab-pane').eq(index),
                 $bbox = $('#bbox');
+                
+            // validate the form first
+            fv.validate();
+            var isFormValid = fv.isValid();
+            if (!isFormValid) {
+                // disable submit button unless form is valid
+                $('#btn-submit-job').prop('disabled', 'true');
+            }
     
-            // validate the bounding box
+            // validate the bounding box extents
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
             if (isValidBBox === false || isValidBBox === null) {
@@ -573,6 +571,63 @@ create.job = (function(){
         });
     }
     
+    
+    /**
+     * Initializes the feature selection tree.
+     */
+    function initSelectFeaturesTree(){
+        // initialize the feature selection tree
+        $.get(Config.HDM_TAGS_URL, function(data){
+            var tree = [];
+            $.map(data, function(idx, node){
+                // top level of tree..
+                var leaf = {
+                    selectable: false,
+                    state: {
+                        checked: true,
+                    }
+                };
+                leaf.text = node;
+                addNodes(idx, leaf);
+                tree.push(leaf);
+            });
+            
+            function addNodes(idx, leaf){
+                var nodes = [];
+                $.map(idx, function(i, n){
+                    if ($.isArray(i)) {
+                        var l = {};
+                        l.text = n;
+                        l.selectable = true;
+                        nodes.push(l)
+                        leaf.nodes = nodes;
+                        addNodes(i, l);
+                    }
+                    else {
+                        var l = {};
+                        l.text = idx[n];
+                        nodes.push(l);
+                        leaf.nodes = nodes;
+                    }
+                });
+            }
+            
+            
+            $('#feature-tree').treeview({
+                data: tree,
+                levels: 1,
+                multiSelect: true,
+                showBorder: false,
+                showCheckbox: true,
+            });
+            
+            // make sure all checked to begin with
+            $('#feature-tree').treeview('checkAll');
+        });
+        
+        
+    }
+    
     /*
      * Handles placename lookups using nominatim.
      * Only interested relations.
@@ -624,7 +679,7 @@ create.job = (function(){
                                     return process(suggestions);
                                 }
                             );
-                        }, 200); // ms
+                        }, 100); // ms
             },
             
             displayText: function(item){

@@ -3,6 +3,7 @@
 {% block css %}
 {{ block.super}}
     <link rel="stylesheet" href="{% static 'ui/components/formvalidation/dist/css/formValidation.css' %}"/>
+    <!--<link rel="stylesheet" href="{% static 'ui/components/bootstrap-treeview/dist/bootstrap-treeview.min.css' %}"/>-->
 {% endblock %}
 
 {% block container %}
@@ -16,7 +17,7 @@
                     <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">Select Formats</a></li>
                     <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">Select Features</a></li>
                     <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">Upload Configuration</a></li>
-                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">Create Export</a></li>
+                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#summary">Export Summary</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="create" class="tab-pane fade in active">
@@ -60,7 +61,7 @@
                     <div id="features" class="tab-pane fade in">
                         <div class="panel panel-default">
                         <div class="panel-body">
-                            Select export features...
+                            <div id="feature-tree"></div>
                         </div>
                       </div>
                     </div>
@@ -71,13 +72,14 @@
                         </div>
                       </div>
                     </div>
-                    <!-- Previous/Next buttons -->
-                    <ul class="pager wizard">
-                        <li class="previous first" style="display:none;"><a href="#">First</a></li>
-                        <li class="previous"><a href="#">Previous</a></li>
-                        <li class="next last" style="display:none;"><a href="#">Last</a></li>
-                        <li class="next"><a href="#">Next</a></li>
-                    </ul>
+                    <div id="summary" class="tab-pane fade in">
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                            Export summary here..<br/>
+                            <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">Create Export Job</button>
+                        </div>
+                      </div>
+                    </div>
                 </div>
                 <!-- container for job extents -->
                 <div class="form-group row" id="form-group-bbox">
@@ -88,7 +90,6 @@
                         <input id="ymax" name="ymax" value=""/>
                     </div>
                 </div>
-                <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">Create Export Job</button>
             </form>
         </div>
     </div>
@@ -125,7 +126,7 @@
 <script src="{% static 'ui/components/twitter-bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
 <script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
 <script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
-<!--<script src="{% static 'ui/components/bootstrap3-typeahead/typeahead.bundle.min.js' %}"></script>-->
+<script src="{% static 'ui/components/bootstrap-treeview/dist/bootstrap-treeview.min.js' %}"></script>
 
 <script src="{% static 'ui/js/layers.js' %}"></script>
 <script src="{% static 'ui/js/config.js' %}"></script>
