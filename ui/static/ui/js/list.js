@@ -567,18 +567,15 @@ jobs.list = (function(){
         });
         
         // run search on search form input events
-        
         $('form#search input').bind('input', function(e){
             runSearch();
         });
         
-        // run search on region selection
-        $('select#region-select').bind('change', function(e){
+        // run search on selection changes
+        $('select').bind('change', function(e){
            runSearch(); 
         });
-        $('select#features').bind('change', function(e){
-           runSearch(); 
-        });
+        
         // run search on user filtering state change
         $('input#user-check').bind('click', function(e){
             // pull the username out of the dom
