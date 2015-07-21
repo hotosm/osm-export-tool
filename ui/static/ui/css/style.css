@@ -261,6 +261,12 @@ ul.typeahead {
     display: none !important;
 }
 
+/* Feature selection styles */
+
+.treeview {
+    font-size: smaller;
+}
+
 /* job detail styles @see job.html */
 
 #details-row {
