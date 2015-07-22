@@ -272,6 +272,10 @@ ul.typeahead {
 
 /* job detail styles @see job.html */
 
+#submitted_runs {
+    display: none;
+}
+
 #details-row {
     padding: 15px;
 }

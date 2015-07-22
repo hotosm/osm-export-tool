@@ -36,6 +36,7 @@ class ExportTaskRunner(TaskRunner):
     export_task_registry = settings.EXPORT_TASKS
     
     def run_task(self, job_uid=None):
+        run_uid = ''
         logger.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
         formats = [format.slug for format in job.formats.all()]
@@ -60,7 +61,6 @@ class ExportTaskRunner(TaskRunner):
         # run the tasks 
         if len(export_tasks) > 0:
             run = None
-            run_uid = None
             try:
                 run = ExportRun.objects.create(job=job, status='SUBMITTED') # persist the run
                 run.save()
@@ -137,7 +137,7 @@ class ExportTaskRunner(TaskRunner):
                         finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)
             ).apply_async(expires=datetime.now() + timedelta(days=1)) # tasks expire after one day.
             
-            return True
+            return run
         else:
             return False
 
