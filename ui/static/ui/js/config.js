@@ -12,7 +12,9 @@ Config.REGION_MASK_URL = '/api/maskregions.json'
 // job / run / format enpoints
 Config.JOBS_URL = '/api/jobs'
 Config.RUNS_URL = '/api/runs'
+Config.RERUN_URL = '/api/rerun?job_uid='
 Config.EXPORT_FORMATS_URL = '/api/formats.json'
+
 
 // datamodel endpoints
 Config.HDM_TAGS_URL = '/api/data-model-hdm?format=json'

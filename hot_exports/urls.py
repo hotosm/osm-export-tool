@@ -10,7 +10,7 @@ from ui import urls as ui_urls
 from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 from api.urls import router
-from api.views import HDMDataModelView, OSMDataModelView
+from api.views import HDMDataModelView, OSMDataModelView, RunJob
 
 urlpatterns = []
 
@@ -27,6 +27,7 @@ urlpatterns += patterns('registration.views',
 urlpatterns += patterns('api.views',
     url(r'^api/', include(router.urls, namespace='api')),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/rerun$', RunJob.as_view(), name='rerun'),
     url(r'^api/data-model-hdm$', HDMDataModelView.as_view(), name='data-model-hdm'),
     url(r'^api/data-model-osm$', OSMDataModelView.as_view(), name='data-model-osm'),
 )

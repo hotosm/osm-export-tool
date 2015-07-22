@@ -6,7 +6,7 @@
 <div id="details-row" class="row">
     <div id="job" class="col-md-5">
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>Job Summary</h4></div>
+            <div class="panel-heading"><h4>Export Summary</h4></div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-6">
@@ -20,30 +20,33 @@
                             </table>
                         </div>
                     </div>
+                    
                     <div class="col-md-6">
                         <div id="extents" class="pull-right"></div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div>
+                            <button id="rerun" class="btn btn-primary">Rerun this Export</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="runs" class="col-md-6">
+    <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading"><h4>Export Runs</h4></div>
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <tr><td><strong>Run Id:</strong></td><td><div id="ruid"></div></td></tr>
-                                <tr><td><strong>Status:</strong></td><td><div id="status"></div></td></tr>
-                                <tr><td><strong>Started:</strong></td><td><div id="started"></div></td></tr>
-                                <tr><td><strong>Finished:</strong></td><td><div id="finished"></div></td></tr>
-                                <tr><td><strong>Duration:</strong></td><td><div id="duration"></div></td></tr>
-                                <tr><td><strong>Downloads:</strong></td><td><div id="downloads"></div></td></tr>
-                            </table>
-                        </div>
-                    </div>
+                <div id="submitted_runs" class="col-md-12">
+                    <h4>Currently Running</h4>
+                    <div class="panel-group" role="tablist" aria-multiselectable="true"></div>
+                </div>
+                <div id="completed_runs" class="col-md-12">
+                    <h4>Completed Runs</h4>
+                    <div class="panel-group" role="tablist" aria-multiselectable="true"></div>
                 </div>
             </div>
         </div>
@@ -60,5 +63,5 @@
 <script src="{% static 'ui/components/moment/min/moment.min.js' %}"></script>
 <script src="{% static 'ui/js/layers.js' %}"></script>
 <script src="{% static 'ui/js/config.js' %}"></script>
-<script src="{% static 'ui/js/job.js' %}"></script>
+<script src="{% static 'ui/js/detail.js' %}"></script>
 {% endblock %}

@@ -32,7 +32,7 @@ from rest_framework.pagination import PageNumberPagination
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 from .pagination import JobLinkHeaderPagination
-from .filters import JobFilter
+from .filters import JobFilter, ExportRunFilter
 
 from jobs import presets
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
@@ -186,6 +186,25 @@ class JobViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class RunJob(views.APIView):
+    """ Class to re-run an export."""
+    
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
+    def get(self, request, uid=None, format=None):
+        job_uid = request.QUERY_PARAMS.get('job_uid', None)
+        if (job_uid):    
+            # run the tasks
+            job = Job.objects.get(uid=job_uid)
+            task_runner = ExportTaskRunner()
+            run = task_runner.run_task(job_uid=job_uid)
+            running = ExportRunSerializer(run, context={'request': request})
+            return Response(running.data, status=status.HTTP_202_ACCEPTED) 
+        else:
+            return Response([{'detail': 'Export not found'}], status.HTTP_404_NOT_FOUND)
+        
+
+
 class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ### ExportFormat API endpoint.
@@ -224,19 +243,21 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = ExportRunSerializer
     permission_classes = (permissions.AllowAny,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ExportRunFilter
     lookup_field = 'uid'
     
     def get_queryset(self):
-         return ExportRun.objects.all()
+         return ExportRun.objects.all().order_by('-started_at')
         
     def retrieve(self, request, uid=None, *args, **kwargs):
         queryset = ExportRun.objects.filter(uid=uid)
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def list(self, request, job_uid=None, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         job_uid = self.request.QUERY_PARAMS.get('job_uid', None)
-        queryset = ExportRun.objects.filter(job__uid=job_uid)
+        queryset = self.filter_queryset(ExportRun.objects.filter(job__uid=job_uid).order_by('-started_at'))
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 

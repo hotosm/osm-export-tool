@@ -2,6 +2,7 @@ import logging
 import pdb
 import django_filters
 from jobs.models import Job
+from tasks.models import ExportRun
 
 logger = logging.getLogger(__name__)
 
@@ -20,4 +21,14 @@ class JobFilter(django_filters.FilterSet):
         model = Job
         fields = ('name', 'description', 'event', 'start', 'end', 'region', 'user', 'feature')
         order_by = ('-created_at',)
+
+
+class ExportRunFilter(django_filters.FilterSet):
+    
+    status = django_filters.CharFilter(name="status",lookup_type="exact")
+    
+    class Meta:
+        model = ExportRun
+        fields = ('status',)
+        order_by = ('-started_at',)
         
