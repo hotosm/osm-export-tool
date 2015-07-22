@@ -80,6 +80,9 @@ ul.nav {
     padding-left: 10px;
 }
 
+#logout {
+    margin-right: 2em !important;
+}
 
 /* main container / bootstrap styles */
 
@@ -263,8 +266,8 @@ ul.typeahead {
 
 /* Feature selection styles */
 
-.treeview {
-    font-size: smaller;
+#feature-tree {
+    font-size: smaller !important;
 }
 
 /* job detail styles @see job.html */
@@ -303,10 +306,15 @@ ul.pager {
     margin-right: 1em;
 }
 
+.input-group.search {
+    width: 100% !important;
+}
+
 #info {
     padding: .7em;
     font-weight: 700;
     font-size: small;
+    margin-left: 1em;
 }
 
 table#jobs {
@@ -342,9 +350,7 @@ span.tag.label.label-info {
     border-radius: 4px !important;
 }
 
-.page-size {
-    margin-left: 1em;
-}
+
 
 /* login page */
 

@@ -575,6 +575,7 @@ create.job = (function(){
     /**
      * Initializes the feature selection tree.
      */
+    /*
     function initSelectFeaturesTree(){
         // initialize the feature selection tree
         $.get(Config.HDM_TAGS_URL, function(data){
@@ -625,7 +626,45 @@ create.job = (function(){
             $('#feature-tree').treeview('checkAll');
         });
         
+    }
+    */
+    
+    function initSelectFeaturesTree(){
+        // initialize the feature selection tree
+        $.get(Config.HDM_TAGS_URL, function(data){
+            var tree = $('#feature-tree ul.nav-list');
+            $.map(data, function(idx, node){
+                // top level features
+                var $topLevel = $('<li><label class="tree-toggle nav-header">' + node + '</label>');
+                tree.append($topLevel);
+                addNodes(idx, $topLevel);
+            });
+            
+            function addNodes(idx, $topLevel){
+                $.map(idx, function(i, n){
+                    var $nextLevel = $('<ul class="nav nav-list tree">');
+                    if ($.isArray(i)) {
+                        $topLevel.append($nextLevel);
+                        var $header = $('<li><label class="tree-toggle nav-header">' + n + '</label>');
+                        var $subLevel = $('<ul class="nav nav-list tree">');
+                        $header.append($subLevel);
+                        $nextLevel.append($header);
+                        addNodes(i, $subLevel);
+                        $nextLevel.append('</ul>');
+                        $header.append('</li>');
+                        $subLevel.append('</ul>');
+                    }
+                    else {
+                        var $entry = $('<li><a href="#">' + idx[n] + '</a></li>');
+                        $topLevel.append($entry);
+                    }
+                });
+            }
+        });
         
+        $('.tree-toggle').click(function () {
+            $(this).parent().children('ul.tree').toggle(200);
+        });
     }
     
     /*
@@ -679,7 +718,7 @@ create.job = (function(){
                                     return process(suggestions);
                                 }
                             );
-                        }, 100); // ms
+                        }, 300); // timeout before initiating search..
             },
             
             displayText: function(item){
@@ -757,7 +796,7 @@ create.job = (function(){
                      validateBounds();
                      return;
                 }
-                // test for empty invalid coords
+                // test for empty or invalid coords
                 for (i = 0; i < coords.length; i++){
                      if (coords[i] === '' || !checkQueryRegex(coords[i])) {
                          bbox.removeAllFeatures();
@@ -782,8 +821,6 @@ create.job = (function(){
             }
         });
     }
-    
-    
     
 }());
 

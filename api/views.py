@@ -68,8 +68,9 @@ class JobViewSet(viewsets.ModelViewSet):
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     lookup_field = 'uid'
     pagination_class = JobLinkHeaderPagination
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
     filter_class = JobFilter
+    search_fields = ('name', 'description', 'event',)
     
     def get_queryset(self,):
         return Job.objects.all()
