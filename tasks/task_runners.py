@@ -60,12 +60,24 @@ class ExportTaskRunner(TaskRunner):
                 logger.debug(msg)
         # run the tasks 
         if len(export_tasks) > 0:
+            # start the run
             run = None
             try:
+                # enforce max runs
+                max_runs = settings.EXPORT_MAX_RUNS
+                run_count = job.runs.count()
+                if run_count > 0:
+                    while run_count > max_runs -1:
+                        job.runs.earliest(field_name='started_at').delete() # delete earliest
+                        run_count -= 1
+                # save the run
                 run = ExportRun.objects.create(job=job, status='SUBMITTED') # persist the run
                 run.save()
                 run_uid = str(run.uid)
                 logger.debug('Saved run with id: {0}'.format(run_uid))
+                max_runs = settings.EXPORT_MAX_RUNS
+                run_count = job.runs.count()
+                
             except DatabaseError as e:
                 logger.error('Error saving export run: {0}'.format(e))
                 raise e

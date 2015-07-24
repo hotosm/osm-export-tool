@@ -58,6 +58,17 @@ class TestExportRun(TestCase):
         tasks = runs[0].tasks.all()
         self.assertEquals(5 , len(runs))
         self.assertEquals(1, len(tasks))
+        
+    def test_delete_export_run(self, ):
+        job = Job.objects.all()[0]
+        run =  ExportRun.objects.create(job=job)
+        task_uid = str(uuid.uuid4()) # from celery
+        task = ExportTask.objects.create(run=run, uid=task_uid)
+        runs = job.runs.all()
+        self.assertEquals(1, runs.count())
+        run_uid = run.uid
+        
+        run.delete()
   
 
 class TestExportTask(TestCase):

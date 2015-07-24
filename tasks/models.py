@@ -1,10 +1,16 @@
 from __future__ import unicode_literals
 import uuid
+import logging
+import shutil
+from hot_exports import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from jobs.models import Job
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
 
+logger = logging.getLogger(__name__)
 
 class TimeStampedModelMixin(models.Model):
     """
@@ -54,12 +60,14 @@ class ExportTask(models.Model):
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     celery_uid = models.UUIDField(null=True) # celery task uid
     name = models.CharField(max_length=50)
+    #display = models.CharField(max_length=50)
     run = models.ForeignKey(ExportRun, related_name='tasks')
     status = models.CharField(blank=True, max_length=20, db_index=True)
     started_at = models.DateTimeField(editable=False, null=True)
     finished_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
+        ordering = ['-started_at']
         managed = True
         db_table = 'export_tasks'
     
@@ -96,3 +104,16 @@ class ExportTaskException(models.Model):
     class Meta:
         managed = True
         db_table = 'export_task_exceptions'
+        
+
+"""
+Delete the associated export files when a ExportRun is deleted.
+"""
+@receiver(post_delete, sender=ExportRun)
+def exportrun_delete_exports(sender, instance, **kwargs):
+    download_root = settings.EXPORT_DOWNLOAD_ROOT
+    run_uid = instance.uid
+    run_dir = '{0}{1}'.format(download_root, run_uid)
+    logger.debug(run_dir)
+    shutil.rmtree(run_dir, ignore_errors=True)
+    

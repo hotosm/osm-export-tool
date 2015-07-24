@@ -304,6 +304,10 @@ ul.typeahead {
     padding: 7px !important;
 }
 
+.panel-body {
+    border-top: none !important;
+}
+
 /* jobs list/search page */
 
 ul.pager {
