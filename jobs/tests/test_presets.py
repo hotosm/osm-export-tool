@@ -71,7 +71,6 @@ class TestHDMToJSON(TestCase):
     
     def test_hdm_to_json(self,):
         js = json.dumps(HOT_HDM, sort_keys=False)
-        logger.debug(js)
         f = open(self.path + '/hdm.json', 'w')
         f.write(js)
         f.close()

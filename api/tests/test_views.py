@@ -31,7 +31,7 @@ class TestJobViewSet(APITestCase):
         extents = (-3.9, 16.1, 7.0, 27.6)
         bbox = Polygon.from_bbox(extents)
         the_geom = GEOSGeometry(bbox, srid=4326)
-        self.job = Job.objects.create(name='TestJob',
+        self.job = Job.objects.create(name='TestJob', event='Test Activation',
                                  description='Test description', user=self.user,
                                  the_geom=the_geom)
         format = ExportFormat.objects.get(slug='obf')
@@ -103,6 +103,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': -3.9,
             'ymin': 16.1,
             'xmax': 7.0,
@@ -141,6 +142,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': -3.9,
             'ymin': 16.1,
             'xmax': 7.0,
@@ -174,6 +176,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             #'xmin': -3.9, missing
             'ymin': 16.1,
             'xmax': 7.0,
@@ -192,6 +195,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': '', # empty
             'ymin': 16.1,
             'xmax': 7.0,
@@ -210,6 +214,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': 7.0, # invalid
             'ymin': 16.1,
             'xmax': 7.0,
@@ -228,6 +233,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': -227.14, # invalid
             'ymin': 16.1,
             'xmax': 7.0,
@@ -246,6 +252,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': 'xyz', # invalid
             'ymin': 16.1,
             'xmax': 7.0,
@@ -264,6 +271,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': 7.0, # inverted
             'ymin': 16.1,
             'xmax': -3.9, # inverted
@@ -282,6 +290,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': '',  # empty
+            'event': 'Test Activation',
             'xmin': -3.9,
             'ymin': 16.1,
             'xmax': 7.0,
@@ -299,6 +308,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': -3.9,
             'ymin': 16.1,
             'xmax': 7.0,
@@ -316,6 +326,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': -3.9,
             'ymin': 16.1,
             'xmax': 7.0,
@@ -333,6 +344,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': -3.9,
             'ymin': 16.1,
             'xmax': 7.0,
@@ -354,6 +366,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': 36.90,
             'ymin': 13.54,
             'xmax': 48.52,
@@ -388,6 +401,7 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': 2.74,
             'ymin': 47.66,
             'xmax': 11.61,
@@ -407,10 +421,11 @@ class TestJobViewSet(APITestCase):
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
+            'event': 'Test Activation',
             'xmin': 10,
             'ymin': 10,
-            'xmax': 25,
-            'ymax': 25,
+            'xmax': 35,
+            'ymax': 35,
             'formats': formats
         }
         response = self.client.post(url, request_data)
@@ -449,6 +464,7 @@ class TestBBoxSearch(APITestCase):
             request_data = {
                 'name': 'TestJob',
                 'description': 'Test description',
+                'event': 'Test Activation',
                 'xmin': extent[0],
                 'ymin': extent[1],
                 'xmax': extent[2],
@@ -474,7 +490,7 @@ class TestBBoxSearch(APITestCase):
         self.assertEquals(status.HTTP_206_PARTIAL_CONTENT, response.status_code)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
-        self.assertEquals(response['Link'], '<http://testserver/api/jobs?page=2; rel="next">')
+        self.assertEquals(response['Link'], '<http://testserver/api/jobs?page=2>; rel="next"')
         self.assertEquals(2, len(response.data)) # 8 jobs in total but response is paginated
     
 
@@ -537,7 +553,8 @@ class TestExportRunViewSet(APITestCase):
         expected = '/api/runs'
         url = reverse('api:runs-list')
         self.assertEquals(expected, url)
-        response = self.client.get(url)
+        query = '{0}?job_uid={1}'.format(url, self.job.uid)
+        response = self.client.get(query)
         self.assertIsNotNone(response)
         result = response.data
         # make sure we get the correct uid back out

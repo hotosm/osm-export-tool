@@ -189,7 +189,7 @@ class JobViewSet(viewsets.ModelViewSet):
 class RunJob(views.APIView):
     """ Class to re-run an export."""
     
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
     
     def get(self, request, uid=None, format=None):
         job_uid = request.QUERY_PARAMS.get('job_uid', None)
