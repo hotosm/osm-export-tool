@@ -143,17 +143,17 @@ class ExportTaskSerializer(serializers.ModelSerializer):
             serializer = ExportTaskResultSerializer(result, many=False, context=self.context)
             return serializer.data
         except ExportTaskResult.DoesNotExist as e:
-            return {}
+            return None # no result yet
     
     def get_started_at(self, obj):
         if (not obj.started_at):
-            return {}
+            return None # not started yet
         else:
             return obj.started_at
     
     def get_finished_at(self, obj):
         if (not obj.finished_at):
-            return {}
+            return None # not finished yet
         else:
             return obj.finished_at
         
@@ -163,7 +163,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
         if started and finished:
             return  str(finished - started)
         else:
-            return {}
+            return None # can't compute yet
 
 
 class SimpleJobSerializer(serializers.Serializer):
@@ -216,7 +216,7 @@ class ExportRunSerializer(serializers.ModelSerializer):
         if started and finished:
             return  str(finished - started)
         else:
-            return {}
+            return None
 
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()

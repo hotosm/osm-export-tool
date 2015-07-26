@@ -16,6 +16,7 @@ class TimeStampedModelMixin(models.Model):
     """
     Mixin for timestamped models.
     """
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
     started_at = models.DateTimeField(default=timezone.now, editable=False)
     finished_at = models.DateTimeField(editable=False, null=True)
     
@@ -60,14 +61,14 @@ class ExportTask(models.Model):
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     celery_uid = models.UUIDField(null=True) # celery task uid
     name = models.CharField(max_length=50)
-    #display = models.CharField(max_length=50)
     run = models.ForeignKey(ExportRun, related_name='tasks')
     status = models.CharField(blank=True, max_length=20, db_index=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
     started_at = models.DateTimeField(editable=False, null=True)
     finished_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
-        ordering = ['-started_at']
+        ordering = ['created_at']
         managed = True
         db_table = 'export_tasks'
     
@@ -114,6 +115,5 @@ def exportrun_delete_exports(sender, instance, **kwargs):
     download_root = settings.EXPORT_DOWNLOAD_ROOT
     run_uid = instance.uid
     run_dir = '{0}{1}'.format(download_root, run_uid)
-    logger.debug(run_dir)
     shutil.rmtree(run_dir, ignore_errors=True)
     

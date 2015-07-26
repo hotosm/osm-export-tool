@@ -308,6 +308,27 @@ ul.typeahead {
     border-top: none !important;
 }
 
+tr.success {
+    background-color: #D9EDF7;
+    padding: .1em;
+    opacity: .8;
+}
+
+tr.running {
+    background-color: #D9EDF7;
+    padding: .1em;
+}
+
+tr.pending {
+    background-color: #FCF8E3;
+    padding: .1em;
+}
+
+tr.failed {
+    background-color: #F2DEDE;
+    padding: .1em;
+}
+
 /* jobs list/search page */
 
 ul.pager {

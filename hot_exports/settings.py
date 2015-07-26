@@ -299,3 +299,5 @@ JOB_MAX_EXTENT = 250
 
 # maximum number of runs to hold for each export
 EXPORT_MAX_RUNS = 5
+
+HOSTNAME = 'hot.geoweb.io'

@@ -24,14 +24,16 @@
                         <div id="extents" class="pull-right"></div>
                     </div>
                 </div>
+                {% if user.is_authenticated %}
                 <hr/>
                 <div class="row">
                     <div class="col-md-12">
                         <div>
-                            <button id="rerun" class="btn btn-primary">Rerun this Export</button>
+                            <button id="rerun" class="btn btn-primary">Rerun this Export&nbsp;&nbsp;<span class="glyphicon glyphicon-repeat"></span></button>
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -70,7 +70,7 @@ class ExportTaskRunner(TaskRunner):
                     while run_count > max_runs -1:
                         job.runs.earliest(field_name='started_at').delete() # delete earliest
                         run_count -= 1
-                # save the run
+                # add the new run
                 run = ExportRun.objects.create(job=job, status='SUBMITTED') # persist the run
                 run.save()
                 run_uid = str(run.uid)
