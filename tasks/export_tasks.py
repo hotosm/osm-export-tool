@@ -12,6 +12,9 @@ from celery.contrib.methods import task
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 from django.db import transaction, DatabaseError
+from django.template import Context
+from django.template.loader import get_template
+from django.core.mail import EmailMessage
 
 from utils import (overpass, osmconf, osmparse,
                    pbf, shp, kml, osmand, garmin)
@@ -56,10 +59,6 @@ class ExportTask(Task):
         download_media_root = settings.EXPORT_MEDIA_ROOT
         download_url = '{0}{1}/{2}'.format(download_media_root, run_uid, filename)
         # save the task and task result
-        task.status = 'SUCCESS'
-        task.save()
-        logger.debug(download_url)
-        logger.debug(task)
         result = ExportTaskResult(
             task=task,
             filename=filename,
@@ -67,6 +66,8 @@ class ExportTask(Task):
             download_url=download_url
         )
         result.save()
+        task.status = 'SUCCESS'
+        task.save()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         from tasks.models import ExportTask, ExportTaskException
@@ -271,6 +272,7 @@ class FinalizeRunTask(Task):
     Finalizes export run.
     Cleans up staging directory.
     Updates run with finish time.
+    Emails user notification.
     """
     
     name = 'Finalize Export Run'
@@ -286,7 +288,18 @@ class FinalizeRunTask(Task):
             shutil.rmtree(stage_dir)
         except IOError as e:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
-        
-        
-        
-
+            
+        # send notification email to user
+        hostname = settings.HOSTNAME
+        url = 'http://{0}/jobs/{1}'.format(hostname, run.job.uid)
+        addr = run.job.user.email
+        subject = "Your HOT Export is ready"
+        to = [addr]
+        from_email = 'exports@hotosm.org'
+        ctx = {
+            'url': url,
+        }
+        message = get_template('ui/email.html').render(Context(ctx))
+        msg = EmailMessage(subject, message, to=to, from_email=from_email)
+        msg.content_subtype = 'html'
+        msg.send()
