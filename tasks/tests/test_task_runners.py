@@ -30,10 +30,10 @@ class TestExportTaskRunner(TestCase):
         self.uid = str(self.job.uid)
         self.job.save()
     
-    @patch('tasks.task_runners.chord')
+    @patch('tasks.task_runners.chain')
     @patch('tasks.export_tasks.GarminExportTask')
     @patch('tasks.export_tasks.ShpExportTask')
-    def test_run_task(self, mock_shp, mock_garmin, mock_chord):
+    def test_run_task(self, mock_shp, mock_garmin, mock_chain):
         shp_task = ExportFormat.objects.get(slug='shp')
         garmin_task = ExportFormat.objects.get(slug='garmin')
         celery_uid = str(uuid.uuid4())
@@ -45,16 +45,16 @@ class TestExportTaskRunner(TestCase):
         garmin_export_task.run.return_value = Mock(state='PENDING', id=celery_uid)
         type(garmin_export_task).name = PropertyMock(return_value='Garmin Export')
         type(garmin_export_task).region = PropertyMock(return_value='Africa')
-        # celery chord mock
-        celery_chord = mock_chord.return_value
-        celery_chord.apply_async.return_value = Mock()
+        # celery chain mock
+        celery_chain = mock_chain.return_value
+        celery_chain.apply_async.return_value = Mock()
         self.job.formats = [shp_task, garmin_task]
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         run = self.job.runs.all()[0]
         self.assertIsNotNone(run)
         # assert delay method called on mock chord..
-        celery_chord.delay.assert_called_once()
+        celery_chain.delay.assert_called_once()
         tasks = run.tasks.all()
         self.assertIsNotNone(tasks)
         self.assertEquals(6, len(tasks)) # 4 initial tasks + 1 shape export task

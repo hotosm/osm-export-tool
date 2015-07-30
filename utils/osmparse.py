@@ -18,6 +18,8 @@ class OSMParser(object):
     def __init__(self, osm=None, sqlite=None, osmconf=None, schema=None, debug=None):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.osm = osm
+        if not os.path.exists(self.osm):
+            raise IOError('Cannot find PBF data for this task.')
         self.sqlite = sqlite
         self.schema = schema
         self.debug = debug

@@ -13,6 +13,7 @@ from unittest import skip
 
 from ..overpass import Overpass
 
+
 logger = logging.getLogger(__name__)
 
 class TestOverpass(TestCase):
@@ -22,6 +23,9 @@ class TestOverpass(TestCase):
         self.bbox = '6.25,-10.85,6.40,-10.62' # monrovia
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.osm = self.path + '/files/query.osm'
+        self.tags = tags = ['amenity:fuel', 'shop:car_repair','amenity:bank',
+                            'amenity:money_transfer','hazard_type:flood',
+                            'landuse:residential','building:yes']
         self.query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'
         
     def test_get_query(self,):
@@ -29,6 +33,18 @@ class TestOverpass(TestCase):
         q = overpass.get_query()
         self.assertIsNotNone(q)
         self.assertEquals(self.query, q)
+    
+    @skip  
+    def test_op_query_no_tags(self, ):
+        op = Overpass(osm=self.osm, bbox=self.bbox)
+        logger.debug(op.get_query())
+        op.run_query()
+    
+    @skip
+    def test_op_query_with_tags(self, ):
+        op = Overpass(osm=self.osm, bbox=self.bbox, tags=self.tags)
+        logger.debug(op.get_query())
+        op.run_query()
     
     @patch('utils.overpass.requests.post')
     def test_run_query(self, mock_post):

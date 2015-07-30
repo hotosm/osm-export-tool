@@ -5,8 +5,10 @@ import sys
 import cPickle
 import shutil
 import os
+import pdb
 from hot_exports import settings
 from celery import app, shared_task, Task
+from celery.result import AsyncResult
 from celery.registry import tasks
 from celery.contrib.methods import task
 from celery.utils.log import get_task_logger
@@ -29,6 +31,10 @@ class ExportTask(Task):
     """
     Abstract base class for export tasks.
     """
+    
+    # whether to abort the whole run if this task fails.
+    abort_on_error = False
+    
     class Meta:
         abstract = True
 
@@ -70,15 +76,24 @@ class ExportTask(Task):
         task.save()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        from tasks.models import ExportTask, ExportTaskException
+        from tasks.models import ExportTask, ExportTaskException, ExportRun
         logger.debug('Task name: {0} failed, {1}'.format(self.name, einfo))
         task = ExportTask.objects.get(celery_uid=task_id)
-        task.status = 'FAILURE'
+        task.status = 'FAILED'
         task.finished_at = timezone.now()
         task.save()
         exception = cPickle.dumps(einfo)
         ete = ExportTaskException(task=task, exception=exception)
         ete.save()
+        if self.abort_on_error:
+            run = ExportRun.objects.get(tasks__celery_uid=task_id)
+            run.status = 'FAILED'
+            run.finished_at = timezone.now()
+            run.save()
+            error_handler = ExportTaskErrorHandler()
+            # run error handler
+            stage_dir = kwargs['stage_dir']
+            error_handler.si(run_uid=str(run.uid), task_id=task_id, stage_dir=stage_dir).delay()
 
     def after_return(self, *args, **kwargs):
         logger.debug('Task returned: {0}'.format(self.request))
@@ -109,8 +124,10 @@ class OSMConfTask(ExportTask):
     Task to create the ogr2ogr conf file.
     """
     name = 'OSMConf'
+    abort_on_error = True
     
-    def run(self, run_uid=None, job_uid=None, categories=None, stage_dir=None):
+    def run(self, run_uid=None, job_uid=None,
+            categories=None, stage_dir=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         conf = osmconf.OSMConfig(categories)
         configfile = conf.create_osm_conf(stage_dir=stage_dir)
@@ -122,6 +139,7 @@ class OverpassQueryTask(ExportTask):
     Class to run an overpass query.
     """
     name = 'OverpassQuery'
+    abort_on_error = True
     
     def run(self, run_uid=None, stage_dir=None, bbox=None):
         """
@@ -131,7 +149,7 @@ class OverpassQueryTask(ExportTask):
         osm = stage_dir + 'query.osm'
         op = overpass.Overpass(bbox=bbox, osm=osm)
         osmfile = op.run_query()
-        return {'result': osmfile}
+        return {'result': osmfile}        
 
 
 class OSMToPBFConvertTask(ExportTask):
@@ -140,6 +158,7 @@ class OSMToPBFConvertTask(ExportTask):
     Returns the path to the pbf file.
     """
     name = 'OSM2PBF'
+    abort_on_error = True
     
     def run(self, run_uid=None, stage_dir=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
@@ -155,6 +174,7 @@ class OSMPrepSchemaTask(ExportTask):
     Task to create the default sqlite schema.
     """
     name = 'OSMSchema'
+    abort_on_error = True
     
     def run(self, run_uid=None, stage_dir=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
@@ -226,12 +246,13 @@ class SqliteExportTask(ExportTask):
     
     name = 'SQLITE Export'
     
-    def run(self, run_uid=None):
-       
-       # dummy task for now..
-       # logic for SHP export goes here..
-       time.sleep(10)
-       return {'result': 'http://testserver/some/download/file.zip'}
+    def run(self, run_uid=None, stage_dir=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        # dummy task for now..
+        # logic for SHP export goes here..
+        time.sleep(10)
+        
+        return {'result': 'http://testserver/some/download/file.zip'}
 
 
 class GarminExportTask(ExportTask):
@@ -279,10 +300,15 @@ class FinalizeRunTask(Task):
     
     def run(self, run_uid=None, stage_dir=None):
         from tasks.models import ExportRun
-        finished = timezone.now()
         run =  ExportRun.objects.get(uid=run_uid)
-        run.finished_at = finished
         run.status = 'COMPLETED'
+        tasks = run.tasks.all()
+        # mark run as incomplete if any tasks fail
+        for task in tasks:
+            if task.status == 'FAILED':
+                run.status = 'INCOMPLETE'
+        finished = timezone.now()
+        run.finished_at = finished
         run.save()
         try:
             shutil.rmtree(stage_dir)
@@ -298,8 +324,40 @@ class FinalizeRunTask(Task):
         from_email = 'exports@hotosm.org'
         ctx = {
             'url': url,
+            'status': run.status
         }
         message = get_template('ui/email.html').render(Context(ctx))
+        msg = EmailMessage(subject, message, to=to, from_email=from_email)
+        msg.content_subtype = 'html'
+        msg.send()
+
+
+class ExportTaskErrorHandler(Task):
+    
+    def run(self, run_uid, task_id=None, stage_dir=None):
+        from tasks.models import ExportRun
+        finished = timezone.now()
+        run =  ExportRun.objects.get(uid=run_uid)
+        run.finished_at = finished
+        run.status = 'FAILED'
+        run.save()
+        try:
+            if os.path.isdir(stage_dir):
+                shutil.rmtree(stage_dir)
+        except IOError as e:
+            logger.error('Error removing {0} during export finalize'.format(stage_dir))
+        hostname = settings.HOSTNAME
+        url = 'http://{0}/jobs/{1}'.format(hostname, run.job.uid)
+        addr = run.job.user.email
+        subject = "Your HOT Export Failed"
+        # email user and administrator
+        to = [addr, 'bjohare+hotadmin@gmail.com']
+        from_email = 'exports@hotosm.org'
+        ctx = {
+            'url': url,
+            'task_id': task_id
+        }
+        message = get_template('ui/error_email.html').render(Context(ctx))
         msg = EmailMessage(subject, message, to=to, from_email=from_email)
         msg.content_subtype = 'html'
         msg.send()

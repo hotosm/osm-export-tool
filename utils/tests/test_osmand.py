@@ -41,17 +41,19 @@ class TestOSMToOBF(TestCase):
         self.work_dir = self.path + '/files'
         self.pbffile = self.path + '/files/query.pbf'
     
+    @patch('os.path.exists')
     @patch('shutil.copy')
     @patch('os.listdir')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')   
-    def test_create_obf(self, popen, pipe, listdir, copy):
+    def test_create_obf(self, popen, pipe, listdir, copy, exists):
         obf_cmd = """
             cd /home/ubuntu/osmand/OsmAndMapCreator && \
             java -Djava.util.logging.config.file=logging.properties \
                 -Xms256M -Xmx1024M -cp "./OsmAndMapCreator.jar:./lib/OsmAnd-core.jar:./lib/*.jar" \
                 net.osmand.data.index.IndexBatchCreator /home/ubuntu/www/hotosm/utils/tests/files/batch.xml
         """
+        exists.return_value = True
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())
@@ -62,6 +64,8 @@ class TestOSMToOBF(TestCase):
             map_creator_dir=self.map_creator_dir, debug=True
         )
         obffile = o2o.convert()
+        exists.assert_called_twice_with(self.work_dir + '/query.osm.pbf')
+        exists.assert_called_twice_with(self.work_dir)
         copy.assert_called_once_with(self.pbffile, self.work_dir + '/query.osm.pbf')
         popen.assert_called_once_with(obf_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)

@@ -267,8 +267,99 @@ ul.typeahead {
 /* Feature selection styles */
 
 #feature-tree {
-    font-size: smaller !important;
+    font-size: small !important;
+    margin-left: 15px;
 }
+
+/*
+#feature-tree > ul.nav, #feature-tree > ul.nav > li > ul.nav {
+    float: left !important;
+    font-size: small !important;
+    font-weight: 400 !important;
+}
+*/
+
+i.fa {
+    float: left !important;
+    font-size: smaller;
+    margin-top: .3em;
+}
+
+.tree-checkbox {
+    position: relative;
+    display: block;
+    margin-top: .1em;
+    margin-bottom: 0px !important;
+    left: 1.5em;
+}
+
+li.entry > label {
+    font-size: small !important;
+}
+
+li.entry > div.tree-checkbox {
+    display: list-item !important;
+    float: right !important;
+    margin-left: .5em !important;
+}
+
+li.top-level {
+    float: left !important;
+    clear: both !important;
+}
+
+li.top-level label {
+    font-size: medium;
+    font-weight: 500;
+    float: left !important;
+}
+
+li.sub-level label {
+    font-size: medium;
+}
+
+li.entry {
+    padding: 0px !important;
+    font-weight: 400 !important;
+    font-size: small !important;
+    float: left;
+    clear: both;
+}
+
+label.nav-header {
+    float: left !important;
+}
+
+label.sub-menu {
+    float: left !important;
+    clear: both !important;
+}
+
+ul.sub-level {
+    margin-top: 0em !important;
+    float: left !important;
+    clear: both !important;
+    position: relative;
+    left: 1.5em;
+}
+
+ul.bottom-level {
+    margin-top: 0em !important;
+    float: left !important;
+    clear: both !important;
+    position: relative;
+    left: 1.5em;
+}
+
+/*
+.collapsing{
+    height: 100px !important;
+    -moz-transition : height 15s;
+    -webkit-transition : height 15s;
+    -o-transition : height 15s;
+    transition : height 15s; 
+}
+*/
 
 /* job detail styles @see job.html */
 
@@ -327,6 +418,11 @@ tr.pending {
 tr.failed {
     background-color: #F2DEDE;
     padding: .1em;
+}
+
+
+tr#exceptions {
+    display: none;
 }
 
 /* jobs list/search page */

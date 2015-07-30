@@ -16,6 +16,8 @@ class SQliteToKml(object):
     """
     def __init__(self, sqlite=None, kmlfile=None, zipped=True, debug=False):
         self.sqlite = sqlite
+        if not os.path.exists(self.sqlite):
+            raise IOError('Cannot find sqlite file for this task.')
         self.kmlfile = kmlfile
         self.zipped = zipped
         if not self.kmlfile:

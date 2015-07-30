@@ -25,7 +25,7 @@ class JobFilter(django_filters.FilterSet):
 
 class ExportRunFilter(django_filters.FilterSet):
     
-    status = django_filters.CharFilter(name="status",lookup_type="exact")
+    status = django_filters.CharFilter(name="status",lookup_type="icontains")
     
     class Meta:
         model = ExportRun

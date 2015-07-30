@@ -37,10 +37,11 @@ class TestOSMToIMG(TestCase):
         self.assertEquals('/home/ubuntu/garmin/mkgmap/mkgmap.jar', mkgmap)
         self.assertEquals('/home/ubuntu/garmin/splitter/splitter.jar', splitter)
     
+    @patch('os.path.exists')
     @patch('os.makedirs')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
-    def test_convert(self, popen, pipe, mkdirs):
+    def test_convert(self, popen, pipe, mkdirs, exists):
         splitter_cmd = """
             java -Xmx1024m -jar /home/ubuntu/garmin/splitter/splitter.jar \
             --output-dir=/home/ubuntu/www/hotosm/utils/tests/files/garmin \
@@ -50,11 +51,12 @@ class TestOSMToIMG(TestCase):
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())
         proc.wait.return_value = 0
-        
+        exists.return_value = True
         o2i = OSMToIMG(
             pbffile=self.pbffile, work_dir=self.work_dir,
             config=self.config, region=self.region, debug=True
         )
+        exists.assert_called_once_with(self.pbffile)
         o2i.run_splitter()
         # test subprocess getting called with correct command
         popen.assert_called_once_with(splitter_cmd, shell=True, executable='/bin/bash',
@@ -90,22 +92,26 @@ class TestOSMToIMG(TestCase):
             pbffile=self.pbffile, work_dir=self.work_dir,
             config=self.config, zipped=False, region=self.region, debug=True
         )
+        exists.assert_called_once_with(self.pbffile)
         imgfile = o2i.run_mkgmap()
+        exists.assert_called_twice_with('/home/ubuntu/www/hotosm/utils/tests/files/garmin/template.args')
         # test subprocess getting called with correct command
         popen.assert_called_once_with(mkgmap_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
-        exists.assert_called_once_with('/home/ubuntu/www/hotosm/utils/tests/files/garmin/template.args')
+        
         self.assertEquals(imgfile, '/home/ubuntu/www/hotosm/utils/tests/files/garmin/gmapsupp.img')
     
+    @patch('os.path.exists')
     @patch('os.remove')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
-    def test_zip_img_file(self, popen, pipe, remove):
+    def test_zip_img_file(self, popen, pipe, remove, exists):
         zipfile = '/home/ubuntu/www/hotosm/utils/tests/files/garmin/garmin.zip'
         imgfile = '/home/ubuntu/www/hotosm/utils/tests/files/garmin/gmapsupp.img'
         zip_cmd = "zip -j {0} {1}".format(zipfile, imgfile)
+        exists.return_value = True
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())
@@ -114,6 +120,7 @@ class TestOSMToIMG(TestCase):
             pbffile=self.pbffile, work_dir=self.work_dir,
             config=self.config, region=self.region, debug=True
         )
+        exists.assert_called_once_with(self.pbffile)
         result = o2i._zip_img_file()
         # test subprocess getting called with correct command
         popen.assert_called_once_with(zip_cmd, shell=True, executable='/bin/bash',

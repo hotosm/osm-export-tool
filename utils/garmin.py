@@ -64,6 +64,8 @@ class OSMToIMG(object):
     def __init__(self, pbffile=None, work_dir=None, config=None,
                  region=None, zipped=True, debug=False):
         self.pbffile = pbffile
+        if not os.path.exists(self.pbffile):
+            raise IOError('Cannot find PBF file for this task.')
         self.work_dir = work_dir
         self.config = config
         self.region = region

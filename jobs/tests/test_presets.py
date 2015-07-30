@@ -22,8 +22,8 @@ class TestPresetParser(TestCase):
         self.assertIsNotNone(tags)
         self.assertEquals(30, len(tags))
         
-        #  logger.debug('\n\t======== USER TAGS ==========\n')
-        #logger.debug('User tags: %s' % tags.keys())
+        logger.debug('\n\t======== USER TAGS ==========\n')
+        logger.debug('User tags: %s' % tags.keys())
         categories = parser.categorise_tags(tags)
         #logger.debug('Points: %s\n' % sorted(categories['points']))
         #logger.debug('Lines: %s\n' % sorted(categories['lines']))
