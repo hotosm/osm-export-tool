@@ -1,4 +1,5 @@
 from __future__ import with_statement
+import os
 import json
 import logging
 import shutil
@@ -15,6 +16,8 @@ class SQliteToShp(object):
     """
     def __init__(self, sqlite=None, shapefile=None, zipped=True, debug=False):
         self.sqlite = sqlite
+        if not os.path.exists(self.sqlite):
+            raise IOError('Cannot find sqlite file for this task.')
         self.shapefile = shapefile
         self.zipped = zipped
         if not self.shapefile:

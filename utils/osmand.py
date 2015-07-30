@@ -43,6 +43,8 @@ class OSMToOBF(object):
                  map_creator_dir=None, debug=False):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.pbffile = pbffile
+        if not os.path.exists(self.pbffile):
+            raise IOError('Cannot find PBF file for this task.')
         self.work_dir = work_dir
         self.map_creator_dir = map_creator_dir
         self.debug = debug

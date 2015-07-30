@@ -36,8 +36,12 @@ class OSMConfig(object):
         self.config.set('multipolygons', 'attributes', ','.join(self.categories['polygons']))
         # write the out the config
         config_file = stage_dir + 'osmconf.ini'
-        with open(config_file, 'wb') as configfile:
-            self.config.write(EqualsSpaceRemover(configfile))
+        try:
+            with open(config_file, 'wb') as configfile:
+                self.config.write(EqualsSpaceRemover(configfile))
+        except IOError as e:
+            logger.error(e)
+            raise IOError('Failed to create osmconf ini file.')
         return config_file
         
         

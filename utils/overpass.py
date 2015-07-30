@@ -14,27 +14,35 @@ logger = logging.getLogger(__name__)
 
 class Overpass(object):
     """
-    Thin wrapper around an overpass query.
-    Returns all nodes, ways and relations within the specified bounding box.
+    Wrapper around an Overpass query.
+    Returns all nodes, ways and relations within the specified bounding box
+    and filtered by the provided tags.
+    Reverts to default query if no tags supplied.
     """
     
-    def __init__(self, url=None, bbox=None, osm=None, debug=False):
+    def __init__(self, url=None, bbox=None, osm=None, tags=None, debug=False):
         self.url = 'http://localhost/interpreter' # default
+        self.default_template = Template('(node($bbox);<;);out body;')
+        self.query = None
         if url: self.url = url
-        self.query_template = Template('(node($bbox);<;);out body;')
         if bbox:
             self.bbox = bbox
         else:
             raise Exception('A bounding box is required: miny,minx,maxy,maxx')
+        if tags and len(tags) > 0:
+            self.tags = tags
+            self.query = self._build_overpass_query()
+        else:
+            self.query = self.default_template.safe_substitute({'bbox': self.bbox})
         if osm:
             self.osm = osm
         else:
             self.osm = 'query.osm' # in the current directory
         self.debug = debug
-
+        
+    
     def get_query(self,):
-        q = self.query_template.safe_substitute({'bbox': self.bbox})
-        return q
+        return self.query
         
     def run_query(self,):
         q = self.get_query()
@@ -54,6 +62,55 @@ class Overpass(object):
             print 'Query finished at %s' % datetime.now()
             print 'Wrote overpass query results to: %s' % self.osm
         return self.osm
+    
+    def _build_overpass_query(self, ):
+        
+        template = Template("""
+                [out:xml];
+                (
+                  $nodes
+                  $ways
+                  $relations
+                );
+                out body qt;
+                >;
+                out skel qt;
+            """)
+
+        nodes = []
+        ways = []
+        relations = []
+        keys = []
+        
+        node_tmpl = Template('node[$tags]($bbox);')
+        way_tmpl = Template('way[$tags]($bbox);')
+        rel_tmpl = Template('rel[$tags]($bbox);')
+        
+        for tag in self.tags:
+            (k, v) = tag.split(':')
+            keys.append(k)
+            tag_str = '"' + k  + '"="' + v + '"'
+            node_tag = node_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
+            way_tag = way_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
+            rel_tag = rel_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
+            nodes.append(node_tag)
+            ways.append(way_tag)
+            relations.append(rel_tag)
+        # build strings
+        node_filter = '\n'.join(nodes)
+        way_filter = '\n'.join(ways)
+        rel_filter = '\n'.join(relations)
+        unique_keys = []
+        for key in keys:
+            if key not in unique_keys:
+                unique_keys.append(key)
+        logger.debug(','.join(unique_keys))
+        
+        q = template.safe_substitute({'nodes': node_filter, 'ways': way_filter,
+                                                 'relations': rel_filter})
+    
+        return q    
+
 
 
 if __name__ == '__main__':

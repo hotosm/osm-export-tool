@@ -3,10 +3,12 @@ from collections import OrderedDict
 tags = {
     'Aerialway':[],
     'Aeroway':[],
-    'Amenity':[
+    'Amenity':{
+        '':[
         'Sustenance','Education','Transportation','Financial','Healthcare',
         'Entertainment, Arts & Culture','Others'
     ],
+    },
     'Barrier':[
         'Linear Barriers','Access Control on Highways'
     ],

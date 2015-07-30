@@ -9,20 +9,23 @@ from ..osmparse import OSMParser
 
 class TestOSMParser(TestCase):
     
+    @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
-    def test_create_spatialite(self, popen, pipe):
+    def test_create_spatialite(self, popen, pipe, exists):
         ogr_cmd = """
             ogr2ogr -f SQlite -dsco SPATIALITE=YES /path/to/query.sqlite /path/to/query.pbf \
             --config OSM_CONFIG_FILE /home/ubuntu/www/hotosm/utils/conf/hotosm.ini \
             --config OGR_INTERLEAVED_READING YES \
             --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
         """
+        exists.return_value = True
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())
         proc.wait.return_value = 0
         parser = OSMParser(osm='/path/to/query.pbf', sqlite='/path/to/query.sqlite')
+        exists.assert_called_twice_with('/path/to/query.pbf')
         parser.create_spatialite()
         popen.assert_called_once_with(ogr_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
@@ -41,7 +44,7 @@ class TestOSMParser(TestCase):
         exists.return_value = True
         parser = OSMParser(osm='/path/to/query.pbf', sqlite='/path/to/query.sqlite')
         parser.create_default_schema()
-        exists.assert_called_once_with('/path/to/query.sqlite')
+        exists.assert_called_twice_with('/path/to/query.sqlite')
         popen.assert_called_once_with(sql_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         proc.communicate.assert_called_once()
@@ -58,7 +61,7 @@ class TestOSMParser(TestCase):
         ogr_open.return_value = ogr_ds
         parser = OSMParser(osm='/path/to/query.pbf', sqlite='/path/to/query.sqlite')
         parser.update_zindexes()
-        exists.assert_called_once_with('/path/to/query.sqlite')
+        exists.assert_called_twice_with('/path/to/query.sqlite')
         ogr_open.assert_called_once_with('/path/to/query.sqlite', update=True)
         self.assertEquals(40, ogr_ds.ExecuteSQL.call_count)
         ogr_ds.Destroy.assert_called_once()

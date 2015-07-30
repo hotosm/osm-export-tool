@@ -3,26 +3,28 @@ from collections import OrderedDict
 tags =  {
     'Building digitizing': [],
     'Building feature': [],
-    'Place':[
-        'City','Town','Suburb','Neighborhood','Village','Hamlet','Isolated Dwelling','Locality'
-    ],
+    'Place':{
+        'Places':[
+            'City','Town','Suburb','Neighborhood','Village','Hamlet','Isolated Dwelling','Locality'
+        ],
+    },
     'Transportation':{
         'Roads':[
             'Roads and streets','Roads under construction','Paths'  
         ],
-            'Other road objects':[
-                'Parking', 'Car Park', 'Parking entrance', 'Motorcycle Parking', 'Bicycle Parking', 'Roundabout'
-                'Mini-roundabout', 'Turning Circle', 'Bridge', 'Tunnel', 'Ford', 'Fire Hydrant', 'Traffic Signal',
-                'Stop', 'Pedestrian Crossing', 'Traffic Calming','Passing Place'
-            ],
-            'Transportation means':[
-                'Bus Station','Bus Stop','Bus Platform','Taxi','Airport','Airport Ground','Helipad','Runway',
-                'Taxiway','Apron','Hangar','Terminal','Gate','Road Restrictions','Road Practicability'
-            ],
-            'Barriers':[
-                'Toll Booth', 'Border Control', 'Bollard', 'Spikes', 'Hedge', 'Fence', 'Wall', 'City Wall',
-                'Retaining Wall', 'Entrance', 'Gate', 'Obstacles'
-            ],
+        'Other road objects':[
+            'Parking', 'Car Park', 'Parking entrance', 'Motorcycle Parking', 'Bicycle Parking', 'Roundabout'
+            'Mini-roundabout', 'Turning Circle', 'Bridge', 'Tunnel', 'Ford', 'Fire Hydrant', 'Traffic Signal',
+            'Stop', 'Pedestrian Crossing', 'Traffic Calming','Passing Place'
+        ],
+        'Transportation means':[
+            'Bus Station','Bus Stop','Bus Platform','Taxi','Airport','Airport Ground','Helipad','Runway',
+            'Taxiway','Apron','Hangar','Terminal','Gate','Road Restrictions','Road Practicability'
+        ],
+        'Barriers':[
+            'Toll Booth', 'Border Control', 'Bollard', 'Spikes', 'Hedge', 'Fence', 'Wall', 'City Wall',
+            'Retaining Wall', 'Entrance', 'Gate', 'Obstacles'
+        ],
     },
     'Utilities':{
         'Water and sanitation':[
@@ -45,7 +47,9 @@ tags =  {
         'Place of worship':[
             'Place of worship','Graveyard'
         ],
-        'Community Center':'Community Centre',
+        'Community Center': [
+            'Community Centre',
+        ],
         'Culture':[
             'Museum','Cinema','Theatre','Library','Arts Centre','Artwork'
         ],
@@ -115,15 +119,16 @@ tags =  {
         ]
     },
     # fix this..
-    'Landuse':[
-        'Built urban landuses','Marketplace','Agricultural landuse','Salt Pond','Reservoir','Cemetery',
-        'Fenced/walled area',
-        {
-            'Leisure':[
-                'Park','Garden','Playground'
-            ]
-        }
-    ],
+    'Landuse':{
+        'Various':[
+            'Built urban','Marketplace','Agricultural','Salt Pond','Reservoir','Cemetery',
+            'Fenced/walled area',
+        ],
+        'Leisure':[
+            'Park','Garden','Playground'
+        ],
+    },
+        
     'Physical environment':{
         'Nature':[
             'Peak','Tree','Wood','Forest','Nature Reserve','Scree','Fell','Scrub','Heath'
@@ -132,9 +137,11 @@ tags =  {
             'Water','River','Stream','Spring','Waterfall','Wetland','Mud','Beach','Bay','Cliff'
         ]
     },
-    'Hazards':[
-        'Flood prone','Landslide prone','Windstorm prone','Add an address and contact','Add more Names'
-    ]
+    'Hazards':{
+        'Hazadous Areas':[
+            'Flood prone','Landslide prone','Windstorm prone'
+        ]
+    }
 }
 
 HOT_HDM = OrderedDict(sorted(tags.items()))

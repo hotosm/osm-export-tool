@@ -226,7 +226,7 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'jobs.tests': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'propagate': True,
             'level': 'DEBUG',
         },
@@ -236,7 +236,7 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'utils.tests': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'propagate': True,
             'level': 'DEBUG',
         },
@@ -260,6 +260,8 @@ NOSE_ARGS = [
 
 # Celery config
 CELERY_TRACK_STARTED = True
+
+CELERY_CHORD_PROPAGATES = True
 
 """
 A mapping of supported export formats to ExportTask handler classes

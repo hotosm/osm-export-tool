@@ -198,8 +198,11 @@ class RunJob(views.APIView):
             job = Job.objects.get(uid=job_uid)
             task_runner = ExportTaskRunner()
             run = task_runner.run_task(job_uid=job_uid)
-            running = ExportRunSerializer(run, context={'request': request})
-            return Response(running.data, status=status.HTTP_202_ACCEPTED) 
+            if run:
+                running = ExportRunSerializer(run, context={'request': request})
+                return Response(running.data, status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response([{'detail': 'Failed to run Export'}], status.HTTP_200_OK)
         else:
             return Response([{'detail': 'Export not found'}], status.HTTP_404_NOT_FOUND)
         

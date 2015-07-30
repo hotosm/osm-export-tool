@@ -127,8 +127,9 @@ class ExportTaskRunner(TaskRunner):
                 The Finalize task is run at the end to clean up staging dirs,
                 update run status, email user etc..
             """
-            initial_tasks = group(
-                    conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid),
+
+            initial_tasks = chain(
+                    conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid) |
                     query.si(stage_dir=stage_dir, bbox=bbox, run_uid=run_uid)
             )
             
@@ -143,16 +144,27 @@ class ExportTaskRunner(TaskRunner):
             
             finalize_task = FinalizeRunTask()
             
+            """
             chord(
                 header=initial_tasks,
                 body=schema_tasks | format_tasks |
                         finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)
             ).apply_async(expires=datetime.now() + timedelta(days=1)) # tasks expire after one day.
+            """
             
-            return run
+            chain(
+                    chain(initial_tasks, schema_tasks),
+                    chord(header=format_tasks,
+                        body=finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)).set(link_error=finalize_task.si())
+            ).apply_async(expires=datetime.now() + timedelta(days=1)) # tasks expire after one day.
+            
+            return run  
+            
         else:
             return False
-
-
+        
+def error_handler(task_id=None):
+    logger.debug('In error handler %s' % task_id)
+        
 class OSMUpdateTaskRunner(TaskRunner):
     pass

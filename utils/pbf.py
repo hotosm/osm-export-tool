@@ -1,5 +1,6 @@
 from __future__ import with_statement
 import json
+import os
 import logging
 import argparse
 import subprocess
@@ -14,6 +15,8 @@ class OSMToPBF(object):
     """
     def __init__(self, osm=None, pbffile=None, debug=False):
         self.osm = osm
+        if not os.path.exists(self.osm):
+            raise IOError('Cannot find raw OSM data for this task.')
         self.pbffile = pbffile
         if not self.pbffile:
             # create pbf path from osm path.

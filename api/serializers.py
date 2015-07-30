@@ -1,13 +1,14 @@
 import logging
 import pdb
 import json
+import cPickle
 from uuid import UUID
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
 from datetime import datetime, timedelta
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
+from tasks.models import ExportRun, ExportTask, ExportTaskResult, ExportTaskException
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
 from django.utils.translation import ugettext_lazy as _
@@ -18,6 +19,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from hot_exports import settings
 import validators
 import six
+
 
 try:
     from collections import OrderedDict
@@ -123,8 +125,22 @@ class ExportTaskResultSerializer(serializers.ModelSerializer):
         return "{0:.3f} MB".format(obj.size)
 
 
+class ExportTaskExceptionSerializer(serializers.ModelSerializer):
+    
+    exception = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ExportTaskException
+        fields = ('exception',)
+        
+    def get_exception(self, obj):
+        exc_info = cPickle.loads(str(obj.exception)).exc_info
+        return str(exc_info[1])
+    
+
 class ExportTaskSerializer(serializers.ModelSerializer):
     result = serializers.SerializerMethodField()
+    errors = serializers.SerializerMethodField()
     started_at = serializers.SerializerMethodField()
     finished_at = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
@@ -135,7 +151,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ExportTask
-        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'result')
+        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'result', 'errors',)
 
     def get_result(self, obj):
         try:
@@ -144,6 +160,14 @@ class ExportTaskSerializer(serializers.ModelSerializer):
             return serializer.data
         except ExportTaskResult.DoesNotExist as e:
             return None # no result yet
+    
+    def get_errors(self, obj):
+        try:
+            errors = obj.exceptions
+            serializer = ExportTaskExceptionSerializer(errors, many=True, context=self.context)
+            return serializer.data
+        except ExportTaskException.DoesNotExist as e:
+            return None
     
     def get_started_at(self, obj):
         if (not obj.started_at):

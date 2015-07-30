@@ -28,7 +28,7 @@ create.job = (function(){
     return {
         init: function(){
             initCreateMap();
-            initSelectFeaturesTree();
+            initHDMFeatureTree();
             initNominatim();
         }
     }
@@ -283,11 +283,11 @@ create.job = (function(){
      */
     function setBounds(bounds) {
         fmt = '0.0000000000' // format to 10 decimal places
-        // fire input event here to make sure fields validate..
         var xmin = numeral(bounds.left).format(fmt);
         var ymin = numeral(bounds.bottom).format(fmt);
         var xmax = numeral(bounds.right).format(fmt);
         var ymax = numeral(bounds.top).format(fmt);
+        // fire input event here to make sure fields validate..
         $('#xmin').val(xmin).trigger('input');
         $('#ymin').val(ymin).trigger('input');
         $('#xmax').val(xmax).trigger('input');
@@ -629,43 +629,111 @@ create.job = (function(){
     }
     */
     
-    function initSelectFeaturesTree(){
+    /**
+     * Build the HDM Feature tree.
+     */
+    function initHDMFeatureTree(){
         // initialize the feature selection tree
         $.get(Config.HDM_TAGS_URL, function(data){
-            var tree = $('#feature-tree ul.nav-list');
+            var $tree = $('#feature-tree ul.nav-list');
             $.map(data, function(idx, node){
                 // top level features
-                var $topLevel = $('<li><label class="tree-toggle nav-header">' + node + '</label>');
-                tree.append($topLevel);
-                addNodes(idx, $topLevel);
+                var re = new RegExp(' ', 'g');
+                var name = node.toLowerCase().replace(re, '_');
+                var icon = 'fa-plus-square-o';
+                if (idx.length === 0) {
+                    icon = 'fa-square';
+                }
+                var $topLevel = $('<li class="top-level nav-header collapse closed"><i class="top-level fa ' + icon + ' fa-fw"></i><label>' + node + '</label>' + 
+                                  '<div class="checkbox tree-checkbox"><input type="checkbox" name="tag" value="" checked/></div>');
+                $tree.append($topLevel);
+                addNodes(idx, $topLevel, name);
             });
             
-            function addNodes(idx, $topLevel){
+            function addNodes(idx, $topLevel, name){
                 $.map(idx, function(i, n){
-                    var $nextLevel = $('<ul class="nav nav-list tree">');
                     if ($.isArray(i)) {
+                        var $nextLevel = $('<ul class="nav nav-list sub-level collapse">');
                         $topLevel.append($nextLevel);
-                        var $header = $('<li><label class="tree-toggle nav-header">' + n + '</label>');
-                        var $subLevel = $('<ul class="nav nav-list tree">');
+                        var $header = $('<li class="sub-level closed"><i class="fa fa-plus-square-o fa-fw"></i><label class="nav-header sub-level">' + n + '</label>' +
+                                        '<div class="checkbox tree-checkbox"><input type="checkbox" name="tag" value="" checked/></div>');
+                        var $subLevel = $('<ul class="nav nav-list bottom-level collapse">');
                         $header.append($subLevel);
                         $nextLevel.append($header);
-                        addNodes(i, $subLevel);
-                        $nextLevel.append('</ul>');
-                        $header.append('</li>');
-                        $subLevel.append('</ul>');
+                        addNodes(i, $subLevel, n);   
                     }
                     else {
-                        var $entry = $('<li><a href="#">' + idx[n] + '</a></li>');
+                        var $entry = $('<li class="entry"><label>' + idx[n] + '</label>' +
+                                       '<div class="checkbox tree-checkbox"><input type="checkbox" name="tag" value="" checked/></div>' +
+                                       '</li>');
                         $topLevel.append($entry);
                     }
                 });
             }
+            
+            /*
+             * Handle click events on tree levels
+             */
+            $('li.top-level > label').bind('click', function(e){
+                if ($(this).parent().hasClass('open')) {
+                    $(this).parent().removeClass('open').addClass('closed');
+                    $(this).parent().find('i.top-level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                }
+                else {
+                    $(this).parent().removeClass('closed').addClass('open');
+                    $(this).parent().find('i.top-level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                }
+                $(this).parent().children('ul.sub-level').toggle(150);
+                
+            });
+            
+            $('li.sub-level > label').bind('click', function(e){
+                if ($(this).parent().hasClass('open')) {
+                    $(this).parent().removeClass('open').addClass('closed');
+                    $(this).parent().find('i').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                }
+                else {
+                    $(this).parent().removeClass('closed').addClass('open');
+                    $(this).parent().find('i').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                }
+                $(this).parent().children('ul.bottom-level').toggle(150);
+            });
+            
+            /*
+             * Handle events on top levels
+             */
+            $('li.top-level > .tree-checkbox').bind('click', function(e){
+                var checked = $(this).find('input').is(':checked');
+                $(this).parent().find('.tree-checkbox').each(function(i, value){
+                    var $input = $(value).find('input');
+                    $input.prop('checked', checked);
+                })
+            })
+            
+            /*
+             * Handle events on sub-levels
+             */
+            $('li.sub-level > .tree-checkbox').bind('click', function(e){
+                var checked = $(this).find('input').is(':checked');
+                $(this).parent().find('.tree-checkbox').each(function(i, value){
+                    var $input = $(value).find('input');
+                    $input.prop('checked', checked);
+                })
+            })
+            
+            /*
+             * Handle click events on entries
+             */
+            $('li.entry > .tree-checkbox').bind('click', function(e){
+                var checked = $(this).find('input').is(':checked');
+                if (checked) {
+                    console.log(checked);
+                }
+            })
         });
-        
-        $('.tree-toggle').click(function () {
-            $(this).parent().children('ul.tree').toggle(200);
-        });
+
     }
+    
     
     /*
      * Handles placename lookups using nominatim.
@@ -718,7 +786,7 @@ create.job = (function(){
                                     return process(suggestions);
                                 }
                             );
-                        }, 300); // timeout before initiating search..
+                        }, 200); // timeout before initiating search..
             },
             
             displayText: function(item){
