@@ -4,6 +4,7 @@ import logging
 #from django.db import models
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import HStoreField
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
@@ -116,11 +117,10 @@ class Region(TimeStampedModelMixin):
     def __str__(self):
         return '{0}'.format(self.name)
     
-    
+"""
 class Tag(models.Model):
-    """
-    Model to represent export tags.
-    """
+    "Model to represent export tags."
+
     id = models.AutoField(primary_key=True, editable=False)
     name = models.CharField(max_length=50)
     geom_types = HStoreField()
@@ -131,7 +131,8 @@ class Tag(models.Model):
     
     def __str__(self):
         return '{0}: {1}'.format(self.name, self.geom_types)
-    
+"""
+
 
 class Job(TimeStampedModelMixin):
     """
@@ -146,7 +147,7 @@ class Job(TimeStampedModelMixin):
     region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     configs = models.ManyToManyField(ExportConfig, related_name='configs')
-    tags = models.ManyToManyField(Tag, related_name='tags')
+    #tags = models.ManyToManyField(Tag, related_name='tags')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
@@ -168,14 +169,24 @@ class Job(TimeStampedModelMixin):
     def overpass_extents(self, ):
         extents = GEOSGeometry(self.the_geom).extent # (w,s,e,n)
         # overpass needs extents in order (s,w,n,e)
-        overpass_extents = '{0},{1},{2},{3}'.format(str(extents[1]), str(extents[0]), str(extents[3]), str(extents[2]))
+        overpass_extents = '{0},{1},{2},{3}'.format(str(extents[1]), str(extents[0]),
+                                                    str(extents[3]), str(extents[2]))
         return overpass_extents
     
     @property
     def tag_dict(self,):
-        tag_dict = {}
-        for tag in self.tags.all():
-            tag_dict[tag.name] = tag.geom_types
+        # get the unique keys from the tags for this export
+        uniq_keys = list(self.tags.values('key').distinct('key'))
+        tag_dict = {} # mapping of tags to geom_types
+        for entry in uniq_keys:
+            key = entry['key']
+            tag_dict['key'] = key
+            geom_types = list(self.tags.filter(key=key).values('geom_types'))
+            geom_type_list = []
+            for geom_type in geom_types:
+                geom_list = geom_type['geom_types']
+                geom_type_list.extend([i for i in geom_list])
+            tag_dict[key] = list(set(geom_type_list)) # get unique values for geomtypes
         return tag_dict
     
     @property
@@ -184,7 +195,7 @@ class Job(TimeStampedModelMixin):
         lines = []
         polygons = []
         for tag in self.tag_dict:
-            for geom in self.tag_dict[tag].keys():
+            for geom in self.tag_dict[tag]:
                 if geom == 'point':
                     points.append(tag)
                 if geom == 'line':
@@ -192,6 +203,27 @@ class Job(TimeStampedModelMixin):
                 if geom == 'polygon':
                     polygons.append(tag)
         return {'points': sorted(points), 'lines': sorted(lines), 'polygons': sorted(polygons)}
+    
+
+class Tag(models.Model):
+    """
+        Model to hold Export tag selections.
+        Holds the data model (osm | hdm | preset)
+        and the geom_type mapping.
+    """
+    id = models.AutoField(primary_key=True, editable=False)
+    key = models.CharField(max_length=30, blank=False, default='', db_index=True)
+    value = models.CharField(max_length=30, blank=False, default='', db_index=True)
+    job = models.ForeignKey(Job, related_name='tags')
+    data_model = models.CharField(max_length=10, blank=False, default='', db_index=True)
+    geom_types = ArrayField(models.CharField(max_length=10, blank=True, default=''), default=[])
+    
+    class Meta:
+        managed = True
+        db_table = 'tags'
+    
+    def __str__(self):
+        return '{0}:{1}'.format(self.key, self.value)
     
     
 

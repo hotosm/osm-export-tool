@@ -1,73 +1,10 @@
 import logging
-#from xml.dom.minidom import parse
-#import xml.dom.minidom
+import pdb
 from collections import OrderedDict
 from lxml import etree
 from StringIO import StringIO
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_TAGS = OrderedDict({
-        "access"             : { "point": 'true', "line": 'true' },
-        "addr:housename"     : { "point": 'true', "line": 'true' },
-        "addr:housenumber"   : { "point": 'true', "line": 'true' },
-        "addr:interpolation" : { "point": 'true', "line": 'true' },
-        "admin_level"        : { "point": 'true', "line": 'true' },
-        "aerialway"          : { "point": 'true', "line": 'true' },
-        "aeroway"            : { "point": 'true', "polygon": 'true'},
-        "amenity"            : { "point": 'true', "polygon": 'true'},
-        "barrier"            : { "point": 'true', "line": 'true'},
-        "bicycle"            : { "point": 'true'},
-        "bridge"             : { "point": 'true', "line": 'true' },
-        "boundary"           : { "point": 'true', "line": 'true' },
-        "building"           : { "point": 'true', "polygon": 'true' },
-        "capital"            : { "point": 'true' },
-        "construction"       : { "point": 'true', "line": 'true' },
-        "covered"            : { "point": 'true', "line": 'true' },
-        "cutting"            : { "point": 'true', "line": 'true' },
-        "denomination"       : { "point": 'true', "line": 'true' },
-        "disused"            : { "point": 'true', "line": 'true' },
-        "ele"                : { "point": 'true' },
-        "embankment"         : { "point": 'true', "line": 'true' },
-        "foot"               : { "point": 'true', "line": 'true' },
-        "generator:source"   : { "point": 'true', "line": 'true' },
-        "harbour"            : { "point": 'true', "polygon": 'true' },
-        "highway"            : { "point": 'true', "line": 'true' },
-        "historic"           : { "point": 'true', "polygon": 'true' },
-        "junction"           : { "point": 'true', "line": 'true' },
-        "landuse"            : { "point": 'true', "polygon": 'true' },
-        "layer"              : { "point": 'true', "line": 'true' },
-        "leisure"            : { "point": 'true', "polygon": 'true' },
-        "lock"               : { "point": 'true', "line": 'true' },
-        "man_made"           : { "point": 'true', "polygon": 'true' },
-        "military"           : { "point": 'true', "polygon": 'true' },
-        "motorcar"           : { "point": 'true', "line": 'true' },
-        "name"               : { "point": 'true', "line": 'true' },
-        "natural"            : { "point": 'true', "polygon": 'true' },
-        "oneway"             : { "point": 'true', "line": 'true' },
-        "poi"                : { "point": 'true' },
-        "population"         : { "point": 'true', "line": 'true' },
-        "power"              : { "point": 'true', "polygon": 'true' },
-        "place"              : { "point": 'true', "polygon": 'true' },
-        "railway"            : { "point": 'true', "line": 'true' },
-        "ref"                : { "point": 'true', "line": 'true' },
-        "religion"           : { "point": 'true' },
-        "route"              : { "point": 'true', "line": 'true' },
-        "service"            : { "point": 'true', "line": 'true' },
-        "shop"               : { "point": 'true', "polygon": 'true' },
-        "sport"              : { "point": 'true', "polygon": 'true' },
-        "surface"            : { "point": 'true', "line": 'true' },
-        "toll"               : { "point": 'true', "line": 'true' },
-        "tourism"            : { "point": 'true', "polygon": 'true' },
-        "tower:type"         : { "point": 'true', "line": 'true' },
-        "tracktype"          : { "line": 'true' },
-        "tunnel"             : { "point": 'true', "line": 'true' },
-        "water"              : { "point": 'true', "polygon": 'true' },
-        "waterway"           : { "point": 'true', "polygon": 'true' },
-        "wetland"            : { "point": 'true', "polygon": 'true' },
-        "width"              : { "point": 'true', "line": 'true' },
-        "wood"               : { "point": 'true', "line": 'true' },
-})
 
 
 class PresetParser():
@@ -75,27 +12,36 @@ class PresetParser():
     types = {
         'node': 'point',
         'way': 'line',
+        'area': 'polygon',
         'closedway': 'polygon',
         'relation': 'polygon'
     }
+    
     namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
     
     def __init__(self, preset=None, *args, **kwargs):
         self.preset = preset
-        self.tags = {}
+        self.tags = []
     
     def parse(self, merge_with_defaults=False):
+        """
+        Reads in the JOSM Preset.
+        Picks out all <item> elements.
+        For each <item>, gets the 'type' attribute and maps the
+        geometry type to the <item>'s 'key' attribute (tag name).
+        Ignores <item>'s with no 'type' attribute.
+        """
         f = open(self.preset)
         xml = f.read()
         tree = etree.parse(StringIO(xml))
         items = tree.xpath('//ns:item', namespaces=self.namespaces)
         for item in items:
             self.process_item_and_children(item)
-        tags = OrderedDict(sorted(self.tags.items()))
+        #tags = OrderedDict(sorted(self.tags.items()))
         if merge_with_defaults:
             return self.merge_presets(tags)
         else:
-            return tags
+            return self.tags
         
     def process_item_and_children(self, item, geometrytype=None):
         geometrytypes = None
@@ -106,11 +52,17 @@ class PresetParser():
         keys = item.xpath('./ns:key', namespaces=self.namespaces)
         if len(keys) > 0 and geometrytypes:
             if keys[0].get('key'):
+                # get kv pair
                 key = keys[0].get('key')
-                if not key in self.tags:
-                    self.tags[key] = {}
+                value = keys[0].get('value')
+                tag = {}
+                tag['key'] = key
+                tag['value'] = value
+                geom_types = []
                 for geomtype in geometrytypes:
-                    self.tags[key][geomtype] = 'true'
+                    geom_types.append(geomtype)
+                tag['geom_types'] = list(set(geom_types))
+                self.tags.append(tag)
         for child in list(item):
             self.process_item_and_children(child)
 
@@ -120,29 +72,43 @@ class PresetParser():
         for osmtype in osmtypes:
             geometrytypes.append(self.types[osmtype])
         return geometrytypes
-       
-    def merge_presets(self, tags):
-        merged_tags = DEFAULT_TAGS.copy()
-        user_tags = tags.copy()
-        merged_tags.update(user_tags)
-        return merged_tags
     
-    def categorise_tags(self, tags):
-        points = []
-        lines = []
-        polygons = []
-        for tag in tags.keys():
-            for geom in tags[tag].keys():
-                if geom == 'point':
-                    points.append(tag)
-                if geom == 'line':
-                    lines.append(tag)
-                if geom == 'polygon':
-                    polygons.append(tag)
-        return {'points': sorted(points), 'lines': sorted(lines), 'polygons': sorted(polygons)}
-                
-            
-            
+    def build_hdm_preset_dict(self, ):
+        hdm = {}
+        xml = StringIO(open(self.preset).read())
+        tree = etree.parse(xml)
+        group_ele = tree.xpath('./ns:group', namespaces=self.namespaces)[0]
+        name = group_ele.get('name')
+        group_dict = {}
+        hdm[name] = group_dict
+        self._parse_group(group_ele, group_dict)
+        return hdm
         
+                
+    def _parse_group(self, group, group_dict):
+        logger.debug('============' + group.get('name'))
+        items = group.xpath('./ns:item', namespaces=self.namespaces)
+        for item in items:
+            item_dict = {}
+            name = item.get('name')
+            types = item.get('type') # get the type attr on the item element
+            if types == None: continue # pass those items with no geom type
+            geom_types = self.get_geometrytype(types)
+            keys = item.xpath('./ns:key', namespaces=self.namespaces)
+            if not len(keys) > 0:
+                continue
+            key = keys[0]
+            item_dict['tag'] = '{0}:{1}'.format(key.get('key'), key.get('value'))
+            item_dict['geom'] = geom_types
+            group_dict[name] = item_dict
+        groups = group.xpath('./ns:group', namespaces=self.namespaces)
+        for sub_group in groups:
+            logger.debug(sub_group.get('name'))
     
-
+        for sub_group in groups:
+            sub_group_dict = {}
+            name = sub_group.get('name')
+            group_dict[name] = sub_group_dict
+            self._parse_group(sub_group, sub_group_dict)
+        
+        
