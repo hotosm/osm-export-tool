@@ -1,5 +1,8 @@
 -- View: exports.region_mask
 
+-- Creates the region mask.
+-- The inverse of the union of all regions.
+
 DROP VIEW exports.region_mask;
 
 CREATE OR REPLACE VIEW exports.region_mask AS 

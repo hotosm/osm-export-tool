@@ -578,7 +578,7 @@
 					<text key="NOTE" text="NOTE" fr.text="NOTES" en.text="NOTE" />
 					<label text=" " />
 				</item>	
-				<item name="Corridors and pathes" fr.name="Corridors ou chemins ruraux" en.name="Corridors and pathes" icon="presets/path.png" type="way">
+				<item name="Corridors and paths" fr.name="Corridors ou chemins ruraux" en.name="Corridors and paths" icon="presets/path.png" type="way">
 					<!--<key key="project:eurosha_2012" value="yes" />-->
 					<key key="highway" value="path" />
 					<link href="http://wiki.openstreetmap.org/wiki/Tag:highway%3Dpath" 

@@ -126,8 +126,7 @@ class OSMConfTask(ExportTask):
     name = 'OSMConf'
     abort_on_error = True
     
-    def run(self, run_uid=None, job_uid=None,
-            categories=None, stage_dir=None):
+    def run(self, run_uid=None, categories=None, stage_dir=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         conf = osmconf.OSMConfig(categories)
         configfile = conf.create_osm_conf(stage_dir=stage_dir)

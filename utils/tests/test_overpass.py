@@ -12,6 +12,7 @@ from mock import patch, MagicMock, Mock
 from unittest import skip
 
 from ..overpass import Overpass
+from jobs import presets
 
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,17 @@ class TestOverpass(TestCase):
         op = Overpass(osm=self.osm, bbox=self.bbox, tags=self.tags)
         logger.debug(op.get_query())
         op.run_query()
+        
+    def test_with_hdm_tags(self, ):
+        
+        parser = presets.PresetParser(preset=self.path + '/files/hdm_presets.xml')
+        geom_tags, kvps = parser.parse()
+        filters = []
+        for kvp in kvps:
+            filter_tag = '{0}:{1}'.format(kvp[0], kvp[1])
+            filters.append(filter_tag)
+        op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
+        op.run_query()
     
     @patch('utils.overpass.requests.post')
     def test_run_query(self, mock_post):
@@ -64,6 +76,8 @@ class TestOverpass(TestCase):
         self.assertEqual(data, expected[0])
         f.close()
         os.remove(out)
+        
+    
         
         
 

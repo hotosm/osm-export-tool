@@ -143,13 +143,15 @@ class JobViewSet(viewsets.ModelViewSet):
                             preset_path = settings.BASE_DIR + config.upload.url
                             # TODO: check if user tags to be merged with defaults
                             parser = presets.PresetParser(preset=preset_path)
-                            tags = parser.parse(merge_with_defaults=False)
-                            for key in tags:
+                            tags_dict = parser.parse(merge_with_defaults=False)
+                            for entry in tags_dict:
                                 tag = Tag.objects.create(
-                                    name = key,
-                                    geom_types = tags[key]
+                                    key = entry['key'],
+                                    value = entry['value'],
+                                    geom_types = entry['geom_types'],
+                                    data_model = 'PRESET',
+                                    job = job
                                 )
-                                job.tags.add(tag)
                         else:
                             # use default tags
                             tags = presets.DEFAULT_TAGS

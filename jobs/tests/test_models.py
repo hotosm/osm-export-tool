@@ -33,15 +33,13 @@ class TestJob(TestCase):
         # add the formats to the job
         self.job.formats = self.formats
         self.job.save()
-        preset_parser = presets.PresetParser(preset=self.path + '/files/hdm_presets.xml')
-        tags = preset_parser.parse(merge_with_defaults=False)
-        for key in tags:
+        self.tags = [('building','yes'), ('place','city'), ('highway','service'), ('aeroway','helipad')]
+        for tag in self.tags:
             tag = Tag.objects.create(
-                name = key,
-                geom_types = tags[key]
+                key = tag[0],
+                value = tag[1],
+                job = self.job
             )
-            self.job.tags.add(tag)
-        
     
     def test_job_creation(self,):
         saved_job = Job.objects.all()[0]
@@ -52,6 +50,8 @@ class TestJob(TestCase):
         saved_formats = saved_job.formats.all()
         self.assertIsNotNone(saved_formats)
         self.assertItemsEqual(saved_formats, self.formats)
+        tags = saved_job.tags.all()
+        self.assertEquals(4, len(tags))
         
     def test_job_creation_with_config(self,):
         saved_job = Job.objects.all()[0]
@@ -117,11 +117,30 @@ class TestJob(TestCase):
         self.assertEquals(4, len(extents.split(',')))
         
     def test_categorised_tags(self, ):
+        # delete existing tags
+        self.job.tags.all().delete()
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        # save all the tags from the preset
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
+        
         job = Job.objects.all()[0]
         categories = job.categorised_tags
         self.assertIsNotNone(categories)
-        self.assertEqual(24, len(categories['points']))
-    
+        self.assertEquals(24, len(categories['points']))
+        self.assertEquals(12, len(categories['lines']))
+        self.assertEquals(22, len(categories['polygons']))
+        
 
 class TestExportFormat(TestCase):
     
@@ -282,18 +301,81 @@ class TestTag(TestCase):
         self.path = os.path.dirname(os.path.realpath(__file__))
         
     def test_create_tags(self,):
-        self.default_tags = presets.DEFAULT_TAGS
-        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
-        self.user_tags = parser.parse()
-        for key in self.user_tags:
+        tags = [
+            {'key': 'aerialway',
+             'value': 'station',
+             'geom_types': ['node','way']
+            },
+            {'key': 'aeroway',
+             'value': 'aerodrome',
+             'geom_types': ['node','area']
+             },
+        ]
+        for tag_dict in tags:
             tag = Tag.objects.create(
-                name = key,
-                geom_types = self.user_tags[key]
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
             )
-            self.job.tags.add(tag)
-        tags = Tag.objects.all()
-        self.assertEquals(30, len(tags))
+        saved_tags = Tag.objects.all()
+        geom_types = saved_tags[0].geom_types
+        self.assertEquals(2, len(saved_tags))
+        self.assertEqual(['node','way'], geom_types)
         
+    def test_save_tags_from_preset(self,):
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
+
+    def test_get_categorised_tags(self,):
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
+        
+        categorised_tags = self.job.categorised_tags
+        
+        
+    
+    """
+    def test_hdm_tags(self, ):
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags, kvps = parser.parse()
+        # clear existing tags
+        self.job.tags.all().delete()
+        for kvp in kvps:
+            tag = Tag.objects.create(
+                key = kvp[0],
+                value = kvp[1],
+                job = self.job
+            )
+        # get saved tags back out
+        job_tags = self.job.tags.all()
+        self.assertEquals(258, len(job_tags))
+        job = Job.objects.filter(tags__key='barrier')
+        self.assertIsNotNone(job[0])
+    """   
     
         
     

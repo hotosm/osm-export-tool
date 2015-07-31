@@ -60,7 +60,7 @@ class Overpass(object):
             raise exceptions.RequestException(e)
         if self.debug:
             print 'Query finished at %s' % datetime.now()
-            print 'Wrote overpass query results to: %s' % self.osm
+            print 'Wrote overpass query results to: %s' % self.osm 
         return self.osm
     
     def _build_overpass_query(self, ):
@@ -87,15 +87,18 @@ class Overpass(object):
         rel_tmpl = Template('rel[$tags]($bbox);')
         
         for tag in self.tags:
-            (k, v) = tag.split(':')
-            keys.append(k)
-            tag_str = '"' + k  + '"="' + v + '"'
-            node_tag = node_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
-            way_tag = way_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
-            rel_tag = rel_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
-            nodes.append(node_tag)
-            ways.append(way_tag)
-            relations.append(rel_tag)
+            try:
+                (k, v) = tag.split(':')
+                keys.append(k)
+                tag_str = '"' + k  + '"="' + v + '"'
+                node_tag = node_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
+                way_tag = way_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
+                rel_tag = rel_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
+                nodes.append(node_tag)
+                ways.append(way_tag)
+                relations.append(rel_tag)
+            except ValueError as e:
+                continue
         # build strings
         node_filter = '\n'.join(nodes)
         way_filter = '\n'.join(ways)
