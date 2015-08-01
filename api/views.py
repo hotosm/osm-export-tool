@@ -7,6 +7,7 @@ import django_filters
 from datetime import datetime
 from collections import OrderedDict
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth.models import User, Group
 from django.shortcuts import get_object_or_404
 from django.db.models import FileField
@@ -38,6 +39,7 @@ from jobs import presets
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from jobs.hdm_tags import HOT_HDM
 from jobs.osm_tags import OSM_DM
+from jobs.presets import PresetParser
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from serializers import (JobSerializer, ExportFormatSerializer,
                          RegionSerializer, RegionMaskSerializer,
@@ -153,14 +155,20 @@ class JobViewSet(viewsets.ModelViewSet):
                                     job = job
                                 )
                         else:
-                            # use default tags
-                            tags = presets.DEFAULT_TAGS
-                            for key in tags:
+                            # get tags from request
+                            tags = request.data.getlist('tags[]')
+                            for entry in tags:
+                                kv = entry.split('|')[0]
+                                geoms = entry.split('|')[1]
+                                k = kv.split(':')[0]
+                                v = kv.split(':')[1]
                                 tag = Tag.objects.create(
-                                    name = key,
-                                    geom_types = tags[key]
-                                )
-                                job.tags.add(tag)   
+                                    key = k,
+                                    value = v,
+                                    job = job,
+                                    data_model = 'OSM',
+                                    geom_types = geoms.split(',')
+                                )  
                         if translation:
                             config = ExportConfig.objects.get(uid=translation)
                             job.configs.add(config)
@@ -323,14 +331,17 @@ class TransformViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
     lookup_field = 'uid'
-    
+
 
 class HDMDataModelView(views.APIView):
     
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     
     def get(self, request, format='json'):
-        return Response(HOT_HDM, status=status.HTTP_200_OK)
+        path = os.path.dirname(os.path.realpath(__file__))
+        parser = PresetParser(path + '/hdm_presets.xml')
+        data = parser.build_hdm_preset_dict()
+        return JsonResponse(data, status=status.HTTP_200_OK)
 
 
 class OSMDataModelView(views.APIView):
@@ -338,6 +349,9 @@ class OSMDataModelView(views.APIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     
     def get(self, request, format='json'):
-        return Response(OSM_DM, status=status.HTTP_200_OK)
+        path = os.path.dirname(os.path.realpath(__file__))
+        parser = PresetParser(path + '/osm_presets.xml')
+        data = parser.build_hdm_preset_dict()
+        return JsonResponse(data, status=status.HTTP_200_OK)
     
         

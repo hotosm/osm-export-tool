@@ -77,16 +77,16 @@ class PresetParser():
         hdm = {}
         xml = StringIO(open(self.preset).read())
         tree = etree.parse(xml)
-        group_ele = tree.xpath('./ns:group', namespaces=self.namespaces)[0]
-        name = group_ele.get('name')
-        group_dict = {}
-        hdm[name] = group_dict
-        self._parse_group(group_ele, group_dict)
-        return hdm
+        groups = tree.xpath('./ns:group', namespaces=self.namespaces)
+        for group in groups:
+            name = group.get('name')
+            group_dict = {}
+            hdm[name] = group_dict
+            self._parse_group(group, group_dict)
+        return OrderedDict(sorted(hdm.items()))
         
                 
     def _parse_group(self, group, group_dict):
-        logger.debug('============' + group.get('name'))
         items = group.xpath('./ns:item', namespaces=self.namespaces)
         for item in items:
             item_dict = {}
@@ -98,13 +98,11 @@ class PresetParser():
             if not len(keys) > 0:
                 continue
             key = keys[0]
+            item_dict['displayName'] = name
             item_dict['tag'] = '{0}:{1}'.format(key.get('key'), key.get('value'))
             item_dict['geom'] = geom_types
-            group_dict[name] = item_dict
+            group_dict[name] = OrderedDict(sorted(item_dict.items()))
         groups = group.xpath('./ns:group', namespaces=self.namespaces)
-        for sub_group in groups:
-            logger.debug(sub_group.get('name'))
-    
         for sub_group in groups:
             sub_group_dict = {}
             name = sub_group.get('name')

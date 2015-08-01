@@ -17,8 +17,8 @@ Config.EXPORT_FORMATS_URL = '/api/formats.json'
 
 
 // datamodel endpoints
-Config.HDM_TAGS_URL = '/api/data-model-hdm?format=json'
-Config.OSM_TAGS_URL = '/api/data-model-osm?format=json'
+Config.HDM_TAGS_URL = '/api/hdm-data-model?format=json'
+Config.OSM_TAGS_URL = '/api/osm-data-model?format=json'
 
 // nominatum
 Config.NOMINATIM_SEARCH_URL = 'http://nominatim.openstreetmap.org/search'
