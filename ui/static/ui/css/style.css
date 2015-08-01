@@ -266,22 +266,23 @@ ul.typeahead {
 
 /* Feature selection styles */
 
-#feature-tree {
-    font-size: small !important;
+#features {
+    float: left !important;
+    min-height: 570px;
+    max-height: 570px;
+    overflow: auto;
     margin-left: 15px;
+    min-width: 100%;
 }
 
-/*
-#feature-tree > ul.nav, #feature-tree > ul.nav > li > ul.nav {
-    float: left !important;
-    font-size: small !important;
-    font-weight: 400 !important;
+#hdm-feature-tree {
+   
 }
-*/
+
 
 i.fa {
     float: left !important;
-    font-size: smaller;
+    font-size: medium;
     margin-top: .3em;
 }
 
@@ -293,22 +294,26 @@ i.fa {
     left: 1.5em;
 }
 
+label {
+    left: .5em !important;
+}
+
 li.entry > label {
-    font-size: small !important;
+    font-size: medium !important;
 }
 
 li.entry > div.tree-checkbox {
     display: list-item !important;
     float: right !important;
-    margin-left: .5em !important;
+    margin-left: 1em !important;
 }
 
-li.top-level {
+li.level {
     float: left !important;
     clear: both !important;
 }
 
-li.top-level label {
+li.level label {
     font-size: medium;
     font-weight: 500;
     float: left !important;
@@ -336,14 +341,6 @@ label.sub-menu {
 }
 
 ul.sub-level {
-    margin-top: 0em !important;
-    float: left !important;
-    clear: both !important;
-    position: relative;
-    left: 1.5em;
-}
-
-ul.bottom-level {
     margin-top: 0em !important;
     float: left !important;
     clear: both !important;

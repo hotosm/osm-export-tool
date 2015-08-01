@@ -540,6 +540,9 @@ create.job = (function(){
             var $form = $('#create-job-form'),
                 fv = $($form).data('formValidation'),
                 $bbox = $('#bbox');
+            var data = $form.serialize();
+            console.log(data);
+            
             // validate the bounding box
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
@@ -566,174 +569,112 @@ create.job = (function(){
                         var url = '/jobs/' + uid;
                         window.location.href=url;
                     }
-            });
-            }
-        });
-    }
-    
-    
-    /**
-     * Initializes the feature selection tree.
-     */
-    /*
-    function initSelectFeaturesTree(){
-        // initialize the feature selection tree
-        $.get(Config.HDM_TAGS_URL, function(data){
-            var tree = [];
-            $.map(data, function(idx, node){
-                // top level of tree..
-                var leaf = {
-                    selectable: false,
-                    state: {
-                        checked: true,
-                    }
-                };
-                leaf.text = node;
-                addNodes(idx, leaf);
-                tree.push(leaf);
-            });
-            
-            function addNodes(idx, leaf){
-                var nodes = [];
-                $.map(idx, function(i, n){
-                    if ($.isArray(i)) {
-                        var l = {};
-                        l.text = n;
-                        l.selectable = true;
-                        nodes.push(l)
-                        leaf.nodes = nodes;
-                        addNodes(i, l);
-                    }
-                    else {
-                        var l = {};
-                        l.text = idx[n];
-                        nodes.push(l);
-                        leaf.nodes = nodes;
-                    }
                 });
             }
-            
-            
-            $('#feature-tree').treeview({
-                data: tree,
-                levels: 1,
-                multiSelect: true,
-                showBorder: false,
-                showCheckbox: true,
-            });
-            
-            // make sure all checked to begin with
-            $('#feature-tree').treeview('checkAll');
         });
-        
     }
-    */
     
-    /**
-     * Build the HDM Feature tree.
+    
+    /*
+     * Initialises the HDM feature tree.
      */
     function initHDMFeatureTree(){
-        // initialize the feature selection tree
         $.get(Config.HDM_TAGS_URL, function(data){
-            var $tree = $('#feature-tree ul.nav-list');
-            $.map(data, function(idx, node){
-                // top level features
-                var re = new RegExp(' ', 'g');
-                var name = node.toLowerCase().replace(re, '_');
-                var icon = 'fa-plus-square-o';
-                if (idx.length === 0) {
-                    icon = 'fa-square';
-                }
-                var $topLevel = $('<li class="top-level nav-header collapse closed"><i class="top-level fa ' + icon + ' fa-fw"></i><label>' + node + '</label>' + 
-                                  '<div class="checkbox tree-checkbox"><input type="checkbox" name="tag" value="" checked/></div>');
-                $tree.append($topLevel);
-                addNodes(idx, $topLevel, name);
-            });
+            var $tree = $('#hdm-feature-tree ul.nav-list');
+            if (typeof data == 'object') {
+                traverse(data, $tree);
+            }
             
-            function addNodes(idx, $topLevel, name){
-                $.map(idx, function(i, n){
-                    if ($.isArray(i)) {
-                        var $nextLevel = $('<ul class="nav nav-list sub-level collapse">');
-                        $topLevel.append($nextLevel);
-                        var $header = $('<li class="sub-level closed"><i class="fa fa-plus-square-o fa-fw"></i><label class="nav-header sub-level">' + n + '</label>' +
-                                        '<div class="checkbox tree-checkbox"><input type="checkbox" name="tag" value="" checked/></div>');
-                        var $subLevel = $('<ul class="nav nav-list bottom-level collapse">');
-                        $header.append($subLevel);
-                        $nextLevel.append($header);
-                        addNodes(i, $subLevel, n);   
+            /*
+             * Recursively builds the feature tree.
+             */
+            function traverse(data, $level){
+                $.each(data, function(k,v){
+                    if ($(v).attr('displayName')){
+                        var name = $(v).attr('displayName');
+                        var tag = $(v).attr('tag');
+                        var geom = $(v).attr('geom');
+                        geom_str = geom.join([separator=',']);
+                        var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" name="tags[]" value="' + tag + '|' + geom_str + '" checked/></div>' +
+                                        '</li>');
+                        $level.append($entry);
                     }
                     else {
-                        var $entry = $('<li class="entry"><label>' + idx[n] + '</label>' +
-                                       '<div class="checkbox tree-checkbox"><input type="checkbox" name="tag" value="" checked/></div>' +
-                                       '</li>');
-                        $topLevel.append($entry);
+                        var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" checked/></div>');
+                        var $nextUL = $('<ul class="nav nav-list sub-level collapse">');
+                        $nextLevel.append($nextUL);
+                        $level.append($nextLevel);
+                        traverse(v, $nextUL);
                     }
                 });
-            }
+            } 
             
             /*
              * Handle click events on tree levels
              */
-            $('li.top-level > label').bind('click', function(e){
+            $('li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
                     $(this).parent().removeClass('open').addClass('closed');
-                    $(this).parent().find('i.top-level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                    $(this).parent().find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
                 }
                 else {
                     $(this).parent().removeClass('closed').addClass('open');
-                    $(this).parent().find('i.top-level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                    $(this).parent().find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
                 
             });
             
-            $('li.sub-level > label').bind('click', function(e){
-                if ($(this).parent().hasClass('open')) {
-                    $(this).parent().removeClass('open').addClass('closed');
-                    $(this).parent().find('i').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
-                }
-                else {
-                    $(this).parent().removeClass('closed').addClass('open');
-                    $(this).parent().find('i').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
-                }
-                $(this).parent().children('ul.bottom-level').toggle(150);
-            });
-            
-            /*
-             * Handle events on top levels
-             */
-            $('li.top-level > .tree-checkbox').bind('click', function(e){
-                var checked = $(this).find('input').is(':checked');
-                $(this).parent().find('.tree-checkbox').each(function(i, value){
-                    var $input = $(value).find('input');
-                    $input.prop('checked', checked);
-                })
-            })
-            
             /*
              * Handle events on sub-levels
              */
-            $('li.sub-level > .tree-checkbox').bind('click', function(e){
+            $('li.level > .tree-checkbox').bind('click', function(e){
                 var checked = $(this).find('input').is(':checked');
                 $(this).parent().find('.tree-checkbox').each(function(i, value){
                     var $input = $(value).find('input');
                     $input.prop('checked', checked);
                 })
-            })
+            });
             
             /*
              * Handle click events on entries
              */
+            /*
             $('li.entry > .tree-checkbox').bind('click', function(e){
                 var checked = $(this).find('input').is(':checked');
                 if (checked) {
                     console.log(checked);
+                    $(this).parentsUntil('li.level').parent().find('li.level > .tree-checkbox').prop('checked', true);
+                    var parentLevel = $(this).parentsUntil('li.level').parent().find('.tree-checkbox')[0];
+                    $(parentLevel).find('input').prop('checked', true);
                 }
-            })
+            });
+            */
+            $('input.entry, input.level').bind('click', function(e){
+                var checked = $(this).is(':checked');
+                if (checked) {
+                     
+                }
+                /*
+                var tags = [];
+                // list selected tags
+                $.each($('#hdm-feature-tree').find('input:checked'), function(k, v){
+                    var val = $(v).val();
+                    if (val != '') {
+                        if (val == 'highway:service') {
+                            alert(val);
+                        }
+                        tags.push($(v).val());
+                    }
+                });
+                console.log(tags.join([separator=',']));
+                */
+            });
+            
         });
-
     }
-    
     
     /*
      * Handles placename lookups using nominatim.

@@ -28,8 +28,8 @@ urlpatterns += patterns('api.views',
     url(r'^api/', include(router.urls, namespace='api')),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/rerun$', RunJob.as_view(), name='rerun'),
-    url(r'^api/data-model-hdm$', HDMDataModelView.as_view(), name='data-model-hdm'),
-    url(r'^api/data-model-osm$', OSMDataModelView.as_view(), name='data-model-osm'),
+    url(r'^api/hdm-data-model$', HDMDataModelView.as_view(), name='hdm-data-model'),
+    url(r'^api/osm-data-model$', OSMDataModelView.as_view(), name='osm-data-model'),
 )
 
 urlpatterns += patterns('admin.views',

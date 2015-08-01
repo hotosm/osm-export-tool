@@ -48,7 +48,9 @@ class UserGroupSerializer(serializers.Serializer):
 """
 
 class TagSerializer(serializers.Serializer):
-    name = serializers.CharField()
+    key = serializers.CharField()
+    value = serializers.CharField()
+    data_model = serializers.CharField()
     types = serializers.SerializerMethodField()
     
     def get_types(self, obj):
