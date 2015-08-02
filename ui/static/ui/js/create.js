@@ -29,6 +29,7 @@ create.job = (function(){
         init: function(){
             initCreateMap();
             initHDMFeatureTree();
+            initOSMFeatureTree();
             initNominatim();
         }
     }
@@ -494,13 +495,60 @@ create.job = (function(){
             //$('#btn-submit-job').prop('disabled', 'true');
         });
         
+        $('.btn-file :file').on('change', function() {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                input.trigger('fileselect', [numFiles, label]);
+        });
+        
+        $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+            console.log(numFiles);
+            console.log(label);
+        });
+        
+        $('#create-job-form').bind('change', function(e){
+           var name = $(this).find('input[name="name"]').val();
+           var description = $(this).find('textarea[name="description"]').val();
+           var event = $(this).find('input[name="event"]').val();
+           var formats = [];
+           $.each($(this).find('input[name="formats"]:checked'), function(i, format){
+                console.log($(this).val());
+                formats.push($(this).val());
+           });
+           
+           console.log(name, description, event, formats);
+        });
         
         $('#create-job-wizard').bootstrapWizard({
             tabClass: 'nav nav-pills',
             onTabClick: function(tab, navigation, index){
-                //return validateTab(index); temp
+                //return validateTab(index);
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip')
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next')
+                }
+            },
+            onNext: function(tab, navigation, index){
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip')
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next')
+                }
+            },
+            onPrevious: function(tab, navigation, index){
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip')
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next')
+                }
             }
         });
+        
         
         function validateTab(index) {
             var fv = $('#create-job-form').data('formValidation'), // FormValidation instance
@@ -580,9 +628,10 @@ create.job = (function(){
      */
     function initHDMFeatureTree(){
         $.get(Config.HDM_TAGS_URL, function(data){
+            var level_idx = 0;
             var $tree = $('#hdm-feature-tree ul.nav-list');
             if (typeof data == 'object') {
-                traverse(data, $tree);
+                traverse(data, $tree, level_idx);
             }
             
             /*
@@ -601,12 +650,14 @@ create.job = (function(){
                         $level.append($entry);
                     }
                     else {
+                        var collapse = level_idx > 0 ? 'collapse' : '';
                         var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" checked/></div>');
-                        var $nextUL = $('<ul class="nav nav-list sub-level collapse">');
+                        var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
                         $level.append($nextLevel);
-                        traverse(v, $nextUL);
+                        level_idx += 1;
+                        traverse(v, $nextUL, level_idx);
                     }
                 });
             } 
@@ -614,7 +665,7 @@ create.job = (function(){
             /*
              * Handle click events on tree levels
              */
-            $('li.level > label').bind('click', function(e){
+            $('#hdm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
                     $(this).parent().removeClass('open').addClass('closed');
                     $(this).parent().find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
@@ -630,7 +681,27 @@ create.job = (function(){
             /*
              * Handle events on sub-levels
              */
-            $('li.level > .tree-checkbox').bind('click', function(e){
+            $('#hdm-feature-tree li.level input').bind('change', function(e){
+                /*
+                var numChecked = $('.tree-checkbox > input:checked').size();
+                if (numChecked > 0) {
+                    $.each($('#osm-feature-tree').find('input[type="checkbox"]'), function(c){
+                        $(this).prop('checked', false).prop('disabled', true);
+                    });
+                }
+                else {
+                    $.each($('#osm-feature-tree').find('input[type="checkbox"]'), function(c){
+                        $(this).prop('checked', false).prop('disabled', false);
+                    });
+                }
+                var checked = $(this).find('input').is(':checked');
+                if (checked) {
+                    $('#osm-feature-tree').prop('disabled', true);
+                }
+                else {
+                    
+                }
+                */
                 var checked = $(this).find('input').is(':checked');
                 $(this).parent().find('.tree-checkbox').each(function(i, value){
                     var $input = $(value).find('input');
@@ -671,6 +742,86 @@ create.job = (function(){
                 });
                 console.log(tags.join([separator=',']));
                 */
+            });
+            
+        });
+    }
+    
+    /*
+     * Initialises the OSM feature tree.
+     */
+    function initOSMFeatureTree(){
+        $.get(Config.OSM_TAGS_URL, function(data){
+            var v = {'OSM Data Model': data}
+            var level_idx = 0;
+            var $tree = $('#osm-feature-tree ul.nav-list');
+            if (typeof data == 'object') {
+                traverse(v, $tree, level_idx);
+            }
+            
+            /*
+             * Recursively builds the feature tree.
+             */
+            function traverse(data, $level){
+                $.each(data, function(k,v){
+                    if ($(v).attr('displayName')){
+                        var name = $(v).attr('displayName');
+                        var tag = $(v).attr('tag');
+                        var geom = $(v).attr('geom');
+                        geom_str = geom.join([separator=',']);
+                        var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" name="tags[]" value="' + tag + '|' + geom_str + '" disabled/></div>' +
+                                        '</li>');
+                        $level.append($entry);
+                    }
+                    else {
+                        var collapse = level_idx > 0 ? 'collapse' : '';
+                        var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled/></div>');
+                        var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
+                        $nextLevel.append($nextUL);
+                        $level.append($nextLevel);
+                        level_idx += 1;
+                        traverse(v, $nextUL, level_idx);
+                    }
+                });
+            } 
+            
+            /*
+             * Handle click events on tree levels
+             */
+            $('#osm-feature-tree li.level > label').bind('click', function(e){
+                if ($(this).parent().hasClass('open')) {
+                    $(this).parent().removeClass('open').addClass('closed');
+                    $(this).parent().find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                }
+                else {
+                    $(this).parent().removeClass('closed').addClass('open');
+                    $(this).parent().find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                }
+                $(this).parent().children('ul.sub-level').toggle(150);
+                
+            });
+            
+            /*
+             * Handle events on sub-levels
+             */
+            $('li.level > .tree-checkbox').bind('click', function(e){
+                var checked = $(this).find('input').is(':checked');
+                $(this).parent().find('.tree-checkbox').each(function(i, value){
+                    var $input = $(value).find('input');
+                    $input.prop('checked', checked);
+                })
+            });
+            
+            /*
+             * Handle click events on entries
+             */
+            $('input.entry, input.level').bind('click', function(e){
+                var checked = $(this).is(':checked');
+                if (checked) {
+                     
+                }
             });
             
         });

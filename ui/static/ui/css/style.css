@@ -126,6 +126,10 @@ span.heading {
     font-size: 1.5em !important;
 }
 
+.tab-pane {
+    margin-left: 15px !important;
+}
+
 
 /* Map styles */
 
@@ -183,6 +187,7 @@ span.heading {
 
 #map-column {
     border-left: 2px solid lightgrey;
+    border-top: 1px solid lightgrey;
 }
 
 /* Create export form styles */
@@ -207,7 +212,7 @@ span.heading {
 }
 
 .tab-pane {
-    min-height: 50%;
+    min-height: 450px;
 }
 
 .tab-pane > .panel {
@@ -266,10 +271,10 @@ ul.typeahead {
 
 /* Feature selection styles */
 
-#features {
+.features {
     float: left !important;
-    min-height: 570px;
-    max-height: 570px;
+    /*min-height: 400px;*/
+    max-height: 400px;
     overflow: auto;
     margin-left: 15px;
     min-width: 100%;
@@ -278,6 +283,30 @@ ul.typeahead {
 #hdm-feature-tree {
    
 }
+
+/* Upload tab */
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+
 
 
 i.fa {
