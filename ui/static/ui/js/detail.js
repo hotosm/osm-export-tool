@@ -96,6 +96,16 @@ exports.detail = (function(){
             var feature = geojson.read(extent);
             job_extents.addFeatures(feature);
             map.zoomToExtent(job_extents.getDataExtent());
+            /*
+             * Check for current user.
+             * Display delete button if
+             * current user matches the owner of the job.
+             */
+            var user = $('span#user').html();
+            if (user === data.owner) {
+                $('button#delete').css('display', 'block');
+            }
+            buildDeleteDialog();
         });
         
         // handle re-run click events..
@@ -107,6 +117,11 @@ exports.detail = (function(){
                     // then start the check interval..
                     startRunCheckInterval();
             });
+        });
+        
+        // handle clone event
+        $('button#clone').bind('click', function(e){
+            window.location.href = '/jobs/clone/' + exports.detail.job_uid;
         });
     }
     
@@ -609,6 +624,45 @@ exports.detail = (function(){
                 }
             });
         }, 3000);
+    }
+    
+    function buildDeleteDialog(){
+        
+        var that = this;
+        var options = {
+            url: Config.JOBS_URL + '/' + exports.detail.job_uid,
+            dataType: 'json',
+            beforeSubmit: function(arr, $form, options) {
+            },
+            success: function(data, status, xhr) {
+                if (status == 'nocontent') {
+                    $('#details-row').css('display', 'none');
+                    // display delete info..
+                    $('#delete-info').css('display', 'block');
+                } 
+            },
+            error: function(xhr, status, error){
+                var json = xhr.responseJSON
+                console.log(error);
+            },
+        }
+        
+       var modalOpts = {
+            keyboard: true,
+            backdrop: 'static',
+        }
+        
+        $("button#delete").bind('click', function(e){
+            // stop form getting posted..
+            e.preventDefault(); 
+            $("#deleteExportModal").modal(modalOpts, 'show');
+        });
+        
+        $("#deleteConfirm").click(function(){
+            // post form..
+            $('#deleteForm').ajaxSubmit(options);
+            $("#deleteExportModal").modal('hide');
+        });
     }
   
 })();
