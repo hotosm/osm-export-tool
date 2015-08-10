@@ -395,10 +395,30 @@ ul.sub-level {
 
 #details-row {
     padding: 15px;
+    display: none;
 }
 
 #job {
     margin-right: 2em;
+}
+
+button#clone {
+    margin-left: .5em;
+}
+
+button#delete {
+    margin-left: .5em;
+    display: none;
+}
+
+span#user {
+    display: none;
+}
+
+#delete-info {
+    display: block;
+    font-size: large;
+    padding: 15px;
 }
 
 #extents {

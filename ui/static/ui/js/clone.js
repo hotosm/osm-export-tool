@@ -17,8 +17,8 @@
 */
 
 
-create = {};
-create.job = (function(){
+clone = {};
+clone.job = (function(){
     var map;
     var regions;
     var mask;
@@ -27,10 +27,11 @@ create.job = (function(){
     
     return {
         init: function(){
-            initCreateMap();
+            initMap();
             initHDMFeatureTree();
             initOSMFeatureTree();
             initNominatim();
+            populateForm();
         }
     }
     
@@ -38,7 +39,7 @@ create.job = (function(){
      * Initialize the map
      * and the UI controls.
      */
-    function initCreateMap() {
+    function initMap() {
         // set up the map and add the required layers
         var maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         var mapOptions = {
@@ -647,14 +648,14 @@ create.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" name="tags[]" value="' + tag + '|' + geom_str + '" checked/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" name="tags[]" value="' + tag + '|' + geom_str + '" /></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
                         var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
-                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" checked/></div>');
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox"/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
                         $level.append($nextLevel);
@@ -774,14 +775,14 @@ create.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" name="tags[]" value="' + tag + '|' + geom_str + '" checked/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" name="tags[]" value="' + tag + '|' + geom_str + '"/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
                         var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
-                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled/></div>');
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" /></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
                         $level.append($nextLevel);
@@ -986,6 +987,84 @@ create.job = (function(){
         });
     }
     
+    /**
+     * Pre-populates the form with details of
+     * the export to clone.
+     */
+    function populateForm(){
+        var url = document.URL;
+        var parts = url.split('/');
+        var job_uid = parts[5];
+        console.log('Job uid is ' + job_uid);
+        $.getJSON(Config.JOBS_URL + '/' + job_uid, function(data, success, jqXHR){
+            // describe export tab
+            $('#name').val(data.name);
+            $('#description').val(data.description);
+            $('#event').val(data.event);
+            // select formats tab
+            $.each(data.exports, function(idx, format){
+                $('#supported-formats input[value="' + format.slug + '"]').prop('checked', true);
+            });
+            // select features tab
+            
+            /*
+             * Get the data-model from the first tag.
+             * We're not mixing data-models (yet)
+             * so we can assume a single data model for now.
+             */
+            var dm = data.tags[0].data_model;
+            var $featureTree;
+            switch (dm) {
+                case 'OSM':
+                    $featureTree = $('#osm-feature-tree');
+                    break;
+                case 'HDM':
+                    $featureTree = $('#hdm-feature-tree');
+                    break;
+                default:
+                    $featureTree = $('#hdm-feature-tree');
+            }
+            
+            /*
+             * iterate through exports tags and
+             * check correspoing checkbox on selection tree.
+             * Check parent levels also.
+             */
+            $.each(data.tags, function(idx, tag){
+                var kvp = tag.key + ':' + tag.value;
+                var geom = tag.geom.join([separator=","]);
+                var tag_val = kvp + '|' + geom;
+                var $input = $featureTree.find('input[value="' + tag_val + '"]');
+                $input.prop('checked', true);
+                // check the parent levels
+                $.each($input.parentsUntil('#' + dm.toLowerCase() + '-feature-tree', 'li.level'),
+                       function(idx, level){
+                    $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
+                });
+                
+            });
+            
+            // configuration tab
+            
+            // summary tab
+            
+            // bounding box
+            var extent = data.extent;
+            var geojson = new OpenLayers.Format.GeoJSON({
+                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            var feature = geojson.read(extent, 'Feature');
+            bbox.addFeatures(feature);
+            map.zoomToExtent(bbox.getDataExtent());
+            transform.setFeature(feature);
+            var bounds = feature.geometry.bounds.clone();
+            bounds.transform('EPSG:3857', 'EPSG:4326');
+            // set the bounds on the form
+            setBounds(bounds);
+        });
+    }
+    
 }());
 
 
@@ -997,5 +1076,5 @@ $(document).ready(function() {
             $('#list-export-map').css('visibility', 'hidden');
             $('#list-controls').css('display','none');
         });
-        create.job.init();
+        clone.job.init();
 });

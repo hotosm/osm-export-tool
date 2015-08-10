@@ -51,9 +51,9 @@ class TagSerializer(serializers.Serializer):
     key = serializers.CharField()
     value = serializers.CharField()
     data_model = serializers.CharField()
-    types = serializers.SerializerMethodField()
+    geom = serializers.SerializerMethodField()
     
-    def get_types(self, obj):
+    def get_geom(self, obj):
         return obj.geom_types
 
 
@@ -344,6 +344,7 @@ class JobSerializer(serializers.Serializer):
         max_length=100,
     )
     created_at = serializers.DateTimeField(read_only=True)
+    owner = serializers.SerializerMethodField(read_only=True)
     exports = serializers.SerializerMethodField()
     configurations = serializers.SerializerMethodField()
     #configs = ExportConfigSerializer(many=True)
@@ -377,9 +378,11 @@ class JobSerializer(serializers.Serializer):
     )
     region = SimpleRegionSerializer(read_only=True)
     extent = serializers.SerializerMethodField(read_only=True)
+    """
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
+    """
     tags = serializers.SerializerMethodField(read_only=True)
     
     def create(self, validated_data):
@@ -426,4 +429,7 @@ class JobSerializer(serializers.Serializer):
         tags = obj.tags.all()
         serializer = TagSerializer(tags, many=True)
         return serializer.data
+    
+    def get_owner(self, obj):
+        return obj.user.username;
     
