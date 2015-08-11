@@ -46,14 +46,15 @@ class TestOverpass(TestCase):
         op = Overpass(osm=self.osm, bbox=self.bbox, tags=self.tags)
         logger.debug(op.get_query())
         op.run_query()
-        
+    
+    @skip
     def test_with_hdm_tags(self, ):
-        
         parser = presets.PresetParser(preset=self.path + '/files/hdm_presets.xml')
-        geom_tags, kvps = parser.parse()
+        tags = parser.parse()
         filters = []
-        for kvp in kvps:
-            filter_tag = '{0}:{1}'.format(kvp[0], kvp[1])
+        for tag in tags:
+            logger.debug(tag)
+            filter_tag = '{0}:{1}'.format(tag['key'], tag['value'])
             filters.append(filter_tag)
         op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
         op.run_query()

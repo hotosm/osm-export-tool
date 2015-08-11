@@ -106,6 +106,13 @@ exports.detail = (function(){
                 $('button#delete').css('display', 'block');
             }
             buildDeleteDialog();
+            
+        }).fail(function(jqxhr, textStatus, error) {
+            if (jqxhr.status == 404) {
+                $('#details-row').css('display', 'none');
+                // display error info..
+                $('#error-info').css('display', 'block'); 
+            }
         });
         
         // handle re-run click events..

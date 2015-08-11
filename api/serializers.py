@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework.utils import html
 from datetime import datetime, timedelta
-from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig
+from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from tasks.models import ExportRun, ExportTask, ExportTaskResult, ExportTaskException
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
@@ -47,6 +47,13 @@ class UserGroupSerializer(serializers.Serializer):
     groups = GroupSerializer(many=True)
 """
 
+class TagSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Tag
+        fields = ('key', 'value', 'data_model', 'geom_types')
+
+"""
 class TagSerializer(serializers.Serializer):
     key = serializers.CharField()
     value = serializers.CharField()
@@ -55,7 +62,7 @@ class TagSerializer(serializers.Serializer):
     
     def get_geom(self, obj):
         return obj.geom_types
-
+"""
 
 class SimpleExportConfigSerializer(serializers.Serializer):
     uid = serializers.UUIDField(read_only=True)
@@ -378,12 +385,10 @@ class JobSerializer(serializers.Serializer):
     )
     region = SimpleRegionSerializer(read_only=True)
     extent = serializers.SerializerMethodField(read_only=True)
-    """
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
-    """
-    tags = serializers.SerializerMethodField(read_only=True)
+    tags = serializers.SerializerMethodField()
     
     def create(self, validated_data):
         return Job.objects.create(**validated_data)
@@ -397,6 +402,7 @@ class JobSerializer(serializers.Serializer):
         bbox = validators.validate_bbox(extents)
         the_geom = GEOSGeometry(bbox, srid=4326)
         data['the_geom'] = the_geom
+        logger.debug(data)
         regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom').order_by( '-intersection')
         data['region'] = validators.validate_region(regions)
         # remove unwanted fields

@@ -395,7 +395,7 @@ ul.sub-level {
 
 #details-row {
     padding: 15px;
-    display: none;
+    display: block;
 }
 
 #job {
@@ -415,8 +415,8 @@ span#user {
     display: none;
 }
 
-#delete-info {
-    display: block;
+#delete-info, #error-info {
+    display: none;
     font-size: large;
     padding: 15px;
 }

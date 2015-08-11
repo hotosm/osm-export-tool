@@ -588,9 +588,6 @@ create.job = (function(){
             var $form = $('#create-job-form'),
                 fv = $($form).data('formValidation'),
                 $bbox = $('#bbox');
-            var data = $form.serialize();
-            console.log(data);
-            
             // validate the bounding box
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
@@ -602,16 +599,53 @@ create.job = (function(){
             if (!fvIsValidForm) {
                 e.preventDefault();
             }
-            /*
-            if (fv.$invalidFields.length > 0) {
-                e.preventDefault();
-            }
-            */
             else {
+                // submit the form..
+                var fields = $form.serializeArray();
+                var form_data = {};
+                var tags = [];
+                var formats = [];
+                $.each(fields, function(idx, field){
+                    // add formats as an array
+                    if (field.name === 'formats') {
+                        formats.push(field.value);
+                    }
+                    else {
+                        form_data[field.name] = field.value;
+                    }
+                });
+                // get the selected tags
+                var selected_tags = $('input.entry:checked');
+                $.each(selected_tags, function(idx, entry){
+                    var tag = {};
+                    var key = entry.getAttribute('data-key');
+                    var value = entry.getAttribute('data-val');
+                    var geom_types = entry.getAttribute('data-geom');
+                    var data_model = entry.getAttribute('data-model');
+                    tag["key"] = key;
+                    tag["value"] = value;
+                    tag["geom_types"] = geom_types.split(',');
+                    tag["data_model"] = data_model;
+                    tags.push(tag)
+                });
+                // add tags and formats to the form data
+                form_data["tags"] = tags;
+                form_data["formats"] = formats;
+                // convert to json string for submission.
+                var json_data = JSON.stringify(form_data);
                 $.ajax({
+                    // post json to the api endpoint
                     url: Config.JOBS_URL,
                     type: 'POST',
-                    data: $form.serialize(),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: json_data,
+                    processData: false, // send as json
+                    beforeSend: function(jqxhr){
+                        // set the crsf token header for authentication
+                        var csrftoken = form_data['csrfmiddlewaretoken'];
+                        jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
                     success: function(result) {
                         var uid = result.uid;
                         var url = '/jobs/' + uid;
@@ -647,7 +681,7 @@ create.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" name="tags[]" value="' + tag + '|' + geom_str + '" checked/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" checked/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
@@ -774,7 +808,7 @@ create.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" name="tags[]" value="' + tag + '|' + geom_str + '" checked/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '"/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
