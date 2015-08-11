@@ -111,7 +111,7 @@ class TestJobViewSet(APITestCase):
             'formats': formats,
             'preset': config_uid,
         }
-        response = self.client.post(url, request_data)
+        response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']
         # test the ExportTaskRunner.run_task(job_id) method gets called.
         task_runner.run_task.assert_called_once_with(job_uid=job_uid)
@@ -131,7 +131,7 @@ class TestJobViewSet(APITestCase):
         job = Job.objects.get(uid=job_uid)
         tags = job.tags.all()
         self.assertIsNotNone(tags)
-        self.assertEquals(30, len(tags))
+        self.assertEquals(238, len(tags))
         
     @patch('api.views.ExportTaskRunner')
     def test_create_job_with_config_success(self, mock):
@@ -152,7 +152,7 @@ class TestJobViewSet(APITestCase):
             'transform':'',
             'translate':''
         }
-        response = self.client.post(url, request_data)
+        response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']
         # test the ExportTaskRunner.run_task(job_id) method gets called.
         task_runner.run_task.assert_called_once_with(job_uid=job_uid)
@@ -169,6 +169,120 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['description'], request_data['description'])
         configs = self.job.configs.all()
         self.assertIsNotNone(configs[0])
+    
+    @patch('api.views.ExportTaskRunner')
+    def test_create_job_with_tags(self, mock):
+        # delete the existing tags and test adding them with json
+        self.job.tags.all().delete()
+        task_runner = mock.return_value
+        config_uid = self.config.uid
+        url = reverse('api:jobs-list')
+        formats = [format.slug for format in ExportFormat.objects.all()]
+        request_data = {
+            'name': 'TestJob',
+            'description': 'Test description',
+            'event': 'Test Activation',
+            'xmin': -3.9,
+            'ymin': 16.1,
+            'xmax': 7.0,
+            'ymax': 27.6,
+            'formats': formats,
+            #'preset': config_uid,
+            'transform':'',
+            'translate':'',
+            'tags':[
+                {
+                    "key":"office","value":"telecommunication","data_model":"OSM","geom_types":["point","polygon"]
+                },
+                {
+                    "key":"amenity","value":"studio","data_model":"OSM","geom_types":["point","polygon"]
+                },
+                {
+                    "key":"man_made","value":"tower","data_model":"OSM","geom_types":["point","polygon"]
+                },
+                {
+                    "key":"office","value":"telecommunication","data_model":"OSM","geom_types":["point","polygon"]
+                },
+                {
+                    "key":"amenity","value":"marketplace","data_model":"OSM","geom_types":["point","line"]
+                },
+                {
+                    "key":"shop","value":"confectionery","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"organic","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"alcohol","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"seafood","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"beverages","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"kiosk","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"butcher","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"convenience","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"deli","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"supermarket","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"greengrocer","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"bakery","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"vacuum_cleaner","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"hifi","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"computer","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"video","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"mobile_phone","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"shop","value":"electronics","data_model":"OSM","geom_types":["point"]
+                },
+                {
+                    "key":"amenity","value":"cafe","data_model":"OSM","geom_types":["point","polygon"]
+                }
+            ]
+        }
+        response = self.client.post(url, request_data, format='json')
+        job_uid = response.data['uid']
+        # test the ExportTaskRunner.run_task(job_id) method gets called.
+        task_runner.run_task.assert_called_once_with(job_uid=job_uid)
+        
+        # test the response headers
+        self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Language'], 'en')
+        
+        # test significant response content
+        self.assertEqual(response.data['exports'][0]['slug'], request_data['formats'][0])
+        self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
+        self.assertEqual(response.data['name'], request_data['name'])
+        self.assertEqual(response.data['description'], request_data['description'])
+        configs = self.job.configs.all()
+        #self.assertIsNotNone(configs[0])
+        logger.debug(response)
     
     def test_missing_bbox_param(self, ):
         url = reverse('api:jobs-list')
@@ -202,7 +316,7 @@ class TestJobViewSet(APITestCase):
             'ymax': 27.6,
             'formats': formats
         }
-        response = self.client.post(url, request_data)
+        response = self.client.post(url, request_data, format='json')
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
         self.assertEquals(response['Content-Language'], 'en')
@@ -373,7 +487,7 @@ class TestJobViewSet(APITestCase):
             'ymax': 20.24,
             'formats': formats
         }
-        response = self.client.post(url, request_data)
+        response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']
         # test the ExportTaskRunner.run_task(job_id) method gets called.
         task_runner.run_task.assert_called_once_with(job_uid=job_uid)
@@ -471,7 +585,7 @@ class TestBBoxSearch(APITestCase):
                 'ymax': extent[3],
                 'formats': formats
             }
-            response = self.client.post(url, request_data)
+            response = self.client.post(url, request_data, format='json')
             self.assertEquals(status.HTTP_202_ACCEPTED, response.status_code)
         self.assertEquals(8, len(Job.objects.all()))
         JobLinkHeaderPagination.page_size = 2

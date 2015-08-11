@@ -47,8 +47,9 @@ class TestJobFilter(APITestCase):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
         formats = [format.slug for format in ExportFormat.objects.all()]
-        url += '?start=2015-01-01&end=2015-08-01';
+        url += '?start=2015-01-01&end=2030-08-01';
         response = self.client.get(url)
+        logger.debug(response)
         self.assertEquals(2, len(response.data))
     
     @patch('api.views.ExportTaskRunner')
@@ -56,7 +57,7 @@ class TestJobFilter(APITestCase):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
         formats = [format.slug for format in ExportFormat.objects.all()]
-        url += '?start=2015-01-01&end=2015-08-01&user=demo1';
+        url += '?start=2015-01-01&end=2030-08-01&user=demo1';
         response = self.client.get(url)
         self.assertEquals(1, len(response.data))
         

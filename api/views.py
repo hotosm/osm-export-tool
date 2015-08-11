@@ -119,8 +119,10 @@ class JobViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
             # add the export formats
-            formats = request.data.getlist('formats')
+            logger.debug(request.data)
+            formats = request.data.get('formats')
             preset = request.data.get('preset')
+            tags = request.data.get('tags')
             translation = request.data.get('translation')
             transform = request.data.get('transform')
             export_formats = []
@@ -138,14 +140,13 @@ class JobViewSet(viewsets.ModelViewSet):
                     with transaction.atomic():
                         job = serializer.save()
                         job.formats = export_formats
-                        # add the configurations
                         if preset:
+                            # get the tags from the uploaded preset
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = settings.BASE_DIR + config.upload.url
-                            # TODO: check if user tags to be merged with defaults
                             parser = presets.PresetParser(preset=preset_path)
-                            tags_dict = parser.parse(merge_with_defaults=False)
+                            tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
                                     key = entry['key'],
@@ -154,24 +155,34 @@ class JobViewSet(viewsets.ModelViewSet):
                                     data_model = 'PRESET',
                                     job = job
                                 )
-                        else:
+                        elif tags:
                             # get tags from request
-                            tags = request.data.getlist('tags[]')
                             for entry in tags:
-                                kv = entry.split('|')[0]
-                                geoms = entry.split('|')[1]
-                                k = kv.split(':')[0]
-                                v = kv.split(':')[1]
                                 tag = Tag.objects.create(
-                                    key = k,
-                                    value = v,
+                                    key = entry['key'],
+                                    value = entry['value'],
                                     job = job,
-                                    data_model = 'OSM',
-                                    geom_types = geoms.split(',')
-                                )  
+                                    data_model = entry['data_model'],
+                                    geom_types = entry['geom_types']
+                                )
+                        else:
+                            # use hdm preset as default tags
+                            path = os.path.dirname(os.path.realpath(__file__))
+                            parser = presets.PresetParser(preset= path + '/hdm_presets.xml')
+                            tags_dict = parser.parse()
+                            for entry in tags_dict:
+                                tag = Tag.objects.create(
+                                    key = entry['key'],
+                                    value = entry['value'],
+                                    geom_types = entry['geom_types'],
+                                    data_model = 'HDM',
+                                    job = job
+                                )
+                        # check for translation file
                         if translation:
                             config = ExportConfig.objects.get(uid=translation)
                             job.configs.add(config)
+                        # check for transform file
                         if transform:
                             config = ExportConfig.objects.get(uid=transform)
                             job.configs.add(config)

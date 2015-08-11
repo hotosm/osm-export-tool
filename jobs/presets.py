@@ -23,7 +23,7 @@ class PresetParser():
         self.preset = preset
         self.tags = []
     
-    def parse(self, merge_with_defaults=False):
+    def parse(self,):
         """
         Reads in the JOSM Preset.
         Picks out all <item> elements.
@@ -38,10 +38,7 @@ class PresetParser():
         for item in items:
             self.process_item_and_children(item)
         #tags = OrderedDict(sorted(self.tags.items()))
-        if merge_with_defaults:
-            return self.merge_presets(tags)
-        else:
-            return self.tags
+        return self.tags
         
     def process_item_and_children(self, item, geometrytype=None):
         geometrytypes = None
