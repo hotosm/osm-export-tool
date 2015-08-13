@@ -9,11 +9,12 @@ Config = {}
 Config.REGIONS_URL = '/api/regions.json'
 Config.REGION_MASK_URL = '/api/maskregions.json'
 
-// job / run / format enpoints
+// job / run / format / configurations endpoints
 Config.JOBS_URL = '/api/jobs'
 Config.RUNS_URL = '/api/runs'
 Config.RERUN_URL = '/api/rerun?job_uid='
 Config.EXPORT_FORMATS_URL = '/api/formats.json'
+Config.CONFIGURATION_URL = '/api/configurations'
 
 
 // datamodel endpoints

@@ -306,7 +306,24 @@ ul.typeahead {
     display: block;
 }
 
+#filelist {
+    display: none;
+    margin: 10px 0 15px 0;
+    vertical-align: middle;
+    font-size: small;
+}
 
+
+
+button#upload {
+    visibility: hidden;
+    position: absolute;
+    left: 25px;
+}
+
+.progress {
+    display: none;
+}
 
 
 i.fa {

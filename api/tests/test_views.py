@@ -700,16 +700,17 @@ class TestExportConfigViewSet(APITestCase):
         path = os.path.dirname(os.path.realpath(__file__))
         f = File(open(path + '/files/Example Transform.sql', 'r'))
         name = 'Test Export Config'
-        response = self.client.post(url, {'name': name, 'upload': f, 'config_type': 'TRANSFORM'}, format='multipart')
+        response = self.client.post(url, {'name': name, 'upload': f, 'config_type': 'TRANSFORM', 'published': True}, format='multipart')
         data = response.data
         uid = data['uid']
         saved_config = ExportConfig.objects.get(uid=uid)
         self.assertIsNotNone(saved_config)
         self.assertEquals(name, saved_config.name)
-        self.assertTrue(saved_config.visible)
+        self.assertTrue(saved_config.published)
         self.assertEquals('example_transform.sql', saved_config.filename)
         self.assertEquals('text/plain', saved_config.content_type)
         saved_config.delete()
+        logger.debug(response)
         
     def test_invalid_config_type(self, ):
         url = reverse('api:configs-list')

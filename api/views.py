@@ -293,6 +293,7 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ExportConfigSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    parser_classes = (FormParser, MultiPartParser, JSONParser)
     queryset = ExportConfig.objects.all()
     lookup_field = 'uid'
     
