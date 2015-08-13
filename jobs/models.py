@@ -69,7 +69,7 @@ class ExportConfig(TimeStampedModelMixin):
     filename = models.CharField(max_length=255)
     upload = models.FileField(max_length=255, upload_to=get_upload_path)
     content_type = models.CharField(max_length=30, editable=False)
-    visible = models.BooleanField(default=True)
+    published = models.BooleanField(default=False)
     
     class Meta:
         managed = True

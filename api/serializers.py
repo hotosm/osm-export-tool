@@ -53,16 +53,6 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('key', 'value', 'data_model', 'geom_types')
 
-"""
-class TagSerializer(serializers.Serializer):
-    key = serializers.CharField()
-    value = serializers.CharField()
-    data_model = serializers.CharField()
-    geom = serializers.SerializerMethodField()
-    
-    def get_geom(self, obj):
-        return obj.geom_types
-"""
 
 class SimpleExportConfigSerializer(serializers.Serializer):
     uid = serializers.UUIDField(read_only=True)
@@ -86,11 +76,13 @@ class ExportConfigSerializer(serializers.Serializer):
     size = serializers.SerializerMethodField()
     content_type = serializers.CharField(max_length=50, read_only=True)
     upload = serializers.FileField(allow_empty_file=False, max_length=100)
+    published = serializers.BooleanField()
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
     
     def create(self, validated_data):
+        logger.debug(validated_data)
         return ExportConfig.objects.create(**validated_data)
     
     def update(self, instance, validated_data):
@@ -105,6 +97,7 @@ class ExportConfigSerializer(serializers.Serializer):
         return instance
     
     def validate(self, data):
+        logger.debug(data)
         upload = data['upload']
         config_type = data['config_type']
         content_type = validators.validate_content_type(upload, config_type)

@@ -410,6 +410,51 @@ create.job = (function(){
      * Initialize the form validation.
      */
     function initForm(){
+    
+        // track the number of uploaded files.
+        var numUploadedFiles = 0;
+        
+        /*
+         * Initialize the bootstrap form wizard.
+         */
+        $('#create-job-wizard').bootstrapWizard({
+            tabClass: 'nav nav-pills',
+            onTabClick: function(tab, navigation, index){
+                //return validateTab(index);
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip');
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next');
+                }
+            },
+            onNext: function(tab, navigation, index){
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip');
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next');
+                }
+                // update summary if user navigates there..
+                if (index == 4) {
+                    updateExportSummaryTab();
+                }
+            },
+            onPrevious: function(tab, navigation, index){
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip');
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next');
+                }
+            }
+        });
+        
+        // ----  FORM VALIDATION ---- //
+        
+        /*
+         * Set up form validation.
+         */
         $('#create-job-form').formValidation({
             framework: 'bootstrap',
             // Feedback icons
@@ -478,12 +523,25 @@ create.job = (function(){
                             message: 'not empty'
                         }
                     }
-                }
+                },
+                'filename': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The filename is required and cannot be empty.'
+                        },
+                    }
+                },
+                'config_type': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The configuration type is required and cannot be empty.'
+                        },
+                    }
+                },
             }
         })
         .on('success.form.fv', function(e){
             e.preventDefault();
-            console.log(e);
             /*
              * Enable the submit button, but prevent automatic form submission
              * on successful validation as this is done by ajax call
@@ -492,64 +550,23 @@ create.job = (function(){
             $('#btn-submit-job').prop('disabled', 'false');
         })
         .on('success.field.fv', function(e) {
-            //$('#btn-submit-job').prop('disabled', 'true');
-        });
-        
-        $('.btn-file :file').on('change', function() {
-            var input = $(this),
-                numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-                input.trigger('fileselect', [numFiles, label]);
-        });
-        
-        $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
-        });
-        
-        $('#create-job-form').bind('change', function(e){
-           var name = $(this).find('input[name="name"]').val();
-           var description = $(this).find('textarea[name="description"]').val();
-           var event = $(this).find('input[name="event"]').val();
-           var formats = [];
-           $.each($(this).find('input[name="formats"]:checked'), function(i, format){
-                console.log($(this).val());
-                formats.push($(this).val());
-           });
-           
-           console.log(name, description, event, formats);
-        });
-        
-        $('#create-job-wizard').bootstrapWizard({
-            tabClass: 'nav nav-pills',
-            onTabClick: function(tab, navigation, index){
-                //return validateTab(index);
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip')
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next')
-                }
-            },
-            onNext: function(tab, navigation, index){
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip')
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next')
-                }
-            },
-            onPrevious: function(tab, navigation, index){
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip')
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next')
-                }
+            // re-enable the file upload button when field is valid
+            if (e.target.id === 'filename' || e.target.id === 'config_type') {
+                $('button#upload').prop('disabled', false);
+                $('button#select-file').prop('disabled', false);
+            }
+        }).on('err.field.fv', function(e) {
+            // re-enable the file upload button when field is valid
+            if (e.target.id === 'filename' || e.target.id === 'config_type') {
+                $('button#upload').prop('disabled', true);
+                $('button#select-file').prop('disabled', true);
             }
         });
         
         
+        /*
+         * Validates a wizard tab given the tab index.
+         */
         function validateTab(index) {
             var fv = $('#create-job-form').data('formValidation'), // FormValidation instance
                 // The current tab
@@ -582,7 +599,361 @@ create.job = (function(){
             return true;
         }
         
-         // handle form submission
+        /*
+         * Validates the file upload tab.
+         */
+        function validateFileUploadTab() {
+            var fv = $('#create-job-form').data('formValidation'), // FormValidation instance
+                // The current tab
+                $tab = $('#create-job-form').find('.tab-pane').eq(3);
+            
+            // validate the form panel contents
+            fv.validateContainer($tab);
+            var isValid = fv.isValidContainer($tab);
+            if ((isValid === false || isValid === null)){
+                // stay on this tab
+                $('button#upload').prop('disabled', true);
+                return false;
+            }
+            $('button#upload').prop('disabled', false);
+            
+            // reset validation on fields
+            fv.resetField($('input#filename'));
+            fv.resetField($('select#config_type'));
+            
+            return true;
+        }
+        
+        // ----- UPLOAD TAB ----- //
+        
+        $('button#select-file').bind('click', function(e){
+            if (!validateFileUploadTab()) {
+                e.preventDefault();
+                $(this).prop('disabled', true);
+            }
+        });
+        
+        /*
+         * Listen for changes on file selection button.
+         */
+        $('.btn-file :file').on('change', function(){
+                var $input = $(this),
+                numFiles = $input.get(0).files ? $input.get(0).files.length : 1,
+                label = $input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                $input.trigger('fileselect', [numFiles, label]);
+        });
+        
+        /*
+         * Handle file selection.
+         */
+        $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+            /*
+             * disable the input fields.
+             * dont want these changed after this point.
+             */
+            $('input#filename').prop('disabled', true);
+            $('select#config_type').prop('disabled', true);
+            $('input#published').prop('disabled', true);
+            var $filelist = $('#filelist');
+            var $select = $('.btn-file');
+            var $upload = $('button#upload');
+            $upload.prop('disabled', false);
+            var type = $('option:selected').val();
+            var published = $('input#published').is(':checked') ? 'Published' : 'Private';
+            
+            var html = '<tr class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + label + '</span></td>' +
+                       '<td>' + type + '</td><td>' + published + '</td>' +
+                       '<td><button id="remove" type="button" class="btn btn-warning btn-sm pull-right">Remove&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button></td></tr>';
+            $filelist.append(html);
+            $filelist.css('display', 'block');
+            $select.css('visibility', 'hidden');
+            $upload.css('visibility', 'visible');
+            // handle events on the remove button if file selected
+            $('button#remove').bind('click', function(e){
+                $('input#filename').prop('disabled', false);
+                $('select#config_type').prop('disabled', false);
+                $('input#published').prop('disabled', false);
+                var $select = $('.btn-file');
+                var $upload = $('button#upload');
+                var $filelist = $('#filelist');
+                var $fileupload = $('#fileupload');
+                // clear the selected files list
+                $fileupload.val('');
+                // get number of selected files in the table
+                var selected = $('#filelist tr').length  -1; // exclude th
+                if (selected == 1) {
+                    $(e.target).parent().parent().remove();
+                    $('#filelist').css('display', 'none');
+                }
+                else {
+                    // just remove this row..
+                    $(e.target).parent().parent().remove();
+                }
+                // toggle file select and upload buttons
+                $upload.css('visibility', 'hidden');
+                $select.css('visibility', 'visible');
+                // clear input fields
+                $('input#filename').val('');
+                $('option#select-message').prop('selected', true);
+                $('input#published').prop('checked', false);
+                // reset the input field validation
+                var fv = $('#create-job-form').data('formValidation');
+                fv.resetField($('input#filename'));
+                fv.resetField($('select#config_type'));
+                $('#create-job-form').trigger('change');
+            });
+        });
+        
+        /*
+         * Handle config file upload.
+         */
+        $('button#upload').bind('click', function(e){
+            if (!validateFileUploadTab()){
+                e.preventDefault();
+                return;
+            }
+            // disable the upload button
+            $('button#upload').prop('disabled', true);
+            // show progress bar
+            $('button#remove').css('display', 'none');
+            $('.progress').css('display', 'block');
+            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+            var filename = $('input#filename').val();
+            var config_type = $('select#config_type').val();
+            switch (config_type) {
+                case 'PRESET':
+                    $('option#select-preset').prop('disabled', true);
+                    break;
+                case 'TRANSFORM':
+                    $('option#select-transform').prop('disabled', true);
+                    break;
+                case 'TRANSLATION':
+                    $('option#select-translate').prop('disabled', true);
+                    break;
+            }
+            var published = $('input[name="published"]').is(':checked');
+            var data = new FormData();
+            data.append('name', filename);
+            data.append('config_type', config_type);
+            data.append('published', published);
+            var $filedata = $('#fileupload').get(0).files[0];
+            data.append('upload', $filedata);
+            $.ajax({
+                // post to the config endpoint
+                url: Config.CONFIGURATION_URL,
+                type: 'POST',
+                contentType: false,
+                data: data,
+                xhr: function() {
+                    var xhr = $.ajaxSettings.xhr();
+                    if(xhr.upload){ // Check if upload property exists
+                        xhr.upload.addEventListener('progress', handleProgress, false); // For handling the progress of the upload
+                    }
+                    return xhr;
+                },
+                processData: false, // send as multipart
+                beforeSend: function(jqxhr){
+                    // set the crsf token header for authentication
+                    jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function(result, textStatus, jqxhr) {
+                    // increment the number of uploaded files
+                    numUploadedFiles += 1;
+                    // add the delete button to the uploaded file
+                    var $td = $('#filelist tr').last().find('td').last();
+                    $td.empty();
+                    // add a delete button to the file list table
+                    var html = '<button id="' + result.uid + '" type="button" class="delete-file btn btn-danger btn-sm pull-right">' +
+                                        'Delete&nbsp;&nbsp;<span class="glyphicon glyphicon-trash">' +
+                                '</span></button>';
+                    $td.html(html);
+                    
+                    // reset the form for more file uploads..
+                    resetUploadConfigTab(textStatus);   
+                    
+                    // handle delete events
+                    $('.delete-file').bind('click', function(e){
+                        var that = $(this);
+                        var data = new FormData();
+                        data.append('_method', 'DELETE');
+                        $.ajax({
+                            url: Config.CONFIGURATION_URL + '/' + e.target.id,
+                            type: 'POST',
+                            data: data,
+                            contentType: false,
+                            processData: false,
+                            beforeSend: function(jqxhr){
+                                // set the crsf token header for authentication
+                                var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+                                jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            },
+                            success: function(result, textStatus, jqxhr) {
+                                // decrement the number of uploaded files
+                                numUploadedFiles -= 1;
+                                resetUploadConfigTab(textStatus);
+                                // clear the selected files list
+                                var $fileupload = $('#fileupload');
+                                $fileupload.val('');
+                                
+                                // re-enable this config_type in the select combo
+                                var config_type = that.parent().parent().find('td').eq(1).html();
+                                var $option = $('option[value="' + config_type + '"]');
+                                $option.prop('disabled', false);
+                                
+                                // get number of selected files in the table
+                                var selected = $('#filelist tr.config').length;
+                                if (selected == 1) {
+                                    // remove the row and hide the table
+                                    that.parent().parent().fadeOut(300, function(){
+                                        $(this).remove();
+                                        $('#filelist').css('display', 'none');
+                                        // trigger change event on form when config deleted
+                                        $('#create-job-form').trigger('change');
+                                    });  
+                                }
+                                else {
+                                    // just remove the deleted row
+                                    that.parent().parent().fadeOut(300, function(){
+                                        $(this).remove();
+                                        // trigger change event on form when config deleted
+                                        $('#create-job-form').trigger('change');
+                                    });
+                                }
+                                
+                            }
+                        });
+                        
+                    });
+                },
+                error: function(jqxhr, textStatus, errorThrown){
+                    console.log(jqxhr);
+                    resetUploadConfigTab(textStatus);
+                    var modalOpts = {
+                        keyboard: true,
+                        backdrop: 'static',
+                    }
+                    var message = jqxhr.responseJSON.message[0];
+                    $('p#message').html(message);
+                    $("#uploadConfigError").modal(modalOpts, 'show');
+                }
+            });
+        });
+        
+        
+        /*
+         * Resets the upload config tab on success or failure.
+         */
+        function resetUploadConfigTab(textStatus){
+            // hide the progress bar
+            $('.progress').css('display', 'none');
+            $('.progress-bar').css('width', '0%');
+            
+            // toggle file selection and upload buttons
+            $('button#upload').css('visibility', 'hidden');
+            $('.btn-file').css('visibility', 'visible');
+            
+            // reset the fields.
+            $('input#filename').val('');
+            $('option#select-message').prop('selected', true);
+            $('input#published').prop('checked', false);
+            
+            // check if max uploaded is reached
+            if (numUploadedFiles == 3) {
+                $('input#filename').prop('disabled', true);
+                $('select#config_type').prop('disabled', true);
+                $('input#published').prop('disabled', true);
+                $('button#select-file').prop('disabled', true);
+            }
+            else {
+                // re-enable the fields
+                $('input#filename').prop('disabled', false);
+                $('select#config_type').prop('disabled', false);
+                $('input#published').prop('disabled', false);
+                $('button#select-file').prop('disabled', false);
+            }
+            
+            if (textStatus === 'error') {
+                // clear the selected files list
+                var $fileupload = $('#fileupload');
+                $fileupload.val('');
+                // get number of selected files in the table
+                var selected = $('#filelist tr').length  -1; // exclude <th>
+                if (selected == 1) {
+                    // remove the last entry in the table
+                    $('#filelist tr').last().remove();
+                    $('#filelist').css('display', 'none');
+                }
+                else {
+                    // just remove this row..
+                    $('#filelist tr').last().remove();
+                }
+            }
+        }
+        
+        /*
+         * Updates progressbar on file upload.
+         */
+        function handleProgress(e){
+            if(e.lengthComputable){
+                var percent = e.loaded / e.total * 100;
+                $('.progress-bar').attr({value:e.loaded,max:e.total});
+                $('.progress-bar').css('width', percent + '%');
+            }
+        }
+        
+        
+        // ----- SUMMARY TAB ----- //
+        
+        /*
+         * Listen for changes to the form
+         * and update the export summary tab.
+         */
+        $('#create-job-form').bind('change', function(e){
+            var name = $(this).find('input[name="name"]').val();
+            var description = $(this).find('textarea[name="description"]').val();
+            var event = $(this).find('input[name="event"]').val();
+            $('#summary-name').html(name);
+            $('#summary-description').html(description);
+            $('#summary-event').html(event);
+            var formats = [];
+            var $ul = $('<ul>');
+            $.each($(this).find('input[name="formats"]:checked'), function(i, format){
+                var val = $(this).val();
+                switch (val){
+                    case 'obf':
+                        $ul.append($('<li>OSMAnd Format</li>'));
+                        break;
+                    case 'shp':
+                        $ul.append($('<li>ESRI Shapefile Format</li>'));
+                        break;
+                    case 'kml':
+                        $ul.append($('<li>KML Format</li>'));
+                        break;
+                    case 'garmin':
+                        $ul.append($('<li>Garmin IMG Format</li>'));
+                        break;
+                    case 'sqlite':
+                        $ul.append($('<li>SQlite Database Format</li>'));
+                        break;
+                }
+            });
+            $('#summary-formats').html($ul);
+            var $tbl = $('<table class="table">');
+            $tbl.append('<tr><th>Filename</th><th>Type</th><th>Status</th></tr>');
+            $('#filelist tr.config').each(function(idx, config){
+                 var filename = $(config).find('td').eq(0).find('span').html();
+                 var config_type = $(config).find('td').eq(1).html();
+                 var status = $(config).find('td').eq(2).html();
+                 $tbl.append('<tr><td>' + filename + '</td><td>' + config_type + '</td><td>' + status + '</td></tr>');
+            });
+            $('#summary-configs').html($tbl);
+        });
+        
+        // ----- FORM SUBMISSION ----- //
+        
+        /*
+         * Submits the export job.
+         */
         $('#create-job-form').submit(function(e){
             // check that the form is valid..
             var $form = $('#create-job-form'),
@@ -656,6 +1027,7 @@ create.job = (function(){
         });
     }
     
+    // ----- FEATURE SELECTION TREES ----- //
     
     /*
      * Initialises the HDM feature tree.
@@ -680,14 +1052,16 @@ create.job = (function(){
                         var val = tag.split(':')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
+                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" checked/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
-                        var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
+                        var state = level_idx == 0 ? 'open' : 'closed';
+                        var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
+                        var $nextLevel = $('<li class="level nav-header ' + state + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" checked/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -699,87 +1073,89 @@ create.job = (function(){
             } 
             
             /*
-             * Handle click events on tree levels
+             * Toggle tree collapse on click.
              */
             $('#hdm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
                     $(this).parent().removeClass('open').addClass('closed');
-                    $(this).parent().find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                    $(this).find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
                 }
                 else {
                     $(this).parent().removeClass('closed').addClass('open');
-                    $(this).parent().find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                    $(this).find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
-                
             });
             
             /*
-             * Handle events on sub-levels
+             * Handle events on sub-level checkboxes.
              */
-            $('#hdm-feature-tree li.level input').bind('change', function(e){
+            $('#hdm-feature-tree input.level').bind('change', function(e){
+                // toggle checkboxes on children when level checkbox is changed
+                var checked = $(this).is(':checked');
+                $(this).parent().find('.tree-checkbox').each(function(i, value){
+                    var $input = $(value).find('input');
+                    $input.prop('checked', checked).trigger('change');
+                });
+                
+                $('#hdm-feature-tree').find('li.level').each(function(i, level){
+                    var count = $(level).find('input.level:checked').length;
+                    if (count === 0) { // recurse here...
+                        $(level).find('input.level:first').prop('checked', false);
+                    }
+                    else {
+                        $(level).find('ul.sub-level li.level input.level:first').prop('checked', true);
+                    }
+                });
+                
                 /*
-                var numChecked = $('.tree-checkbox > input:checked').size();
-                if (numChecked > 0) {
-                    $.each($('#osm-feature-tree').find('input[type="checkbox"]'), function(c){
-                        $(this).prop('checked', false).prop('disabled', true);
-                    });
-                }
-                else {
-                    $.each($('#osm-feature-tree').find('input[type="checkbox"]'), function(c){
-                        $(this).prop('checked', false).prop('disabled', false);
-                    });
-                }
-                var checked = $(this).find('input').is(':checked');
                 if (checked) {
-                    $('#osm-feature-tree').prop('disabled', true);
+                    $(this).parentsUntil('#hdm-feature-tree', 'li.level').each(
+                       function(idx, level){
+                            $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
+                    });
                 }
                 else {
+                    $(this).parentsUntil('#hdm-feature-tree', 'li.level').each(
+                           function(i, value){
+                                var num_checked = $(value).find('input.level:checked').length;
+                                if (num_checked == 0) {
+                                    var $input = $(value).find('input.level:first');
+                                    $input.prop('checked', false);
+                                }
+                    });
                     
                 }
                 */
-                var checked = $(this).find('input').is(':checked');
-                $(this).parent().find('.tree-checkbox').each(function(i, value){
-                    var $input = $(value).find('input');
-                    $input.prop('checked', checked);
-                })
             });
             
+            
             /*
-             * Handle click events on entries
+             * Handle click events on entry level checkboxes.
              */
-            /*
-            $('li.entry > .tree-checkbox').bind('click', function(e){
-                var checked = $(this).find('input').is(':checked');
-                if (checked) {
-                    console.log(checked);
-                    $(this).parentsUntil('li.level').parent().find('li.level > .tree-checkbox').prop('checked', true);
-                    var parentLevel = $(this).parentsUntil('li.level').parent().find('.tree-checkbox')[0];
-                    $(parentLevel).find('input').prop('checked', true);
-                }
-            });
-            */
-            $('input.entry, input.level').bind('click', function(e){
+            $('#hdm-feature-tree input.entry').bind('click', function(e){
                 var checked = $(this).is(':checked');
                 if (checked) {
-                     
+                    $.each($(this).parentsUntil('#hdm-feature-tree', 'li.level'),
+                       function(idx, level){
+                            $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
+                    });
                 }
-                /*
-                var tags = [];
-                // list selected tags
-                $.each($('#hdm-feature-tree').find('input:checked'), function(k, v){
-                    var val = $(v).val();
-                    if (val != '') {
-                        if (val == 'highway:service') {
-                            alert(val);
-                        }
-                        tags.push($(v).val());
-                    }
-                });
-                console.log(tags.join([separator=',']));
-                */
+                else {
+                    /*
+                     * Go up the tree selecting all ancestor levels.
+                     * For each ancestor check if any child entries are checked.
+                     * If not then uncheck the level.
+                     */
+                    $.each($(this).parentsUntil('#hdm-feature-tree', 'li.level'),
+                           function(idx, level){
+                                var num_checked = $(level).find('input.entry:checked').length;
+                                if (num_checked == 0) {
+                                    $(level).children('div.tree-checkbox').find('input.level').prop('checked', false);
+                                }
+                    });
+                }
             });
-            
         });
     }
     
@@ -807,14 +1183,14 @@ create.job = (function(){
                         var val = tag.split(':')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
+                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '"/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
-                        var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
+                        var $nextLevel = $('<li class="level nav-header closed"><label><i class="level fa fa-plus-square-o fa-fw"></i>' + k + '</label>' + 
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -837,7 +1213,7 @@ create.job = (function(){
                     $(this).parent().removeClass('closed').addClass('open');
                     $(this).parent().find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
                 }
-                $(this).parent().children('ul.sub-level').toggle(150);
+                //$(this).parent().children('ul.sub-level').toggle(150);
                 
             });
             

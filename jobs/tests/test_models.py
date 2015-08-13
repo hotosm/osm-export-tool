@@ -276,7 +276,7 @@ class TestExportConfig(TestCase):
         saved_config = ExportConfig.objects.get(uid=uid)
         self.assertEquals('PRESET', saved_config.config_type)
         self.assertEquals(name, saved_config.name)
-        self.assertTrue(saved_config.visible)
+        self.assertFalse(saved_config.published)
         self.assertIsNotNone(saved_config)
         self.assertEqual(config, saved_config)
         sf = File(open(os.path.abspath('.') + '/media/export/config/preset/hdm_presets.xml'))

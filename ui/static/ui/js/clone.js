@@ -686,14 +686,14 @@ clone.job = (function(){
                         var val = tag.split(':')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
+                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" /></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
-                        var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
+                        var $nextLevel = $('<li class="level nav-header closed"><label><i class="level fa fa-plus-square-o fa-fw"></i>' + k + '</label>' + 
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox"/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -813,14 +813,14 @@ clone.job = (function(){
                         var val = tag.split(':')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry"><i class="fa fa-square-o fa-fw"></i><label>' + name + '</label>' +
+                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '"/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
-                        var $nextLevel = $('<li class="level nav-header closed"><i class="level fa fa-plus-square-o fa-fw"></i><label>' + k + '</label>' + 
+                        var $nextLevel = $('<li class="level nav-header closed"><label><i class="level fa fa-plus-square-o fa-fw"></i>' + k + '</label>' + 
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" /></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
