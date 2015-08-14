@@ -125,8 +125,8 @@
                             <div class="form-group row" id="form-group-publish">
                                 <div class="col-md-12">
                                     <div class="checkbox">
-                                        <label class="control-label" for="published">
-                                          <input id="published" name="published" type="checkbox" value="">
+                                        <label class="control-label" for="publish_config">
+                                          <input id="publish_config" name="publishconfig" type="checkbox" value="">
                                           Publish this configuration globally.
                                         </label>
                                     </div>
@@ -161,6 +161,11 @@
                                     </span>
                                 </button>
                             </div>
+                            <div id="configurations">
+                                <input id="preset" type="hidden" name="preset" value="" />
+                                <input id="translation" type="hidden" name="translation" value="" />
+                                <input id="transform" type="hidden" name="transform" value="" />
+                            </div>
                         </div>
                       </div>
                     </div>
@@ -178,7 +183,16 @@
                                     <span id="summary-configs"></span>
                                 </div>
                                 <div class="col-md-6">
-                                    
+                                    <div class="form-group row" id="form-group-publish">
+                                        <div class="col-md-12">
+                                            <div class="checkbox">
+                                                <label class="control-label" for="published">
+                                                  <input id="published" name="published" type="checkbox" value="">
+                                                  Publish this export globally.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             

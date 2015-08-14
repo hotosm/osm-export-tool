@@ -347,6 +347,7 @@ class JobSerializer(serializers.Serializer):
     owner = serializers.SerializerMethodField(read_only=True)
     exports = serializers.SerializerMethodField()
     configurations = serializers.SerializerMethodField()
+    published = serializers.BooleanField()
     #configs = ExportConfigSerializer(many=True)
     xmin = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,

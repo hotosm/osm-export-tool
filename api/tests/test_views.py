@@ -110,6 +110,7 @@ class TestJobViewSet(APITestCase):
             'ymax': 27.6,
             'formats': formats,
             'preset': config_uid,
+            'published': True
         }
         response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']
@@ -126,6 +127,7 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
+        self.assertTrue(response.data['published'])
         
         # check we have the correct tags
         job = Job.objects.get(uid=job_uid)
@@ -150,7 +152,7 @@ class TestJobViewSet(APITestCase):
             'formats': formats,
             'preset': config_uid,
             'transform':'',
-            'translate':''
+            'translation':''
         }
         response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']

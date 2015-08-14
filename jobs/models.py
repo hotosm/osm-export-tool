@@ -147,6 +147,7 @@ class Job(TimeStampedModelMixin):
     region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     configs = models.ManyToManyField(ExportConfig, related_name='configs')
+    published = models.BooleanField(default=False)
     #tags = models.ManyToManyField(Tag, related_name='tags')
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
