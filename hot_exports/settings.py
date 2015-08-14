@@ -10,14 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from __future__ import absolute_import
+
 import os
 import sys
-import settings_private
+from hot_exports import settings_private
+from celery.schedules import crontab
 from django.utils.translation import ugettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -262,6 +264,14 @@ NOSE_ARGS = [
 CELERY_TRACK_STARTED = True
 
 CELERY_CHORD_PROPAGATES = True
+
+# configure periodic task
+CELERYBEAT_SCHEDULE = {
+    'purge-unpublished-exports': {
+        'task': 'Purge Unpublished Exports',
+        'schedule': crontab(minute=0,hour=0,day_of_week='*')
+    },
+}
 
 """
 A mapping of supported export formats to ExportTask handler classes

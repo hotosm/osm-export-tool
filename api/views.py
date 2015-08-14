@@ -121,8 +121,8 @@ class JobViewSet(viewsets.ModelViewSet):
             # add the export formats
             logger.debug(request.data)
             formats = request.data.get('formats')
-            preset = request.data.get('preset')
             tags = request.data.get('tags')
+            preset = request.data.get('preset')
             translation = request.data.get('translation')
             transform = request.data.get('transform')
             export_formats = []
@@ -142,6 +142,7 @@ class JobViewSet(viewsets.ModelViewSet):
                         job.formats = export_formats
                         if preset:
                             # get the tags from the uploaded preset
+                            logger.debug('Found preset with uid: %s' % preset);
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = settings.BASE_DIR + config.upload.url
