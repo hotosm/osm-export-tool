@@ -1089,7 +1089,7 @@ create.job = (function(){
             /*
              * Recursively builds the feature tree.
              */
-            function traverse(data, $level){
+            function traverse(data, $level, level_idx){
                 $.each(data, function(k,v){
                     if ($(v).attr('displayName')){
                         var name = $(v).attr('displayName');
@@ -1107,7 +1107,8 @@ create.job = (function(){
                         var collapse = level_idx > 0 ? 'collapse' : '';
                         var state = level_idx == 0 ? 'open' : 'closed';
                         var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
-                        var $nextLevel = $('<li class="level nav-header ' + state + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                        var root = level_idx == 0 ? 'root' : '';
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" checked/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -1116,11 +1117,9 @@ create.job = (function(){
                         traverse(v, $nextUL, level_idx);
                     }
                 });
-            } 
-            
-            /*
-             * Toggle tree collapse on click.
-             */
+            }
+        
+            // toggle level collapse
             $('#hdm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
                     $(this).parent().removeClass('open').addClass('closed');
@@ -1133,47 +1132,35 @@ create.job = (function(){
                 $(this).parent().children('ul.sub-level').toggle(150);
             });
             
-            /*
-             * Handle events on sub-level checkboxes.
-             */
+            // toggle level child nodes
             $('#hdm-feature-tree input.level').on('change', function(e){
                 // toggle checkboxes on children when level checkbox is changed
                 var checked = $(this).is(':checked');
-                $(this).parent().find('.tree-checkbox').each(function(i, value){
-                    var $input = $(value).find('input');
-                    $input.prop('checked', checked);
-                    $input.trigger('change');
+                
+                $(this).parent().parent().find('ul input').each(function(i, input){
+                    $(input).prop('checked', checked);
                 });
-            });
-            
-            /*
-             * Handle events on entry checkboxes.
-             */
-            $('#hdm-feature-tree input.entry').on("change", function(e){
-                $('#hdm-feature-tree input.level').trigger("entry:changed", e);
-            });
-            
-            /*
-             * Propagate changes up the tree..
-             */
-            
-            $('#hdm-feature-tree input.level').on('change', function(e){
-                var checked = $(this).is(':checked');
-                $(this).parentsUntil('#hdm-feature-tree', 'li.level').slice(1).each(function(idx, level){
-                    var hasCheckedChildren = $(level).find('input.level:checked').length > 0 ? true : false;
-                    if (hasCheckedChildren) {
-                        var $input = $(level).find('input:first');
+                
+                $(this).parentsUntil('#hdm-feature-tree', 'li.level').slice(1).each(function(i, level){
+                    $input = $(level).find('input.level:first');
+                    var childrenChecked = $(level).find('ul input.level:checked').length > 0 ? true : false;
+                    if (childrenChecked) {
                         $input.prop('checked', true);
-                        $input.trigger('change');
                     }
                     else {
-                        var $input = $(level).find('input:first');
                         $input.prop('checked', false);
-                        $input.trigger('change');
                     }
                 });
+
             });
             
+            /*
+            * Handle events on entry checkboxes.
+            */
+            $('#hdm-feature-tree input.entry').on("change", function(e){
+                // fire changed event on levels
+                $('#hdm-feature-tree input.level').trigger("entry:changed", e);
+            });
             
             /*
              * Listen for changes on entry level checkboxes
@@ -1182,18 +1169,16 @@ create.job = (function(){
             $('#hdm-feature-tree input.level').on("entry:changed", function(e){
                 var $currentLevel = $(this).parent().parent();
                 var hasCheckedChildren = $currentLevel.find('input.entry:checked').length > 0 ? true : false;
+                //var hasChildLevelsChecked = $currentLevel.find('input.level:checked').length > 0 ? true : false;
                 if (hasCheckedChildren) {
                     var $input = $currentLevel.find('input:first');
                     $input.prop('checked', true);
-                    $input.trigger('change');
                 }
                 else {
                     var $input = $currentLevel.find('input:first');
                     $input.prop('checked', false);
-                    $input.trigger('change');
                 }
-            });
-            
+            });    
         });
     }
     
@@ -1258,6 +1243,7 @@ create.job = (function(){
             /*
              * Handle events on sub-levels
              */
+            /*
             $('li.level > .tree-checkbox').bind('click', function(e){
                 var checked = $(this).find('input').is(':checked');
                 $(this).parent().find('.tree-checkbox').each(function(i, value){
@@ -1265,17 +1251,7 @@ create.job = (function(){
                     $input.prop('checked', checked);
                 })
             });
-            
-            /*
-             * Handle click events on entries
-             */
-            $('input.entry, input.level').bind('click', function(e){
-                var checked = $(this).is(':checked');
-                if (checked) {
-                     
-                }
-            });
-            
+            */
         });
     }
     
