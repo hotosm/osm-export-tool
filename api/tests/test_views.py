@@ -15,7 +15,7 @@ from mock import Mock, PropertyMock, patch
 from tasks.task_runners import ExportTaskRunner
 from jobs.models import Job, ExportFormat, ExportConfig
 from tasks.models import ExportTask, ExportRun
-from api.pagination import JobLinkHeaderPagination
+from api.pagination import LinkHeaderPagination
 from api.views import ExportConfigViewSet
 
 logger = logging.getLogger(__name__)
@@ -153,6 +153,7 @@ class TestJobViewSet(APITestCase):
             'preset': config_uid,
             'transform':'',
             'translation':''
+            
         }
         response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']
@@ -169,6 +170,7 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
+        self.assertFalse(response.data['published'])
         configs = self.job.configs.all()
         self.assertIsNotNone(configs[0])
     
@@ -284,7 +286,6 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['description'], request_data['description'])
         configs = self.job.configs.all()
         #self.assertIsNotNone(configs[0])
-        logger.debug(response)
     
     def test_missing_bbox_param(self, ):
         url = reverse('api:jobs-list')
@@ -590,7 +591,7 @@ class TestBBoxSearch(APITestCase):
             response = self.client.post(url, request_data, format='json')
             self.assertEquals(status.HTTP_202_ACCEPTED, response.status_code)
         self.assertEquals(8, len(Job.objects.all()))
-        JobLinkHeaderPagination.page_size = 2
+        LinkHeaderPagination.page_size = 2
         
     def test_bbox_search_success(self, ):
         url = reverse('api:jobs-list')
@@ -712,7 +713,6 @@ class TestExportConfigViewSet(APITestCase):
         self.assertEquals('example_transform.sql', saved_config.filename)
         self.assertEquals('text/plain', saved_config.content_type)
         saved_config.delete()
-        logger.debug(response)
         
     def test_invalid_config_type(self, ):
         url = reverse('api:configs-list')

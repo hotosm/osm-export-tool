@@ -32,8 +32,8 @@ from rest_framework.pagination import PageNumberPagination
 
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
-from .pagination import JobLinkHeaderPagination
-from .filters import JobFilter, ExportRunFilter
+from .pagination import LinkHeaderPagination
+from .filters import JobFilter, ExportRunFilter, ExportConfigFilter
 
 from jobs import presets
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
@@ -69,7 +69,7 @@ class JobViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     lookup_field = 'uid'
-    pagination_class = JobLinkHeaderPagination
+    pagination_class = LinkHeaderPagination
     filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
     filter_class = JobFilter
     search_fields = ('name', 'description', 'event',)
@@ -293,6 +293,10 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     Lists all available configuration files.
     """
     serializer_class = ExportConfigSerializer
+    pagination_class = LinkHeaderPagination
+    filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
+    filter_class = ExportConfigFilter
+    search_fields = ('name', 'config_type',)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     queryset = ExportConfig.objects.all()

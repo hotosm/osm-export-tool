@@ -49,7 +49,6 @@ class TestJobFilter(APITestCase):
         formats = [format.slug for format in ExportFormat.objects.all()]
         url += '?start=2015-01-01&end=2030-08-01';
         response = self.client.get(url)
-        logger.debug(response)
         self.assertEquals(2, len(response.data))
     
     @patch('api.views.ExportTaskRunner')

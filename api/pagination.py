@@ -5,7 +5,7 @@ from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
-class JobLinkHeaderPagination(PageNumberPagination):
+class LinkHeaderPagination(PageNumberPagination):
     
     page_size = 10
     page_size_query_param = 'page_size'
@@ -32,6 +32,6 @@ class JobLinkHeaderPagination(PageNumberPagination):
         start_idx = self.page.start_index()
         end_idx = self.page.end_index()
         total = self.page.paginator.count
-        content_range_header = 'jobs {0}-{1}/{2}'.format(start_idx, end_idx, total)
+        content_range_header = 'results {0}-{1}/{2}'.format(start_idx, end_idx, total)
         headers = {'Link': link, 'Content-Range': content_range_header} if link else {'Content-Range': content_range_header}
         return Response(data, headers=headers, status=status_code)
