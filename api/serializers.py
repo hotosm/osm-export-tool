@@ -77,6 +77,7 @@ class ExportConfigSerializer(serializers.Serializer):
     content_type = serializers.CharField(max_length=50, read_only=True)
     upload = serializers.FileField(allow_empty_file=False, max_length=100)
     published = serializers.BooleanField()
+    created = serializers.SerializerMethodField()
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
@@ -109,6 +110,9 @@ class ExportConfigSerializer(serializers.Serializer):
     def get_size(self, obj):
         size = obj.upload.size
         return size
+    
+    def get_created(self, obj):
+        return obj.created_at
     
 
 class ExportTaskResultSerializer(serializers.ModelSerializer):
@@ -347,7 +351,7 @@ class JobSerializer(serializers.Serializer):
     owner = serializers.SerializerMethodField(read_only=True)
     exports = serializers.SerializerMethodField()
     configurations = serializers.SerializerMethodField()
-    published = serializers.BooleanField()
+    published = serializers.BooleanField(required=False)
     #configs = ExportConfigSerializer(many=True)
     xmin = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,

@@ -1,7 +1,7 @@
 import logging
 import pdb
 import django_filters
-from jobs.models import Job
+from jobs.models import Job, ExportConfig
 from tasks.models import ExportRun
 
 logger = logging.getLogger(__name__)
@@ -32,3 +32,17 @@ class ExportRunFilter(django_filters.FilterSet):
         fields = ('status',)
         order_by = ('-started_at',)
         
+
+class ExportConfigFilter(django_filters.FilterSet):
+    
+    name = django_filters.CharFilter(name="name", lookup_type="icontains")
+    config_type = django_filters.CharFilter(name="config_type", lookup_type="icontains")
+    start = django_filters.DateTimeFilter(name="created_at", lookup_type="gte")
+    end = django_filters.DateTimeFilter(name="created_at", lookup_type="lte")
+    user = django_filters.CharFilter(name="user__username", lookup_type="exact")
+    
+    class Meta:
+        model = ExportConfig
+        fields = ('name', 'config_type', 'start', 'end', 'user')
+        order_by = ('-created_at',)
+    
