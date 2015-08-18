@@ -75,4 +75,7 @@ migrations
 
 nohup.out
 api/tests/examples
+celerybeat.pid
+celerybeat-schedule
+
 

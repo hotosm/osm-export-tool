@@ -869,6 +869,16 @@ create.job = (function(){
             });
         });
         
+        
+        $('button#select-config').on('click', function(e){
+            console.log(e);
+            var modalOpts = {
+                    keyboard: true,
+                    backdrop: 'static',
+            }
+            $("#configSelectionModal").modal(modalOpts, 'show');
+        });
+        
         /*
          * Updates the form with the uploaded config ids
          */
@@ -936,6 +946,7 @@ create.job = (function(){
                 }
             }
         }
+        
         
         /*
          * Updates progressbar on file upload.

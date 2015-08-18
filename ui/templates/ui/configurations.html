@@ -10,10 +10,11 @@
 
 {% block container %}
 <div class="row">
-    <div class="col-md-4">
-        <label>Upload Configuration</label>
+    <div id="spinner" class="col-md-7">
+            <span id="spinner"><i class="fa fa-cog fa-spin fa-5x"></i></span>
     </div>
-    <div id="search" class="col-md-8" style="border-left: 1px solid lightgrey;">
+    <div id="search-config" class="col-md-7">
+        
         <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
             <i class="indicator glyphicon glyphicon-chevron-down"></i> Filter Configurations 
         </a>
@@ -55,7 +56,7 @@
                     <div class="table-responsive">
                         <table id="configurations" class="table table-hover">
                             <thead>
-                                <tr><th>Name</th><th>Type</th><th>Created</th><th>Download Configuration</th></tr>
+                                <tr><th>Name</th><th>Type</th><th>Created</th><th>Download Configuration</th><th></th></tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -63,6 +64,7 @@
                 </div>
             </div>
             <div class="row">
+                <span id="user">{{ user.username }}</span>
                 <div class="col-md-2">
                 {% if user.is_authenticated %}
                     <div class="col-md-2">
@@ -110,6 +112,82 @@
             </div>
         </form>
     </div>
+    <div id="config-upload" class="col-md-5">
+        <form id="create-configuration-form">
+        <div class="row">
+            <div class="col-md-12">
+                <label>Upload a configuration file</label>
+                <p class="">
+                Configuration files can be tagging presets (already supported),
+                or SQL transforms or translation tables (planned). When you upload a file,
+                choose a human-readable name for it (e.g. "HOT Presets for Haiti v1.23");
+                when creating a new job later, you can then select which of these files to apply.
+                </p>
+            </div>
+        </div>
+        <div class="form-group row" id="form-group-name">
+            <div class="col-md-12">
+                <label class="control-label" for="name">Filename:</label>
+                <input class="form-control" type="text" name="filename" id="filename" value=""/>
+            </div>
+        </div>
+        <br/>
+        <div class="form-group row">
+            <label class="control-label" for="config_type">Select Configuration Type:</label>
+            <select class="form-control" id="config_type" name="config_type">
+                <option id="select-message" value="">Select a configuration type</option>
+                <option id="select-preset" value="PRESET">Preset</option>
+                <option id="select-transform" value="TRANSFORM">Schema Transformation</option>
+                <option id="select-translate" value="TRANSLATION">Translation File</option>
+            </select>
+        </div>
+        <br/>
+        <div class="form-group row" id="form-group-publish">
+            <div class="col-md-12">
+                <div class="checkbox">
+                    <label class="control-label" for="publish_config">
+                      <input id="publish_config" name="publishconfig" type="checkbox" value="">
+                      Publish this configuration globally.
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group-row" id="form-group-filelist">
+            <div class="table-responsive table-stripped col-md-12">
+                <table class="table" id="filelist">
+                    <th width="40%">Filename</th><th width="25%">Type</th><th width="25%">Status</th><th width="10%"></th>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                  <span class="sr-only">60% Complete</span>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <button id="select-file" type="button" class="btn btn-primary btn-lg btn-file pull-left">
+                <span>
+                    <i class="fa fa-plus"></i>&nbsp;
+                    Select a file <input id="fileupload" type="file" name="upload">
+                </span>
+            </button>
+            <button id="upload" type="button" class="btn btn-lg btn-success pull-left">
+                <span>
+                <i class="fa fa-upload"></i>&nbsp;
+                Upload
+                </span>
+            </button>
+        </div>
+        <div id="configurations">
+              <input id="preset" type="hidden" name="preset" value="" />
+              <input id="translation" type="hidden" name="translation" value="" />
+              <input id="transform" type="hidden" name="transform" value="" />
+        </div>
+        </form>
+    </div>
 </div>
 
 <!--
@@ -138,7 +216,7 @@
 
 <script src="{% static 'ui/components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'ui/components/datatables/media/js/dataTables.bootstrap.js' %}"></script>
-
+<script src="{% static 'ui/components/jquery-color/jquery.color.js' %}"></script>
 <script src="{% static 'ui/js/layers.js' %}"></script>
 <script src="{% static 'ui/js/config.js' %}"></script>
 <script src="{% static 'ui/js/configurations.js' %}"></script>
