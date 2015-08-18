@@ -325,6 +325,21 @@ button#upload {
     display: none;
 }
 
+/* config selection modal dialog */
+
+#configSelectionModal {
+    
+}
+
+#configSelectionModal container-fluid {
+    padding: 15px !important;
+}
+
+div#spinner-modal {
+    display: none;
+}
+
+
 
 i.fa {
     float: left !important;
@@ -490,6 +505,10 @@ tr#exceptions {
 
 /* jobs list/search page */
 
+div#search {
+    display: none;
+}
+
 ul.pager {
     margin-right: 1em;
 }
@@ -547,5 +566,38 @@ span.tag.label.label-info {
     margin-left: 3em;
     margin-right: 3em;
     font-size: large;
+}
+
+/* Configuration Browser */
+
+div#search-config {
+    display: none;
+}
+
+div#spinner {
+    display: block;
+}
+
+span#spinner i {
+    font-size: 4em !important;
+    left: 50%;
+    top: 200px;
+    position: relative;
+}
+
+#config-upload {
+    padding: 15px;
+    font-size: medium;
+    border-left: 1px solid lightgrey;
+}
+
+
+.added {
+    background-color:lightgreen;
+    /*transition:background-color 0.5s ease;*/
+}
+
+.normal {
+    background-color: white;
 }
 

@@ -27,6 +27,8 @@ jobs.list = (function(){
     
     return {
         main: function(){
+            $('div#search').css('display','none');
+            $('div#spinner').css('display','block');
             // initialize the map
             initListMap();
             // initialize the results table
@@ -286,6 +288,9 @@ jobs.list = (function(){
             var table = $('table#jobs').DataTable();
             table.clear();
             table.rows.add(data).draw();
+            $('div#spinner').css('display', 'none');
+            $('div#search').css('display', 'block');
+            $('div#search').fadeIn(1500);
             
             // clear the existing export extent features and add the new ones..
             job_extents.destroyFeatures();
@@ -418,6 +423,7 @@ jobs.list = (function(){
             info: false,
             filter: false,
             searching: false,
+            rowId: 'uid',
             columns: [
                 {
                     data: 'name',
@@ -430,7 +436,7 @@ jobs.list = (function(){
                 {
                     data: 'created_at',
                     render: function(data, type, row){
-                        return moment(data).format('YYYY-MM-DD HH:MM');
+                        return moment(data).format('YYYY-MM-DD hh:mm');
                     }
                 },
                 {data: 'region.name'}
