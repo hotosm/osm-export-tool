@@ -1,0 +1,223 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% block css %}
+{{ block.super}}
+<link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/dataTables.bootstrap.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/components/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css' %}"/>
+{% endblock %}
+
+{% block container %}
+<div class="row">
+    <div id="spinner" class="col-md-7">
+            <span id="spinner"><i class="fa fa-cog fa-spin fa-5x"></i></span>
+    </div>
+    <div id="search-config" class="col-md-7">
+        
+        <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
+            <i class="indicator glyphicon glyphicon-chevron-down"></i> Filter Configurations 
+        </a>
+        <form id="search" class="form-inline" role="search">
+            {% csrf_token %}
+            <div class="collapse" id="filterForm">
+                <div class="form-group" id="form-group-search">
+                    <label class="control-label sr-only" for="name">Search</label>
+                    <div>
+                        <div class="input-group search">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                            <input id="search" type="text" class="form-control" placeholder="" name="search">
+                        </div>
+                    </div>
+                </div>
+                <!-- start date picker -->
+                <div class="form-group">
+                    <div class='input-group date' id='start-date'>
+                        <span class="input-group-addon"><strong>Start Date:</strong></span>
+                        <input type='text' class="form-control" name="start"/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <!-- end date picker -->
+                <div class="form-group">
+                    <div class="input-group date" id='end-date'>
+                        <span class="input-group-addon"><strong>End Date:&nbsp;&nbsp;&nbsp;</strong></span>
+                        <input type='text' class="form-control" name="end" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="list-configurations">
+                    <div class="table-responsive">
+                        <table id="configurations" class="table table-hover">
+                            <thead>
+                                <tr><th>Name</th><th>Type</th><th>Created</th><th>Download Configuration</th><th></th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span id="user">{{ user.username }}</span>
+                <div class="col-md-2">
+                {% if user.is_authenticated %}
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon"><strong>My Configurations</strong></span>
+                                <span class="input-group-addon check">
+                                    <div class="checkbox">
+                                        <input id="user-check" type="checkbox"/>
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="form-group-user">
+                        <div id="user">
+                            <span id="user">{{ user.username }}</span>
+                            <input id="user" name="user" value="" type="hidden"/>
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
+                <div class="col-md-3">
+                    <div class="col-md-2">
+                        <div class="form-group page-size">
+                            <div class="input-group page-size">
+                                <span class="input-group-addon"><strong>Page size</strong></span>
+                                <span class="input-group-addon">
+                                    <select id="page-size" name="page_size">
+                                        <option value="5">5</option>
+                                        <option value="10" selected>10</option>
+                                        <option value="15">15</option>
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div id="info" class="pull-left"></div>
+                    <div id="pagination" class="pull-right">
+                        <ul class="pager"></ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="config-upload" class="col-md-5">
+        <form id="create-configuration-form">
+        <div class="row">
+            <div class="col-md-12">
+                <label>Upload a configuration file</label>
+                <p class="">
+                Configuration files can be tagging presets (already supported),
+                or SQL transforms or translation tables (planned). When you upload a file,
+                choose a human-readable name for it (e.g. "HOT Presets for Haiti v1.23");
+                when creating a new job later, you can then select which of these files to apply.
+                </p>
+            </div>
+        </div>
+        <div class="form-group row" id="form-group-name">
+            <div class="col-md-12">
+                <label class="control-label" for="name">Filename:</label>
+                <input class="form-control" type="text" name="filename" id="filename" value=""/>
+            </div>
+        </div>
+        <br/>
+        <div class="form-group row">
+            <label class="control-label" for="config_type">Select Configuration Type:</label>
+            <select class="form-control" id="config_type" name="config_type">
+                <option id="select-message" value="">Select a configuration type</option>
+                <option id="select-preset" value="PRESET">Preset</option>
+                <option id="select-transform" value="TRANSFORM">Schema Transformation</option>
+                <option id="select-translate" value="TRANSLATION">Translation File</option>
+            </select>
+        </div>
+        <br/>
+        <div class="form-group row" id="form-group-publish">
+            <div class="col-md-12">
+                <div class="checkbox">
+                    <label class="control-label" for="publish_config">
+                      <input id="publish_config" name="publishconfig" type="checkbox" value="">
+                      Publish this configuration globally.
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group-row" id="form-group-filelist">
+            <div class="table-responsive table-stripped col-md-12">
+                <table class="table" id="filelist">
+                    <th width="40%">Filename</th><th width="25%">Type</th><th width="25%">Status</th><th width="10%"></th>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                  <span class="sr-only">60% Complete</span>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <button id="select-file" type="button" class="btn btn-primary btn-lg btn-file pull-left">
+                <span>
+                    <i class="fa fa-plus"></i>&nbsp;
+                    Select a file <input id="fileupload" type="file" name="upload">
+                </span>
+            </button>
+            <button id="upload" type="button" class="btn btn-lg btn-success pull-left">
+                <span>
+                <i class="fa fa-upload"></i>&nbsp;
+                Upload
+                </span>
+            </button>
+        </div>
+        <div id="configurations">
+              <input id="preset" type="hidden" name="preset" value="" />
+              <input id="translation" type="hidden" name="translation" value="" />
+              <input id="transform" type="hidden" name="transform" value="" />
+        </div>
+        </form>
+    </div>
+</div>
+
+<!--
+    <div class="row">
+        <div class="form-group" id="form-group-features">
+            <div class="input-group">
+                <span class="input-group-addon"><strong>Select Features:</strong></span>
+                <select id="features" multiple name="feature">
+                    <option value="railway">railway</option>
+                </select>
+            </div>
+        </div>
+    </div>
+-->
+
+{% endblock %}
+{% block corejs %}
+{{ block.super}}
+<script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/components/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/components/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script src="{% static 'ui/components/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'ui/components/bootstrap-tagsinput/dist/bootstrap-tagsinput.js' %}"></script>
+
+<script src="{% static 'ui/components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ui/components/datatables/media/js/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'ui/components/jquery-color/jquery.color.js' %}"></script>
+<script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/config.js' %}"></script>
+<script src="{% static 'ui/js/configurations.js' %}"></script>
+{% endblock %}
