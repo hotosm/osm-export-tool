@@ -1,8 +1,417 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% block css %}
+{{ block.super}}
+    <link rel="stylesheet" href="{% static 'ui/components/formvalidation/dist/css/formValidation.css' %}"/>
+    <!--<link rel="stylesheet" href="{% static 'ui/components/bootstrap-treeview/dist/bootstrap-treeview.min.css' %}"/>-->
+{% endblock %}
 
 {% block container %}
+<div class="row">
+    <div class="col-md-6">
+        <div id="create-job-wizard">
+            <form id="create-job-form" role="form" action="" class="" method="POST">
+                {% csrf_token %}
+                <ul id="tabs" class="nav nav-pills">
+                    <li id="create-tab" role="presentation" class="active"><a data-toggle="tab" href="#create">Describe Export</a></li>
+                    <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">Select Formats</a></li>
+                    <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">Select Features</a></li>
+                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">Upload Configuration</a></li>
+                    <li id="summary-tab" role="presentation"><a data-toggle="tab" href="#summary">Export Summary</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="create" class="tab-pane fade in active">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="form-group row" id="form-group-name">
+                                    <div class="col-md-12">
+                                        <label class="control-label" for="name">Name</label>
+                                        <input class="form-control" type="text" name="name" id="name" value=""/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="form-group row" id="form-group-description">
+                                    <div class="col-md-12">
+                                        <label class="control-label" for="description">Description</label>
+                                        <textarea name="description" id="description" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="form-group row" id="form-group-event">
+                                    <div class="col-md-12">
+                                        <label class="control-label" for="description">Event</label>
+                                        <input class="form-control" type="text" name="event" id="event" value=""/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                    <div id="formats" class="tab-pane fade in">
+                        <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group row" id="form-group-formats">
+                                <div class="col-md-6">
+                                    <label class="control-label" for="formats">Select Export Formats:</label>
+                                    <div id="supported-formats"></div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="features" class="tab-pane fade in">
+                        <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Select from either the HDM or OSM data models.</label>
+                                </div>
+                            </div>
+                            <div class="features">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group-row" id="form-group-hdm-features">
+                                            <div class="col-md-6">
+                                                <!--<h5>Humanitarian Data Model v2.11</h5>-->
+                                                <div id="hdm-feature-tree" class="pull-left">
+                                                    <ul class="nav nav-list"></ul>                                       
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group-row" id="form-group-osm-features">
+                                            <div class="col-md-6">
+                                                <!--<h5>OpenStreetMap Data Model</h5>-->
+                                                <div id="osm-feature-tree" class="pull-left">
+                                                    <ul class="nav nav-list"></ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="upload" class="tab-pane fade in">
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Upload a configuration file</label>
+                                    <p class="">
+                                    Configuration files can be tagging presets (already supported),
+                                    or SQL transforms or translation tables (planned). When you upload a file,
+                                    choose a human-readable name for it (e.g. "HOT Presets for Haiti v1.23");
+                                    when creating a new job later, you can then select which of these files to apply.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="form-group row" id="form-group-name">
+                                <div class="col-md-12">
+                                    <label class="control-label" for="name">Filename:</label>
+                                    <input class="form-control" type="text" name="filename" id="filename" value=""/>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-group row">
+                                <label class="control-label" for="config_type">Select Configuration Type:</label>
+                                <select class="form-control" id="config_type" name="config_type">
+                                    <option id="select-message" value="">Select a configuration type</option>
+                                    <option id="select-preset" value="PRESET">Preset</option>
+                                    <option id="select-transform" value="TRANSFORM">Schema Transformation</option>
+                                    <option id="select-translate" value="TRANSLATION">Translation File</option>
+                                </select>
+                            </div>
+                            <br/>
+                            <div class="form-group row" id="form-group-publish">
+                                <div class="col-md-12">
+                                    <div class="checkbox">
+                                        <label class="control-label" for="publish_config">
+                                          <input id="publish_config" name="publishconfig" type="checkbox" value="">
+                                          Publish this configuration globally.
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-row" id="form-group-filelist">
+                                <div class="table-responsive table-stripped col-md-12">
+                                    <table class="table" id="filelist">
+                                        <th width="40%">Filename</th><th width="25%">Type</th><th width="25%">Status</th><th width="10%"></th>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                      <span class="sr-only">60% Complete</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <button id="select-file" type="button" class="btn btn-primary btn-lg btn-file pull-left">
+                                    <span>
+                                        <i class="fa fa-plus"></i>&nbsp;
+                                        Select a file <input id="fileupload" type="file" name="upload">
+                                    </span>
+                                </button>
+                                <button id="upload" type="button" class="btn btn-lg btn-success pull-left">
+                                    <span>
+                                    <i class="fa fa-upload"></i>&nbsp;
+                                    Upload
+                                    </span>
+                                </button>
+                                <button id="select-config" type="button" class="btn btn-lg btn-primary pull-right">
+                                    <span>
+                                    <i class="fa fa-cogs"></i>&nbsp;
+                                    Apply configurations
+                                    </span>
+                                </button>
+                            </div>
+                            <div id="configurations">
+                                <input id="preset" type="hidden" name="preset" value="" />
+                                <input id="translation" type="hidden" name="translation" value="" />
+                                <input id="transform" type="hidden" name="transform" value="" />
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="summary" class="tab-pane fade in">
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <span><strong>Name:</strong></span><span id="summary-name"></span><br/>
+                                    <span><strong>Description:</strong></span><span id="summary-description"></span><br/>
+                                    <span><strong>Event:</strong></span><span id="summary-event"></span><br/>
+                                    <span><strong>Selected formats:</strong></span></br>
+                                    <span id="summary-formats"></span>
+                                    <span><strong>Configurations:</strong></span><br/>
+                                    <span id="summary-configs"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row" id="form-group-publish">
+                                        <div class="col-md-12">
+                                            <div class="checkbox">
+                                                <label class="control-label" for="published">
+                                                  <input id="published" name="published" type="checkbox" value="">
+                                                  Publish this export globally.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <br/>
+                            <br/>
+                            <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">Create Export</button>
+                        </div>
+                      </div>
+                    </div>
+                    <ul class="pager wizard">
+                        <li class="previous first" style="display:none;"><a href="#">First</a></li>
+                        <li class="previous"><a href="#">Previous</a></li>
+                        <li class="next last" style="display:none;"><a href="#">Last</a></li>
+                        <li class="next"><a href="#">Next</a></li>
+                    </ul>
+                </div>
+                <!-- container for job extents -->
+                <div class="form-group row" id="form-group-bbox">
+                    <div class="col-md-6" id="bbox">
+                        <input id="xmin" name="xmin" value=""/>
+                        <input id="ymin" name="ymin" value=""/>
+                        <input id="xmax" name="xmax" value=""/>
+                        <input id="ymax" name="ymax" value=""/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="map-column" class="col-md-6">
+        <div id="create-controls">
+            <div class="btn-group" role="group">
+                <button id="select-area" class="btn btn-md btn-primary">Select Export Area</button>
+                <button id="zoom-selection" class="btn btn-md btn-primary">Zoom To Selection</button>
+                <button id="reset-map" class="btn btn-md btn-primary">Reset Map</button>
+            </div>
+            <div id="alert-extents" class="alert alert-danger fade in"></div>
+            <div id="valid-extents" class="alert alert-success fade in"></div>
+        </div>
+        
+        <div id="gazetteer" class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-addon gazetteer"><span class="glyphicon glyphicon-search"></span></span>
+                <input id="nominatim" type="text" class="form-control typeahead" data-provide="typeahead" autocomplete="off" placeholder="Search for a place or enter xmin,ymin,xmax,ymax"/>
+            </div>
+            
+        </div>
+        <div id="create-export-map"></div>
+    </div>
+</div>
 
-<h2>Create job here...</h2>
+<!-- bootstrap modal -->
+<div class="modal fade" id="uploadConfigError" tabindex="-1" role="dialog" aria-labelledby="uploadConfigError" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Error Uploading Configuration File</h4>
+        </div>
+        <div class="modal-body">
+         <p><span class="glyphicon glyphicon-exclamation-sign" style="float:left; font-size: 2.0em; color: red; margin:0 7px 25px 0;"> 
+         </span>
+            <div>
+             <p>There was a problem with your configuration upload.</p>
+             <p id="message"></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+</div>
 
+<!-- configuration select modal dialog -->
+<div id="configSelectionModal" class="modal fade " tabindex="-1" role="dialog" aria-labelledby="configSelectionModal">
+  <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Select configuration files to apply to this export</h4>
+                <h5>Only one of each configuration type can be selected.</h5>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div id="spinner-modal" class="col-md-12">
+                        <span id="spinner-modal"><i class="fa fa-cog fa-spin fa-5x"></i></span>
+                    </div>
+                    <div id="search-config-modal" class="col-md-12">
+                        
+                        <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
+                            <i class="indicator glyphicon glyphicon-chevron-down"></i> Filter Configurations 
+                        </a>
+                        <form id="search" class="form-inline" role="search">
+                            {% csrf_token %}
+                            <div class="collapse" id="filterForm">
+                                <div class="form-group" id="form-group-search">
+                                    <label class="control-label sr-only" for="name">Search</label>
+                                    <div>
+                                        <div class="input-group search">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                                            <input id="search" type="text" class="form-control" placeholder="" name="search">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- start date picker -->
+                                <div class="form-group">
+                                    <div class='input-group date' id='start-date'>
+                                        <span class="input-group-addon"><strong>Start Date:</strong></span>
+                                        <input type='text' class="form-control" name="start"/>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- end date picker -->
+                                <div class="form-group">
+                                    <div class="input-group date" id='end-date'>
+                                        <span class="input-group-addon"><strong>End Date:&nbsp;&nbsp;&nbsp;</strong></span>
+                                        <input type='text' class="form-control" name="end" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="list-configurations">
+                                    <div class="table-responsive">
+                                        <table id="configurations" class="table table-hover">
+                                            <thead>
+                                                <tr><th>Name</th><th>Type</th><th>Created</th><th>Filename</th><th>Select</th></tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <span id="user">{{ user.username }}</span>
+                                <div class="col-md-2">
+                                {% if user.is_authenticated %}
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><strong>My Configurations</strong></span>
+                                                <span class="input-group-addon check">
+                                                    <div class="checkbox">
+                                                        <input id="user-check" type="checkbox"/>
+                                                    </div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="form-group-user">
+                                        <div id="user">
+                                            <span id="user">{{ user.username }}</span>
+                                            <input id="user" name="user" value="" type="hidden"/>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="col-md-2">
+                                        <div class="form-group page-size">
+                                            <div class="input-group page-size">
+                                                <span class="input-group-addon"><strong>Page size</strong></span>
+                                                <span class="input-group-addon">
+                                                    <select id="page-size" name="page_size">
+                                                        <option value="5">5</option>
+                                                        <option value="10" selected>10</option>
+                                                        <option value="15">15</option>
+                                                    </select>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div id="info" class="pull-left"></div>
+                                    <div id="pagination" class="pull-right">
+                                        <ul class="pager"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Select</button>
+            </div>
+        </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block corejs %}
+{{ block.super }}
+<script src="{% static 'ui/components/bootstrap3-typeahead/bootstrap3-typeahead.js' %}"></script>
+<script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/components/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/components/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'ui/components/twitter-bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script src="{% static 'ui/components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ui/components/datatables/media/js/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'ui/components/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+
+<script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/config.js' %}"></script>
+<script src="{% static 'ui/js/create.js' %}"></script>
+<script src="{% static 'ui/js/select-configurations.js' %}"></script>
 {% endblock %}

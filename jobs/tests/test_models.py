@@ -5,72 +5,41 @@ import os
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import ExportTask, Job, ExportFormat, Region
+from jobs.models import Job, ExportFormat, Region, ExportConfig, Tag
+from tasks.models import ExportTask, ExportRun
 from django.contrib.gis.gdal import DataSource
 from django.utils import timezone
+from django.core.files import File
+
+import jobs.presets as presets
 
 logger = logging.getLogger(__name__)   
-    
 
-class TestExportTask(TestCase):
-    """
-    Test cases for ExportTask model
-    """
-    def setUp(self,):
-        formats = ExportFormat.objects.all()
-        user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        bbox_wkt = 'POLYGON((10 10, 10 20, 20 20, 20 10, 10 10))'
-        the_geom = GEOSGeometry(bbox_wkt, srid=4326)
-        the_geog = GEOSGeometry(bbox_wkt)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
-        Job.objects.create(name='TestJob',
-                                 description='Test description', user=user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
-        job = Job.objects.all()[0]
-        # add the formats to the job
-        job.formats = formats
-        job.save()
-
-    def test_create_export_task(self,):
-        """
-        Make sure task gets created correctly
-        """
-        job = Job.objects.all()[0]
-        uid = uuid.uuid4()
-        task = ExportTask.objects.create(job=job, uid=uid)
-        saved_task = ExportTask.objects.get(uid=uid)
-        self.assertEqual(task, saved_task)
-
-    def test_export_task_uid(self,):
-        """
-        Make sure uid gets saved correctly
-        """
-        job = Job.objects.all()[0]
-        uid = uuid.uuid4() # comes from celery task uid
-        task = ExportTask.objects.create(job=job, uid=uid)
-        self.assertEqual(uid, task.uid)
 
 class TestJob(TestCase):
     """
     Test cases for Job model
     """
     def setUp(self,):
+        self.path = os.path.dirname(os.path.realpath(__file__))
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         self.job = Job.objects.create(name='TestJob',
-                                 description='Test description', user=self.user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
+                                 description='Test description', event='Nepal activation',
+                                 user=self.user, the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
         self.job.save()
-        
+        self.tags = [('building','yes'), ('place','city'), ('highway','service'), ('aeroway','helipad')]
+        for tag in self.tags:
+            tag = Tag.objects.create(
+                key = tag[0],
+                value = tag[1],
+                job = self.job
+            )
     
     def test_job_creation(self,):
         saved_job = Job.objects.all()[0]
@@ -78,12 +47,34 @@ class TestJob(TestCase):
         self.assertEquals(self.uid, saved_job.uid)
         self.assertIsNotNone(saved_job.created_at)
         self.assertIsNotNone(saved_job.updated_at)
-        self.assertEquals('', saved_job.status)
         saved_formats = saved_job.formats.all()
         self.assertIsNotNone(saved_formats)
         self.assertItemsEqual(saved_formats, self.formats)
-    
-    
+        tags = saved_job.tags.all()
+        self.assertEquals(4, len(tags))
+        
+    def test_job_creation_with_config(self,):
+        saved_job = Job.objects.all()[0]
+        self.assertEqual(self.job, saved_job)
+        self.assertEquals(self.uid, saved_job.uid)
+        self.assertIsNotNone(saved_job.created_at)
+        self.assertIsNotNone(saved_job.updated_at)
+        saved_formats = saved_job.formats.all()
+        self.assertIsNotNone(saved_formats)
+        self.assertItemsEqual(saved_formats, self.formats)
+        # attach a configuration to a job
+        f = File(open(self.path + '/files/hdm_presets.xml'))
+        filename = f.name.split('/')[-1]
+        config = ExportConfig.objects.create(name='Test Preset Config', filename=filename,
+                                             upload=f, config_type='PRESET', user=self.user)
+        f.close()
+        self.assertIsNotNone(config)
+        uid = config.uid
+        saved_job.configs.add(config)
+        saved_config = saved_job.configs.all()[0]
+        self.assertEqual(config, saved_config)
+        saved_config.delete() #cleanup
+        
     def test_spatial_fields(self,):
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12)) # in africa
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -102,6 +93,7 @@ class TestJob(TestCase):
         job = Job.objects.all()[0]
         self.assertEquals('TestJob', job.name)
         self.assertEquals('Test description', job.description)
+        self.assertEquals('Nepal activation', job.event)
         self.assertEqual(self.user, job.user)
         
     def test_str(self, ):
@@ -117,7 +109,38 @@ class TestJob(TestCase):
         self.job.save()
         saved_job = Job.objects.all()[0]
         self.assertEqual(saved_job.region, region)
-    
+        
+    def test_overpass_extents(self,):
+        job = Job.objects.all()[0]
+        extents = job.overpass_extents
+        self.assertIsNotNone(extents)
+        self.assertEquals(4, len(extents.split(',')))
+        
+    def test_categorised_tags(self, ):
+        # delete existing tags
+        self.job.tags.all().delete()
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        # save all the tags from the preset
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
+        
+        job = Job.objects.all()[0]
+        categories = job.categorised_tags
+        self.assertIsNotNone(categories)
+        self.assertEquals(24, len(categories['points']))
+        self.assertEquals(12, len(categories['lines']))
+        self.assertEquals(22, len(categories['polygons']))
+        
 
 class TestExportFormat(TestCase):
     
@@ -174,12 +197,9 @@ class TestJobRegionIntersection(TestCase):
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((36.90, 13.54, 48.52, 20.24)) # overlaps africa / central asia
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
-                                 the_geom=the_geom, the_geog=the_geog,
-                                 the_geom_webmercator=the_geom_webmercator)
+                                 the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
@@ -225,14 +245,139 @@ class TestJobRegionIntersection(TestCase):
         job = Job.objects.all()[0]
         bbox = Polygon.from_bbox((2.74, 47.66, 21.61, 60.24)) # outside any region
         the_geom = GEOSGeometry(bbox, srid=4326)
-        the_geog = GEOSGeometry(bbox)
-        the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
         job.the_geom = the_geom
-        job.the_geog = the_geog
-        job.the_geom_webmercator = the_geom_webmercator
         job.save()
         regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(job.the_geom, field_name='the_geom').order_by( '-intersection')
         self.assertEquals(0, len(regions))
 
 
+class TestExportConfig(TestCase):
     
+    def setUp(self,):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom)
+        self.uid = self.job.uid
+        
+    
+    def test_create_config(self,):
+        f = open(self.path + '/files/hdm_presets.xml')
+        test_file = File(f)
+        filename = test_file.name.split('/')[-1]
+        name = 'Test Configuration File'
+        config = ExportConfig.objects.create(name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
+        test_file.close()
+        self.assertIsNotNone(config)
+        uid = config.uid
+        saved_config = ExportConfig.objects.get(uid=uid)
+        self.assertEquals('PRESET', saved_config.config_type)
+        self.assertEquals(name, saved_config.name)
+        self.assertFalse(saved_config.published)
+        self.assertIsNotNone(saved_config)
+        self.assertEqual(config, saved_config)
+        sf = File(open(os.path.abspath('.') + '/media/export/config/preset/hdm_presets.xml'))
+        self.assertIsNotNone(sf) # check the file gets created on disk
+        saved_config.delete() # clean up
+        sf.close()
+        
+class TestTag(TestCase):
+    
+    def setUp(self, ):
+        self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', user=self.user,
+                                 the_geom=the_geom)
+        self.uid = self.job.uid
+        # add the formats to the job
+        self.job.formats = self.formats
+        self.job.save()
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        
+    def test_create_tags(self,):
+        tags = [
+            {'key': 'aerialway',
+             'value': 'station',
+             'geom_types': ['node','way']
+            },
+            {'key': 'aeroway',
+             'value': 'aerodrome',
+             'geom_types': ['node','area']
+             },
+        ]
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        saved_tags = Tag.objects.all()
+        geom_types = saved_tags[0].geom_types
+        self.assertEquals(2, len(saved_tags))
+        self.assertEqual(['node','way'], geom_types)
+        
+    def test_save_tags_from_preset(self,):
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
+
+    def test_get_categorised_tags(self,):
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
+        
+        categorised_tags = self.job.categorised_tags
+        
+        
+    
+    """
+    def test_hdm_tags(self, ):
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags, kvps = parser.parse()
+        # clear existing tags
+        self.job.tags.all().delete()
+        for kvp in kvps:
+            tag = Tag.objects.create(
+                key = kvp[0],
+                value = kvp[1],
+                job = self.job
+            )
+        # get saved tags back out
+        job_tags = self.job.tags.all()
+        self.assertEquals(258, len(job_tags))
+        job = Job.objects.filter(tags__key='barrier')
+        self.assertIsNotNone(job[0])
+    """   
+    
+        
+    
+    
+        

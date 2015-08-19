@@ -1,0 +1,11 @@
+<!--
+    OsmAnd Batch Creation Config Template.
+    Determines where the OBF creation process is staged
+    and configures the export process.
+-->
+<batch_process>
+	<process_attributes mapZooms="" renderingTypesFile="" zoomWaySmoothness="" osmDbDialect="sqlite" mapDbDialect="sqlite"/>
+	 <!-- zoomWaySmoothness - 1-4, typical mapZooms - 11;12;13-14;15-   -->
+	<process directory_for_osm_files="/home/ubuntu/www/hotosm/utils/tests/files" directory_for_index_files="/home/ubuntu/www/hotosm/utils/tests/files" directory_for_generation="/home/ubuntu/www/hotosm/utils/tests/files" skipExistingIndexesAt="/home/ubuntu/www/hotosm/utils/tests/files" indexPOI="true" indexRouting="true" indexMap="true" indexTransport="true" indexAddress="true">
+	</process>
+</batch_process>

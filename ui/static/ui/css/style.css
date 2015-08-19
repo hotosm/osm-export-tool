@@ -1,30 +1,603 @@
 @media (min-width: 1200px){
-    .container {
+    .container, .container-fluid {
        width: 100% !important;
     }
 }
 
 @media (min-width: 992px){
-    .container {
+    .container, .container-fluid {
        width: 100% !important;
     }
 }
 
 @media (min-width: 768px){
-    .container {
-       width: 100% !important;
+    .container, .container-fluid {
+       width: 100% !important;  
     }
 }
 
-
-body {
-  padding-top: 50px;
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Lato', sans-serif;
 }
 
+/* top banner */
+
+#banner {
+    background-color: #fff;
+    color: #B02129;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.banner-links {
+    font-size: small;
+    margin-top: 2.5em;
+    float: right !important;
+}
+
+.logo {
+    height: 75px;
+    padding: 0px;
+    float: left;
+}
+
+/* nav styles */
+
 .navbar {
-    background-color: #6D6E72;
+    background-color: #fff;
+    margin-bottom: 0px !important;
+}
+
+.navbar-inverse {
+    border: none !important;
 }
 
 a.navbar-brand {
     color: #fff !important;
+    margin-left: 10px !important;
 }
+
+nav > div.container {
+    background-color: #B02129;
+    border: none !important;
+}
+
+ul.nav {
+    float: right !important;
+    font-size: large;
+    font-weight: 700;
+}
+
+.navbar-inverse .navbar-nav>.active>a {
+    background-color: #B02129;
+    color: #fff;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+    color: #fff;
+    padding-left: 10px;
+}
+
+#logout {
+    margin-right: 2em !important;
+}
+
+/* main container / bootstrap styles */
+
+.container-fluid {
+    padding: 0px !important;
+}
+
+
+.row {
+    margin: 0px !important;
+    width: 100%;
+    height: 100%;
+}
+
+
+.col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3,
+.col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9,
+.col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2,
+.col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7,
+.col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11,
+.col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6,
+.col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11,
+.col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6,
+.col-xs-7, .col-xs-8, .col-xs-9 {
+  position: relative;
+  min-height: 1px;
+  padding: 0px;
+}
+
+.glyphicon-heading {
+    font-size: 2em;
+    top: 8px;
+    color: #B02129;
+}
+
+.form-control-feedback {
+    top: 1.5em !important;
+}
+
+span.heading {
+    font-size: 1.5em !important;
+}
+
+.tab-pane {
+    margin-left: 15px !important;
+}
+
+
+/* Map styles */
+
+#create-export-map {
+    position: absolute;
+    width: 100%;
+    height: 620px;
+    border-left: 3px solid lightgrey;
+}
+
+#list-export-map {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 620px;
+    border-left: 3px solid lightgrey;
+}
+
+#list-controls {
+    display: none;
+}
+
+#alert-extents {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    z-index: 100;
+    visibility: hidden;
+}
+
+#valid-extents {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    z-index: 100;
+    visibility: hidden;
+}
+
+.btn-group {
+    position: absolute;
+    top: 9px;
+    left: 50px;
+    z-index: 100;
+}
+
+.olControlDrawFeatureActive { 
+  cursor: crosshair;
+}
+
+.olControlAttribution {
+    bottom: .5em !important;
+    right: 1em !important;
+}
+
+#map-column {
+    border-left: 2px solid lightgrey;
+    border-top: 1px solid lightgrey;
+}
+
+/* Create export form styles */
+
+#create-job-wizard {
+    padding: 10px !important;
+}
+
+#create-job-wizard ul.nav-pills {
+    font-size: medium !important;
+    float: left !important;
+    font-size: small;
+    font-weight: 500;
+}
+
+#create-job-wizard {
+    font-size: medium;
+}
+
+#supported-formats {
+    padding-left: 1em;
+}
+
+.tab-pane {
+    min-height: 450px;
+}
+
+.tab-pane > .panel {
+    border: none;
+    clear: both;
+}
+
+.tab-pane > .panel > .panel-body {
+    padding-left: 0px !important;
+}
+
+/* gazetteer lookup styles */
+
+div#gazetteer {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    z-index: 100;
+    
+}
+
+#nominatim {
+    max-width: 330px !important;
+}
+
+span.gazetteer {
+    background-color: #337AB7;
+    color: white;
+    border: 1px solid #337AB7;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.typeahead { z-index: 1051;}
+
+ul.typeahead { 
+    max-width: 500px !important;
+    overflow: hidden !important;
+}
+
+
+/*
+ * hide the bbox div
+ * which contains bbox hidden fields.
+ */
+
+#bbox {
+    visibility: hidden;
+    max-height: 1px;
+    max-width: 1px;
+}
+
+#bbox > small {
+    display: none !important;
+}
+
+/* Feature selection styles */
+
+.features {
+    float: left !important;
+    /*min-height: 400px;*/
+    max-height: 400px;
+    overflow: auto;
+    margin-left: 15px;
+    min-width: 100%;
+}
+
+#hdm-feature-tree {
+   
+}
+
+/* Upload tab */
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+#filelist {
+    display: none;
+    margin: 10px 0 15px 0;
+    vertical-align: middle;
+    font-size: small;
+}
+
+
+
+button#upload {
+    visibility: hidden;
+    position: absolute;
+    left: 25px;
+}
+
+.progress {
+    display: none;
+}
+
+/* config selection modal dialog */
+
+#configSelectionModal {
+    
+}
+
+#configSelectionModal container-fluid {
+    padding: 15px !important;
+}
+
+div#spinner-modal {
+    display: none;
+}
+
+
+
+i.fa {
+    float: left !important;
+    font-size: medium;
+    margin-top: .3em;
+}
+
+.tree-checkbox {
+    position: relative;
+    display: block;
+    margin-top: .1em;
+    margin-bottom: 0px !important;
+    left: 1.5em;
+}
+
+label {
+    left: .5em !important;
+}
+
+li.entry > label {
+    font-size: medium !important;
+}
+
+li.entry > div.tree-checkbox {
+    display: list-item !important;
+    float: right !important;
+    margin-left: 1em !important;
+}
+
+li.level {
+    float: left !important;
+    clear: both !important;
+}
+
+li.level label {
+    font-size: medium;
+    font-weight: 500;
+    float: left !important;
+}
+
+li.sub-level label {
+    font-size: medium;
+}
+
+li.entry {
+    padding: 0px !important;
+    font-weight: 400 !important;
+    font-size: small !important;
+    float: left;
+    clear: both;
+}
+
+label.nav-header {
+    float: left !important;
+}
+
+label.sub-menu {
+    float: left !important;
+    clear: both !important;
+}
+
+ul.sub-level {
+    margin-top: 0em !important;
+    float: left !important;
+    clear: both !important;
+    position: relative;
+    left: 1.5em;
+}
+
+/*
+.collapsing{
+    height: 100px !important;
+    -moz-transition : height 15s;
+    -webkit-transition : height 15s;
+    -o-transition : height 15s;
+    transition : height 15s; 
+}
+*/
+
+/* job detail styles @see job.html */
+
+#submitted_runs {
+    display: none;
+}
+
+#details-row {
+    padding: 15px;
+    display: block;
+}
+
+#job {
+    margin-right: 2em;
+}
+
+button#clone {
+    margin-left: .5em;
+}
+
+button#delete {
+    margin-left: .5em;
+    display: none;
+}
+
+span#user {
+    display: none;
+}
+
+#delete-info, #error-info {
+    display: none;
+    font-size: large;
+    padding: 15px;
+}
+
+#extents {
+    position: relative;
+    width: 20em;
+    height: 20em;
+    border: 1px solid lightgrey;
+}
+
+#extents .olControlZoom {
+    display: none;
+}
+
+#extents .olControlAttribution {
+    bottom: .5em !important;
+}
+
+#status .alert {
+    margin-bottom: 0px !important;
+    padding: 7px !important;
+}
+
+.panel-body {
+    border-top: none !important;
+}
+
+tr.success {
+    background-color: #D9EDF7;
+    padding: .1em;
+    opacity: .8;
+}
+
+tr.running {
+    background-color: #D9EDF7;
+    padding: .1em;
+}
+
+tr.pending {
+    background-color: #FCF8E3;
+    padding: .1em;
+}
+
+tr.failed {
+    background-color: #F2DEDE;
+    padding: .1em;
+}
+
+
+tr#exceptions {
+    display: none;
+}
+
+/* jobs list/search page */
+
+div#search {
+    display: none;
+}
+
+ul.pager {
+    margin-right: 1em;
+}
+
+.input-group.search {
+    width: 100% !important;
+}
+
+#info {
+    padding: .7em;
+    font-weight: 700;
+    font-size: small;
+    margin-left: 1em;
+}
+
+table#jobs {
+    font-size: small;
+}
+
+#results {
+    border-top: 2px solid lightgrey;
+}
+
+form#search {
+    padding: .7em;
+}
+
+#form-group-bbox {
+    display: none;
+}
+
+span#user {
+    display: none;
+}
+
+#filter-toggle {
+    margin: .7em;
+}
+
+span.check {
+    background-color: white;
+}
+
+span.tag.label.label-info {
+    background-color: #B02129;
+    border-radius: 4px !important;
+}
+
+
+
+/* login page */
+
+#about {
+    margin-top: 2em;
+    margin-left: 3em;
+    margin-right: 3em;
+    font-size: large;
+}
+
+/* Configuration Browser */
+
+div#search-config {
+    display: none;
+}
+
+div#spinner {
+    display: block;
+}
+
+span#spinner i {
+    font-size: 4em !important;
+    left: 50%;
+    top: 200px;
+    position: relative;
+}
+
+#config-upload {
+    padding: 15px;
+    font-size: medium;
+    border-left: 1px solid lightgrey;
+}
+
+
+.added {
+    background-color:lightgreen;
+    /*transition:background-color 0.5s ease;*/
+}
+
+.normal {
+    background-color: white;
+}
+

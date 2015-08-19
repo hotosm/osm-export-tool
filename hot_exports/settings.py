@@ -10,14 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from __future__ import absolute_import
+
 import os
 import sys
-import settings_private
+from hot_exports import settings_private
+from celery.schedules import crontab
 from django.utils.translation import ugettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -32,8 +34,11 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
+REGISTRATION_OPEN = True                
+ACCOUNT_ACTIVATION_DAYS = 7  
+REGISTRATION_AUTO_LOGIN = True
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/jobs/create/'
 
 
 # Application definition
@@ -46,6 +51,8 @@ DEFAULT_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.postgres',
+    'django.contrib.sites',
 )
 
 THIRD_PARTY_APPS = (
@@ -54,6 +61,7 @@ THIRD_PARTY_APPS = (
     'rest_framework.authtoken',
     'django_nose',
     'django_extensions',
+    'registration',
 )
 
 LOCAL_APPS = (
@@ -61,6 +69,7 @@ LOCAL_APPS = (
     'tasks',
     'api',
     'ui',
+    'utils',
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -79,7 +88,9 @@ MIDDLEWARE_CLASSES = (
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',), 
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',
+                                'rest_framework.filters.SearchFilter',
+                                'rest_framework.filters.OrderingFilter'), 
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.SessionAuthentication',
                                        'rest_framework.authentication.TokenAuthentication'),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
@@ -96,7 +107,7 @@ ROOT_URLCONF = 'hot_exports.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['api/templates/'],
+        'DIRS': ['api/templates/', 'ui/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,6 +128,9 @@ SESSION_COOKIE_DOMAIN='hot.geoweb.io'
 SESSION_COOKIE_PATH='/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+SITE_ID = 1
+
+
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
@@ -127,6 +141,8 @@ DATABASES = settings_private.DATABASES
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
+DEFAULT_CHARSET = 'UTF-8'
 
 TIME_ZONE = 'UTC'
 
@@ -201,13 +217,28 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
-        'celery': {
+        'celery.task': {
             'handlers': ['file'],
             'propagate': True,
             'level': 'DEBUG',
-        }, 
+        },
+        'jobs': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
         'jobs.tests': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'utils': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'utils.tests': {
+            'handlers': ['console', 'file'],
             'propagate': True,
             'level': 'DEBUG',
         },
@@ -225,26 +256,60 @@ NOSE_ARGS = [
     '--with-coverage',
     '--cover-html',
     '--cover-html-dir=cover',
-    '--cover-package=api,tasks,jobs'
+    '--cover-package=api,tasks,jobs,utils'
 ]
 """
+
 # Celery config
 CELERY_TRACK_STARTED = True
 
+CELERY_CHORD_PROPAGATES = True
+
+# configure periodic task
+CELERYBEAT_SCHEDULE = {
+    'purge-unpublished-exports': {
+        'task': 'Purge Unpublished Exports',
+        'schedule': crontab(minute=0,hour=0,day_of_week='*')
+    },
+}
+
 """
-A dictionary of export formats mapped to ExportTask classes.
+A mapping of supported export formats to ExportTask handler classes
 """
 EXPORT_TASKS = {
-    'shp': 'ShpExportTask',
-    'obf': 'ObfExportTask',
-    'pgdump': 'PgdumpExportTask',
-    'sqlite': 'SqliteExportTask',
-    'kml': 'KmlExportTask',
-    'garmin': 'GarminExportTask'
+    'shp': 'tasks.export_tasks.ShpExportTask',
+    'obf': 'tasks.export_tasks.ObfExportTask',
+    'sqlite': 'tasks.export_tasks.SqliteExportTask',
+    'kml': 'tasks.export_tasks.KmlExportTask',
+    'garmin': 'tasks.export_tasks.GarminExportTask'
+}
+
+# where exports are staged for processing
+EXPORT_STAGING_ROOT = '/home/ubuntu/export_staging/'
+
+# where exports are stored for public download
+EXPORT_DOWNLOAD_ROOT = '/home/ubuntu/export_downloads/'
+
+# the root url for export downloads
+EXPORT_MEDIA_ROOT = '/exports/'
+
+# home dir of the OSMAnd Map Creator
+OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmand/OsmAndMapCreator'
+
+# location of the garmin config file
+GARMIN_CONFIG = '/home/ubuntu/www/hotosm/utils/conf/garmin_config.xml'
+
+UPDATE_TASKS = {
+    # not implemented yet
 }
 
 """
 Maximum extent of a Job
 max of (latmax-latmin) * (lonmax-lonmin)
 """
-JOB_MAX_EXTENT = 200
+JOB_MAX_EXTENT = 250
+
+# maximum number of runs to hold for each export
+EXPORT_MAX_RUNS = 5
+
+HOSTNAME = 'hot.geoweb.io'

@@ -1,0 +1,123 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+
+{% block container %}
+
+<center>
+    <div class="panel panel-default" style="width: 25%;margin-top: 2em;">
+    <div id="heading-wrap" class="panel-heading"><span class="glyphicon-heading glyphicon glyphicon-user pull-left">&nbsp</span>
+      <div><h4>Register for Hot Exports</h4></div>
+    </div>
+    <div class="panel-body">
+          <div id="login">
+                <form method="post" action="." id="registerForm">
+                    {% csrf_token %}
+                    <div class="form-group row" id="form-group-username">
+                        <div class="col-md-12">
+                            <strong><label class="control-label pull-left" for="username">Username: </label></strong>
+                            <input class="form-control input-lg" type="text" name="username" id="id_username" value=""/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="form-group row" id="form-group-email">
+                        <div class="col-md-12">
+                            <strong><label class="control-label pull-left" for="username">Email: </label></strong>
+                            <input class="form-control input-lg" type="email" name="email" id="id_email" value=""/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="form-group row" id="form-group-password1">
+                        <div class="col-md-12">
+                            <strong><label class="control-label pull-left" for="password">Password: </label></strong>
+                            <input name="password1" id="id_password1" class="form-control input-lg" type="password"/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="form-group row" id="form-group-password2">
+                        <div class="col-md-12">
+                            <strong><label class="control-label pull-left" for="password">Confirm Password: </label></strong>
+                            <input name="password2" id="id_password2" class="form-control input-lg" type="password"/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="form-group row pull-left">
+                        <div class="col-md-6">
+                            <button id="save" type="submit" class="btn btn-lg btn-success pull-left">Register</button>
+                        </div>
+                    </div>
+                  <input type="hidden" name="next" value="{{ next }}" />
+              </form>
+          </div>
+      </div>
+    </div>
+    </center>
+{% endblock %}
+{% block corejs %}
+{{ block.super }}
+<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#registerForm').formValidation({
+                framework: 'bootstrap',
+        
+                // Feedback icons
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+        
+                // List of fields and their validation rules
+                fields: {
+                    username: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please enter your username.'
+                            },
+                        }
+                    },
+                    email: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please enter your email address.'
+                            },
+                            regexp: {
+                                regexp: '^[^@\\s]+@([^@\\s]+\\.)+[^@\\s]+$',
+                                message: 'Please enter a valid email address.'
+                            }
+                        }
+                    },
+                    password1: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please enter a password.'
+                            },
+                        }
+                    },
+                    password2: {
+                        validators: {
+                            identical: {
+                                field: 'password1',
+                                message: 'Passwords are not the same.'
+                            },
+                            notEmpty: {
+                                message: 'Please confirm your password.'
+                            },
+                        }
+                    }
+                }
+        }); 
+    })
+    .on('err.validator.fv', function(e, data) {
+            if (data.field === 'email') {
+                data.element
+                    .data('fv.messages')
+                    // Hide all the messages
+                    .find('.help-block[data-fv-for="' + data.field + '"]').hide()
+                    // Show only message associated with current validator
+                    .filter('[data-fv-validator="' + data.validator + '"]').show();
+            }
+    });
+</script>
+{% endblock %}

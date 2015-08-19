@@ -1,0 +1,19 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block container %}
+
+<center>
+<div class="panel panel-danger" style="width: 40%; margin-top: 2em;">
+  <div class="panel-heading"><span class="heading">{% trans   "Account activation failed" %}</span></div>
+  <div class="panel-body">
+    <p>
+        {% trans "We apologise for any inconvenience this may cause."%}<br/>
+        {% trans 'Please <a href="/contact">contact us</a> if you continue to experience problems with your account activation.'%}
+    </p>
+  </div>
+</div>
+</center>
+
+
+{% endblock %}
