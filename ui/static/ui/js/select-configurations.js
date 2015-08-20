@@ -34,10 +34,14 @@ configurations.list = (function(){
             initDataTable();
             // initialize the start / end date pickers
             initDatePickers();
+            // initialize the selection handler
+            initSelectionHandler();
+            // listen for state changes on selected file list
+            handleStateChanges();
             // initialize the search callback
             initSearch();
             // run the default search
-            runSearch(); 
+            runSearch();
         },
     }
     
@@ -68,46 +72,65 @@ configurations.list = (function(){
             // set message if no results returned from this url..
             $('td.dataTables_empty').html('No configuration files found.');
             
-            // maintain selections when table is refreshed (pagination etc..)
+            /*
+             * toggle enabled/disabed state on config types
+             * based on what's currently in the select list.
+             */
+            $('#filelist tr.config').each(function(idx, tr){
+                var selection = getSelectionFromTR(tr);
+                $('input[data-type="' + selection.config_type + '"]')
+                    .each(function(i, input){
+                        $(input).prop('disabled', true);
+                        $(input).closest('tr').css('opacity', .5); 
+                });
+            });
+            
+            // enable checkboxes on selections
             $(selections).each(function(idx, selection){
                 $('input[id="' + selection.uid + '"]').prop('checked', true);
-                toggleCheckboxes(selection, true);
+                toggleCheckboxes(selection, true); 
             });
             
             // bind a listener to the selection checkboxes
-            $('input[name="config"]').on('click', function(e){
+            $('input[name="config"]').on('change', function(e){
                 var isSelected = $(e.target).is(':checked');
                 var uid = e.target.id;
                 var type = e.target.getAttribute('data-type');
-                var typeAlreadySelected = false;
-                // check that this type of file is not already selected
-                $(selections).each(function(idx, selection){
-                    if (type === selection.type) {
-                        
-                    }
-                });
+                var filename = e.target.getAttribute('data-filename');
+                var published = e.target.getAttribute('data-published') === true ? 'Published' : 'Private';
                 if (isSelected) {
                     var selection = {}
                     selection['uid'] = uid;
-                    selection['type'] = type;
+                    selection['config_type'] = type;
+                    selection['filename'] = filename;
+                    selection['published'] = published;
                     selections.push(selection);
                     toggleCheckboxes(selection, true);
+                    if (type === 'PRESET') {
+                        $(document).trigger({type: 'preset:selected', source: 'config-browser'});
+                    }
                 }
                 else {
                     $(selections).each(function(idx, selection){
                         if (selection.uid === e.target.id) {
-                            selections.pop(selection);
+                            selections.splice(idx, 1);
+                            toggleCheckboxes(selection, false);
                         }
-                        toggleCheckboxes(selection, false);
                     });
+                    if (type === 'PRESET') {
+                        $(document).trigger({type: 'preset:deselected', source: 'config-browser'});
+                    }
                 }
             });
         });
     }
     
-    
+    /*
+     * Toggles disabled state on configuration types
+     * depending on what's currently selected.
+     */
     function toggleCheckboxes(selection, disable){
-        var type = selection.type;
+        var type = selection.config_type;
         var uid = selection.uid;
         $('input[data-type="' + type + '"]')
             .each(function(i, input){
@@ -115,6 +138,7 @@ configurations.list = (function(){
                     var inputUid = input.id;
                     if (inputUid != uid) {
                         $(input).prop('disabled', true);
+                        $(input).closest('tr').css('opacity', .5);
                     }
                     else {
                         // leave the one currently selected enabled
@@ -123,8 +147,67 @@ configurations.list = (function(){
                 }
                 else {
                     $(input).prop('disabled', false);
+                    $(input).closest('tr').css('opacity', 1);                    
                 }
                 
+        });
+    }
+    
+    // handle user config selections
+    function initSelectionHandler(){
+        $('button#select').on('click', function(e){
+            console.log(selections);
+            var $filelist = $('#filelist');
+            // clear the list and add the new selections
+            $filelist.find('tr[data-source="config-browser"]').each(function(idx, tr){
+                var selection = getSelectionFromTR(tr);
+                $filelist.trigger({type: 'config:removed', source: 'config-browser', selection: selection});
+            });
+            $(selections).each(function(idx, selection){
+                $filelist.trigger({type: 'config:added', source: 'config-browser', selection: selection});
+            });
+        });
+    }
+    
+    // builds a selection object from an entry in the filelist.
+    function getSelectionFromTR(tr){
+        var selection = {};
+        selection['uid'] = $(tr).attr('id');
+        selection['filename'] = $(tr).attr('data-filename');
+        selection['config_type'] = $(tr).attr('data-type');
+        selection['published'] = $(tr).attr('data-published');
+        return selection;
+    }
+    
+    /*
+     * Listens for state changes.
+     * on selected file list.
+     */
+    function handleStateChanges(){
+        /*
+         * Listen for remove events on the filelist and update
+         * selections accordingly.
+         */
+        $('table#configurations').on('filelist:removed', function(e){
+            console.log(e);
+            $(selections).each(function(idx, selection){
+                if (selection.uid === e.selection.uid) {
+                    selections.splice(idx, 1);
+                }
+            });
+            runSearch();
+        });
+        
+        /*
+         * Listen for configurations being added to the filelist
+         * and update state on this.
+         */
+        $('table#configurations').on('config:added', function(e){
+            toggleCheckboxes(e.selection, true);
+        });
+        
+        $('table#configurations').on('config:removed', function(e){
+            toggleCheckboxes(e.selection, false);
         });
     }
     
@@ -136,7 +219,7 @@ configurations.list = (function(){
     function paginate(jqXHR){
         
         // get the pagination ul
-        var paginate = $('ul.pager');
+        var paginate = $('#pagination ul.pager');
         paginate.empty();
         var info = $('#info');
         info.empty();
@@ -225,7 +308,11 @@ configurations.list = (function(){
                     render: function(data, type, row){
                         var html = '<div class="checkbox">' +
                                         '<label>' +
-                                            '<input id="' + data + '" type="checkbox" data-type="' + row.config_type + '" name="config">' +
+                                            '<input id="' + row.uid + '" type="checkbox" ' +
+                                                'data-type="' + row.config_type + '" ' +
+                                                'data-filename="' + row.filename + '" ' +
+                                                'data-published="' + row.published + '" ' +
+                                                'name="config"/>' +
                                         '</label>' +
                                     '</div>';
                         return html

@@ -16,7 +16,7 @@
                     <li id="create-tab" role="presentation" class="active"><a data-toggle="tab" href="#create">Describe Export</a></li>
                     <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">Select Formats</a></li>
                     <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">Select Features</a></li>
-                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">Upload Configuration</a></li>
+                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">Select Configurations</a></li>
                     <li id="summary-tab" role="presentation"><a data-toggle="tab" href="#summary">Export Summary</a></li>
                 </ul>
                 <div class="tab-content">
@@ -132,6 +132,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <!--
                             <div class="form-group-row" id="form-group-filelist">
                                 <div class="table-responsive table-stripped col-md-12">
                                     <table class="table" id="filelist">
@@ -139,6 +140,7 @@
                                     </table>
                                 </div>
                             </div>
+                            -->
                             <div class="row">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
@@ -163,9 +165,16 @@
                                 <button id="select-config" type="button" class="btn btn-lg btn-primary pull-right">
                                     <span>
                                     <i class="fa fa-cogs"></i>&nbsp;
-                                    Apply configurations
+                                    Select configurations
                                     </span>
                                 </button>
+                            </div>
+                            <div class="form-group-row" id="form-group-filelist">
+                                <div class="table-responsive table-stripped col-md-12">
+                                    <table class="table" id="filelist">
+                                        <th width="40%">Filename</th><th width="25%">Type</th><th width="25%">Status</th><th width="10%"></th>
+                                    </table>
+                                </div>
                             </div>
                             <div id="configurations">
                                 <input id="preset" type="hidden" name="preset" value="" />
@@ -367,9 +376,8 @@
                                                 <span class="input-group-addon"><strong>Page size</strong></span>
                                                 <span class="input-group-addon">
                                                     <select id="page-size" name="page_size">
-                                                        <option value="5">5</option>
-                                                        <option value="10" selected>10</option>
-                                                        <option value="15">15</option>
+                                                        <option value="5" selected>5</option>
+                                                        <option value="10">10</option>
                                                     </select>
                                                 </span>
                                             </div>
@@ -388,7 +396,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Select</button>
+              <button id="select" type="button" class="btn btn-primary" data-dismiss="modal">Select</button>
             </div>
         </div>
   </div>
