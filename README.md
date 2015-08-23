@@ -40,11 +40,11 @@ $ pip install django
 Install PostgreSQL and its dependencies,  
 $ sudo apt-get install libpq-dev python-dev      
 $ sudo apt-get install postgresql postgresql-contrib  
-#####-Create the database and role
-$ sudo su - postgres  
-$ createdb 'hot_exports_dev'
-$ create role hot with password '<-password->'   
-set the password in settings_private.py to be the same as your password.   
+#####-Create the database and role  
+$ sudo su - postgres    
+$ createdb 'hot_exports_dev'  
+$ create role hot with password '<-password->'  
+set the user to be 'hot' and password to be above password in settings_private.py    
 Type psql  
 $ ALTER ROLE hot SUPERUSER;  
 $ ALTER ROLE hot WITH LOGIN;  
