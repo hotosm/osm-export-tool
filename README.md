@@ -10,7 +10,7 @@ $ sudo apt-get upgrade
 #####-Python
 Unix environments come pre-installed with Python. To check version, run the command:  
 $ python -V  
-$ python3 -V
+$ python3 -V  
 If you have 2.7.x version, you can go ahead.
 #####-easy_install and pip
 easy_install and pip are Python Package Managers, making it much easier to install and upgrade Python packages (and package dependencies).  
@@ -53,11 +53,11 @@ $ CREATE EXTENSION POSTGIS;
 $ CREATE EXTENSION HSTORE;  
 
 #####-Install GDAL
-For ubuntu, following packages are required, before installing GDAL
+For ubuntu, following packages are required before installing GDAL  
 $ sudo apt-get install python-software-properties  
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable  
 $ sudo apt-get update  
-To install the python GDAL bindings into your virtualenv you need to tell pip where to find the libgdal header files, so in your shell run:  
+To install the python GDAL bindings into your virtualenv you need to tell pip where to find the libgdal header files, so in your shell run:    
 $ export CPLUS_INCLUDE_PATH=/usr/include/gdal  
 $ export C_INCLUDE_PATH=/usr/include/gdal  
 $ pip install GDAL=1.11.2
