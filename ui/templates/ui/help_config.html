@@ -1,0 +1,84 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% block container %}
+<br>
+<br>
+<b>Page Navigation Help</b>
+<br><i>
+Create<br>
+Exports<br>
+Store<br>
+</i>
+<br>
+<b>Export File Formats</b>
+<br><i>
+Esri SHP<br>
+Garmin Map<br>
+Google Earth KMZ<br>
+OSM Source PBF<br>
+SQLite SQL<br>
+</i>
+<br>
+<b>Feature Tag Selection</b>
+<br><i>
+Humanitarian Data Model<br>
+OpenStreetMap<br>
+</i>
+<br>
+<b>Configuration Files</b>
+<br><i>
+Presets<br>
+Transform<br>
+Language<br>
+</i>
+<br>
+
+<h2>Configuration File Help</h2>
+
+<p>The user can upload configuration files in the tool to apply to the data selected for export. This help page will provide guidance on the types of configuration files, how to search for them on the 'Store' page and upload them on the 'Create' page.<br><br> 
+
+<h3>File Types</h3>
+
+<b>Preset Files</b>
+<br>
+<br>
+
+<b>Transform Files</b>
+<br><br>
+Transform files are used to execute arbitrary SQL (spatialite) commands on the selected exported data.<br>
+For example, create new database columns, drop existing database columns, rename columns, merge columns, or drop records.
+<br>
+<br>
+Example 1. Insert new column into the planet_osm_point table and fill it with a copy of the "amenity" value:<br>
+<br>
+<i>alter table planet_osm_point add column testcolumn varchar;
+update planet_osm_point set testcolumn=amenity;</i><br>
+<br>
+Example 2. Insert two new columns into tables building_roof_material_stone and building_roof_material_concrete, setting them to 1 if the existing column building_roof_material contains these terms:<br>
+<br>
+<i>alter table planet_osm_polygon add column building_roof_material_stone integer;
+alter table planet_osm_polygon add column building_roof_material_concrete integer;
+update planet_osm_polygon set building_roof_material_stone=1 where building_roof_material like "%stone%";
+update planet_osm_polygon set building_roof_material_concrete=1 where building_roof_material like "%concrete%";</i><br>
+<br>
+
+<b>Language Files</b>
+<br><br>
+Language files are used to translate the contents of a database field from one language into another.<br>
+For example the term "bakery" may be transformed into "boulangerie" or "road" to "jalan".
+<br>
+<br>
+Example 1.<br>
+<br>
+
+<h3>Search Files</h3>
+
+<h3>Upload Files</h3>
+
+Files can be uploaded on the 'Select Configuration' tab of the 'Create' page. As it is part of the wizard that takes the user through creating a new export, it can only be accessed once the previous steps have been completed. 
+<br><br>
+The 'Select Features' tab provides the user with a text box to enter a 'Filename' and a 'Configuration Type'. Once these have been completed, the user can choose to either search their desktop for the file by clicking 'Browse Desktop' or  select a file from the configuration file Store by clicking 'Browse Store'.
+<br><br>
+Once the configuration file has been selected, the user will be brought back to the 'Create' wizard where they can choose to publish the file globally by clicking 'Publish File'.
+
+{% endblock %}
