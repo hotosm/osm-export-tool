@@ -1,0 +1,80 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% block container %}
+<br>
+<br>
+<b>Page Navigation Help</b>
+<br><i>
+Create<br>
+Exports<br>
+Store<br>
+</i>
+<br>
+<b>Export File Formats</b>
+<br><i>
+Esri SHP<br>
+Garmin Map<br>
+Google Earth KMZ<br>
+OSM Source PBF<br>
+SQLite SQL<br>
+</i>
+<br>
+<b>Feature Tag Selection</b>
+<br><i>
+Humanitarian Data Model<br>
+OpenStreetMap<br>
+</i>
+<br>
+<b>Configuration Files</b>
+<br><i>
+Presets<br>
+Transform<br>
+Language<br>
+</i>
+<br>
+
+
+<h2>Page Navigation Help</h2>
+
+<p>The OSM Export Tool has three main sections; an area to create new exports (Create), an area where existing exports are stored and can be re-run (Exports), and an area where configuration files are stored and can be accessed (Store). This help page will take the user step by step through these three sections, providing information for the available functions and how to use them:<br> 
+
+<h3>Create</h3>
+
+<p>User must be registered and logged in to create a new export.<br>
+<br>
+<b>1. Describe Export:</b> Enter the name, description and event of the new export, select the area of interest on the map (right section) and click 'Next'.<br>
+<b>2. Export Formats:</b> Select one or more file format(s) for the export and click 'Next'.<br>
+<b>3. Export Features:</b> Expand and select feature tags from the HDM or OSM tree list for export and click 'Next'. Presets can not be chosen if tags have been selected in previous tab.<br>
+<b>4. Configuration File:</b> Upload a configuration file by locating the file and specifying a name and type. Choose whether to save it to your personal account and/or publish it to the global store for everyone to access and click 'Next'.<br>
+<b>5. Export Summary:</b> This provides an overview of the export settings. The option to publish the export globally for everyone can be selected. Click 'Create Export' to complete and run the new export.<br> 
+<b>6. Export Details:</b> Contains the status and summary of the export, as well as the history of runs and options to either re-run or clone the job.<br>
+<br>
+</p>
+
+<h3>Exports</h3>
+
+<p>Existing exports can be searched, viewed and re-run from the Exports page. An account is not needed view or search for existing exports.<br>
+<br>
+On the Exports page there are the following filter options:<br>
+<b>1. Search Box:</b> Enter Name/Event/Description keywords to filter.<br> 
+<b>2. Start Date/End Date:</b> Filter based on date of creation.<br> 
+<b>3. Interactive Map:</b> Visually displays location of filtered exports and can also be used to filter geographically by selecting on the map.<br> 
+<b>4. My Exports:</b> Displays personal exports if the user is logged in.<br>
+<b>5. Next Page:</b> Move on to display more results.</br>
+</br>
+</p> 
+
+<h3>Store</h3>
+
+<p>Saved configuration files can be searched, viewed and downloaded from the Store page. An account is not needed to filter and search the saved configuration files.<br>  
+<br>
+On the Store page there are the following filter options:<br>
+<b>1. Search Box:</b> Enter Name/Event/Description keywords to filter.<br>
+<b>2. Start Date/End Date:</b> Filter based on date of creation.<br> 
+<b>3. File Type:</b> Filter based on File Type.<br> 
+<b>4. My Configuration Files:</b> Displays personal configuration files if the user is logged in.<br> 
+<b>5. Next Page:</b> Move on to display more results.</br>
+</br>
+</p>
+
+{% endblock %}
