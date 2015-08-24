@@ -58,6 +58,8 @@ class SimpleExportConfigSerializer(serializers.Serializer):
     uid = serializers.UUIDField(read_only=True)
     name = serializers.CharField()
     config_type = serializers.CharField()
+    filename = serializers.CharField()
+    published = serializers.BooleanField()
     url = serializers.HyperlinkedIdentityField(
        view_name='api:configs-detail',
        lookup_field='uid'

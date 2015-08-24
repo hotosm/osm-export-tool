@@ -26,7 +26,6 @@ create.job = (function(){
     var max_bounds_area = 2500000; // sq km // set this dynamically..
     
     return {
-        numSelectedFiles: 0,
         init: function(){
             initCreateMap();
             initHDMFeatureTree();
@@ -671,6 +670,11 @@ create.job = (function(){
             $('button#upload').prop('disabled', true);
             // disable the config-select button
             $('button#select-config').prop('disabled', true);
+            
+            // disable selected config remove buttons until file uploaded
+            $(this).find('tr.config').find('button').each(function(idx, btn){
+                $(btn).prop('disabled', true);
+            });
             
             // show progress bar
             $('button#remove').css('display', 'none');
@@ -1433,99 +1437,112 @@ create.job = (function(){
     function initConfigSelectionHandler(){
         
         var filesSelected = 0;
-        var maxFilesSelected = 3;
         
         $('#filelist').on('config:added config:uploaded', function(e){
             var selection = e.selection;
             var source = e.source;
             var uid = selection.uid;
-            if (filesSelected === maxFilesSelected){
-                // handle this..
+            
+            if (source == 'config-upload') {
+                // add the uploaded uid to the table row
+                $tr = $('#filelist').find('tr#upload');
+                $tr.attr('id', selection.uid);
+                
+                // re-enable any remove buttons on the filelist
+                $(this).find('tr.config').find('button').each(function(idx, btn){
+                    $(btn).prop('disabled', false);
+                });
+                
+                // add the delete button to the uploaded file
+                var $td = $tr.find('td').last();
+                $td.empty();
+                var html = '<button id="' + selection.uid + '" type="button" class="delete-file btn btn-danger btn-sm pull-right">' +
+                                    'Delete&nbsp;&nbsp;<span class="glyphicon glyphicon-trash">' +
+                            '</span></button>';
+                $td.html(html);
+                
+                // reset the form for more file uploads..
+                resetUploadConfigTab('success');
+                
+                // notify the config-browser
+                $('table#configurations').trigger({type: 'config:added', selection:selection});
+                
+                // handle delete events
+                $tr.on('click', 'button#' + selection.uid, function(e){
+                    var data = new FormData();
+                    data.append('_method', 'DELETE');
+                    $.ajax({
+                        url: Config.CONFIGURATION_URL + '/' + e.target.id,
+                        type: 'POST',
+                        data: data,
+                        contentType: false,
+                        processData: false,
+                        beforeSend: function(jqxhr){
+                            // set the crsf token header for authentication
+                            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+                            jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                        success: function(result, textStatus, jqxhr) {
+                            $('table#configurations').trigger({type: 'config:removed', selection: selection});
+                            $('#filelist').trigger({type: 'config:delete-upload', selection: selection});
+                        },
+                        error: function(jqxhr, textStatus, errorThrown){
+                            console.log(jqxhr);
+                            var status = jqxhr.status;
+                            resetUploadConfigTab(textStatus);
+                            var modalOpts = {
+                                keyboard: true,
+                                backdrop: 'static',
+                            }
+                            var message = '';
+                            if (status === 404) {
+                                message = 'Requested file not found.'
+                            }
+                            else {
+                                message = jqxhr.responseJSON.message[0];
+                            }
+                            $('p#message').html(message);
+                            $("#uploadConfigError").modal(modalOpts, 'show');
+                        }
+                    });
+                    
+                });
             }
             else {
-                if (source == 'config-upload') {
-                    // add the uploaded uid to the table row
-                    $tr = $('#filelist').find('tr#upload');
-                    $tr.attr('id', selection.uid);
-                    
-                    // add the delete button to the uploaded file
-                    var $td = $tr.find('td').last();
-                    $td.empty();
-                    var html = '<button id="' + selection.uid + '" type="button" class="delete-file btn btn-danger btn-sm pull-right">' +
-                                        'Delete&nbsp;&nbsp;<span class="glyphicon glyphicon-trash">' +
-                                '</span></button>';
-                    $td.html(html);
-                    
-                    // reset the form for more file uploads..
-                    resetUploadConfigTab('success');
-                    
-                    // notify the config-browser
-                    $('table#configurations').trigger({type: 'config:added', selection:selection});
-                    
-                    // handle delete events
-                    $tr.on('click', 'button#' + selection.uid, function(e){
-                        var data = new FormData();
-                        data.append('_method', 'DELETE');
-                        $.ajax({
-                            url: Config.CONFIGURATION_URL + '/' + e.target.id,
-                            type: 'POST',
-                            data: data,
-                            contentType: false,
-                            processData: false,
-                            beforeSend: function(jqxhr){
-                                // set the crsf token header for authentication
-                                var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
-                                jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
-                            },
-                            success: function(result, textStatus, jqxhr) {
-                                $('table#configurations').trigger({type: 'config:removed', selection: selection});
-                                $('#filelist').trigger({type: 'config:delete-upload', selection: selection});
-                            },
-                            error: function(jqxhr, textStatus, errorThrown){
-                                console.log(jqxhr);
-                                var status = jqxhr.status;
-                                resetUploadConfigTab(textStatus);
-                                var modalOpts = {
-                                    keyboard: true,
-                                    backdrop: 'static',
-                                }
-                                var message = '';
-                                if (status === 404) {
-                                    message = 'Requested file not found.'
-                                }
-                                else {
-                                    message = jqxhr.responseJSON.message[0];
-                                }
-                                $('p#message').html(message);
-                                $("#uploadConfigError").modal(modalOpts, 'show');
-                            }
-                        });
-                        
-                    });
-                }
-                else {
-                    // add the selected config from config-browser to the table
-                    var $tr = $('<tr id="' + selection.uid + '" data-filename="' + selection.filename + '" data-source="' + source + '"' +
-                                    'data-type="' + selection.config_type + '" data-published="' + selection.published + '"' +
-                                    'class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + selection.filename + '</span></td>' +
-                                    '<td>' + selection.config_type + '</td><td>' + selection.published + '</td>' +
-                                    '<td><button id="' + selection.uid + '" type="button" class="btn btn-warning btn-sm pull-right">Remove&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button></td></tr>');
-                    $(this).append($tr);
-                    $tr.on('click', 'button#' + selection.uid, function(e){
-                        // notify the config-browser of removal
-                        $('table#configurations').trigger({type: 'filelist:removed', selection: selection});
-                        // remove from filelist
-                        $('#filelist').trigger({type: 'config:removed', selection: selection});
-                    });
-                }
-                $(this).css('display', 'block');
-                filesSelected += 1;
-                updateConfigInputs(selection);
+                /*
+                 * check that a file with the same id is not already on the list,
+                 * e.g. from a user upload.
+                 */
+                $(this).find('tr[data-source="config-upload"]').each(function(idx, upload){
+                    var uid = $(upload).attr('id');
+                    if (uid == selection.uid) {
+                        $(upload).remove();
+                        filesSelected -= 1;
+                    }
+                })
                 
-                if (filesSelected === maxFilesSelected) {
-                    console.log('No more files allowed..');
-                }
+                // add the selected config from config-browser to the table
+                var $tr = $('<tr id="' + selection.uid + '" data-filename="' + selection.filename + '" data-source="' + source + '"' +
+                                'data-type="' + selection.config_type + '" data-published="' + selection.published + '"' +
+                                'class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + selection.filename + '</span></td>' +
+                                '<td>' + selection.config_type + '</td><td>' + selection.published + '</td>' +
+                                '<td><button id="' + selection.uid + '" type="button" class="btn btn-warning btn-sm pull-right">Remove&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button></td></tr>');
+                $(this).append($tr);
+                $tr.on('click', 'button#' + selection.uid, function(e){
+                    // notify the config-browser of removal
+                    $('table#configurations').trigger({type: 'filelist:removed', selection: selection});
+                    // remove from filelist
+                    $('#filelist').trigger({type: 'config:removed', selection: selection});
+                });
             }
+                
+            $(this).css('display', 'block');
+            filesSelected += 1;
+            updateConfigInputs(selection);
+            
+            // trigger max files check
+            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
+
         });
         
         // a configuration file is selected for upload
@@ -1549,14 +1566,18 @@ create.job = (function(){
         $('#filelist').on('config:removed', function(e){
             filesSelected -= 1;
             var selection = e.selection;
+            
+            // get the row being removed
             var $tr = $(this).find('tr#' + selection.uid);
             var config_type = $tr.find('td').eq(1).html();
             
+            // re-enable that config type in the dropdown
             var $option = $('option[value="' + config_type + '"]');
             $option.prop('disabled', false);
             
             /*
              * If preset is being removed trigger deselected event
+             * to notify other preset related ui controls.
              */
             if (config_type === 'PRESET') {
                 $(document).trigger({type: 'preset:deselected', source: 'config-upload'});
@@ -1568,17 +1589,28 @@ create.job = (function(){
             
             // remove the selected config from the table
             var configs = $('#filelist tr.config').length;
+            var $tr = $(this).find('tr#' + selection.uid);
             if (configs == 1) {
-                $(this).find('tr#' + selection.uid).remove();
-                $('#filelist').css('display', 'none');
+               $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                    // hide the file list
+                    $('#filelist').css('display', 'none');
+                });  
             }
             else {
                 // just remove this row..
-                $(this).find('tr#' + selection.uid).remove();
+                $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                });  
             }
             
             // trigger change event on form to update summary tab
             $('#create-job-form').trigger('change');
+            
+            // trigger max files check
+            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
         });
         
         // handle pending upload selection removal
@@ -1609,13 +1641,21 @@ create.job = (function(){
             
             // remove the pending upload from the table
             var configs = $('#filelist tr.config').length;
+            var $tr = $(this).find('tr#upload');
             if (configs == 1) {
-                $(this).find('tr#upload').remove();
-                $('#filelist').css('display', 'none');
+               $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                    // hide the file list
+                    $('#filelist').css('display', 'none');
+                });  
             }
             else {
                 // just remove this row..
-                $(this).find('tr#upload').remove();
+                $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                });  
             }
             
             // trigger change event on form to update summary tab
@@ -1625,6 +1665,8 @@ create.job = (function(){
         // an uploaded file is deleted
         $('#filelist').on('config:delete-upload', function(e){
             var selection = e.selection;
+            
+            // get the row being deleted.
             var $tr = $(this).find('tr#' + selection.uid);
             // decrement the number of uploaded files
             filesSelected -= 1;
@@ -1673,7 +1715,31 @@ create.job = (function(){
                     $('#create-job-form').trigger('change');
                 });
             }
-                                
+            
+            // trigger max files check
+            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});           
+        });
+        
+        
+        $(document).on('config:checkmaxfiles', function(e){
+            var maxFiles = 3;
+            var filesSelected = e.filesSelected;
+            if (filesSelected == maxFiles) {
+                $('input#filename').prop('disabled', true);
+                $('select#config_type').prop('disabled', true);
+                $('input#publish_config').prop('disabled', true);
+                $('button#select-file').prop('disabled', true);
+                $('button#select-config').prop('disabled', true);
+            }
+            else {
+                // re-enable the fields
+                $('input#filename').prop('disabled', false);
+                $('select#config_type').prop('disabled', false);
+                $('input#publish_config').prop('disabled', false);
+                $('button#select-file').prop('disabled', false);
+                $('button#select-config').prop('disabled', false);
+            }
+            
         });
     }
     

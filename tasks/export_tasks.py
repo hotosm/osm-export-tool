@@ -19,7 +19,7 @@ from django.template.loader import get_template
 from django.core.mail import EmailMessage
 
 from utils import (overpass, osmconf, osmparse,
-                   pbf, shp, kml, osmand, garmin)
+                   pbf, shp, kml, osmand, garmin, transform)
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
@@ -185,6 +185,20 @@ class OSMPrepSchemaTask(ExportTask):
         osmparser.create_default_schema()
         osmparser.update_zindexes()
         return {'result': sqlite}
+    
+
+class ThematicLayersExportTask(ExportTask):
+    
+    name = "Thematic Export"
+    
+    def run(self, run_uid=None, stage_dir=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        sqlite = stage_dir + 'query.sqlite'
+        transform_sqlite = stage_dir + 'transform_query.sqlite'
+        transform = transform.TransformSQlite(sqlite=sqlite, transform=transform_path,
+                                              transform_sqlite=transform_sqlite)
+        transform.transform_spatialite()
+        return {'result': transform_sqlite}
  
 
 class ShpExportTask(ExportTask):

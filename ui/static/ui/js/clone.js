@@ -31,6 +31,8 @@ clone.job = (function(){
             initHDMFeatureTree();
             initOSMFeatureTree();
             initNominatim();
+            initPresetSelectionHandler();
+            initConfigSelectionHandler();
             populateForm();
         }
     }
@@ -411,6 +413,44 @@ clone.job = (function(){
      * Initialize the form validation.
      */
     function initForm(){
+        
+        /*
+         * Initialize the bootstrap form wizard.
+         */
+        $('#create-job-wizard').bootstrapWizard({
+            tabClass: 'nav nav-pills',
+            onTabClick: function(tab, navigation, index){
+                //return validateTab(index);
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip');
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next');
+                }
+            },
+            onNext: function(tab, navigation, index){
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip');
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next');
+                }
+            },
+            onPrevious: function(tab, navigation, index){
+                if (index == 2 || index == 3){
+                    $('ul.pager.wizard').find('li.next > a').html('Skip');
+                }
+                else{
+                    $('ul.pager.wizard').find('li.next > a').html('Next');
+                }
+            }
+        });
+        
+        // ----  FORM VALIDATION ---- //
+        
+        /*
+         * Set up form validation.
+         */
         $('#create-job-form').formValidation({
             framework: 'bootstrap',
             // Feedback icons
@@ -479,7 +519,21 @@ clone.job = (function(){
                             message: 'not empty'
                         }
                     }
-                }
+                },
+                'filename': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The filename is required and cannot be empty.'
+                        },
+                    }
+                },
+                'config_type': {
+                    validators: {
+                        notEmpty: {
+                            message: 'The configuration type is required and cannot be empty.'
+                        },
+                    }
+                },
             }
         })
         .on('success.form.fv', function(e){
@@ -493,64 +547,22 @@ clone.job = (function(){
             $('#btn-submit-job').prop('disabled', 'false');
         })
         .on('success.field.fv', function(e) {
-            //$('#btn-submit-job').prop('disabled', 'true');
-        });
-        
-        $('.btn-file :file').on('change', function() {
-            var input = $(this),
-                numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-                input.trigger('fileselect', [numFiles, label]);
-        });
-        
-        $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
-        });
-        
-        $('#create-job-form').bind('change', function(e){
-           var name = $(this).find('input[name="name"]').val();
-           var description = $(this).find('textarea[name="description"]').val();
-           var event = $(this).find('input[name="event"]').val();
-           var formats = [];
-           $.each($(this).find('input[name="formats"]:checked'), function(i, format){
-                console.log($(this).val());
-                formats.push($(this).val());
-           });
-           
-           console.log(name, description, event, formats);
-        });
-        
-        $('#create-job-wizard').bootstrapWizard({
-            tabClass: 'nav nav-pills',
-            onTabClick: function(tab, navigation, index){
-                //return validateTab(index);
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip')
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next')
-                }
-            },
-            onNext: function(tab, navigation, index){
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip')
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next')
-                }
-            },
-            onPrevious: function(tab, navigation, index){
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip')
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next')
-                }
+            // re-enable the file upload button when field is valid
+            if (e.target.id === 'filename' || e.target.id === 'config_type') {
+                $('button#upload').prop('disabled', false);
+                $('button#select-file').prop('disabled', false);
+            }
+        }).on('err.field.fv', function(e) {
+            // re-enable the file upload button when field is valid
+            if (e.target.id === 'filename' || e.target.id === 'config_type') {
+                $('button#upload').prop('disabled', true);
+                $('button#select-file').prop('disabled', true);
             }
         });
         
-        
+        /*
+         * Validates a wizard tab given the tab index.
+         */
         function validateTab(index) {
             var fv = $('#create-job-form').data('formValidation'), // FormValidation instance
                 // The current tab
@@ -583,7 +595,239 @@ clone.job = (function(){
             return true;
         }
         
-         // handle form submission
+        /*
+         * Validates the file upload tab.
+         */
+        function validateFileUploadTab() {
+            var fv = $('#create-job-form').data('formValidation'), // FormValidation instance
+                // The current tab
+                $tab = $('#create-job-form').find('.tab-pane').eq(3);
+            
+            // validate the form panel contents
+            fv.validateContainer($tab);
+            var isValid = fv.isValidContainer($tab);
+            if ((isValid === false || isValid === null)){
+                // stay on this tab
+                $('button#upload').prop('disabled', true);
+                return false;
+            }
+            $('button#upload').prop('disabled', false);
+            
+            // reset validation on fields
+            fv.resetField($('input#filename'));
+            fv.resetField($('select#config_type'));
+            
+            return true;
+        }
+        
+        // ----- UPLOAD TAB ----- //
+        
+        $('button#select-file').bind('click', function(e){
+            if (!validateFileUploadTab()) {
+                e.preventDefault();
+                $(this).prop('disabled', true);
+            }
+        });
+        
+        /*
+         * Listen for changes on file selection button.
+         */
+        $('button#select-file :file').on('change', function(){
+                var $input = $(this),
+                    filename = $input.val().replace(/\\/g, '/').replace(/.*\//, ''),
+                    $filelist = $('#filelist'),
+                    selection = {},
+                    type = $('option:selected').val(),
+                    published = $('input#publish_config').is(':checked') ? 'Published' : 'Private';
+                selection['filename'] = filename;
+                selection['config_type'] = type;
+                selection['published'] = published;
+                
+                // disable form fields
+                $('input#filename').prop('disabled', true);
+                $('select#config_type').prop('disabled', true);
+                $('input#publish_config').prop('disabled', true);
+                
+                // toggle select and upload button visibility
+                $('.btn-file').css('visibility', 'hidden');
+                $('button#upload').prop('disabled', false).css('visibility', 'visible');
+                
+                // disable config-browser
+                $('button#select-config').prop('disabled', true);
+                
+                // trigger the selection event
+                $filelist.trigger({type: 'config:fileselected', source: 'config-upload', selection: selection});
+        });
+        
+        /*
+         * Handle config file upload.
+         */
+        $('button#upload').bind('click', function(e){
+            if (!validateFileUploadTab()){
+                e.preventDefault();
+                return;
+            }
+            // disable the upload button
+            $('button#upload').prop('disabled', true);
+            // disable the config-select button
+            $('button#select-config').prop('disabled', true);
+            
+            // disable selected config remove buttons until file uploaded
+            $('#filelist').find('tr.config').find('button').each(function(idx, btn){
+                $(btn).prop('disabled', true);
+            });
+            
+            // show progress bar
+            $('button#remove').css('display', 'none');
+            $('.progress').css('display', 'block');
+            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+            var filename = $('input#filename').val();
+            var config_type = $('select#config_type').val();
+            switch (config_type) {
+                case 'PRESET':
+                    $('option#select-preset').prop('disabled', true);
+                    break;
+                case 'TRANSFORM':
+                    $('option#select-transform').prop('disabled', true);
+                    break;
+                case 'TRANSLATION':
+                    $('option#select-translate').prop('disabled', true);
+                    break;
+            }
+            var published = $('input[name="publish_config"]').is(':checked');
+            var data = new FormData();
+            data.append('name', filename);
+            data.append('config_type', config_type);
+            data.append('published', published);
+            var $filedata = $('#fileupload').get(0).files[0];
+            data.append('upload', $filedata);
+            $.ajax({
+                // post to the config endpoint
+                url: Config.CONFIGURATION_URL,
+                type: 'POST',
+                contentType: false,
+                data: data,
+                xhr: function() {
+                    var xhr = $.ajaxSettings.xhr();
+                    if(xhr.upload){ // Check if upload property exists
+                        xhr.upload.addEventListener('progress', handleProgress, false); // For handling the progress of the upload
+                    }
+                    else {
+                        console.log('File upload not supported in this browser');
+                        // whats the fallback?
+                        //TODO: alert user here..
+                    }
+                    return xhr;
+                },
+                processData: false, // send as multipart
+                beforeSend: function(jqxhr){
+                    // set the crsf token header for authentication
+                    jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function(result, textStatus, jqxhr) {
+                    
+                    // trigger preset:selected event
+                    if (result.config_type === 'PRESET') {
+                        $(document).trigger({type: 'preset:selected', source: 'config-upload'});
+                    }
+                    var selection = {};
+                    selection['uid'] = result.uid;
+                    selection['filename'] = result.filename;
+                    selection['config_type'] = result.config_type;
+                    selection['published'] = result.published;
+                    
+                    $('#filelist').trigger({type: 'config:uploaded', source: 'config-upload', selection: selection});
+                    
+                },
+                error: function(jqxhr, textStatus, errorThrown){
+                    console.log(jqxhr);
+                    resetUploadConfigTab(textStatus);
+                    var modalOpts = {
+                        keyboard: true,
+                        backdrop: 'static',
+                    }
+                    var message = jqxhr.responseJSON.message[0];
+                    $('p#message').html(message);
+                    $("#uploadConfigError").modal(modalOpts, 'show');
+                }
+            });
+        });
+        
+        /*
+         * Handle click on select config button (config-browser)
+         */
+        $('button#select-config').on('click', function(e){
+            var modalOpts = {
+                    keyboard: true,
+                    backdrop: 'static',
+            }
+            $("#configSelectionModal").modal(modalOpts, 'show');
+        });
+        
+        /*
+         * Updates progressbar on file upload.
+         */
+        function handleProgress(e){
+            if(e.lengthComputable){
+                var percent = e.loaded / e.total * 100;
+                $('.progress-bar').attr({value:e.loaded,max:e.total});
+                $('.progress-bar').css('width', percent + '%');
+            }
+        }
+        
+        // ----- SUMMARY TAB ----- //
+        
+        /*
+         * Listen for changes to the form
+         * and update the export summary tab.
+         */
+        $('#create-job-form').bind('change', function(e){
+            var name = $(this).find('input[name="name"]').val();
+            var description = $(this).find('textarea[name="description"]').val();
+            var event = $(this).find('input[name="event"]').val();
+            $('#summary-name').html(name);
+            $('#summary-description').html(description);
+            $('#summary-event').html(event);
+            var formats = [];
+            var $ul = $('<ul>');
+            $.each($(this).find('input[name="formats"]:checked'), function(i, format){
+                var val = $(this).val();
+                switch (val){
+                    case 'obf':
+                        $ul.append($('<li>OSMAnd Format</li>'));
+                        break;
+                    case 'shp':
+                        $ul.append($('<li>ESRI Shapefile Format</li>'));
+                        break;
+                    case 'kml':
+                        $ul.append($('<li>KML Format</li>'));
+                        break;
+                    case 'garmin':
+                        $ul.append($('<li>Garmin IMG Format</li>'));
+                        break;
+                    case 'sqlite':
+                        $ul.append($('<li>SQlite Database Format</li>'));
+                        break;
+                }
+            });
+            $('#summary-formats').html($ul);
+            var $tbl = $('<table class="table">');
+            $tbl.append('<tr><th>Filename</th><th>Type</th><th>Status</th></tr>');
+            $('#filelist tr.config').each(function(idx, config){
+                 var filename = $(config).find('td').eq(0).find('span').html();
+                 var config_type = $(config).find('td').eq(1).html();
+                 var status = $(config).find('td').eq(2).html();
+                 $tbl.append('<tr><td>' + filename + '</td><td>' + config_type + '</td><td>' + status + '</td></tr>');
+            });
+            $('#summary-configs').html($tbl);
+        });
+        
+    
+        // ----- FORM SUBMISSION ----- //
+            
+        /*
+         * Submits the export job.
+         */
         $('#create-job-form').submit(function(e){
             // check that the form is valid..
             var $form = $('#create-job-form'),
@@ -595,27 +839,42 @@ clone.job = (function(){
             if (isValidBBox === false || isValidBBox === null) {
                 validateBounds(bbox.getDataExtent());
             }
-            // validate the form
-            fv.validate();
-            var fvIsValidForm = fv.isValid();
             
+            /*
+             * Disable config form field validation
+             * as validation of these fields is
+             * only required on config upload.
+             */
+            fv.enableFieldValidators('filename', false);
+            fv.enableFieldValidators('config_type', false);
+            
+            fv.validate(); // validate the form
+            var fvIsValidForm = fv.isValid();
             if (!fvIsValidForm) {
-                // prevent form submission if form invalid
+                // alert user here..
+                alert('invalid form');
                 e.preventDefault();
             }
             else {
-                // submit the form as json
+                // submit the form..
                 var fields = $form.serializeArray();
                 var form_data = {};
                 var tags = [];
                 var formats = [];
                 $.each(fields, function(idx, field){
-                    // add formats as an array
-                    if (field.name === 'formats') {
-                        formats.push(field.value);
-                    }
-                    else {
-                        form_data[field.name] = field.value;
+                    console.log(idx, field);
+                    // ignore config upload related fields
+                    switch (field.name){
+                        case 'filename': break;
+                        case 'config_type': break;
+                        case 'publishconfig': break;
+                        case 'published':
+                            form_data['published'] = true;
+                            break;
+                        case 'formats':
+                            formats.push(field.value);
+                        default:
+                            form_data[field.name] = field.value;
                     }
                 });
                 // get the selected tags
@@ -651,10 +910,8 @@ clone.job = (function(){
                         jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
                     },
                     success: function(result) {
-                        // get the uid for the newly created export
-                        var uid = result.uid; 
+                        var uid = result.uid;
                         var url = '/jobs/' + uid;
-                        // redirect to the detail page
                         window.location.href=url;
                     }
                 });
@@ -662,11 +919,21 @@ clone.job = (function(){
         });
     }
     
+    // ----- FEATURE SELECTION TREES ----- //
     
     /*
      * Initialises the HDM feature tree.
      */
     function initHDMFeatureTree(){
+        // turn off preset selection on config upload
+        //$('option#select-preset').prop('disabled', true);
+        
+        /*
+         * Fire preset selection on hdm-tree
+         * to set the state of preset related controls.
+         */
+        $(document).trigger({type: 'preset:selected', source: 'hdm-feature-tree'});
+        
         $.get(Config.HDM_TAGS_URL, function(data){
             var level_idx = 0;
             var $tree = $('#hdm-feature-tree ul.nav-list');
@@ -677,7 +944,7 @@ clone.job = (function(){
             /*
              * Recursively builds the feature tree.
              */
-            function traverse(data, $level){
+            function traverse(data, $level, level_idx){
                 $.each(data, function(k,v){
                     if ($(v).attr('displayName')){
                         var name = $(v).attr('displayName');
@@ -687,14 +954,17 @@ clone.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" /></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" checked/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
-                        var $nextLevel = $('<li class="level nav-header closed"><label><i class="level fa fa-plus-square-o fa-fw"></i>' + k + '</label>' + 
-                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox"/></div>');
+                        var state = level_idx == 0 ? 'open' : 'closed';
+                        var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
+                        var root = level_idx == 0 ? 'root' : '';
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" checked/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
                         $level.append($nextLevel);
@@ -702,90 +972,83 @@ clone.job = (function(){
                         traverse(v, $nextUL, level_idx);
                     }
                 });
-            } 
-            
-            /*
-             * Handle click events on tree levels
-             */
+            }
+        
+            // toggle level collapse
             $('#hdm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
                     $(this).parent().removeClass('open').addClass('closed');
-                    $(this).parent().find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                    $(this).find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
                 }
                 else {
                     $(this).parent().removeClass('closed').addClass('open');
-                    $(this).parent().find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                    $(this).find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
-                
             });
             
             /*
-             * Handle events on sub-levels
+             * Handle events on sub-level checkboxes.
              */
-            $('#hdm-feature-tree li.level input').bind('change', function(e){
-                /*
-                var numChecked = $('.tree-checkbox > input:checked').size();
-                if (numChecked > 0) {
-                    $.each($('#osm-feature-tree').find('input[type="checkbox"]'), function(c){
-                        $(this).prop('checked', false).prop('disabled', true);
-                    });
-                }
-                else {
-                    $.each($('#osm-feature-tree').find('input[type="checkbox"]'), function(c){
-                        $(this).prop('checked', false).prop('disabled', false);
-                    });
-                }
-                var checked = $(this).find('input').is(':checked');
-                if (checked) {
-                    $('#osm-feature-tree').prop('disabled', true);
-                }
-                else {
-                    
-                }
-                */
-                var checked = $(this).find('input').is(':checked');
-                $(this).parent().find('.tree-checkbox').each(function(i, value){
-                    var $input = $(value).find('input');
-                    $input.prop('checked', checked);
-                })
-            });
-            
-            /*
-             * Handle click events on entries
-             */
-            /*
-            $('li.entry > .tree-checkbox').bind('click', function(e){
-                var checked = $(this).find('input').is(':checked');
-                if (checked) {
-                    console.log(checked);
-                    $(this).parentsUntil('li.level').parent().find('li.level > .tree-checkbox').prop('checked', true);
-                    var parentLevel = $(this).parentsUntil('li.level').parent().find('.tree-checkbox')[0];
-                    $(parentLevel).find('input').prop('checked', true);
-                }
-            });
-            */
-            $('input.entry, input.level').bind('click', function(e){
+            $('#hdm-feature-tree input.level').on('change', function(e){
                 var checked = $(this).is(':checked');
-                if (checked) {
-                     
-                }
-                /*
-                var tags = [];
-                // list selected tags
-                $.each($('#hdm-feature-tree').find('input:checked'), function(k, v){
-                    var val = $(v).val();
-                    if (val != '') {
-                        if (val == 'highway:service') {
-                            alert(val);
-                        }
-                        tags.push($(v).val());
+                $(this).parent().parent().find('ul input').each(function(i, input){
+                    $(input).prop('checked', checked);
+                });
+                $(this).parentsUntil('#hdm-feature-tree', 'li.level').slice(1).each(function(i, level){
+                    $input = $(level).find('input.level:first');
+                    var childrenChecked = $(level).find('ul input.level:checked').length > 0 ? true : false;
+                    if (childrenChecked) {
+                        $input.prop('checked', true);
+                    }
+                    else {
+                        $input.prop('checked', false);
                     }
                 });
-                console.log(tags.join([separator=',']));
-                */
+
             });
             
+            /*
+            * Handle events on entry checkboxes.
+            */
+            $('#hdm-feature-tree input.entry').on("change", function(e){
+                // fire changed event on levels
+                $('#hdm-feature-tree input.level').trigger("entry:changed", e);
+            });
+            
+            /*
+             * Listen for changes on entry level checkboxes
+             * and update levels accordingly.
+             */
+            $('#hdm-feature-tree input.level').on("entry:changed", function(e){
+                var $currentLevel = $(this).parent().parent();
+                var hasCheckedChildren = $currentLevel.find('input.entry:checked').length > 0 ? true : false;
+                if (hasCheckedChildren) {
+                    var $input = $currentLevel.find('input:first');
+                    $input.prop('checked', true);
+                }
+                else {
+                    var $input = $currentLevel.find('input:first');
+                    $input.prop('checked', false);
+                }
+            });
+            
+            /*
+             * Listen for changes to the HDM root node.
+             * Trigger preset selection / deselection events.
+             */
+            $('#hdm-feature-tree li.root').on('change', function(e){
+                var checked = $(this).find('input.level:first').is(':checked');
+                $('#osm-feature-tree').find('input').each(function(idx, input){
+                    $(input).prop('disabled', checked);
+                });
+                if (checked) {
+                    $(document).trigger({type: 'preset:selected', source: 'feature-tree'});
+                }
+                else {
+                    $(document).trigger({type: 'preset:deselected', source: 'feature-tree'});
+                }
+            });
         });
     }
     
@@ -804,7 +1067,7 @@ clone.job = (function(){
             /*
              * Recursively builds the feature tree.
              */
-            function traverse(data, $level){
+            function traverse(data, $level, level_idx){
                 $.each(data, function(k,v){
                     if ($(v).attr('displayName')){
                         var name = $(v).attr('displayName');
@@ -814,14 +1077,17 @@ clone.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '"/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" disabled/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
                     else {
                         var collapse = level_idx > 0 ? 'collapse' : '';
-                        var $nextLevel = $('<li class="level nav-header closed"><label><i class="level fa fa-plus-square-o fa-fw"></i>' + k + '</label>' + 
-                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" /></div>');
+                        var state = level_idx == 0 ? 'open' : 'closed';
+                        var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
+                        var root = level_idx == 0 ? 'root' : '';
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled /></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
                         $level.append($nextLevel);
@@ -829,44 +1095,83 @@ clone.job = (function(){
                         traverse(v, $nextUL, level_idx);
                     }
                 });
-            } 
+            }
             
-            /*
-             * Handle click events on tree levels
-             */
+            // toggle level collapse
             $('#osm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
                     $(this).parent().removeClass('open').addClass('closed');
-                    $(this).parent().find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                    $(this).find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
                 }
                 else {
                     $(this).parent().removeClass('closed').addClass('open');
-                    $(this).parent().find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                    $(this).find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
-                
             });
             
             /*
-             * Handle events on sub-levels
+             * Handle events on sub-level checkboxes.
              */
-            $('li.level > .tree-checkbox').bind('click', function(e){
-                var checked = $(this).find('input').is(':checked');
-                $(this).parent().find('.tree-checkbox').each(function(i, value){
-                    var $input = $(value).find('input');
-                    $input.prop('checked', checked);
-                })
-            });
-            
-            /*
-             * Handle click events on entries
-             */
-            $('input.entry, input.level').bind('click', function(e){
+            $('#osm-feature-tree input.level').on('change', function(e){
                 var checked = $(this).is(':checked');
-                if (checked) {
-                     
+                $(this).parent().parent().find('ul input').each(function(i, input){
+                    $(input).prop('checked', checked);
+                });
+                $(this).parentsUntil('#hdm-feature-tree', 'li.level').slice(1).each(function(i, level){
+                    $input = $(level).find('input.level:first');
+                    var childrenChecked = $(level).find('ul input.level:checked').length > 0 ? true : false;
+                    if (childrenChecked) {
+                        $input.prop('checked', true);
+                    }
+                    else {
+                        $input.prop('checked', false);
+                    }
+                });
+
+            });
+            
+            /*
+            * Handle events on entry checkboxes.
+            */
+            $('#osm-feature-tree input.entry').on("change", function(e){
+                // fire changed event on levels
+                $('#osm-feature-tree input.level').trigger("entry:changed", e);
+            });
+            
+            /*
+             * Listen for changes on entry level checkboxes
+             * and update levels accordingly.
+             */
+            $('#osm-feature-tree input.level').on("entry:changed", function(e){
+                var $currentLevel = $(this).parent().parent();
+                var hasCheckedChildren = $currentLevel.find('input.entry:checked').length > 0 ? true : false;
+                if (hasCheckedChildren) {
+                    var $input = $currentLevel.find('input:first');
+                    $input.prop('checked', true);
+                }
+                else {
+                    var $input = $currentLevel.find('input:first');
+                    $input.prop('checked', false);
                 }
             });
+            
+            /*
+             * Listen for changes to the OSM root node.
+             */
+            $('#osm-feature-tree li.root').on('change', function(e){
+                var checked = $(this).find('input.level:first').is(':checked');
+                $('#hdm-feature-tree').find('input').each(function(idx, input){
+                    $(input).prop('disabled', checked);
+                });
+                if (checked) {
+                    $(document).trigger({type: 'preset:selected', source: 'feature-tree'});
+                }
+                else {
+                    $(document).trigger({type: 'preset:deselected', source: 'feature-tree'});
+                }
+            });
+            
             
         });
     }
@@ -1026,6 +1331,482 @@ clone.job = (function(){
         });
     }
     
+    /*
+     * Listens for preset selection events
+     * and updates state on preset related
+     * ui controls.
+     *
+     * Preset selection events can be triggered by:
+     *  - hdm and osm feature-tree
+     *  - config-upload
+     *  - config-browser
+     */
+    function initPresetSelectionHandler(){        
+        // handle preset selections
+        $(document).on('preset:selected', function(e){
+            switch (e.source){
+                case 'feature-tree':
+                    // feature trees can be overridden by other preset sources
+                    break;
+                case 'config-upload':
+                    // disable the selection trees
+                    $('#hdm-feature-tree, #osm-feature-tree').find('input').each(function(idx, input){
+                        $(input).prop('checked', false);
+                        $(input).prop('disabled', true);
+                    });
+                    // disable preset config types in the config browser
+                    $('input[data-type="PRESET"]')
+                        .each(function(i, input){
+                            $(input).prop('disabled', true);
+                            $(input).closest('tr').css('opacity', .5);
+                    });
+                    break;
+                case 'config-browser':
+                    // disable the preset option on the config type selection control
+                    $('option#select-preset').prop('disabled', true);
+                    // clear and disable the feature selection trees
+                    $('#hdm-feature-tree, #osm-feature-tree').find('input').each(function(idx, input){
+                        $(input).prop('checked', false);
+                        $(input).prop('disabled', true);
+                    });
+                    break;  
+            }
+            
+        });
+        
+        // handle deselections
+        $(document).on('preset:deselected', function(e){
+            switch (e.source){
+                case 'feature-tree':
+                    // enable the preset option on the config type selection control
+                    $('option#select-preset').prop('disabled', false);
+                    // enable preset config types in the config browser
+                    $('input[data-type="PRESET"]')
+                        .each(function(i, input){
+                            $(input).prop('disabled', false);
+                            $(input).closest('tr').css('opacity', 1);
+                    });
+                    break;
+                case 'config-upload':
+                    // re-enable the hdm-feature-tree and select all by default
+                    $('#hdm-feature-tree').find('input').each(function(idx, input){
+                        $(input).prop('disabled', false);
+                        $(input).prop('checked', true);
+                        
+                    });
+                    // enable preset config types in the config browser
+                    $('input[data-type="PRESET"]')
+                        .each(function(i, input){
+                            $(input).prop('disabled', false);
+                            $(input).closest('tr').css('opacity', 1);
+                    });
+                    // enable the config_type selection option
+                    $('option#select-preset').prop('disabled', false);
+                    break;
+                case 'config-browser':
+                    // enable the preset option on the config type selection control
+                    $('option#select-preset').prop('disabled', false);
+                    // enable the hdm feature selection tree
+                    $('#hdm-feature-tree').find('input').each(function(idx, input){
+                        $(input).prop('disabled', false);
+                        $(input).prop('checked', true);
+                    });
+                    break;
+            }
+            
+        });
+    }
+    
+    /*
+     * Handles configuration selection events
+     * when configurations are added or removed
+     * to or from the filelist table.
+     *
+     * These events are triggered by:
+     *  -   file selections on the upload config form  = config:fileselected
+     *  -   a file successfully uploaded = config:uploaded
+     *  -   config selections added by the config browser = config:added
+     *  -   a pending file upload removed = config:remove-upload
+     *  -   a configuration removed = config:removed
+     *  -   an uploaded configuration deleted = config:upload-deleted
+     *
+     *  Other events fired:
+     *  -   notification to the config-browser that a file is removed = filelist:removed
+     *  
+     */
+    function initConfigSelectionHandler(){
+        
+        var filesSelected = 0;
+        
+        $('#filelist').on('config:added config:uploaded', function(e){
+            var selection = e.selection;
+            var source = e.source;
+            var uid = selection.uid;
+            
+            if (source == 'config-upload') {
+                // add the uploaded uid to the table row
+                $tr = $('#filelist').find('tr#upload');
+                $tr.attr('id', selection.uid);
+                
+                // re-enable any remove buttons on the filelist
+                $(this).find('tr.config').find('button').each(function(idx, btn){
+                    $(btn).prop('disabled', false);
+                });
+                
+                // add the delete button to the uploaded file
+                var $td = $tr.find('td').last();
+                $td.empty();
+                var html = '<button id="' + selection.uid + '" type="button" class="delete-file btn btn-danger btn-sm pull-right">' +
+                                    'Delete&nbsp;&nbsp;<span class="glyphicon glyphicon-trash">' +
+                            '</span></button>';
+                $td.html(html);
+                
+                // reset the form for more file uploads..
+                resetUploadConfigTab('success');
+                
+                /*
+                 * If preset is being removed trigger selected event
+                 * to notify other preset related ui controls.
+                 */
+                if (selection.config_type === 'PRESET') {
+                   $(document).trigger({type: 'preset:selected', source: 'config-upload'});
+                }
+                
+                // notify the config-browser
+                $('table#configurations').trigger({type: 'config:added', selection:selection});
+                
+                // handle delete events
+                $tr.on('click', 'button#' + selection.uid, function(e){
+                    var data = new FormData();
+                    data.append('_method', 'DELETE');
+                    $.ajax({
+                        url: Config.CONFIGURATION_URL + '/' + e.target.id,
+                        type: 'POST',
+                        data: data,
+                        contentType: false,
+                        processData: false,
+                        beforeSend: function(jqxhr){
+                            // set the crsf token header for authentication
+                            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+                            jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                        success: function(result, textStatus, jqxhr) {
+                            $('table#configurations').trigger({type: 'config:removed', selection: selection});
+                            $('#filelist').trigger({type: 'config:delete-upload', selection: selection});
+                        },
+                        error: function(jqxhr, textStatus, errorThrown){
+                            console.log(jqxhr);
+                            var status = jqxhr.status;
+                            resetUploadConfigTab(textStatus);
+                            var modalOpts = {
+                                keyboard: true,
+                                backdrop: 'static',
+                            }
+                            var message = '';
+                            if (status === 404) {
+                                message = 'Requested file not found.'
+                            }
+                            else {
+                                message = jqxhr.responseJSON.message[0];
+                            }
+                            $('p#message').html(message);
+                            $("#uploadConfigError").modal(modalOpts, 'show');
+                        }
+                    });
+                    
+                });
+            }
+            else {
+                // add the selected config from config-browser to the table
+                var $tr = $('<tr id="' + selection.uid + '" data-filename="' + selection.filename + '" data-source="' + source + '"' +
+                                'data-type="' + selection.config_type + '" data-published="' + selection.published + '"' +
+                                'class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + selection.filename + '</span></td>' +
+                                '<td>' + selection.config_type + '</td><td>' + selection.published + '</td>' +
+                                '<td><button id="' + selection.uid + '" type="button" class="btn btn-warning btn-sm pull-right">Remove&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button></td></tr>');
+                $(this).append($tr);
+                $tr.on('click', 'button#' + selection.uid, function(e){
+                    // notify the config-browser of removal
+                    $('table#configurations').trigger({type: 'filelist:removed', selection: selection});
+                    // remove from filelist
+                    $('#filelist').trigger({type: 'config:removed', selection: selection});
+                });
+                
+                /*
+                 * If preset is being removed trigger selected event
+                 * to notify other preset related ui controls.
+                 */
+                if (selection.config_type === 'PRESET') {
+                   $(document).trigger({type: 'preset:selected', source: 'config-upload'});
+                }
+            }
+                
+            $(this).css('display', 'block');
+            filesSelected += 1;
+            updateConfigInputs(selection);
+            
+            // trigger max files check
+            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
+
+        });
+        
+        // a configuration file is selected for upload
+        $('#filelist').on('config:fileselected', function(e){
+            var selection = e.selection;
+            var source = e.source;
+            var html = '<tr id="upload" data-filename="' + selection.filename + '" data-source="' + source + '"' +
+                        'data-type="' + selection.config_type + '" data-published="' + selection.published + '" ' +
+                        'class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + selection.filename + '</span></td>' +
+                       '<td>' + selection.config_type + '</td><td>' + selection.published + '</td>' +
+                       '<td><button id="remove-upload" type="button" class="btn btn-warning btn-sm pull-right">Remove&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button></td></tr>';
+            $(this).append(html);
+            $(this).css('display', 'block');
+            
+            // handle events on the remove button
+            $('button#remove-upload').bind('click', function(e){
+                $('#filelist').trigger({type: 'config:remove-upload'});
+            });
+        });
+        
+        // handle config selection removal from file list
+        $('#filelist').on('config:removed', function(e){
+            filesSelected -= 1;
+            var selection = e.selection;
+            
+            // get the row being removed
+            var $tr = $(this).find('tr#' + selection.uid);
+            var config_type = $tr.find('td').eq(1).html();
+            
+            // re-enable that config type in the dropdown
+            var $option = $('option[value="' + config_type + '"]');
+            $option.prop('disabled', false);
+            
+            /*
+             * If preset is being removed trigger deselected event
+             * to notify other preset related ui controls.
+             */
+            if (config_type === 'PRESET') {
+                $(document).trigger({type: 'preset:deselected', source: 'config-upload'});
+            }
+            
+            // remove the config form input value
+            var config_type_lwr = config_type.toLowerCase();
+            $('input#' + config_type_lwr).val();
+            
+            // remove the selected config from the table
+            var configs = $('#filelist tr.config').length;
+            var $tr = $(this).find('tr#' + selection.uid);
+            if (configs == 1) {
+               $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                    // hide the file list
+                    $('#filelist').css('display', 'none');
+                });  
+            }
+            else {
+                // just remove this row..
+                $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                });  
+            }
+            
+            // trigger change event on form to update summary tab
+            $('#create-job-form').trigger('change');
+            
+            // trigger max files check
+            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
+        });
+        
+        // handle pending upload selection removal
+        $('#filelist').on('config:remove-upload', function(e){
+            // re-enable the upload input fields to allow another upload
+            $('input#filename').prop('disabled', false);
+            $('select#config_type').prop('disabled', false);
+            $('input#publish_config').prop('disabled', false);
+            $('input#filename').val('');
+            $('option#select-message').prop('selected', true);
+            $('input#publish_config').prop('checked', false);
+            
+            // reenable the select config button
+            $('button#select-config').prop('disabled', false);
+            
+            // reset the input field validation
+            var fv = $('#create-job-form').data('formValidation');
+            fv.resetField($('input#filename'));
+            fv.resetField($('select#config_type'));
+            
+            // toggle file select and upload buttons
+            $('button#select-file').css('visibility', 'visible');
+            $('button#upload').css('visibility', 'hidden');
+            
+            // clear the selected files list on the file input
+            var $fileupload = $('#fileupload');
+            $fileupload.val('');
+            
+            // remove the pending upload from the table
+            var configs = $('#filelist tr.config').length;
+            var $tr = $(this).find('tr#upload');
+            if (configs == 1) {
+               $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                    // hide the file list
+                    $('#filelist').css('display', 'none');
+                });  
+            }
+            else {
+                // just remove this row..
+                $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                });  
+            }
+            
+            // trigger change event on form to update summary tab
+            $('#create-job-form').trigger('change');
+        });
+        
+        // an uploaded file is deleted
+        $('#filelist').on('config:delete-upload', function(e){
+            var selection = e.selection;
+            
+            // get the row being deleted.
+            var $tr = $(this).find('tr#' + selection.uid);
+            // decrement the number of uploaded files
+            filesSelected -= 1;
+            
+            // reset the upload ui
+            resetUploadConfigTab('success');
+            
+            // clear the selected files list
+            var $fileupload = $('#fileupload');
+            $fileupload.val('');
+            
+            // re-enable this config_type in the select combo
+            var config_type = $tr.find('td').eq(1).html();
+            var $option = $('option[value="' + config_type + '"]');
+            $option.prop('disabled', false);
+            
+            /*
+             * Re-enable the HDM feature selection tree.
+             */
+            if (config_type === 'PRESET') {
+                $(document).trigger({type: 'preset:deselected', source: 'config-upload'});
+            }
+            
+            // remove the config form input value
+            var config_type_lwr = config_type.toLowerCase();
+            $('input#' + config_type_lwr).val();
+            
+            // get number of configuration files in the table
+            var configs = $('#filelist tr.config').length;
+            if (configs == 1) {
+                // remove the row and hide the table
+                $tr.fadeOut(300, function(){
+                    // remove the upload from the table
+                    $(this).remove();
+                    // hide the file list
+                    $('#filelist').css('display', 'none');
+                    // trigger change event on form when config deleted
+                    $('#create-job-form').trigger('change');
+                });  
+            }
+            else {
+                // just remove the deleted row
+                $tr.fadeOut(300, function(){
+                    $(this).remove();
+                    // trigger change event on form when config deleted
+                    $('#create-job-form').trigger('change');
+                });
+            }
+            
+            // trigger max files check
+            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});           
+        });
+        
+        
+        $(document).on('config:checkmaxfiles', function(e){
+            var maxFiles = 3;
+            var filesSelected = e.filesSelected;
+            if (filesSelected == maxFiles) {
+                $('input#filename').prop('disabled', true);
+                $('select#config_type').prop('disabled', true);
+                $('input#publish_config').prop('disabled', true);
+                $('button#select-file').prop('disabled', true);
+                $('button#select-config').prop('disabled', true);
+            }
+            else {
+                // re-enable the fields
+                $('input#filename').prop('disabled', false);
+                $('select#config_type').prop('disabled', false);
+                $('input#publish_config').prop('disabled', false);
+                $('button#select-file').prop('disabled', false);
+                $('button#select-config').prop('disabled', false);
+            }
+            
+        });
+    }
+    
+    /*
+     * Updates the form with the uploaded config ids
+     */
+    function updateConfigInputs(selection){
+        var uid = selection.uid;
+        switch (selection.config_type){
+            case "PRESET":
+                $('option#select-preset').prop('disabled', true);
+                $('input#preset').val(uid);
+                break;
+            case "TRANSLATION":
+                $('option#select-translate').prop('disabled', true);
+                $('input#translation').val(uid);
+                break;
+            case "TRANSFORM":
+                $('option#select-transform').prop('disabled', true);
+                $('input#transform').val(uid);
+                break;
+        }
+    }
+    
+    /*
+     * Resets the upload config tab on success or failure.
+     */
+    function resetUploadConfigTab(textStatus){
+        // hide the progress bar
+        $('.progress').css('display', 'none');
+        $('.progress-bar').css('width', '0%');
+        
+        // toggle file selection and upload buttons
+        $('button#upload').css('visibility', 'hidden');
+        $('.btn-file').css('visibility', 'visible');
+        
+        // re-enabled config browser button
+        $('button#select-config').prop('disabled', false);
+        
+        // reset the fields.
+        $('input#filename').val('');
+        $('option#select-message').prop('selected', true);
+        $('input#publish_config').prop('checked', false);
+        
+        if (textStatus === 'error') {
+            // clear the selected files list
+            var $fileupload = $('#fileupload');
+            $fileupload.val('');
+            // get number of selected files in the table
+            var selected = $('#filelist tr').length  -1; // exclude <th>
+            if (selected == 1) {
+                // remove the last entry in the table
+                $('#filelist tr').last().remove();
+                $('#filelist').css('display', 'none');
+            }
+            else {
+                // just remove this row..
+                $('#filelist tr').last().remove();
+            }
+        }
+    }
+    
     /**
      * Pre-populates the form with details of
      * the export to clone.
@@ -1036,56 +1817,72 @@ clone.job = (function(){
         var job_uid = parts[5];
         console.log('Job uid is ' + job_uid);
         $.getJSON(Config.JOBS_URL + '/' + job_uid, function(data, success, jqXHR){
-            // describe export tab
+            
+            // -- describe export tab -- //
             $('#name').val(data.name);
             $('#description').val(data.description);
             $('#event').val(data.event);
-            // select formats tab
+            
+            // -- select formats tab -- //
             $.each(data.exports, function(idx, format){
                 $('#supported-formats input[value="' + format.slug + '"]').prop('checked', true);
             });
-            // select features tab
             
-            /*
-             * Get the data-model from the first tag.
-             * We're not mixing data-models (yet)
-             * so we can assume a single data model for now.
-             */
-            var dm = data.tags[0].data_model;
-            var $featureTree;
-            switch (dm) {
-                case 'OSM':
-                    $featureTree = $('#osm-feature-tree');
-                    break;
-                case 'HDM':
-                    $featureTree = $('#hdm-feature-tree');
-                    break;
-                default:
-                    $featureTree = $('#hdm-feature-tree');
+            // -- select features tab -- //
+            
+            var tags = data.tags.length;
+            if (tags > 0) {
+                /*
+                 * Get the data-model from the first tag.
+                 * We're not mixing data-models (yet)
+                 * so we can assume a single data model for now.
+                 */
+                var dm = data.tags[0].data_model;
+                var $featureTree;
+                switch (dm) {
+                    case 'OSM':
+                        $featureTree = $('#osm-feature-tree');
+                        break;
+                    case 'HDM':
+                        $featureTree = $('#hdm-feature-tree');
+                        break;
+                    default:
+                        $featureTree = $('#hdm-feature-tree');
+                }
+                
+                /*
+                 * iterate through exports tags and
+                 * check correspoing checkbox on selection tree.
+                 * Check parent levels also.
+                 */
+                $.each(data.tags, function(idx, tag){
+                    var key = tag.key;
+                    var val = tag.value;
+                    // check the corresponding input on the tree
+                    var $input = $featureTree.find('input[data-key="' + key + '"][data-val="' + val + '"]');
+                    $input.prop('checked', true);
+                    // check the parent levels
+                    $.each($input.parentsUntil('#' + dm.toLowerCase() + '-feature-tree', 'li.level'),
+                           function(idx, level){
+                        $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
+                    });
+                });
             }
             
-            /*
-             * iterate through exports tags and
-             * check correspoing checkbox on selection tree.
-             * Check parent levels also.
-             */
-            $.each(data.tags, function(idx, tag){
-                var key = tag.key;
-                var val = tag.value;
-                // check the corresponding input on the tree
-                var $input = $featureTree.find('input[data-key="' + key + '"][data-val="' + val + '"]');
-                $input.prop('checked', true);
-                // check the parent levels
-                $.each($input.parentsUntil('#' + dm.toLowerCase() + '-feature-tree', 'li.level'),
-                       function(idx, level){
-                    $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
-                });
-                
+            
+            // -- configuration tab -- //
+            var configs = data.configurations;
+            $(configs).each(function(idx, config){
+                var $filelist = $('#filelist');
+                var selection = {};
+                selection['uid'] = config.uid;
+                selection['config_type'] = config.config_type;
+                selection['filename'] = config.filename;
+                selection['published'] = config.published;
+                console.log(config);
+                // notify the config-browser
+                $('table#configurations').trigger({type: 'config:added', selection:selection});
             });
-            
-            // configuration tab
-            
-            // summary tab
             
             // bounding box
             var extent = data.extent;
@@ -1101,6 +1898,10 @@ clone.job = (function(){
             bounds.transform('EPSG:3857', 'EPSG:4326');
             // set the bounds on the form
             setBounds(bounds);
+            
+            // summary tab
+            
+            $('#create-job-form').trigger('change');
         });
     }
     

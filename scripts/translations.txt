@@ -1,0 +1,34 @@
+access=customers,access=clients
+access=delivery,access=livraison
+access=permissive,access=à la discrétion du propriétaire
+access=private,access=accès privé
+amenity=animal_shelter,amenity=refuge pour animaux
+amenity=arts_centre,amenity=centre culturel
+amenity=atm,amenity=distributeur de billets de banque
+amenity=baby_hatch,amenity=boîte d'abandon
+amenity=bank,amenity=banque
+amenity=bar,amenity=bar
+amenity=bench,amenity=banc
+barrier=fence,barrier=palissade
+barrier=gate,barrier=portail
+barrier=hedge,barrier=haie
+barrier=wall,barrier=mur
+bicycle=yes,bicycle=cyclable
+bridge=yes,bridge=pont
+building=apartments,building=immeuble d'appartements
+building=barn,building=grange
+building=bridge,building=pont
+building=bunker,building=bunker
+building=cabin,building=cabane
+building=cathedral,building=cathédrale
+building=civic,building=bâtiment municipal
+building=chapel,building=chapelle
+building=church,building=église
+building=construction,building=bâtiment en construction
+building=cowshed,building=étable
+building=detached,building=dépendance
+building=dormitory,building=résidence universitaire
+building=farm,building=ferme
+building=yes,building=bâtiment
+
+

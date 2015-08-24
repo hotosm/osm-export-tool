@@ -41,7 +41,7 @@ configurations.list = (function(){
             // initialize the search callback
             initSearch();
             // run the default search
-            runSearch();
+            //runSearch();
         },
     }
     
@@ -71,19 +71,6 @@ configurations.list = (function(){
             $('div#search-config').css('display', 'block').fadeIn(1500);
             // set message if no results returned from this url..
             $('td.dataTables_empty').html('No configuration files found.');
-            
-            /*
-             * toggle enabled/disabed state on config types
-             * based on what's currently in the select list.
-             */
-            $('#filelist tr.config').each(function(idx, tr){
-                var selection = getSelectionFromTR(tr);
-                $('input[data-type="' + selection.config_type + '"]')
-                    .each(function(i, input){
-                        $(input).prop('disabled', true);
-                        $(input).closest('tr').css('opacity', .5); 
-                });
-            });
             
             // enable checkboxes on selections
             $(selections).each(function(idx, selection){
@@ -156,7 +143,6 @@ configurations.list = (function(){
     // handle user config selections
     function initSelectionHandler(){
         $('button#select').on('click', function(e){
-            console.log(selections);
             var $filelist = $('#filelist');
             // clear the list and add the new selections
             $filelist.find('tr[data-source="config-browser"]').each(function(idx, tr){
@@ -166,6 +152,7 @@ configurations.list = (function(){
             $(selections).each(function(idx, selection){
                 $filelist.trigger({type: 'config:added', source: 'config-browser', selection: selection});
             });
+            selections = [];
         });
     }
     
@@ -184,12 +171,23 @@ configurations.list = (function(){
      * on selected file list.
      */
     function handleStateChanges(){
+        
+        /*
+         * Handle events on dialog show.
+         */
+        $('#configSelectionModal').on('show.bs.modal', function(e){
+            $('table#configurations tr.config').each(function(idx, tr){
+                var selection = getSelectionFromTR($(tr));
+                selections.push(selection);
+            });
+            runSearch();
+        });
+        
         /*
          * Listen for remove events on the filelist and update
          * selections accordingly.
          */
         $('table#configurations').on('filelist:removed', function(e){
-            console.log(e);
             $(selections).each(function(idx, selection){
                 if (selection.uid === e.selection.uid) {
                     selections.splice(idx, 1);
@@ -203,6 +201,7 @@ configurations.list = (function(){
          * and update state on this.
          */
         $('table#configurations').on('config:added', function(e){
+            selections.push(e.selection);
             toggleCheckboxes(e.selection, true);
         });
         

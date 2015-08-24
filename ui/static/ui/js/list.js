@@ -422,8 +422,10 @@ jobs.list = (function(){
             paging: false,
             info: false,
             filter: false,
+            ordering: true,
             searching: false,
             rowId: 'uid',
+            "order": [[ 3, "desc" ]],
             columns: [
                 {
                     data: 'name',
@@ -436,7 +438,7 @@ jobs.list = (function(){
                 {
                     data: 'created_at',
                     render: function(data, type, row){
-                        return moment(data).format('YYYY-MM-DD hh:mm');
+                        return moment(data).format('YYYY-MM-DD hh:mm a');
                     }
                 },
                 {data: 'region.name'}
