@@ -58,6 +58,7 @@ class ExportTaskRunner(TaskRunner):
             except ImportError as e:
                 msg = 'Error importing export task: {0}'.format(e)
                 logger.debug(msg)
+        
         # run the tasks 
         if len(export_tasks) > 0:
             # start the run
@@ -89,11 +90,21 @@ class ExportTaskRunner(TaskRunner):
             # pull out the tags to create the conf file
             categories = job.categorised_tags # dict of points/lines/polygons
             bbox = job.overpass_extents # extents of job in order required by overpass
+            
             # setup the initial tasks
             conf = OSMConfTask()
             query = OverpassQueryTask()
             pbfconvert = OSMToPBFConvertTask()
             prep_schema = OSMPrepSchemaTask()
+            
+            # check for transform and/or translate configurations
+            """
+            Not implemented for now.
+            
+            transform = job.configs.filter(config_type='TRANSFORM')
+            translate = job.configs.filter(config_type='TRANSLATION')
+            """
+            
             # save initial tasks to the db with 'PENDING' state..
             for initial_task in [conf, query, pbfconvert, prep_schema]:
                 try:
@@ -120,7 +131,7 @@ class ExportTaskRunner(TaskRunner):
                     raise e
             
             """
-                Create a celery chord which runs the initial conf and query tasks in parallel,
+                Create a celery chain which runs the initial conf and query tasks in parallel,
                 followed by a chain of pbfconvert and prep_schema (schema_tasks)
                 which run sequentially when the others have completed.
                 The export format tasks (format_tasks) are then run in parallel afterwards.

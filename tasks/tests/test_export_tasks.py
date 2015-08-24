@@ -18,7 +18,7 @@ from tasks.export_tasks import (ExportTask, ShpExportTask,
                                 ObfExportTask, GarminExportTask,
                                 KmlExportTask, OSMConfTask,
                                 OverpassQueryTask, OSMToPBFConvertTask,
-                                OSMPrepSchemaTask)
+                                OSMPrepSchemaTask,  TransformExportTask)
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from celery.datastructures import ExceptionInfo
 
@@ -204,6 +204,12 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
+    
+    @patch('celery.app.task.Task.request')
+    @patch('utils.transform.TransformSQlite')
+    def test_run_transform_task(self, mock_transform, mock_request):
+        task = TransformExportTask()
+        
     
     @patch('os.makedirs')
     @patch('os.path.exists')
