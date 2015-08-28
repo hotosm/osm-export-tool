@@ -1,23 +1,23 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
-
+{% load i18n %}
 {% block container %}
 
 <div id="details-row" class="row">
     <div id="job" class="col-md-5">
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>Export Summary</h4></div>
+            <div class="panel-heading"><h4>{% trans 'Export Summary' %}</h4></div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-6">
                         <span id="user">{{ user.username }}</span>
                         <div class="table-responsive">
                             <table class="table">
-                                <tr><td><strong>Job Id:</strong></td><td><div id="uid"></div></td></tr>
-                                <tr><td><strong>Name:</strong></td><td><div id="name"></div></td></tr>
-                                <tr><td><strong>Description:</strong></td><td><div id="description"></div></td></tr>
-                                <tr><td><strong>Created:</strong></td><td><div id="created"></div></td></tr>
-                                <tr><td><strong>Export Formats:</strong></td><td><div id="formats"></div></td></tr>
+                                <tr><td><strong>{% trans 'Job Id:' %}</strong></td><td><div id="uid"></div></td></tr>
+                                <tr><td><strong>{% trans 'Name:' %}</strong></td><td><div id="name"></div></td></tr>
+                                <tr><td><strong>{% trans 'Description:' %}</strong></td><td><div id="description"></div></td></tr>
+                                <tr><td><strong>{% trans 'Created:' %}</strong></td><td><div id="created"></div></td></tr>
+                                <tr><td><strong>{% trans 'Export Formats:' %}</strong></td><td><div id="formats"></div></td></tr>
                             </table>
                         </div>
                     </div>
@@ -30,16 +30,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div>
-                            <button id="rerun" class="btn btn-primary pull-left">Rerun this Export&nbsp;&nbsp;<span class="glyphicon glyphicon-repeat"></span></button>
+                            <button id="rerun" class="btn btn-primary pull-left">{% trans 'Rerun this Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-repeat"></span></button>
                         </div>
                         <div>
-                            <button id="clone" class="btn btn-primary pull-left">Clone this Export&nbsp;&nbsp;<span class="glyphicon glyphicon-asterisk"></span></button>
+                            <button id="clone" class="btn btn-primary pull-left">{% trans 'Clone this Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-asterisk"></span></button>
                         </div>
                         <div>
                             <form id="deleteForm" method="post" action="" role="form" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <input type="hidden" value="DELETE" name="_method"/>
-                                <button id="delete" class="btn btn-danger pull-left">Delete this Export&nbsp;&nbsp;<span class="glyphicon glyphicon-trash"></span></button>
+                                <button id="delete" class="btn btn-danger pull-left">{% trans 'Delete this Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-trash"></span></button>
                             </form> 
                         </div>
                     </div>
@@ -50,7 +50,7 @@
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>Export Runs</h4></div>
+            <div class="panel-heading"><h4>{% trans 'Export Runs' %}</h4></div>
             <div class="panel-body">
                 <div id="submitted_runs" class="col-md-12">
                     <div class="panel-group" role="tablist" aria-multiselectable="true"></div>

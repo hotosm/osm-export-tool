@@ -600,6 +600,7 @@ span.tag.label.label-info {
 
 div#search-config {
     display: none;
+    border-right: 1px solid lightgrey;
 }
 
 div#spinner {
@@ -616,7 +617,6 @@ span#spinner i {
 #config-upload {
     padding: 15px;
     font-size: medium;
-    border-left: 1px solid lightgrey;
 }
 
 
