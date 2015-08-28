@@ -49,6 +49,36 @@ class TestJobViewSet(APITestCase):
         f.close()
         self.assertIsNotNone(self.config)
         self.job.configs.add(self.config)
+        self.tags = [
+                {
+                    "name":"Telecommunication office",
+                    "key":"office","value":"telecommunication",
+                    "data_model":"HDM",
+                    "geom_types":["point","polygon"],
+                    "groups": ['HDM Presets v2.11', 'Commercial and Economic', 'Telecommunication']
+                },
+                {
+                    "name":"Radio or TV Studio",
+                    "key":"amenity","value":"studio",
+                    "data_model":"OSM",
+                    "geom_types":["point","polygon"],
+                    "groups": ['HDM Presets v2.11', 'Commercial and Economic', 'Telecommunication']
+                },
+                {
+                    "name":"Telecommunication antenna",
+                    "key":"man_made","value":"tower",
+                    "data_model":"OSM",
+                    "geom_types":["point","polygon"],
+                    "groups": ['HDM Presets v2.11', 'Commercial and Economic', 'Telecommunication']
+                },
+                {
+                    "name":"Telecommunication company retail office",
+                    "key":"office","value":"telecommunication",
+                    "data_model":"OSM",
+                    "geom_types":["point","polygon"],
+                    "groups": ['HDM Presets v2.11', 'Commercial and Economic', 'Telecommunication']
+                }
+            ]
         
     def tearDown(self,):
         self.config.delete() # clean up
@@ -110,7 +140,8 @@ class TestJobViewSet(APITestCase):
             'ymax': 27.6,
             'formats': formats,
             'preset': config_uid,
-            'published': True
+            'published': True,
+            'tags': self.tags
         }
         response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']
@@ -194,80 +225,7 @@ class TestJobViewSet(APITestCase):
             #'preset': config_uid,
             'transform':'',
             'translate':'',
-            'tags':[
-                {
-                    "key":"office","value":"telecommunication","data_model":"OSM","geom_types":["point","polygon"]
-                },
-                {
-                    "key":"amenity","value":"studio","data_model":"OSM","geom_types":["point","polygon"]
-                },
-                {
-                    "key":"man_made","value":"tower","data_model":"OSM","geom_types":["point","polygon"]
-                },
-                {
-                    "key":"office","value":"telecommunication","data_model":"OSM","geom_types":["point","polygon"]
-                },
-                {
-                    "key":"amenity","value":"marketplace","data_model":"OSM","geom_types":["point","line"]
-                },
-                {
-                    "key":"shop","value":"confectionery","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"organic","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"alcohol","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"seafood","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"beverages","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"kiosk","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"butcher","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"convenience","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"deli","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"supermarket","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"greengrocer","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"bakery","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"vacuum_cleaner","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"hifi","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"computer","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"video","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"mobile_phone","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"shop","value":"electronics","data_model":"OSM","geom_types":["point"]
-                },
-                {
-                    "key":"amenity","value":"cafe","data_model":"OSM","geom_types":["point","polygon"]
-                }
-            ]
+            'tags': self.tags
         }
         response = self.client.post(url, request_data, format='json')
         job_uid = response.data['uid']
@@ -735,7 +693,8 @@ class TestExportConfigViewSet(APITestCase):
         url = reverse('api:configs-list')
         response = self.client.post(url, {'upload': '', 'config_type': 'TRANSFORM-WRONG'}, format='multipart')
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
-        
+    
+    @skip('Transform not implemented.')
     def test_update_config(self, ):
         url = reverse('api:configs-list')
         # create an initial config we can then update..

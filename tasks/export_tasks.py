@@ -17,9 +17,10 @@ from django.db import transaction, DatabaseError
 from django.template import Context
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
-
+from django.core.files.base import ContentFile
+from jobs.presets import TagParser
 from utils import (overpass, osmconf, osmparse,
-                   pbf, shp, kml, osmand, garmin, transform)
+                   pbf, shp, kml, osmand, garmin, thematic_shp)
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
@@ -42,7 +43,7 @@ class ExportTask(Task):
         from tasks.models import ExportTask, ExportTaskResult
         # update the task
         finished = timezone.now()
-        task = ExportTask.objects.get(celery_uid=task_id)
+        task = ExportTask.objects.get(celery_uid=task_id)   
         task.finished_at = finished
         # get the output
         output_url = retval['result']
@@ -189,31 +190,43 @@ class OSMPrepSchemaTask(ExportTask):
 
 class ThematicLayersExportTask(ExportTask):
     
-    name = "Thematic Export"
+    name = "Thematic Shapefile Export"
     
     def run(self, run_uid=None, stage_dir=None):
+        from tasks.models import ExportRun
+        from jobs.models import Job
         self.update_task_state(run_uid=run_uid, name=self.name)
+        run = ExportRun.objects.get(uid=run_uid)
+        tags = run.job.categorised_tags
         sqlite = stage_dir + 'query.sqlite'
-        transform_sqlite = stage_dir + 'transform_query.sqlite'
-        transform = transform.TransformSQlite(sqlite=sqlite, transform=transform_path,
-                                              transform_sqlite=transform_sqlite)
-        transform.transform_spatialite()
-        return {'result': transform_sqlite}
+        thematic_sqlite = stage_dir + 'thematic.sqlite'
+        try:
+            t2s= thematic_shp.ThematicSQliteToShp(sqlite=sqlite, tags=tags)
+            t2s.generate_thematic_schema()
+            out = t2s.convert()
+            return {'result': out}
+        except Exception as e:
+            logger.error('Raised exception in thematic task', e)
+            raise Exception(e) # hand off to celery..
  
 
 class ShpExportTask(ExportTask):
     """
     Class defining SHP export function.
     """
-    name = 'Shapefile Export'
+    name = 'Default Shapefile Export'
     
     def run(self, run_uid=None, stage_dir=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         sqlite = stage_dir + 'query.sqlite'
         shapefile = stage_dir + 'shp'
-        s2s = shp.SQliteToShp(sqlite=sqlite, shapefile=shapefile)
-        out = s2s.convert()
-        return {'result': out}
+        try:
+            s2s = shp.SQliteToShp(sqlite=sqlite, shapefile=shapefile)
+            out = s2s.convert()
+            return {'result': out}
+        except Exception as e:
+            logger.error('Raised exception in shapefile export.', e)
+            raise Exception(e)
 
 
 class KmlExportTask(ExportTask):
@@ -226,9 +239,13 @@ class KmlExportTask(ExportTask):
         self.update_task_state(run_uid=run_uid, name=self.name)
         sqlite = stage_dir + 'query.sqlite'
         kmlfile = stage_dir + 'query.kml'
-        s2k = kml.SQliteToKml(sqlite=sqlite, kmlfile=kmlfile)
-        out = s2k.convert()
-        return {'result': out}
+        try:
+            s2k = kml.SQliteToKml(sqlite=sqlite, kmlfile=kmlfile)
+            out = s2k.convert()
+            return {'result': out}
+        except Exception as e:
+            logger.error('Raised exception in kml export.', e)
+            raise Exception(e)
 
 
 class ObfExportTask(ExportTask):    
@@ -242,14 +259,18 @@ class ObfExportTask(ExportTask):
         pbffile = stage_dir + 'query.pbf'
         map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
         work_dir = stage_dir + 'osmand'
-        o2o = osmand.OSMToOBF(
-            pbffile=pbffile, work_dir=work_dir, map_creator_dir=map_creator_dir
-        )
-        out = o2o.convert()
-        obffile = stage_dir + 'query.obf'
-        shutil.move(out, obffile)
-        shutil.rmtree(work_dir)
-        return {'result': obffile}
+        try:
+            o2o = osmand.OSMToOBF(
+                pbffile=pbffile, work_dir=work_dir, map_creator_dir=map_creator_dir
+            )
+            out = o2o.convert()
+            obffile = stage_dir + 'query.obf'
+            shutil.move(out, obffile)
+            shutil.rmtree(work_dir)
+            return {'result': obffile}
+        except Exception as e:
+            logger.error('Raised exception in obf export.', e)
+            raise Exception(e)
 
 
 class SqliteExportTask(ExportTask):
@@ -261,11 +282,9 @@ class SqliteExportTask(ExportTask):
     
     def run(self, run_uid=None, stage_dir=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        # dummy task for now..
-        # logic for SHP export goes here..
-        time.sleep(10)
-        
-        return {'result': 'http://testserver/some/download/file.zip'}
+        # sqlite already generated by OSMPrepSchema so just return path.
+        sqlite = stage_dir + 'query.sqlite'
+        return {'result': sqlite}
 
 
 class GarminExportTask(ExportTask):
@@ -289,16 +308,56 @@ class GarminExportTask(ExportTask):
         work_dir = stage_dir + 'garmin'
         config = settings.GARMIN_CONFIG # get path to garmin config
         pbffile = stage_dir + 'query.pbf'
-        o2i = garmin.OSMToIMG(
-            pbffile=pbffile, work_dir=work_dir,
-            config=config, region=None, debug=False
-        )
-        o2i.run_splitter()
-        out = o2i.run_mkgmap()
-        imgfile = stage_dir + 'garmin.zip'
-        shutil.move(out, imgfile)
-        shutil.rmtree(work_dir)
-        return {'result': imgfile}
+        try:
+            o2i = garmin.OSMToIMG(
+                pbffile=pbffile, work_dir=work_dir,
+                config=config, region=None, debug=False
+            )
+            o2i.run_splitter()
+            out = o2i.run_mkgmap()
+            imgfile = stage_dir + 'garmin.zip'
+            shutil.move(out, imgfile)
+            shutil.rmtree(work_dir)
+            return {'result': imgfile}
+        except Exception as e:
+            logger.error('Raised exception in garmin export.', e)
+            raise Exception(e)
+
+
+class GeneratePresetTask(ExportTask):
+    """
+    Generates a JOSM Preset from the exports selected features.
+    """
+    
+    name = 'Generate Preset'
+
+    def run(self, run_uid=None, stage_dir=None):
+        from tasks.models import ExportRun
+        from jobs.models import Job, ExportConfig
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        run = ExportRun.objects.get(uid=run_uid)
+        job = run.job
+        user = job.user
+        feature_save = job.feature_save
+        feature_pub = job.feature_pub
+        if feature_save or feature_pub:
+            tags = job.tags.all()
+            tag_parser = TagParser(tags=tags)
+            xml = tag_parser.parse_tags()
+            preset_file = ContentFile(xml)
+            name = 'Custom HDM Preset'
+            filename = 'hdm_custom_preset.xml'
+            content_type = 'application/xml'
+            config = ExportConfig.objects.create(
+                name=name, filename=filename,
+                config_type='PRESET', content_type=content_type,
+                user=user, published=feature_pub
+            )
+            config.upload.save(filename, preset_file)
+            base_dir = settings.BASE_DIR
+            output_path = base_dir + config.upload.url
+            logger.debug(output_path)
+            return {'result': output_path}
 
 
 class FinalizeRunTask(Task):

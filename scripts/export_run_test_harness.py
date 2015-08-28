@@ -16,7 +16,7 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon
 def run(*script_args):
     path = os.path.dirname(os.path.realpath(__file__))
     # pull out the demo user
-    user = User.objects.get(username='demo')
+    user = User.objects.get(username='bjohare')
     # create the test job
     bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40)) #monrovia
     #bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n) horn of africa
@@ -30,19 +30,21 @@ def run(*script_args):
     # add the format(s)
     formats = [
             ExportFormat.objects.get(slug='obf'),
-            ExportFormat.objects.get(slug='shp')
+            ExportFormat.objects.get(slug='thematic')
     ]
     job.formats = formats
     job.save()
     # add the tags (defaults to hdm presets)
-    preset_parser = PresetParser(preset='./tasks/tests/files/hdm_presets.xml')
-    tags = preset_parser.parse(merge_with_defaults=True)
-    for key in tags:
+    parser = PresetParser(preset='./tasks/tests/files/hdm_presets.xml')
+    tags_dict = parser.parse()
+    for entry in tags_dict:
         tag = Tag.objects.create(
-            name = key,
-            geom_types = tags[key]
+            key = entry['key'],
+            value = entry['value'],
+            geom_types = entry['geom_types'],
+            data_model = 'HDM',
+            job = job
         )
-        job.tags.add(tag)
     # run the export.. tasks processed on celery queue
     # results available at /api/runs url
     runner = ExportTaskRunner()

@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
                 ('uid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)),
                 ('name', models.CharField(max_length=100)),
-                ('slug', jobs.models.LowerCaseCharField(default='', unique=True, max_length=7)),
+                ('slug', jobs.models.LowerCaseCharField(default='', unique=True, max_length=10)),
                 ('description', models.CharField(max_length=255)),
                 ('cmd', models.TextField(max_length=1000)),
             ],

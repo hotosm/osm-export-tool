@@ -10,7 +10,7 @@ from jobs.presets import PresetParser
 from celery import chain, group, chord
 from .export_tasks import (OSMConfTask, OverpassQueryTask,
                            OSMPrepSchemaTask, OSMToPBFConvertTask,
-                           FinalizeRunTask)
+                           GeneratePresetTask, FinalizeRunTask)
 from django.db import transaction, DatabaseError
 import pdb
 
@@ -129,14 +129,22 @@ class ExportTaskRunner(TaskRunner):
                 except DatabaseError as e:
                     logger.error('Saving task {0} threw: {1}'.format(export_task.name, e))
                     raise e
+            # check if we need to generate a preset file from Job feature selections    
+            if job.feature_save or job.feature_pub:
+                # run GeneratePresetTask
+                preset_task = GeneratePresetTask()
+                ExportTask.objects.create(run=run,
+                                              status='PENDING', name=preset_task.name)
+                logger.debug('Saved task: {0}'.format(preset_task.name))
+                # add to export tasks
+                export_tasks.append(preset_task)
+            
             
             """
-                Create a celery chain which runs the initial conf and query tasks in parallel,
-                followed by a chain of pbfconvert and prep_schema (schema_tasks)
-                which run sequentially when the others have completed.
-                The export format tasks (format_tasks) are then run in parallel afterwards.
-                The Finalize task is run at the end to clean up staging dirs,
-                update run status, email user etc..
+                Create a celery chain which runs the initial conf and query tasks (initial_tasks),
+                followed by a chain of pbfconvert and prep_schema (schema_tasks).
+                The export format tasks (format_tasks) are then run in parallel, followed
+                by the finalize_task at the end to clean up staging dirs, update run status, email user etc..
             """
 
             initial_tasks = chain(
@@ -156,13 +164,10 @@ class ExportTaskRunner(TaskRunner):
             finalize_task = FinalizeRunTask()
             
             """
-            chord(
-                header=initial_tasks,
-                body=schema_tasks | format_tasks |
-                        finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)
-            ).apply_async(expires=datetime.now() + timedelta(days=1)) # tasks expire after one day.
+                If header tasks fail, errors will not propagate to the finalize_task.
+                This means that the finalize_task will always be called, and will update the
+                overall run status.
             """
-            
             chain(
                     chain(initial_tasks, schema_tasks),
                     chord(header=format_tasks,

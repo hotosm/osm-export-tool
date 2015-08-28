@@ -185,7 +185,7 @@ exports.detail = (function(){
                                     result.size + '</td></tr>');
                             }
                             break;
-                        case 'Shapefile Export':
+                        case 'Default Shapefile Export':
                             if (status === 'SUCCESS') {
                                 $taskDiv.append('<tr><td><a href="' + result.url + '">ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
                                     result.size + '</td></tr>');
@@ -206,6 +206,18 @@ exports.detail = (function(){
                         case 'SQLITE Export':
                             if (status === 'SUCCESS') {
                                 $taskDiv.append('<tr><td><a href="' + result.url + '">SQlite Database File</a></td><td>' + duration + '</td><td>' +
+                                    result.size + '</td></tr>');
+                            }
+                            break;
+                        case 'Thematic Shapefile Export':
+                            if (status === 'SUCCESS') {
+                                $taskDiv.append('<tr><td><a href="' + result.url + '">Thematic ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
+                                    result.size + '</td></tr>');
+                            }
+                            break;
+                        case 'Generate Preset':
+                            if (status === 'SUCCESS') {
+                                $taskDiv.append('<tr><td><a href="' + result.url + '" target="_blank">Custom JOSM Preset (XML)</a></td><td>' + duration + '</td><td>' +
                                     result.size + '</td></tr>');
                             }
                             break;
@@ -361,7 +373,7 @@ exports.detail = (function(){
                             result.size + '</td><td>' + task.status + '</td></tr>');
                         }
                         break;
-                    case 'Shapefile Export':
+                    case 'Default Shapefile Export':
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
                             cls = status.toLowerCase();
                             $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>ESRI Shapefile (SHP)</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td></tr>');
@@ -369,6 +381,17 @@ exports.detail = (function(){
                         else {
                             cls = status.toLowerCase();
                             $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td><a href="' + result.url + '">ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
+                            result.size + '</td><td>' + task.status + '</td></tr>');
+                        }
+                        break;
+                    case 'Thematic Shapefile Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>Thematic ESRI Shapefile (SHP)</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td></tr>');
+                        }
+                        else {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td><a href="' + result.url + '">Thematic ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
                             result.size + '</td><td>' + task.status + '</td></tr>');
                         }
                         break;
@@ -414,7 +437,17 @@ exports.detail = (function(){
                             cls = status.toLowerCase();
                             $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>Generate OpenStreetMap Schema</td><td>' + duration + '</td><td></td><td>' + task.status + '</td></tr>');
                         }
-                        break; 
+                        break;
+                    case 'Generate Preset':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>Genrerate JOSM Preset</td><td> -- </td><td> -- </td><td>' + task.status + '</td></tr>');
+                        }
+                        else {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>Generate JOSM Preset</td><td>' + duration + '</td><td></td><td>' + task.status + '</td></tr>');
+                        }
+                        break;
                 }
             });
         });
@@ -519,7 +552,7 @@ exports.detail = (function(){
                             result.size + '</td><td>' + task.status + '</td>');
                         }
                         break;
-                    case 'Shapefile Export':
+                    case 'Default Shapefile Export':
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
                             $tr.removeClass();
                             $tr.addClass(status.toLowerCase());
@@ -529,6 +562,19 @@ exports.detail = (function(){
                             $tr.removeClass();
                             $tr.addClass(status.toLowerCase());
                             $tr.html('<td><a href="' + result.url + '">ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
+                            result.size + '</td><td>' + task.status + '</td>');
+                        }
+                        break;
+                    case 'Thematic Shapefile Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>Thematic ESRI Shapefile (SHP)</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
+                        }
+                        else {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td><a href="' + result.url + '">Thematic ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
                             result.size + '</td><td>' + task.status + '</td>');
                         }
                         break;
@@ -581,6 +627,18 @@ exports.detail = (function(){
                             $tr.removeClass();
                             $tr.addClass(status.toLowerCase());
                             $tr.html('<td>Generate OpenStreetMap Schema</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td>');
+                        }
+                        break;
+                    case 'Generate Preset':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>Generate JOSM Preset</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
+                        }
+                        else {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>Generate JOSM Preset</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td>');
                         }
                         break; 
                 }

@@ -27,7 +27,7 @@ create.job = (function(){
     
     return {
         init: function(){
-            initCreateMap();
+            initMap();
             initHDMFeatureTree();
             initOSMFeatureTree();
             initNominatim();
@@ -40,7 +40,7 @@ create.job = (function(){
      * Initialize the map
      * and the UI controls.
      */
-    function initCreateMap() {
+    function initMap() {
         // set up the map and add the required layers
         var maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
         var mapOptions = {
@@ -486,7 +486,7 @@ create.job = (function(){
                     validators: {
                         choice: {
                             min: 1,
-                            max: 5,
+                            max: 6,
                             message: 'At least one export format must be selected.'
                         }
                     }
@@ -526,6 +526,7 @@ create.job = (function(){
                         },
                     }
                 },
+                /*
                 'config_type': {
                     validators: {
                         notEmpty: {
@@ -533,6 +534,7 @@ create.job = (function(){
                         },
                     }
                 },
+                */
             }
         })
         .on('success.form.fv', function(e){
@@ -636,7 +638,8 @@ create.job = (function(){
                     filename = $input.val().replace(/\\/g, '/').replace(/.*\//, ''),
                     $filelist = $('#filelist'),
                     selection = {},
-                    type = $('option:selected').val(),
+                    //type = $('option:selected').val(),
+                    type = $('input#config_type').val(),
                     published = $('input#publish_config').is(':checked') ? 'Published' : 'Private';
                 selection['filename'] = filename;
                 selection['config_type'] = type;
@@ -668,6 +671,8 @@ create.job = (function(){
             }
             // disable the upload button
             $('button#upload').prop('disabled', true);
+            $('button#remove-upload').prop('disabled', true);
+            
             // disable the config-select button
             $('button#select-config').prop('disabled', true);
             
@@ -681,6 +686,11 @@ create.job = (function(){
             $('.progress').css('display', 'block');
             var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
             var filename = $('input#filename').val();
+            var config_type = $('input#config_type').val();
+            
+            /*
+             * Put this back later if we implement translation or transforms
+             *
             var config_type = $('select#config_type').val();
             switch (config_type) {
                 case 'PRESET':
@@ -693,6 +703,8 @@ create.job = (function(){
                     $('option#select-translate').prop('disabled', true);
                     break;
             }
+            */
+            
             var published = $('input[name="publish_config"]').is(':checked');
             var data = new FormData();
             data.append('name', filename);
@@ -760,6 +772,10 @@ create.job = (function(){
                     keyboard: true,
                     backdrop: 'static',
             }
+            // reset the input field validation
+            var fv = $('#create-job-form').data('formValidation');
+            fv.resetField($('input#filename'));
+            $('button#select-file').prop('disabled', false);
             $("#configSelectionModal").modal(modalOpts, 'show');
         });
         
@@ -798,7 +814,7 @@ create.job = (function(){
                         $ul.append($('<li>OSMAnd Format</li>'));
                         break;
                     case 'shp':
-                        $ul.append($('<li>ESRI Shapefile Format</li>'));
+                        $ul.append($('<li>ESRI Shapefile Format (OSM Schema)</li>'));
                         break;
                     case 'kml':
                         $ul.append($('<li>KML Format</li>'));
@@ -809,18 +825,74 @@ create.job = (function(){
                     case 'sqlite':
                         $ul.append($('<li>SQlite Database Format</li>'));
                         break;
+                    case 'thematic':
+                        $ul.append($('<li>ESRI Shapefile Format (Thematic Schema)</li>'));
+                        break;
                 }
             });
             $('#summary-formats').html($ul);
-            var $tbl = $('<table class="table">');
-            $tbl.append('<tr><th>Filename</th><th>Type</th><th>Status</th></tr>');
+        });
+        
+         /*
+         * Listen for configurations being added to the filelist
+         * and update state on this.
+         */
+        $('table#summary-configs').on('config:added', function(e){
+            $('div#summary-configs').css('visibility', 'visible');
+            var selection = e.selection;
             $('#filelist tr.config').each(function(idx, config){
                  var filename = $(config).find('td').eq(0).find('span').html();
                  var config_type = $(config).find('td').eq(1).html();
                  var status = $(config).find('td').eq(2).html();
-                 $tbl.append('<tr><td>' + filename + '</td><td>' + config_type + '</td><td>' + status + '</td></tr>');
+                 $('table#summary-configs').append('<tr id="' + selection.uid + '" class="config"><td>' + filename + '</td><td>' + config_type + '</td><td>' + status + '</td></tr>');
             });
-            $('#summary-configs').html($tbl);
+        });
+        
+        $('table#summary-configs').on('config:removed', function(e){
+            var selection = e.selection;
+            // remove the selected config from the table
+            var configs = $('table#summary-configs tr.config').length;
+            var $tr = $(this).find('tr#' + selection.uid);
+            if (configs == 1) {
+                // remove the config from the table
+                $tr.remove();
+                // hide the file list
+                $('div#summary-configs').css('visibility', 'hidden'); 
+            }
+            else {
+                // just remove this row..
+                $tr.remove();
+            }
+        });
+        
+        /*
+         * Handle selection events on config publish options.
+         * Only one can be selected at at time.
+         */
+        $('input#feature_save').on('change', function(e){
+            var checked = $(this).is(':checked');
+            $featPub =  $('input#feature_pub');
+            if (checked) {
+                $featPub.prop('checked', false);
+                $featPub.prop('disabled', true);   
+            }
+            else {
+                $featPub.prop('checked', false);
+                $featPub.prop('disabled', false); 
+            }
+        });
+        
+        $('input#feature_pub').on('change', function(e){
+            var checked = $(this).is(':checked');
+            $featSave =  $('input#feature_save');
+            if (checked) {
+                $featSave.prop('checked', false);
+                $featSave.prop('disabled', true);   
+            }
+            else {
+                $featSave.prop('checked', false);
+                $featSave.prop('disabled', false); 
+            }
         });
         
         // ----- FORM SUBMISSION ----- //
@@ -846,7 +918,7 @@ create.job = (function(){
              * only required on config upload.
              */
             fv.enableFieldValidators('filename', false);
-            fv.enableFieldValidators('config_type', false);
+            //fv.enableFieldValidators('config_type', false);
             
             fv.validate(); // validate the form
             var fvIsValidForm = fv.isValid();
@@ -871,6 +943,12 @@ create.job = (function(){
                         case 'published':
                             form_data['published'] = true;
                             break;
+                        case 'feature_pub':
+                            form_data['feature_pub'] = true;
+                            break;
+                        case 'feature_save':
+                            form_data['feature_save'] = true;
+                            break;
                         case 'formats':
                             formats.push(field.value);
                         default:
@@ -880,16 +958,26 @@ create.job = (function(){
                 // get the selected tags
                 var selected_tags = $('input.entry:checked');
                 $.each(selected_tags, function(idx, entry){
+                    var data_model = entry.getAttribute('data-model');
+                    var levels = $(entry).parentsUntil('#' + data_model.toLowerCase() + '-feature-tree', 'li.level');
+                    var groups = [];
+                    var labels = $(levels).find('label:first');
+                    $.each(labels, function(idx, label){
+                        var group = $(label).text();
+                        groups.push(group);
+                    });
                     var tag = {};
+                    var name = entry.getAttribute('data-name');
                     var key = entry.getAttribute('data-key');
                     var value = entry.getAttribute('data-val');
                     var geom_types = entry.getAttribute('data-geom');
-                    var data_model = entry.getAttribute('data-model');
+                    tag['name'] = name;
                     tag["key"] = key;
                     tag["value"] = value;
                     tag["geom_types"] = geom_types.split(',');
                     tag["data_model"] = data_model;
-                    tags.push(tag)
+                    tag["groups"] = groups;
+                    tags.push(tag);
                 });
                 // add tags and formats to the form data
                 form_data["tags"] = tags;
@@ -927,7 +1015,6 @@ create.job = (function(){
     function initHDMFeatureTree(){
         // turn off preset selection on config upload
         //$('option#select-preset').prop('disabled', true);
-        
         /*
          * Fire preset selection on hdm-tree
          * to set the state of preset related controls.
@@ -940,6 +1027,8 @@ create.job = (function(){
             if (typeof data == 'object') {
                 traverse(data, $tree, level_idx);
             }
+            
+            
             
             /*
              * Recursively builds the feature tree.
@@ -954,7 +1043,8 @@ create.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" checked/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' +
+                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" checked/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
@@ -1077,7 +1167,8 @@ create.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' + geom_str + '" data-key="' + key + '" data-val="' + val + '" disabled/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' +
+                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" checked/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
@@ -1483,6 +1574,7 @@ create.job = (function(){
                             jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
                         },
                         success: function(result, textStatus, jqxhr) {
+                            // notify the config-browser
                             $('table#configurations').trigger({type: 'config:removed', selection: selection});
                             $('#filelist').trigger({type: 'config:delete-upload', selection: selection});
                         },
@@ -1534,11 +1626,17 @@ create.job = (function(){
                     // remove from filelist
                     $('#filelist').trigger({type: 'config:removed', selection: selection});
                 });
-            }
                 
+                // notify the config-browser
+                $('table#configurations').trigger({type: 'config:added', selection:selection});
+            }
+              
             $(this).css('display', 'block');
             filesSelected += 1;
             updateConfigInputs(selection);
+            
+            // notify the summary config table on the summary tab
+            $('table#summary-configs').trigger({type: 'config:added', selection:selection});
             
             // trigger max files check
             $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
@@ -1556,6 +1654,7 @@ create.job = (function(){
                        '<td><button id="remove-upload" type="button" class="btn btn-warning btn-sm pull-right">Remove&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button></td></tr>';
             $(this).append(html);
             $(this).css('display', 'block');
+            
             // handle events on the remove button
             $('button#remove-upload').bind('click', function(e){
                 $('#filelist').trigger({type: 'config:remove-upload'});
@@ -1609,6 +1708,8 @@ create.job = (function(){
             // trigger change event on form to update summary tab
             $('#create-job-form').trigger('change');
             
+            $('table#summary-configs').trigger({type: 'config:removed', selection: selection});
+            
             // trigger max files check
             $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
         });
@@ -1629,7 +1730,7 @@ create.job = (function(){
             // reset the input field validation
             var fv = $('#create-job-form').data('formValidation');
             fv.resetField($('input#filename'));
-            fv.resetField($('select#config_type'));
+            //fv.resetField($('select#config_type'));
             
             // toggle file select and upload buttons
             $('button#select-file').css('visibility', 'visible');
@@ -1716,13 +1817,16 @@ create.job = (function(){
                 });
             }
             
+            // update the summary tab
+            $('table#summary-configs').trigger({type: 'config:removed', selection: selection});
+            
             // trigger max files check
             $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});           
         });
         
         
         $(document).on('config:checkmaxfiles', function(e){
-            var maxFiles = 3;
+            var maxFiles = 1;
             var filesSelected = e.filesSelected;
             if (filesSelected == maxFiles) {
                 $('input#filename').prop('disabled', true);

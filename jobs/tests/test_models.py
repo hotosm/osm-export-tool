@@ -302,13 +302,12 @@ class TestTag(TestCase):
         
     def test_create_tags(self,):
         tags = [
-            {'key': 'aerialway',
-             'value': 'station',
-             'geom_types': ['node','way']
-            },
-            {'key': 'aeroway',
-             'value': 'aerodrome',
-             'geom_types': ['node','area']
+            {
+                'name': 'Airport Ground',
+                'key': 'aeroway',
+                'value': 'aerodrome',
+                'geom_types': ['node','area'],
+                'groups': ['HOT Presets v2.11', 'Transportation', 'Transportation means', 'Airport']
              },
         ]
         for tag_dict in tags:
@@ -317,12 +316,15 @@ class TestTag(TestCase):
                 value = tag_dict['value'],
                 job = self.job,
                 data_model = 'osm',
-                geom_types = tag_dict['geom_types']
+                geom_types = tag_dict['geom_types'],
+                groups = tag_dict['groups']
             )
         saved_tags = Tag.objects.all()
         geom_types = saved_tags[0].geom_types
-        self.assertEquals(2, len(saved_tags))
-        self.assertEqual(['node','way'], geom_types)
+        self.assertEquals(1, len(saved_tags))
+        self.assertEqual(['node','area'], geom_types)
+        groups = saved_tags[0].groups
+        self.assertEquals(4, len(groups))
         
     def test_save_tags_from_preset(self,):
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -335,9 +337,15 @@ class TestTag(TestCase):
                 value = tag_dict['value'],
                 job = self.job,
                 data_model = 'osm',
-                geom_types = tag_dict['geom_types']
+                geom_types = tag_dict['geom_types'],
+                groups = tag_dict['groups']
             )
         self.assertEquals(238, self.job.tags.all().count())
+        # check the groups got saved correctly
+        saved_tag = self.job.tags.filter(value='service')[0]
+        self.assertIsNotNone(saved_tag)
+        self.assertEquals(3, len(saved_tag.groups))
+        
 
     def test_get_categorised_tags(self,):
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -350,10 +358,10 @@ class TestTag(TestCase):
                 value = tag_dict['value'],
                 job = self.job,
                 data_model = 'osm',
-                geom_types = tag_dict['geom_types']
+                geom_types = tag_dict['geom_types'],
+                groups = tag_dict['groups']
             )
         self.assertEquals(238, self.job.tags.all().count())
-        
         categorised_tags = self.job.categorised_tags
         
         

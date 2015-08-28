@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import uuid
 import logging
+import pdb
 #from django.db import models
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import HStoreField
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 # construct the upload path for export config files..
 def get_upload_path(instance, filename):
+    #pdb.set_trace()
     configtype = instance.config_type.lower()
     # sanitize the filename here..
     path = 'export/config/{0}/{1}'.format(configtype, instance.filename)
@@ -81,7 +83,7 @@ class ExportFormat(TimeStampedModelMixin):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     name = models.CharField(max_length=100)
-    slug = LowerCaseCharField(max_length=7, unique=True, default='')    
+    slug = LowerCaseCharField(max_length=10, unique=True, default='')    
     description = models.CharField(max_length=255)
     cmd = models.TextField(max_length=1000)
     objects = models.Manager()
@@ -147,8 +149,9 @@ class Job(TimeStampedModelMixin):
     region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     configs = models.ManyToManyField(ExportConfig, related_name='configs')
-    published = models.BooleanField(default=False)
-    #tags = models.ManyToManyField(Tag, related_name='tags')
+    published = models.BooleanField(default=False) # publish export
+    feature_save = models.BooleanField(default=False) # save feature selections
+    feature_pub = models.BooleanField(default=False) # publish feature selections
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
@@ -213,11 +216,13 @@ class Tag(models.Model):
         and the geom_type mapping.
     """
     id = models.AutoField(primary_key=True, editable=False)
+    name = models.CharField(max_length=100, blank=False, default='', db_index=True)
     key = models.CharField(max_length=30, blank=False, default='', db_index=True)
     value = models.CharField(max_length=30, blank=False, default='', db_index=True)
     job = models.ForeignKey(Job, related_name='tags')
     data_model = models.CharField(max_length=10, blank=False, default='', db_index=True)
     geom_types = ArrayField(models.CharField(max_length=10, blank=True, default=''), default=[])
+    groups = ArrayField(models.CharField(max_length=100, blank=True, default=''), default=[])
     
     class Meta:
         managed = True

@@ -3,6 +3,7 @@ import pdb
 from collections import OrderedDict
 from lxml import etree
 from StringIO import StringIO
+from jobs.models import Job, Tag
 
 logger = logging.getLogger(__name__)
 
@@ -45,20 +46,25 @@ class PresetParser():
         if item.get('type'):
             item_type = item.get('type')
             geometrytypes = self.get_geometrytype(item_type)
-        
         keys = item.xpath('./ns:key', namespaces=self.namespaces)
+        item_groups = {}
+        groups = []
+        for group in item.iterancestors(tag='{http://josm.openstreetmap.de/tagging-preset-1.0}group'):
+            groups.append(group.get('name'))
         if len(keys) > 0 and geometrytypes:
             if keys[0].get('key'):
                 # get kv pair
                 key = keys[0].get('key')
                 value = keys[0].get('value')
                 tag = {}
+                tag['name'] = item.get('name')
                 tag['key'] = key
                 tag['value'] = value
                 geom_types = []
                 for geomtype in geometrytypes:
                     geom_types.append(geomtype)
                 tag['geom_types'] = list(set(geom_types))
+                tag['groups'] = list(reversed(groups))
                 self.tags.append(tag)
         for child in list(item):
             self.process_item_and_children(child)
@@ -105,5 +111,55 @@ class PresetParser():
             name = sub_group.get('name')
             group_dict[name] = sub_group_dict
             self._parse_group(sub_group, sub_group_dict)
-        
+
+      
+class TagParser():
+    
+    namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
+    nsmap = {None: 'http://josm.openstreetmap.de/tagging-preset-1.0'}
+    
+    types = {
+        'point': 'node',
+        'line': 'way',
+        'polygon': 'area,closedway,relation',
+    }
+    
+    def __init__(self, tags=None, *args, **kwargs):
+        self.tags = tags
+    
+    def parse_tags(self, ):
+        root = etree.Element('presets', nsmap=self.nsmap)
+        doc = etree.ElementTree(root)
+        for tag in self.tags:
+            groups = self._add_groups(root, tag)
+        xml = etree.tostring(doc, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+        return xml
+
+    def _add_groups(self, parent, tag):
+        for group in tag.groups:
+            # check if element exists if not create it
+            found_groups = parent.xpath('group[@name="' + group + '"]', namespaces=self.namespaces)
+            if len(found_groups) == 0:
+                grp = etree.SubElement(parent, 'group', name=group)
+                tag.groups.pop(0)
+                if len(tag.groups) == 0:
+                    geom_types = self._get_types(tag.geom_types)
+                    item = etree.SubElement(grp, 'item', name=tag.name, type=geom_types)
+                    etree.SubElement(item, 'key', key=tag.key, value=tag.value)
+                self._add_groups(grp, tag)
+            else:
+                tag.groups.pop(0)
+                if len(tag.groups) == 0:
+                    geom_types = self._get_types(tag.geom_types)
+                    item = etree.SubElement(found_groups[0], 'item', name=tag.name, type=geom_types)
+                    etree.SubElement(item, 'key', key=tag.key, value=tag.value)
+                self._add_groups(found_groups[0], tag)
+
+    def _get_types(self, geom_types):
+        types = []
+        for geom_type in geom_types:
+            gtype = self.types.get(geom_type)
+            if gtype is not None:
+                types.append(self.types[geom_type])
+        return ','.join(types)
         

@@ -23,7 +23,7 @@ configurations.list = (function(){
     var job_extents;
     var bbox;
     var filtering = false;
-    var searchForm = $('form#search');
+    var searchForm = $('form#search');  
     var selections = [];
     
     return {
@@ -176,7 +176,8 @@ configurations.list = (function(){
          * Handle events on dialog show.
          */
         $('#configSelectionModal').on('show.bs.modal', function(e){
-            $('table#configurations tr.config').each(function(idx, tr){
+            selections = [];
+            $('table#filelist tr.config').each(function(idx, tr){
                 var selection = getSelectionFromTR($(tr));
                 selections.push(selection);
             });
