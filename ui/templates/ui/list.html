@@ -1,5 +1,6 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% load i18n %}
 {% block css %}
 {{ block.super}}
 <link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/jquery.dataTables.min.css' %}"/>
@@ -15,13 +16,13 @@
     </div>
     <div id="search" class="col-md-6">
         <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
-            <i class="indicator glyphicon glyphicon-chevron-down"></i> Filter Exports 
+            <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Exports' %} 
         </a>
         <form id="search" class="form-inline" role="search">
             {% csrf_token %}
             <div class="collapse" id="filterForm">
                 <div class="form-group" id="form-group-search">
-                    <label class="control-label sr-only" for="name">Search</label>
+                    <label class="control-label sr-only" for="name">{% trans 'Search' %}</label>
                     <div>
                         <div class="input-group search">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
@@ -32,7 +33,7 @@
                 <!-- start date picker -->
                 <div class="form-group">
                     <div class='input-group date' id='start-date'>
-                        <span class="input-group-addon"><strong>Start Date:</strong></span>
+                        <span class="input-group-addon"><strong>{% trans 'Start Date:' %}</strong></span>
                         <input type='text' class="form-control" name="start"/>
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
@@ -42,7 +43,7 @@
                 <!-- end date picker -->
                 <div class="form-group">
                     <div class="input-group date" id='end-date'>
-                        <span class="input-group-addon"><strong>End Date:&nbsp;&nbsp;&nbsp;</strong></span>
+                        <span class="input-group-addon"><strong>{% trans 'End Date:' %}&nbsp;&nbsp;&nbsp;</strong></span>
                         <input type='text' class="form-control" name="end" />
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
@@ -61,7 +62,7 @@
                     <div class="table-responsive">
                         <table id="jobs" class="table table-hover">
                             <thead>
-                                <tr><th>Name</th><th>Description</th><th>Event</th><th>Created</th><th>Region</th></tr>
+                                <tr><th>{% trans 'Name' %}</th><th>{% trans 'Description' %}</th><th>{% trans 'Event' %}</th><th>{% trans 'Created' %}</th><th>{% trans 'Region' %}</th></tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -74,7 +75,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <div class="input-group">
-                                <span class="input-group-addon"><strong>My Exports</strong></span>
+                                <span class="input-group-addon"><strong>{% trans 'My Exports' %}</strong></span>
                                 <span class="input-group-addon check">
                                     <div class="checkbox">
                                         <input id="user-check" type="checkbox"/>
@@ -95,7 +96,7 @@
                     <div class="col-md-2">
                         <div class="form-group page-size">
                             <div class="input-group page-size">
-                                <span class="input-group-addon"><strong>Page size</strong></span>
+                                <span class="input-group-addon"><strong>{% trans 'Page size' %}</strong></span>
                                 <span class="input-group-addon">
                                     <select id="page-size" name="page_size">
                                         <option value="5">5</option>
@@ -119,8 +120,8 @@
     <div id="map-column" class="col-md-6">
         <div id="list-controls-temp">
             <div class="btn-group" role="group">
-                <button id="filter-area" class="btn btn-md btn-primary">Filter Area</button>
-                <button id="clear-filter" class="btn btn-md btn-primary">Clear Filter</button>
+                <button id="filter-area" class="btn btn-md btn-primary">{% trans 'Filter Area' %}</button>
+                <button id="clear-filter" class="btn btn-md btn-primary">{% trans 'Clear Filter' %}</button>
             </div>
             <div id="alert-extents" class="alert alert-danger fade in"></div>
             <div id="valid-extents" class="alert alert-success fade in"></div>
