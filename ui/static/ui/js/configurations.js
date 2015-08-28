@@ -16,7 +16,6 @@
 
 */
 
-
 configurations = {};
 configurations.list = (function(){
     var map;
@@ -71,6 +70,7 @@ configurations.list = (function(){
                         },
                     }
                 },
+                /*
                 'config_type': {
                     validators: {
                         notEmpty: {
@@ -78,6 +78,7 @@ configurations.list = (function(){
                         },
                     }
                 },
+                */
             }
         })
         .on('success.form.fv', function(e){
@@ -123,7 +124,7 @@ configurations.list = (function(){
             
             // reset validation on fields
             fv.resetField($('input#filename'));
-            fv.resetField($('select#config_type'));
+            //fv.resetField($('select#config_type'));
             
             return true;
         }
@@ -154,13 +155,14 @@ configurations.list = (function(){
              * dont want these changed after this point.
              */
             $('input#filename').prop('disabled', true);
-            $('select#config_type').prop('disabled', true);
+            //$('select#config_type').prop('disabled', true);
             $('input#publish_config').prop('disabled', true);
             var $filelist = $('#filelist');
             var $select = $('.btn-file');
             var $upload = $('button#upload');
             $upload.prop('disabled', false);
-            var type = $('option:selected').val();
+            //var type = $('option:selected').val();
+            var type = $('input#config_type').val();
             var published = $('input#publish_config').is(':checked') ? 'Published' : 'Private';
             var html = '<tr class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + label + '</span></td>' +
                        '<td>' + type + '</td><td>' + published + '</td>' +
@@ -172,7 +174,7 @@ configurations.list = (function(){
             // handle events on the remove button if file selected
             $('button#remove').bind('click', function(e){
                 $('input#filename').prop('disabled', false);
-                $('select#config_type').prop('disabled', false);
+                //$('select#config_type').prop('disabled', false);
                 $('input#publish_config').prop('disabled', false);
                 var $select = $('.btn-file');
                 var $upload = $('button#upload');
@@ -195,7 +197,7 @@ configurations.list = (function(){
                 $select.css('visibility', 'visible');
                 // clear input fields
                 $('input#filename').val('');
-                $('option#select-message').prop('selected', true);
+                //$('option#select-message').prop('selected', true);
                 $('input#publish_config').prop('checked', false);
                 // reset the input field validation
                 var fv = $('#create-configuration-form').data('formValidation');
@@ -220,7 +222,8 @@ configurations.list = (function(){
             $('.progress').css('display', 'block');
             var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
             var filename = $('input#filename').val();
-            var config_type = $('select#config_type').val();
+            //var config_type = $('select#config_type').val();
+            var config_type = $('input#config_type').val();
             var published = $('input[name="publish_config"]').is(':checked');
             var data = new FormData();
             data.append('name', filename);
@@ -241,6 +244,7 @@ configurations.list = (function(){
                     }
                     else {
                         console.log('File upload not supported in this browser');
+                        alert('Unfortunately, file upload is not supported in your browser.');
                         // whats the fallback?
                         //TODO: alert user here..
                     }
