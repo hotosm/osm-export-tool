@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         ExportFormat = apps.get_model('jobs', 'ExportFormat')
         ExportFormat.objects.create(name='OBF Format', description='OSMAnd OBF Export Format.',
                                     slug='OBF')
-        ExportFormat.objects.create(name='ESRI Shapefile Format', description='ESRI Shapefile Export Format.',
+        ExportFormat.objects.create(name='ESRI Shapefile Format', description='ESRI Shapefile Export Format (OSM Schema)',
                                     slug='SHP')
         ExportFormat.objects.create(name='KML Format', description='KML Export Format.',
                                     slug='KML')
@@ -21,6 +21,8 @@ class Migration(migrations.Migration):
                                     slug='SQLITE')
         ExportFormat.objects.create(name='Garmin Map Format', description='Garmin Map Export Format.',
                                     slug='GARMIN')
+        ExportFormat.objects.create(name='ESRI Shapefile Format (Thematic)', description='ESRI Shapefile with Thematic Layers',
+                                    slug='THEMATIC')
 
     dependencies = [
         ('jobs', '0001_initial'),

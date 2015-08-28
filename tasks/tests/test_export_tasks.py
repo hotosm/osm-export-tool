@@ -18,7 +18,7 @@ from tasks.export_tasks import (ExportTask, ShpExportTask,
                                 ObfExportTask, GarminExportTask,
                                 KmlExportTask, OSMConfTask,
                                 OverpassQueryTask, OSMToPBFConvertTask,
-                                OSMPrepSchemaTask,  TransformExportTask)
+                                OSMPrepSchemaTask)
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from celery.datastructures import ExceptionInfo
 
@@ -205,12 +205,6 @@ class TestExportTasks(TestCase):
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
     
-    @patch('celery.app.task.Task.request')
-    @patch('utils.transform.TransformSQlite')
-    def test_run_transform_task(self, mock_transform, mock_request):
-        task = TransformExportTask()
-        
-    
     @patch('os.makedirs')
     @patch('os.path.exists')
     @patch('shutil.copy')
@@ -243,7 +237,7 @@ class TestExportTasks(TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(task, result.task)
         self.assertEquals('SUCCESS', task.status)
-        self.assertEquals('Shapefile Export', task.name)
+        self.assertEquals('Default Shapefile Export', task.name)
         # pull out the result and test
         result = ExportTaskResult.objects.get(task__celery_uid=celery_uid)
         self.assertIsNotNone(result)

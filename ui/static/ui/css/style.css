@@ -325,6 +325,34 @@ button#upload {
     display: none;
 }
 
+/* SUMMARY TAB */
+
+#summary-name, #summary-description, #summary-event {
+    margin-left: .5em;
+}
+
+div#summary-configs {
+    visibility: hidden;
+}
+
+table#summary-configs {
+    
+    font-size: small;
+}
+
+#btn-submit-job {
+    float: right;
+}
+
+div#options {
+    padding-left: 1em;
+}
+
+div#details {
+    padding-right: 1em;
+    border-right: 1px solid lightgrey;
+}
+
 /* config selection modal dialog */
 
 #configSelectionModal {

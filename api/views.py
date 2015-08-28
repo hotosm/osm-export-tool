@@ -12,6 +12,7 @@ from django.contrib.auth.models import User, Group
 from django.shortcuts import get_object_or_404
 from django.db.models import FileField
 from django.db import Error, transaction
+from django.core.files.base import ContentFile
 
 from rest_framework import views
 from rest_framework import viewsets
@@ -39,7 +40,7 @@ from jobs import presets
 from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from jobs.hdm_tags import HOT_HDM
 from jobs.osm_tags import OSM_DM
-from jobs.presets import PresetParser
+from jobs.presets import PresetParser, TagParser
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from serializers import (JobSerializer, ExportFormatSerializer,
                          RegionSerializer, RegionMaskSerializer,
@@ -125,6 +126,8 @@ class JobViewSet(viewsets.ModelViewSet):
             preset = request.data.get('preset')
             translation = request.data.get('translation')
             transform = request.data.get('transform')
+            featuresave = request.data.get('featuresave')
+            featurepub = request.data.get('featurepub')
             export_formats = []
             job = None
             for slug in formats:
@@ -150,6 +153,7 @@ class JobViewSet(viewsets.ModelViewSet):
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
+                                    name = entry['name'],
                                     key = entry['key'],
                                     value = entry['value'],
                                     geom_types = entry['geom_types'],
@@ -160,11 +164,13 @@ class JobViewSet(viewsets.ModelViewSet):
                             # get tags from request
                             for entry in tags:
                                 tag = Tag.objects.create(
+                                    name = entry['name'],
                                     key = entry['key'],
                                     value = entry['value'],
                                     job = job,
                                     data_model = entry['data_model'],
-                                    geom_types = entry['geom_types']
+                                    geom_types = entry['geom_types'],
+                                    groups = entry['groups']
                                 )
                         else:
                             # use hdm preset as default tags
@@ -173,6 +179,7 @@ class JobViewSet(viewsets.ModelViewSet):
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
+                                    name = entry['name'],
                                     key = entry['key'],
                                     value = entry['value'],
                                     geom_types = entry['geom_types'],
@@ -299,7 +306,7 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'config_type',)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
-    queryset = ExportConfig.objects.all()
+    queryset = ExportConfig.objects.filter(config_type='PRESET')
     lookup_field = 'uid'
     
 class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):

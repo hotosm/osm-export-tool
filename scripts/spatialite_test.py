@@ -1,5 +1,7 @@
 """
     Harness for running sql commands against a spatialite db from python.
+    This is work in progress towards a schema translation task.
+    
     From the project directory run:
     ./manage.py runscript spatialite_test --settings=hot_exports.settings -v2
     Depends on django-extensions.

@@ -322,7 +322,8 @@ class JobSerializer(serializers.Serializer):
         ('obf', 'OBF Format'),
         ('kml', 'KML Format'),
         ('garmin', 'Garmin Format'),
-        ('sqlite', 'SQLITE Format')
+        ('sqlite', 'SQLITE Format'),
+        ('thematic','Thematic Shapefile Format')
     )
     
     formats = serializers.MultipleChoiceField(
@@ -354,6 +355,8 @@ class JobSerializer(serializers.Serializer):
     exports = serializers.SerializerMethodField()
     configurations = serializers.SerializerMethodField()
     published = serializers.BooleanField(required=False)
+    feature_save = serializers.BooleanField(required=False)
+    feature_pub = serializers.BooleanField(required=False)
     #configs = ExportConfigSerializer(many=True)
     xmin = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,
