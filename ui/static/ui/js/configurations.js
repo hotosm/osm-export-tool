@@ -30,13 +30,10 @@ configurations.list = (function(){
             initUploadForm();
             $('div#search-config').css('display','none');
             $('div#spinner').css('display','block');
-            // initialize the results table
+            initPopovers();
             initDataTable();
-            // initialize the start / end date pickers
             initDatePickers();
-            // initialize the search callback
             initSearch();
-            // run the default search
             runSearch(); 
         },
     }
@@ -597,6 +594,33 @@ configurations.list = (function(){
         var url = Config.CONFIGURATION_URL + '?';
         url += searchForm.serialize();
         listConfigurations(url); // update results table
+    }
+    
+    /*
+     * Initialise UI popovers.
+     */
+    function initPopovers(){
+        $('a#filter-toggle').popover({
+            //title: 'Select Formats', 
+            content: "Filter through all the preset files based on keywords in the search box and/or between a start and end date",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'right'
+        });
+        $('label[for="publish_config"]').popover({
+            //title: 'Select Formats', 
+            content: "Publish the preset file to the global store for everyone to access",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('input#filename').popover({
+            //title: 'Select Formats', 
+            content: "Give the selected Preset file a name",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
     }
     
 }());

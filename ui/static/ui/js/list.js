@@ -29,19 +29,12 @@ jobs.list = (function(){
         main: function(){
             $('div#search').css('display','none');
             $('div#spinner').css('display','block');
-            // initialize the map
             initListMap();
-            // initialize the results table
+            initPopovers();
             initDataTable();
-            // initialize the start / end date pickers
             initDatePickers();
-            // load regions into search form
             loadRegions();
-            // initialize the feature tag filter
-            //initFeatureTagFilter();
-            // initialize the search callback
             initSearch();
-            // run the default search
             runSearch(); 
         },
     }
@@ -609,6 +602,26 @@ jobs.list = (function(){
         var url = Config.JOBS_URL + '?';
         url += searchForm.serialize();
         listJobs(url); // update results table
+    }
+    
+    /*
+     * Initialise UI popovers.
+     */
+    function initPopovers(){
+        $('a#filter-toggle').popover({
+            //title: 'Select Formats', 
+            content: "Filter through all the exports based on keywords in the search box and/or between a start and end date",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'right'
+        });
+        $('div#myexports').popover({
+            //title: 'Select Formats', 
+            content: "Show your personal export(s)",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
     }
     
 }());

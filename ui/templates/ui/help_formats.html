@@ -1,6 +1,10 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
 {% block container %}
+
+<div class="help">
+    
+<!--
 <br>
 <br>
 <b>Page Navigation Help</b>
@@ -32,113 +36,116 @@ Transform<br>
 Language<br>
 </i>
 <br>
+-->
+    
+<ol class="breadcrumb">
+  <li><a href="/help">Help</a></li>
+  <li class="active">Formats</li>
+</ol>
 
 <h2>Export File Format Help</h2>
+<div class="well">
+The OSM Export Tool allows the data selected by the user to be exported into any of the following five file formats: Esri SHP, Garmin IMG, Google KMZ, OSM PBF, and SQLite SQL. This help page provides the user with information about these formats, as well as provide links to further sources
+</div>
 
-<p>The OSM Export Tool allows the data selected by the user to be exported into any of the following five file formats: Esri SHP, Garmin IMG, Google KMZ, OSM PBF, and SQLite SQL. This help page provides the user with information about these formats, as well as provide links to further sources: <br> 
-</p>
-
+<a name="shp"></a>
 <h3>Esri SHP</h3>
-<p> The shapefile format developed by Esri spatially describes geometries as either 'points', 'polylines', or 'polygons' with a set of associated attributes. Similar to OSM these can be considered as 'nodes', 'ways','closed ways', and 'tags' respectively. The shapefile is made up of several files formatted to represent different aspects of geodata:
-<br>
-<li>.shp - shape format; feature geometry
-<li>.shx - index format; positional index
-<li>.dbf - attribute format; columnar information
-<li>.prj - coordinate format; projection information 
-<br>
-<br>
-<b>Compatible Software</b><br>
-<br>
-<li>QGIS
-<li>GRASS GIS
-<li>ArcMap
-<li>MapInfo
-<br><br>
-<b>Further Information</b><br>
-<br> 
+<div class="well">
+The shapefile format developed by Esri spatially describes geometries as either 'points', 'polylines', or 'polygons' with a set of associated attributes. Similar to OSM these can be considered as 'nodes', 'ways','closed ways', and 'relations' respectively.
+The shapefile is made up of several files formatted to represent different aspects of geodata:
+<ul>
+<li>.shp - shape format; feature geometry</li>
+<li>.shx - index format; positional index</li>
+<li>.dbf - attribute format; columnar information</li>
+<li>.prj - coordinate format; projection information</li>
+</ul>
+<h4><strong>Compatible Software</strong></h4>
+<ul>
+<li>QGIS</li>
+<li>GRASS GIS</li>
+<li>ArcMap</li>
+<li>MapInfo</li>
+</ul>
+<h4><strong>Further Information</strong></h4>
 <a href="https://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm">ArcGIS Online | Shapefiles</a><br>
 <a href="https://wiki.openstreetmap.org/wiki/Shapefiles#About_Shapefiles">OpenStreetMap Wiki | Esri SHP File</a><br>
-<br>
-</p>
+<a href="#top">top</a>
+</div>
 
-
+<a name="img"></a>
 <h3>Garmin IMG</h3>
-
-<p> The image file contains all the information needed to render a map on a Garmin GPS unit. The hard-disk image is a flat file system complete with a partition table, that does not directly support the concept of subdirectories, but does provide a kind of sub-directory structure. The image file contains several subfiles:
-<br>
-<li>.rgn - map elements; polylines, polygons and points
-<li>.lbl - labels; map elements, city names, localities, etc 
-<li>.tre - map structure information; data tree
-<li>.net - road network information
-<li>.nod - routing information
-<li>.mdr - searchable address table for routing desinations  
-<br><br>
-<b>Compatible Software</b>
-<br><br>
-<li>Garmin
-<li>QLandkarte
-<li>OSM Composer
-<li>GroundTruth
-<br><br>
-<b>Further Information</b>
-<br><br>
+<div class="well">The image file contains all the information needed to render a map on a Garmin GPS unit. The hard-disk image is a flat file system complete with a partition table, that does not directly support the concept of subdirectories, but does provide a kind of sub-directory structure. The image file contains several subfiles:
+<ul>
+<li>.rgn - map elements; polylines, polygons and points</li>
+<li>.lbl - labels; map elements, city names, localities, etc</li>
+<li>.tre - map structure information; data tree</li>
+<li>.net - road network information</li>
+<li>.nod - routing information</li>
+<li>.mdr - searchable address table for routing desinations</li>
+</ul>
+<h4><strong>Compatible Software</strong></h4>
+<ul>
+<li>Garmin</li>
+<li>QLandkarte</li>
+<li>OSM Composer</li>
+<li>GroundTruth</li>
+</ul>
+<h4><strong>Further Information</strong></h4>
 <a href="http://sourceforge.net/projects/garmin-img/files/IMG%20File%20Format/1.0/imgformat-1.0.pdf/download">SourceForge | Garmin IMG Format</a><br>
 <a href="https://wiki.openstreetmap.org/wiki/OSM_Map_On_Garmin/IMG_File_Format">OpenStreetMap Wiki | Garmin IMG File</a><br>
-<br>
-</p>
+<a href="#top">top</a>
+</div>
 
+<a name="kmz"></a>
 <h3>Google KMZ</h3>
-
-<p> The KMZ file is a compressed version of a KML file. The Keyhole Markup Language (KML) is an Extensible Markup Language (XML) grammar and file format for modeling and storing geographic features such as points, lines, images polygons and models. 
-<br><br>
-<b>Compatible Software</b>
-<br>
-<li>Google Earth
-<li>Google Maps
-<li>QGIS
-<li>ArcMap
-<br><br>
-<b>Further Information</b><br>
-<br>
+<div class="well">
+The KMZ file is a compressed version of a KML file. The Keyhole Markup Language (KML) is an Extensible Markup Language (XML) grammar and file format for modeling and storing geographic features such as points, lines, images polygons and models.
+<h4><strong>Compatible Software</strong></h4>
+<ul>
+<li>Google Earth</li>
+<li>Google Maps</li>
+<li>QGIS</li>
+<li>ArcMap</li>
+</ul>
+<h4><strong>Further Information</strong></h4>
 <a href="https://support.google.com/earth/answer/148118?hl=en">Google Earth | KML File</a><br>
 <a href="https://developers.google.com/kml/documentation/kml_tut?hl=en">Google Documentation | KML Tutorial</a><br>
-<a href="https://wiki.openstreetmap.org/wiki/KML">OpenStreetMap Wiki | KML File</a>
-<br><br>
-</p>
-<h3>OSM Source PBF</h3>
+<a href="https://wiki.openstreetmap.org/wiki/KML">OpenStreetMap Wiki | KML File</a><br/>
+<a href="#top">top</a>
+</div>
 
-<p> The Protocolbuffer Binary Format (PBF) is a highly compressed optimisted format intended as an alternative to the XML, which are the two main formats of the OSM Planet file. The Planet.osm is the OSM data in one file with all the nodes, ways and relations that make up the map.
-<br><br>
-<b>Compatible Software</b>
-<br>
-<li>JOSM
-<li>Osmosis
-<li>QGIS
-<li>ArcMap
-<br><br>
-<b>Further Information</b><br>
-<br>
+<a name="pbf"></a>
+<h3>OSM Source PBF</h3>
+<div class="well">
+The Protocolbuffer Binary Format (PBF) is a highly compressed optimisted format intended as an alternative to the XML, which are the two main formats of the OSM Planet file. The Planet.osm is the OSM data in one file with all the nodes, ways and relations that make up the map.
+<h4><strong>Compatible Software</strong></h4>
+<ul>
+<li>JOSM</li>
+<li>Osmosis</li>
+<li>QGIS</li>
+<li>ArcMap</li>
+</ul>
+<h4><strong>Further Information</strong></h4>
 <a href="https://wiki.openstreetmap.org/wiki/PBF_Format">OpenStreetMap Wiki | PBF Format</a><br>
 <a href="http://wiki.openstreetmap.org/wiki/Planet.osm">OpenStreetMap Wiki | Planet.osm</a><br>
-<br><br>
-</p>
+<a href="#top">top</a>
+</div>
 
+<a name="sql"></a>
 <h3>SQLite SQL</h3>
-
-<p> The .sql file is related to the Structured Query Language (SQL) and are used to modify the contents of a relation database. These files written in ASCII may contain instructions and statements for creating or modifying database structure, such as data insertions, updates, deletions and other SQL operations.
-<br><br>
-<b>Compatible Software</b>
-<br>
-<li>PostgreSQL
-<li>MySQL
-<li>MicroSoft Access
-<br><br>
-<b>Further Information</b><br>
-<br>
+<div class="well">
+The .sql file is related to the Structured Query Language (SQL) and are used to modify the contents of a relation database. These files written in ASCII may contain instructions and statements for creating or modifying database structure, such as data insertions, updates, deletions and other SQL operations.
+<h4><strong>Compatible Software</strong></h4>
+<ul>
+<li>PostgreSQL</li>
+<li>MySQL</li>
+<li>MicroSoft Access</li>
+</ul>
+<h4><strong>Further Information</strong></h4>
 <a href="http://www.postgresql.org/docs/9.4/static/sql.html">PostgreSQL | The SQL Language</a><br>
-<a href="https://en.wikipedia.org/wiki/SQL">Wikipedia | SQL</a>
-<br><br>
-</p>
-
+<a href="https://en.wikipedia.org/wiki/SQL">Wikipedia | SQL</a><br/>
+<a href="#top">top</a>
+</div>
+</div>
 
 {% endblock %}

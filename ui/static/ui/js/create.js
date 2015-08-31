@@ -28,6 +28,7 @@ create.job = (function(){
     return {
         init: function(){
             initMap();
+            initPopovers();
             initHDMFeatureTree();
             initOSMFeatureTree();
             initNominatim();
@@ -423,7 +424,7 @@ create.job = (function(){
         $('#create-job-wizard').bootstrapWizard({
             tabClass: 'nav nav-pills',
             onTabClick: function(tab, navigation, index){
-                //return validateTab(index);
+                return validateTab(index);
                 if (index == 2 || index == 3){
                     $('ul.pager.wizard').find('li.next > a').html('Skip');
                 }
@@ -573,6 +574,14 @@ create.job = (function(){
                 // The current tab
                 $tab = $('#create-job-form').find('.tab-pane').eq(index),
                 $bbox = $('#bbox');
+            
+            // ignore upload tab as we apply custom validation there..
+            var id = $tab.attr('id');
+            if (id === 'features' || id === 'summary' || id === 'upload') {
+                fv.resetField('filename');
+                $('button#select-file').prop('disabled', false);
+                return true;
+            }
                 
             // validate the form first
             fv.validate();
@@ -628,6 +637,7 @@ create.job = (function(){
         // ----- UPLOAD TAB ----- //
         
         $('button#select-file').bind('click', function(e){
+            $(this).popover('hide');
             if (!validateFileUploadTab()) {
                 e.preventDefault();
                 $(this).prop('disabled', true);
@@ -772,6 +782,7 @@ create.job = (function(){
          * Handle click on select config button (config-browser)
          */
         $('button#select-config').on('click', function(e){
+            $(this).popover('hide');
             var modalOpts = {
                     keyboard: true,
                     backdrop: 'static',
@@ -1924,7 +1935,94 @@ create.job = (function(){
         }
     }
     
-    
+    /*
+     * Initialize the UI popovers.
+     */
+    function initPopovers() {
+        $('#create-tab').popover({
+            content: "Select the area on the Map for export and enter the Name, Description and Event",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#formats-tab').popover({
+            //title: 'Select Formats', 
+            content: "Select one or more file formats for export",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#features-tab').popover({
+            //title: 'Select Formats', 
+            content: "Expand and select feature tags from the HDM or OSM tree list for export",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#upload-tab').popover({
+            //title: 'Select Formats', 
+            content: "Upload or select a preset file. Save and/or publish",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#summary-tab').popover({
+            //title: 'Select Formats', 
+            content: "Summary of the export settings. Select “Create Export” to start the export",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('input#filename').popover({
+            //title: 'Select Formats', 
+            content: "Give the selected Preset file a name",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('label[for="publish_config"]').popover({
+            //title: 'Select Formats', 
+            content: "Publish the preset file to the global store for everyone to access",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('button#select-file').popover({
+            //title: 'Select Formats', 
+            content: "Find and upload a preset file from desktop",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('button#select-config').popover({
+            //title: 'Select Formats', 
+            content: "Find and select preset file from the store",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('label[for="feature_save"]').popover({
+            //title: 'Select Formats', 
+            content: "Save the feature tag selection to your personal preset store",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('label[for="feature_pub"]').popover({
+            //title: 'Select Formats', 
+            content: "Publish the feature tag selection to the global preset store for everyone to access",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('label[for="published"]').popover({
+            //title: 'Select Formats', 
+            content: "Publish the export to the global exports for everyone to access",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+    }
 }());
 
 

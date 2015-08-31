@@ -1,6 +1,9 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
 {% block container %}
+    
+<div class="help">
+<!--
 <br>
 <br>
 <b>Page Navigation Help</b>
@@ -32,17 +35,27 @@ Transform<br>
 Language<br>
 </i>
 <br>
+-->
+
+<ol class="breadcrumb">
+  <li><a href="/help">Help</a></li>
+  <li class="active">Configurations</li>
+</ol>
 
 <h2>Configuration File Help</h2>
-
-<p>The user can upload configuration files in the tool to apply to the data selected for export. This help page will provide guidance on the types of configuration files, how to search for them on the 'Store' page and upload them on the 'Create' page.<br><br> 
+<div class="well">
+The user can upload configuration files in the tool to apply to the data selected for export. This help page will provide guidance on the types of configuration files, how to search for them on the 'Store' page and upload them on the 'Create' page.
+</div>
 
 <h3>File Types</h3>
+<a name="presets"></a>
+<div class="well">
+    <ul>
+        <li><strong>Preset:</strong> A <a href="http://learnosm.org/en/josm/creating-presets/" target="_blank">JOSM Preset</a>.</li>
+    </ul>
+</div>
 
-<b>Preset Files</b>
-<br>
-<br>
-
+<!--
 <b>Transform Files</b>
 <br><br>
 Transform files are used to execute arbitrary SQL (spatialite) commands on the selected exported data.<br>
@@ -70,15 +83,18 @@ For example the term "bakery" may be transformed into "boulangerie" or "road" to
 <br>
 Example 1.<br>
 <br>
+-->
 
 <h3>Search Files</h3>
+<div class="well">
+    Search presets info.
+</div>
 
 <h3>Upload Files</h3>
-
-Files can be uploaded on the 'Select Configuration' tab of the 'Create' page. As it is part of the wizard that takes the user through creating a new export, it can only be accessed once the previous steps have been completed. 
-<br><br>
-The 'Select Features' tab provides the user with a text box to enter a 'Filename' and a 'Configuration Type'. Once these have been completed, the user can choose to either search their desktop for the file by clicking 'Browse Desktop' or  select a file from the configuration file Store by clicking 'Browse Store'.
-<br><br>
-Once the configuration file has been selected, the user will be brought back to the 'Create' wizard where they can choose to publish the file globally by clicking 'Publish File'.
-
+<div class="well">
+<p>Files can be uploaded on the 'Select Preset' tab of the 'Create' page.  As it is part of the wizard that takes the user through creating a new export, it can only be accessed once the previous steps have been completed.
+The 'Select Preset' tab provides the user with a text box to enter a 'Filename'. Once this has been completed, the user can choose to either search their desktop for the file by clicking 'Upload Preset' or  select a file from the configuration file Store by clicking ''.</p>
+<p>Once the configuration file has been selected, the user will be brought back to the 'Create' wizard where they can choose to publish the file globally by clicking 'Publish File'.</p>
+</div>
+</div>
 {% endblock %}

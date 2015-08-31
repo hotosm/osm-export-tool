@@ -26,6 +26,7 @@ exports.detail = (function(){
             exports.detail.job_uid = job_uid;
             exports.detail.timer = false;
             initMap();
+            initPopovers();
             loadJobDetail();
             loadSubmittedRunDetails();
             loadCompletedRunDetails();
@@ -731,6 +732,24 @@ exports.detail = (function(){
             $('#deleteForm').ajaxSubmit(options);
             $("#deleteExportModal").modal('hide');
         });
+    }
+    
+    function initPopovers(){
+        $('button#rerun').popover({
+            //title: 'Select Formats', 
+            content: "Run the export with the same geographic location and settings",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('button#clone').popover({
+            //title: 'Select Formats', 
+            content: "Clone this export while adjusting the settings",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        
     }
   
 })();
