@@ -285,7 +285,7 @@ create.job = (function(){
      * update the bbox extents on the form.
      */
     function setBounds(bounds) {
-        fmt = '0.0000000000' // format to 10 decimal places
+        fmt = '0.000000' // format to 6 decimal places .11 metre precision
         var xmin = numeral(bounds.left).format(fmt);
         var ymin = numeral(bounds.bottom).format(fmt);
         var xmax = numeral(bounds.right).format(fmt);
@@ -295,6 +295,9 @@ create.job = (function(){
         $('#ymin').val(ymin).trigger('input');
         $('#xmax').val(xmax).trigger('input');
         $('#ymax').val(ymax).trigger('input');
+        // update coordinate display
+        var coords = '(e,s,w,n): ' + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
+        $('span#coordinates').html(coords);
     }
     
     /*
@@ -306,6 +309,7 @@ create.job = (function(){
         $('#ymin').val('').trigger('input');
         $('#xmax').val('').trigger('input');
         $('#ymax').val('').trigger('input');
+        $('span#coordinates').empty();
     }
     
     /*
@@ -746,7 +750,7 @@ create.job = (function(){
                     selection['filename'] = result.filename;
                     selection['config_type'] = result.config_type;
                     selection['published'] = result.published;
-                    
+                    // notify the file list
                     $('#filelist').trigger({type: 'config:uploaded', source: 'config-upload', selection: selection});
                     
                 },
@@ -929,6 +933,9 @@ create.job = (function(){
             }
             else {
                 // submit the form..
+                $('div#submit-spinner').css('display', 'block');
+                $('#create-job-wizard').css('opacity', .5);
+                $('#map-column').css('opacity', .5);
                 var fields = $form.serializeArray();
                 var form_data = {};
                 var tags = [];
@@ -1027,8 +1034,6 @@ create.job = (function(){
             if (typeof data == 'object') {
                 traverse(data, $tree, level_idx);
             }
-            
-            
             
             /*
              * Recursively builds the feature tree.
@@ -1261,15 +1266,13 @@ create.job = (function(){
                 else {
                     $(document).trigger({type: 'preset:deselected', source: 'feature-tree'});
                 }
-            });
-            
-            
+            });  
         });
     }
     
     /*
      * Handles placename lookups using nominatim.
-     * Only interested relations.
+     * Only interested in relations.
      */
     function initNominatim(){
         window.query_cache = {};

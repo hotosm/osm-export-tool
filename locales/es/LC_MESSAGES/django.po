@@ -1,0 +1,568 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-31 09:53+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: api/serializers.py:338
+msgid "invalid export format."
+msgstr ""
+
+#: api/serializers.py:339
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr ""
+
+#: api/serializers.py:368
+msgid "xmin is required."
+msgstr ""
+
+#: api/serializers.py:369
+msgid "invalid xmin value."
+msgstr ""
+
+#: api/serializers.py:375
+msgid "ymin is required."
+msgstr ""
+
+#: api/serializers.py:376
+msgid "invalid ymin value."
+msgstr ""
+
+#: api/serializers.py:382
+msgid "xmax is required."
+msgstr ""
+
+#: api/serializers.py:383
+msgid "invalid xmax value."
+msgstr ""
+
+#: api/serializers.py:389
+msgid "ymax is required."
+msgstr ""
+
+#: api/serializers.py:390
+msgid "invalid ymax value."
+msgstr ""
+
+#: api/views.py:95
+msgid "missing_bbox_parameter"
+msgstr ""
+
+#: api/views.py:96
+msgid "Missing bounding box parameter"
+msgstr ""
+
+#: api/views.py:200
+msgid "server_error"
+msgstr ""
+
+#: api/views.py:205
+msgid "Invalid format provided."
+msgstr ""
+
+#: api/views.py:235
+msgid "Failed to run Export"
+msgstr ""
+
+#: api/views.py:237
+msgid "Export not found"
+msgstr ""
+
+#: ui/templates/registration/activate.html:8
+msgid "Account activation failed"
+msgstr ""
+
+#: ui/templates/registration/activate.html:11
+#: ui/templates/registration/registration_closed.html:11
+msgid "We apologise for any inconvenience this may cause."
+msgstr ""
+
+#: ui/templates/registration/activate.html:12
+msgid ""
+"Please <a href=\"/contact\">contact us</a> if you continue to experience "
+"problems with your account activation."
+msgstr ""
+
+#: ui/templates/registration/activation_complete.html:8
+msgid "You have successfully activated your account"
+msgstr ""
+
+#: ui/templates/registration/activation_complete.html:11
+msgid "Please click <a href=\"/jobs/create\">here</a> to start."
+msgstr ""
+
+#: ui/templates/registration/activation_email.html:7
+msgid "registration"
+msgstr ""
+
+#: ui/templates/registration/activation_email.html:12
+#, python-format
+msgid ""
+"\n"
+"    You have asked to register an account at <a href=\"%(site.url)s\">HOT "
+"Exports</a>.\n"
+"    If this wasn't you, please ignore this email\n"
+"    and your address will be removed from our records.\n"
+"    "
+msgstr ""
+
+#: ui/templates/registration/activation_email.html:19
+#, python-format
+msgid ""
+"\n"
+"    To activate this account, please click the following link within the "
+"next\n"
+"    %(expiration_days)s days:\n"
+"    "
+msgstr ""
+
+#: ui/templates/registration/activation_email.html:31
+msgid ""
+"\n"
+"    Sincerely,\n"
+"    \n"
+"    Humanitarian OpenStreetMap Team\n"
+"    "
+msgstr ""
+
+#: ui/templates/registration/activation_email.txt:2
+msgid "Activate account at"
+msgstr ""
+
+#: ui/templates/registration/activation_email.txt:6
+#, python-format
+msgid "Link is valid for %(expiration_days)s days."
+msgstr ""
+
+#: ui/templates/registration/activation_email_subject.txt:1
+msgid "Account activation on"
+msgstr ""
+
+#: ui/templates/registration/logout.html:8
+msgid "You have successfully logged out of HOT Exports"
+msgstr ""
+
+#: ui/templates/registration/logout.html:11
+msgid "Please click <a href=\"/accounts/login\">here</a> to login again."
+msgstr ""
+
+#: ui/templates/registration/password_change_done.html:8
+msgid "Password changed"
+msgstr ""
+
+#: ui/templates/registration/password_change_done.html:11
+msgid "Your password has been changed successfully."
+msgstr ""
+
+#: ui/templates/registration/password_reset_complete.html:7
+msgid "Password reset successfully"
+msgstr ""
+
+#: ui/templates/registration/password_reset_complete.html:10
+msgid "Your password has been reset successfully."
+msgstr ""
+
+#: ui/templates/registration/password_reset_complete.html:11
+msgid "Log in"
+msgstr ""
+
+#: ui/templates/registration/password_reset_done.html:7
+msgid "Password reset email sent"
+msgstr ""
+
+#: ui/templates/registration/password_reset_done.html:10
+msgid "A password reset email has been sent to your registered email address."
+msgstr ""
+
+#: ui/templates/registration/password_reset_done.html:11
+msgid "Please click the link in the email to reset your password."
+msgstr ""
+
+#: ui/templates/registration/password_reset_email.html:4
+msgid "Hi"
+msgstr ""
+
+#: ui/templates/registration/password_reset_email.html:6
+#, python-format
+msgid ""
+"\n"
+"You are receiving this email because you (or someone pretending to be you)\n"
+"requested that your password be reset on the %(domain)s site.  If you do "
+"not \n"
+"wish to reset your password, please ignore this message.\n"
+msgstr ""
+
+#: ui/templates/registration/password_reset_email.html:11
+msgid ""
+"\n"
+"To reset your password, please click the following link, or copy and paste "
+"it\n"
+"into your web browser:\n"
+msgstr ""
+
+#: ui/templates/registration/password_reset_email.html:18
+msgid "Your username, in case you've forgotten:"
+msgstr ""
+
+#: ui/templates/registration/password_reset_email.html:21
+msgid "Best regards"
+msgstr ""
+
+#: ui/templates/registration/password_reset_email.html:22
+msgid "Management"
+msgstr ""
+
+#: ui/templates/registration/registration_closed.html:8
+msgid "Registration for HOT Exports is currently closed."
+msgstr ""
+
+#: ui/templates/registration/registration_complete.html:8
+msgid "You are now registered for HOT Exports"
+msgstr ""
+
+#: ui/templates/registration/registration_complete.html:11
+msgid "An activation email has been sent to your registered email address."
+msgstr ""
+
+#: ui/templates/registration/registration_complete.html:12
+msgid "Please click the link in the email to activate your account."
+msgstr ""
+
+#: ui/templates/ui/base.html:14
+msgid "HOT Export Tool"
+msgstr ""
+
+#: ui/templates/ui/base.html:50
+msgid "OSM Export Tool"
+msgstr ""
+
+#: ui/templates/ui/base.html:54
+msgid "Exports"
+msgstr ""
+
+#: ui/templates/ui/base.html:55
+msgid "Presets"
+msgstr ""
+
+#: ui/templates/ui/base.html:61
+msgid "Log Out"
+msgstr ""
+
+#: ui/templates/ui/base.html:62
+msgid "Change Password"
+msgstr ""
+
+#: ui/templates/ui/base.html:66
+msgid "Login"
+msgstr ""
+
+#: ui/templates/ui/clone.html:53 ui/templates/ui/create.html:53
+msgid "Coordinates"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:19 ui/templates/ui/create.html:339
+msgid "Filter Configurations"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:25 ui/templates/ui/create.html:345
+#: ui/templates/ui/list.html:25
+msgid "Search"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:36 ui/templates/ui/create.html:356
+#: ui/templates/ui/list.html:36
+msgid "Start Date:"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:46 ui/templates/ui/create.html:366
+#: ui/templates/ui/list.html:46
+msgid "End Date:"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:59 ui/templates/ui/create.html:32
+#: ui/templates/ui/create.html.py:379 ui/templates/ui/list.html:65
+msgid "Name"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:59
+#: ui/templates/ui/configurations.html:157 ui/templates/ui/create.html:247
+#: ui/templates/ui/create.html.py:379
+msgid "Type"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:59 ui/templates/ui/create.html:379
+#: ui/templates/ui/list.html:65
+msgid "Created"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:59
+msgid "Download Configuration"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:72 ui/templates/ui/create.html:393
+msgid "My Configurations"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:93 ui/templates/ui/create.html:414
+#: ui/templates/ui/list.html:99
+msgid "Page size"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:118
+msgid "Upload a configuration file"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:120
+msgid ""
+"Use this form to upload a <a href=\"http://learnosm.org/en/josm/creating-"
+"presets/\" target=\"_blank\">JOSM Preset</a> configuration file."
+msgstr ""
+
+#: ui/templates/ui/configurations.html:126 ui/templates/ui/create.html:123
+msgid "Filename:"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:149
+msgid "Publish this configuration globally."
+msgstr ""
+
+#: ui/templates/ui/configurations.html:157 ui/templates/ui/create.html:182
+#: ui/templates/ui/create.html.py:247 ui/templates/ui/create.html:379
+msgid "Filename"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:157 ui/templates/ui/create.html:247
+msgid "Status"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:173
+msgid "Select a file"
+msgstr ""
+
+#: ui/templates/ui/configurations.html:179 ui/templates/ui/create.html:169
+msgid "Upload"
+msgstr ""
+
+#: ui/templates/ui/create.html:20
+msgid "Describe Export"
+msgstr ""
+
+#: ui/templates/ui/create.html:21
+msgid "Select Formats"
+msgstr ""
+
+#: ui/templates/ui/create.html:22
+msgid "Select Features"
+msgstr ""
+
+#: ui/templates/ui/create.html:23
+msgid "Select Preset"
+msgstr ""
+
+#: ui/templates/ui/create.html:24 ui/templates/ui/detail.html:9
+msgid "Export Summary"
+msgstr ""
+
+#: ui/templates/ui/create.html:39 ui/templates/ui/list.html:65
+msgid "Description"
+msgstr ""
+
+#: ui/templates/ui/create.html:46 ui/templates/ui/list.html:65
+msgid "Event"
+msgstr ""
+
+#: ui/templates/ui/create.html:66
+msgid "Select Export Formats"
+msgstr ""
+
+#: ui/templates/ui/create.html:78
+msgid "Select from either the HDM or OSM data models."
+msgstr ""
+
+#: ui/templates/ui/create.html:111
+msgid "Upload a preset file"
+msgstr ""
+
+#: ui/templates/ui/create.html:113
+msgid ""
+"\n"
+"                                    Use this form to either upload a <a href="
+"\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">JOSM "
+"Preset</a> configuration file,\n"
+"                                    or to select a previously published "
+"preset configuration. Only one preset file can be selected at a time.\n"
+"                                    Any selections of features you have made "
+"from the HDM Data Model or the OSM Data Model will be cleared.\n"
+"                                    "
+msgstr ""
+
+#: ui/templates/ui/create.html:146
+msgid "Publish this preset globally."
+msgstr ""
+
+#: ui/templates/ui/create.html:163
+msgid "Select a preset to upload"
+msgstr ""
+
+#: ui/templates/ui/create.html:175
+msgid "Select a stored preset"
+msgstr ""
+
+#: ui/templates/ui/create.html:199
+msgid "Export Details"
+msgstr ""
+
+#: ui/templates/ui/create.html:201 ui/templates/ui/detail.html:17
+msgid "Name:"
+msgstr ""
+
+#: ui/templates/ui/create.html:202 ui/templates/ui/detail.html:18
+msgid "Description:"
+msgstr ""
+
+#: ui/templates/ui/create.html:203
+msgid "Event:"
+msgstr ""
+
+#: ui/templates/ui/create.html:204
+msgid "Selected export formats:"
+msgstr ""
+
+#: ui/templates/ui/create.html:208
+msgid "Export Options"
+msgstr ""
+
+#: ui/templates/ui/create.html:215
+msgid "Save feature selection locally"
+msgstr ""
+
+#: ui/templates/ui/create.html:225
+msgid "Publish feature selection globally"
+msgstr ""
+
+#: ui/templates/ui/create.html:235
+msgid "Publish export globally"
+msgstr ""
+
+#: ui/templates/ui/create.html:244
+msgid "Configurations:"
+msgstr ""
+
+#: ui/templates/ui/create.html:254
+msgid "Create Export"
+msgstr ""
+
+#: ui/templates/ui/create.html:259
+msgid "First"
+msgstr ""
+
+#: ui/templates/ui/create.html:260
+msgid "Previous"
+msgstr ""
+
+#: ui/templates/ui/create.html:261
+msgid "Last"
+msgstr ""
+
+#: ui/templates/ui/create.html:262
+msgid "Next"
+msgstr ""
+
+#: ui/templates/ui/create.html:280
+msgid "Select Export Area"
+msgstr ""
+
+#: ui/templates/ui/create.html:281
+msgid "Zoom To Selection"
+msgstr ""
+
+#: ui/templates/ui/create.html:282
+msgid "Reset Map"
+msgstr ""
+
+#: ui/templates/ui/create.html:291
+msgid "Search for a place or enter xmin,ymin,xmax,ymax"
+msgstr ""
+
+#: ui/templates/ui/create.html:305
+msgid "Error Uploading Configuration File"
+msgstr ""
+
+#: ui/templates/ui/create.html:311
+msgid "There was a problem with your configuration upload."
+msgstr ""
+
+#: ui/templates/ui/create.html:328
+msgid "Select a preset configuration file to apply to this export"
+msgstr ""
+
+#: ui/templates/ui/create.html:329
+msgid "Only one preset file can be selected."
+msgstr ""
+
+#: ui/templates/ui/create.html:379 ui/templates/ui/create.html.py:437
+msgid "Select"
+msgstr ""
+
+#: ui/templates/ui/detail.html:16
+msgid "Job Id:"
+msgstr ""
+
+#: ui/templates/ui/detail.html:19
+msgid "Created:"
+msgstr ""
+
+#: ui/templates/ui/detail.html:20
+msgid "Export Formats:"
+msgstr ""
+
+#: ui/templates/ui/detail.html:33
+msgid "Rerun this Export"
+msgstr ""
+
+#: ui/templates/ui/detail.html:36
+msgid "Clone this Export"
+msgstr ""
+
+#: ui/templates/ui/detail.html:42
+msgid "Delete this Export"
+msgstr ""
+
+#: ui/templates/ui/detail.html:53
+msgid "Export Runs"
+msgstr ""
+
+#: ui/templates/ui/list.html:19
+msgid "Filter Exports"
+msgstr ""
+
+#: ui/templates/ui/list.html:65
+msgid "Region"
+msgstr ""
+
+#: ui/templates/ui/list.html:78
+msgid "My Exports"
+msgstr ""
+
+#: ui/templates/ui/list.html:123
+msgid "Filter Area"
+msgstr ""
+
+#: ui/templates/ui/list.html:124
+msgid "Clear Filter"
+msgstr ""

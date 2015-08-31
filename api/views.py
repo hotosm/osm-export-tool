@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import FileField
 from django.db import Error, transaction
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext as _
 
 from rest_framework import views
 from rest_framework import viewsets
@@ -91,8 +92,8 @@ class JobViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data)
         if (len(params.split(',')) < 4):
             errors = OrderedDict()
-            errors['id'] = 'missing_bbox_parameter'
-            errors['message'] = 'Missing bounding box parameter'
+            errors['id'] = _('missing_bbox_parameter')
+            errors['message'] = _('Missing bounding box parameter')
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             extents = params.split(',')   
@@ -196,12 +197,12 @@ class JobViewSet(viewsets.ModelViewSet):
                             job.configs.add(config)
                 except Error as e:
                     error_data = OrderedDict()
-                    error_data['id'] = 'server_error'
+                    error_data['id'] = _('server_error')
                     error_data['message'] = 'Error creating export job: {0}'.format(e)
                     return Response(error_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 error_data = OrderedDict()
-                error_data['formats'] = ['Invalid format provided.']
+                error_data['formats'] = [_('Invalid format provided.')]
                 return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
             
             # run the tasks
@@ -231,9 +232,9 @@ class RunJob(views.APIView):
                 running = ExportRunSerializer(run, context={'request': request})
                 return Response(running.data, status=status.HTTP_202_ACCEPTED)
             else:
-                return Response([{'detail': 'Failed to run Export'}], status.HTTP_200_OK)
+                return Response([{'detail': _('Failed to run Export')}], status.HTTP_200_OK)
         else:
-            return Response([{'detail': 'Export not found'}], status.HTTP_404_NOT_FOUND)
+            return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
         
 
 

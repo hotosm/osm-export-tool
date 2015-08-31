@@ -9,6 +9,9 @@
 
 {% block container %}
 <div class="row">
+    <div id="submit-spinner" class="col-md-12">
+        <span id="submit-spinner"><i class="fa fa-cog fa-spin fa-5x"></i></span>
+    </div>
     <div class="col-md-6">
         <div id="create-job-wizard">
             <form id="create-job-form" role="form" action="" class="" method="POST">
@@ -26,7 +29,7 @@
                             <div class="panel-body">
                                 <div class="form-group row" id="form-group-name">
                                     <div class="col-md-12">
-                                        <label class="control-label" for="name">{% trans Name %}</label>
+                                        <label class="control-label" for="name">{% trans 'Name' %}</label>
                                         <input class="form-control" type="text" name="name" id="name" value=""/>
                                     </div>
                                 </div>
@@ -42,6 +45,14 @@
                                     <div class="col-md-12">
                                         <label class="control-label" for="description">{% trans 'Event' %}</label>
                                         <input class="form-control" type="text" name="event" id="event" value=""/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="form-group row" id="form-group-coords">
+                                    <div class="col-md-12">
+                                        <label class="control-label" for="description">{% trans 'Coordinates' %}</label>
+                                        <br/>
+                                        <span id="coordinates"></span>
                                     </div>
                                 </div>
                             </div>
@@ -315,7 +326,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">{% trans 'Select a preset configuration file to apply to this export' %}</h4>
-                <h5>{% trans 'Only one of each configuration file can be selected.' %}</h5>
+                <h5>{% trans 'Only one preset file can be selected.' %}</h5>
             </div>
             <div class="container-fluid">
                 <div class="row">

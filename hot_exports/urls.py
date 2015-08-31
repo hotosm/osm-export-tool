@@ -14,16 +14,21 @@ from api.views import HDMDataModelView, OSMDataModelView, RunJob
 
 urlpatterns = []
 
-urlpatterns += patterns('ui.views',
-    url(r'^$', login_required(TemplateView.as_view(template_name='ui/index.html')), name='index'),
+urlpatterns += i18n_patterns('ui.views',
+    url(r'^/$', login_required(TemplateView.as_view(template_name='ui/index.html')), name='index'),
     url(r'^help$', TemplateView.as_view(template_name='ui/help.html'), name='help'),
     url(r'^jobs/', include(ui_urls)),
 )
 
-urlpatterns += patterns('registration.views',
+urlpatterns += i18n_patterns('registration.views',
     url(r'^accounts/', include('registration.backends.default.urls')),
 )
 
+urlpatterns += i18n_patterns('admin.views',
+    url(r'^admin/', include(admin.site.urls)),
+)
+
+# don't apply i18n patterns here.. api uses Accept-Language header
 urlpatterns += patterns('api.views',
     url(r'^api/', include(router.urls, namespace='api')),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
@@ -31,8 +36,3 @@ urlpatterns += patterns('api.views',
     url(r'^api/hdm-data-model$', HDMDataModelView.as_view(), name='hdm-data-model'),
     url(r'^api/osm-data-model$', OSMDataModelView.as_view(), name='osm-data-model'),
 )
-
-urlpatterns += patterns('admin.views',
-    url(r'^admin/', include(admin.site.urls)),
-)
-
