@@ -252,6 +252,10 @@ span#submit-spinner i {
     padding-left: 0px !important;
 }
 
+.nav-pills>li+li {
+    margin-left: 0px !important;
+}
+
 /* gazetteer lookup styles */
 
 div#gazetteer {
@@ -657,3 +661,19 @@ span#spinner i {
     background-color: white;
 }
 
+
+/* HELP Pages */
+
+div.help {
+    padding: 1em 10em 3em 8em;
+    font-size: 1.2em;
+    line-height: 1.6em;
+}
+
+.help > ul > li {
+    list-style-type: none;
+}
+
+a.top {
+    padding: 15px !important;
+}

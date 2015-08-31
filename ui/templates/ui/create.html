@@ -64,6 +64,7 @@
                             <div class="form-group row" id="form-group-formats">
                                 <div class="col-md-12">
                                     <label class="control-label" for="formats">{% trans 'Select Export Formats' %}:</label>
+                                    <p>More than one export format can be selected. Please note that there are two Esri Shapefile options, as the Thematic Schema provides the data in a set of themed geometry tables (points, lines and polygons), whereas the OSM Schema provides all attributes in layers grouped by geometry type.</p>
                                     <div id="supported-formats"></div>
                                 </div>
                             </div>
@@ -75,7 +76,10 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label>{% trans 'Select from either the HDM or OSM data models.' %}</label>
+                                    <label>{% trans 'Select from either the HDM or OSM data models' %}</label>
+                                    <p>Features can only be selected from one tree, either from the HDM or the OSM data model.
+                                    Feature tags can not be mixed between the two,
+                                    with the other tree deactivating as soon as a tag from the other tree has been selected.</p>
                                 </div>
                             </div>
                             <div class="features">
@@ -160,7 +164,7 @@
                                 <button id="select-file" type="button" class="btn btn-primary btn-lg btn-file pull-left">
                                     <span>
                                         <i class="fa fa-plus"></i>&nbsp;
-                                        {% trans 'Select a preset to upload' %} <input id="fileupload" type="file" name="upload">
+                                        {% trans 'Upload Preset' %} <input id="fileupload" type="file" name="upload">
                                     </span>
                                 </button>
                                 <button id="upload" type="button" class="btn btn-lg btn-success pull-left">
@@ -172,7 +176,7 @@
                                 <button id="select-config" type="button" class="btn btn-lg btn-primary pull-right">
                                     <span>
                                     <i class="fa fa-cogs"></i>&nbsp;
-                                    {% trans 'Select a stored preset' %}
+                                    {% trans 'Select Stored Preset' %}
                                     </span>
                                 </button>
                             </div>
