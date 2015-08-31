@@ -286,7 +286,7 @@ clone.job = (function(){
      * update the bbox extents on the form.
      */
     function setBounds(bounds) {
-        fmt = '0.0000000000' // format to 10 decimal places
+        fmt = '0.000000' // format to 6 decimal places .11 metre precision
         var xmin = numeral(bounds.left).format(fmt);
         var ymin = numeral(bounds.bottom).format(fmt);
         var xmax = numeral(bounds.right).format(fmt);
@@ -296,6 +296,9 @@ clone.job = (function(){
         $('#ymin').val(ymin).trigger('input');
         $('#xmax').val(xmax).trigger('input');
         $('#ymax').val(ymax).trigger('input');
+        // update coordinate display
+        var coords = '(e,s,w,n): ' + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
+        $('span#coordinates').html(coords);
     }
     
     /*
@@ -307,6 +310,7 @@ clone.job = (function(){
         $('#ymin').val('').trigger('input');
         $('#xmax').val('').trigger('input');
         $('#ymax').val('').trigger('input');
+        $('span#coordinates').empty();
     }
     
     /*
@@ -937,6 +941,9 @@ clone.job = (function(){
             }
             else {
                 // submit the form..
+                $('div#submit-spinner').css('display', 'block');
+                $('#create-job-wizard').css('opacity', .5);
+                $('#map-column').css('opacity', .5);
                 var fields = $form.serializeArray();
                 var form_data = {};
                 var tags = [];
@@ -1934,7 +1941,7 @@ clone.job = (function(){
     function populateForm(){
         var url = document.URL;
         var parts = url.split('/');
-        var job_uid = parts[5];
+        var job_uid = parts[parts.length - 2];
         console.log('Job uid is ' + job_uid);
         $.getJSON(Config.JOBS_URL + '/' + job_uid, function(data, success, jqXHR){
             

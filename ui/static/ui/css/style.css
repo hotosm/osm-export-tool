@@ -192,6 +192,34 @@ span.heading {
 
 /* Create export form styles */
 
+div#submit-spinner{
+    float: left;
+    position: fixed;
+    z-index: 1000;
+    background: transparent;
+    /*
+    background-color: #fff;
+    filter:alpha(opacity=50);
+    -moz-opacity:0.5;
+    -khtml-opacity: 0.5;
+    opacity: 0.5;
+    */
+    z-index: 10000;
+    min-width: 100%;
+    min-height: 100%;
+    display: none;
+}
+
+span#submit-spinner {
+    position: relative;
+    top: 200px;
+    left: 50%;
+}
+
+span#submit-spinner i {
+    font-size: 4em !important;
+}
+
 #create-job-wizard {
     padding: 10px !important;
 }

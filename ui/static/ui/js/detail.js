@@ -309,7 +309,8 @@ exports.detail = (function(){
             // display the submitted run
             $('#submitted_runs').css('display', 'block');
             // disable the re-run button..
-            $('button#rerun').prop('disabled', 'true');
+            $('button#rerun').prop('disabled', true);
+            $('button#delete').prop('disabled', true);
         }
         else {
             // stop the interval timer..
@@ -319,7 +320,8 @@ exports.detail = (function(){
             // reload the completed runs to show the latest run..
             loadCompletedRunDetails();
             // enable the re-run button..
-            $('button#rerun').prop('disabled', '');
+            $('button#rerun').prop('disabled', false);
+            $('button#delete').prop('disabled', false);
             return;
         }
         $.each(data, function(index, run){
@@ -654,7 +656,8 @@ exports.detail = (function(){
             loadCompletedRunDetails();
             
             // enable the re-run button..
-            $('button#rerun').prop('disabled', '');
+            $('button#rerun').prop('disabled', false);
+            $('button#delete').prop('disabled', false);
         }
     } 
     
@@ -688,7 +691,7 @@ exports.detail = (function(){
                     updateSubmittedRunDetails(data);
                 }
             });
-        }, 3000);
+        }, 2000);
     }
     
     function buildDeleteDialog(){

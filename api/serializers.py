@@ -11,7 +11,7 @@ from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from tasks.models import ExportRun, ExportTask, ExportTaskResult, ExportTaskException
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.utils import timezone
 from rest_framework_gis import serializers as geo_serializers
 from rest_framework_gis import fields as geo_fields
@@ -80,6 +80,7 @@ class ExportConfigSerializer(serializers.Serializer):
     upload = serializers.FileField(allow_empty_file=False, max_length=100)
     published = serializers.BooleanField()
     created = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField(read_only=True)
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
@@ -115,6 +116,9 @@ class ExportConfigSerializer(serializers.Serializer):
     
     def get_created(self, obj):
         return obj.created_at
+    
+    def get_owner(self, obj):
+        return obj.user.username;
     
 
 class ExportTaskResultSerializer(serializers.ModelSerializer):

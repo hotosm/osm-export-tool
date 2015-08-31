@@ -510,8 +510,14 @@ configurations.list = (function(){
                     data: 'uid',
                     orderable:false,
                     render: function(data, type, row){
-                        return '<button title="Delete this configuration file" id="' + data + '" type="button" class="delete-file btn btn-danger btn-sm pull-right">' +
+                        var user = $('span#user').text();
+                        if (row.owner === user) {
+                            return '<button title="Delete this configuration file" id="' + data + '" type="button" class="delete-file btn btn-danger btn-sm pull-right">' +
                                 'Delete</button>';
+                        }
+                        else {
+                            return '';
+                        } 
                     }
                 }
             ]

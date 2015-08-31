@@ -1,5 +1,6 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% load i18n %}
 {% block css %}
 {{ block.super}}
     <link rel="stylesheet" href="{% static 'ui/components/formvalidation/dist/css/formValidation.css' %}"/>
@@ -8,6 +9,9 @@
 
 {% block container %}
 <div class="row">
+    <div id="submit-spinner" class="col-md-12">
+        <span id="submit-spinner"><i class="fa fa-cog fa-spin fa-5x"></i></span>
+    </div>
     <div class="col-md-6">
         <div id="create-job-wizard">
             <form id="create-job-form" role="form" action="" class="" method="POST">
@@ -41,6 +45,14 @@
                                     <div class="col-md-12">
                                         <label class="control-label" for="description">Event</label>
                                         <input class="form-control" type="text" name="event" id="event" value=""/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="form-group row" id="form-group-coords">
+                                    <div class="col-md-12">
+                                        <label class="control-label" for="description">{% trans 'Coordinates' %}</label>
+                                        <br/>
+                                        <span id="coordinates"></span>
                                     </div>
                                 </div>
                             </div>
@@ -312,7 +324,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Select configuration files to apply to this export</h4>
-                <h5>Only one of each configuration type can be selected.</h5>
+                <h5>Only one preset file can be selected.</h5>
             </div>
             <div class="container-fluid">
                 <div class="row">
