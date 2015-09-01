@@ -1783,6 +1783,9 @@ clone.job = (function(){
             var $fileupload = $('#fileupload');
             $fileupload.val('');
             
+            // clear configuration hidden inputs
+            $('input#preset').val();
+            
             // remove the pending upload from the table
             var configs = $('#filelist tr.config').length;
             var $tr = $(this).find('tr#upload');
@@ -1821,6 +1824,9 @@ clone.job = (function(){
             // clear the selected files list
             var $fileupload = $('#fileupload');
             $fileupload.val('');
+            
+            // clear configuration hidden inputs
+            $('input#preset').val();
             
             // re-enable this config_type in the select combo
             var config_type = $tr.find('td').eq(1).html();
