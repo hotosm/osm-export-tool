@@ -1501,8 +1501,14 @@ clone.job = (function(){
         $(document).on('preset:deselected', function(e){
             switch (e.source){
                 case 'feature-tree':
+                    // disable and uncheck feature save and publish inputs
+                    $('input#feature_save').prop('disabled', true);
+                    $('input#feature_save').prop('checked', false);
+                    
+                    $('input#feature_pub').prop('disabled', true);
+                    $('input#feature_pub').prop('checked', false);
                     // enable the preset option on the config type selection control
-                    $('option#select-preset').prop('disabled', false);
+                    //$('option#select-preset').prop('disabled', false);
                     // enable preset config types in the config browser
                     $('input[data-type="PRESET"]')
                         .each(function(i, input){

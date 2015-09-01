@@ -346,7 +346,7 @@ class GeneratePresetTask(ExportTask):
             xml = tag_parser.parse_tags()
             preset_file = ContentFile(xml)
             name = 'Custom HDM Preset'
-            filename = 'hdm_custom_preset.xml'
+            filename = 'josm_custom_preset.xml'
             content_type = 'application/xml'
             config = ExportConfig.objects.create(
                 name=name, filename=filename,
