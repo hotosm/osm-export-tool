@@ -64,7 +64,7 @@ $ pip install GDAL=1.11.2
 
 #####-Final Step:
 Install the dependencies into your virtualenv:  
-$ 'pip install -r /path/to/requirements.txt'  
+$ pip install -r /path/to/requirements-dev.txt  
 Once you've got all the dependencies installed, run ./manage.py migrate to set up the database tables etc..  
 Then run ./manage.py runserver to run the server.  
 You should then be able to browse to http://localhost:8000/
