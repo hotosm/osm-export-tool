@@ -1,21 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
-# Translators:
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: osm-export-tool2\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-01 08:54+0000\n"
-"PO-Revision-Date: 2015-09-01 09:01+0000\n"
-"Last-Translator: Dražen Odobašić <dodobas@candela-it.com>\n"
-"Language-Team: German (http://www.transifex.com/hotosm/osm-export-tool2/language/de/)\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: api/serializers.py:338
 msgid "invalid export format."
@@ -113,7 +113,8 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"    You have asked to register an account at <a href=\"%(site.url)s\">HOT Exports</a>.\n"
+"    You have asked to register an account at <a href=\"%(site.url)s\">HOT "
+"Exports</a>.\n"
 "    If this wasn't you, please ignore this email\n"
 "    and your address will be removed from our records.\n"
 "    "
@@ -123,7 +124,8 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"    To activate this account, please click the following link within the next\n"
+"    To activate this account, please click the following link within the "
+"next\n"
 "    %(expiration_days)s days:\n"
 "    "
 msgstr ""
@@ -199,14 +201,16 @@ msgstr ""
 msgid ""
 "\n"
 "You are receiving this email because you (or someone pretending to be you)\n"
-"requested that your password be reset on the %(domain)s site.  If you do not \n"
+"requested that your password be reset on the %(domain)s site.  If you do "
+"not \n"
 "wish to reset your password, please ignore this message.\n"
 msgstr ""
 
 #: ui/templates/registration/password_reset_email.html:11
 msgid ""
 "\n"
-"To reset your password, please click the following link, or copy and paste it\n"
+"To reset your password, please click the following link, or copy and paste "
+"it\n"
 "into your web browser:\n"
 msgstr ""
 
@@ -396,9 +400,13 @@ msgstr ""
 #: ui/templates/ui/create.html:117
 msgid ""
 "\n"
-"                                    Use this form to either upload a <a href=\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">JOSM Preset</a> configuration file,\n"
-"                                    or to select a previously published preset configuration. Only one preset file can be selected at a time.\n"
-"                                    Any selections of features you have made from the HDM Data Model or the OSM Data Model will be cleared.\n"
+"                                    Use this form to either upload a <a href="
+"\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">JOSM "
+"Preset</a> configuration file,\n"
+"                                    or to select a previously published "
+"preset configuration. Only one preset file can be selected at a time.\n"
+"                                    Any selections of features you have made "
+"from the HDM Data Model or the OSM Data Model will be cleared.\n"
 "                                    "
 msgstr ""
 
