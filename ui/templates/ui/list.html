@@ -18,7 +18,7 @@
         <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
             <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Exports' %} 
         </a>
-        <form id="search" class="form-inline" role="search">
+        <form id="search" role="search">
             {% csrf_token %}
             <div class="collapse" id="filterForm">
                 <div class="form-group" id="form-group-search">
@@ -26,13 +26,13 @@
                     <div>
                         <div class="input-group search">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                            <input id="search" type="text" class="form-control" placeholder="" name="search">
+                            <input id="search" type="text" class="form-control" placeholder="Search for name, description or event" name="search">
                         </div>
                     </div>
                 </div>
                 <!-- start date picker -->
-                <div class="form-group">
-                    <div class='input-group date' id='start-date'>
+                <div class="form-group col-md-5">
+                    <div class="input-group date" id='start-date'>
                         <span class="input-group-addon"><strong>{% trans 'Start Date:' %}</strong></span>
                         <input type='text' class="form-control" name="start"/>
                         <span class="input-group-addon">
@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <!-- end date picker -->
-                <div class="form-group">
+                <div class="form-group col-md-5 col-md-offset-2">
                     <div class="input-group date" id='end-date'>
                         <span class="input-group-addon"><strong>{% trans 'End Date:' %}&nbsp;&nbsp;&nbsp;</strong></span>
                         <input type='text' class="form-control" name="end" />
@@ -70,46 +70,43 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-2">
                 {% if user.is_authenticated %}
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <div id="myexports" class="input-group">
-                                <span class="input-group-addon"><strong>{% trans 'My Exports' %}</strong></span>
-                                <span class="input-group-addon check">
-                                    <div class="checkbox">
-                                        <input id="user-check" type="checkbox"/>
-                                    </div>
-                                </span>
+                <div class="form-group" id="form-group-user">
+                    <div id="user">
+                        <span id="user">{{ user.username }}</span>
+                        <input id="user" name="user" value="" type="hidden"/>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div id="myexports">
+                            <div class="checkbox">
+                                <label class="control-label" for="user-check">
+                                    <input id="user-check" type="checkbox"/><strong>{% trans 'My Exports' %}</strong>
+                                </label>        
                             </div>
                         </div>
                     </div>
-                    <div class="form-group" id="form-group-user">
-                        <div id="user">
-                            <span id="user">{{ user.username }}</span>
-                            <input id="user" name="user" value="" type="hidden"/>
-                        </div>
-                    </div>
+                </div>
                 {% endif %}
-                </div>
-                <div class="col-md-3">
-                    <div class="col-md-2">
-                        <div class="form-group page-size">
-                            <div class="input-group page-size">
-                                <span class="input-group-addon"><strong>{% trans 'Page size' %}</strong></span>
-                                <span class="input-group-addon">
-                                    <select id="page-size" name="page_size">
-                                        <option value="5">5</option>
-                                        <option value="10" selected>10</option>
-                                        <option value="15">15</option>
-                                    </select>
-                                </span>
-                            </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div class="page-size">
+                            <label class="control-label" for="page-size">
+                                <span class="pull-left"><strong>{% trans 'Page size' %}</strong>&nbsp;</span>
+                                <select id="page-size" name="page_size" class="pull-right">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                </select>
+                            </label>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-4">
                     <div id="info" class="pull-left"></div>
+                </div>
+                <div class="col-md-4">
                     <div id="pagination" class="pull-right">
                         <ul class="pager"></ul>
                     </div>

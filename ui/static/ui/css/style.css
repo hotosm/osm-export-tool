@@ -578,10 +578,13 @@ ul.pager {
 }
 
 #info {
-    padding: .7em;
+    padding-top: .7em;
     font-weight: 700;
     font-size: small;
-    margin-left: 1em;
+}
+
+div.page-size {
+    padding-top: .7em;
 }
 
 table#jobs {
@@ -597,6 +600,10 @@ form#search {
 }
 
 #form-group-bbox {
+    display: none;
+}
+
+#form-group-user {
     display: none;
 }
 
@@ -616,8 +623,6 @@ span.tag.label.label-info {
     background-color: #B02129;
     border-radius: 4px !important;
 }
-
-
 
 /* login page */
 

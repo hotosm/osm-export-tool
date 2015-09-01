@@ -5,7 +5,7 @@
 	author="HOT (Humanitarian OpenStreetMap Team)"
 	shortdescription="HDM Data Model for HOT field surveys"
 	description="HDM Data Model adapted for Eurosha from OTI STM020 program in Haiti">
-    <group name="HOT Presets v2.11" fr.name="HOT Presets v2.11" en.name="HOT Presets v2.11">
+    <group name="Humanitarian Data Model" fr.name="HOT Presets v2.11" en.name="HOT Presets v2.11">
 		<!-- -->
 		<item name="Building digitizing" fr.name="Digitalisation de batiment" en.name="Building digitizing" icon="styles/standard/misc/landmark/building.png" type="closedway,relation">
 			<!--<key key="project:eurosha_2012" value="yes" />-->

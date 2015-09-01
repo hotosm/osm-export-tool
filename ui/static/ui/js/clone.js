@@ -28,6 +28,7 @@ clone.job = (function(){
     return {
         init: function(){
             initMap();
+            initPopovers();
             initHDMFeatureTree();
             initOSMFeatureTree();
             initNominatim();
@@ -491,7 +492,7 @@ clone.job = (function(){
                     validators: {
                         choice: {
                             min: 1,
-                            max: 5,
+                            max: 6,
                             message: 'At least one export format must be selected.'
                         }
                     }
@@ -573,6 +574,14 @@ clone.job = (function(){
                 // The current tab
                 $tab = $('#create-job-form').find('.tab-pane').eq(index),
                 $bbox = $('#bbox');
+            
+            // ignore upload tab as we apply custom validation there..
+            var id = $tab.attr('id');
+            if (id === 'features' || id === 'summary' || id === 'upload') {
+                fv.resetField('filename');
+                $('button#select-file').prop('disabled', false);
+                return true;
+            }
                 
             // validate the form first
             fv.validate();
@@ -1934,6 +1943,95 @@ clone.job = (function(){
         }
     }
     
+    /*
+     * Initialize the UI popovers.
+     */
+    function initPopovers() {
+        $('#create-tab').popover({
+            content: "Select the area on the Map for export and enter the Name, Description and Event",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#formats-tab').popover({
+            //title: 'Select Formats', 
+            content: "Select one or more file formats for export",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#features-tab').popover({
+            //title: 'Select Formats', 
+            content: "Expand and select feature tags from the HDM or OSM tree list for export",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#upload-tab').popover({
+            //title: 'Select Formats', 
+            content: "Upload or select a preset file. Save and/or publish",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('#summary-tab').popover({
+            //title: 'Select Formats', 
+            content: "Summary of the export settings. Select “Create Export” to start the export",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('input#filename').popover({
+            //title: 'Select Formats', 
+            content: "Give the selected Preset file a name",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('label[for="publish_config"]').popover({
+            //title: 'Select Formats', 
+            content: "Publish the preset file to the global store for everyone to access",
+            trigger: 'hover',
+            delay: {show: 0, hide: 100},
+            placement: 'top'
+        });
+        $('button#select-file').popover({
+            //title: 'Select Formats', 
+            content: "Find and upload a preset file from desktop",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('button#select-config').popover({
+            //title: 'Select Formats', 
+            content: "Find and select preset file from the store",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('label[for="feature_save"]').popover({
+            //title: 'Select Formats', 
+            content: "Save the feature tag selection to your personal preset store",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('label[for="feature_pub"]').popover({
+            //title: 'Select Formats', 
+            content: "Publish the feature tag selection to the global preset store for everyone to access",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('label[for="published"]').popover({
+            //title: 'Select Formats', 
+            content: "Publish the export to the global exports for everyone to access",
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+    }
+    
     /**
      * Pre-populates the form with details of
      * the export to clone.
@@ -1970,9 +2068,20 @@ clone.job = (function(){
                 switch (dm) {
                     case 'OSM':
                         $featureTree = $('#osm-feature-tree');
+                        // clear and disable the other tree
+                        $hdmtree = $('#hdm-feature-tree');
+                        $hdmtree.find('input').each(function(idx, input){
+                            $(input).prop('checked', false);
+                            $(input).prop('disabled', true);
+                        });
                         break;
                     case 'HDM':
                         $featureTree = $('#hdm-feature-tree');
+                        $osmtree = $('#osm-feature-tree');
+                        $osmtree.find('input').each(function(idx, input){
+                            $(input).prop('checked', false);
+                            $(input).prop('disabled', true);
+                        });
                         break;
                     default:
                         $featureTree = $('#hdm-feature-tree');
@@ -1989,10 +2098,12 @@ clone.job = (function(){
                     // check the corresponding input on the tree
                     var $input = $featureTree.find('input[data-key="' + key + '"][data-val="' + val + '"]');
                     $input.prop('checked', true);
+                    $input.prop('disabled', false);
                     // check the parent levels
                     $.each($input.parentsUntil('#' + dm.toLowerCase() + '-feature-tree', 'li.level'),
                            function(idx, level){
                         $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
+                        $(level).children('div.tree-checkbox').find('input.level').prop('disabled', false);
                     });
                 });
             }
@@ -2021,16 +2132,21 @@ clone.job = (function(){
             });
             var feature = geojson.read(extent, 'Feature');
             bbox.addFeatures(feature);
-            map.zoomToExtent(bbox.getDataExtent());
+            //map.zoomToExtent(bbox.getDataExtent());
             transform.setFeature(feature);
             var bounds = feature.geometry.bounds.clone();
             bounds.transform('EPSG:3857', 'EPSG:4326');
+            
             // set the bounds on the form
             setBounds(bounds);
+            map.zoomToExtent(bbox.getDataExtent());
             
             // summary tab
-            $('input#feature_save').prop('checked', data.feature_save)
-            $('input#feature_pub').prop('checked', data.feature_pub)
+            if (configs.length == 0) {
+                $('input#feature_save').prop('checked', data.feature_save)
+                $('input#feature_pub').prop('checked', data.feature_pub)
+            }
+            
             $('input#published').prop('checked', data.published)
             $('#create-job-form').trigger('change');
         });
