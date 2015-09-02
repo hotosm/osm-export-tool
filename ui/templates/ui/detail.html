@@ -11,11 +11,12 @@
                 <div class="row">
                     <div class="col-md-6">
                         <span id="user">{{ user.username }}</span>
-                        <div class="table-responsive">
+                        <div id="export-details" class="table-responsive">
                             <table class="table">
                                 <tr><td><strong>{% trans 'Job Id:' %}</strong></td><td><div id="uid"></div></td></tr>
                                 <tr><td><strong>{% trans 'Name:' %}</strong></td><td><div id="name"></div></td></tr>
                                 <tr><td><strong>{% trans 'Description:' %}</strong></td><td><div id="description"></div></td></tr>
+                                <tr><td><strong>{% trans 'Event:' %}</strong></td><td><div id="event"></div></td></tr>
                                 <tr><td><strong>{% trans 'Created:' %}</strong></td><td><div id="created"></div></td></tr>
                                 <tr><td><strong>{% trans 'Export Formats:' %}</strong></td><td><div id="formats"></div></td></tr>
                             </table>
