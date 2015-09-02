@@ -17,11 +17,11 @@
             <form id="create-job-form" role="form" action="" class="" method="POST">
                 {% csrf_token %}
                 <ul id="tabs" class="nav nav-pills">
-                    <li id="create-tab" role="presentation" class="active"><a data-toggle="tab" href="#create">Describe Export</a></li>
-                    <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">Select Formats</a></li>
-                    <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">Select Features</a></li>
-                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">Select Preset</a></li>
-                    <li id="summary-tab" role="presentation"><a data-toggle="tab" href="#summary">Export Summary</a></li>
+                    <li id="create-tab" role="presentation" class="active"><a data-toggle="tab" href="#create">{% trans 'Describe Export' %}</a></li>
+                    <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">{% trans 'Select Formats' %}</a></li>
+                    <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">{% trans 'Select Features' %}</a></li>
+                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">{% trans 'Select Preset' %}</a></li>
+                    <li id="summary-tab" role="presentation"><a data-toggle="tab" href="#summary">{% trans 'Export Summary' %}</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="create" class="tab-pane fade in active">
@@ -29,21 +29,21 @@
                             <div class="panel-body">
                                 <div class="form-group row" id="form-group-name">
                                     <div class="col-md-12">
-                                        <label class="control-label" for="name">Name</label>
+                                        <label class="control-label" for="name">{% trans 'Name' %}</label>
                                         <input class="form-control" type="text" name="name" id="name" value=""/>
                                     </div>
                                 </div>
                                 <br/>
                                 <div class="form-group row" id="form-group-description">
                                     <div class="col-md-12">
-                                        <label class="control-label" for="description">Description</label>
+                                        <label class="control-label" for="description">{% trans 'Description' %}</label>
                                         <textarea name="description" id="description" class="form-control" rows="3"></textarea>
                                     </div>
                                 </div>
                                 <br/>
                                 <div class="form-group row" id="form-group-event">
                                     <div class="col-md-12">
-                                        <label class="control-label" for="description">Event</label>
+                                        <label class="control-label" for="description">{% trans 'Event' %}</label>
                                         <input class="form-control" type="text" name="event" id="event" value=""/>
                                     </div>
                                 </div>
@@ -63,7 +63,7 @@
                         <div class="panel-body">
                             <div class="form-group row" id="form-group-formats">
                                 <div class="col-md-12">
-                                    <label class="control-label" for="formats">Select Export Formats:</label>
+                                    <label class="control-label" for="formats">{% trans 'Select Export Formats:' %}</label>
                                     <div id="supported-formats"></div>
                                 </div>
                             </div>
@@ -75,7 +75,10 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label>Select from either the HDM or OSM data models.</label>
+                                    <label>{% trans 'Select from either the HDM or OSM data models.</label>
+                                    <p>{% blocktrans %}Features can only be selected from one tree, either from the HDM or the OSM data model.
+                                    Feature tags can not be mixed between the two,
+                                    with the other tree deactivating as soon as a tag from the other tree has been selected.{% endblocktrans %}</p>
                                 </div>
                             </div>
                             <div class="features">
@@ -108,17 +111,19 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label>Upload a preset file</label>
+                                    <label>{% trans 'Upload a preset file' %}</label>
                                     <p class="">
+                                    {% blocktrans %}
                                     Use this form to either upload a <a href="http://learnosm.org/en/josm/creating-presets/" target="_blank">JOSM Preset</a> configuration file,
                                     or to select a previously published preset configuration. Only one preset file can be selected at a time.
                                     Any selections of features you have made from the HDM Data Model or the OSM Data Model will be cleared.
+                                    {% endblocktrans %}
                                     </p>
                                 </div>
                             </div>
                             <div class="form-group row" id="form-group-name">
                                 <div class="col-md-12">
-                                    <label class="control-label" for="name">Filename:</label>
+                                    <label class="control-label" for="name">{% trans 'Filename:' %}</label>
                                     <input class="form-control" type="text" name="filename" id="filename" value=""/>
                                 </div>
                             </div>
@@ -141,7 +146,7 @@
                                     <div class="checkbox">
                                         <label class="control-label" for="publish_config">
                                           <input id="publish_config" name="publishconfig" type="checkbox" value="">
-                                          Publish this preset globally.
+                                          {% trans 'Publish this preset globally.' %}
                                         </label>
                                     </div>
                                 </div>
@@ -158,26 +163,26 @@
                                 <button id="select-file" type="button" class="btn btn-primary btn-lg btn-file pull-left">
                                     <span>
                                         <i class="fa fa-plus"></i>&nbsp;
-                                        Select a preset to upload <input id="fileupload" type="file" name="upload">
+                                        {% trans 'Select a preset to upload' %} <input id="fileupload" type="file" name="upload">
                                     </span>
                                 </button>
                                 <button id="upload" type="button" class="btn btn-lg btn-success pull-left">
                                     <span>
                                     <i class="fa fa-upload"></i>&nbsp;
-                                    Upload
+                                    {% trans 'Upload' %}
                                     </span>
                                 </button>
                                 <button id="select-config" type="button" class="btn btn-lg btn-primary pull-right">
                                     <span>
                                     <i class="fa fa-cogs"></i>&nbsp;
-                                    Select a stored preset
+                                    {% trans 'Select a stored preset' %}
                                     </span>
                                 </button>
                             </div>
                             <div class="form-group-row" id="form-group-filelist">
                                 <div class="table-responsive table-stripped table-condensed col-md-12">
                                     <table class="table" id="filelist">
-                                        <th width="40%">Filename</th><th width="25%">Type</th><th width="25%">Status</th><th width="10%"></th>
+                                        <th width="40%">{% trans 'Filename' %}</th><th width="25%">Type</th><th width="25%">Status</th><th width="10%"></th>
                                     </table>
                                 </div>
                             </div>
@@ -194,23 +199,23 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div id="details" class="col-md-6 pull-left">
-                                    <h4>Export Details</h4>
+                                    <h4>{% trans 'Export Details' %}</h4>
                                     <hr/>
-                                    <span><strong>Name:</strong></span><span id="summary-name"></span><br/>
-                                    <span><strong>Description:</strong></span><span id="summary-description"></span><br/>
-                                    <span><strong>Event:</strong></span><span id="summary-event"></span><br/>
-                                    <span><strong>Selected export formats:</strong></span></br>
+                                    <span><strong>{% trans 'Name:' %}</strong></span><span id="summary-name"></span><br/>
+                                    <span><strong>{% trans 'Description:' %}</strong></span><span id="summary-description"></span><br/>
+                                    <span><strong>{% trans 'Event:' %}</strong></span><span id="summary-event"></span><br/>
+                                    <span><strong>{% trans 'Selected export formats:' %}</strong></span></br>
                                     <span id="summary-formats"></span>
                                 </div>
                                 <div id="options" class="col-md-6 pull-left">
-                                    <h4>Export Options</h4>
+                                    <h4>{% trans 'Export Options' %}</h4>
                                     <hr/>
                                     <div class="form-group row" id="form-group-featuresave">
                                         <div class="col-md-12">
                                             <div class="checkbox">
                                                 <label class="control-label" for="feature_save">
                                                   <input id="feature_save" name="feature_save" type="checkbox" value="">
-                                                  Save feature selection locally
+                                                  {% trans 'Save feature selection locally' %}
                                                 </label>
                                             </div>
                                         </div>
@@ -220,7 +225,7 @@
                                             <div class="checkbox">
                                                 <label class="control-label" for="feature_pub">
                                                   <input id="feature_pub" name="feature_pub" type="checkbox" value="">
-                                                  Publish feature selection globally
+                                                  {% trans 'Publish feature selection globally' %}
                                                 </label>
                                             </div>
                                         </div>
@@ -230,7 +235,7 @@
                                             <div class="checkbox">
                                                 <label class="control-label" for="published">
                                                   <input id="published" name="published" type="checkbox" value="">
-                                                  Publish export globally
+                                                  {% trans 'Publish export globally' %}
                                                 </label>
                                             </div>
                                         </div>
@@ -239,25 +244,25 @@
                             </div>
                             <div class="row">
                                 <div id="summary-configs" class="col-md-12">
-                                    <span><strong>Configurations:</strong></span><br/>
+                                    <span><strong>{% trans 'Configurations:' %}</strong></span><br/>
                                     <div class="table-responsive table-stripped table-condensed">
                                         <table id="summary-configs" class="table">
-                                            <tr><th>Filename</th><th>Type</th><th>Status</th></tr>
+                                            <tr><th>{% trans 'Filename' %}</th><th>{% trans 'Type' %}</th><th>{% trans 'Status' %}</th></tr>
                                         </table>
                                     </div>
                                 </div>
                             </div>
                             <br/>
                             <br/>
-                            <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">Create Export</button>
+                            <button id="btn-submit-job" type="submit" class="btn btn-lg btn-success">{% trans 'Create Export' %}</button>
                         </div>
                       </div>
                     </div>
                     <ul class="pager wizard">
                         <li class="previous first" style="display:none;"><a href="#">First</a></li>
-                        <li class="previous"><a href="#">Previous</a></li>
+                        <li class="previous"><a href="#">{% trans 'Previous' %}</a></li>
                         <li class="next last" style="display:none;"><a href="#">Last</a></li>
-                        <li class="next"><a href="#">Next</a></li>
+                        <li class="next"><a href="#">{% trans 'Next' %}</a></li>
                     </ul>
                 </div>
                 <!-- container for job extents -->
@@ -275,9 +280,9 @@
     <div id="map-column" class="col-md-6">
         <div id="create-controls">
             <div class="btn-group" role="group">
-                <button id="select-area" class="btn btn-md btn-primary">Select Export Area</button>
-                <button id="zoom-selection" class="btn btn-md btn-primary">Zoom To Selection</button>
-                <button id="reset-map" class="btn btn-md btn-primary">Reset Map</button>
+                <button id="select-area" class="btn btn-md btn-primary">{% trans 'Select Export Area' %}</button>
+                <button id="zoom-selection" class="btn btn-md btn-primary">{% trans 'Zoom To Selection' %}</button>
+                <button id="reset-map" class="btn btn-md btn-primary">{% trans 'Reset Map' %}</button>
             </div>
             <div id="alert-extents" class="alert alert-danger fade in"></div>
             <div id="valid-extents" class="alert alert-success fade in"></div>
@@ -286,7 +291,7 @@
         <div id="gazetteer" class="col-md-6">
             <div class="input-group">
                 <span class="input-group-addon gazetteer"><span class="glyphicon glyphicon-search"></span></span>
-                <input id="nominatim" type="text" class="form-control typeahead" data-provide="typeahead" autocomplete="off" placeholder="Search for a place or enter xmin,ymin,xmax,ymax"/>
+                <input id="nominatim" type="text" class="form-control typeahead" data-provide="typeahead" autocomplete="off" placeholder="{% trans 'Search for a place or enter xmin,ymin,xmax,ymax' %}"/>
             </div>
             
         </div>
@@ -300,13 +305,13 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Error Uploading Configuration File</h4>
+          <h4 class="modal-title" id="myModalLabel">{% trans 'Error Uploading Configuration File' %}</h4>
         </div>
         <div class="modal-body">
          <p><span class="glyphicon glyphicon-exclamation-sign" style="float:left; font-size: 2.0em; color: red; margin:0 7px 25px 0;"> 
          </span>
             <div>
-             <p>There was a problem with your configuration upload.</p>
+             <p>{% trans 'There was a problem with your configuration upload.' %}</p>
              <p id="message"></p>
             </div>
         </div>
@@ -323,8 +328,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Select configuration files to apply to this export</h4>
-                <h5>Only one preset file can be selected.</h5>
+                <h4 class="modal-title" id="myModalLabel">{% trans 'Select configuration files to apply to this export' %}</h4>
+                <h5>{% trans 'Only one preset file can be selected.' %}</h5>
             </div>
             <div class="container-fluid">
                 <div class="row">
@@ -334,13 +339,13 @@
                     <div id="search-config-modal" class="col-md-12">
                         
                         <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
-                            <i class="indicator glyphicon glyphicon-chevron-down"></i> Filter Configurations 
+                            <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Configurations' %}
                         </a>
                         <form id="search" class="form-inline" role="search">
                             {% csrf_token %}
                             <div class="collapse" id="filterForm">
                                 <div class="form-group" id="form-group-search">
-                                    <label class="control-label sr-only" for="name">Search</label>
+                                    <label class="control-label sr-only" for="name">{% trans 'Search' %}</label>
                                     <div>
                                         <div class="input-group search">
                                             <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
@@ -351,7 +356,7 @@
                                 <!-- start date picker -->
                                 <div class="form-group">
                                     <div class='input-group date' id='start-date'>
-                                        <span class="input-group-addon"><strong>Start Date:</strong></span>
+                                        <span class="input-group-addon"><strong>{% trans 'Start Date:' %}</strong></span>
                                         <input type='text' class="form-control" name="start"/>
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
@@ -361,7 +366,7 @@
                                 <!-- end date picker -->
                                 <div class="form-group">
                                     <div class="input-group date" id='end-date'>
-                                        <span class="input-group-addon"><strong>End Date:&nbsp;&nbsp;&nbsp;</strong></span>
+                                        <span class="input-group-addon"><strong>{% trans 'End Date:' %}&nbsp;&nbsp;&nbsp;</strong></span>
                                         <input type='text' class="form-control" name="end" />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
@@ -374,7 +379,7 @@
                                     <div class="table-responsive">
                                         <table id="configurations" class="table table-hover table-condensed">
                                             <thead>
-                                                <tr><th>Name</th><th>Type</th><th>Created</th><th>Filename</th><th>Select</th></tr>
+                                                <tr><th>{% trans 'Name' %}</th><th>{% trans 'Type' %}</th><th>{% trans 'Created' %}</th><th>{% trans 'Filename' %}</th><th>{% trans 'Select' %}</th></tr>
                                             </thead>
                                             <tbody></tbody>
                                         </table>
@@ -382,46 +387,41 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <span id="user">{{ user.username }}</span>
-                                <div class="col-md-2">
                                 {% if user.is_authenticated %}
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><strong>My Configurations</strong></span>
-                                                <span class="input-group-addon check">
-                                                    <div class="checkbox">
-                                                        <input id="user-check" type="checkbox"/>
-                                                    </div>
-                                                </span>
-                                            </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <label class="control-label" for="user-check">
+                                                <input id="user-check" type="checkbox"/> <strong>{% trans 'My Configurations' %}</strong>
+                                            </label>
                                         </div>
                                     </div>
-                                    <div class="form-group" id="form-group-user">
-                                        <div id="user">
-                                            <span id="user">{{ user.username }}</span>
-                                            <input id="user" name="user" value="" type="hidden"/>
-                                        </div>
-                                    </div>
-                                {% endif %}
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="col-md-2">
-                                        <div class="form-group page-size">
-                                            <div class="input-group page-size">
-                                                <span class="input-group-addon"><strong>Page size</strong></span>
-                                                <span class="input-group-addon">
-                                                    <select id="page-size" name="page_size">
+                                <div class="form-group" id="form-group-user">
+                                    <div id="user">
+                                        <span id="user">{{ user.username }}</span>
+                                        <input id="user" name="user" value="" type="hidden"/>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <div class="page-size">
+                                                <label class="control-label" for="page-size">
+                                                    <span class="pull-left"><strong>{% trans 'Page size' %}</strong>&nbsp;</span>
+                                                    <select id="page-size" name="page_size" class="pull-right">
                                                         <option value="5" selected>5</option>
                                                         <option value="10">10</option>
+                                                        <option value="15">15</option>
                                                     </select>
-                                                </span>
-                                            </div>
+                                                </label>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-7">
+                                <div class="col-md-4">
                                     <div id="info" class="pull-left"></div>
+                                </div>
+                                <div class="col-md-4">
                                     <div id="pagination" class="pull-right">
                                         <ul class="pager"></ul>
                                     </div>
@@ -432,7 +432,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-              <button id="select" type="button" class="btn btn-primary" data-dismiss="modal">Select</button>
+              <button id="select" type="button" class="btn btn-primary" data-dismiss="modal">{% trans 'Select' %}</button>
             </div>
         </div>
   </div>

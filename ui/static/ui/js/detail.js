@@ -83,6 +83,7 @@ exports.detail = (function(){
             $('#uid').html(data.uid);
             $('#name').html(data.name);
             $('#description').html(data.description);
+            $('#event').html(data.event);
             var created = moment(data.created_at).format('h:mm:ss a, MMMM Do YYYY');
             $('#created').html(created);
             var formats = data.exports;
