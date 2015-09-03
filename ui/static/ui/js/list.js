@@ -89,14 +89,31 @@ jobs.list = (function(){
         
         job_extents.events.register("featureselected", this, function(e) {
             var uid = e.feature.data.uid;
-            $('a#' + uid).parent().parent().css('background-color', '#E8E8E8');
+            $('tr#' + uid).css('background-color', '#E8E8E8');
         });
         
         job_extents.events.register("featureunselected", this, function(e) {
             var uid = e.feature.data.uid;
-            $('a#' + uid).parent().parent().css('background-color', '#FFF');
+            $('tr#' + uid).css('background-color', '#FFF');
         });
         
+        // double-click feature handler
+        dblClickHandler = new OpenLayers.Handler.Click(selectControl,
+                {
+                    dblclick: function(e){
+                        var feature = this.layer.selectedFeatures[0];
+                        var uid = feature.attributes.uid;
+                        window.location.href = '/jobs/' + uid;
+                    }
+                },
+                {
+                    single: false,
+                    double: true,
+                    stopDouble: true,
+                    stopSingle: false
+                }
+        )
+        dblClickHandler.activate();
         
         
         // add filter selection layer
@@ -435,7 +452,23 @@ jobs.list = (function(){
                     }
                 },
                 {data: 'region.name'}
-            ]
+            ],
+            rowCallback: function(row, data, index){
+                console.log(row, data, index);
+                $(row).attr('data-toggle', 'tooltip');
+                $(row).attr('data-placement', 'top');
+                $(row).attr('data-trigger', 'hover');
+                if (data.published) {
+                    
+                    $(row).attr('title', 'Globally published export');
+                }
+                else {
+                    var expires = moment(data.created_at).add(2, 'days').format('YYYY-MM-DD hh:mm a');
+                    //var fmtExpires = moment(expires).format('YYYY-MM-DD hh:mm a')
+                    console.log(expires);
+                    $(row).attr('title', 'Unpublished export. Expires: ' + expires);
+                }
+            }
            });
         // clear the empty results message on initial draw..
         $('td.dataTables_empty').html('');
@@ -586,9 +619,13 @@ jobs.list = (function(){
             if ($this.is(':checked')) {
                 // set the username on the form input
                 $('input#user').val(username);
+                // turn off published filter
+                $('input#published').val('');
                 runSearch(); 
             } else {
                 $('input#user').val('');
+                // turn on published filter
+                $('input#published').val('True');
                 runSearch();
             }
         });

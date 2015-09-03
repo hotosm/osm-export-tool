@@ -191,10 +191,10 @@ clone.job = (function(){
             $('#nominatim').val('');
             unsetBounds();
             bbox.removeAllFeatures();
-            map.zoomToExtent(regions.getDataExtent());
+            //map.zoomToExtent(regions.getDataExtent());
             transform.unsetFeature();
             box.activate();
-            validateBounds();
+            //validateBounds();
         });
         
         $('#zoom-selection').bind('click', function(e){
@@ -332,7 +332,8 @@ clone.job = (function(){
             validateBBox(); // trigger form validation.
             $('#valid-extents').css('visibility','hidden');
             $('#alert-extents').css('visibility','visible');
-            $('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-remove">&nbsp;</span>');
+            //$('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-remove">&nbsp;</span>');
+            $('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span>');
             return false;
         }
         var extent = bounds.toGeometry();
@@ -461,7 +462,7 @@ clone.job = (function(){
             // Feedback icons
             icon: {
                 valid: 'glyphicon glyphicon-ok',
-                invalid: 'glyphicon glyphicon-remove',
+                //invalid: 'glyphicon glyphicon-remove',
                 validating: 'glyphicon glyphicon-refresh'
             },
             excluded: ':disabled',
@@ -481,6 +482,7 @@ clone.job = (function(){
                         }
                     }
                 },
+                /*
                 'event': {
                     validators: {
                         notEmpty: {
@@ -488,6 +490,7 @@ clone.job = (function(){
                         }
                     }
                 },
+                */
                 'formats': {
                     validators: {
                         choice: {

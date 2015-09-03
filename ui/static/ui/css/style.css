@@ -163,8 +163,8 @@ span.heading {
 
 #valid-extents {
     position: absolute;
-    top: 9px;
-    right: 10px;
+    top: 90px;
+    left: 50px;
     z-index: 100;
     visibility: hidden;
 }
