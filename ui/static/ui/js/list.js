@@ -97,7 +97,10 @@ jobs.list = (function(){
             $('tr#' + uid).css('background-color', '#FFF');
         });
         
-        // double-click feature handler
+        /*
+         * Double-click handler.
+         * Does redirection to export detail page on feature double click.
+         */
         dblClickHandler = new OpenLayers.Handler.Click(selectControl,
                 {
                     dblclick: function(e){
@@ -451,22 +454,48 @@ jobs.list = (function(){
                         return moment(data).format('YYYY-MM-DD hh:mm a');
                     }
                 },
-                {data: 'region.name'}
+                {data: 'region.name'},
+                {
+                    data: 'published',
+                    orderable:false,
+                    render: function(data, type, row){
+                        var published = row.published;
+                        var owner = $('span#user').text();
+                        var div = $('<div>');
+                        var pubSpan = $('<span class="glyphicon"></span>&nbsp;');
+                        div.append(pubSpan);
+                        if (owner === row.owner) {
+                            var userSpan = $('<span class="glyphicon glyphicon-user"></span>');
+                            div.append(userSpan);
+                        }
+                        if (published) {
+                            pubSpan.addClass('glyphicon-eye-open');
+                        }
+                        else {
+                            pubSpan.addClass('glyphicon-eye-close');
+                        }
+                        return div[0].outerHTML;
+                    }
+                }
             ],
             rowCallback: function(row, data, index){
-                console.log(row, data, index);
-                $(row).attr('data-toggle', 'tooltip');
-                $(row).attr('data-placement', 'top');
-                $(row).attr('data-trigger', 'hover');
+                //$(row).attr('data-toggle', 'tooltip');
+                //$(row).attr('data-placement', 'right');
+                //$(row).attr('data-trigger', 'hover');
+                var user = $('span#user').text();
+                var owner = user === data.owner ? 'me' : data.owner;
                 if (data.published) {
-                    
-                    $(row).attr('title', 'Globally published export');
+                    $(row).tooltip({
+                        'html': true,
+                        'title': 'Globally published export.<br/>Created by: ' + owner
+                    });
                 }
                 else {
                     var expires = moment(data.created_at).add(2, 'days').format('YYYY-MM-DD hh:mm a');
-                    //var fmtExpires = moment(expires).format('YYYY-MM-DD hh:mm a')
-                    console.log(expires);
-                    $(row).attr('title', 'Unpublished export. Expires: ' + expires);
+                    $(row).tooltip({
+                        'html': true,
+                        'title': 'Unpublished export. <br/>Expires: ' + expires + '.<br/>Created by: ' + owner
+                    });
                 }
             }
            });

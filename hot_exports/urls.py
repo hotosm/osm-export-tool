@@ -20,6 +20,7 @@ urlpatterns += i18n_patterns('ui.views',
 )
 
 urlpatterns += i18n_patterns('ui.help',
+    url(r'^about$', TemplateView.as_view(template_name='ui/about.html'), name='about'),
     url(r'^help$', TemplateView.as_view(template_name='ui/help.html'), name='help'),
     url(r'^help/pages$', TemplateView.as_view(template_name='ui/help_pages.html'), name='help_pages'),
     url(r'^help/formats$', TemplateView.as_view(template_name='ui/help_formats.html'), name='help_formats'),
