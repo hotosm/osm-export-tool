@@ -16,10 +16,11 @@ class JobFilter(django_filters.FilterSet):
     region = django_filters.CharFilter(name="region__name")
     user = django_filters.CharFilter(name="user__username", lookup_type="exact")
     feature = django_filters.CharFilter(name="tags__name", lookup_type="icontains")
+    published = django_filters.BooleanFilter(name="published", lookup_type="exact")
     
     class Meta:
         model = Job
-        fields = ('name', 'description', 'event', 'start', 'end', 'region', 'user', 'feature')
+        fields = ('name', 'description', 'event', 'start', 'end', 'region', 'user', 'feature', 'published')
         order_by = ('-created_at',)
 
 
