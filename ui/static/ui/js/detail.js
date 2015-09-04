@@ -50,7 +50,7 @@ exports.detail = (function(){
         }
         map = new OpenLayers.Map('extents', {options: mapOptions});
         // restrict extent to world bounds to prevent panning..
-        map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
+        map.restrictedExtent = map.getMaxExtent();
         
         // add base layers
         osm = Layers.OSM
@@ -84,6 +84,9 @@ exports.detail = (function(){
             $('#name').html(data.name);
             $('#description').html(data.description);
             $('#event').html(data.event);
+            $('#created_by').html(data.owner);
+            var published = data.published ? 'Publicly' : 'Privately';
+            $('#published').html(published);
             var created = moment(data.created_at).format('h:mm:ss a, MMMM Do YYYY');
             $('#created').html(created);
             var formats = data.exports;
