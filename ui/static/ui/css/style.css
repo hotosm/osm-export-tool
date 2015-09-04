@@ -186,6 +186,11 @@ span.heading {
 }
 
 #map-column {
+    /*
+    position: fixed;
+    top: 125px;
+    right: 0px;
+    */
     border-left: 2px solid lightgrey;
     border-top: 1px solid lightgrey;
 }
@@ -632,6 +637,27 @@ span.tag.label.label-info {
 span#toggle-feature {
     z-index: 1000 !important;
 }
+
+.glyphicon-none:before {
+    content: "\e094";
+    color: transparent !important;
+}
+
+.tooltip {
+    z-index: 10000 !important;
+}
+
+/*
+#map-column.affix-top {
+    position: static;
+    float: right;
+}
+
+#map-column.affix {
+    position: fixed;
+    float: right;
+  }
+*/
 
 /* login page */
 

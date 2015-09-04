@@ -1186,7 +1186,7 @@ create.job = (function(){
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' +
-                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" checked/></div>' +
+                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" disabled/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
@@ -2019,14 +2019,14 @@ create.job = (function(){
         });
         $('label[for="feature_save"]').popover({
             //title: 'Select Formats', 
-            content: "Save the feature tag selection to your personal preset store",
+            content: "Save the feature tag selection to your personal preset storeage",
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="feature_pub"]').popover({
             //title: 'Select Formats', 
-            content: "Publish the feature tag selection to the global preset store for everyone to access",
+            content: "Publish the feature tag selection to the global preset storeage for everyone to access",
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
