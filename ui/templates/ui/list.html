@@ -26,7 +26,7 @@
                     <div>
                         <div class="input-group search">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                            <input id="search" type="text" class="form-control" placeholder="Search for name, description or event" name="search">
+                            <input id="search" type="text" class="form-control" placeholder="Search for name, description, event or username" name="search">
                         </div>
                     </div>
                 </div>
@@ -90,24 +90,26 @@
                     </div>
                 </div>
                 {% endif %}
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <div class="page-size">
                             <label class="control-label" for="page-size">
-                                <span class="pull-left"><strong>{% trans 'Page size' %}</strong>&nbsp;</span>
-                                <select id="page-size" name="page_size" class="pull-right">
+                                <span class="pull-left"><strong>{% trans 'Display' %}</strong>&nbsp;</span>
+                                &nbsp;
+                                <select id="page-size" name="page_size" class="pull-left">
                                     <option value="5">5</option>
                                     <option value="10" selected>10</option>
                                     <option value="15">15</option>
                                 </select>
+                                <span class="pull-left"><strong>{% trans 'exports per page' %}</strong>&nbsp;</span>
                             </label>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div id="info" class="pull-left"></div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div id="pagination" class="pull-right">
                         <ul class="pager"></ul>
                     </div>

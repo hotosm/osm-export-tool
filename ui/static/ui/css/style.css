@@ -589,7 +589,7 @@ ul.pager {
 }
 
 div.page-size {
-    padding-top: .7em;
+    padding: .7em 1.5em 0em 1.5em;
 }
 
 table#jobs {
@@ -627,6 +627,10 @@ span.check {
 span.tag.label.label-info {
     background-color: #B02129;
     border-radius: 4px !important;
+}
+
+span#toggle-feature {
+    z-index: 1000 !important;
 }
 
 /* login page */

@@ -25,6 +25,24 @@ jobs.list = (function(){
     var filtering = false;
     var searchForm = $('form#search');
     
+    // override unselect so hidden features don't get reset with 'default'
+    // style on unselect. 
+    OpenLayers.Control.SelectFeature.prototype.unselect = function(feature){
+        var layer = feature.layer;
+        if (feature.renderIntent == 'hidden') {
+            OpenLayers.Util.removeItem(layer.selectedFeatures, feature);
+            layer.events.triggerEvent("featureunselected", {feature: feature});
+            this.onUnselect.call(this.scope, feature);
+        }
+        else {
+            // Store feature style for restoration later
+            this.unhighlight(feature); // resets the renderIntent to 'default'
+            OpenLayers.Util.removeItem(layer.selectedFeatures, feature);
+            layer.events.triggerEvent("featureunselected", {feature: feature});
+            this.onUnselect.call(this.scope, feature);
+        }
+    }
+    
     return {
         main: function(){
             $('div#search').css('display','none');
@@ -75,17 +93,13 @@ jobs.list = (function(){
         
         /* required to fire selection events on waypoints */
         var selectControl = new OpenLayers.Control.SelectFeature(job_extents,{
-            id: 'selectControl'
+            id: 'selectControl',
+            onUnselect: function(feature){
+                console.log(feature.renderIntent);
+            }
         });
         map.addControl(selectControl);
         selectControl.activate();
-        
-        $("tbody > tr").hover(function() {
-            var uid = $(this).attr("id");
-            var feature = job_extents.getFeatureByFid(uid);
-            selectControl.unselectAll();
-            selectControl.select(feature);
-        });
         
         job_extents.events.register("featureselected", this, function(e) {
             var uid = e.feature.data.uid;
@@ -93,7 +107,8 @@ jobs.list = (function(){
         });
         
         job_extents.events.register("featureunselected", this, function(e) {
-            var uid = e.feature.data.uid;
+            var feature = e.feature;
+            var uid = feature.data.uid;
             $('tr#' + uid).css('background-color', '#FFF');
         });
         
@@ -101,7 +116,7 @@ jobs.list = (function(){
          * Double-click handler.
          * Does redirection to export detail page on feature double click.
          */
-        dblClickHandler = new OpenLayers.Handler.Click(selectControl,
+        var dblClickHandler = new OpenLayers.Handler.Click(selectControl,
                 {
                     dblclick: function(e){
                         var feature = this.layer.selectedFeatures[0];
@@ -269,10 +284,15 @@ jobs.list = (function(){
             //graphicZIndex : 40,
         });
         
+        var hiddenStyle = new OpenLayers.Style({
+            display: 'none'
+        });
+        
         var styles = new OpenLayers.StyleMap(
         {
             "default": defaultStyle,
-            "select": selectStyle
+            "select": selectStyle,
+            "hidden": hiddenStyle
         });
         
         return styles;
@@ -292,7 +312,7 @@ jobs.list = (function(){
             url = Config.JOBS_URL;
         }
         $.ajax(url)
-        .done(function(data, textStatus, jqXHR){
+        .done(function(data, textStatus, jqXHR){    
             // generate pagination on UI
             paginate(jqXHR);
             
@@ -304,6 +324,30 @@ jobs.list = (function(){
             $('div#spinner').css('display', 'none');
             $('div#search').css('display', 'block');
             $('div#search').fadeIn(1500);
+            
+            // toggle feature visibility
+            $('span.toggle-feature').on('click', function(e){
+                var selectControl = map.getControlsBy('id','selectControl')[0];
+                var uid = $(e.target).attr('id');
+                for(var f=0; f < job_extents.features.length; f++){
+                    var feature = job_extents.features[f];
+                    if(feature.attributes.uid === uid){;
+                        var visible = feature.getVisibility();
+                        if (visible) {
+                            feature.renderIntent = 'hidden';
+                            selectControl.unselect(feature);
+                            job_extents.redraw();
+                            $('tr#' + uid).addClass('warning');
+                        }
+                        else {
+                            feature.renderIntent = 'default';
+                            $('tr#' + uid).removeClass('warning');
+                            job_extents.redraw();
+                        }
+                   }
+                }
+                $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+            });
             
             // clear the existing export extent features and add the new ones..
             job_extents.destroyFeatures();
@@ -340,10 +384,16 @@ jobs.list = (function(){
                 // mouse in
                 function(e){
                     var selectControl = map.getControlsBy('id','selectControl')[0];
-                    uid = $(e.currentTarget).find('a').attr('id');
-                    var feature = job_extents.getFeaturesByAttribute('uid',uid)[0]
-                    selectControl.unselectAll();
-                    selectControl.select(feature);
+                    var uid = $(this).attr('id');                    
+                    for(var f=0; f < job_extents.features.length; f++){
+                        var feature = job_extents.features[f];
+                        if(feature.attributes.uid === uid && feature.renderIntent != 'hidden'){
+                            selectControl.select(feature);  
+                        }
+                        else {
+                            selectControl.unselect(feature);
+                        }
+                    }
                 },
                 // mouse out
                 function(e){
@@ -461,20 +511,24 @@ jobs.list = (function(){
                     render: function(data, type, row){
                         var published = row.published;
                         var owner = $('span#user').text();
-                        var div = $('<div>');
-                        var pubSpan = $('<span class="glyphicon"></span>&nbsp;');
-                        div.append(pubSpan);
+                        var $div = $('<div>');
+                        var $toggleSpan = $('<span id="' + row.uid + '" class="toggle-feature glyphicon glyphicon-eye-open"></span>');
+                        var $pubSpan = $('<span class="glyphicon">&nbsp;</span>');
+                        $div.append($pubSpan);
                         if (owner === row.owner) {
-                            var userSpan = $('<span class="glyphicon glyphicon-user"></span>');
-                            div.append(userSpan);
-                        }
-                        if (published) {
-                            pubSpan.addClass('glyphicon-eye-open');
+                            var $userSpan = $('<span class="glyphicon glyphicon-user">&nbsp;</span>');
+                            $div.append($userSpan);
                         }
                         else {
-                            pubSpan.addClass('glyphicon-eye-close');
+                            $div.append($('<span>&nbsp;</span>'));
                         }
-                        return div[0].outerHTML;
+                        if (published) {
+                            $pubSpan.addClass('glyphicon-globe');
+                        }
+                        $div.append($toggleSpan);
+                        
+                        // return the html
+                        return $div[0].outerHTML;
                     }
                 }
             ],
@@ -487,7 +541,7 @@ jobs.list = (function(){
                 if (data.published) {
                     $(row).tooltip({
                         'html': true,
-                        'title': 'Globally published export.<br/>Created by: ' + owner
+                        'title': 'Published export.<br/>Created by: ' + owner
                     });
                 }
                 else {
@@ -501,6 +555,12 @@ jobs.list = (function(){
            });
         // clear the empty results message on initial draw..
         $('td.dataTables_empty').html('');
+        
+        $('#toggle-feature').on('click', function(e){
+            console.log(e);
+            $(this).toggleClass('glyphicon-eye-open', 'glyphicon-eye-close');
+            
+        });
     }
     
     /**
