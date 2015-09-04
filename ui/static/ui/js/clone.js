@@ -1193,8 +1193,8 @@ clone.job = (function(){
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
                         var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
-                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' +
-                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" checked/></div>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' +
+                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '"/></div>' +
                                         '</li>');
                         $level.append($entry);
                     }
@@ -1204,7 +1204,7 @@ clone.job = (function(){
                         var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
                         var root = level_idx == 0 ? 'root' : '';
                         var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
-                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled /></div>');
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" /></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
                         $level.append($nextLevel);
@@ -2005,7 +2005,7 @@ clone.job = (function(){
         });
         $('label[for="publish_config"]').popover({
             //title: 'Select Formats', 
-            content: "Publish the preset file to the global store for everyone to access",
+            content: "Publish the preset file to the global storeage for everyone to access",
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
@@ -2026,14 +2026,14 @@ clone.job = (function(){
         });
         $('label[for="feature_save"]').popover({
             //title: 'Select Formats', 
-            content: "Save the feature tag selection to your personal preset store",
+            content: "Save the feature tag selection to your personal preset storeage",
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="feature_pub"]').popover({
             //title: 'Select Formats', 
-            content: "Publish the feature tag selection to the global preset store for everyone to access",
+            content: "Publish the feature tag selection to the global preset storeage for everyone to access",
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
@@ -2073,16 +2073,21 @@ clone.job = (function(){
             var tags = data.tags.length;
             var configs = data.configurations;
             if (tags > 0 && configs.length == 0) {
+                
                 /*
                  * Get the data-model from the first tag.
                  * We're not mixing data-models (yet)
                  * so we can assume a single data model for now.
                  */
                 var dm = data.tags[0].data_model;
-                var $featureTree;
+                
                 switch (dm) {
                     case 'OSM':
-                        $featureTree = $('#osm-feature-tree');
+                        $osmtree = $('#osm-feature-tree');
+                        $osmtree.find('input').each(function(idx, input){
+                            $(input).prop('checked', false);
+                            $(input).prop('disabled', false);
+                        });
                         // clear and disable the other tree
                         $hdmtree = $('#hdm-feature-tree');
                         $hdmtree.find('input').each(function(idx, input){
@@ -2091,15 +2096,17 @@ clone.job = (function(){
                         });
                         break;
                     case 'HDM':
-                        $featureTree = $('#hdm-feature-tree');
+                        $hdmtree = $('#hdm-feature-tree');
+                        $hdmtree.find('input').each(function(idx, input){
+                            $(input).prop('checked', false);
+                            $(input).prop('disabled', false);
+                        });
                         $osmtree = $('#osm-feature-tree');
                         $osmtree.find('input').each(function(idx, input){
                             $(input).prop('checked', false);
                             $(input).prop('disabled', true);
                         });
                         break;
-                    default:
-                        $featureTree = $('#hdm-feature-tree');
                 }
                 
                 /*
@@ -2111,7 +2118,7 @@ clone.job = (function(){
                     var key = tag.key;
                     var val = tag.value;
                     // check the corresponding input on the tree
-                    var $input = $featureTree.find('input[data-key="' + key + '"][data-val="' + val + '"]');
+                    var $input = $('#' + dm.toLowerCase() + '-feature-tree').find('input[data-key="' + key + '"][data-val="' + val + '"]');
                     $input.prop('checked', true);
                     $input.prop('disabled', false);
                     // check the parent levels

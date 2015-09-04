@@ -11,10 +11,10 @@
 
 {% block container %}
 <div class="row">
-    <div id="spinner" class="col-md-6">
+    <div id="spinner" class="col-md-7">
             <span id="spinner"><i class="fa fa-cog fa-spin fa-5x"></i></span>
     </div>
-    <div id="search" class="col-md-6">
+    <div id="search" class="col-md-7">
         <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
             <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Exports' %} 
         </a>
@@ -100,6 +100,8 @@
                                     <option value="5">5</option>
                                     <option value="10" selected>10</option>
                                     <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
                                 </select>
                                 <span class="pull-left"><strong>{% trans 'exports per page' %}</strong>&nbsp;</span>
                             </label>
@@ -117,7 +119,7 @@
             </div>
         </form>
     </div>
-    <div id="map-column" class="col-md-6">
+    <div id="map-column" data-spy="affix" class="col-md-5">
         <div id="list-controls-temp">
             <div class="btn-group" role="group">
                 <button id="filter-area" class="btn btn-md btn-primary">{% trans 'Filter Area' %}</button>

@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import re
 import importlib
 from datetime import datetime, timedelta
 from hot_exports import settings
@@ -39,6 +40,7 @@ class ExportTaskRunner(TaskRunner):
         run_uid = ''
         logger.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
+        job_name = self.normalize_job_name(job.name)
         formats = [format.slug for format in job.formats.all()]
         export_tasks = []
         # build a list of celery tasks based on the export formats..
@@ -148,17 +150,17 @@ class ExportTaskRunner(TaskRunner):
             """
 
             initial_tasks = chain(
-                    conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid) |
-                    query.si(stage_dir=stage_dir, bbox=bbox, run_uid=run_uid)
+                    conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name) |
+                    query.si(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid)
             )
             
             schema_tasks = chain(
-                    pbfconvert.si(stage_dir=stage_dir, run_uid=run_uid) | 
-                    prep_schema.si(stage_dir=stage_dir, run_uid=run_uid)
+                    pbfconvert.si(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid) | 
+                    prep_schema.si(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid)
             )
             
             format_tasks = group(
-                task.si(run_uid=run_uid, stage_dir=stage_dir) for task in export_tasks
+                task.si(run_uid=run_uid, stage_dir=stage_dir, job_name = job_name) for task in export_tasks
             )
             
             finalize_task = FinalizeRunTask()
@@ -178,6 +180,14 @@ class ExportTaskRunner(TaskRunner):
             
         else:
             return False
+
+    def normalize_job_name(self, name):
+        # Remove all non-word characters
+        s = re.sub(r"[^\w\s]", '', name)
+        # Replace all whitespace with a single underscore
+        s = re.sub(r"\s+", '_', s)
+        return s.lower()
+        
         
 def error_handler(task_id=None):
     logger.debug('In error handler %s' % task_id)

@@ -23,11 +23,12 @@ class OSMConfig(object):
     Creates ogr2ogr OSM conf file based on the template
     at utils/conf/hotosm.ini.tmpl
     """
-    def __init__(self, categories=None):
+    def __init__(self, categories=None, job_name=None):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.tmpl = self.path + '/conf/hotosm.ini.tmpl'
         self.categories = categories
         self.config = ConfigParser.SafeConfigParser()
+        self.job_name = job_name
     
     def create_osm_conf(self, stage_dir=None):
         self.config.read(self.tmpl) # read in the template
@@ -35,7 +36,7 @@ class OSMConfig(object):
         self.config.set('lines', 'attributes', ','.join(self.categories['lines']))
         self.config.set('multipolygons', 'attributes', ','.join(self.categories['polygons']))
         # write the out the config
-        config_file = stage_dir + 'osmconf.ini'
+        config_file = stage_dir + self.job_name + '.ini'
         try:
             with open(config_file, 'wb') as configfile:
                 self.config.write(EqualsSpaceRemover(configfile))

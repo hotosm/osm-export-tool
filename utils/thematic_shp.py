@@ -16,9 +16,10 @@ class ThematicSQliteToShp(object):
     """
     Thin wrapper around ogr2ogr to convert sqlite to shp using thematic layers.
     """
-    def __init__(self, sqlite=None, shapefile=None, tags=None, zipped=True, debug=False):
+    def __init__(self, sqlite=None, shapefile=None, tags=None, job_name=None, zipped=True, debug=False):
         self.sqlite = sqlite
         self.tags = tags
+        self.job_name = job_name
         if not os.path.exists(self.sqlite):
             raise IOError('Cannot find sqlite file for this task.')
         self.shapefile = shapefile
@@ -26,12 +27,12 @@ class ThematicSQliteToShp(object):
         self.stage_dir = os.path.dirname(self.sqlite)
         if not self.shapefile:
             # create shp path from sqlite path.
-            self.shapefile = self.stage_dir + '/thematic_shp'
+            self.shapefile = self.stage_dir + '/' + self.job_name + '_thematic_shp'
         self.debug = debug
         self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $sqlite -lco ENCODING=UTF-8")
         self.zip_cmd = Template("zip -j -r $zipfile $shp_dir")
         # create thematic sqlite file
-        self.thematic_sqlite = self.stage_dir + '/thematic.sqlite'
+        self.thematic_sqlite = self.stage_dir + '/' + self.job_name + '_thematic.sqlite'
         shutil.copy(self.sqlite, self.thematic_sqlite)
         assert os.path.exists(self.thematic_sqlite), 'Thematic sqlite file not found.'
         

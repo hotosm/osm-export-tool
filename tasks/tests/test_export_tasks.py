@@ -44,10 +44,11 @@ class TestExportTasks(TestCase):
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         osm_conf = mock_config.return_value
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
-        expected_output_path = stage_dir + '/' + 'export_config.ini'
+        job_name = self.job.name.lower()
+        expected_output_path = stage_dir + '/' + job_name + '.ini'
         osm_conf.create_osm_conf.return_value = expected_output_path
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         osm_conf.create_osm_conf.assert_called_with(stage_dir=stage_dir)
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
@@ -63,10 +64,11 @@ class TestExportTasks(TestCase):
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         overpass_query = mock_overpass.return_value
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
-        expected_output_path = stage_dir + '/' + 'query.osm'
+        job_name = self.job.name.lower()
+        expected_output_path = stage_dir + '/' + job_name + '.osm'
         overpass_query.run_query.return_value = expected_output_path
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         overpass_query.run_query.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
@@ -82,10 +84,11 @@ class TestExportTasks(TestCase):
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         osmtopbf = mock_overpass.return_value
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
-        expected_output_path = stage_dir + '/' + 'query.pbf'
+        job_name = self.job.name.lower()
+        expected_output_path = stage_dir + '/' + job_name + '.pbf'
         osmtopbf.convert.return_value = expected_output_path
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         osmtopbf.convert.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
@@ -101,10 +104,11 @@ class TestExportTasks(TestCase):
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         prep_schema = mock_parser.return_value
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid) + '/'
-        expected_output_path = stage_dir + 'query.sqlite'
+        job_name = self.job.name.lower()
+        expected_output_path = stage_dir + job_name + '.sqlite'
         prep_schema.instancemethod.return_value = expected_output_path
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         prep_schema.instancemethod.assert_called_once()
         prep_schema.create_spatialite.assert_called_once()
         prep_schema.create_default_schema.assert_called_once()
@@ -123,12 +127,14 @@ class TestExportTasks(TestCase):
         celery_uid = str(uuid.uuid4())
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         sqlite_to_shp = mock.return_value
-        sqlite_to_shp.convert.return_value = '/path/to/shapefile.shp'
+        job_name = self.job.name.lower()
+        sqlite_to_shp.convert.return_value = '/path/to/' + job_name + '.shp'
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
+        
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         sqlite_to_shp.convert.assert_called_once()
-        self.assertEquals('/path/to/shapefile.shp', result['result'])
+        self.assertEquals('/path/to/' + job_name + '.shp', result['result'])
         # test tasks update_task_state method
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
@@ -146,11 +152,12 @@ class TestExportTasks(TestCase):
         osm_to_obf = mock_obf.return_value
         shutil_move = mock_move.return_value
         shutil_rmtree = mock_rmtree.return_value
-        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/query.obf'
+        job_name = self.job.name.lower()
+        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '.obf'
         osm_to_obf.convert.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid) + '/'
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         osm_to_obf.convert.assert_called_once()
         shutil_move.assert_called_once()
         shutil_rmtree.assert_called_once()
@@ -172,11 +179,12 @@ class TestExportTasks(TestCase):
         osm_to_img = mock_obf.return_value
         shutil_move = mock_move.return_value
         shutil_rmtree = mock_rmtree.return_value
-        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/garmin.zip'
+        job_name = self.job.name.lower()
+        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '.zip'
         osm_to_img.run_mkgmap.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid) + '/'
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         osm_to_img.run_mkgmap.assert_called_once()
         shutil_move.assert_called_once()
         shutil_rmtree.assert_called_once()
@@ -193,11 +201,12 @@ class TestExportTasks(TestCase):
         celery_uid = str(uuid.uuid4())
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         sqlite_to_kml = mock_kml.return_value
-        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/query.kmz'
+        job_name = self.job.name.lower()
+        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '.kmz'
         sqlite_to_kml.convert.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid) + '/'
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir)
+        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         sqlite_to_kml.convert.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test the tasks update_task_state method

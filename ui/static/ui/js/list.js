@@ -93,10 +93,7 @@ jobs.list = (function(){
         
         /* required to fire selection events on waypoints */
         var selectControl = new OpenLayers.Control.SelectFeature(job_extents,{
-            id: 'selectControl',
-            onUnselect: function(feature){
-                console.log(feature.renderIntent);
-            }
+            id: 'selectControl'
         });
         map.addControl(selectControl);
         selectControl.activate();
@@ -107,8 +104,7 @@ jobs.list = (function(){
         });
         
         job_extents.events.register("featureunselected", this, function(e) {
-            var feature = e.feature;
-            var uid = feature.data.uid;
+            var uid = e.feature.data.uid;
             $('tr#' + uid).css('background-color', '#FFF');
         });
         
@@ -520,10 +516,13 @@ jobs.list = (function(){
                             $div.append($userSpan);
                         }
                         else {
-                            $div.append($('<span>&nbsp;</span>'));
+                            $div.append($('<span class="glyphicon glyphicon-none">&nbsp;</span>'));
                         }
                         if (published) {
                             $pubSpan.addClass('glyphicon-globe');
+                        }
+                        else {
+                            $pubSpan.addClass('glyphicon-time');
                         }
                         $div.append($toggleSpan);
                         
@@ -555,12 +554,6 @@ jobs.list = (function(){
            });
         // clear the empty results message on initial draw..
         $('td.dataTables_empty').html('');
-        
-        $('#toggle-feature').on('click', function(e){
-            console.log(e);
-            $(this).toggleClass('glyphicon-eye-open', 'glyphicon-eye-close');
-            
-        });
     }
     
     /**
@@ -638,7 +631,6 @@ jobs.list = (function(){
         
         
         function lookupOSMTags(q, sync) {
-            console.log('in lookup...')
             if (q === '') {
                 sync(osm_tags.get('Detroit Lions', 'Green Bay Packers', 'Chicago Bears'));
             }
