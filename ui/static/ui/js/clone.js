@@ -1730,7 +1730,7 @@ clone.job = (function(){
             
             // remove the config form input value
             var config_type_lwr = config_type.toLowerCase();
-            $('input#' + config_type_lwr).val();
+            $('input#' + config_type_lwr).val('');
             
             // remove the selected config from the table
             var configs = $('#filelist tr.config').length;
@@ -1787,7 +1787,7 @@ clone.job = (function(){
             $fileupload.val('');
             
             // clear configuration hidden inputs
-            $('input#preset').val();
+            $('input#preset').val('');
             
             // remove the pending upload from the table
             var configs = $('#filelist tr.config').length;
@@ -1829,7 +1829,7 @@ clone.job = (function(){
             $fileupload.val('');
             
             // clear configuration hidden inputs
-            $('input#preset').val();
+            $('input#preset').val('');
             
             // re-enable this config_type in the select combo
             var config_type = $tr.find('td').eq(1).html();
@@ -1845,7 +1845,7 @@ clone.job = (function(){
             
             // remove the config form input value
             var config_type_lwr = config_type.toLowerCase();
-            $('input#' + config_type_lwr).val();
+            $('input#' + config_type_lwr).val('');
             
             // get number of configuration files in the table
             var configs = $('#filelist tr.config').length;

@@ -41,9 +41,10 @@ class ExportConfigFilter(django_filters.FilterSet):
     start = django_filters.DateTimeFilter(name="created_at", lookup_type="gte")
     end = django_filters.DateTimeFilter(name="created_at", lookup_type="lte")
     user = django_filters.CharFilter(name="user__username", lookup_type="exact")
+    published = django_filters.BooleanFilter(name="published", lookup_type="exact")
     
     class Meta:
         model = ExportConfig
-        fields = ('name', 'config_type', 'start', 'end', 'user')
+        fields = ('name', 'config_type', 'start', 'end', 'user', 'published')
         order_by = ('-created_at',)
     

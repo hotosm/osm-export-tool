@@ -647,6 +647,10 @@ span#toggle-feature {
     z-index: 10000 !important;
 }
 
+.fa-users {
+    margin-right: .7em;
+}
+
 /*
 #map-column.affix-top {
     position: static;

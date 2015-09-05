@@ -160,7 +160,7 @@ class ExportTaskRunner(TaskRunner):
             )
             
             format_tasks = group(
-                task.si(run_uid=run_uid, stage_dir=stage_dir, job_name = job_name) for task in export_tasks
+                task.si(run_uid=run_uid, stage_dir=stage_dir, job_name=job_name) for task in export_tasks
             )
             
             finalize_task = FinalizeRunTask()
