@@ -1708,7 +1708,7 @@ create.job = (function(){
             
             // remove the config form input value
             var config_type_lwr = config_type.toLowerCase();
-            $('input#' + config_type_lwr).val();
+            $('input#' + config_type_lwr).val('');
             
             // remove the selected config from the table
             var configs = $('#filelist tr.config').length;
