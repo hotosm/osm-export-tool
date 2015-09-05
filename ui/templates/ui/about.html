@@ -1,0 +1,28 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block container %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div id="about">
+            <h2>{% trans 'Fresh Humanitarian Maps' %}</h2>
+            <h3>{% trans 'Download up-to-date humanitarian maps for GIS analysis or for use in GPS devices and Smartphones.' %}</h3>
+            {% trans 'This platform allows you to create custom OpenStreetMap exports for various HOT regions. You can specify an area of interest and a list of features (OpenStreetMap tags) for the export. A current OpenStreetMap data extract for that area in various data formats is then created for you within minutes.' %}
+            <h2>{% trans 'How to Get Started'  %}</h2>
+            {% blocktrans %}You can view and search through existing HOT exports at our <a href="/jobs">Exports</a> page. You do not need an account to view or search for existing exports.
+            If you want to <a href="/jobs/create">create</a> an export and you are a new user, please <a href="/accounts/register">register</a> for an account.
+            More detailed help is available on our <a href="/help">help</a> page.
+            {% endblocktrans %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block corejs %}
+{{ block.super }}
+<script type="text/javascript">
+    $(document).ready(function() {
+    });
+</script>
+{% endblock %}

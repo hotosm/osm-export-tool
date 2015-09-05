@@ -516,7 +516,9 @@ jobs.list = (function(){
                             $div.append($userSpan);
                         }
                         else {
-                            $div.append($('<span class="glyphicon glyphicon-none">&nbsp;</span>'));
+                            //$div.append($('<span class="glyphicon glyphicon-none">&nbsp;</span>'));
+                            var $userSpan = $('<span class="fa fa-users">&nbsp;</span>');
+                            $div.append($userSpan);
                         }
                         if (published) {
                             $pubSpan.addClass('glyphicon-globe');
@@ -532,9 +534,6 @@ jobs.list = (function(){
                 }
             ],
             rowCallback: function(row, data, index){
-                //$(row).attr('data-toggle', 'tooltip');
-                //$(row).attr('data-placement', 'right');
-                //$(row).attr('data-trigger', 'hover');
                 var user = $('span#user').text();
                 var owner = user === data.owner ? 'me' : data.owner;
                 if (data.published) {

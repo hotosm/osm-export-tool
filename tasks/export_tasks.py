@@ -332,7 +332,7 @@ class GeneratePresetTask(ExportTask):
     
     name = 'Generate Preset'
 
-    def run(self, run_uid=None, stage_dir=None):
+    def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
         from jobs.models import Job, ExportConfig
         self.update_task_state(run_uid=run_uid, name=self.name)
@@ -346,8 +346,8 @@ class GeneratePresetTask(ExportTask):
             tag_parser = TagParser(tags=tags)
             xml = tag_parser.parse_tags()
             preset_file = ContentFile(xml)
-            name = 'Custom Preset'
-            filename = 'josm_custom_preset.xml'
+            name = job.name
+            filename = job_name + '_preset.xml'
             content_type = 'application/xml'
             config = ExportConfig.objects.create(
                 name=name, filename=filename,
@@ -357,7 +357,7 @@ class GeneratePresetTask(ExportTask):
             config.upload.save(filename, preset_file)
             base_dir = settings.BASE_DIR
             output_path = base_dir + config.upload.url
-            logger.debug(output_path)
+            job.configs.add(config)
             return {'result': output_path}
 
 

@@ -504,6 +504,33 @@ configurations.list = (function(){
                     }
                 },
                 {
+                    data: 'published',
+                    orderable:false,
+                    render: function(data, type, row){
+                        var published = row.published;
+                        var owner = $('span#user').text();
+                        var $div = $('<div>');
+                        var $pubSpan = $('<span class="glyphicon">&nbsp;</span>');
+                        $div.append($pubSpan);
+                        if (owner === row.owner) {
+                            var $userSpan = $('<span class="glyphicon glyphicon-user">&nbsp;</span>');
+                            $div.append($userSpan);
+                        }
+                        else {
+                            var $userSpan = $('<span class="fa fa-users">&nbsp;</span>');
+                            $div.append($userSpan);
+                        }
+                        if (published) {
+                            $pubSpan.addClass('glyphicon-globe');
+                        }
+                        else {
+                            $pubSpan.addClass('glyphicon-minus-sign');
+                        }
+                        // return the html
+                        return $div[0].outerHTML;
+                    }
+                },
+                {
                     data: 'uid',
                     orderable:false,
                     render: function(data, type, row){
@@ -517,7 +544,24 @@ configurations.list = (function(){
                         } 
                     }
                 }
-            ]
+            ],
+            rowCallback: function(row, data, index){
+                var user = $('span#user').text();
+                var owner = user === data.owner ? 'me' : data.owner;
+                if (data.published) {
+                    $(row).tooltip({
+                        'html': true,
+                        'title': 'Published preset.<br/>Created by: ' + owner
+                    });
+                }
+                else {
+                    var expires = moment(data.created_at).add(2, 'days').format('YYYY-MM-DD hh:mm a');
+                    $(row).tooltip({
+                        'html': true,
+                        'title': 'Private preset. <br/>Created by: ' + owner
+                    });
+                }
+            }
            });
         // clear the empty results message on initial draw..
         $('td.dataTables_empty').html('');
@@ -578,9 +622,11 @@ configurations.list = (function(){
             if ($this.is(':checked')) {
                 // set the username on the form input
                 $('input#user').val(username);
+                $('input#published').val('');
                 runSearch(); 
             } else {
                 $('input#user').val('');
+                $('input#published').val('True');
                 runSearch();
             }
         });

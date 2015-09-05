@@ -180,7 +180,7 @@ class TestExportTasks(TestCase):
         shutil_move = mock_move.return_value
         shutil_rmtree = mock_rmtree.return_value
         job_name = self.job.name.lower()
-        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '.zip'
+        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '_garmin.zip'
         osm_to_img.run_mkgmap.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid) + '/'
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)

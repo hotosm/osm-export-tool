@@ -119,6 +119,7 @@ class ExportConfigSerializer(serializers.Serializer):
     
     def get_owner(self, obj):
         return obj.user.username;
+
     
 
 class ExportTaskResultSerializer(serializers.ModelSerializer):
@@ -353,6 +354,7 @@ class JobSerializer(serializers.Serializer):
     )
     event = serializers.CharField(
         max_length=100,
+        allow_blank=True
     )
     created_at = serializers.DateTimeField(read_only=True)
     owner = serializers.SerializerMethodField(read_only=True)
