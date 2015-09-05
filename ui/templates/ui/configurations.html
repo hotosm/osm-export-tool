@@ -16,7 +16,7 @@
     </div>
     <div id="search-config" class="col-md-7">
         <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
-            <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Configurations' %}
+            <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Presets' %}
         </a>
         <form id="search" role="search">
             {% csrf_token %}
@@ -70,7 +70,7 @@
                         <div class="form-group">
                             <div class="checkbox">
                                 <label class="control-label" for="user-check">
-                                    <input id="user-check" type="checkbox"/> <strong>{% trans 'My Configurations' %}</strong>
+                                    <input id="user-check" type="checkbox"/> <strong>{% trans 'My Presets' %}</strong>
                                 </label>
                             </div>
                         </div>
@@ -111,7 +111,7 @@
         <form id="create-configuration-form">
         <div class="row">
             <div class="col-md-12">
-                <label>{% trans 'Upload a configuration file' %}</label>
+                <label>{% trans 'Upload a preset file' %}</label>
                 <p class="">
                 {% blocktrans %}Use this form to upload a <a href="http://learnosm.org/en/josm/creating-presets/" target="_blank">JOSM Preset</a> configuration file.{% endblocktrans %}
                 </p>
@@ -142,7 +142,7 @@
                 <div class="checkbox">
                     <label class="control-label" for="publish_config">
                       <input id="publish_config" name="publishconfig" type="checkbox" value="">
-                      {% trans 'Publish this configuration globally.' %}
+                      {% trans 'Publish this preset publicly' %}
                     </label>
                 </div>
             </div>

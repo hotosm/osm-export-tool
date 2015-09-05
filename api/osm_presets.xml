@@ -8241,6 +8241,20 @@
     </group> <!-- Landuse -->
   </group> <!-- Geography -->
     <group name="Annotation" icon="presets/addresses.png">
+        <group name="Source">
+            <item name="Photograph or Video" type="node,way,closedway">
+                <key key="source" value="image"></key>
+            </item>
+            <item name="Historical map" type="node,way,closedway">
+                <key key="source" value="historical"></key>
+            </item>
+            <item name="Local or common knowledge" type="node,way,closedway">
+                <key key="source" value="knowledge"></key>
+            </item>
+            <item name="Track or GPS Unit" type="way">
+                <key key="source" value="survey"></key>
+            </item>
+        </group>
         <item name="Name" icon="presets/message.png" type="node,way,closedway,relation" preset_name_label="true">
             <link href="http://wiki.openstreetmap.org/wiki/Key:name"
                   ar.href="http://wiki.openstreetmap.org/wiki/Ar:Key:name"
@@ -8271,7 +8285,7 @@
                 <text key="official_name" text="Official name" match="key" />
                 <text key="short_name" text="Common name abbreviation" match="key" />
             </optional>
-        </item> <!-- Name -->
+        </item>
         <item name="Addresses" icon="presets/addresses.png" type="node,way,closedway,relation" preset_name_label="true">
             <link href="http://wiki.openstreetmap.org/wiki/Key:addr"
                   cs.href="http://wiki.openstreetmap.org/wiki/Cs:Key:addr"
@@ -8420,6 +8434,7 @@
             <preset_link preset_name="Description" />
         </item> <!-- Fixme -->
     </group> <!-- Annotation -->
+    
     <group name="Relations" icon="presets/relations.png">
         <item name="Multipolygon" icon="presets/multipolygon.png" type="relation" preset_name_label="true">
             <link href="http://wiki.openstreetmap.org/wiki/Relation:multipolygon"
