@@ -204,7 +204,7 @@
                                     <span><strong>{% trans 'Name:' %}</strong></span><span id="summary-name"></span><br/>
                                     <span><strong>{% trans 'Description:' %}</strong></span><span id="summary-description"></span><br/>
                                     <span><strong>{% trans 'Event:' %}</strong></span><span id="summary-event"></span><br/>
-                                    <span><strong>{% trans 'Selected export formats:' %}</strong></span></br>
+                                    <span><strong>{% trans 'Export formats:' %}</strong></span></br>
                                     <span id="summary-formats"></span>
                                 </div>
                                 <div id="options" class="col-md-6 pull-left">
@@ -258,11 +258,8 @@
                         </div>
                       </div>
                     </div>
-                    <ul class="pager wizard">
-                        <li class="previous first" style="display:none;"><a href="#">First</a></li>
-                        <li class="previous"><a href="#">{% trans 'Previous' %}</a></li>
-                        <li class="next last" style="display:none;"><a href="#">Last</a></li>
-                        <li class="next"><a href="#">{% trans 'Next' %}</a></li>
+                    <ul id="create-pager" class="pager wizard">
+                        <li class="next"><a href="#">{% trans 'Skip' %}</a></li>
                     </ul>
                 </div>
                 <!-- container for job extents -->

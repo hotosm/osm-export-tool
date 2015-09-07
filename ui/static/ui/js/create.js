@@ -297,7 +297,7 @@ create.job = (function(){
         $('#xmax').val(xmax).trigger('input');
         $('#ymax').val(ymax).trigger('input');
         // update coordinate display
-        var coords = '(e,s,w,n): ' + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
+        var coords = '(East, South, West, North): ' + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
         $('span#coordinates').html(coords);
     }
     
@@ -426,28 +426,17 @@ create.job = (function(){
             tabClass: 'nav nav-pills',
             onTabClick: function(tab, navigation, index){
                 return validateTab(index);
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip');
+            },
+            onTabShow: function(tab, navigation, index){
+                if (index == 2 || index == 3) {
+                    $('li.next').css('display', 'block');
                 }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next');
+                else {
+                    $('li.next').css('display', 'none');
                 }
             },
             onNext: function(tab, navigation, index){
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip');
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next');
-                }
-            },
-            onPrevious: function(tab, navigation, index){
-                if (index == 2 || index == 3){
-                    $('ul.pager.wizard').find('li.next > a').html('Skip');
-                }
-                else{
-                    $('ul.pager.wizard').find('li.next > a').html('Next');
-                }
+                return validateTab(index);  
             }
         });
         
