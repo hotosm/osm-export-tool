@@ -261,6 +261,15 @@ span#submit-spinner i {
     margin-left: 0px !important;
 }
 
+#create-pager li {
+    float: left !important;
+    margin-left: 15px !important;
+}
+
+li.next {
+    display: none;
+}
+
 /* gazetteer lookup styles */
 
 div#gazetteer {
