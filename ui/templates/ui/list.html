@@ -50,7 +50,6 @@
                         </span>
                     </div>
                 </div>
-                <input id="published" type="hidden" name="published" value="True"/>
                 <!-- hidden bbox filter extents -->
                 <div class="form-group" id="form-group-bbox">
                     <div id="bbox">
@@ -76,6 +75,7 @@
                     <div id="user">
                         <span id="user">{{ user.username }}</span>
                         <input id="user" name="user" value="" type="hidden"/>
+                        <input id="user_private" name="user_private" value="{{ user.username }}" type="hidden"/>
                     </div>
                 </div>
                 <div class="col-md-2">

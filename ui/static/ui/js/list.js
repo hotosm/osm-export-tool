@@ -699,13 +699,9 @@ jobs.list = (function(){
             if ($this.is(':checked')) {
                 // set the username on the form input
                 $('input#user').val(username);
-                // turn off published filter
-                $('input#published').val('');
                 runSearch(); 
             } else {
                 $('input#user').val('');
-                // turn on published filter
-                $('input#published').val('True');
                 runSearch();
             }
         });

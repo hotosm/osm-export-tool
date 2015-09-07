@@ -143,15 +143,15 @@ class Job(TimeStampedModelMixin):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     user = models.ForeignKey(User, related_name='owner')
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=1000)
+    name = models.CharField(max_length=100, db_index=True)
+    description = models.CharField(max_length=1000, db_index=True)
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
     region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     configs = models.ManyToManyField(ExportConfig, related_name='configs')
-    published = models.BooleanField(default=False) # publish export
-    feature_save = models.BooleanField(default=False) # save feature selections
-    feature_pub = models.BooleanField(default=False) # publish feature selections
+    published = models.BooleanField(default=False, db_index=True) # publish export
+    feature_save = models.BooleanField(default=False, db_index=True) # save feature selections
+    feature_pub = models.BooleanField(default=False, db_index=True) # publish feature selections
     the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
