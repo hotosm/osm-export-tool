@@ -838,7 +838,8 @@ clone.job = (function(){
                  var filename = $(config).find('td').eq(0).find('span').html();
                  var config_type = $(config).find('td').eq(1).html();
                  var status = $(config).find('td').eq(2).html();
-                 $('table#summary-configs').append('<tr id="' + selection.uid + '" class="config"><td>' + filename + '</td><td>' + config_type + '</td><td>' + status + '</td></tr>');
+                 var published = published = status ? 'Published' : 'Private';
+                 $('table#summary-configs').append('<tr id="' + selection.uid + '" class="config"><td>' + filename + '</td><td>' + config_type + '</td><td>' + published + '</td></tr>');
             });
         });
         
@@ -919,7 +920,6 @@ clone.job = (function(){
             var fvIsValidForm = fv.isValid();
             if (!fvIsValidForm) {
                 // alert user here..
-                alert('invalid form');
                 e.preventDefault();
             }
             else {
