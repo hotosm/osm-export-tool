@@ -11,17 +11,17 @@ class Migration(migrations.Migration):
     
     def insert_export_formats(apps, schema_editor):
         ExportFormat = apps.get_model('jobs', 'ExportFormat')
-        ExportFormat.objects.create(name='OBF Format', description='OSMAnd OBF Export Format.',
+        ExportFormat.objects.create(name='OBF Format', description='OSMAnd OBF',
                                     slug='OBF')
-        ExportFormat.objects.create(name='ESRI Shapefile Format', description='ESRI Shapefile Export Format (OSM Schema)',
+        ExportFormat.objects.create(name='ESRI Shapefile Format', description='Esri SHP (OSM Schema)',
                                     slug='SHP')
-        ExportFormat.objects.create(name='KML Format', description='KML Export Format.',
+        ExportFormat.objects.create(name='KML Format', description='Google Earth KMZ',
                                     slug='KML')
-        ExportFormat.objects.create(name='SQLITE Format', description='SQLITE Export Format.',
+        ExportFormat.objects.create(name='SQLITE Format', description='SQlite SQL',
                                     slug='SQLITE')
-        ExportFormat.objects.create(name='Garmin Map Format', description='Garmin Map Export Format.',
+        ExportFormat.objects.create(name='Garmin Map Format', description='Garmin Map',
                                     slug='GARMIN')
-        ExportFormat.objects.create(name='ESRI Shapefile Format (Thematic)', description='ESRI Shapefile with Thematic Layers',
+        ExportFormat.objects.create(name='ESRI Shapefile Format (Thematic)', description='Esri SHP (Thematic Schema)',
                                     slug='THEMATIC')
 
     dependencies = [
