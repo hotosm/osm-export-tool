@@ -248,6 +248,7 @@ class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = ExportFormat.objects.all()
     lookup_field = 'slug'
+    ordering = ['description']
     
 
 class RegionViewSet(viewsets.ReadOnlyModelViewSet):

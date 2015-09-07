@@ -270,7 +270,8 @@ create.job = (function(){
                 formatsDiv.append('<div class="checkbox"><label>'
                                  + '<input type="checkbox"'
                                  + 'name="formats"'
-                                 + 'value="' + format.slug + '"/>'
+                                 + 'value="' + format.slug + '"' 
+                                 + 'data-description="' + format.description + '"/>'
                                  + format.description
                                  + '</label></div>');
             }
@@ -815,27 +816,8 @@ create.job = (function(){
             var formats = [];
             var $ul = $('<ul>');
             $.each($(this).find('input[name="formats"]:checked'), function(i, format){
-                var val = $(this).val();
-                switch (val){
-                    case 'obf':
-                        $ul.append($('<li>OSMAnd Format</li>'));
-                        break;
-                    case 'shp':
-                        $ul.append($('<li>ESRI Shapefile Format (OSM Schema)</li>'));
-                        break;
-                    case 'kml':
-                        $ul.append($('<li>KML Format</li>'));
-                        break;
-                    case 'garmin':
-                        $ul.append($('<li>Garmin IMG Format</li>'));
-                        break;
-                    case 'sqlite':
-                        $ul.append($('<li>SQlite Database Format</li>'));
-                        break;
-                    case 'thematic':
-                        $ul.append($('<li>ESRI Shapefile Format (Thematic Schema)</li>'));
-                        break;
-                }
+                var description = format.getAttribute('data-description');
+                $ul.append($('<li>' + description + '</li>'));
             });
             $('#summary-formats').html($ul);
         });
