@@ -1363,6 +1363,7 @@ clone.job = (function(){
             }
             else {
                 unsetBounds();
+                return feature;
             }
         }
         
