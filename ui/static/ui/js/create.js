@@ -543,6 +543,7 @@ create.job = (function(){
              * when the submit button is clicked.
              */
             $('#btn-submit-job').prop('disabled', 'false');
+            $('#btn-submit-job').removeClass('disabled');
         })
         .on('success.field.fv', function(e) {
             // re-enable the file upload button when field is valid
@@ -575,13 +576,24 @@ create.job = (function(){
                 $('button#select-file').prop('disabled', false);
                 return true;
             }
+            
+            /*
+             * Disable config form field validation
+             * as validation of these fields is
+             * only required on config upload.
+             */
+            fv.enableFieldValidators('filename', false);
                 
             // validate the form first
             fv.validate();
             var isFormValid = fv.isValid();
             if (!isFormValid) {
                 // disable submit button unless form is valid
-                $('#btn-submit-job').prop('disabled', 'true');
+                $('#btn-submit-job').prop('disabled', true);
+            }
+            else {
+                $('#btn-submit-job').prop('disabled', false);
+                $('button#select-file').removeClass('disabled');
             }
     
             // validate the bounding box extents
@@ -630,6 +642,8 @@ create.job = (function(){
         // ----- UPLOAD TAB ----- //
         
         $('button#select-file').bind('click', function(e){
+            var fv = $('#create-job-form').data('formValidation');
+            fv.enableFieldValidators('filename', true);
             $(this).popover('hide');
             if (!validateFileUploadTab()) {
                 e.preventDefault();

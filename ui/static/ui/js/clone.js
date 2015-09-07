@@ -543,7 +543,8 @@ clone.job = (function(){
              * on successful validation as this is done by ajax call
              * when the submit button is clicked.
              */
-            $('#btn-submit-job').prop('disabled', 'false');
+            $('#btn-submit-job').prop('disabled', false);
+            $('#btn-submit-job').removeClass('disabled');
         })
         .on('success.field.fv', function(e) {
             // re-enable the file upload button when field is valid
@@ -552,7 +553,7 @@ clone.job = (function(){
                 $('button#select-file').prop('disabled', false);
             }
         }).on('err.field.fv', function(e) {
-            // re-enable the file upload button when field is valid
+            // disable the file upload button when field is invalid
             if (e.target.id === 'filename' || e.target.id === 'config_type') {
                 $('button#upload').prop('disabled', true);
                 $('button#select-file').prop('disabled', true);
@@ -581,7 +582,11 @@ clone.job = (function(){
             var isFormValid = fv.isValid();
             if (!isFormValid) {
                 // disable submit button unless form is valid
-                $('#btn-submit-job').prop('disabled', 'true');
+                $('#btn-submit-job').prop('disabled', true);
+            }
+            else {
+                $('#btn-submit-job').prop('disabled', false);
+                $('button#select-file').removeClass('disabled');
             }
     
             // validate the bounding box extents
@@ -2143,6 +2148,14 @@ clone.job = (function(){
             
             $('input#published').prop('checked', data.published)
             $('#create-job-form').trigger('change');
+            
+            // trigger validation on the form
+            var fv = $('#create-job-form').data('formValidation');
+            fv.validate();
+            var isValidForm = fv.isValid();
+            if (isValidForm) {
+                $('#btn-submit-job').prop('disabled', false);
+            }
         });
     }
     
