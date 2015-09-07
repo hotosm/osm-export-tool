@@ -1,6 +1,7 @@
 import logging
 import pdb
 import django_filters
+from django.db.models import Q
 from jobs.models import Job, ExportConfig
 from tasks.models import ExportRun
 
@@ -17,11 +18,21 @@ class JobFilter(django_filters.FilterSet):
     user = django_filters.CharFilter(name="user__username", lookup_type="exact")
     feature = django_filters.CharFilter(name="tags__name", lookup_type="icontains")
     published = django_filters.BooleanFilter(name="published", lookup_type="exact")
+    user_private = django_filters.MethodFilter(action='user_private_filter')
     
     class Meta:
         model = Job
-        fields = ('name', 'description', 'event', 'start', 'end', 'region', 'user', 'feature', 'published')
+        fields = ('name', 'description', 'event', 'start', 'end', 'region',
+                  'user', 'user_private', 'feature', 'published')
         order_by = ('-created_at',)
+        
+    def user_private_filter(self, queryset, value):
+        return queryset.filter(
+            # default filter for listing export jobs
+            # show current user published / unpublished
+            # or all other users published only
+            (Q(user__username=value) | (~Q(user__username=value) & Q(published=True)))
+        )
 
 
 class ExportRunFilter(django_filters.FilterSet):
