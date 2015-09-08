@@ -242,6 +242,21 @@ class RegionMask(models.Model):
         managed = False
         db_table = 'region_mask'
 
+
+class ExportProfile(models.Model):
+    name = models.CharField(max_length=100, blank=False, default='')
+    group = models.OneToOneField(Group, related_name='export_profile')
+    max_extent = models.IntegerField()
+    
+    class Meta:
+        managed = True
+        db_table = 'export_profiles'
+    
+    def __str__(self):
+        return '{0}'.format(self.name)
+
+
+
 """
 Delete the associated file when the export config is deleted.
 """

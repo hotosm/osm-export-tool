@@ -23,7 +23,7 @@ create.job = (function(){
     var regions;
     var mask;
     var transform;
-    var max_bounds_area = 2500000; // sq km // set this dynamically..
+    var max_bounds_area = $('#user-max-extent').text();
     
     return {
         init: function(){
