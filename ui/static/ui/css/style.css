@@ -270,6 +270,10 @@ li.next {
     display: none;
 }
 
+#user-max-extent {
+    display: none;
+}
+
 /* gazetteer lookup styles */
 
 div#gazetteer {

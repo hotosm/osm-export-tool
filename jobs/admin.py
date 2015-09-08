@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.contrib.gis.admin import OSMGeoAdmin
 from django.contrib.gis.geos import GEOSGeometry
-from .models import ExportFormat, Job, Region
+from .models import (ExportFormat, Job, Region,
+                     ExportProfile)
 
 admin.site.register(ExportFormat)
 admin.site.register(Job)
+admin.site.register(ExportProfile)
 
 
 class HOTRegionGeoAdmin(OSMGeoAdmin):

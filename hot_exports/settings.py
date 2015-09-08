@@ -38,6 +38,20 @@ REGISTRATION_AUTO_LOGIN = True
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/jobs/create/'
 
+# OAuth login settings
+
+SOCIAL_AUTH_LOGIN_URL = '/osm/login/'
+SOCIAL_AUTH_OPENSTREETMAP_KEY = '56e4WINtKE9BSzIU1JtYZufLRBp0La5zS6qHvei3'
+SOCIAL_AUTH_OPENSTREETMAP_SECRET = 'fcwFW11HB3zFDUQonYUTS3QJEQ5IAowWmISu2l93'
+# OSM oauth URLs
+BASE_URL = 'https://www.openstreetmap.org/oauth'
+REQUEST_TOKEN_URL = '%s/request_token' % BASE_URL
+ACCESS_TOKEN_URL = '%s/access_token' % BASE_URL
+AUTHORIZE_URL = '%s/authorize' % BASE_URL
+# OSM user details URL
+USER_DETAILS_URL = 'http://api.openstreetmap.org/api/0.6/user/details'
+
+
 ALLOWED_HOSTS = ['hot.geoweb.io']
 
 
@@ -62,6 +76,7 @@ THIRD_PARTY_APPS = (
     'django_nose',
     'django_extensions',
     'registration',
+    'social.apps.django_app.default'
 )
 
 LOCAL_APPS = (
@@ -73,6 +88,11 @@ LOCAL_APPS = (
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.openstreetmap.OpenStreetMapOAuth',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 
 MIDDLEWARE_CLASSES = (
@@ -115,6 +135,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },

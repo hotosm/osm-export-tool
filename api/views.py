@@ -379,5 +379,4 @@ class OSMDataModelView(views.APIView):
         parser = PresetParser(path + '/osm_presets.xml')
         data = parser.build_hdm_preset_dict()
         return JsonResponse(data, status=status.HTTP_200_OK)
-    
-        
+

@@ -36,6 +36,10 @@ urlpatterns += i18n_patterns('admin.views',
     url(r'^admin/', include(admin.site.urls)),
 )
 
+urlpatterns += i18n_patterns('ui.social',
+    url('^osm/', include('social.apps.django_app.urls', namespace='social'))                        
+)
+
 # don't apply i18n patterns here.. api uses Accept-Language header
 urlpatterns += patterns('api.views',
     url(r'^api/', include(router.urls, namespace='api')),
