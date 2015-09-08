@@ -339,7 +339,7 @@ UPDATE_TASKS = {
 Maximum extent of a Job
 max of (latmax-latmin) * (lonmax-lonmin)
 """
-JOB_MAX_EXTENT = 250
+JOB_MAX_EXTENT = 1000
 
 # maximum number of runs to hold for each export
 EXPORT_MAX_RUNS = 5

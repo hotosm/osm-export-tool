@@ -190,10 +190,8 @@ create.job = (function(){
             $('#nominatim').val('');
             unsetBounds();
             bbox.removeAllFeatures();
-            //map.zoomToExtent(regions.getDataExtent());
             transform.unsetFeature();
             box.activate();
-            //validateBounds();
         });
         
         $('#zoom-selection').bind('click', function(e){
@@ -220,7 +218,6 @@ create.job = (function(){
         
         /* Add map controls */
         map.addControl(new OpenLayers.Control.ScaleLine());
-        //map.addControl(new OpenLayers.Control.LayerSwitcher());
         
         // set inital zoom to regions extent
         map.zoomTo(regions.getDataExtent());
@@ -1367,6 +1364,7 @@ create.job = (function(){
             }
             else {
                 unsetBounds();
+                return feature;
             }
         }
         
