@@ -10,7 +10,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
 from django.db.models.fields import CharField
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
 
 logger = logging.getLogger(__name__) 
@@ -264,6 +264,17 @@ Delete the associated file when the export config is deleted.
 def exportconfig_delete_upload(sender, instance, **kwargs):
     instance.upload.delete(False)
     
+
+"""
+Add each newly registered user to the DefaultExportExtentGroup
+"""
+@receiver(post_save, sender=User)
+def user_post_save(sender, instance, created, **kwargs):
+    """
+    This method is executed whenever an user object is saved                                                                                     
+    """
+    if created:
+        instance.groups.add(Group.objects.get(name='DefaultExportExtentGroup'))
 
 
 

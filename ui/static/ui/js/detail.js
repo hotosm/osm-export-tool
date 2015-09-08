@@ -98,9 +98,14 @@ exports.detail = (function(){
                     'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                     'externalProjection': new OpenLayers.Projection("EPSG:4326")
             });
-            var feature = geojson.read(extent);
+            var feature = geojson.read(extent, 'Feature');
             job_extents.addFeatures(feature);
             map.zoomToExtent(job_extents.getDataExtent());
+            var bounds = feature.geometry.bounds.clone();
+            var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
+            // format the area and max bounds for display..
+            var area_str = numeral(area).format('0,0');
+            $('#extent').html(area_str + ' sq km');
             /*
              * Check for current user.
              * Display delete button if
@@ -696,7 +701,7 @@ exports.detail = (function(){
                     updateSubmittedRunDetails(data);
                 }
             });
-        }, 2000);
+        }, 3000);
     }
     
     function buildDeleteDialog(){
