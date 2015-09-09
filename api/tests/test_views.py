@@ -7,7 +7,7 @@ from django.core.files import File
 from unittest import skip
 from rest_framework.reverse import reverse
 from rest_framework import status
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from rest_framework.test import APITestCase, APITransactionTestCase
 from rest_framework.authtoken.models import Token
@@ -25,6 +25,7 @@ class TestJobViewSet(APITestCase):
     
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create_user(
             username='demo', email='demo@demo.com', password='demo'
         )
@@ -497,10 +498,10 @@ class TestJobViewSet(APITestCase):
             'name': 'TestJob',
             'description': 'Test description',
             'event': 'Test Activation',
-            'xmin': 10,
-            'ymin': 10,
-            'xmax': 35,
-            'ymax': 35,
+            'xmin': -100,
+            'ymin': -30,
+            'xmax': 10,
+            'ymax': 80,
             'formats': formats
         }
         response = self.client.post(url, request_data)
@@ -519,6 +520,7 @@ class TestBBoxSearch(APITestCase):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
         # create dummy user
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create_user(
             username='demo', email='demo@demo.com', password='demo'
         )
@@ -598,6 +600,7 @@ class TestExportRunViewSet(APITestCase):
     Test cases for ExportRunViewSet
     """
     def setUp(self, ):
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
@@ -642,6 +645,7 @@ class TestExportConfigViewSet(APITestCase):
     """
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -732,6 +736,7 @@ class TestExportTaskViewSet(APITestCase):
     """
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)

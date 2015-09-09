@@ -280,7 +280,6 @@ NOSE_ARGS = [
     '--cover-package=api,tasks,jobs,utils'
 ]
 
-
 # Celery config
 CELERY_TRACK_STARTED = True
 

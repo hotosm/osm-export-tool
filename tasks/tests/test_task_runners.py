@@ -3,7 +3,7 @@ import json
 import uuid
 import os
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from mock import Mock, patch, PropertyMock
 from unittest import skip
 from ..task_runners import ExportTaskRunner
@@ -18,6 +18,7 @@ class TestExportTaskRunner(TestCase):
     
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40))

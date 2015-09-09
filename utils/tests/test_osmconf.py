@@ -3,7 +3,7 @@ import os
 import uuid
 from django.test import TestCase
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from unittest import skip
 from jobs import presets
@@ -21,6 +21,7 @@ class TestOSMConf(TestCase):
         self.assertIsNotNone(self.tags)
         self.assertEquals(238, len(self.tags))
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -42,7 +43,7 @@ class TestOSMConf(TestCase):
         self.categories = self.job.categorised_tags
     
     def test_create_osm_conf(self,):
-        conf = OSMConfig(self.categories)
+        conf = OSMConfig(self.categories, job_name=self.job.name)
         path = conf.create_osm_conf(stage_dir=self.path + '/files/')
         self.assertTrue(os.path.exists(path))
         os.remove(path)

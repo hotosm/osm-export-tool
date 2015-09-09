@@ -47,7 +47,7 @@ class TimeStampedModelMixin(models.Model):
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
     
-    class Meta:
+    class Meta: # pragma: no cover
         abstract = True
         
 
@@ -73,7 +73,7 @@ class ExportConfig(TimeStampedModelMixin):
     content_type = models.CharField(max_length=30, editable=False)
     published = models.BooleanField(default=False)
     
-    class Meta:
+    class Meta: # pragma: no cover
         managed = True
         db_table = 'export_configurations'
 
@@ -88,7 +88,7 @@ class ExportFormat(TimeStampedModelMixin):
     cmd = models.TextField(max_length=1000)
     objects = models.Manager()
     
-    class Meta:
+    class Meta: # pragma: no cover
         managed = True
         db_table = 'export_formats'
         
@@ -112,28 +112,12 @@ class Region(TimeStampedModelMixin):
     the_geog = models.PolygonField(verbose_name='Geographic extent for export region', geography=True, default='') 
     objects = models.GeoManager()
     
-    class Meta:
+    class Meta: # pragma: no cover
         managed = True
         db_table = 'regions'
     
     def __str__(self):
         return '{0}'.format(self.name)
-    
-"""
-class Tag(models.Model):
-    "Model to represent export tags."
-
-    id = models.AutoField(primary_key=True, editable=False)
-    name = models.CharField(max_length=50)
-    geom_types = HStoreField()
-    
-    class Meta:
-        managed = True
-        db_table = 'tags'
-    
-    def __str__(self):
-        return '{0}: {1}'.format(self.name, self.geom_types)
-"""
 
 
 class Job(TimeStampedModelMixin):
@@ -157,7 +141,7 @@ class Job(TimeStampedModelMixin):
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
     objects = models.GeoManager()
     
-    class Meta:
+    class Meta: # pragma: no cover
         managed = True
         db_table = 'jobs'
         
@@ -224,13 +208,12 @@ class Tag(models.Model):
     geom_types = ArrayField(models.CharField(max_length=10, blank=True, default=''), default=[])
     groups = ArrayField(models.CharField(max_length=100, blank=True, default=''), default=[])
     
-    class Meta:
+    class Meta: # pragma: no cover
         managed = True
         db_table = 'tags'
     
-    def __str__(self):
+    def __str__(self): # pragma: no cover
         return '{0}:{1}'.format(self.key, self.value)
-    
     
 
 class RegionMask(models.Model):
@@ -238,7 +221,7 @@ class RegionMask(models.Model):
     id = models.IntegerField(primary_key=True)
     the_geom = models.MultiPolygonField(verbose_name='Mask for export regions', srid=4326)
     
-    class Meta:
+    class Meta: # pragma: no cover
         managed = False
         db_table = 'region_mask'
 
@@ -248,7 +231,7 @@ class ExportProfile(models.Model):
     group = models.OneToOneField(Group, related_name='export_profile')
     max_extent = models.IntegerField()
     
-    class Meta:
+    class Meta: # pragma: no cover
         managed = True
         db_table = 'export_profiles'
     

@@ -14,11 +14,11 @@ class HOTRegionGeoAdmin(OSMGeoAdmin):
     model = Region
     exclude = ['the_geom', 'the_geog']
     
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request, obj, form, change): #pragma no cover
         geom_merc = obj.the_geom_webmercator
         obj.the_geom = geom_merc.transform(ct=4326, clone=True)
         obj.the_geog = GEOSGeometry(obj.the_geom.wkt)
         obj.save()
     
         
-admin.site.register(Region, HOTRegionGeoAdmin)
+admin.site.register(Region, HOTRegionGeoAdmin) 
