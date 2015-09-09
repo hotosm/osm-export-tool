@@ -3,7 +3,7 @@ import json
 import uuid
 import os
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from jobs.models import Job, ExportFormat
 from rest_framework.test import APITestCase
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 class TestJobFilter(APITestCase):
     
     def setUp(self,):
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user1 = User.objects.create_user(
             username='demo1', email='demo@demo.com', password='demo'
         )

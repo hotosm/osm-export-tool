@@ -2123,7 +2123,25 @@ clone.job = (function(){
                 $(document).trigger({type: 'preset:selected', source: 'config-browser'});
             });
             
-            // bounding box
+            // summary tab
+            if (configs.length == 0) {
+                $('input#feature_save').prop('checked', data.feature_save);
+                $('input#feature_pub').prop('checked', data.feature_pub);
+            }
+            
+            $('input#published').prop('checked', data.published)
+            $('#create-job-form').trigger('change');
+            
+            // trigger validation on the form
+            var fv = $('#create-job-form').data('formValidation');
+            fv.validate();
+            var isValidForm = fv.isValid();
+            if (isValidForm) {
+                $('#btn-submit-job').prop('disabled', false);
+                $('#btn-submit-job').removeClass('disabled');
+            }
+            
+            // add export bounding box
             var extent = data.extent;
             var geojson = new OpenLayers.Format.GeoJSON({
                     'internalProjection': new OpenLayers.Projection("EPSG:3857"),
@@ -2139,23 +2157,6 @@ clone.job = (function(){
             // set the bounds on the form
             setBounds(bounds);
             map.zoomToExtent(bbox.getDataExtent());
-            
-            // summary tab
-            if (configs.length == 0) {
-                $('input#feature_save').prop('checked', data.feature_save)
-                $('input#feature_pub').prop('checked', data.feature_pub)
-            }
-            
-            $('input#published').prop('checked', data.published)
-            $('#create-job-form').trigger('change');
-            
-            // trigger validation on the form
-            var fv = $('#create-job-form').data('formValidation');
-            fv.validate();
-            var isValidForm = fv.isValid();
-            if (isValidForm) {
-                $('#btn-submit-job').prop('disabled', false);
-            }
         });
     }
     

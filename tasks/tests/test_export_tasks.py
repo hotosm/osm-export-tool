@@ -8,7 +8,7 @@ import traceback
 import os
 from hot_exports import settings
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from mock import Mock, patch, PropertyMock, MagicMock
 from unittest import skip
 from ..task_runners import ExportTaskRunner
@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 class TestExportTasks(TestCase):
     
     def setUp(self,):
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40))

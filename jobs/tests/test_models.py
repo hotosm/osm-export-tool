@@ -3,9 +3,9 @@ import sys
 import uuid
 import os
 from django.test import TestCase, TransactionTestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import Job, ExportFormat, Region, ExportConfig, Tag
+from jobs.models import Job, ExportFormat, Region, ExportConfig, Tag, ExportProfile
 from tasks.models import ExportTask, ExportRun
 from django.contrib.gis.gdal import DataSource
 from django.utils import timezone
@@ -23,6 +23,7 @@ class TestJob(TestCase):
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -52,6 +53,8 @@ class TestJob(TestCase):
         self.assertItemsEqual(saved_formats, self.formats)
         tags = saved_job.tags.all()
         self.assertEquals(4, len(tags))
+        self.assertEquals('Test description', saved_job.description)
+        self.assertEquals(0, saved_job.configs.all().count())
         
     def test_job_creation_with_config(self,):
         saved_job = Job.objects.all()[0]
@@ -194,6 +197,7 @@ class TestJobRegionIntersection(TestCase):
     
     def setUp(self,):
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((36.90, 13.54, 48.52, 20.24)) # overlaps africa / central asia
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -255,6 +259,7 @@ class TestExportConfig(TestCase):
     
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -284,10 +289,24 @@ class TestExportConfig(TestCase):
         saved_config.delete() # clean up
         sf.close()
         
+    def test_add_config_to_job(self,):
+        f = open(self.path + '/files/hdm_presets.xml')
+        test_file = File(f)
+        filename = test_file.name.split('/')[-1]
+        name = 'Test Configuration File'
+        config = ExportConfig.objects.create(name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
+        test_file.close()
+        self.assertIsNotNone(config)
+        uid = config.uid
+        self.job.configs.add(config)
+        self.assertEquals(1, self.job.configs.all().count())
+        
+        
 class TestTag(TestCase):
     
     def setUp(self, ):
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -320,11 +339,13 @@ class TestTag(TestCase):
                 groups = tag_dict['groups']
             )
         saved_tags = Tag.objects.all()
+        self.assertEquals(saved_tags[0].key, 'aeroway')
         geom_types = saved_tags[0].geom_types
         self.assertEquals(1, len(saved_tags))
         self.assertEqual(['node','area'], geom_types)
         groups = saved_tags[0].groups
         self.assertEquals(4, len(groups))
+        
         
     def test_save_tags_from_preset(self,):
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -364,28 +385,19 @@ class TestTag(TestCase):
         self.assertEquals(238, self.job.tags.all().count())
         categorised_tags = self.job.categorised_tags
         
+
+class TestExportProfile(TestCase):
+    
+    def setUp(self,):
+        self.group = Group.objects.create(name='DefaultExportExtentGroup')
         
-    
-    """
-    def test_hdm_tags(self, ):
-        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
-        tags, kvps = parser.parse()
-        # clear existing tags
-        self.job.tags.all().delete()
-        for kvp in kvps:
-            tag = Tag.objects.create(
-                key = kvp[0],
-                value = kvp[1],
-                job = self.job
-            )
-        # get saved tags back out
-        job_tags = self.job.tags.all()
-        self.assertEquals(258, len(job_tags))
-        job = Job.objects.filter(tags__key='barrier')
-        self.assertIsNotNone(job[0])
-    """   
-    
         
-    
-    
-        
+    def test_export_profile(self,):
+        profile = ExportProfile.objects.create(
+            name='DefaultExportProfile',
+            max_extent=2500000,
+            group=self.group
+        )
+        self.assertEqual(self.group.export_profile, profile)
+        self.assertEquals('DefaultExportProfile', profile.name)
+        self.assertEquals(250000, profile.max_extent)
