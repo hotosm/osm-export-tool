@@ -2,6 +2,7 @@ import os
 from django.utils import timezone
 
 from utils.overpass import Overpass
+from utils.pbf import OSMToPBF
 from jobs import presets
 
 
@@ -19,16 +20,14 @@ def run(*script_args):
     lib_bbox = '4.15,-11.60,8.55,-7.36'
     path = '/home/ubuntu/www/hotosm/utils/tests'
     osm = path + '/files/query.osm'
-    tags = tags = ['amenity:fuel', 'shop:car_repair','amenity:bank',
-                        'amenity:money_transfer','hazard_type:flood',
-                        'landuse:residential','building:yes']
     query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'
     parser = presets.PresetParser(preset=path + '/files/hdm_presets.xml')
-    geom_tags, kvps = parser.parse()
+    kvps = parser.parse()
     filters = []
     for kvp in kvps:
-        filter_tag = '{0}:{1}'.format(kvp[0], kvp[1])
+        filter_tag = '{0}:{1}'.format(kvp['key'], kvp['value'])
         filters.append(filter_tag)
+    print filters
         
     
     print "=============="
@@ -40,7 +39,10 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
+    pbf = OSMToPBF(osm=osm, pbffile=path + '/files/query.pbf', debug=True)
+    pbf.convert()
     
+    """
     print "=============="
     print "Querying Monrovia without filters."
     print timezone.now()
@@ -72,4 +74,4 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
-    
+    """

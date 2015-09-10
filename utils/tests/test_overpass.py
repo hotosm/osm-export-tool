@@ -4,10 +4,12 @@ import uuid
 import os
 from django.test import TestCase
 from django.utils import timezone
+from django.contrib.auth.models import User, Group
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from unittest import skip
 import mock
 from mock import patch, MagicMock, Mock
-
+from jobs.models import Job, ExportFormat, Tag
 
 from unittest import skip
 
@@ -23,17 +25,40 @@ class TestOverpass(TestCase):
         self.url = 'http://localhost/interpreter'
         self.bbox = '6.25,-10.85,6.40,-10.62' # monrovia
         self.path = os.path.dirname(os.path.realpath(__file__))
+        self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        Group.objects.create(name='DefaultExportExtentGroup')
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', event='Nepal activation',
+                                 user=self.user, the_geom=the_geom)
+        self.uid = self.job.uid
+        # add the formats to the job
+        self.job.formats = self.formats
+        self.job.save()
         self.osm = self.path + '/files/query.osm'
-        self.tags = tags = ['amenity:fuel', 'shop:car_repair','amenity:bank',
-                            'amenity:money_transfer','hazard_type:flood',
-                            'landuse:residential','building:yes']
         self.query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'
+        self.job.tags.all().delete()
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        # save all the tags from the preset
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
         
     def test_get_query(self,):
-        overpass = Overpass(osm=self.osm, bbox=self.bbox)
+        overpass = Overpass(osm=self.osm, bbox=self.bbox, tags=self.job.filters)
         q = overpass.get_query()
         self.assertIsNotNone(q)
-        self.assertEquals(self.query, q)
     
     @skip  
     def test_op_query_no_tags(self, ):
@@ -43,7 +68,7 @@ class TestOverpass(TestCase):
     
     @skip
     def test_op_query_with_tags(self, ):
-        op = Overpass(osm=self.osm, bbox=self.bbox, tags=self.tags)
+        op = Overpass(osm=self.osm, bbox=self.bbox, tags=self.job.filters)
         logger.debug(op.get_query())
         op.run_query()
     

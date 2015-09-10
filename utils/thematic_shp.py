@@ -80,12 +80,10 @@ class ThematicSQliteToShp(object):
                       'columns': ', '.join(self.tags[layer_type]),
                       'planet_table': spec['table'], 'select_clause': spec['select_clause']}
             sql = sql_tmpl.safe_substitute(params)
-            logger.debug(sql)
             cur.execute(sql)
             geom_type = geom_types[layer_type]
             
             recover_geom_sql = recover_geom_tmpl.safe_substitute({'tablename': "'" + layer + "'", 'geom_type': "'" + geom_type + "'"})
-            logger.debug(recover_geom_sql)
             conn.commit()
             cur.execute(recover_geom_sql)
             cur.execute("SELECT CreateSpatialIndex({0}, 'GEOMETRY')".format("'" + layer + "'"))

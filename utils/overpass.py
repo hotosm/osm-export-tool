@@ -66,52 +66,44 @@ class Overpass(object):
     def _build_overpass_query(self, ):
         
         template = Template("""
-                [out:xml];
+                [out:xml][timeout:3600][bbox:$bbox];
                 (
                   $nodes
                   $ways
                   $relations
                 );
-                out body qt;
-                >;
-                out skel qt;
+                (._;>;);
+                out body;
             """)
 
         nodes = []
         ways = []
         relations = []
-        keys = []
         
-        node_tmpl = Template('node[$tags]($bbox);')
-        way_tmpl = Template('way[$tags]($bbox);')
-        rel_tmpl = Template('rel[$tags]($bbox);')
+        node_tmpl = Template('node[$tags];')
+        way_tmpl = Template('way[$tags];')
+        rel_tmpl = Template('rel[$tags];')
         
         for tag in self.tags:
             try:
                 (k, v) = tag.split(':')
-                keys.append(k)
                 tag_str = '"' + k  + '"="' + v + '"'
-                node_tag = node_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
-                way_tag = way_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
-                rel_tag = rel_tmpl.safe_substitute({'tags': tag_str, 'bbox': self.bbox})
+                node_tag = node_tmpl.safe_substitute({'tags': tag_str})
+                way_tag = way_tmpl.safe_substitute({'tags': tag_str})
+                rel_tag = rel_tmpl.safe_substitute({'tags': tag_str})
                 nodes.append(node_tag)
                 ways.append(way_tag)
                 relations.append(rel_tag)
             except ValueError as e:
                 continue
+
         # build strings
         node_filter = '\n'.join(nodes)
         way_filter = '\n'.join(ways)
         rel_filter = '\n'.join(relations)
-        unique_keys = []
-        for key in keys:
-            if key not in unique_keys:
-                unique_keys.append(key)
-        logger.debug(','.join(unique_keys))
         
-        q = template.safe_substitute({'nodes': node_filter, 'ways': way_filter,
+        q = template.safe_substitute({'bbox':self.bbox, 'nodes': node_filter, 'ways': way_filter,
                                                  'relations': rel_filter})
-    
         return q    
 
 

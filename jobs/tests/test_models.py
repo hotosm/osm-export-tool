@@ -144,6 +144,27 @@ class TestJob(TestCase):
         self.assertEquals(12, len(categories['lines']))
         self.assertEquals(22, len(categories['polygons']))
         
+    def test_tags(self,):
+        self.job.tags.all().delete()
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        # save all the tags from the preset
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
+        
+        job = Job.objects.all()[0]
+        filters = job.filters
+        logger.debug(filters)
+        
 
 class TestExportFormat(TestCase):
     
@@ -400,4 +421,4 @@ class TestExportProfile(TestCase):
         )
         self.assertEqual(self.group.export_profile, profile)
         self.assertEquals('DefaultExportProfile', profile.name)
-        self.assertEquals(250000, profile.max_extent)
+        self.assertEquals(2500000, profile.max_extent)

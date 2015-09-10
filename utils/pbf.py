@@ -33,7 +33,7 @@ class OSMToPBF(object):
         (stdout,stderr) = proc.communicate() 
         returncode = proc.wait()
         if (returncode != 0):
-            raise Exception, "ogr2ogr failed with return code: {0}".format(returncode)
+            raise Exception, "osmconvert failed with return code: {0}".format(returncode)
         if(self.debug):
             print 'Osmconvert returned: %s' % returncode
         return self.pbffile

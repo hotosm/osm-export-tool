@@ -143,13 +143,13 @@ class OverpassQueryTask(ExportTask):
     name = 'OverpassQuery'
     abort_on_error = True
     
-    def run(self, run_uid=None, stage_dir=None, job_name=None, bbox=None):
+    def run(self, run_uid=None, stage_dir=None, job_name=None, tags=None, bbox=None):
         """
         Runs the query and returns the path to the generated osm file.
         """
         self.update_task_state(run_uid=run_uid, name=self.name)
         osm = stage_dir + job_name + '.osm'
-        op = overpass.Overpass(bbox=bbox, osm=osm)
+        op = overpass.Overpass(bbox=bbox, osm=osm, tags=tags)
         osmfile = op.run_query()
         return {'result': osmfile}        
 
@@ -416,7 +416,8 @@ class ExportTaskErrorHandler(Task):
         run.save()
         try:
             if os.path.isdir(stage_dir):
-                shutil.rmtree(stage_dir)
+                #shutil.rmtree(stage_dir)
+                pass
         except IOError as e:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
         hostname = settings.HOSTNAME
