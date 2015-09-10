@@ -39,6 +39,8 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
+    
+    # check pbf conversion
     pbf = OSMToPBF(osm=osm, pbffile=path + '/files/query.pbf', debug=True)
     pbf.convert()
     
