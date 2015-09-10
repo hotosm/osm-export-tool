@@ -32,9 +32,9 @@ clone.job = (function(){
             initHDMFeatureTree();
             initOSMFeatureTree();
             initNominatim();
+            populateForm();
             initPresetSelectionHandler();
             initConfigSelectionHandler();
-            populateForm();
         }
     }
     
@@ -568,6 +568,13 @@ clone.job = (function(){
                 // The current tab
                 $tab = $('#create-job-form').find('.tab-pane').eq(index),
                 $bbox = $('#bbox');
+                
+            /*
+             * Disable config form field validation
+             * as validation of these fields is
+             * only required on config upload.
+             */
+            fv.enableFieldValidators('filename', false);
             
             // ignore upload tab as we apply custom validation there..
             var id = $tab.attr('id');
