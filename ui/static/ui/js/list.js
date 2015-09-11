@@ -444,7 +444,7 @@ jobs.list = (function(){
             url = url.slice(1, url.length -1);
             var rel = b.split(';')[1].split('=')[1];
             rel = rel.slice(1, rel.length -1);
-            paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>&nbsp;');
+            paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> ' + gettext('Prev') + '</a></li>&nbsp;');
             $('li#prev').on('click', function(){
                 var u = this.getAttribute('data-url');
                 u == 'undefined' ? listJobs() : listJobs(u);  
@@ -457,7 +457,7 @@ jobs.list = (function(){
             var rel = a.split(';')[1].split('=')[1];
             rel = rel.slice(1, rel.length -1);
             if (rel == 'prev') {
-                paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>');
+                paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> ' + gettext('Prev') + '</a></li>');
                 $('li#prev').on('click', function(){
                     var u = this.getAttribute('data-url');
                     u == 'undefined' ? listJobs() : listJobs(u);
@@ -539,14 +539,14 @@ jobs.list = (function(){
                 if (data.published) {
                     $(row).tooltip({
                         'html': true,
-                        'title': 'Published export.<br/>Created by: ' + owner
+                        'title': gettext('Published export.') + '<br/>' + gettext('Created by: ') + owner
                     });
                 }
                 else {
                     var expires = moment(data.created_at).add(2, 'days').format('YYYY-MM-DD hh:mm a');
                     $(row).tooltip({
                         'html': true,
-                        'title': 'Unpublished export. <br/>Expires: ' + expires + '.<br/>Created by: ' + owner
+                        'title': gettext('Unpublished export.') + '<br/>' + gettext('Expires: ') + expires + '.<br/>' + gettext('Created by: ') + owner
                     });
                 }
             }
@@ -723,14 +723,14 @@ jobs.list = (function(){
     function initPopovers(){
         $('a#filter-toggle').popover({
             //title: 'Select Formats', 
-            content: "Filter through all the exports based on keywords in the search box and/or between a start and end date",
+            content: gettext("Filter the exports based on keywords in the search box and/or between a start and end date"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'right'
         });
         $('div#myexports').popover({
             //title: 'Select Formats', 
-            content: "Show your personal export(s)",
+            content: gettext("Show your personal export(s)"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'

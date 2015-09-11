@@ -27,9 +27,10 @@ class TestJob(TestCase):
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
-        self.job = Job.objects.create(name='TestJob',
+        self.job = Job(name='TestJob',
                                  description='Test description', event='Nepal activation',
                                  user=self.user, the_geom=the_geom)
+        self.job.save()
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
@@ -223,7 +224,7 @@ class TestJobRegionIntersection(TestCase):
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
-                                 the_geom=the_geom)
+                                 the_geom=the_geom, feature_save=True, feature_pub=True)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
