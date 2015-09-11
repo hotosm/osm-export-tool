@@ -151,7 +151,7 @@ class ExportTaskRunner(TaskRunner):
 
             initial_tasks = chain(
                     conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name) |
-                    query.si(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid, tags=job.filters)
+                    query.si(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid, filters=job.filters)
             )
             
             schema_tasks = chain(

@@ -8,7 +8,7 @@ from jobs import presets
 
 """
     Harness to run an Overpass Query outside of test context.
-    Uses HDM datamodel to construct overpass query.
+    Uses HDM/OSM Data Models to construct overpass query.
     From the project directory run:
     ./manage.py runscript overpass_benchmarks --settings=hot_exports.settings -v2
     Depends on django-extensions.
@@ -19,7 +19,6 @@ def run(*script_args):
     bbox = '6.25,-10.85,6.40,-10.62' # monrovia
     lib_bbox = '4.15,-11.60,8.55,-7.36'
     path = '/home/ubuntu/www/hotosm/utils/tests'
-    osm = path + '/files/query.osm'
     query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'
     parser = presets.PresetParser(preset=path + '/files/osm_presets.xml')
     kvps = parser.parse()
@@ -28,21 +27,21 @@ def run(*script_args):
         filter_tag = '{0}={1}'.format(kvp['key'], kvp['value'])
         filters.append(filter_tag)
     print filters
-    f = open(path + '/files/filters.txt', 'w')
-    f.write('--keep="{0}"\n'.format(' or '.join(filters)))
-    #f.write('--keep-nodes="{0}"\n'.format(' or '.join(filters)))
-    #f.write('--keep-ways="{0}"\n'.format(' '.join(filters)))
-    #f.write('--keep-relations="{0}"\n'.format(' or '.join(filters)))
     
     print "=============="
-    print "Querying Monrovia with HDM filters."
+    print "Querying Monrovia with OSM filters."
     print timezone.now()
-    op = Overpass(osm=osm, bbox=bbox)
-    op.run_query()
+    op = Overpass(
+        bbox=bbox, stage_dir=path + '/files/',
+        job_name='test', filters=filters
+    )
+    osm = op.run_query()
     print timezone.now()
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
+    
+    filtered = op.filter()
     
     # check pbf conversion
     #pbf = OSMToPBF(osm=path + '/files/filter.osm', pbffile=path + '/files/filter.pbf', debug=True)

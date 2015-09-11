@@ -1,6 +1,6 @@
 [run]
 
-omit = */migrations/*, api/renderers.py, */__init__.py
+omit = */migrations/*, api/renderers.py, */__init__.py, */admin.py
 
 [report]
 exclude_lines = 

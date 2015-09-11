@@ -163,7 +163,6 @@ class TestJob(TestCase):
         
         job = Job.objects.all()[0]
         filters = job.filters
-        logger.debug(filters)
         
 
 class TestExportFormat(TestCase):
@@ -411,7 +410,6 @@ class TestExportProfile(TestCase):
     
     def setUp(self,):
         self.group = Group.objects.create(name='DefaultExportExtentGroup')
-        
         
     def test_export_profile(self,):
         profile = ExportProfile.objects.create(

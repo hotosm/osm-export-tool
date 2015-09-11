@@ -13,20 +13,24 @@ from mock import Mock, patch, PropertyMock, MagicMock
 from unittest import skip
 from ..task_runners import ExportTaskRunner
 from jobs.models import ExportFormat, Job, Tag
+from jobs import presets
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from tasks.export_tasks import (ExportTask, ShpExportTask,
                                 ObfExportTask, GarminExportTask,
                                 KmlExportTask, OSMConfTask,
                                 OverpassQueryTask, OSMToPBFConvertTask,
-                                OSMPrepSchemaTask)
+                                OSMPrepSchemaTask, GeneratePresetTask,
+                                FinalizeRunTask, ExportTaskErrorHandler)
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from celery.datastructures import ExceptionInfo
+from django.core.mail import EmailMessage
 
 logger = logging.getLogger(__name__)
   
 class TestExportTasks(TestCase):
     
     def setUp(self,):
+        self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -35,7 +39,24 @@ class TestExportTasks(TestCase):
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
                                  the_geom=the_geom)
+        self.job.feature_save = True
+        self.job.feature_pub = True
+        self.job.save()
         self.run = ExportRun.objects.create(job=self.job)
+        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(238, len(tags))
+        # save all the tags from the preset
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                key = tag_dict['key'],
+                value = tag_dict['value'],
+                job = self.job,
+                data_model = 'osm',
+                geom_types = tag_dict['geom_types']
+            )
+        self.assertEquals(238, self.job.tags.all().count())
     
     @patch('celery.app.task.Task.request')
     @patch('utils.osmconf.OSMConfig')
@@ -59,18 +80,21 @@ class TestExportTasks(TestCase):
         
     @patch('celery.app.task.Task.request')
     @patch('utils.overpass.Overpass')
-    def test_run_overpass_task(self, mock_overpass, mock_request):
+    def test_run_overpass_task(self, overpass, mock_request):
         task = OverpassQueryTask()
         celery_uid = str(uuid.uuid4())
         type(mock_request).id = PropertyMock(return_value=celery_uid)
-        overpass_query = mock_overpass.return_value
+        overpass = overpass.return_value
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
         job_name = self.job.name.lower()
+        raw_osm_path = stage_dir + '/' + 'query.osm'
         expected_output_path = stage_dir + '/' + job_name + '.osm'
-        overpass_query.run_query.return_value = expected_output_path
+        overpass.run_query.return_value = raw_osm_path
+        overpass.filter.return_value = expected_output_path
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
         result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
-        overpass_query.run_query.assert_called_once()
+        overpass.run_query.assert_called_once()        
+        overpass.filter.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
@@ -281,6 +305,69 @@ class TestExportTasks(TestCase):
         self.assertEquals(error_type, ValueError)
         self.assertEquals('some unexpected error', str(msg))
         #traceback.print_exception(error_type, msg, tb)
-        
+    
+    @patch('celery.app.task.Task.request')
+    def test_generate_preset_task(self, mock_request):
+        task = GeneratePresetTask()
+        run_uid = self.run.uid
+        stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
+        celery_uid = str(uuid.uuid4())
+        running_task = ExportTask.objects.create(
+            run=self.run,
+            celery_uid=celery_uid,
+            status='RUNNING',
+            name=task.name
+        )
+        type(mock_request).id = PropertyMock(return_value=celery_uid)
+        result = task.run(run_uid=run_uid, job_name='testjob')
+        expected_result = stage_dir + 'testjob_preset.xml'
+        config = self.job.configs.all()[0]
+        expected_path = settings.BASE_DIR + config.upload.url
+        self.assertEquals(result['result'], expected_path)
+        os.remove(expected_path)
+    
+    @patch('django.core.mail.EmailMessage')
+    @patch('shutil.rmtree')
+    def test_finalize_run_task(self, rmtree, email):
+        celery_uid = str(uuid.uuid4())
+        run_uid = self.run.uid
+        stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
+        succeeded_task = ExportTask.objects.create(
+            run=self.run,
+            celery_uid=celery_uid,
+            status='SUCCESS',
+            name='Default Shapefile Export'
+        )
+        task = FinalizeRunTask()
+        self.assertEquals('Finalize Export Run', task.name)
+        task.run(run_uid=run_uid, stage_dir=stage_dir)
+        rmtree.assert_called_once_with(stage_dir)
+        msg = Mock()
+        email.return_value = msg
+        msg.send.assert_called_once()
+        #self.assertEquals('SUCCESS', self.run.status)
+    
+    @patch('django.core.mail.EmailMessage')
+    @patch('shutil.rmtree')
+    @patch('os.path.isdir')
+    def test_export_task_error_handler(self, isdir, rmtree, email):
+        celery_uid = str(uuid.uuid4())
+        run_uid = self.run.uid
+        stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
+        succeeded_task = ExportTask.objects.create(
+            run=self.run,
+            celery_uid=celery_uid,
+            status='SUCCESS',
+            name='Default Shapefile Export'
+        )
+        task = ExportTaskErrorHandler()
+        self.assertEquals('Export Task Error Handler', task.name)
+        task.run(run_uid=run_uid, stage_dir=stage_dir)
+        isdir.assert_called_once_with(stage_dir)
+        #rmtree.assert_called_once_with(stage_dir)
+        msg = Mock()
+        email.return_value = msg
+        msg.send.assert_called_once()
+        #self.assertEquals('FAILED', self.run.status)
         
         

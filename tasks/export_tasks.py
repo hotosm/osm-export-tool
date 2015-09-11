@@ -143,17 +143,18 @@ class OverpassQueryTask(ExportTask):
     name = 'OverpassQuery'
     abort_on_error = True
     
-    def run(self, run_uid=None, stage_dir=None, job_name=None, tags=None, bbox=None):
+    def run(self, run_uid=None, stage_dir=None, job_name=None, filters=None, bbox=None):
         """
-        Runs the query and returns the path to the generated osm file.
+        Runs the query and returns the path to the filtered osm file.
         """
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osm = stage_dir + 'query.osm'
-        op = overpass.Overpass(bbox=bbox, osm=osm, tags=tags)
-        osmfile = op.run_query()
-        filtered_osm = stage_dir + job_name + '.osm'
-        filtered = op.filter(filtered_osm=filtered_osm)
-        return {'result': filtered}        
+        op = overpass.Overpass(
+            bbox=bbox, stage_dir=stage_dir,
+            job_name=job_name, filters=filters
+        )
+        op.run_query() # run the query
+        filtered_osm = op.filter() # filter the results
+        return {'result': filtered_osm}        
 
 
 class OSMToPBFConvertTask(ExportTask):
@@ -408,6 +409,11 @@ class FinalizeRunTask(Task):
 
 
 class ExportTaskErrorHandler(Task):
+    """
+    Handles un-recoverable errors in export tasks.
+    """
+    
+    name = "Export Task Error Handler"
     
     def run(self, run_uid, task_id=None, stage_dir=None):
         from tasks.models import ExportRun

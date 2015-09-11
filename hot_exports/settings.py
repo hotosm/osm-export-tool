@@ -323,9 +323,8 @@ OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmand/OsmAndMapCreator'
 # location of the garmin config file
 GARMIN_CONFIG = '/home/ubuntu/www/hotosm/utils/conf/garmin_config.xml'
 
-UPDATE_TASKS = {
-    # not implemented yet
-}
+# url to overpass api endpoint
+OVERPASS_API_URL = 'http://localhost/interpreter'
 
 """
 Maximum extent of a Job

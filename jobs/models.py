@@ -181,7 +181,7 @@ class Job(TimeStampedModelMixin):
     def filters(self,):
         filters = []
         for tag in self.tags.all():
-            kv = '{0}:{1}'.format(tag.key, tag.value)
+            kv = '{0}={1}'.format(tag.key, tag.value)
             filters.append(kv)
         return filters
     

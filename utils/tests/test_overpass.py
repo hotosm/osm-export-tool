@@ -43,7 +43,7 @@ class TestOverpass(TestCase):
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
         tags = parser.parse()
         self.assertIsNotNone(tags)
-        self.assertEquals(238, len(tags))
+        self.assertEquals(256, len(tags))
         # save all the tags from the preset
         for tag_dict in tags:
             tag = Tag.objects.create(
@@ -53,17 +53,20 @@ class TestOverpass(TestCase):
                 data_model = 'osm',
                 geom_types = tag_dict['geom_types']
             )
-        self.assertEquals(238, self.job.tags.all().count())
+        self.assertEquals(256, self.job.tags.all().count())
         
     def test_get_query(self,):
-        overpass = Overpass(osm=self.osm, bbox=self.bbox, tags=self.job.filters)
+        overpass = Overpass(
+            stage_dir=self.path + '/files/',
+            bbox=self.bbox, job_name='testjob',
+            filters=self.job.filters
+        )
         q = overpass.get_query()
-        self.assertIsNotNone(q)
+        self.assertEquals(q, self.query)
     
     @skip  
     def test_op_query_no_tags(self, ):
         op = Overpass(osm=self.osm, bbox=self.bbox)
-        logger.debug(op.get_query())
         op.run_query()
     
     @skip
@@ -79,14 +82,30 @@ class TestOverpass(TestCase):
         filters = []
         for tag in tags:
             logger.debug(tag)
-            filter_tag = '{0}:{1}'.format(tag['key'], tag['value'])
+            filter_tag = '{0}={1}'.format(tag['key'], tag['value'])
+            filters.append(filter_tag)
+        op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
+        op.run_query()
+        
+    @skip
+    def test_with_osm_tags(self, ):
+        parser = presets.PresetParser(preset=self.path + '/files/osm_presets.xml')
+        tags = parser.parse()
+        filters = []
+        for tag in tags:
+            logger.debug(tag)
+            filter_tag = '{0}={1}'.format(tag['key'], tag['value'])
             filters.append(filter_tag)
         op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
         op.run_query()
     
     @patch('utils.overpass.requests.post')
     def test_run_query(self, mock_post):
-        op = Overpass(osm=self.osm, bbox=self.bbox)
+        op = Overpass(
+            stage_dir=self.path + '/files/',
+            bbox=self.bbox, job_name='testjob',
+            filters=self.job.filters
+        )
         q = op.get_query()
         out = self.path + '/files/query.osm'
         mock_response = mock.Mock()
