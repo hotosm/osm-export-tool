@@ -19,7 +19,7 @@ class TestOSMConf(TestCase):
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
         self.tags = parser.parse()
         self.assertIsNotNone(self.tags)
-        self.assertEquals(238, len(self.tags))
+        self.assertEquals(256, len(self.tags))
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='DefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')

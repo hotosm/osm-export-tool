@@ -34,6 +34,7 @@ class TestPurgeUnpublishedExportsTask(TestCase):
         jobs = Job.objects.all()
         self.assertEquals(2, jobs.count())
         task = PurgeUnpublishedExportsTask()
+        self.assertEquals('Purge Unpublished Exports', task.name)
         task.run()
         jobs = Job.objects.all()
         self.assertEquals(1, jobs.count())
