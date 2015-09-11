@@ -32,6 +32,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+# registration settings
 REGISTRATION_OPEN = True                
 ACCOUNT_ACTIVATION_DAYS = 7  
 REGISTRATION_AUTO_LOGIN = True
@@ -39,18 +40,10 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/jobs/create/'
 
 # OAuth login settings
-
-SOCIAL_AUTH_LOGIN_URL = '/osm/login/'
+SOCIAL_AUTH_OPENSTREETMAP_LOGIN_URL = '/osm/login/'
 SOCIAL_AUTH_OPENSTREETMAP_KEY = '56e4WINtKE9BSzIU1JtYZufLRBp0La5zS6qHvei3'
 SOCIAL_AUTH_OPENSTREETMAP_SECRET = 'fcwFW11HB3zFDUQonYUTS3QJEQ5IAowWmISu2l93'
-# OSM oauth URLs
-BASE_URL = 'https://www.openstreetmap.org/oauth'
-REQUEST_TOKEN_URL = '%s/request_token' % BASE_URL
-ACCESS_TOKEN_URL = '%s/access_token' % BASE_URL
-AUTHORIZE_URL = '%s/authorize' % BASE_URL
-# OSM user details URL
-USER_DETAILS_URL = 'http://api.openstreetmap.org/api/0.6/user/details'
-
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/jobs/create/'
 
 ALLOWED_HOSTS = ['hot.geoweb.io']
 
