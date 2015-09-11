@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.contrib import auth
 from ui import urls as ui_urls
 from django.views.generic import TemplateView
+from django.views.i18n import javascript_catalog
 from rest_framework.routers import DefaultRouter
 from api.urls import router
 from api.views import HDMDataModelView, OSMDataModelView, RunJob
@@ -48,5 +49,15 @@ urlpatterns += patterns('api.views',
     url(r'^api/hdm-data-model$', HDMDataModelView.as_view(), name='hdm-data-model'),
     url(r'^api/osm-data-model$', OSMDataModelView.as_view(), name='osm-data-model'),
 )
+
+
+
+js_info_dict = {
+    'packages': ('hot_osm',),
+}
+
+urlpatterns += [
+    url(r'^jsi18n/$', javascript_catalog, js_info_dict),
+]
 
 

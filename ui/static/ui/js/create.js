@@ -295,7 +295,7 @@ create.job = (function(){
         $('#xmax').val(xmax).trigger('input');
         $('#ymax').val(ymax).trigger('input');
         // update coordinate display
-        var coords = '(East, South, West, North): ' + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
+        var coords = gettext('(East, South, West, North): ') + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
         $('span#coordinates').html(coords);
     }
     
@@ -330,7 +330,7 @@ create.job = (function(){
             $('#valid-extents').css('visibility','hidden');
             $('#alert-extents').css('visibility','visible');
             //$('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-remove">&nbsp;</span>');
-            $('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span>');
+            $('#alert-extents').html('<span>' + gettext('Select area to export') + '&nbsp;&nbsp;</span>');
             return false;
         }
         var extent = bounds.toGeometry();
@@ -357,15 +357,15 @@ create.job = (function(){
            validateBBox(); // trigger validation on extents
            $('#valid-extents').css('visibility','hidden');
            $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>Invalid Extent.</strong><br/>Selected area is outside <br/>a valid HOT Export Region.')
+           $('#alert-extents').html('<strong>' + gettext('Invalid Extent') + '</strong><br/>' + gettext('Selected area is outside') + '<br/>' + gettext('a valid HOT Export Region'))
            return false;
         } else if (area > max_bounds_area) {
            // area too large
            validateBBox(); // trigger validation on extents
            $('#valid-extents').css('visibility','hidden');
            $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>Invalid Exent.</strong><br/>Selected area is ' + area_str
-                                 + ' sq km.<br/> Must be less than ' + max_bounds_str + ' sq km.');
+           $('#alert-extents').html('<strong>' + gettext('Invalid Exent') + '</strong><br/>Selected area is ' + area_str
+                                 + ' sq km.<br/>' + gettext('Must be less than ') + max_bounds_str + ' sq km.');
            return false;
         } else {
             // extents are valid so display success message..
@@ -457,14 +457,14 @@ create.job = (function(){
                 'name': {
                     validators: {
                         notEmpty: {
-                            message: 'The export job name is required and cannot be empty.'
+                            message: gettext('The export job name is required and cannot be empty')
                         },
                     }
                 },
                 'description': {
                     validators: {
                         notEmpty: {
-                            message: 'The description is required and cannot be empty.'
+                            message: gettext('The description is required and cannot be empty')
                         }
                     }
                 },
@@ -482,7 +482,7 @@ create.job = (function(){
                         choice: {
                             min: 1,
                             max: 6,
-                            message: 'At least one export format must be selected.'
+                            message: gettext('At least one export format must be selected')
                         }
                     }
                 },
@@ -517,7 +517,7 @@ create.job = (function(){
                 'filename': {
                     validators: {
                         notEmpty: {
-                            message: 'The filename is required and cannot be empty.'
+                            message: gettext('The filename is required and cannot be empty')
                         },
                     }
                 },
@@ -525,7 +525,7 @@ create.job = (function(){
                 'config_type': {
                     validators: {
                         notEmpty: {
-                            message: 'The configuration type is required and cannot be empty.'
+                            message: 'The configuration type is required and cannot be empty'
                         },
                     }
                 },
@@ -1555,7 +1555,7 @@ create.job = (function(){
                 var $td = $tr.find('td').last();
                 $td.empty();
                 var html = '<button id="' + selection.uid + '" type="button" class="delete-file btn btn-danger btn-sm pull-right">' +
-                                    'Delete&nbsp;&nbsp;<span class="glyphicon glyphicon-trash">' +
+                                    gettext('Delete') + '&nbsp;&nbsp;<span class="glyphicon glyphicon-trash">' +
                             '</span></button>';
                 $td.html(html);
                 
@@ -1595,7 +1595,7 @@ create.job = (function(){
                             }
                             var message = '';
                             if (status === 404) {
-                                message = 'Requested file not found.'
+                                message = gettext('Requested file not found')
                             }
                             else {
                                 message = jqxhr.responseJSON.message[0];
@@ -1939,35 +1939,35 @@ create.job = (function(){
      */
     function initPopovers() {
         $('#create-tab').popover({
-            content: "Select the area on the Map for export and enter the Name, Description and Event",
+            content: gettext("Select the area on the Map for export and enter the Name, Description and Event"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#formats-tab').popover({
             //title: 'Select Formats', 
-            content: "Select one or more file formats for export",
+            content: gettext("Select one or more file formats for export"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#features-tab').popover({
             //title: 'Select Formats', 
-            content: "Expand and select feature tags from the HDM or OSM tree list for export",
+            content: gettext("Expand and select feature tags from the HDM or OSM tree list for export"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#upload-tab').popover({
             //title: 'Select Formats', 
-            content: "Upload or select a preset file. Save and/or publish",
+            content: gettext("Upload or select a preset file. Save and/or publish"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#summary-tab').popover({
             //title: 'Select Formats', 
-            content: "Summary of the export settings. Select “Create Export” to start the export",
+            content: gettext("Summary of the export settings. Select “Create Export” to start the export"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
@@ -1981,42 +1981,42 @@ create.job = (function(){
         });
         $('label[for="publish_config"]').popover({
             //title: 'Select Formats', 
-            content: "Publish the preset file to the global store for everyone to access",
+            content: gettext("Publish the preset file to the global store for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('button#select-file').popover({
             //title: 'Select Formats', 
-            content: "Find and upload a preset file from desktop",
+            content: gettext("Find and upload a preset file from desktop"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('button#select-config').popover({
             //title: 'Select Formats', 
-            content: "Find and select preset file from the store",
+            content: gettext("Find and select preset file from the store"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="feature_save"]').popover({
             //title: 'Select Formats', 
-            content: "Save the feature tag selection to your personal preset storeage",
+            content: gettext("Save the feature tag selection to your personal preset storeage"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="feature_pub"]').popover({
             //title: 'Select Formats', 
-            content: "Publish the feature tag selection to the global preset storeage for everyone to access",
+            content: gettext("Publish the feature tag selection to the global preset storeage for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="published"]').popover({
             //title: 'Select Formats', 
-            content: "Publish the export to the global exports for everyone to access",
+            content: gettext("Publish the export to the global exports for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
