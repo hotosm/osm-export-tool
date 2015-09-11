@@ -5,7 +5,7 @@
 	author="HOT (Humanitarian OpenStreetMap Team)"
 	shortdescription="HDM Data Model for HOT field surveys"
 	description="HDM Data Model adapted for Eurosha from OTI STM020 program in Haiti">
-    <group name="HOT Presets v2.11" fr.name="HOT Presets v2.11" en.name="HOT Presets v2.11">
+    <group name="Humanitarian Data Model" fr.name="HOT Presets v2.11" en.name="HOT Presets v2.11">
 		<!-- -->
 		<item name="Building digitizing" fr.name="Digitalisation de batiment" en.name="Building digitizing" icon="styles/standard/misc/landmark/building.png" type="closedway,relation">
 			<!--<key key="project:eurosha_2012" value="yes" />-->
@@ -349,6 +349,350 @@
 		</group> <!-- Places -->
 		<group name="Transportation" fr.name="Transports" en.name="Transportation">
 			<group name="Roads" fr.name="Voirie" en.name="Roads" icon="presets/way_secondary.png">
+                <item name="Motorway" icon="presets/motorway.png" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=motorway"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=motorway"
+                          es.href="http://wiki.openstreetmap.org/wiki/ES:Tag:highway=motorway"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=motorway"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=motorway"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=motorway"
+                          ko.href="http://wiki.openstreetmap.org/wiki/Ko:Tag:highway=motorway"
+                          nl.href="http://wiki.openstreetmap.org/wiki/NL:Tag:highway=motorway"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=motorway"
+                          pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:highway=motorway"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=motorway"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=motorway"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=motorway" />
+                    <space />
+                    <key key="highway" value="motorway" />
+                    <text key="ref" text="Reference" />
+                    <optional>
+                        <text key="name" text="Name" />
+                        <reference ref="highway_base" />
+                        <text key="width" text="Width (meters)" />
+                        <checkgroup columns="4">
+                            <check key="oneway" text="Oneway" default="on" />
+                            <check key="bridge" text="Bridge" disable_off="true" />
+                            <check key="tunnel" text="Tunnel" disable_off="true" />
+                            <check key="cutting" text="Cutting" disable_off="true" />
+                            <check key="embankment" text="Embankment" disable_off="true" />
+                            <check key="lit" text="Lit" />
+                            <check key="toll" text="Toll" />
+                        </checkgroup>
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Motorway -->
+                <item name="Motorway Link" icon="presets/motorway.png" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=motorway_link"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=motorway_link"
+                          es.href="http://wiki.openstreetmap.org/wiki/ES:Tag:highway=motorway_link"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=motorway_link"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=motorway_link"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=motorway_link"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=motorway_link"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=motorway_link"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=motorway_link" />
+                    <key key="highway" value="motorway_link" />
+                    <optional>
+                        <reference ref="highway_base" />
+                        <text key="width" text="Width (meters)" />
+                        <checkgroup columns="4">
+                            <check key="oneway" text="Oneway" default="on" />
+                            <check key="bridge" text="Bridge" disable_off="true" />
+                            <check key="tunnel" text="Tunnel" disable_off="true" />
+                            <check key="cutting" text="Cutting" disable_off="true" />
+                            <check key="embankment" text="Embankment" disable_off="true" />
+                            <check key="lit" text="Lit" />
+                            <check key="toll" text="Toll" />
+                        </checkgroup>
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Motorway Link -->
+                <item name="Trunk" icon="presets/trunk.png" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=trunk"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=trunk"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=trunk"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=trunk"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=trunk"
+                          ko.href="http://wiki.openstreetmap.org/wiki/Ko:Tag:highway=trunk"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=trunk"
+                          pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:highway=trunk"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=trunk"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=trunk"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=trunk"
+                          vi.href="http://wiki.openstreetmap.org/wiki/Vi:Tag:highway=trunk" />
+                    <space />
+                    <key key="highway" value="trunk" />
+                    <text key="ref" text="Reference" />
+                    <optional>
+                        <text key="name" text="Name" />
+                        <reference ref="highway_base" />
+                        <text key="width" text="Width (meters)" />
+                        <checkgroup columns="4">
+                            <check key="oneway" text="Oneway" default="on" />
+                            <check key="motorroad" text="Motorroad" default="on" />
+                            <check key="bridge" text="Bridge" disable_off="true" />
+                            <check key="tunnel" text="Tunnel" disable_off="true" />
+                            <check key="cutting" text="Cutting" disable_off="true" />
+                            <check key="embankment" text="Embankment" disable_off="true" />
+                            <check key="lit" text="Lit" />
+                            <check key="toll" text="Toll" />
+                        </checkgroup>
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Trunk -->
+                <item name="Trunk Link" icon="presets/trunk.png" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Link_(highway)"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Highway_link" />
+                    <space />
+                    <key key="highway" value="trunk_link" />
+                    <text key="ref" text="Reference" />
+                    <optional>
+                        <reference ref="highway_base" />
+                        <text key="width" text="Width (meters)" />
+                        <checkgroup columns="4">
+                            <check key="oneway" text="Oneway" default="on" />
+                            <check key="motorroad" text="Motorroad" default="on" />
+                            <check key="bridge" text="Bridge" disable_off="true" />
+                            <check key="tunnel" text="Tunnel" disable_off="true" />
+                            <check key="cutting" text="Cutting" disable_off="true" />
+                            <check key="embankment" text="Embankment" disable_off="true" />
+                            <check key="lit" text="Lit" />
+                            <check key="toll" text="Toll" />
+                        </checkgroup>
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Trunk Link -->
+                <separator/>
+                <item name="Primary" icon="presets/way_primary.png" type="way,closedway" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=primary"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=primary"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=primary"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=primary"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=primary"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=primary"
+                          pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:highway=primary"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=primary"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=primary"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=primary"
+                          vi.href="http://wiki.openstreetmap.org/wiki/Vi:Tag:highway=primary" />
+                    <space />
+                    <key key="highway" value="primary" />
+                    <text key="ref" text="Reference" />
+                    <optional>
+                        <text key="name" text="Name" />
+                        <reference ref="highway_base" />
+                        <check key="motorroad" text="Motorroad" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Primary -->
+                <item name="Primary Link" icon="presets/way_primary.png" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Link_(highway)"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Link_(highway)"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Link_(highway)"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Link_(highway)"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Link_(highway)"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Link_(highway)"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Link_(highway)" />
+                    <key key="highway" value="primary_link" />
+                    <optional>
+                        <reference ref="highway_base" />
+                        <check key="motorroad" text="Motorroad" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Primary Link -->
+                <item name="Secondary" icon="presets/way_secondary.png" type="way,closedway" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=secondary"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=secondary"
+                          fi.href="http://wiki.openstreetmap.org/wiki/Fi:Tag:highway=secondary"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=secondary"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=secondary"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=secondary"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=secondary"
+                          pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:highway=secondary"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=secondary"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=secondary"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=secondary"
+                          vi.href="http://wiki.openstreetmap.org/wiki/Vi:Tag:highway=secondary" />
+                    <space />
+                    <key key="highway" value="secondary" />
+                    <text key="ref" text="Reference" />
+                    <optional>
+                        <text key="name" text="Name" />
+                        <reference ref="highway_base" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Secondary -->
+                <item name="Secondary Link" icon="presets/way_secondary.png" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Link_(highway)"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Link_(highway)"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Link_(highway)"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Link_(highway)"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Link_(highway)"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Link_(highway)"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Link_(highway)" />
+                    <key key="highway" value="secondary_link" />
+                    <optional>
+                        <reference ref="highway_base" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Secondary Link -->
+                <item name="Tertiary" icon="presets/way_tertiary.png" type="way,closedway" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=tertiary"
+                          da.href="http://wiki.openstreetmap.org/wiki/Da:Tag:highway=tertiary"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=tertiary"
+                          fi.href="http://wiki.openstreetmap.org/wiki/Fi:Tag:highway=tertiary"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=tertiary"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=tertiary"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=tertiary"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=tertiary"
+                          pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:highway=tertiary"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=tertiary"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=tertiary"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=tertiary"
+                          vi.href="http://wiki.openstreetmap.org/wiki/Vi:Tag:highway=tertiary" />
+                    <space />
+                    <key key="highway" value="tertiary" />
+                    <text key="ref" text="Reference" />
+                    <optional>
+                        <text key="name" text="Name" />
+                        <reference ref="highway_base" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Tertiary -->
+                <item name="Tertiary Link" icon="presets/way_tertiary.png" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Link_(highway)"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Link_(highway)"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Link_(highway)"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Link_(highway)"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Link_(highway)"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Link_(highway)"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Link_(highway)" />
+                    <key key="highway" value="tertiary_link" />
+                    <optional>
+                        <reference ref="highway_base" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Tertiary Link -->
+                <item name="Unclassified" icon="presets/way_unclassified.png" type="way,closedway" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=unclassified"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=unclassified"
+                          fi.href="http://wiki.openstreetmap.org/wiki/Fi:Tag:highway=unclassified"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=unclassified"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=unclassified"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=unclassified"
+                          pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:highway=unclassified"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=unclassified"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=unclassified"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=unclassified" />
+                    <key key="highway" value="unclassified" />
+                    <optional>
+                        <text key="name" text="Name" />
+                        <text key="ref" text="Reference" />
+                        <reference ref="highway_base" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                        <check key="passing_places" text="Passing Places" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Unclassified -->
+                <item name="Residential" icon="presets/residential.png" type="way,closedway" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=residential"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=residential"
+                          es.href="http://wiki.openstreetmap.org/wiki/ES:Tag:highway=residential"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=residential"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=residential"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=residential"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=residential"
+                          pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:highway=residential"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=residential"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=residential"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=residential"
+                          vi.href="http://wiki.openstreetmap.org/wiki/Vi:Tag:highway=residential" />
+                    <space />
+                    <key key="highway" value="residential" />
+                    <text key="name" text="Name" />
+                    <optional>
+                        <text key="ref" text="Reference" />
+                        <reference ref="highway_base" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width_sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Residential -->
+                <item name="Bicycle Road" icon="presets/bicycle_road.svg" type="way" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Key:bicycle_road"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Key:bicycle_road"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Key:bicycle_road" />
+                    <space />
+                    <key key="bicycle_road" value="yes" />
+                    <key key="bicycle" value="designated" />
+                    <combo key="highway" text="Highway type" values="residential,service,unclassified,path,cycleway" values_context="Highway" default="residential" />
+                    <text key="name" text="Name" />
+                    <combo key="vehicle" text="Vehicle access" values="yes,no,destination" default="no" />
+                    <text key="maxspeed" text="Max. speed (km/h)" default="30" />
+                    <optional>
+                        <combo key="layer" text="Layer" values="5,4,3,2,1,0,-1,-2,-3,-4,-5" />
+                        <combo key="lanes" text="Lanes" values="1,2,3,4,5" />
+                        <reference ref="surface_smoothness" />
+                        <check key="oneway" text="Oneway" />
+                        <check key="oneway:bicycle" text="Oneway for bicycle" />
+                        <reference ref="highway_yesno_incline" />
+                        <check key="lit" text="Lit" />
+                        <text key="width" text="Width (meters)" />
+                        <combo key="sidewalk" text="Sidewalk" values="both,left,right,no" values_context="sidewalk" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Bicycle Road -->
+                <item name="Living Street" icon="presets/living_street.png" type="way,closedway" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=living_street"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=living_street"
+                          es.href="http://wiki.openstreetmap.org/wiki/ES:Tag:highway=living_street"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=living_street"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=living_street"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=living_street"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=living_street"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=living_street" />
+                    <space />
+                    <key key="highway" value="living_street" />
+                    <text key="name" text="Name" />
+                    <optional>
+                        <combo key="layer" text="Layer" values="5,4,3,2,1,0,-1,-2,-3,-4,-5" length="3" />
+                        <combo key="lanes" text="Lanes" values="1,2,3,4,5" length="3" />
+                        <reference ref="surface_smoothness" />
+                        <reference ref="highway_yesno_incline_oneway_lit_width" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Living Street -->
+                <item name="Pedestrian" icon="presets/pedestrian.png" type="way,closedway,relation" preset_name_label="true">
+                    <link href="http://wiki.openstreetmap.org/wiki/Tag:highway=pedestrian"
+                          de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:highway=pedestrian"
+                          es.href="http://wiki.openstreetmap.org/wiki/ES:Tag:highway=pedestrian"
+                          fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:highway=pedestrian"
+                          it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:highway=pedestrian"
+                          ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:highway=pedestrian"
+                          pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:highway=pedestrian"
+                          pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:highway=pedestrian"
+                          ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:highway=pedestrian"
+                          uk.href="http://wiki.openstreetmap.org/wiki/Uk:Tag:highway=pedestrian" />
+                    <space />
+                    <key key="highway" value="pedestrian" />
+                    <text key="name" text="Name" />
+                    <optional>
+                        <combo key="layer" text="Layer" values="5,4,3,2,1,0,-1,-2,-3,-4,-5" length="3" />
+                        <combo key="lanes" text="Lanes" values="1,2,3,4,5" length="3" />
+                        <reference ref="surface_smoothness" />
+                        <check key="area" text="Area" />
+                        <reference ref="highway_yesno_incline" />
+                        <check key="lit" text="Lit" />
+                        <text key="width" text="Width (meters)" />
+                    </optional>
+                    <preset_link preset_name="Road Restrictions" />
+                </item> <!-- Pedestrian -->
 				<item name="Roads and streets" fr.name="Routes et rues" en.name="Roads and streets" icon="presets/way_secondary.png" type="way">
 					<!--<key key="project:eurosha_2012" value="yes" />-->
 					<label text="** Edit/modify a road **" 
@@ -578,7 +922,7 @@
 					<text key="NOTE" text="NOTE" fr.text="NOTES" en.text="NOTE" />
 					<label text=" " />
 				</item>	
-				<item name="Corridors and pathes" fr.name="Corridors ou chemins ruraux" en.name="Corridors and pathes" icon="presets/path.png" type="way">
+				<item name="Corridors and paths" fr.name="Corridors ou chemins ruraux" en.name="Corridors and pathes" icon="presets/path.png" type="way">
 					<!--<key key="project:eurosha_2012" value="yes" />-->
 					<key key="highway" value="path" />
 					<link href="http://wiki.openstreetmap.org/wiki/Tag:highway%3Dpath" 
@@ -9348,7 +9692,7 @@
 			</group> <!-- Water -->
 		</group> <!-- Physical environment -->
 		<group name="Hazards" fr.name="Menaces" en.name="Hazards">
-			<item name="Flood prone" fr.name="Menace d'inondation" en.name="Flood prone" >
+			<item name="Flood prone" fr.name="Menace d'inondation" en.name="Flood prone" type="node,way,closedway">
 				<!--<key key="project:eurosha_2012" value="yes" />-->
 				<key key="hazard_prone" value="yes" />
 				<key key="hazard_type" value="flood" />
@@ -9367,7 +9711,7 @@
 				<text key="NOTE" text="NOTE" fr.text="NOTES" en.text="NOTE" />
 				<label text=" " />
 			</item>
-			<item name="Landslide prone" fr.name="Menace de glissements de terrain" en.name="Landslide prone" >
+			<item name="Landslide prone" fr.name="Menace de glissements de terrain" en.name="Landslide prone" type="node,way,closedway">
 				<!--<key key="project:eurosha_2012" value="yes" />-->
 				<key key="hazard_prone" value="yes" />
 				<key key="hazard_type" value="landslide" />
@@ -9386,7 +9730,7 @@
 				<text key="NOTE" text="NOTE" fr.text="NOTES" en.text="NOTE" />
 				<label text=" " />
 			</item>		
-			<item name="Windstorm prone" fr.name="Menace de tempetes de vent" en.name="Windstorm prone" >
+			<item name="Windstorm prone" fr.name="Menace de tempetes de vent" en.name="Windstorm prone" type="node,way,closedway">
 				<!--<key key="project:eurosha_2012" value="yes" />-->
 				<key key="hazard_prone" value="yes" />
 				<key key="hazard_type" value="windstorm" />

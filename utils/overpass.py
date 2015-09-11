@@ -2,6 +2,7 @@ import logging
 import os
 import string
 import argparse
+import pdb
 from osgeo import ogr, osr, gdal
 from django.utils import timezone
 from django.utils import timezone
@@ -29,11 +30,9 @@ class Overpass(object):
             self.bbox = bbox
         else:
             raise Exception('A bounding box is required: miny,minx,maxy,maxx')
-        if tags and len(tags) > 0:
-            self.tags = tags
-            self.query = self._build_overpass_query()
-        else:
-            self.query = self.default_template.safe_substitute({'bbox': self.bbox})
+        
+        # dump out all osm data for the specified bounding box
+        self.query = self.default_template.safe_substitute({'bbox': self.bbox})
         if osm:
             self.osm = osm
         else:
@@ -50,7 +49,6 @@ class Overpass(object):
             print 'Query started at: %s' % datetime.now()   
         try:
             req = requests.post(self.url, data=q, stream=True)
-            logger.debug(req)
             CHUNK = 16 * 1024 # whats the optimum here?
             with open(self.osm, 'wb') as fd:
                 for chunk in req.iter_content(CHUNK):
@@ -63,6 +61,18 @@ class Overpass(object):
             print 'Wrote overpass query results to: %s' % self.osm 
         return self.osm
     
+    def filter(self, ):
+        pass
+    
+    
+    """
+    Overpass  imposes a limit of 1023 statements per query.
+    This is no good for us when querying with the OSM Data Model
+    which contains 578 tags. Thats 578 * 3 statements for all
+    nodes, ways and relations. Instead we use 'osmfilter' as a second
+    step in this task. Leaving this here in case things change or
+    we decide to build our own overpass api in future.
+    """
     def _build_overpass_query(self, ):
         
         template = Template("""

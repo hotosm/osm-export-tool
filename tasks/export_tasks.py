@@ -148,10 +148,12 @@ class OverpassQueryTask(ExportTask):
         Runs the query and returns the path to the generated osm file.
         """
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osm = stage_dir + job_name + '.osm'
+        osm = stage_dir + 'query.osm'
         op = overpass.Overpass(bbox=bbox, osm=osm, tags=tags)
         osmfile = op.run_query()
-        return {'result': osmfile}        
+        filtered_osm = stage_dir + job_name + '.osm'
+        filtered = op.filter(filtered_osm=filtered_osm)
+        return {'result': filtered}        
 
 
 class OSMToPBFConvertTask(ExportTask):

@@ -642,6 +642,9 @@ clone.job = (function(){
         // ----- UPLOAD TAB ----- //
         
         $('button#select-file').bind('click', function(e){
+            var fv = $('#create-job-form').data('formValidation');
+            fv.enableFieldValidators('filename', true);
+            $(this).popover('hide');
             if (!validateFileUploadTab()) {
                 e.preventDefault();
                 $(this).prop('disabled', true);

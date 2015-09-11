@@ -21,19 +21,23 @@ def run(*script_args):
     path = '/home/ubuntu/www/hotosm/utils/tests'
     osm = path + '/files/query.osm'
     query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'
-    parser = presets.PresetParser(preset=path + '/files/hdm_presets.xml')
+    parser = presets.PresetParser(preset=path + '/files/osm_presets.xml')
     kvps = parser.parse()
     filters = []
     for kvp in kvps:
-        filter_tag = '{0}:{1}'.format(kvp['key'], kvp['value'])
+        filter_tag = '{0}={1}'.format(kvp['key'], kvp['value'])
         filters.append(filter_tag)
     print filters
-        
+    f = open(path + '/files/filters.txt', 'w')
+    f.write('--keep="{0}"\n'.format(' or '.join(filters)))
+    #f.write('--keep-nodes="{0}"\n'.format(' or '.join(filters)))
+    #f.write('--keep-ways="{0}"\n'.format(' '.join(filters)))
+    #f.write('--keep-relations="{0}"\n'.format(' or '.join(filters)))
     
     print "=============="
     print "Querying Monrovia with HDM filters."
     print timezone.now()
-    op = Overpass(osm=osm, bbox=bbox, tags=filters)
+    op = Overpass(osm=osm, bbox=bbox)
     op.run_query()
     print timezone.now()
     stat = os.stat(osm)
@@ -41,8 +45,8 @@ def run(*script_args):
     print 'Result file size: {0}'.format(size)
     
     # check pbf conversion
-    pbf = OSMToPBF(osm=osm, pbffile=path + '/files/query.pbf', debug=True)
-    pbf.convert()
+    #pbf = OSMToPBF(osm=path + '/files/filter.osm', pbffile=path + '/files/filter.pbf', debug=True)
+    #pbf.convert()
     
     """
     print "=============="
