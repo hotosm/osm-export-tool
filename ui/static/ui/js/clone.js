@@ -2050,6 +2050,21 @@ clone.job = (function(){
             $('#description').val(data.description);
             $('#event').val(data.event);
             
+            // add export bounding box
+            var extent = data.extent;
+            var geojson = new OpenLayers.Format.GeoJSON({
+                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            var feature = geojson.read(extent, 'Feature');
+            bbox.addFeatures(feature);
+            
+            var bounds = feature.geometry.bounds.clone();
+            bounds.transform('EPSG:3857', 'EPSG:4326');
+            
+            // set the bounds on the form
+            setBounds(bounds);
+            
             // -- select formats tab -- //
             $.each(data.exports, function(idx, format){
                 $('#supported-formats input[value="' + format.slug + '"]').prop('checked', true);
@@ -2151,28 +2166,12 @@ clone.job = (function(){
                 $('#btn-submit-job').removeClass('disabled');
             }
             
-            // add export bounding box
-            var extent = data.extent;
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var feature = geojson.read(extent, 'Feature');
-            bbox.addFeatures(feature);
-            //map.zoomToExtent(bbox.getDataExtent());
-            
-            var bounds = feature.geometry.bounds.clone();
-            bounds.transform('EPSG:3857', 'EPSG:4326');
-            
-            // set the bounds on the form
-            setBounds(bounds);
-            transform.setFeature(feature);
+            // zoom to export extents
             map.zoomToExtent(bbox.getDataExtent());
         });
     }
     
 }());
-
 
 $(document).ready(function() {
         // construct the UI app

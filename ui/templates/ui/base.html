@@ -34,8 +34,14 @@
     <div id="banner" class="container-fluid">
         <div class="row">
             <div class="col-md-4"><img class="logo" src="{% static 'ui/images/hot_logo.png' %}"/></div>
+            <div class="col-md-4 pull-right">
+                <form id="lang" action="{% url 'set_language' %}" method="post" role="form">{% csrf_token %}
+                    <input name="next" type="hidden" value="{{ redirect_to }}" />
+                    <input name="language" type="hidden" value=""/>
+                </form>
+            </div>
             <div class="col-md-8">
-               <span class="banner-links"><a href="id">Bahasa Indoneisa</a> | <a href="de">Deustch</a> | <a href="en">English</a> | <a href="es">Espanol</a> | <a href="fr">Francis</a> | <a href="jp">Japanese</a></span>
+               <span class="banner-links"><a id="id" href="">Bahasa Indoneisa</a> | <a id="de" href="">Deustch</a> | <a id="en" href="">English</a> | <a id="es" href="">Espanol</a> | <a id="fr" href="">Francis</a> | <a id="jp" href="">Japanese</a></span>
             </div>
         </div>
     </div>
@@ -61,12 +67,12 @@
                 <li id="logout" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                <li><a href="/accounts/logout/?next=/accounts/login"><span class="glyphicon glyphicon-log-out"></span> {% trans 'Log Out' %}</a></li>
-                <li><a href="/accounts/password/change"><span class="glyphicon glyphicon-user"></span> {% trans 'Change Password' %}</a></li>
+                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> {% trans 'Log Out' %}</a></li>
+                <!--<li><a href="/accounts/password/change"><span class="glyphicon glyphicon-user"></span> {% trans 'Change Password' %}</a></li>-->
                 </ul>
                 </li>
             {% else %}
-                <li><a href="/accounts/login/">{% trans 'Login' %}</a></li>
+                <li><a href="{% url 'osm:begin' 'openstreetmap' %}?next={{request.path}}">{% trans 'Login to OpenStreetMap' %}</a></li>
             {% endif %}
                 <li><span class="nav-pad">&nbsp;</span></li>
           </ul>
@@ -85,6 +91,7 @@
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
     <script src="{% static 'ui/components/jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'ui/components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ui/js/language.js' %}"></script>
     {% endblock %}
   </body>
 </html>

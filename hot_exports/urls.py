@@ -13,11 +13,16 @@ from rest_framework.routers import DefaultRouter
 from api.urls import router
 from api.views import HDMDataModelView, OSMDataModelView, RunJob
 
+admin.autodiscover()
+
 urlpatterns = []
 
 urlpatterns += i18n_patterns('ui.views',
     url(r'^$', login_required(TemplateView.as_view(template_name='ui/index.html')), name='index'),
     url(r'^jobs/', include(ui_urls)),
+    url(r'^login/$', TemplateView.as_view(template_name='osm/login.html'), name="login"), 
+    url(r'^logout$', 'logout', name='logout'),
+    url(r'^email/$', 'require_email', name='require_email'),
 )
 
 urlpatterns += i18n_patterns('ui.help',
@@ -29,16 +34,15 @@ urlpatterns += i18n_patterns('ui.help',
     url(r'^help/config$', TemplateView.as_view(template_name='ui/help_config.html'), name='help_config'),
 )
 
-urlpatterns += i18n_patterns('registration.views',
-    url(r'^accounts/', include('registration.backends.default.urls')),
-)
-
 urlpatterns += i18n_patterns('admin.views',
     url(r'^admin/', include(admin.site.urls)),
 )
 
+# OAuth urls
 urlpatterns += i18n_patterns('ui.social',
-    url('^osm/', include('social.apps.django_app.urls', namespace='social'))                        
+    url('^osm/', include('social.apps.django_app.urls', namespace='osm')),
+    url('^osm/email_verify_sent/$', TemplateView.as_view(template_name='osm/email_verify_sent.html'), name='email_verify_sent'),
+    url('^osm/error$', TemplateView.as_view(template_name='osm/error.html'), name='login_error')
 )
 
 # don't apply i18n patterns here.. api uses Accept-Language header
@@ -50,14 +54,14 @@ urlpatterns += patterns('api.views',
     url(r'^api/osm-data-model$', OSMDataModelView.as_view(), name='osm-data-model'),
 )
 
-
-
+# i18n for js
 js_info_dict = {
     'packages': ('hot_osm',),
 }
 
 urlpatterns += [
     url(r'^jsi18n/$', javascript_catalog, js_info_dict),
+    url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
 
 

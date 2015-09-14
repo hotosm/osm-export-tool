@@ -1,0 +1,19 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block container %}
+
+<center>
+<div class="panel panel-danger" style="width: 40%; margin-top: 2em;">
+  <div class="panel-heading"><span class="heading">{% trans   "OpenStreetMap Login Error" %}</span></div>
+  <div class="panel-body">
+    <p style="font-size: large;">
+        {% trans "There was a problem logging you in to OpenStreetMap"%} <br/> 
+    </p>
+    <p>
+        {{ message }}
+    </p>
+  </div>
+</div>
+</center>
+{% endblock %}
