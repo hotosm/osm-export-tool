@@ -1,77 +1,45 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% load i18n %}
 {% block container %}
 
 <div class="help">
-    
-<!--
-<b>Page Navigation Help</b>
-<br><i>
-Create<br>
-Exports<br>
-Store<br>
-</i>
-<br>
-<b>Export File Formats</b>
-<br><i>
-Esri SHP<br>
-Garmin Map<br>
-Google Earth KMZ<br>
-OSM Source PBF<br>
-SQLite SQL<br>
-</i>
-<br>
-<b>Feature Tag Selection</b>
-<br><i>
-Humanitarian Data Model<br>
-OpenStreetMap<br>
-</i>
-<br>
-<b>Configuration Files</b>
-<br><i>
-Presets<br>
-Transform<br>
-Language<br>
-</i>
-<br>
--->
-    
 <ol class="breadcrumb">
-  <li><a href="/help">Help</a></li>
-  <li class="active">Features</li>
+  <li><a href="/help">{% trans 'Help' %}</a></li>
+  <li class="active">{% trans 'Features' %}</li>
 </ol>
 
-<h2>Feature Tag Selection Help</h2>
+<h2>{% trans 'Feature Tag Selection Help' %}</h2>
 <div class="well">
-<p>The user can choose specific map features for download by selecting tags from the tree structure or uploading a preset configuration file in the 'Create' section of the Export Tool. This help page will provide guidance to the user on how to use the tree structure to select desired feature tags to export as map data.</p>
-<p>The feature tag tree structure is available on the 'Select Features' tab of the 'Create' page. As it is part of the wizard that takes the user through creating a new export, it can only be accessed once the previous steps have been completed. The 'Select Features' tab provides the user with two trees to select feature tags from: Humanitarian Data Model (HDM) and the OpenStreetMap (OSM).</p>
+<p>{% trans 'The user can choose specific map features for download by selecting tags from the tree structure or uploading a preset configuration file in the 'Create' section of the Export Tool. This help page will provide guidance to the user on how to use the tree structure to select desired feature tags to export as map data.' %}</p>
+<p>{% trans "The feature tag tree structure is available on the 'Select Features' tab of the 'Create' page. As it is part of the wizard that takes the user through creating a new export, it can only be accessed once the previous steps have been completed. The 'Select Features' tab provides the user with two trees to select feature tags from: Humanitarian Data Model (HDM) and the OpenStreetMap (OSM)." %}</p>
 </div>
 
 <a name="hdm"></a>
-<h3>Humanitarian Data Model</h3>
+<h3>{% trans 'Humanitarian Data Model' %}</h3>
 <div class="well">
-<p>HDM was developed and is aimed at reconciling schemas from humanitarian response agencies, as OSM was traditionally developed for mapping in nonemergency situations. Humanitarian field responders need to know how OSM tags relate to their existing data models, and how to include features that may be relevant only in disaster response, recovery, or development contexts.
+<p>{% trans 'HDM was developed and is aimed at reconciling schemas from humanitarian response agencies, as OSM was traditionally developed for mapping in nonemergency situations. Humanitarian field responders need to know how OSM tags relate to their existing data models, and how to include features that may be relevant only in disaster response, recovery, or development contexts.' %}
 <br>
 </p>
-<a href="http://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Tags">OpenStreetMap Wiki | Humanitarian OSM Tags</a><br><br>
+<a href="http://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Tags">{% trans 'OpenStreetMap Wiki | Humanitarian OSM Tags' %}</a><br><br>
 
-<p><b><i>It is recommended that the HDM tree structure be selected to export OSM data for humanitarian purposes, as the feature tags listed are aimed for ease of use and efficiency during disaster situations providing required key data.</i></b></p><br>
+<p><b><i>{% trans 'It is recommended that the HDM tree structure be selected to export OSM data for humanitarian purposes, as the feature tags listed are aimed for ease of use and efficiency during disaster situations providing required key data.' %}</i></b></p><br>
 </div>
 
 <a name="osm"></a>
-<h3>OpenStreetMap</h3>
+<h3>{% trans 'OpenStreetMap' %}</h3>
 <div class="well">
-<p>OSM represents physical features on the ground using tags attached to its basic data structures such as its nodes, ways, and relations. Each tag describes a geographic attribute of the feature being shown by that specific node, way or relation.</p>
-<a href="http://wiki.openstreetmap.org/wiki/Map_Features">OpenstreetMap Wiki | OSM Tags</a><br>
+<p>{% trans 'OSM represents physical features on the ground using tags attached to its basic data structures such as its nodes, ways, and relations. Each tag describes a geographic attribute of the feature being shown by that specific node, way or relation.' %}</p>
+<a href="http://wiki.openstreetmap.org/wiki/Map_Features">{% trans 'OpenstreetMap Wiki | OSM Tags' %}</a><br>
 </div>
 
-<h3>Tree Structure System</h3>
+<h3>{% trans 'Tree Structure System' %}</h3>
 <div class="well">
-<li>Top-level branches can be expanded by clicking on the name of those with a plus-sign + to the left.
-<li>Tick the box on the right to select a feature tag for export.
-<li>Tick a top level-branch to select all sub-level for export.
-<li>Tick the HDM or OSM top-level to select all features in either tree for export.
-<li>Features from both the HDM and OSM can not be mixed. Once one is selected the other will be deactivated.
+<li>{% trans 'Top-level branches can be expanded by clicking on the name of those with a plus-sign + to the left.' %}
+<li>{% trans 'Tick the box on the right to select a feature tag for export.' %}
+<li>{% trans 'Tick a top level-branch to select all sub-level for export.' %}
+<li>{% trans 'Tick the HDM or OSM top-level to select all features in either tree for export.' %}
+<li>{% trans 'Features from both the HDM and OSM can not be mixed. Once one is selected the other will be deactivated.' %}
 </div>
 </div>
 

@@ -594,6 +594,7 @@ div#search {
 
 ul.pager {
     margin-right: 1em;
+    margin-top: 0px;
 }
 
 .input-group.search {
@@ -601,13 +602,17 @@ ul.pager {
 }
 
 #info {
-    padding-top: .7em;
+    padding-top: 0em;
     font-weight: 700;
     font-size: small;
 }
 
 div.page-size {
-    padding: .7em 1.5em 0em 1.5em;
+    padding: 0em 1.5em 0em 1.5em;
+}
+
+select#page-size {
+    margin: 0 .2em 0 .2em;
 }
 
 table#jobs {

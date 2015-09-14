@@ -1,52 +1,52 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
-
+{% load i18n %}
 {% block container %}
 
 <div class="help">
-<h2>Help Documentation</h2>
+<h2>{% trans 'Help Documentation' %}</h2>
 
 <div class="well">
-The OSM Export Tool allows users to create custom OpenStreetMap exports for selected HOT regions. This help documentation is split into the following sections to assist users to navigate the site, use the functions effectively and successfullly create and run exports.
+{% trans 'The OSM Export Tool allows users to create custom OpenStreetMap exports for selected HOT regions. This help documentation is split into the following sections to assist users to navigate the site, use the functions effectively and successfullly create and run exports.' %}
 </div>
 
-<h3>Page Navigation</h3>
+<h3>{% trans 'Page Navigation' %}</h3>
 <div class="well">
-This section takes the user through the three main areas of the OSM Export Tool website and provides step by step directions on what functions are available and how to use them:
+{% trans 'This section takes the user through the three main areas of the OSM Export Tool website and provides step by step directions on what functions are available and how to use them:' %}
 <ul>
-    <li><a href="help/pages#create">Create</a></li>
-    <li><a href="help/pages#exports">Exports</a></li>
-    <li><a href="help/pages#store">Store</a></li>
+    <li><a href="help/pages#create">{% trans 'Create' %}</a></li>
+    <li><a href="help/pages#exports">{% trans 'Exports' %}</a></li>
+    <li><a href="help/pages#store">{% trans 'Store' %}</a></li>
 </ul>
 </div>
 
 
-<h3>Export File Formats</h3>
+<h3>{% trans 'Export File Formats' %}</h3>
 <div class="well">
-This section takes the user through the five file formats available for selection to export the OSM data into, as well as provide useful links for users to find further information on their application:
+{% trans 'This section takes the user through the five file formats available for selection to export the OSM data into, as well as provide useful links for users to find further information on their application:' %}
 <ul>
-    <li><a href="help/formats#shp">Esri SHP</a></li>
-    <li><a href="help/formats#img">Garmin IMG</a></li>
-    <li><a href="help/formats#kmz">Google KMZ</a></li>
-    <li><a href="help/formats#pbf">OSM PBF</a></li>
-    <li><a href="help/formats#sql">SQlite SQL</a></li>
+    <li><a href="help/formats#shp">{% trans 'Esri SHP' %}</a></li>
+    <li><a href="help/formats#img">{% trans 'Garmin IMG' %}</a></li>
+    <li><a href="help/formats#kmz">{% trans 'Google KMZ' %}</a></li>
+    <li><a href="help/formats#pbf">{% trans 'OSM PBF' %}</a></li>
+    <li><a href="help/formats#sql">{% trans 'SQlite SQL' %}</a></li>
 </ul>
 </div>
 
-<h3>Feature Tag Selection</h3>
+<h3>{% trans 'Feature Tag Selection' %}</h3>
 <div class="well">
-This section takes the user through the feature selection functionality built into the Export Tool, which allows the user to select OSM tags to export specific map features for export:<br>
+{% trans 'This section takes the user through the feature selection functionality built into the Export Tool, which allows the user to select OSM tags to export specific map features for export:' %}<br>
 <ul>
-    <li><a href="help/tags#hdm">Humanitarian Data Model</a></li>
-    <li><a href="help/tags#osm">OpenStreetMap Data Model</a></li>
+    <li><a href="help/tags#hdm">{% trans 'Humanitarian Data Model' %}</a></li>
+    <li><a href="help/tags#osm">{% trans 'OpenStreetMap Data Model' %}</a></li>
 </ul>
 </div>
 
-<h3>Configuration Files</h3>
+<h3>{% trans 'Configuration Files' %}</h3>
 <div class="well">
-This section takes the user through the configuration files that can be used with the Export Tool to provide extra functionality:
+{% trans 'This section takes the user through the configuration files that can be used with the Export Tool to provide extra functionality:' %}
 <ul>
-    <li><a href="help/config#presets">Presets</a></li>
+    <li><a href="help/config#presets">{% trans 'Presets' %}</a></li>
 </ul>
 </div>
 </div>
