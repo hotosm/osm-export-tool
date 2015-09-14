@@ -626,7 +626,7 @@ configurations.list = (function(){
                 runSearch(); 
             } else {
                 $('input#user').val('');
-                $('input#published').val('True');
+                //$('input#published').val('True');
                 runSearch();
             }
         });

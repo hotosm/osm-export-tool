@@ -51,7 +51,6 @@
                     </div>
                 </div>
             </div>
-            <input id="published" type="hidden" name="published" value="True"/>
             <div class="row">
                 <div id="list-configurations">
                     <div class="table-responsive">
@@ -66,6 +65,13 @@
             </div>
             <div class="row">
                 {% if user.is_authenticated %}
+                    <div class="form-group" id="form-group-user">
+                        <div id="user">
+                            <span id="user">{{ user.username }}</span>
+                            <input id="user" name="user" value="" type="hidden"/>
+                            <input id="user_private" name="user_private" value="{{ user.username }}" type="hidden"/>
+                        </div>
+                    </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <div class="checkbox">
@@ -75,10 +81,11 @@
                             </div>
                         </div>
                     </div>
+                {% else %}
                     <div class="form-group" id="form-group-user">
                         <div id="user">
-                            <span id="user">{{ user.username }}</span>
                             <input id="user" name="user" value="" type="hidden"/>
+                            <input id="published" name="published" value="True" type="hidden"/>
                         </div>
                     </div>
                 {% endif %}

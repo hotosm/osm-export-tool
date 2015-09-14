@@ -53,9 +53,18 @@ class ExportConfigFilter(django_filters.FilterSet):
     end = django_filters.DateTimeFilter(name="created_at", lookup_type="lte")
     user = django_filters.CharFilter(name="user__username", lookup_type="exact")
     published = django_filters.BooleanFilter(name="published", lookup_type="exact")
+    user_private = django_filters.MethodFilter(action='user_private_filter')
     
     class Meta:
         model = ExportConfig
-        fields = ('name', 'config_type', 'start', 'end', 'user', 'published')
+        fields = ('name', 'config_type', 'start', 'end', 'user', 'published', 'user_private')
         order_by = ('-created_at',)
+        
+    def user_private_filter(self, queryset, value):
+        return queryset.filter(
+            # default filter for listing configurations
+            # show current user published / unpublished
+            # or all other users published only
+            (Q(user__username=value) | (~Q(user__username=value) & Q(published=True)))
+        )
     

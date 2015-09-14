@@ -1,0 +1,45 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block container %}
+
+    {% if not user.is_authenticated %}
+    <div class="row">
+        <div class="col-md-6">
+            <div id="about">
+                <h2>{% trans 'Fresh Humanitarian Maps' %}</h2>
+                <h3>{% trans 'Download up-to-date humanitarian maps for GIS analysis or for use in GPS devices and Smartphones.' %}</h3>
+                {% trans 'This platform allows you to create custom OpenStreetMap exports for various HOT regions. You can specify an area of interest and a list of features (OpenStreetMap tags) for the export. A current OpenStreetMap data extract for that area in various data formats is then created for you within minutes.' %}
+                <h2>{% trans 'How to Get Started'  %}</h2>
+                {% blocktrans %}You can view and search through existing HOT exports at our <a href="/jobs">Exports</a> page. You do not need an account to view or search for existing exports.
+                If you want to create an export and you are a new user, please <a href="/accounts/register">register</a> for an account.
+                If you already have an account with HOT, please log in using the log in form on this page.
+                More detailed help is available on our <a href="/help">help</a> page.
+                {% endblocktrans %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default" style="margin: 2em 3em 0em 3em;">
+            <div id="heading-wrap" class="panel-heading"><span class="glyphicon-heading glyphicon glyphicon-log-in pull-left">&nbsp</span>
+              <div><h4>{% trans 'Login to OpenStreetMap' %}</h4></div>
+            </div>
+            <div class="panel-body">
+                  <div id="login">
+                        <div class="row pull-left">
+                                <div style="font-size: large;">
+                                    {% trans "If you don't have an OpenStreetMap account you can register for one <a href='http://www.openstreetmap.org/user/new'>here</a>." %}
+                                </div>
+                                <br/><br/>
+                                <div class="col-md-6">
+                                    <a href="{% url 'osm:begin' 'openstreetmap' %}"><div id="login" class="btn btn-lg btn-success pull-left">{% trans 'Login to OpenStreetMap' %}</div></a>
+                                </div>
+                        </div>
+                  </div>
+              </div>
+            </div>
+            
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}

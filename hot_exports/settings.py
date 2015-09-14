@@ -32,18 +32,38 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-# registration settings
-REGISTRATION_OPEN = True                
-ACCOUNT_ACTIVATION_DAYS = 7  
-REGISTRATION_AUTO_LOGIN = True
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/jobs/create/'
+LOGIN_URL = '/login/'
 
 # OAuth login settings
 SOCIAL_AUTH_OPENSTREETMAP_LOGIN_URL = '/osm/login/'
 SOCIAL_AUTH_OPENSTREETMAP_KEY = '56e4WINtKE9BSzIU1JtYZufLRBp0La5zS6qHvei3'
 SOCIAL_AUTH_OPENSTREETMAP_SECRET = 'fcwFW11HB3zFDUQonYUTS3QJEQ5IAowWmISu2l93'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/jobs/create/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/osm/error'
+SOCIAL_AUTH_URL_NAMESPACE = 'osm'
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+SOCIAL_AUTH_FORCE_EMAIL_VALIDATION = True
+SOCIAL_AUTH_EMAIL_VALIDATION_FUNCTION = 'ui.pipeline.email_validation'
+SOCIAL_AUTH_EMAIL_VALIDATION_URL = '/osm/email_verify_sent/'
+
+#SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
+#SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'ui.pipeline.require_email',
+    'social.pipeline.mail.mail_validation',
+    'social.pipeline.social_auth.associate_by_email',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.debug.debug',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
+)
 
 ALLOWED_HOSTS = ['hot.geoweb.io']
 
@@ -68,7 +88,6 @@ THIRD_PARTY_APPS = (
     'rest_framework.authtoken',
     'django_nose',
     'django_extensions',
-    'registration',
     'social.apps.django_app.default'
 )
 
@@ -84,6 +103,8 @@ INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 AUTHENTICATION_BACKENDS = (
     'social.backends.openstreetmap.OpenStreetMapOAuth',
+    'social.backends.email.EmailAuth',
+    'social.backends.username.UsernameAuth',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -98,6 +119,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
 )
 
 REST_FRAMEWORK = {
@@ -120,13 +142,15 @@ ROOT_URLCONF = 'hot_exports.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['api/templates/', 'ui/templates'],
+        'DIRS': ['api/templates/', 'ui/templates', 'ui/static/ui/js'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
                 'django.contrib.messages.context_processors.messages',
                 'social.apps.django_app.context_processors.backends',
                 'social.apps.django_app.context_processors.login_redirect',
@@ -209,7 +233,7 @@ LOGGING = {
         'django': {
             'handlers':['file'],
             'propagate': True,
-            'level':'INFO',
+            'level':'ERROR',
         },
         'api': {
             'handlers': ['file'],
