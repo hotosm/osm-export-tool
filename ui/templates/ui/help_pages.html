@@ -1,92 +1,61 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
+{% load i18n %}
 {% block container %}
 <div class="help">
-    
-<!--
-<b>Page Navigation Help</b>
-<br><i>
-Create<br>
-Exports<br>
-Store<br>
-</i>
-<br>
-<b>Export File Formats</b>
-<br><i>
-Esri SHP<br>
-Garmin Map<br>
-Google Earth KMZ<br>
-OSM Source PBF<br>
-SQLite SQL<br>
-</i>
-<br>
-<b>Feature Tag Selection</b>
-<br><i>
-Humanitarian Data Model<br>
-OpenStreetMap<br>
-</i>
-<br>
-<b>Configuration Files</b>
-<br><i>
-Presets<br>
-Transform<br>
-Language<br>
-</i>
-<br>
--->
 <a name="top"></a>
 <ol class="breadcrumb">
-  <li><a href="/help">Help</a></li>
-  <li class="active">Navigation</li>
+  <li><a href="/help">{% trans 'Help' %}</a></li>
+  <li class="active">{% trans 'Navigation' %}</li>
 </ol>
 
-<h2>Page Navigation Help</h2>
+<h2>{% trans 'Page Navigation Help' %}</h2>
 <div class="well">
-    The OSM Export Tool has three main sections; an area to create new exports (Create), an area where existing exports are stored and can be re-run (Exports), and an area where configuration files are stored and can be accessed (Store). This help page will take the user step by step through these three sections, providing information for the available functions and how to use them.
+    {% trans 'The OSM Export Tool has three main sections; an area to create new exports (Create), an area where existing exports are stored and can be re-run (Exports), and an area where configuration files are stored and can be accessed (Presets). This help page will take the user step by step through these three sections, providing information for the available functions and how to use them.' %}
 </div>
 
 <a name="create"></a>
-<h3>Create</h3>
+<h3>{% trans 'Create' %}</h3>
 <div class="well">
-User must be registered and logged in to create a new export.
+{% trans 'User must be registered and logged in to create a new export.' %}
 <ol>
-    <li><strong>Describe Export:</strong> Enter the name, description and event of the new export, select the area of interest on the map (right section) and click 'Next'.</li>
-    <li><strong>Export Formats:</strong> Select one or more file format(s) for the export and click 'Next'.</li>
-    <li><strong>Export Features:</strong> Expand and select feature tags from the HDM or OSM tree list for export and click 'Next'. Presets can not be chosen if tags have been selected in previous tab.</li>
-    <li><strong>Preset File:</strong> Upload a JOSM preset file by locating the file and specifying a name and type. Choose whether to save it to your personal account and/or publish it to the global store for everyone to access and click 'Next'.</li>
-    <li><strong>Export Summary:</strong> This provides an overview of the export settings. The option to publish the export globally for everyone can be selected. Click 'Create Export' to complete and run the new export.</li>
-    <li><strong>Export Details:</strong> Contains the status and summary of the export, as well as the history of runs and options to either re-run or clone the job.</li>
+    <li><strong>{% trans 'Describe Export:' %}</strong> {% trans "Enter the name, description and event of the new export, select the area of interest on the map (right section) and click 'Next'." %}</li>
+    <li><strong>{% trans 'Export Formats:' %}</strong> {% trans "Select one or more file format(s) for the export and click 'Next'." %}</li>
+    <li><strong>{% trans 'Export Features:' %}</strong> {% trans "Expand and select feature tags from the HDM or OSM tree list for export and click 'Next'. Presets can not be chosen if tags have been selected in previous tab." %}</li>
+    <li><strong>{% trans 'Preset File:' %}</strong> {% trans "Upload a JOSM preset file by locating the file and specifying a name and type. Choose whether to save it to your personal account and/or publish it to the global store for everyone to access and click 'Next'." %}</li>
+    <li><strong>{% trans 'Export Summary:' %}</strong> {% trans "This provides an overview of the export settings. The option to publish the export globally for everyone can be selected. Click 'Create Export' to complete and run the new export." %}</li>
+    <li><strong>{% trans 'Export Details:' %}</strong> {% trans "Contains the status and summary of the export, as well as the history of runs and options to either re-run or clone the job." %}</li>
 </ol>
-<a href="#top">top</a>
+<a href="#top">{% trans 'top' %}</a>
 </div>
 
 <a name="exports"></a>
-<h3>Exports</h3>
+<h3>{% trans 'Exports' %}</h3>
 <div class="well">
-Existing exports can be searched, viewed and re-run from the Exports page. An account is not needed view or search for existing exports.<br/>
-On the Exports page there are the following filter options:
+{% trans "Existing exports can be searched, viewed and re-run from the Exports page. An account is not needed view or search for existing exports." %}<br/>
+{% trans "On the Exports page there are the following filter options:" %}
 <ol>
-    <li><strong>Search Box:</strong> Enter Name/Description/Event keywords to filter.</li>
-    <li><strong>Start Date/End Date:</strong> Filter based on date of creation.</li>
-    <li><strong>Interactive Map:</strong> Visually displays location of filtered exports and can also be used to filter geographically by selecting on the map.</li>
-    <li><strong>My Exports:</strong> Displays personal exports if the user is logged in.</li>
-    <li><strong>Next Page:</strong> Move on to display more results.</li>
+    <li><strong>{% trans 'Search Box:' %}</strong> {% trans "Enter Name/Description/Event keywords to filter." %}</li>
+    <li><strong>{% trans "Start Date/End Date:" %}</strong> {% trans "Filter based on date of creation." %}</li>
+    <li><strong>{% trans 'Interactive Map:' %}</strong> {% trans "Visually displays location of filtered exports and can also be used to filter geographically by selecting on the map." %}</li>
+    <li><strong>{% trans 'My Exports:' %}</strong> {% trans "Displays personal exports if the user is logged in." %}</li>
+    <li><strong>{% trans 'Next Page:' %}</strong> {% trans "Move on to display more results." %}</li>
 </ol>
-<a href="#top">top</a>
+<a href="#top">{% trans 'top' %}</a>
 </div>
 
 <a name="store"></a>
-<h3>Store</h3>
+<h3>{% trans 'Store' %}</h3>
 <div class="well">
-Saved configuration files can be searched, viewed and downloaded from the Store page. An account is not needed to filter and search the saved configuration files.<br/>
-On the Store page there are the following filter options:
+{% trans "Saved configuration files can be searched, viewed and downloaded from the Store page. An account is not needed to filter and search the saved configuration files." %}<br/>
+{% trans "On the Store page there are the following filter options:" %}
 <ol>
-    <li><strong>Search Box:</strong> Filter presets by name.</li>
-    <li><strong>Start Date/End Date:</strong> Filter based on date of creation.</li>
-    <li><strong>My Preset Files:</strong> Display personal preset files if the user is logged in.</li>
-    <li><strong>Next Page:</strong> Move on to display more results.</li>
+    <li><strong>{% trans 'Search Box:' %}</strong> {% trans 'Filter presets by name.' %}</li>
+    <li><strong>{% trans 'Start Date/End Date:' %}</strong> {% trans 'Filter based on date of creation.' %}</li>
+    <li><strong>{% trans 'My Preset Files:' %}</strong> {% trans 'Display personal preset files if the user is logged in.' %}</li>
+    <li><strong>{% trans 'Next Page:' %}</strong> {% trans 'Move on to display more results.' %}</li>
 </ol>
-<a href="#top">top</a>
+<a href="#top">{% trans 'top' %}</a>
 </div>
 
 </div>

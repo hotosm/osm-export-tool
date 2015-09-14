@@ -2065,6 +2065,9 @@ clone.job = (function(){
             // set the bounds on the form
             setBounds(bounds);
             
+            // enable bbox modification
+            transform.setFeature(feature);
+            
             // -- select formats tab -- //
             $.each(data.exports, function(idx, format){
                 $('#supported-formats input[value="' + format.slug + '"]').prop('checked', true);
