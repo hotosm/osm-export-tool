@@ -40,6 +40,9 @@
                             <button id="clone" class="btn btn-primary pull-left">{% trans 'Clone this Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-asterisk"></span></button>
                         </div>
                         <div>
+                            <button id="features" class="btn btn-primary pull-left">{% trans 'Features' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-tag"></span></button>
+                        </div>
+                        <div>
                             <form id="deleteForm" method="post" action="" role="form" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <input type="hidden" value="DELETE" name="_method"/>
@@ -114,6 +117,31 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
           <button id="deleteConfirm" type="button" class="btn btn-danger">Delete Export</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- features modal -->
+<div class="modal fade" id="featuresModal" tabindex="-1" role="dialog" aria-labelledby="featuresModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">{% trans 'Features selected for this export' %}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div id="hdm-feature-tree" class="pull-left">
+                    <ul class="nav nav-list"></ul>                                       
+                </div>
+                <div id="osm-feature-tree" class="pull-left">
+                    <ul class="nav nav-list"></ul>                                       
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>

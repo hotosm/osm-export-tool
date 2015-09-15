@@ -524,6 +524,10 @@ button#delete {
     display: none;
 }
 
+button#features {
+    margin-left: .5em;
+}
+
 span#user {
     display: none;
 }

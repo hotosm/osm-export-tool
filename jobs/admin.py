@@ -5,7 +5,6 @@ from .models import (ExportFormat, Job, Region,
                      ExportProfile)
 
 admin.site.register(ExportFormat)
-admin.site.register(Job)
 admin.site.register(ExportProfile)
 
 
@@ -19,6 +18,13 @@ class HOTRegionGeoAdmin(OSMGeoAdmin):
         obj.the_geom = geom_merc.transform(ct=4326, clone=True)
         obj.the_geog = GEOSGeometry(obj.the_geom.wkt)
         obj.save()
-    
         
-admin.site.register(Region, HOTRegionGeoAdmin) 
+class JobAdmin(admin.ModelAdmin):
+    search_fields = ['uid', 'name', 'user__username']
+    list_display = ['uid','name', 'user']
+    exclude = ['the_geom', 'the_geog']
+
+    
+    
+admin.site.register(Region, HOTRegionGeoAdmin)
+admin.site.register(Job, JobAdmin)
