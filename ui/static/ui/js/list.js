@@ -217,6 +217,26 @@ jobs.list = (function(){
                 runSearch();
             }
         });
+        
+        // make map div sticky
+        /*
+        var $mapColumn = $('#map-column');
+        var mapTop = $mapColumn.offset().top;
+        $(window).scroll(function(){ // scroll event
+            var bannerHeight = $('#banner').height();
+            var navHeight = $('.navbar.navbar-inverse').height();
+            var headerHeight = bannerHeight + navHeight;
+            var windowTop = $(window).scrollTop(); // returns number
+            if (mapTop < windowTop) {
+                $mapColumn.css({ 'position': 'fixed', 'right': '0px', 'top': '0px' });
+                $('#list-export-map').css({'right': '0', 'z-index': '-1000'});
+            }
+            else {
+                $mapColumn.css({'position': 'static', 'right': '0px'});
+                $('#list-export-map').css('right', '0');
+            }
+        });
+        */
     }
     
     

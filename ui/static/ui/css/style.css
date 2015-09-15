@@ -140,14 +140,16 @@ span.heading {
     border-left: 3px solid lightgrey;
 }
 
+
 #list-export-map {
     position: absolute;
     top: 0px;
-    left: 0px;
+    right: 0px;
     width: 100%;
     height: 620px;
-    border-left: 3px solid lightgrey;
+    border-left: 1px solid lightgrey;
 }
+
 
 #list-controls {
     display: none;
@@ -191,6 +193,7 @@ span.heading {
     top: 125px;
     right: 0px;
     */
+    z-index: 1000;
     border-left: 2px solid lightgrey;
     border-top: 1px solid lightgrey;
 }
@@ -588,6 +591,10 @@ tr#exceptions {
 
 /* jobs list/search page */
 
+#map-column {
+    right: 0px;
+}
+
 div#search {
     display: none;
 }
@@ -608,7 +615,11 @@ ul.pager {
 }
 
 div.page-size {
-    padding: 0em 1.5em 0em 1.5em;
+    padding: 0em 1.5em 0em 0em;
+}
+
+div.checkbox {
+    margin-top: 0px !important;
 }
 
 select#page-size {
