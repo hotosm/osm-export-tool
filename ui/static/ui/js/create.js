@@ -546,13 +546,13 @@ create.job = (function(){
             // re-enable the file upload button when field is valid
             if (e.target.id === 'filename' || e.target.id === 'config_type') {
                 $('button#upload').prop('disabled', false);
-                $('button#select-file').prop('disabled', false);
+                $('#select-file').prop('disabled', false);
             }
         }).on('err.field.fv', function(e) {
             // re-enable the file upload button when field is valid
             if (e.target.id === 'filename' || e.target.id === 'config_type') {
                 $('button#upload').prop('disabled', true);
-                $('button#select-file').prop('disabled', true);
+                $('#select-file').prop('disabled', true);
             }
         });
         
@@ -570,7 +570,7 @@ create.job = (function(){
             var id = $tab.attr('id');
             if (id === 'features' || id === 'summary' || id === 'upload') {
                 fv.resetField('filename');
-                $('button#select-file').prop('disabled', false);
+                $('#select-file').prop('disabled', false);
                 return true;
             }
             
@@ -590,7 +590,7 @@ create.job = (function(){
             }
             else {
                 $('#btn-submit-job').prop('disabled', false);
-                $('button#select-file').removeClass('disabled');
+                $('#select-file').removeClass('disabled');
             }
     
             // validate the bounding box extents
@@ -638,7 +638,7 @@ create.job = (function(){
         
         // ----- UPLOAD TAB ----- //
         
-        $('button#select-file').bind('click', function(e){
+        $('#select-file').bind('click', function(e){
             var fv = $('#create-job-form').data('formValidation');
             fv.enableFieldValidators('filename', true);
             $(this).popover('hide');
@@ -651,7 +651,7 @@ create.job = (function(){
         /*
          * Listen for changes on file selection button.
          */
-        $('button#select-file :file').on('change', function(){
+        $('#select-file :file').on('change', function(){
                 var $input = $(this),
                     filename = $input.val().replace(/\\/g, '/').replace(/.*\//, ''),
                     $filelist = $('#filelist'),
@@ -794,7 +794,7 @@ create.job = (function(){
             // reset the input field validation
             var fv = $('#create-job-form').data('formValidation');
             fv.resetField($('input#filename'));
-            $('button#select-file').prop('disabled', false);
+            $('#select-file').prop('disabled', false);
             $("#configSelectionModal").modal(modalOpts, 'show');
         });
         
@@ -1301,6 +1301,7 @@ create.job = (function(){
                                     q: query,
                                     format: 'json',
                                     limit: 10,
+                                    key: 'Fmjtd|luur2h082g,b2=o5-9wbx1f'
                                 },
                                 function(data){
                                     // build list of suggestions
@@ -1740,7 +1741,7 @@ create.job = (function(){
             //fv.resetField($('select#config_type'));
             
             // toggle file select and upload buttons
-            $('button#select-file').css('visibility', 'visible');
+            $('#select-file').css('visibility', 'visible');
             $('button#upload').css('visibility', 'hidden');
             
             // clear the selected files list on the file input
@@ -1845,7 +1846,7 @@ create.job = (function(){
                 $('input#filename').prop('disabled', true);
                 $('select#config_type').prop('disabled', true);
                 $('input#publish_config').prop('disabled', true);
-                $('button#select-file').prop('disabled', true);
+                $('#select-file').prop('disabled', true);
                 $('button#select-config').prop('disabled', true);
             }
             else {
@@ -1853,7 +1854,7 @@ create.job = (function(){
                 $('input#filename').prop('disabled', false);
                 $('select#config_type').prop('disabled', false);
                 $('input#publish_config').prop('disabled', false);
-                $('button#select-file').prop('disabled', false);
+                $('#select-file').prop('disabled', false);
                 $('button#select-config').prop('disabled', false);
             }
             
@@ -1906,14 +1907,14 @@ create.job = (function(){
             $('input#filename').prop('disabled', true);
             $('select#config_type').prop('disabled', true);
             $('input#publish_config').prop('disabled', true);
-            $('button#select-file').prop('disabled', true);
+            $('#select-file').prop('disabled', true);
         }
         else {
             // re-enable the fields
             $('input#filename').prop('disabled', false);
             $('select#config_type').prop('disabled', false);
             $('input#publish_config').prop('disabled', false);
-            $('button#select-file').prop('disabled', false);
+            $('#select-file').prop('disabled', false);
         }
         
         if (textStatus === 'error') {
@@ -1986,7 +1987,7 @@ create.job = (function(){
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
-        $('button#select-file').popover({
+        $('#select-file').popover({
             //title: 'Select Formats', 
             content: gettext("Find and upload a preset file from desktop"),
             trigger: 'hover',
