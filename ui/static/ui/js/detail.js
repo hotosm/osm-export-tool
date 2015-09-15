@@ -49,8 +49,6 @@ exports.detail = (function(){
                 noWrap: true // don't wrap world extents
         }
         map = new OpenLayers.Map('extents', {options: mapOptions});
-        // restrict extent to world bounds to prevent panning..
-        map.restrictedExtent = map.getMaxExtent();
         
         // add base layers
         osm = Layers.OSM
@@ -69,6 +67,8 @@ exports.detail = (function(){
         });
         
         map.addLayer(job_extents);
+        console.log(map.getExtent());
+        map.restrictedExtent = map.getExtent();
         return map;
     }
   
@@ -93,6 +93,27 @@ exports.detail = (function(){
             for (i = 0; i < formats.length; i++){
                 $('#formats').append(formats[i].name + '<br/>');
             }
+            
+            // features
+            var model = data.tags.length > 0 ? data.tags[0].data_model : null;
+            
+            switch (model){
+                case 'HDM':
+                    $('#osm-feature-tree').css('display','none');
+                    $('#hdm-feature-tree').css('display','block');
+                    initHDMFeatureTree(data.tags);
+                    break;
+                case 'OSM':
+                    $('#hdm-feature-tree').css('display','none');
+                    $('#osm-feature-tree').css('display','block');
+                    initOSMFeatureTree(data.tags);
+                    break;
+                case 'PRESET':
+                    break;
+                default:
+                    break;
+            }
+            
             var extent = data.extent;
             var geojson = new OpenLayers.Format.GeoJSON({
                     'internalProjection': new OpenLayers.Projection("EPSG:3857"),
@@ -116,6 +137,7 @@ exports.detail = (function(){
                 $('button#delete').css('display', 'block');
             }
             buildDeleteDialog();
+            buildFeatureDialog();
             
         }).fail(function(jqxhr, textStatus, error) {
             if (jqxhr.status == 404) {
@@ -743,6 +765,16 @@ exports.detail = (function(){
         });
     }
     
+    function buildFeatureDialog(){
+        var modalOpts = {
+            keyboard: true,
+            backdrop: 'static',
+        }
+        $("button#features").bind('click', function(e){
+            $("#featuresModal").modal(modalOpts, 'show');
+        });
+    }
+    
     function initPopovers(){
         $('button#rerun').popover({
             //title: 'Select Formats', 
@@ -759,6 +791,162 @@ exports.detail = (function(){
             placement: 'top'
         });
         
+    }
+    
+    // ----- FEATURE SELECTION TREES ----- //
+    
+    /*
+     * Initialises the HDM feature tree.
+     */
+    function initHDMFeatureTree(tags){
+        
+        $.get(Config.HDM_TAGS_URL, function(data){
+            var level_idx = 0;
+            var $tree = $('#hdm-feature-tree ul.nav-list');
+            if (typeof data == 'object') {
+                traverse(data, $tree, level_idx);
+            }
+            
+            /*
+             * Recursively builds the feature tree.
+             */
+            function traverse(data, $level, level_idx){
+                $.each(data, function(k,v){
+                    if ($(v).attr('displayName')){
+                        var name = $(v).attr('displayName');
+                        var tag = $(v).attr('tag');
+                        var key = tag.split(':')[0];
+                        var val = tag.split(':')[1];
+                        var geom = $(v).attr('geom');
+                        geom_str = geom.join([separator=',']);
+                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' +
+                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" disabled/></div>' +
+                                        '</li>');
+                        $level.append($entry);
+                    }
+                    else {
+                        var collapse = level_idx > 0 ? 'collapse' : '';
+                        var state = level_idx == 0 ? 'open' : 'closed';
+                        var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
+                        var root = level_idx == 0 ? 'root' : '';
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled/></div>');
+                        var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
+                        $nextLevel.append($nextUL);
+                        $level.append($nextLevel);
+                        level_idx += 1;
+                        traverse(v, $nextUL, level_idx);
+                    }
+                });
+            }
+            
+            $.each(tags, function(idx, tag){
+                var key = tag.key;
+                var val = tag.value;
+                // check the corresponding input on the tree
+                var $input = $('#hdm-feature-tree').find('input[data-key="' + key + '"][data-val="' + val + '"]');
+                $input.prop('checked', true);
+                $input.prop('disabled', true);
+                // check the parent levels
+                $.each($input.parentsUntil('#hdm-feature-tree', 'li.level'),
+                       function(idx, level){
+                    $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
+                    $(level).children('div.tree-checkbox').find('input.level').prop('disabled', true);
+                });
+            });
+                    
+        
+            // toggle level collapse
+            $('#hdm-feature-tree li.level > label').bind('click', function(e){
+                if ($(this).parent().hasClass('open')) {
+                    $(this).parent().removeClass('open').addClass('closed');
+                    $(this).find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                }
+                else {
+                    $(this).parent().removeClass('closed').addClass('open');
+                    $(this).find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                }
+                $(this).parent().children('ul.sub-level').toggle(150);
+            });
+            
+        });
+    }
+    
+    /*
+     * Initialises the OSM feature tree.
+     */
+    function initOSMFeatureTree(tags){
+        $.get(Config.OSM_TAGS_URL, function(data){
+            var v = {'OSM Data Model': data}
+            var level_idx = 0;
+            var $tree = $('#osm-feature-tree ul.nav-list');
+            if (typeof data == 'object') {
+                traverse(v, $tree, level_idx);
+            }
+            
+            /*
+             * Recursively builds the feature tree.
+             */
+            function traverse(data, $level, level_idx){
+                $.each(data, function(k,v){
+                    if ($(v).attr('displayName')){
+                        var name = $(v).attr('displayName');
+                        var tag = $(v).attr('tag');
+                        var key = tag.split(':')[0];
+                        var val = tag.split(':')[1];
+                        var geom = $(v).attr('geom');
+                        geom_str = geom.join([separator=',']);
+                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
+                                           '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' +
+                                            geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" disabled/></div>' +
+                                        '</li>');
+                        $level.append($entry);
+                    }
+                    else {
+                        var collapse = level_idx > 0 ? 'collapse' : '';
+                        var state = level_idx == 0 ? 'open' : 'closed';
+                        var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
+                        var root = level_idx == 0 ? 'root' : '';
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                                            '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled /></div>');
+                        var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
+                        $nextLevel.append($nextUL);
+                        $level.append($nextLevel);
+                        level_idx += 1;
+                        traverse(v, $nextUL, level_idx);
+                    }
+                });
+            }
+            
+            // toggle level collapse
+            $('#osm-feature-tree li.level > label').bind('click', function(e){
+                if ($(this).parent().hasClass('open')) {
+                    $(this).parent().removeClass('open').addClass('closed');
+                    $(this).find('i.level').removeClass('fa-plus-minus-o').addClass('fa-plus-square-o');
+                }
+                else {
+                    $(this).parent().removeClass('closed').addClass('open');
+                    $(this).find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                }
+                $(this).parent().children('ul.sub-level').toggle(150);
+            });
+            
+            $.each(tags, function(idx, tag){
+                var key = tag.key;
+                var val = tag.value;
+                // check the corresponding input on the tree
+                var $input = $('#osm-feature-tree').find('input[data-key="' + key + '"][data-val="' + val + '"]');
+                $input.prop('checked', true);
+                $input.prop('disabled', true);
+                // check the parent levels
+                $.each($input.parentsUntil('#osm-feature-tree', 'li.level'),
+                       function(idx, level){
+                    $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
+                    $(level).children('div.tree-checkbox').find('input.level').prop('disabled', true);
+                });
+            });
+        });
     }
   
 })();
