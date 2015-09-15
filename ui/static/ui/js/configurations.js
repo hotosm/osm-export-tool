@@ -91,13 +91,13 @@ configurations.list = (function(){
             // re-enable the file upload button when field is valid
             if (e.target.id === 'filename' || e.target.id === 'config_type') {
                 $('button#upload').prop('disabled', false);
-                $('button#select-file').prop('disabled', false);
+                $('#select-file').prop('disabled', false);
             }
         }).on('err.field.fv', function(e) {
             // re-enable the file upload button when field is valid
             if (e.target.id === 'filename' || e.target.id === 'config_type') {
                 $('button#upload').prop('disabled', true);
-                $('button#select-file').prop('disabled', true);
+                $('#select-file').prop('disabled', true);
             }
         });
         
@@ -126,7 +126,7 @@ configurations.list = (function(){
             return true;
         }
         
-        $('button#select-file').bind('click', function(e){
+        $('#select-file').on('click', function(e){
             if (!validateFileUploadForm()) {
                 e.preventDefault();
                 $(this).prop('disabled', true);
@@ -313,7 +313,7 @@ configurations.list = (function(){
             $('input#filename').prop('disabled', false);
             $('select#config_type').prop('disabled', false);
             $('input#publish_config').prop('disabled', false);
-            $('button#select-file').prop('disabled', false);
+            $('#select-file').prop('disabled', false);
             
             if (textStatus === 'error') {
                 // clear the selected files list
