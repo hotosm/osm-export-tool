@@ -67,7 +67,6 @@ exports.detail = (function(){
         });
         
         map.addLayer(job_extents);
-        console.log(map.getExtent());
         map.restrictedExtent = map.getExtent();
         return map;
     }
@@ -101,14 +100,20 @@ exports.detail = (function(){
                 case 'HDM':
                     $('#osm-feature-tree').css('display','none');
                     $('#hdm-feature-tree').css('display','block');
+                    $('#filelist').css('display', 'none');
                     initHDMFeatureTree(data.tags);
                     break;
                 case 'OSM':
                     $('#hdm-feature-tree').css('display','none');
                     $('#osm-feature-tree').css('display','block');
+                    $('#filelist').css('display', 'none');
                     initOSMFeatureTree(data.tags);
                     break;
                 case 'PRESET':
+                    $('#hdm-feature-tree').css('display','none');
+                    $('#osm-feature-tree').css('display','none');
+                    $('#filelist').css('display', 'block');
+                    initPresetList(data.configurations);
                     break;
                 default:
                     break;
@@ -847,16 +852,15 @@ exports.detail = (function(){
                 // check the corresponding input on the tree
                 var $input = $('#hdm-feature-tree').find('input[data-key="' + key + '"][data-val="' + val + '"]');
                 $input.prop('checked', true);
-                $input.prop('disabled', true);
+                $input.prop('disabled', false);
                 // check the parent levels
                 $.each($input.parentsUntil('#hdm-feature-tree', 'li.level'),
                        function(idx, level){
                     $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
-                    $(level).children('div.tree-checkbox').find('input.level').prop('disabled', true);
+                    $(level).children('div.tree-checkbox').find('input.level').prop('disabled', false);
                 });
             });
                     
-        
             // toggle level collapse
             $('#hdm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
@@ -868,6 +872,11 @@ exports.detail = (function(){
                     $(this).find('i.level').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
+            });
+            
+            // prevent checkboxes from being deselected
+            $('#hdm-feature-tree input[type="checkbox"]').on('click', function(e){
+                e.preventDefault();
             });
             
         });
@@ -938,15 +947,36 @@ exports.detail = (function(){
                 // check the corresponding input on the tree
                 var $input = $('#osm-feature-tree').find('input[data-key="' + key + '"][data-val="' + val + '"]');
                 $input.prop('checked', true);
-                $input.prop('disabled', true);
+                $input.prop('disabled', false);
                 // check the parent levels
                 $.each($input.parentsUntil('#osm-feature-tree', 'li.level'),
                        function(idx, level){
                     $(level).children('div.tree-checkbox').find('input.level').prop('checked', true);
-                    $(level).children('div.tree-checkbox').find('input.level').prop('disabled', true);
+                    $(level).children('div.tree-checkbox').find('input.level').prop('disabled', false);
                 });
             });
+            
+            // prevent checkboxes from being deselected
+            $('#osm-feature-tree input[type="checkbox"]').on('click', function(e){
+                e.preventDefault();
+            });
         });
+    }
+    
+    /*
+     * Loads preset details on fetaures modal.
+     */
+    function initPresetList(configurations){
+        var $filelist = $('#filelist');
+        if (configurations.length > 0) {
+            var config = configurations[0];
+            var published = config.published ? 'Published' : 'Private';
+            var $tr = $('<tr id="' + config.uid + '" data-filename="' + config.filename + '"' +
+                        'data-type="' + config.config_type + '" data-published="' + config.published + '"' +
+                        'class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + config.filename + '</span></td>' +
+                        '<td>' + config.config_type + '</td><td>' + published + '</td></tr>');
+            $filelist.append($tr);
+        }
     }
   
 })();

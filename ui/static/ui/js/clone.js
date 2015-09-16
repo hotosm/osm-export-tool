@@ -34,7 +34,7 @@ clone.job = (function(){
             initNominatim();
             initPresetSelectionHandler();
             initConfigSelectionHandler();
-            populateForm();
+            //populateForm();
         }
     }
     
@@ -1018,6 +1018,8 @@ clone.job = (function(){
                 });
             }
         });
+        
+        populateForm();
     }
     
     // ----- FEATURE SELECTION TREES ----- //
@@ -1315,6 +1317,7 @@ clone.job = (function(){
                                     q: query,
                                     format: 'json',
                                     limit: 10,
+                                    key: 'Fmjtd|luur2h082g,b2=o5-9wbx1f'
                                 },
                                 function(data){
                                     // build list of suggestions
@@ -2045,7 +2048,6 @@ clone.job = (function(){
         var url = document.URL;
         var parts = url.split('/');
         var job_uid = parts[parts.length - 2];
-        console.log('Job uid is ' + job_uid);
         $.getJSON(Config.JOBS_URL + '/' + job_uid, function(data, success, jqXHR){
             
             // -- describe export tab -- //
