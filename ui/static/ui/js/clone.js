@@ -593,7 +593,6 @@ clone.job = (function(){
             }
             else {
                 $('#btn-submit-job').prop('disabled', false);
-                $('#select-file').removeClass('disabled');
             }
     
             // validate the bounding box extents
@@ -660,7 +659,7 @@ clone.job = (function(){
                     filename = $input.val().replace(/\\/g, '/').replace(/.*\//, ''),
                     $filelist = $('#filelist'),
                     selection = {},
-                    type = $('option:selected').val(),
+                    type = $('input#config_type').val(),
                     published = $('input#publish_config').is(':checked') ? 'Published' : 'Private';
                 selection['filename'] = filename;
                 selection['config_type'] = type;
@@ -1663,6 +1662,7 @@ clone.job = (function(){
                 
                 // notify the config-browser
                 $('table#configurations').trigger({type: 'config:added', selection:selection});
+
             }
                 
             $(this).css('display', 'block');
@@ -1868,11 +1868,11 @@ clone.job = (function(){
         $(document).on('config:checkmaxfiles', function(e){
             var maxFiles = 1;
             var filesSelected = e.filesSelected;
-            if (filesSelected == maxFiles) {
+            if (filesSelected >= maxFiles) {
                 $('input#filename').prop('disabled', true);
                 $('select#config_type').prop('disabled', true);
                 $('input#publish_config').prop('disabled', true);
-                $('#select-file').prop('disabled', true);
+                $('#select-file').addClass('disabled');
                 $('button#select-config').prop('disabled', true);
             }
             else {
@@ -1880,7 +1880,7 @@ clone.job = (function(){
                 $('input#filename').prop('disabled', false);
                 $('select#config_type').prop('disabled', false);
                 $('input#publish_config').prop('disabled', false);
-                $('#select-file').prop('disabled', false);
+                $('#select-file').removeClass('disabled');
                 $('button#select-config').prop('disabled', false);
             }
             
@@ -1925,7 +1925,9 @@ clone.job = (function(){
         
         // reset the fields.
         $('input#filename').val('');
+        $('input#filename').prop('disabled', false);
         $('option#select-message').prop('selected', true);
+        $('input#publish_config').prop('disabled', false);
         $('input#publish_config').prop('checked', false);
         
         if (textStatus === 'error') {

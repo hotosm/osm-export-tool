@@ -188,12 +188,6 @@ span.heading {
 }
 
 #map-column {
-    /*
-    position: fixed;
-    top: 125px;
-    right: 0px;
-    */
-    z-index: 1000;
     border-left: 2px solid lightgrey;
     border-top: 1px solid lightgrey;
 }
