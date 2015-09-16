@@ -66,10 +66,9 @@
             {% if user.is_authenticated %}
                 <li id="logout" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> {% trans 'Log Out' %}</a></li>
-                <!--<li><a href="/accounts/password/change"><span class="glyphicon glyphicon-user"></span> {% trans 'Change Password' %}</a></li>-->
-                </ul>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> {% trans 'Log Out' %}</a></li>
+                    </ul>
                 </li>
             {% else %}
                 <li><a href="{% url 'osm:begin' 'openstreetmap' %}?next={{request.path}}">{% trans 'Login to OpenStreetMap' %}</a></li>

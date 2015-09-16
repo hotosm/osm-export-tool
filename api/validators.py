@@ -108,7 +108,7 @@ def validate_string_field(name=None, data=None):
         raise serializers.ValidationError(detail)
     
 def validate_content_type(upload, config_type):
-    ACCEPT_MIME_TYPES = {'PRESET': ('application/xml', 'text/plain'),
+    ACCEPT_MIME_TYPES = {'PRESET': ('application/xml',),
                         'TRANSFORM': ('application/x-sql', 'text/plain'),
                         'TRANSLATION': ('text/plain',)}
     content_type = magic.from_buffer(upload.read(1024), mime=True)

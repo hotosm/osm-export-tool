@@ -590,7 +590,6 @@ create.job = (function(){
             }
             else {
                 $('#btn-submit-job').prop('disabled', false);
-                $('#select-file').removeClass('disabled');
             }
     
             // validate the bounding box extents
@@ -638,7 +637,7 @@ create.job = (function(){
         
         // ----- UPLOAD TAB ----- //
         
-        $('#select-file').bind('click', function(e){
+        $('#select-file').on('click', function(e){
             var fv = $('#create-job-form').data('formValidation');
             fv.enableFieldValidators('filename', true);
             $(this).popover('hide');
@@ -1842,11 +1841,11 @@ create.job = (function(){
         $(document).on('config:checkmaxfiles', function(e){
             var maxFiles = 1;
             var filesSelected = e.filesSelected;
-            if (filesSelected == maxFiles) {
+            if (filesSelected >= maxFiles) {
                 $('input#filename').prop('disabled', true);
                 $('select#config_type').prop('disabled', true);
                 $('input#publish_config').prop('disabled', true);
-                $('#select-file').prop('disabled', true);
+                $('#select-file').addClass('disabled');
                 $('button#select-config').prop('disabled', true);
             }
             else {
@@ -1854,10 +1853,9 @@ create.job = (function(){
                 $('input#filename').prop('disabled', false);
                 $('select#config_type').prop('disabled', false);
                 $('input#publish_config').prop('disabled', false);
-                $('#select-file').prop('disabled', false);
+                $('#select-file').removeClass('disabled');
                 $('button#select-config').prop('disabled', false);
             }
-            
         });
     }
     
@@ -1899,23 +1897,10 @@ create.job = (function(){
         
         // reset the fields.
         $('input#filename').val('');
+        $('input#filename').prop('disabled', false);
         $('option#select-message').prop('selected', true);
+        $('input#publish_config').prop('disabled', false);
         $('input#publish_config').prop('checked', false);
-        
-        // check if max selected configs is reached
-        if (create.job.numSelectedFiles == 3) {
-            $('input#filename').prop('disabled', true);
-            $('select#config_type').prop('disabled', true);
-            $('input#publish_config').prop('disabled', true);
-            $('#select-file').prop('disabled', true);
-        }
-        else {
-            // re-enable the fields
-            $('input#filename').prop('disabled', false);
-            $('select#config_type').prop('disabled', false);
-            $('input#publish_config').prop('disabled', false);
-            $('#select-file').prop('disabled', false);
-        }
         
         if (textStatus === 'error') {
             // clear the selected files list
