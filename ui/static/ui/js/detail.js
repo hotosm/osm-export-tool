@@ -154,13 +154,25 @@ exports.detail = (function(){
         
         // handle re-run click events..
         $('button#rerun').bind('click', function(e){
-           $.get(Config.RERUN_URL + exports.detail.job_uid,
+            $.ajax({
+                cache: false,
+                url: Config.RERUN_URL + exports.detail.job_uid,
+                success: function(data){
+                    // initialize the submitted run panel immediately
+                    initSumtittedRunPanel([data]);
+                    // then start the check interval..
+                    startRunCheckInterval();
+                }
+            })
+            /*
+            $.get(Config.RERUN_URL + exports.detail.job_uid,
                 function(data, textStatus, jqXhr){
                     // initialize the submitted run panel immediately
                     initSumtittedRunPanel([data]);
                     // then start the check interval..
                     startRunCheckInterval();
             });
+            */
         });
         
         // handle clone event
@@ -328,12 +340,16 @@ exports.detail = (function(){
       */
     function loadSubmittedRunDetails(){
         var job_uid = exports.detail.job_uid;
-        $.getJSON(Config.RUNS_URL + '?status=SUBMITTED&job_uid=' + job_uid, function(data){
-            if (data.length > 0) {
-                initSumtittedRunPanel(data);
-                startRunCheckInterval();
+        $.ajax({
+            cache: false,
+            url: Config.RUNS_URL + '?status=SUBMITTED&job_uid=' + job_uid,
+            success: function(data){
+                if (data.length > 0) {
+                    initSumtittedRunPanel(data);
+                    startRunCheckInterval();
+                }
             }
-        }); 
+        });
     }
     
     /**
@@ -721,6 +737,7 @@ exports.detail = (function(){
             var job_uid = exports.detail.job_uid;
             var url = Config.RUNS_URL + '?job_uid=' +  job_uid + '&status=SUBMITTED&format=json';
             $.ajax({
+                cache: false,
                 url: url,
                 dataType: 'json',
                 cache: false,
