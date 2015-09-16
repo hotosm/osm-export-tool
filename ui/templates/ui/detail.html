@@ -9,7 +9,7 @@
             <div class="panel-heading"><h4>{% trans 'Export Summary' %}</h4></div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-6">
                         <span id="user">{{ user.username }}</span>
                         <div id="export-details" class="table-responsive">
                             <table class="table">
@@ -137,6 +137,11 @@
                 </div>
                 <div id="osm-feature-tree" class="pull-left">
                     <ul class="nav nav-list"></ul>                                       
+                </div>
+                <div class="table-responsive table-stripped table-condensed col-md-12">
+                    <table class="table" id="filelist">
+                        <th width="40%">{% trans 'Filename' %}</th><th width="25%">Type</th><th width="25%">Status</th><th width="10%"></th>
+                    </table>
                 </div>
             </div>
         </div>

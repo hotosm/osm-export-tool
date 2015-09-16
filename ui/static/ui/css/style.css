@@ -130,6 +130,11 @@ span.heading {
     margin-left: 15px !important;
 }
 
+.table-responsive {
+    min-height: 0.01%;
+    overflow-x: visible !important;
+}
+
 
 /* Map styles */
 
@@ -425,7 +430,7 @@ i.fa {
 .tree-checkbox {
     position: relative;
     display: block;
-    margin-top: .1em;
+    margin-top: .2em;
     margin-bottom: 0px !important;
     left: 1.5em;
 }
@@ -436,17 +441,23 @@ label {
 
 li.entry > label {
     font-size: medium !important;
+    margin-right: .5em !important;
 }
 
 li.entry > div.tree-checkbox {
     display: list-item !important;
-    float: right !important;
-    margin-left: 1em !important;
+    margin-top: .2em !important;
+    /*float: right !important;*/
+    /*margin-left: 1em !important;*/
 }
 
 li.level {
     float: left !important;
     clear: both !important;
+}
+
+input.level {
+    margin-top: .4em !important;
 }
 
 li.level label {
