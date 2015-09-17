@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.gis.admin import OSMGeoAdmin
 from django.contrib.gis.geos import GEOSGeometry
 from .models import (ExportFormat, Job, Region,
-                     ExportProfile)
+                     ExportProfile, ExportConfig)
 
 admin.site.register(ExportFormat)
 admin.site.register(ExportProfile)
@@ -23,8 +23,13 @@ class JobAdmin(admin.ModelAdmin):
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid','name', 'user']
     exclude = ['the_geom', 'the_geog']
+    
 
+class ExportConfigAdmin(admin.ModelAdmin):
+    search_fields = ['uid', 'name', 'user__username']
+    list_display = ['uid','name', 'user']
     
     
 admin.site.register(Region, HOTRegionGeoAdmin)
 admin.site.register(Job, JobAdmin)
+admin.site.register(ExportConfig, ExportConfigAdmin)
