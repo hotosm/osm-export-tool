@@ -841,7 +841,7 @@ exports.detail = (function(){
                         var val = tag.split(':')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
+                        var $entry = $('<li class="entry" data-toggle="tooltip" data-placement="right" title="' + key + ':' + val + '"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' +
                                             geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" disabled/></div>' +
                                         '</li>');
@@ -923,7 +923,7 @@ exports.detail = (function(){
                         var val = tag.split(':')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
+                        var $entry = $('<li class="entry" data-toggle="tooltip" data-placement="right" title="' + key + ':' + val + '"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' +
                                             geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" disabled/></div>' +
                                         '</li>');
