@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import logout as auth_logout
 from social.backends.utils import load_backends
 from social.apps.django_app.utils import psa
+from django.conf import settings
 
 
 """
@@ -16,7 +17,7 @@ from social.apps.django_app.utils import psa
 @require_http_methods(['GET'])
 def create_export(request):
     user = request.user
-    max_extent = {'extent': 2500000} # default
+    max_extent = {'extent': settings.JOB_MAX_EXTENT}
     for group in user.groups.all():
         if hasattr(group, 'export_profile'):
             max_extent['extent'] = group.export_profile.max_extent

@@ -244,7 +244,7 @@ msgstr ""
 
 #: ui/templates/ui/base.html:51
 msgid "OSM Export Tool"
-msgstr ""
+msgstr "OSM Ekspor Alat"
 
 #: ui/templates/ui/base.html:55
 msgid "Exports"

@@ -44,10 +44,6 @@ class OSMParser(object):
         gdal.UseExceptions()
         self.srs = osr.SpatialReference()
         self.srs.ImportFromEPSG(4326) # configurable
-        # create the output file
-        if self.schema:
-            # run other schema transformations here...
-            pass
         
     def create_spatialite(self, ):        
         # create spatialite from osm data

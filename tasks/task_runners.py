@@ -78,9 +78,6 @@ class ExportTaskRunner(TaskRunner):
                 run.save()
                 run_uid = str(run.uid)
                 logger.debug('Saved run with id: {0}'.format(run_uid))
-                max_runs = settings.EXPORT_MAX_RUNS
-                run_count = job.runs.count()
-                
             except DatabaseError as e:
                 logger.error('Error saving export run: {0}'.format(e))
                 raise e
@@ -192,5 +189,3 @@ class ExportTaskRunner(TaskRunner):
 def error_handler(task_id=None):
     logger.debug('In error handler %s' % task_id)
         
-class OSMUpdateTaskRunner(TaskRunner):
-    pass

@@ -179,7 +179,16 @@ DATABASES = settings_private.DATABASES
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('id', 'Bahasa Indonesia'),
+    ('de', 'Deutsch'),
+    ('es', 'Spanish'),
+    ('ja', 'Japanese'),
+    ('fr', 'French'),
+)
 
 DEFAULT_CHARSET = 'UTF-8'
 
@@ -192,7 +201,7 @@ USE_L10N = True
 USE_TZ = True
 
 LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'locales'),
+    os.path.join(BASE_DIR, 'locales/'),
 )
 
 # Static files (CSS, JavaScript, Images)
@@ -289,14 +298,14 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
+"""
 NOSE_ARGS = [
     '--with-coverage',
     '--cover-html',
     '--cover-html-dir=cover',
     '--cover-package=api,tasks,jobs,utils'
 ]
-
+"""
 # Celery config
 CELERY_TRACK_STARTED = True
 
@@ -354,7 +363,7 @@ OVERPASS_API_URL = 'http://localhost/interpreter'
 Maximum extent of a Job
 max of (latmax-latmin) * (lonmax-lonmin)
 """
-JOB_MAX_EXTENT = 1000
+JOB_MAX_EXTENT = 2500000 # default export max extent
 
 # maximum number of runs to hold for each export
 EXPORT_MAX_RUNS = 5

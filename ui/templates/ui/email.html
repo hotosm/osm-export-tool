@@ -1,10 +1,17 @@
+{% load i18n %}
 <html>
     <head>
         <title>HOT Exports</title>
     </head>
     <body>
-        This is an automated email from HOT Exports.<br/>
-        Your HOT Export is ready.<br/>
-        Please follow this link {{ url }}/ to download your files.<br/>
+        {% trans 'This is an automated email from HOT Exports.' %}<br/>
+        {% trans 'Your HOT Export is ready.' %}<br/>
+        {% trans 'Please follow this link' %} {{ url }}/ {% trans 'to download your files.' %}<br/>
+        <p>
+            {% trans 'Thank you for using the HOT Export Service' %}
+        </p>
+        <p>
+            {% trans 'Humanitarian OpenStreetMap Team' %}
+        </p>
     </body>
 </html>

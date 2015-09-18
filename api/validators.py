@@ -1,13 +1,14 @@
 import logging
 import magic
 import StringIO
+import pdb
 from collections import OrderedDict
 from uuid import UUID
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.utils.datastructures import MultiValueDictKeyError
-from hot_exports import settings
-from django.contrib.gis.geos import Polygon, GEOSException
+from django.conf import settings
+from django.contrib.gis.geos import Polygon, GEOSException, GEOSGeometry
 
 
 # Get an instance of a logger
@@ -43,16 +44,22 @@ def validate_search_bbox(extents):
     except GEOSException as e:
         raise serializers.ValidationError(detail) 
 
-def validate_bbox(extents):
+def validate_bbox(extents, user=None):
+    max_extent = settings.JOB_MAX_EXTENT
+    for group in user.groups.all():
+        if hasattr(group, 'export_profile'):
+            max_extent = group.export_profile.max_extent
     detail = OrderedDict()
     detail['id'] = 'invalid_bounds'
     detail['message'] = 'Invalid bounding box.'
     try:
-        bbox = Polygon.from_bbox(extents)
-        if (bbox.valid):
-            if bbox.area > settings.JOB_MAX_EXTENT:
+        bbox = GEOSGeometry(Polygon.from_bbox(extents), srid=4326)
+        bbox_merc = bbox.transform(3857, clone=True)
+        if (bbox.valid and bbox_merc.valid):
+            area = bbox_merc.area / 1000000
+            if area > max_extent:
                 detail['id'] = 'invalid_extents'
-                detail['message'] = 'Job extents too large: {0}'.format(bbox.area)
+                detail['message'] = 'Job extents too large: {0}'.format(area)
                 raise serializers.ValidationError(detail)
             return bbox
         else:
