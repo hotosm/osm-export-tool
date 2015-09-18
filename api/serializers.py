@@ -11,6 +11,7 @@ from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
 from tasks.models import ExportRun, ExportTask, ExportTaskResult, ExportTaskException
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon, GEOSException
+from django.contrib.gis.measure import A
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from rest_framework_gis import serializers as geo_serializers
@@ -406,14 +407,15 @@ class JobSerializer(serializers.Serializer):
         pass
     
     def validate(self, data):
+        user = data['user']
         validators.validate_formats(data)
         extents = validators.validate_bbox_params(data)
-        bbox = validators.validate_bbox(extents)
+        bbox = validators.validate_bbox(extents, user=user)
         the_geom = GEOSGeometry(bbox, srid=4326)
         data['the_geom'] = the_geom
-        logger.debug(data)
-        regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom').order_by( '-intersection')
-        data['region'] = validators.validate_region(regions)
+        regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom')
+        sorted_regions =  sorted(regions.all(), key=lambda a: a.intersection.area, reverse=True) # order by largest area of intersection
+        data['region'] = validators.validate_region(sorted_regions)
         # remove unwanted fields
         data.pop('xmin'),  data.pop('ymin'), data.pop('xmax'), data.pop('ymax'), data.pop('formats')
         return data

@@ -59,9 +59,9 @@ js_info_dict = {
     'packages': ('hot_osm',),
 }
 
-urlpatterns += [
+urlpatterns += patterns('',
     url(r'^jsi18n/$', javascript_catalog, js_info_dict),
     url(r'^i18n/', include('django.conf.urls.i18n')),
-]
+)
 
 

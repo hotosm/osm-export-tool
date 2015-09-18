@@ -19,7 +19,7 @@ class HOTRegionGeoAdmin(OSMGeoAdmin):
         obj.the_geog = GEOSGeometry(obj.the_geom.wkt)
         obj.save()
         
-class JobAdmin(admin.ModelAdmin):
+class JobAdmin(OSMGeoAdmin):
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid','name', 'user']
     exclude = ['the_geom', 'the_geog']
@@ -27,7 +27,7 @@ class JobAdmin(admin.ModelAdmin):
 
 class ExportConfigAdmin(admin.ModelAdmin):
     search_fields = ['uid', 'name', 'user__username']
-    list_display = ['uid','name', 'user']
+    list_display = ['uid', 'name', 'user', 'config_type']
     
     
 admin.site.register(Region, HOTRegionGeoAdmin)

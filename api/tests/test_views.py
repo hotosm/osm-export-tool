@@ -13,7 +13,7 @@ from rest_framework.test import APITestCase, APITransactionTestCase
 from rest_framework.authtoken.models import Token
 from mock import Mock, PropertyMock, patch
 from tasks.task_runners import ExportTaskRunner
-from jobs.models import Job, ExportFormat, ExportConfig
+from jobs.models import Job, ExportFormat, ExportConfig, ExportProfile
 from tasks.models import ExportTask, ExportRun
 from api.pagination import LinkHeaderPagination
 from api.views import ExportConfigViewSet
@@ -25,7 +25,12 @@ class TestJobViewSet(APITestCase):
     
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        Group.objects.create(name='DefaultExportExtentGroup')
+        self.group = Group.objects.create(name='DefaultExportExtentGroup')
+        profile = ExportProfile.objects.create(
+            name='DefaultExportProfile',
+            max_extent=2500000,
+            group=self.group
+        )
         self.user = User.objects.create_user(
             username='demo', email='demo@demo.com', password='demo'
         )
@@ -498,10 +503,10 @@ class TestJobViewSet(APITestCase):
             'name': 'TestJob',
             'description': 'Test description',
             'event': 'Test Activation',
-            'xmin': -100,
-            'ymin': -30,
-            'xmax': 10,
-            'ymax': 80,
+            'xmin': -40,
+            'ymin': -10,
+            'xmax': 40,
+            'ymax': 20,
             'formats': formats
         }
         response = self.client.post(url, request_data)

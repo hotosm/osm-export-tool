@@ -121,7 +121,6 @@ class JobViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
             # add the export formats
-            logger.debug(request.data)
             formats = request.data.get('formats')
             tags = request.data.get('tags')
             preset = request.data.get('preset')

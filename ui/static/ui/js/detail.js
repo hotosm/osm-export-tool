@@ -83,6 +83,7 @@ exports.detail = (function(){
             $('#name').html(data.name);
             $('#description').html(data.description);
             $('#event').html(data.event);
+            $('#region').html(data.region.name);
             $('#created_by').html(data.owner);
             var published = data.published ? 'Publicly' : 'Privately';
             $('#published').html(published);
@@ -154,6 +155,7 @@ exports.detail = (function(){
         
         // handle re-run click events..
         $('button#rerun').bind('click', function(e){
+            $(this).popover('hide');            
             $.ajax({
                 cache: false,
                 url: Config.RERUN_URL + exports.detail.job_uid,
@@ -164,15 +166,6 @@ exports.detail = (function(){
                     startRunCheckInterval();
                 }
             })
-            /*
-            $.get(Config.RERUN_URL + exports.detail.job_uid,
-                function(data, textStatus, jqXhr){
-                    // initialize the submitted run panel immediately
-                    initSumtittedRunPanel([data]);
-                    // then start the check interval..
-                    startRunCheckInterval();
-            });
-            */
         });
         
         // handle clone event
@@ -190,98 +183,102 @@ exports.detail = (function(){
     function loadCompletedRunDetails(expand_first){
         var job_uid = exports.detail.job_uid;
         var $runPanel = $('#completed_runs > .panel-group');
-        $.getJSON(Config.RUNS_URL + '?status=COMPLETE&job_uid=' + job_uid, function(data){
-            // clear the completed run panel
-            $runPanel.empty();
-            // hide the submitted run panel
-            if (!exports.detail.timer) {
-                $('#submitted_runs > .panel-group').empty();
-                $('#submitted_runs').css('display', 'none');
-            }
-            
-            $.each(data, function(index, run){
-                var started = moment(run.started_at).format('h:mm:ss a, MMMM Do YYYY');
-                var finished = moment(run.finished_at).format('h:mm:ss a, MMMM Do YYYY');
-                var duration = moment.duration(run.duration).humanize();
-                var status_class = run.status === 'COMPLETED' ? 'alert alert-success' : 'alert alert-warning';
-                var expanded = !exports.detail.timer && index === 0 ? 'in' : '';
-                var context = { 'run_uid': run.uid, 'status': run.status,
-                                'started': started, 'finished': finished,
-                                'duration': duration,'status_class': status_class,
-                                'expanded': expanded};
-                var template = getCompletedRunTemplate();
-                var html = template(context);
-                $runPanel.append(html);
+        var url = Config.RUNS_URL + '?status=COMPLETE&job_uid=' + job_uid
+        $.ajax({
+            cache: false,
+            url: url,
+            dataType: 'json',
+            success: function(data){
+                $runPanel.empty();
+                // hide the submitted run panel
+                if (!exports.detail.timer) {
+                    $('#submitted_runs > .panel-group').empty();
+                    $('#submitted_runs').css('display', 'none');
+                }
                 
-                // add task info
-                $taskDiv = $runPanel.find('div#' + run.uid).find('#tasks').find('table');
-                var tasks = run.tasks;
-                $.each(tasks, function(i, task){
-                    var errors = task.errors;
-                    var result = task.result;
-                    var status = task.status;
-                    var duration = numeral(task.duration).format("HH:mm:ss.SSS");
-                    switch (task.name) {
-                        case 'KML Export':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Google Earth (KMZ) File') + '</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                        case 'OSM2PBF':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('OpenStreetMap (PBF) File') + '</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                        case 'Default Shapefile Export':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('ESRI Shapefile (SHP)') + '</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                        case 'OBF Export':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('OSMAnd (OBF) File') + '</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                        case 'Garmin Export':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Garmin Map (IMG) File') + '</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                        case 'SQLITE Export':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('SQlite Database File') + '</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                        case 'Thematic Shapefile Export':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '">Thematic ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                        case 'Generate Preset':
-                            if (status === 'SUCCESS') {
-                                $taskDiv.append('<tr><td><a href="' + result.url + '" target="_blank">' + gettext('Custom JOSM Preset (XML)') + '</a></td><td>' + duration + '</td><td>' +
-                                    result.size + '</td></tr>');
-                            }
-                            break;
-                    }
+                $.each(data, function(index, run){
+                    var started = moment(run.started_at).format('h:mm:ss a, MMMM Do YYYY');
+                    var finished = moment(run.finished_at).format('h:mm:ss a, MMMM Do YYYY');
+                    var duration = moment.duration(run.duration).humanize();
+                    var status_class = run.status === 'COMPLETED' ? 'alert alert-success' : 'alert alert-warning';
+                    var expanded = !exports.detail.timer && index === 0 ? 'in' : '';
+                    var context = { 'run_uid': run.uid, 'status': run.status,
+                                    'started': started, 'finished': finished,
+                                    'duration': duration,'status_class': status_class,
+                                    'expanded': expanded};
+                    var template = getCompletedRunTemplate();
+                    var html = template(context);
+                    $runPanel.append(html);
                     
-                    if (errors.length > 0) {
-                        $tr = $('tr#exceptions');
-                        $tr.css('display', 'table-row');
-                        $errorsDiv = $runPanel.find('div#' + run.uid).find('#errors').find('table');
-                        $errorsDiv.append('<tr><td>' + task.name + '</td><td>' + task.errors[0].exception + '</td></tr>');
-                    }
+                    // add task info
+                    $taskDiv = $runPanel.find('div#' + run.uid).find('#tasks').find('table');
+                    var tasks = run.tasks;
+                    $.each(tasks, function(i, task){
+                        var errors = task.errors;
+                        var result = task.result;
+                        var status = task.status;
+                        var duration = numeral(task.duration).format("HH:mm:ss.SSS");
+                        switch (task.name) {
+                            case 'KML Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Google Earth (KMZ) File') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                            case 'OSM2PBF':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('OpenStreetMap (PBF) File') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                            case 'Default Shapefile Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('ESRI Shapefile (SHP)') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                            case 'OBF Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('OSMAnd (OBF) File') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                            case 'Garmin Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Garmin Map (IMG) File') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                            case 'SQLITE Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('SQlite Database File') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                            case 'Thematic Shapefile Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">Thematic ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                            case 'Generate Preset':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '" target="_blank">' + gettext('Custom JOSM Preset (XML)') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
+                        }
+                        
+                        if (errors.length > 0) {
+                            $tr = $('tr#exceptions');
+                            $tr.css('display', 'table-row');
+                            $errorsDiv = $runPanel.find('div#' + run.uid).find('#errors').find('table');
+                            $errorsDiv.append('<tr><td>' + task.name + '</td><td>' + task.errors[0].exception + '</td></tr>');
+                        }
+                    });
                 });
-            });
-        }); 
-      
+            }
+        });
     }
     
     /**
@@ -342,6 +339,7 @@ exports.detail = (function(){
         var job_uid = exports.detail.job_uid;
         $.ajax({
             cache: false,
+            dataType: 'json',
             url: Config.RUNS_URL + '?status=SUBMITTED&job_uid=' + job_uid,
             success: function(data){
                 if (data.length > 0) {
@@ -726,7 +724,7 @@ exports.detail = (function(){
          * Only do this once before interval check kicks in.
          */
         if (!exports.detail.timer) {
-            $('#completed_runs .panel-collapse').removeClass('in'); // fix this..
+            $('#completed_runs .panel-collapse').removeClass('in');
         }
         
         /*
@@ -737,7 +735,6 @@ exports.detail = (function(){
             var job_uid = exports.detail.job_uid;
             var url = Config.RUNS_URL + '?job_uid=' +  job_uid + '&status=SUBMITTED&format=json';
             $.ajax({
-                cache: false,
                 url: url,
                 dataType: 'json',
                 cache: false,
@@ -798,16 +795,20 @@ exports.detail = (function(){
     }
     
     function initPopovers(){
-        $('button#rerun').popover({
-            //title: 'Select Formats', 
+        $('button#rerun').popover({ 
             content: gettext("Run the export with the same geographic location and settings"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
-        $('button#clone').popover({
-            //title: 'Select Formats', 
+        $('button#clone').popover({ 
             content: gettext("Clone this export while adjusting the settings"),
+            trigger: 'hover',
+            delay: {show: 0, hide: 0},
+            placement: 'top'
+        });
+        $('button#features').popover({
+            content: gettext("Show the selected features for this export"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'

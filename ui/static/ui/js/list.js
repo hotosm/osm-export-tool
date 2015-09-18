@@ -249,7 +249,7 @@ jobs.list = (function(){
                         fillColor: "blue",
                         fillOpacity: 0.05,
                         strokeColor: "blue",
-                        //graphicZIndex : -1,
+                        graphicZIndex : 1,
                     }),
                     // style for the select extents box
                     "transform": new OpenLayers.Style({
@@ -259,7 +259,7 @@ jobs.list = (function(){
                         fillColor: "blue",
                         fillOpacity: 1,
                         strokeColor: "blue",
-                        //graphicZIndex : -1,
+                        graphicZIndex : -1,
                     },
                     {
                         context: {
