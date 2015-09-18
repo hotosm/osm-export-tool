@@ -1014,6 +1014,12 @@ clone.job = (function(){
                         var uid = result.uid;
                         var url = '/jobs/' + uid;
                         window.location.href=url;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        console.log(jqXHR, textStatus, errorThrown);
+                        if (jqXHR.status == 500 || jqXHR.status == 400) {
+                            window.location.href = Config.CREATE_ERROR_URL;
+                        }
                     }
                 });
             }
