@@ -51,3 +51,10 @@ def logout(request):
 def require_email(request):
     backend = request.session['partial_pipeline']['backend']
     return render_to_response('osm/email.html', {'backend': backend}, RequestContext(request))
+
+@require_http_methods(['GET'])
+def create_error_view(request):
+    return render_to_response('ui/error.html', {}, RequestContext(request))
+
+def internal_error_view(request):
+    return render_to_response('ui/500.html', {}, RequestContext(request))

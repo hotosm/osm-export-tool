@@ -231,7 +231,7 @@ class RunJob(views.APIView):
                 running = ExportRunSerializer(run, context={'request': request})
                 return Response(running.data, status=status.HTTP_202_ACCEPTED)
             else:
-                return Response([{'detail': _('Failed to run Export')}], status.HTTP_200_OK)
+                return Response([{'detail': _('Failed to run Export')}], status.HTTP_400_BAD_REQUEST)
         else:
             return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
         

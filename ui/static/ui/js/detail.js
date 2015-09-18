@@ -164,6 +164,12 @@ exports.detail = (function(){
                     initSumtittedRunPanel([data]);
                     // then start the check interval..
                     startRunCheckInterval();
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                    console.log(jqXHR, textStatus, errorThrown);
+                    if (jqXHR.status == 500 || jqXHR.status == 400) {
+                        window.location.href = Config.CREATE_ERROR_URL;
+                    }
                 }
             })
         });

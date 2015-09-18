@@ -25,4 +25,7 @@ Config.OSM_TAGS_URL = '/api/osm-data-model?format=json'
 Config.NOMINATIM_SEARCH_URL = 'http://nominatim.openstreetmap.org/search'
 Config.MAPQUEST_SEARCH_URL = 'http://open.mapquestapi.com/nominatim/v1/search'
 
+// error pages
+Config.CREATE_ERROR_URL = '/error'
+
 
