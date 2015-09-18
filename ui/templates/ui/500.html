@@ -1,8 +1,19 @@
 {% extends "ui/base.html" %}
 {% load staticfiles %}
-
+{% load i18n %}
 {% block container %}
 
-
+<div class="row">
+    <div class="col-md-6" style="padding: 15px; font-size: large;">
+        <div class="panel panel-danger">
+            <div class="panel-heading"><h4>{% trans 'Server Error' %}</h4></div>
+            <div class="panel-body">
+                {% blocktrans %}
+                HOT Exports has experienced an internal error. Please <a href="mailto:exports@hotosm.org">email us</a> if this problem persists.
+                {% endblocktrans %}
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

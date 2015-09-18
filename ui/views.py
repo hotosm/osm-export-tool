@@ -11,11 +11,11 @@ from social.apps.django_app.utils import psa
 from django.conf import settings
 
 
-"""
- Handles display of the create export page.
-"""
 @require_http_methods(['GET'])
 def create_export(request):
+    """
+    Handles display of the create export page.
+    """
     user = request.user
     max_extent = {'extent': settings.JOB_MAX_EXTENT}
     for group in user.groups.all():
@@ -26,11 +26,12 @@ def create_export(request):
     context.update(csrf(request))
     return render_to_response('ui/create.html', context)
 
-"""
- Handles display of the clone export page.
-"""
+
 @require_http_methods(['GET'])
 def clone_export(request, uuid=None):
+    """
+    Handles display of the clone export page.
+    """
     user = request.user
     max_extent = {'extent': 2500000} # default
     for group in user.groups.all():
@@ -49,8 +50,13 @@ def logout(request):
 
 
 def require_email(request):
+    """
+    View to handle email collection for new user loging in with OSM account.
+    """
     backend = request.session['partial_pipeline']['backend']
     return render_to_response('osm/email.html', {'backend': backend}, RequestContext(request))
+
+# error views
 
 @require_http_methods(['GET'])
 def create_error_view(request):
@@ -58,3 +64,9 @@ def create_error_view(request):
 
 def internal_error_view(request):
     return render_to_response('ui/500.html', {}, RequestContext(request))
+
+def not_found_error_view(request):
+    return render_to_response('ui/404.html', {}, RequestContext(request))
+
+def not_allowed_error_view(request):
+    return render_to_response('ui/403.html', {}, RequestContext(request))
