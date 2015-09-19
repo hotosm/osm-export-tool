@@ -69,7 +69,7 @@ $ sudo su - postgres
 $ createdb 'hot_exports_dev'
 $ create role hot with password '<-password->'
 </pre>
-You might need to update the pg_hba.conf file to allow localhost connections via tcp/ip or
+You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
 allow trusted connections from localhost.
 
 Run <code>$ psql -h localhost -U hot -W hot_exports_dev</code>
@@ -112,7 +112,7 @@ Download the latest version of the __mkgmap__ utility for making garming img fil
 
 Download the latest version of the __splitter__ utility for splitting larger osm files into tiles. [http://www.mkgmap.org.uk/download/splitter.html](http://www.mkgmap.org.uk/download/splitter.html)
 
-Create a directory and unpack the <code>mgmap</code> and <code>splitter</code> archives into it.
+Create a directory and unpack the <code>mkgmap</code> and <code>splitter</code> archives into it.
 
 ###### OSMAnd OBF
 
@@ -196,7 +196,7 @@ For more detailed information on Celery Workers see [here](http://celery.readthe
 
 ## Using Transifex service
 
-* to work with Transifex you need to create `~/.transifexrc`, and modify it's access privileges `chmod 600 ~/.transifexrc`
+To work with Transifex you need to create `~/.transifexrc`, and modify it's access privileges `chmod 600 ~/.transifexrc`
 
 Example `.transifexrc` file:
 
