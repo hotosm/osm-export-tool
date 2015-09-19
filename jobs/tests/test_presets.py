@@ -67,11 +67,13 @@ class TestHDMToJSON(TestCase):
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
     
+    @skip
     def test_hdm_to_json(self,):
         js = json.dumps(HOT_HDM, sort_keys=False)
         f = open(self.path + '/hdm.json', 'w')
         f.write(js)
         f.close()
+        os.remove(self.path + '/hdm.json')
 
 
 class TestTagParser(TestCase):
