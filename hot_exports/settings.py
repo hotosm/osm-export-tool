@@ -363,7 +363,7 @@ OVERPASS_API_URL = 'http://localhost/interpreter'
 Maximum extent of a Job
 max of (latmax-latmin) * (lonmax-lonmin)
 """
-JOB_MAX_EXTENT = 2500000 # default export max extent
+JOB_MAX_EXTENT = 2500000 # default export max extent in sq km
 
 # maximum number of runs to hold for each export
 EXPORT_MAX_RUNS = 5
