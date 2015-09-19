@@ -390,7 +390,7 @@ create.job = (function(){
                     "transform": new OpenLayers.Style({
                         display: "${getDisplay}",
                         cursor: "${role}",
-                        pointRadius: 6,
+                        pointRadius: 4,
                         fillColor: "blue",
                         fillOpacity: 1,
                         strokeColor: "blue",
@@ -398,14 +398,13 @@ create.job = (function(){
                     {
                         context: {
                             getDisplay: function(feature) {
-                                // hide the resize handles except at the south-east corner
+                                // hide the resize handles except at the se & nw corners
                                 return  feature.attributes.role === "n-resize"  ||
                                         feature.attributes.role === "ne-resize" ||
                                         feature.attributes.role === "e-resize"  ||
                                         feature.attributes.role === "s-resize"  ||
                                         feature.attributes.role === "sw-resize" ||
-                                        feature.attributes.role === "w-resize"  ||
-                                        feature.attributes.role === "nw-resize" ? "none" : ""
+                                        feature.attributes.role === "w-resize"  ? "none" : ""
                             }
                         }
                     })
