@@ -98,6 +98,7 @@ $ export CPLUS_INCLUDE_PATH=/usr/include/gdal
 $ export C_INCLUDE_PATH=/usr/include/gdal
 $ pip install GDAL=1.11.2
 </pre>
+
 ##### Install third-party dependencies
 The HOT Export pipeline depends on a number of third-party tools.
 
@@ -111,19 +112,84 @@ Download the latest version of the __mkgmap__ utility for making garming img fil
 
 Download the latest version of the __splitter__ utility for splitting larger osm files into tiles. [http://www.mkgmap.org.uk/download/splitter.html](http://www.mkgmap.org.uk/download/splitter.html)
 
+Create a directory and unpack the <code>mgmap</code> and <code>splitter</code> archives into it.
 
-##### Final Step:
-Install the dependencies into your virtualenv:
+###### OSMAnd OBF
+
+For details on the OSMAnd Map Creator utility see [http://wiki.openstreetmap.org/wiki/OsmAndMapCreator](http://wiki.openstreetmap.org/wiki/OsmAndMapCreator)
+
+Download the OSMAnd MapCreator from [http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip](http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip).
+Unpack this into a directory somewhere.
+
+##### Install RabbitMQ
+
+HOT Exports depends on the **rabbitmq-server**. For more detailed installation instructions see [http://www.rabbitmq.com/install-debian.html](http://www.rabbitmq.com/install-debian.html).
+The default configuration should be fine for development purposes.
+
+<code>$ sudo apt-get install rabbitmq-server</code>
+
+##### Checkout the HOT Export Tool source
+
+In the hotosm project directory run:
+
+<code>$ git clone git@github.com:hotosm/osm-export-tool2.git</code>
+
+##### Install the project's python dependencies
+
+From the project directory, install the dependencies into your virtualenv:
 <pre>
-$ pip install -r /path/to/requirements-dev.txt
+$ pip install -r requirements-dev.txt
+$ pip install -r requirements.txt
 </pre>
+
+##### Project Configuration
+
+Create a <code>settings_private.py</code> file in the hot_exports directory and add the following:
+
+<pre>
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'hot_exports_dev',
+        'OPTIONS': {
+            'options': '-c search_path=exports,public'
+        },
+        'CONN_MAX_AGE': None,
+        'HOST': 'localhost',
+        'USER': 'hot',
+        'PASSWORD': 'your password',
+    }
+}
+</pre>
+
+Update the <code>settings.py</code> file. Set the following config variables:
+
+Set <code>OSMAND_MAP_CREATOR_DIR</code> to the directory where you installed the OSMAnd MapCreator.
+
+Set <code>GARMIN_CONFIG</code> the **absolute** path to the garmin configuration file, ./utils/conf/garmin_config.xml by default.
+
+Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
+absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
+
 Once you've got all the dependencies installed, run ./manage.py migrate to set up the database tables etc..
 Then run ./manage.py runserver to run the server.
-You should then be able to browse to http://localhost:8000/
+You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
 
----------------------------------------------------------------------------------------
+##### Celery Workers
 
-# Transifex workflow
+HOT Exports depends on the [Celery](http://celery.readthedocs.org/en/latest/index.html) distributed task queue. As export jobs are created
+they are pushed to a Celery Worker for processing. At least two celery workers need to be started as follows:
+
+From a 'hotosm' virtualenv directory (use screen), run:
+
+<code>$ celery -A hot_exports worker --loglevel debug --logfile=celery.log</code>.
+
+This will start a celery worker which will process export tasks. An additional celery worker needs to be started to handle purging of expired unpublished
+export jobs. From another hotosm virtualenv terminal session, run:
+
+<code>$ celery -A hot_exports beat --loglevel debug --logfile=celery-beat.log</code>
+
+See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>settings.py</code>
 
 
 ## Using Transifex service
@@ -138,7 +204,7 @@ Example `.transifexrc` file:
     token =
     username = my_transifex_username
 
-## Manage source files
+### Manage source files
 
 * update source language (English) file
   * `python manage.py makemessages -l en`
@@ -146,7 +212,7 @@ Example `.transifexrc` file:
 * push the new source file to Transifex service, it will overwrite current source file
   * `tx push -s`
 
-## Pulling latest changes from the Transfex
+### Pulling latest changes from the Transfex
 
 * when adding a new language, it's resource file does not exists in the project, but it's ok as it will be automatically created when pulling new translations from the service
   * add a local mapping: `tx set -r osm-export-tool2.master -l hr osmtm/locale/hr/LC_MESSAGES/osmtm.po`
