@@ -166,13 +166,13 @@ Update the <code>settings.py</code> file. Set the following config variables:
 
 Set <code>OSMAND_MAP_CREATOR_DIR</code> to the directory where you installed the OSMAnd MapCreator.
 
-Set <code>GARMIN_CONFIG</code> the **absolute** path to the garmin configuration file, ./utils/conf/garmin_config.xml by default.
+Set <code>GARMIN_CONFIG</code> to point to the **absolute** path to the garmin configuration file, ./utils/conf/garmin_config.xml by default.
 
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
 
-Once you've got all the dependencies installed, run ./manage.py migrate to set up the database tables etc..
-Then run ./manage.py runserver to run the server.
+Once you've got all the dependencies installed, run <code>./manage.py migrate</code> to set up the database tables etc..
+Then run <code>./manage.py runserver</code> to run the server.
 You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
 
 ##### Celery Workers
@@ -189,7 +189,9 @@ export jobs. From another hotosm virtualenv terminal session, run:
 
 <code>$ celery -A hot_exports beat --loglevel debug --logfile=celery-beat.log</code>
 
-See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>settings.py</code>
+See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>settings.py</code>.
+
+For more detailed information on Celery Workers see [here](http://celery.readthedocs.org/en/latest/userguide/workers.html)
 
 
 ## Using Transifex service
