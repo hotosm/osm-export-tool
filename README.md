@@ -69,6 +69,7 @@ $ sudo su - postgres
 $ createdb 'hot_exports_dev'
 $ create role hot with password '<-password->'
 </pre>
+
 You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
 allow trusted connections from localhost.
 
@@ -80,11 +81,15 @@ $ GRANT ALL PRIVILEGES ON DATABASE hot_exports_dev TO hot;
 $ CREATE EXTENSION POSTGIS;
 $ CREATE EXTENSION HSTORE;
 </pre>
+
 Create the exports schema
+
 <pre>
 $ CREATE SCHEMA exports AUTHORIZATION hot;
 </pre>
+
 ##### Install GDAL
+
 For ubuntu, following packages are required before installing GDAL
 <pre>
 $ sudo apt-get install python-software-properties
@@ -92,11 +97,12 @@ $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 $ sudo apt-get update
 $ sudo apt-get install gdal-bin libgdal-dev
 </pre>
+
 To install the python GDAL bindings into your virtualenv you need to tell pip where to find the libgdal header files, so in your shell run:
+
 <pre>
 $ export CPLUS_INCLUDE_PATH=/usr/include/gdal
 $ export C_INCLUDE_PATH=/usr/include/gdal
-$ pip install GDAL=1.11.2
 </pre>
 
 ##### Install third-party dependencies
