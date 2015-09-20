@@ -15,7 +15,7 @@ before_install:
     # postgis from pgdg requires different gdal package than the grass package
     - sudo rm -f /etc/apt/sources.list.d/pgdg-source.list 
     - sudo apt-get update -qq
-    - sudo apt-get remove postgresql-9.1-postgis-2.1
+    - sudo apt-get remove postgresql-9.3-postgis-2.1
     - sudo apt-get install postgresql-9.3
     - sudo apt-get install -y postgis postgresql-9.3-postgis-2.1
     - sudo apt-get install postgresql-9.3-postgis-scripts
