@@ -686,7 +686,11 @@ span#toggle-feature {
 }
 
 .fa-users {
-    margin-right: .7em;
+    margin-right: .5em;
+}
+
+.glyphicon-globe, .glyphicon-time, .glyphicon-user {
+    margin-right: .5em;
 }
 
 /*
