@@ -16,8 +16,8 @@ before_install:
     - sudo apt-get update -qq
     - sudo apt-get remove postgresql-9.3-postgis-2.1
     - sudo apt-get install postgresql-9.3
-    - sudo apt-get install -y postgis
-    - sudo apt-get install postgresql-9.3-postgis-scripts
+    - sudo apt-get install -y postgis postgresql-contrib
+    #- sudo apt-get install postgresql-9.3-postgis-scripts
     - sudo apt-get install -y libgdal1h gdal-bin libgdal-dev
     - export CPLUS_INCLUDE_PATH=/usr/include/gdal
     - export C_INCLUDE_PATH=/usr/include/gdal
