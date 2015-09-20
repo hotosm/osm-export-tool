@@ -1,5 +1,8 @@
 OSM Export Tool
 ======
+
+<!---![alt text](https://travis-ci.org/hotosm/osm-export-tool2.svg?branch=master)--->
+
 **Osm Export Tool** platform allows you to create custom OpenStreetMap exports for various HOT regions. You can specify an area of interest and a list of features (OpenStreetMap tags) for the export. A current OpenStreetMap data extract for that area in various data formats is then created for you within minutes.
 
 The live site http://export.hotosm.org is currently still powered by the older version 1 code living at https://github.com/hotosm/hot-exports
