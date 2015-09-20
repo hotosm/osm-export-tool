@@ -529,15 +529,15 @@ jobs.list = (function(){
                         var owner = $('span#user').text();
                         var $div = $('<div>');
                         var $toggleSpan = $('<span id="' + row.uid + '" class="toggle-feature glyphicon glyphicon-eye-open"></span>');
-                        var $pubSpan = $('<span class="glyphicon">&nbsp;</span>');
+                        var $pubSpan = $('<span class="glyphicon"></span>');
                         $div.append($pubSpan);
                         if (owner === row.owner) {
-                            var $userSpan = $('<span class="glyphicon glyphicon-user">&nbsp;</span>');
+                            var $userSpan = $('<span class="glyphicon glyphicon-user"></span>');
                             $div.append($userSpan);
                         }
                         else {
                             //$div.append($('<span class="glyphicon glyphicon-none">&nbsp;</span>'));
-                            var $userSpan = $('<span class="fa fa-users">&nbsp;</span>');
+                            var $userSpan = $('<span class="fa fa-users"></span>');
                             $div.append($userSpan);
                         }
                         if (published) {
