@@ -22,8 +22,6 @@ Unix environments come pre-installed with Python. To check version, run the comm
 
 <code>$ python -V</code>
 
-<code>$ python3 -V</code>
-
 HOT Exports requires Python 2.7.x. If you have 2.7.x installed, you can go ahead.
 
 ##### pip
