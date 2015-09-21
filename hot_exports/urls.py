@@ -24,6 +24,7 @@ urlpatterns += i18n_patterns('ui.views',
     url(r'^login/$', TemplateView.as_view(template_name='osm/login.html'), name="login"), 
     url(r'^logout$', 'logout', name='logout'),
     url(r'^error$', create_error_view, name='error'),
+    url(r'^update$', TemplateView.as_view(template_name='ui/upgrade.html'), name='update'),
     url(r'^email/$', 'require_email', name='require_email'),
 )
 
