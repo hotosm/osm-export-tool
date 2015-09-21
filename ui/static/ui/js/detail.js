@@ -543,7 +543,6 @@ exports.detail = (function(){
                                                             </table> \
                                                         </div> \
                                                     </td></tr> \
-                                                    <tr><td></td></tr> \
                                                </table> \
                                            </div> \
                                        </div> \
