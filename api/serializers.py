@@ -61,10 +61,14 @@ class SimpleExportConfigSerializer(serializers.Serializer):
     config_type = serializers.CharField()
     filename = serializers.CharField()
     published = serializers.BooleanField()
+    created = serializers.SerializerMethodField()
     url = serializers.HyperlinkedIdentityField(
        view_name='api:configs-detail',
        lookup_field='uid'
     )
+    
+    def get_created(self, obj):
+        return obj.created_at
 
 
 class ExportConfigSerializer(serializers.Serializer):
