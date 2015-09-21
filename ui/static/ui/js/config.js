@@ -27,5 +27,6 @@ Config.MAPQUEST_SEARCH_URL = 'http://open.mapquestapi.com/nominatim/v1/search'
 
 // error pages
 Config.CREATE_ERROR_URL = '/error'
+Config.UPDATE_BROWSER_URL = '/update'
 
 

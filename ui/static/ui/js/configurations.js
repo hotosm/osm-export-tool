@@ -241,9 +241,7 @@ configurations.list = (function(){
                     }
                     else {
                         console.log('File upload not supported in this browser');
-                        alert('Unfortunately, file upload is not supported in your browser.');
-                        // whats the fallback?
-                        //TODO: alert user here..
+                        window.location.href = Config.UPDATE_BROWSER_URL
                     }
                     return xhr;
                 },
