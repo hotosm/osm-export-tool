@@ -91,7 +91,8 @@ $ CREATE SCHEMA exports AUTHORIZATION hot;
 
 ##### Install GDAL
 
-For ubuntu, following packages are required before installing GDAL
+We need gdal >=1.10.0
+
 <pre>
 $ sudo apt-get install python-software-properties
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
