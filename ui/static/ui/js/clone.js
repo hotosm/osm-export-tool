@@ -1306,14 +1306,17 @@ clone.job = (function(){
                             
                         }
                         // if in cache use cached value
+                        /*
                         if(query_cache[query]){
                             process(query_cache[query]);
                             return;
                         }
+                        */
                         if( typeof searching != "undefined") {
                             clearTimeout(searching);
                             process([]);
                         }
+                        /*
                         searching = setTimeout(function() {
                             return $.getJSON(
                                 Config.MAPQUEST_SEARCH_URL,
@@ -1326,9 +1329,35 @@ clone.job = (function(){
                                 function(data){
                                     // build list of suggestions
                                     var suggestions = [];
-                                    $.each(data, function(i, place){
+                                    $.each(g, function(i, place){
                                         // only interested in relations
-                                        if (place.osm_type === 'relation') {
+                                        if (place.osm_type === 'relation' || place.osm_type === 'way') {
+                                            suggestions.push(place);
+                                        }
+                                    });
+                                    // save result to cache
+                                    query_cache[query] = suggestions;
+                                    return process(suggestions);
+                                }
+                            );
+                        }, 100); // timeout before initiating search..
+                        */
+                        searching = setTimeout(function() {
+                            return $.getJSON(
+                                Config.GEONAMES_SEARCH_URL,
+                                {
+                                    q: query,
+                                    maxRows: 20,
+                                    username: 'hotexports',
+                                    style: 'full'
+                                },
+                                function(data){
+                                    // build list of suggestions
+                                    var suggestions = [];
+                                    var geonames = data.geonames;
+                                    $.each(geonames, function(i, place){
+                                        // only interested in features with a bounding box
+                                        if (place.bbox) {
                                             suggestions.push(place);
                                         }
                                     });
@@ -1341,8 +1370,15 @@ clone.job = (function(){
             },
             
             displayText: function(item){
-                return item.display_name;
+                //return item.display_name;
+                names = [];
+                item.name.trim() != "" ? names.push(item.name) : null;
+                item.adminName1.trim() != "" ? names.push(item.adminName1) : null;
+                item.adminName2.trim() != "" ? names.push(item.adminName2) : null;
+                item.countryName.trim() != "" ? names.push(item.countryName) : null;
+                return names.join(separator=', ');
             },
+            /*
             afterSelect: function(item){
                 var boundingbox = item.boundingbox;
                 var bottom = boundingbox[0], top = boundingbox[1],
@@ -1355,6 +1391,20 @@ clone.job = (function(){
                     transform.setFeature(feature);
                 }
             }
+            */
+            afterSelect: function(item){
+                var boundingbox = item.bbox;
+                var bottom = boundingbox.south, top = boundingbox.north,
+                    left = boundingbox.west, right = boundingbox.east;
+                var bounds = new OpenLayers.Bounds(left, bottom, right, top);
+                // add the bounds to the map..
+                var feature = buildBBoxFeature(bounds);
+                // allow bbox to be modified
+                if (feature){
+                    transform.setFeature(feature);
+                }
+            }
+            
         });
         
         /**

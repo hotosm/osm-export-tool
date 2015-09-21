@@ -25,6 +25,9 @@ Config.OSM_TAGS_URL = '/api/osm-data-model?format=json'
 Config.NOMINATIM_SEARCH_URL = 'http://nominatim.openstreetmap.org/search'
 Config.MAPQUEST_SEARCH_URL = 'http://open.mapquestapi.com/nominatim/v1/search'
 
+// geonames
+Config.GEONAMES_SEARCH_URL = 'http://api.geonames.org/searchJSON'
+
 // error pages
 Config.CREATE_ERROR_URL = '/error'
 Config.UPDATE_BROWSER_URL = '/update'
