@@ -255,7 +255,7 @@ jobs.list = (function(){
                     "transform": new OpenLayers.Style({
                         display: "${getDisplay}",
                         cursor: "${role}",
-                        pointRadius: 6,
+                        pointRadius: 4,
                         fillColor: "blue",
                         fillOpacity: 1,
                         strokeColor: "blue",
@@ -270,8 +270,7 @@ jobs.list = (function(){
                                         feature.attributes.role === "e-resize"  ||
                                         feature.attributes.role === "s-resize"  ||
                                         feature.attributes.role === "sw-resize" ||
-                                        feature.attributes.role === "w-resize"  ||
-                                        feature.attributes.role === "nw-resize" ? "none" : ""
+                                        feature.attributes.role === "w-resize"  ? "none" : ""
                             }
                         }
                     })
