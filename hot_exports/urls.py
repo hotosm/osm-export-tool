@@ -20,7 +20,7 @@ urlpatterns = []
 
 urlpatterns += i18n_patterns('ui.views',
     url(r'^$', login_required(TemplateView.as_view(template_name='ui/index.html')), name='index'),
-    url(r'^jobs/', include(ui_urls)),
+    url(r'^exports/', include(ui_urls)),
     url(r'^login/$', TemplateView.as_view(template_name='osm/login.html'), name="login"), 
     url(r'^logout$', 'logout', name='logout'),
     url(r'^error$', create_error_view, name='error'),
