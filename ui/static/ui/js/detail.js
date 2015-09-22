@@ -176,7 +176,7 @@ exports.detail = (function(){
         
         // handle clone event
         $('button#clone').bind('click', function(e){
-            window.location.href = '/clone/' + exports.detail.job_uid;
+            window.location.href = '/exports/clone/' + exports.detail.job_uid;
         });
     }
     
