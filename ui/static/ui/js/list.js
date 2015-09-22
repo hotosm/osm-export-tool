@@ -73,7 +73,9 @@ jobs.list = (function(){
                 sphericalMercator: true,
                 noWrap: true // don't wrap world extents
         }
-        map = new OpenLayers.Map('list-export-map', {options: mapOptions});
+        map = new OpenLayers.Map('list-export-map', {
+            options: mapOptions
+        });
         
         // restrict extent to world bounds to prevent panning..
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
@@ -98,15 +100,25 @@ jobs.list = (function(){
         map.addControl(selectControl);
         selectControl.activate();
         
-        job_extents.events.register("featureselected", this, function(e) {
+        job_extents.events.register("featureselected", this, function(e){
             var uid = e.feature.data.uid;
             $('tr#' + uid).css('background-color', '#E8E8E8');
         });
         
-        job_extents.events.register("featureunselected", this, function(e) {
+        job_extents.events.register("featureunselected", this, function(e){
             var uid = e.feature.data.uid;
             $('tr#' + uid).css('background-color', '#FFF');
         });
+        
+        job_extents.events.register('featureover', this, function(e){
+            $popup = $('#feature-popup');
+            $popup.css('display', 'block');
+        });
+        
+        job_extents.events.register('featureout', this, function(e){
+            $('#feature-popup').css('display', 'none');
+        });
+    
         
         /*
          * Double-click handler.
@@ -199,6 +211,9 @@ jobs.list = (function(){
             transform.unsetFeature();
             box.activate();
         });
+        
+        map.setLayerIndex(bbox, 0); 
+        map.setLayerIndex(job_extents, 100);
         
         // clears the search selection area
         $('#clear-filter').bind('click', function(e){
@@ -326,7 +341,9 @@ jobs.list = (function(){
             // default search endpoint
             url = Config.JOBS_URL;
         }
-        $.ajax(url)
+        $.ajax({
+            url: url,
+        })
         .done(function(data, textStatus, jqXHR){    
             // generate pagination on UI
             paginate(jqXHR);
@@ -703,7 +720,9 @@ jobs.list = (function(){
         
         // run search on search form input events
         $('form#search input').bind('input', function(e){
-            runSearch();
+            setTimeout(function(){
+                runSearch();
+            }, 450);
         });
         
         // run search on selection changes
