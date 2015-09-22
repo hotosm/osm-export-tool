@@ -1010,7 +1010,7 @@ clone.job = (function(){
                     },
                     success: function(result) {
                         var uid = result.uid;
-                        var url = '/jobs/' + uid;
+                        var url = '/exports/' + uid;
                         window.location.href=url;
                     },
                     error: function(jqXHR, textStatus, errorThrown){

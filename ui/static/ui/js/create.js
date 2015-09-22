@@ -998,7 +998,7 @@ create.job = (function(){
                     },
                     success: function(result) {
                         var uid = result.uid;
-                        var url = '/jobs/' + uid;
+                        var url = '/exports/' + uid;
                         window.location.href=url;
                     }
                 });

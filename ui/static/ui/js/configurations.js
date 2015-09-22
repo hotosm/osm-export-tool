@@ -501,6 +501,7 @@ configurations.list = (function(){
                         return '<a href="' + row.upload + '" target="_blank">' + data + '</a>';
                     }
                 },
+                { data: 'owner'},
                 {
                     data: 'published',
                     orderable:false,
@@ -508,14 +509,14 @@ configurations.list = (function(){
                         var published = row.published;
                         var owner = $('span#user').text();
                         var $div = $('<div>');
-                        var $pubSpan = $('<span class="glyphicon">&nbsp;</span>');
+                        var $pubSpan = $('<span class="glyphicon"></span>');
                         $div.append($pubSpan);
                         if (owner === row.owner) {
-                            var $userSpan = $('<span class="glyphicon glyphicon-user">&nbsp;</span>');
+                            var $userSpan = $('<span class="glyphicon glyphicon-user"></span>');
                             $div.append($userSpan);
                         }
                         else {
-                            var $userSpan = $('<span class="fa fa-users">&nbsp;</span>');
+                            var $userSpan = $('<span class="fa fa-users"></span>');
                             $div.append($userSpan);
                         }
                         if (published) {

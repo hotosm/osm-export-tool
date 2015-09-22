@@ -117,7 +117,7 @@ jobs.list = (function(){
                     dblclick: function(e){
                         var feature = this.layer.selectedFeatures[0];
                         var uid = feature.attributes.uid;
-                        window.location.href = '/jobs/' + uid;
+                        window.location.href = '/exports/' + uid;
                     }
                 },
                 {
@@ -508,7 +508,7 @@ jobs.list = (function(){
                 {
                     data: 'name',
                     render: function(data, type, row){
-                        return '<a id="' + row.uid + '" href="/jobs/' + row.uid + '">' + data + '</a>';
+                        return '<a id="' + row.uid + '" href="downloads/' + row.uid + '">' + data + '</a>';
                     }
                 },
                 {data: 'description'},
@@ -516,10 +516,12 @@ jobs.list = (function(){
                 {
                     data: 'created_at',
                     render: function(data, type, row){
-                        return moment(data).format('YYYY-MM-DD hh:mm a');
+                        //return moment(data).format('YYYY-MM-DD hh:mm a');
+                        return moment(data).format('YYYY-MM-DD');
                     }
                 },
                 {data: 'region.name'},
+                {data: 'owner'},
                 {
                     data: 'published',
                     orderable:false,
