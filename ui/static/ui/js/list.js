@@ -508,7 +508,7 @@ jobs.list = (function(){
                 {
                     data: 'name',
                     render: function(data, type, row){
-                        return '<a id="' + row.uid + '" href="downloads/' + row.uid + '">' + data + '</a>';
+                        return '<a id="' + row.uid + '" href="/exports/' + row.uid + '">' + data + '</a>';
                     }
                 },
                 {data: 'description'},
