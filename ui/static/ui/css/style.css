@@ -622,6 +622,7 @@ ul.pager {
 
 .input-group.search {
     width: 100% !important;
+    padding-right: 1em !important;
 }
 
 #info {
