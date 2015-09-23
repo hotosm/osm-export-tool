@@ -207,8 +207,6 @@ span.heading {
 }
 
 #map-column {
-    border-left: 2px solid lightgrey;
-    border-top: 1px solid lightgrey;
 }
 
 /* Create export form styles */
@@ -643,6 +641,11 @@ select#page-size {
 
 table#jobs {
     font-size: small;
+    fixed-width: 100%;
+}
+
+table#jobs td.owner {
+    word-break: break-all;
 }
 
 #results {
@@ -696,6 +699,10 @@ span#toggle-feature {
 }
 
 .glyphicon-globe, .glyphicon-time, .glyphicon-user {
+    margin-right: .5em;
+}
+
+.toggle-feature {
     margin-right: .5em;
 }
 

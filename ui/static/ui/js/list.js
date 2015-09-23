@@ -233,6 +233,13 @@ jobs.list = (function(){
             }
         });
         
+        /*
+         * Reset the map to the job extents.
+         */
+        $('#reset-map').bind('click', function(e){
+            map.zoomToExtent(job_extents.getDataExtent());
+        });
+        
         // make map div sticky
         /*
         var $mapColumn = $('#map-column');
@@ -379,6 +386,18 @@ jobs.list = (function(){
                    }
                 }
                 $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+            });
+            
+            $('span.zoom-feature').on('click', function(e){
+                var uid = $(e.target).attr('data-zoom');
+                for(var f=0; f < job_extents.features.length; f++){
+                    var feature = job_extents.features[f];
+                    if(feature.attributes.uid === uid){;
+                        var bounds = feature.geometry.bounds;
+                        map.zoomToExtent(bounds);
+                   }
+                }
+                
             });
             
             // clear the existing export extent features and add the new ones..
@@ -546,7 +565,7 @@ jobs.list = (function(){
                         var published = row.published;
                         var owner = $('span#user').text();
                         var $div = $('<div>');
-                        var $toggleSpan = $('<span id="' + row.uid + '" class="toggle-feature glyphicon glyphicon-eye-open"></span>');
+                        var $toggleSpan = $('<span id="' + row.uid + '" class="toggle-feature glyphicon glyphicon-eye-open" data-toggle="tooltip"></span>');
                         var $pubSpan = $('<span class="glyphicon"></span>');
                         $div.append($pubSpan);
                         if (owner === row.owner) {
@@ -565,6 +584,8 @@ jobs.list = (function(){
                             $pubSpan.addClass('glyphicon-time');
                         }
                         $div.append($toggleSpan);
+                        var $zoomSpan = $('<span class="fa fa-search-plus zoom-feature" data-zoom="' + row.uid + '"></span>');
+                        $div.append($zoomSpan);
                         
                         // return the html
                         return $div[0].outerHTML;
@@ -574,19 +595,42 @@ jobs.list = (function(){
             rowCallback: function(row, data, index){
                 var user = $('span#user').text();
                 var owner = user === data.owner ? 'me' : data.owner;
+                var $pubSpan = $(row).find('.glyphicon-globe');
+                var $unpubSpan = $(row).find('.glyphicon-time');
+                var $featToggle = $(row).find('.toggle-feature');
+                var $users = $(row).find('.fa-users');
+                var $user = $(row).find('.glyphicon-user');
+                var $zoomSpan = $(row).find('.fa-search-plus');
                 if (data.published) {
-                    $(row).tooltip({
+                    $pubSpan.tooltip({
                         'html': true,
-                        'title': gettext('Published export.') + '<br/>' + gettext('Created by: ') + owner
+                        'title': gettext('Published export.')
                     });
                 }
                 else {
                     var expires = moment(data.created_at).add(2, 'days').format('YYYY-MM-DD hh:mm a');
-                    $(row).tooltip({
+                    $unpubSpan.tooltip({
                         'html': true,
-                        'title': gettext('Unpublished export.') + '<br/>' + gettext('Expires: ') + expires + '.<br/>' + gettext('Created by: ') + owner
+                        'title': gettext('Unpublished export') + '<br/>' + gettext('Expires: ') + expires
                     });
                 }
+                $users.tooltip({
+                    'html': true,
+                    'title': gettext('Created by: ') + owner
+                });
+                $user.tooltip({
+                    'html': true,
+                    'title': gettext('Created by: ') + owner
+                });
+                $featToggle.tooltip({
+                    'html': true,
+                    'title': gettext('click to toggle feature visibility')
+                });
+                $zoomSpan.tooltip({
+                    'html': true,
+                    'title': gettext('click to zoom')
+                });
+                $(row).find('td').eq(5).addClass('owner');
             }
            });
         // clear the empty results message on initial draw..
@@ -634,6 +678,7 @@ jobs.list = (function(){
     
     /**
      * Initializes the feature tag filter.
+     *  -- NOT IMPLEMENTED YET --
      */
     function initFeatureTagFilter() {
         
