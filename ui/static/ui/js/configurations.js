@@ -492,7 +492,7 @@ configurations.list = (function(){
                 {
                     data: 'created',
                     render: function(data, type, row){
-                        return moment(data).format('YYYY-MM-DD hh:mm a');
+                        return moment(data).format('YYYY-MM-DD');
                     }
                 },
                 {
@@ -547,19 +547,30 @@ configurations.list = (function(){
             rowCallback: function(row, data, index){
                 var user = $('span#user').text();
                 var owner = user === data.owner ? 'me' : data.owner;
+                var $pubSpan = $(row).find('.glyphicon-globe');
+                var $unpubSpan = $(row).find('.glyphicon-minus-sign');
+                var $users = $(row).find('.fa-users');
+                var $user = $(row).find('.glyphicon-user');
                 if (data.published) {
-                    $(row).tooltip({
+                    $pubSpan.tooltip({
                         'html': true,
-                        'title': 'Published preset.<br/>Created by: ' + owner
+                        'title': 'Published preset'
                     });
                 }
                 else {
-                    var expires = moment(data.created_at).add(2, 'days').format('YYYY-MM-DD hh:mm a');
-                    $(row).tooltip({
+                    $unpubSpan.tooltip({
                         'html': true,
-                        'title': 'Private preset. <br/>Created by: ' + owner
+                        'title': 'Private preset'
                     });
                 }
+                $users.tooltip({
+                    'html': true,
+                    'title': gettext('Created by ') + owner
+                });
+                $user.tooltip({
+                    'html': true,
+                    'title': gettext('Created by ') + owner
+                });
             }
            });
         // clear the empty results message on initial draw..
@@ -613,7 +624,7 @@ configurations.list = (function(){
         });
         
         // run search on user filtering state change
-        $('input#user-check').bind('click', function(e){
+        $('input#user-check').bind('change', function(e){
             // pull the username out of the dom
             var username = $('span#user').text();
             var $this = $(this);
@@ -628,6 +639,13 @@ configurations.list = (function(){
                 //$('input#published').val('True');
                 runSearch();
             }
+        });
+        
+        $('button#reset-form').on('click', function(e){
+            $('input#search').val('');
+            $('input#user-check').prop('checked', false).trigger('change');
+            $('#start-date').data('DateTimePicker').date(moment().subtract(1, 'month'));
+            $('#end-date').data('DateTimePicker').date(moment());
         });
     }
     

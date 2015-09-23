@@ -304,7 +304,7 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     pagination_class = LinkHeaderPagination
     filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
     filter_class = ExportConfigFilter
-    search_fields = ('name', 'config_type',)
+    search_fields = ('name', 'config_type', 'user__username')
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     queryset = ExportConfig.objects.filter(config_type='PRESET')

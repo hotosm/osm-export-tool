@@ -43,6 +43,28 @@ jobs.list = (function(){
         }
     }
     
+    var stickyTop = $('#map-column').offset().top; // returns number    
+ 
+    $(window).scroll(function(){ // scroll event
+        var bannerHeight = $('#banner').height();
+        var navbarHeight = $('.navbar').height();
+        var windowTop = $(window).scrollTop(); // returns number
+        if (stickyTop < windowTop) {
+            $('#map-column').css({
+                position: 'fixed',
+                top: 0,
+                right: 0
+            });
+        }
+        else {
+            $('#map-column').css({
+                position: 'relative',
+                //right: 0
+            });
+        }
+     
+    });
+    
     return {
         main: function(){
             $('div#search').css('display','none');

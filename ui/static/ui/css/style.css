@@ -656,7 +656,7 @@ table#jobs td.owner {
 }
 
 form#search {
-    padding: .7em;
+    padding-left: .7em;
 }
 
 #form-group-bbox {
@@ -701,7 +701,7 @@ span#toggle-feature {
     margin-right: .5em;
 }
 
-.glyphicon-globe, .glyphicon-time, .glyphicon-user {
+.glyphicon-globe, .glyphicon-time, .glyphicon-user, .glyphicon-minus-sign {
     margin-right: .5em;
 }
 
