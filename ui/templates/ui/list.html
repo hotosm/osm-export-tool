@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <!-- end date picker -->
-                <div class="form-group col-md-5 col-md-offset-2">
+                <div class="form-group col-md-5 col-md-offset-1">
                     <div class="input-group date" id='end-date'>
                         <span class="input-group-addon"><strong>{% trans 'End Date:' %}&nbsp;&nbsp;&nbsp;</strong></span>
                         <input type='text' class="form-control" name="end" />
@@ -62,7 +62,7 @@
                     <div class="table-responsive">
                         <table id="jobs" class="table table-hover">
                             <thead>
-                                <tr><th width="10%">{% trans 'Name' %}</th><th width="25%">{% trans 'Description' %}</th><th width="15%">{% trans 'Event' %}</th><th width="10%">{% trans 'Created' %}</th><th width="15%">{% trans 'Region' %}</th><th width="10%">Owner</th></th><th width="15%"></th></tr>
+                                <tr><th width="10%">{% trans 'Name' %}</th><th width="20%">{% trans 'Description' %}</th><th width="10%">{% trans 'Event' %}</th><th width="10%">{% trans 'Created' %}</th><th width="15%">{% trans 'Region' %}</th><th width="10%">Owner</th></th><th width="25%"></th></tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -131,6 +131,7 @@
             <div class="btn-group" role="group">
                 <button id="filter-area" class="btn btn-md btn-primary">{% trans 'Filter Area' %}</button>
                 <button id="clear-filter" class="btn btn-md btn-primary">{% trans 'Clear Filter' %}</button>
+                <button id="reset-map" class="btn btn-md btn-primary">{% trans 'Reset Map' %}</button>
             </div>
             <div id="alert-extents" class="alert alert-danger fade in"></div>
             <div id="valid-extents" class="alert alert-success fade in"></div>
