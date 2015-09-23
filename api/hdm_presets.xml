@@ -8944,6 +8944,66 @@
 				<text key="NOTE" text="NOTE" fr.text="NOTES" en.text="NOTE" />
 				<label text=" " />
 			</item>
+            <item name="Village Green" icon="styles/standard/leisure/common.png" type="closedway,relation" preset_name_label="true">
+            <link href="http://wiki.openstreetmap.org/wiki/Tag:landuse=village_green"
+                  cs.href="http://wiki.openstreetmap.org/wiki/Cs:Tag:landuse=village_green"
+                  de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:landuse=village_green"
+                  fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:landuse=village_green"
+                  ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:landuse=village_green"
+                  pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:landuse=village_green"
+                  pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:landuse=village_green"
+                  ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:landuse=village_green" />
+            <space />
+            <key key="landuse" value="village_green" />
+            <text key="name" text="Name" />
+        </item> <!-- Village Green -->
+        <item name="Common" icon="styles/standard/leisure/common.png" type="closedway,relation" preset_name_label="true">
+            <link href="http://wiki.openstreetmap.org/wiki/Tag:leisure=common"
+                  pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:leisure=common"
+                  ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:leisure=common" />
+            <space />
+            <key key="leisure" value="common" />
+            <text key="name" text="Name" />
+        </item> <!-- Common -->
+        <item name="Park" icon="styles/standard/leisure/park.png" type="closedway,relation" preset_name_label="true">
+            <link href="http://wiki.openstreetmap.org/wiki/Tag:leisure=park"
+                  de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:leisure=park"
+                  es.href="http://wiki.openstreetmap.org/wiki/ES:Tag:leisure=park"
+                  fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:leisure=park"
+                  ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:leisure=park"
+                  pt.href="http://wiki.openstreetmap.org/wiki/Pt:Tag:leisure=park"
+                  pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:leisure=park"
+                  ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:leisure=park" />
+            <space />
+            <key key="leisure" value="park" />
+            <text key="name" text="Name" />
+        </item> <!-- Park -->
+        <item name="Recreation Ground" icon="styles/standard/leisure/common.png" type="closedway,relation" preset_name_label="true">
+            <link href="http://wiki.openstreetmap.org/wiki/Tag:landuse=recreation_ground"
+                  cs.href="http://wiki.openstreetmap.org/wiki/Cs:Tag:landuse=recreation_ground"
+                  de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:landuse=recreation_ground"
+                  ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:landuse=recreation_ground"
+                  pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:landuse=recreation_ground"
+                  pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:landuse=recreation_ground"
+                  ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:landuse=recreation_ground" />
+            <space />
+            <key key="landuse" value="recreation_ground" />
+            <text key="name" text="Name" />
+        </item> <!-- Recreation Ground -->
+        <separator/>
+        <item name="Residential Area" icon="styles/standard/misc/landmark/building.png" type="closedway,relation" preset_name_label="true">
+            <link href="http://wiki.openstreetmap.org/wiki/Tag:landuse=residential"
+                  cs.href="http://wiki.openstreetmap.org/wiki/Cs:Tag:landuse=residential"
+                  de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:landuse=residential"
+                  fr.href="http://wiki.openstreetmap.org/wiki/FR:Tag:landuse=residential"
+                  ja.href="http://wiki.openstreetmap.org/wiki/JA:Tag:landuse=residential"
+                  pl.href="http://wiki.openstreetmap.org/wiki/Pl:Tag:landuse=residential"
+                  pt_BR.href="http://wiki.openstreetmap.org/wiki/Pt-br:Tag:landuse=residential"
+                  ru.href="http://wiki.openstreetmap.org/wiki/RU:Tag:landuse=residential" />
+            <space />
+            <key key="landuse" value="residential" />
+            <text key="name" text="Name" />
+        </item> <!-- Residential Area -->
 			<group name="Urban landuse" fr.name="Zones urbaines" en.name="Urban landuse" icon="styles/standard/misc/landmark/building.png">
 			<item name="Built urban landuses" fr.name="Zones baties urbaines" en.name="Built urban landuses" type="closedway,relation" >
 					<link href="http://wiki.openstreetmap.org/wiki/Landuse"/>

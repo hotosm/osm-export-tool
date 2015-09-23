@@ -393,7 +393,7 @@ class FinalizeRunTask(Task):
             
         # send notification email to user
         hostname = settings.HOSTNAME
-        url = 'http://{0}/jobs/{1}'.format(hostname, run.job.uid)
+        url = 'http://{0}/exports/{1}'.format(hostname, run.job.uid)
         addr = run.job.user.email
         subject = "Your HOT Export is ready"
         to = [addr]
@@ -429,7 +429,7 @@ class ExportTaskErrorHandler(Task):
         except IOError as e:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
         hostname = settings.HOSTNAME
-        url = 'http://{0}/jobs/{1}'.format(hostname, run.job.uid)
+        url = 'http://{0}/exports/{1}'.format(hostname, run.job.uid)
         addr = run.job.user.email
         subject = "Your HOT Export Failed"
         # email user and administrator
