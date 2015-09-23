@@ -44,12 +44,13 @@ jobs.list = (function(){
     }
     
     var stickyTop = $('#map-column').offset().top; // returns number    
- 
-    $(window).scroll(function(){ // scroll event
-        var bannerHeight = $('#banner').height();
-        var navbarHeight = $('.navbar').height();
-        var windowTop = $(window).scrollTop(); // returns number
-        if (stickyTop < windowTop) {
+    
+    /*
+     * Handle stickiness of map on window scroll
+     */
+    $(window).scroll(function(){
+        var windowTop = $(window).scrollTop();
+        if (stickyTop < windowTop && $(window).width() > 992) {
             $('#map-column').css({
                 position: 'fixed',
                 top: 0,
@@ -59,7 +60,6 @@ jobs.list = (function(){
         else {
             $('#map-column').css({
                 position: 'relative',
-                //right: 0
             });
         }
      
