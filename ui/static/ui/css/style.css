@@ -14,6 +14,9 @@
     .container, .container-fluid {
        width: 100% !important;  
     }
+    #start-date {
+        padding-right: 0px;
+    }
 }
 
 html, body {
@@ -704,6 +707,10 @@ span#toggle-feature {
 
 .toggle-feature {
     margin-right: .5em;
+}
+
+#start-date, #end-date {
+    padding-right: 1em;
 }
 
 /*

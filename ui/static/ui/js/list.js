@@ -395,6 +395,7 @@ jobs.list = (function(){
                     if(feature.attributes.uid === uid){;
                         var bounds = feature.geometry.bounds;
                         map.zoomToExtent(bounds);
+                        
                    }
                 }
                 
@@ -616,11 +617,11 @@ jobs.list = (function(){
                 }
                 $users.tooltip({
                     'html': true,
-                    'title': gettext('Created by: ') + owner
+                    'title': gettext('Created by ') + owner
                 });
                 $user.tooltip({
                     'html': true,
-                    'title': gettext('Created by: ') + owner
+                    'title': gettext('Created by ') + owner
                 });
                 $featToggle.tooltip({
                     'html': true,
@@ -776,7 +777,7 @@ jobs.list = (function(){
         });
         
         // run search on user filtering state change
-        $('input#user-check').bind('click', function(e){
+        $('input#user-check').bind('change', function(e){
             // pull the username out of the dom
             var username = $('span#user').text();
             var $this = $(this);
@@ -789,6 +790,13 @@ jobs.list = (function(){
                 $('input#user').val('');
                 runSearch();
             }
+        });
+        
+        $('button#reset-form').on('click', function(e){
+            $('input#search').val('');
+            $('input#user-check').prop('checked', false).trigger('change');
+            $('#start-date').data('DateTimePicker').date(moment().subtract(1, 'month'));
+            $('#end-date').data('DateTimePicker').date(moment());
         });
     }
     
