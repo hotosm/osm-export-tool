@@ -42,7 +42,7 @@ class TestExportTasks(TestCase):
         self.job.feature_save = True
         self.job.feature_pub = True
         self.job.save()
-        self.run = ExportRun.objects.create(job=self.job)
+        self.run = ExportRun.objects.create(job=self.job, user=self.user)
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
         tags = parser.parse()
         self.assertIsNotNone(tags)
@@ -257,7 +257,7 @@ class TestExportTasks(TestCase):
             name=shp_export_task.name
         )
         shp_export_task = ShpExportTask()
-        download_url = '/exports/' + str(self.run.uid) + '/file.shp'
+        download_url = '/downloads/' + str(self.run.uid) + '/file.shp'
         download_root = settings.EXPORT_DOWNLOAD_ROOT
         run_dir = '{0}{1}'.format(download_root, str(self.run.uid))
         shp_export_task.on_success(retval={'result': download_url}, task_id=celery_uid,

@@ -242,9 +242,10 @@ class ExportRunSerializer(serializers.ModelSerializer):
     tasks = ExportTaskSerializer(many=True)
     finished_at = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     class Meta:
         model = ExportRun
-        fields = ('uid', 'url', 'started_at', 'finished_at', 'duration', 'status', 'job', 'tasks')
+        fields = ('uid', 'url', 'started_at', 'finished_at', 'duration', 'user', 'status', 'job', 'tasks')
     
     def get_finished_at(self, obj):
         if (not obj.finished_at):
@@ -259,6 +260,10 @@ class ExportRunSerializer(serializers.ModelSerializer):
             return  str(finished - started)
         else:
             return None
+    
+    def get_user(self, obj):
+        return obj.user.username
+
 
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()

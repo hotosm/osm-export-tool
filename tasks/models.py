@@ -40,6 +40,7 @@ class ExportRun(RunModelMixin):
     Model for export task runs.
     """
     job = models.ForeignKey(Job, related_name='runs')
+    user = models.ForeignKey(User, related_name="runs", default=0)
     status = models.CharField(
         blank=True, max_length=20,
         db_index=True, default=''

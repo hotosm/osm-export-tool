@@ -1,16 +1,17 @@
+{% load i18n %}
 <html>
     <head>
-        <title>HOT Exports</title>
+        <title>{% trans 'HOT Exports' %}</title>
     </head>
     <body>
-        <p>This is an automated email from HOT Exports.</p>
-        Unfortunately, your HOT Export has failed.<br/>
-        Please follow this link {{ url }} to see the status of your HOT Export.<br/>
-        Please quote this Task ID when reporting errors: {{ task_id }}.<br/>
-        We apologise for any inconvenience this may cause.
+        {% trans 'This is an automated email from HOT Exports.' %}<br/>
+        {% trans 'Unfortunately, your HOT Export has failed.' %}<br/>
+        {% trans 'Please follow this link' %} {{ url }} {% trans 'to see the status of your HOT Export.' %}<br/>
+        {% trans 'Please quote this Task ID when reporting errors:' %} {{ task_id }}.<br/>
+        {% trans 'We apologise for any inconvenience this may cause.' %}
+        <br/>
+        {% trans 'Yours sincerely' %},<br/>
         
-        Yours sincerely,
-        
-        Humanitarian OpenStreetMap Team
+        {% trans 'Humanitarian OpenStreetMap Team' %}
     </body>
 </html>

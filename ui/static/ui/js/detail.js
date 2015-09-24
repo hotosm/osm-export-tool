@@ -208,7 +208,7 @@ exports.detail = (function(){
                     var duration = moment.duration(run.duration).humanize();
                     var status_class = run.status === 'COMPLETED' ? 'alert alert-success' : 'alert alert-warning';
                     var expanded = !exports.detail.timer && index === 0 ? 'in' : '';
-                    var context = { 'run_uid': run.uid, 'status': run.status,
+                    var context = { 'run_uid': run.uid, 'status': run.status, 'user': run.user,
                                     'started': started, 'finished': finished,
                                     'duration': duration,'status_class': status_class,
                                     'expanded': expanded};
@@ -308,6 +308,7 @@ exports.detail = (function(){
                                                <table class="table"> \
                                                    <tr><td><strong>Run Id:</strong></td><td><div id="runuid">{{ run_uid }}</div></td></tr> \
                                                    <tr><td><strong>Status:</strong></td><td><div id="status" class="{{ status_class }}" role="alert">{{ status }}</div></td></tr> \
+                                                   <tr><td><strong>Run by:</strong></td><td><div id="user" class="{{ user }}">{{ user }}</div></td></tr> \
                                                    <tr><td><strong>Started:</strong></td><td><div id="started">{{ started }}</div></td></tr> \
                                                    <tr><td><strong>Finished:</strong></td><td><div id="finished">{{ finished }}</div></td></tr> \
                                                    <tr><td><strong>Duration:</strong></td><td><div id="duration">{{ duration }}</div></td></tr> \
@@ -387,7 +388,7 @@ exports.detail = (function(){
             var status_class = run.status === 'SUBMITTED' ? 'alert alert-info' : 'alert alert-warning';
             var expanded = index === 0 ? 'in' : ''; // collapse all for now..
             var context = { 'run_uid': run.uid, 'status': run.status,
-                            'started': started, 'status_class': status_class,
+                            'started': started, 'user': run.user, 'status_class': status_class,
                             'expanded': expanded};
             var template = getSubmittedRunTemplate();
             var html = template(context);
@@ -536,6 +537,7 @@ exports.detail = (function(){
                                                    <tr><td><strong>Run Id:</strong></td><td><div id="runuid">{{ run_uid }}</div></td></tr> \
                                                    <tr><td><strong>Status:</strong></td><td><div id="status" class="{{ status_class }}" role="alert">{{ status }}</div></td></tr> \
                                                    <tr><td><strong>Started:</strong></td><td><div id="started">{{ started }}</div></td></tr> \
+                                                   <tr><td><strong>Run by:</strong></td><td><div id="user">{{ user }}</div></td></tr> \
                                                    <tr><td><strong>Tasks:</strong></td><td> \
                                                         <div id="tasks"> \
                                                             <table class="table table-condensed" width="100%"> \
