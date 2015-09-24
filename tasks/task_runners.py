@@ -36,7 +36,7 @@ class ExportTaskRunner(TaskRunner):
     """
     export_task_registry = settings.EXPORT_TASKS
     
-    def run_task(self, job_uid=None):
+    def run_task(self, job_uid=None, user=None):
         run_uid = ''
         logger.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
@@ -74,7 +74,9 @@ class ExportTaskRunner(TaskRunner):
                         job.runs.earliest(field_name='started_at').delete() # delete earliest
                         run_count -= 1
                 # add the new run
-                run = ExportRun.objects.create(job=job, status='SUBMITTED') # persist the run
+                if not user:
+                    user = job.user
+                run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED') # persist the run
                 run.save()
                 run_uid = str(run.uid)
                 logger.debug('Saved run with id: {0}'.format(run_uid))

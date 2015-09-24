@@ -222,11 +222,12 @@ class RunJob(views.APIView):
     
     def get(self, request, uid=None, format=None):
         job_uid = request.QUERY_PARAMS.get('job_uid', None)
+        user = request.user
         if (job_uid):    
             # run the tasks
             job = Job.objects.get(uid=job_uid)
             task_runner = ExportTaskRunner()
-            run = task_runner.run_task(job_uid=job_uid)
+            run = task_runner.run_task(job_uid=job_uid, user=user)
             if run:
                 running = ExportRunSerializer(run, context={'request': request})
                 return Response(running.data, status=status.HTTP_202_ACCEPTED)
