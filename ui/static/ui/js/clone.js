@@ -62,16 +62,20 @@ clone.job = (function(){
         
         // add base layers
         var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
-        var hotosm = Layers.HOT
+        //var osm = Layers.HOT;
+        
+        //var hotosm = Layers.HOT
+        
         osm.options = {
-            //layers: "basic",
+            layers: "basic",
             isBaseLayer: true,
             visibility: true,
             displayInLayerSwitcher: true,
         };
+        
         //osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors<br/>Nominatim Search Courtesy of <a href='http://www.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>";
         osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors.";
-        hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
+        //hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayers([osm]);
         
         // add the regions layer
