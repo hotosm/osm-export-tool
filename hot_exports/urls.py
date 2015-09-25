@@ -19,9 +19,10 @@ admin.autodiscover()
 urlpatterns = []
 
 urlpatterns += i18n_patterns('ui.views',
-    url(r'^$', login_required(TemplateView.as_view(template_name='ui/index.html')), name='index'),
+    #url(r'^$', TemplateView.as_view(template_name='osm/login.html'), name='index'),
+    url(r'^$', 'login', name='index'),
     url(r'^exports/', include(ui_urls)),
-    url(r'^login/$', TemplateView.as_view(template_name='osm/login.html'), name="login"), 
+    url(r'^login/$', 'login', name="login"),
     url(r'^logout$', 'logout', name='logout'),
     url(r'^error$', create_error_view, name='error'),
     url(r'^update$', TemplateView.as_view(template_name='ui/upgrade.html'), name='update'),
@@ -67,8 +68,8 @@ urlpatterns += patterns('',
     url(r'^i18n/', include('django.conf.urls.i18n')),
 )
 
-handler500 = 'ui.views.internal_error_view'
+#handler500 = 'ui.views.internal_error_view'
 
-handler404 = 'ui.views.not_found_error_view'
+#handler404 = 'ui.views.not_found_error_view'
 
 

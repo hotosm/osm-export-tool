@@ -43,6 +43,9 @@ def clone_export(request, uuid=None):
     return render_to_response('ui/clone.html', context)
 
 
+def login(request):
+    return render_to_response('osm/login.html', {}, RequestContext(request))
+
 def logout(request):
     """Logs out user"""
     auth_logout(request)
@@ -60,13 +63,13 @@ def require_email(request):
 
 @require_http_methods(['GET'])
 def create_error_view(request):
-    return render_to_response('ui/error.html', {}, RequestContext(request))
+    return render_to_response('ui/error.html', {}, RequestContext(request), status=500)
 
 def internal_error_view(request):
-    return render_to_response('ui/500.html', {}, RequestContext(request))
+    return render_to_response('ui/500.html', {}, RequestContext(request), status=500)
 
 def not_found_error_view(request):
-    return render_to_response('ui/404.html', {}, RequestContext(request))
+    return render_to_response('ui/404.html', {}, RequestContext(request), status=404)
 
 def not_allowed_error_view(request):
-    return render_to_response('ui/403.html', {}, RequestContext(request))
+    return render_to_response('ui/403.html', {}, RequestContext(request), status=403)
