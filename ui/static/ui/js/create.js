@@ -68,7 +68,6 @@ create.job = (function(){
             visibility: true,
             displayInLayerSwitcher: true,
         };
-        //osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors<br/>Nominatim Search Courtesy of <a href='http://www.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>";
         osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors.";
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayers([osm]);
@@ -468,15 +467,6 @@ create.job = (function(){
                         }
                     }
                 },
-                /*
-                'event': {
-                    validators: {
-                        notEmpty: {
-                            message: 'The event is required and cannot be empty.'
-                        }
-                    }
-                },
-                */
                 'formats': {
                     validators: {
                         choice: {
@@ -1292,32 +1282,6 @@ create.job = (function(){
                             clearTimeout(searching);
                             process([]);
                         }
-                        /*
-                        searching = setTimeout(function() {
-                            return $.getJSON(
-                                Config.MAPQUEST_SEARCH_URL,
-                                {
-                                    q: query,
-                                    format: 'json',
-                                    limit: 10,
-                                    key: 'Fmjtd|luur2h082g,b2=o5-9wbx1f'
-                                },
-                                function(data){
-                                    // build list of suggestions
-                                    var suggestions = [];
-                                    $.each(data, function(i, place){
-                                        // only interested in relations
-                                        if (place.osm_type === 'relation') {
-                                            suggestions.push(place);
-                                        }
-                                    });
-                                    // save result to cache
-                                    query_cache[query] = suggestions;
-                                    return process(suggestions);
-                                }
-                            );
-                        }, 200); // timeout before initiating search..
-                        */
                         searching = setTimeout(function() {
                             return $.getJSON(
                                 Config.GEONAMES_SEARCH_URL,
@@ -1344,23 +1308,6 @@ create.job = (function(){
                             );
                         }, 200); // timeout before initiating search..
             },
-            /*
-            displayText: function(item){
-                return item.display_name;
-            },
-            afterSelect: function(item){
-                var boundingbox = item.boundingbox;
-                var bottom = boundingbox[0], top = boundingbox[1],
-                    left = boundingbox[2], right = boundingbox[3];
-                var bounds = new OpenLayers.Bounds(left, bottom, right, top);
-                // add the bounds to the map..
-                var feature = buildBBoxFeature(bounds);
-                // allow bbox to be modified
-                if (feature){
-                    transform.setFeature(feature);
-                }
-            }
-            */
             displayText: function(item){
                 //return item.display_name;
                 names = [];

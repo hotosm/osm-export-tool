@@ -15,8 +15,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-
-
 jobs = {};
 jobs.list = (function(){
     var map;
@@ -25,8 +23,10 @@ jobs.list = (function(){
     var filtering = false;
     var searchForm = $('form#search');
     
-    // override unselect so hidden features don't get reset with 'default'
-    // style on unselect. 
+    /*
+     * Override unselect so hidden features don't get reset
+     * with the 'default' style on unselect.
+     */
     OpenLayers.Control.SelectFeature.prototype.unselect = function(feature){
         var layer = feature.layer;
         if (feature.renderIntent == 'hidden') {
@@ -43,14 +43,15 @@ jobs.list = (function(){
         }
     }
     
-    var stickyTop = $('#map-column').offset().top; // returns number    
     
     /*
      * Handle stickiness of map on window scroll
      */
+    var stickyTop = $('#map-column').offset().top;  
     $(window).scroll(function(){
         var windowTop = $(window).scrollTop();
-        if (stickyTop < windowTop && $(window).width() > 992) {
+        // only make sticky on larger screens
+        if (stickyTop < windowTop && $(window).width() > 992) { 
             $('#map-column').css({
                 position: 'fixed',
                 top: 0,
@@ -115,13 +116,17 @@ jobs.list = (function(){
         // add export extents to map
         map.addLayer(job_extents);
         
-        /* required to fire selection events on waypoints */
+        /* required to fire selection events on bounding boxes */
         var selectControl = new OpenLayers.Control.SelectFeature(job_extents,{
             id: 'selectControl'
         });
         map.addControl(selectControl);
         selectControl.activate();
         
+        
+        /*
+         * Feature selection and hover events
+         */
         job_extents.events.register("featureselected", this, function(e){
             var uid = e.feature.data.uid;
             $('tr#' + uid).css('background-color', '#E8E8E8');
@@ -261,26 +266,7 @@ jobs.list = (function(){
         $('#reset-map').bind('click', function(e){
             map.zoomToExtent(job_extents.getDataExtent());
         });
-        
-        // make map div sticky
-        /*
-        var $mapColumn = $('#map-column');
-        var mapTop = $mapColumn.offset().top;
-        $(window).scroll(function(){ // scroll event
-            var bannerHeight = $('#banner').height();
-            var navHeight = $('.navbar.navbar-inverse').height();
-            var headerHeight = bannerHeight + navHeight;
-            var windowTop = $(window).scrollTop(); // returns number
-            if (mapTop < windowTop) {
-                $mapColumn.css({ 'position': 'fixed', 'right': '0px', 'top': '0px' });
-                $('#list-export-map').css({'right': '0', 'z-index': '-1000'});
-            }
-            else {
-                $mapColumn.css({'position': 'static', 'right': '0px'});
-                $('#list-export-map').css('right', '0');
-            }
-        });
-        */
+
     }
     
     
@@ -575,7 +561,6 @@ jobs.list = (function(){
                 {
                     data: 'created_at',
                     render: function(data, type, row){
-                        //return moment(data).format('YYYY-MM-DD hh:mm a');
                         return moment(data).format('YYYY-MM-DD');
                     }
                 },
@@ -596,7 +581,6 @@ jobs.list = (function(){
                             $div.append($userSpan);
                         }
                         else {
-                            //$div.append($('<span class="glyphicon glyphicon-none">&nbsp;</span>'));
                             var $userSpan = $('<span class="fa fa-users"></span>');
                             $div.append($userSpan);
                         }
