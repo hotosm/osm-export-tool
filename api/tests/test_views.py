@@ -619,7 +619,7 @@ class TestExportRunViewSet(APITestCase):
                                  description='Test description', user=self.user,
                                  the_geom=the_geom)
         self.job_uid = str(self.job.uid)
-        self.run = ExportRun.objects.create(job=self.job)
+        self.run = ExportRun.objects.create(job=self.job, user=self.user)
         self.run_uid = str(self.run.uid)
 
     def test_retrieve_run(self, ):
