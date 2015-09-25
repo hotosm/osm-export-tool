@@ -22,36 +22,6 @@
     </ul>
 </div>
 
-<!--
-<b>Transform Files</b>
-<br><br>
-Transform files are used to execute arbitrary SQL (spatialite) commands on the selected exported data.<br>
-For example, create new database columns, drop existing database columns, rename columns, merge columns, or drop records.
-<br>
-<br>
-Example 1. Insert new column into the planet_osm_point table and fill it with a copy of the "amenity" value:<br>
-<br>
-<i>alter table planet_osm_point add column testcolumn varchar;
-update planet_osm_point set testcolumn=amenity;</i><br>
-<br>
-Example 2. Insert two new columns into tables building_roof_material_stone and building_roof_material_concrete, setting them to 1 if the existing column building_roof_material contains these terms:<br>
-<br>
-<i>alter table planet_osm_polygon add column building_roof_material_stone integer;
-alter table planet_osm_polygon add column building_roof_material_concrete integer;
-update planet_osm_polygon set building_roof_material_stone=1 where building_roof_material like "%stone%";
-update planet_osm_polygon set building_roof_material_concrete=1 where building_roof_material like "%concrete%";</i><br>
-<br>
-
-<b>Language Files</b>
-<br><br>
-Language files are used to translate the contents of a database field from one language into another.<br>
-For example the term "bakery" may be transformed into "boulangerie" or "road" to "jalan".
-<br>
-<br>
-Example 1.<br>
-<br>
--->
-
 <h3>{% trans 'Search Files' %}</h3>
 <div class="well">
     {% trans 'Search presets info' %}.

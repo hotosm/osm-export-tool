@@ -81,12 +81,12 @@
 
 <div id="delete-info" class="row">
     <div class="panel panel-default">
-        <div class="panel-heading"><h4>Export Deleted</h4></div>
+        <div class="panel-heading"><h4>{% trans 'Export Deleted' %}</h4></div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p>Your export has been deleted successfully.</p>
-                    <p>Please start <a href="/jobs/create">here</a> to create a new export.</p>
+                    <p>{% trans 'Your export has been deleted successfully.' %}</p>
+                    <p>{% trans 'Please start' %} <a href="/jobs/create">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
                 </div>
             </div>
         </div>
@@ -95,12 +95,12 @@
 
 <div id="error-info" class="row">
     <div class="panel panel-default">
-        <div class="panel-heading"><h4>Export Not Found</h4></div>
+        <div class="panel-heading"><h4>{% trans 'Export Not Found' %}</h4></div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p>The requested export was not found.</p>
-                    <p>Please start <a href="/jobs/create">here</a> to create a new export.</p>
+                    <p>{% trans 'The requested export was not found.' %}</p>
+                    <p>{% trans 'Please start' %} <a href="/jobs/create">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
                 </div>
             </div>
         </div>
@@ -113,19 +113,19 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Really delete this export?</h4>
+          <h4 class="modal-title" id="myModalLabel">{% trans 'Really delete this export?' %}</h4>
         </div>
         <div class="modal-body">
          <p><span class="glyphicon glyphicon-exclamation-sign" style="float:left; font-size: 2.0em; color: red; margin:0 7px 25px 0;"> 
          </span>
             <div>
-             <p>This Export will be permanently deleted and cannot be recovered.</p>
-             <p>All associated export runs and their downloads will also be deleted.</p>
+             <p>{% trans 'This Export will be permanently deleted and cannot be recovered.' %}</p>
+             <p>{% trans 'All associated export runs and their downloads will also be deleted.' %}</p>
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-          <button id="deleteConfirm" type="button" class="btn btn-danger">Delete Export</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans 'Cancel' %}</button>
+          <button id="deleteConfirm" type="button" class="btn btn-danger">{% trans 'Delete Export' %}</button>
         </div>
       </div>
     </div>
@@ -149,13 +149,13 @@
                 </div>
                 <div class="table-responsive table-stripped table-condensed col-md-12">
                     <table class="table" id="filelist">
-                        <th width="30%">{% trans 'Filename' %}</th><th width="10%">Type</th><th width="10%">Status</th><th width="45%">Created</th>
+                        <th width="30%">{% trans 'Filename' %}</th><th width="10%">{% trans 'Type' %}</th><th width="10%">{% trans 'Status' %}</th><th width="45%">{% trans 'Created' %}</th>
                     </table>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans 'Close' %}</button>
         </div>
       </div>
     </div>
