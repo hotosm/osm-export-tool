@@ -527,17 +527,21 @@ ul.sub-level {
     margin-right: 2em;
 }
 
+button#rerun {
+    margin-right: .5em;
+}
+
 button#clone {
-    margin-left: .5em;
+    margin-right: .5em;
 }
 
 button#delete {
-    margin-left: .5em;
+    margin-right: .5em;
     display: none;
 }
 
 button#features {
-    margin-left: .5em;
+    margin-right: .5em;
 }
 
 span#user {
@@ -650,6 +654,10 @@ table#jobs {
 
 table#jobs td.owner {
     word-break: break-all;
+}
+
+table#configurations {
+    margin-top: .5em;
 }
 
 #results {
