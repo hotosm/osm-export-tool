@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Alberto Chung Vázquez <isc.chungvazquez@gmail.com>, 2015
 # Nacho, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-19 15:35+0000\n"
-"PO-Revision-Date: 2015-09-19 15:28+0000\n"
-"Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
+"PO-Revision-Date: 2015-09-23 11:47+0000\n"
+"Last-Translator: Alberto Chung Vázquez <isc.chungvazquez@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/hotosm/osm-export-tool2/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,99 +30,99 @@ msgstr "Se esperaba una lista de elementos pero se obtuvo tipo \"{input_type}\".
 
 #: api/serializers.py:371
 msgid "xmin is required."
-msgstr ""
+msgstr "xmin es necesario."
 
 #: api/serializers.py:372
 msgid "invalid xmin value."
-msgstr ""
+msgstr "valor xmin inválido."
 
 #: api/serializers.py:378
 msgid "ymin is required."
-msgstr ""
+msgstr "ymin es necesario."
 
 #: api/serializers.py:379
 msgid "invalid ymin value."
-msgstr ""
+msgstr "valor ymin inválido."
 
 #: api/serializers.py:385
 msgid "xmax is required."
-msgstr ""
+msgstr "xmax es necesario."
 
 #: api/serializers.py:386
 msgid "invalid xmax value."
-msgstr ""
+msgstr "valor xmax inválido."
 
 #: api/serializers.py:392
 msgid "ymax is required."
-msgstr ""
+msgstr "ymax es necesario."
 
 #: api/serializers.py:393
 msgid "invalid ymax value."
-msgstr ""
+msgstr "valor ymax inválido."
 
 #: api/views.py:95
 msgid "missing_bbox_parameter"
-msgstr ""
+msgstr "parámetro_bbox_faltante"
 
 #: api/views.py:96
 msgid "Missing bounding box parameter"
-msgstr ""
+msgstr "Parámetro delimitador de la caja faltante"
 
 #: api/views.py:199
 msgid "server_error"
-msgstr ""
+msgstr "error_del_servidor"
 
 #: api/views.py:204
 msgid "Invalid format provided."
-msgstr ""
+msgstr "Formato proporcionado inválido."
 
 #: api/views.py:234
 msgid "Failed to run Export"
-msgstr ""
+msgstr "No se ha podido ejecutar la exportación"
 
 #: api/views.py:236
 msgid "Export not found"
-msgstr ""
+msgstr "Exportación no encontrada"
 
 #: ui/templates/osm/email.html:14
 msgid ""
 "Please provide a valid email address. This email address will be used to notifiy you when your exports are ready.\n"
 "                    A verification link will be sent to the email address you provide. "
-msgstr ""
+msgstr "Por favor proporciona un correo electrónico válido. Esta dirección de correo electrónico será usada para notificarte cuando tu exportación esté lista. \nUn link de verificación será enviado al correo electrónico que proporciones."
 
 #: ui/templates/osm/email.html:28
 msgid "Submit"
-msgstr ""
+msgstr "Enviar"
 
 #: ui/templates/osm/email_verify_sent.html:8
 msgid "Validation Email Sent"
-msgstr ""
+msgstr "Correo electrónico de validación enviado"
 
 #: ui/templates/osm/email_verify_sent.html:11
 msgid "An activation email has been sent to your email address."
-msgstr ""
+msgstr "Un correo electrónico de activación ha sido enviado a tu dirección de correo electrónico."
 
 #: ui/templates/osm/email_verify_sent.html:12
 msgid "Please click the link in the email to activate your account."
-msgstr ""
+msgstr "Por favor haga click en el enlace en tu correo electrónico para activar tu cuenta"
 
 #: ui/templates/osm/error.html:8
 msgid "OpenStreetMap Login Error"
-msgstr ""
+msgstr "Error al iniciar sesión en OpenStreetMap"
 
 #: ui/templates/osm/error.html:11
 msgid "There was a problem logging you in to OpenStreetMap"
-msgstr ""
+msgstr "Hubo un problema al iniciar sesión en OpenStreetMap"
 
 #: ui/templates/osm/login.html:10 ui/templates/ui/about.html:9
 msgid "Fresh Humanitarian Maps"
-msgstr ""
+msgstr "Mapas Humanitarios recientes"
 
 #: ui/templates/osm/login.html:11 ui/templates/ui/about.html:10
 msgid ""
 "Download up-to-date humanitarian maps for GIS analysis or for use in GPS "
 "devices and Smartphones."
-msgstr ""
+msgstr "Descargar mapas humanitarios actualizados para análisis SIG o para usar en dispositivos GPS y smarphones."
 
 #: ui/templates/osm/login.html:12 ui/templates/ui/about.html:11
 msgid ""
@@ -130,11 +131,11 @@ msgid ""
 "(OpenStreetMap tags) for the export. A current OpenStreetMap data extract "
 "for that area in various data formats is then created for you within "
 "minutes."
-msgstr ""
+msgstr "Esta plataforma permite crear exportaciones personalizadas de OpenStreetMap para varias regiones HOT. Puedes especificar un area de interés y una lista de características (etiquetas de OpenStreetMap) para exportar. Un extracto de los datos actuales de OpenStreetMap para esa área será creado en varios formatos de datos en minutos."
 
 #: ui/templates/osm/login.html:13 ui/templates/ui/about.html:12
 msgid "How to Get Started"
-msgstr ""
+msgstr "Cómo empezar"
 
 #: ui/templates/osm/login.html:14
 msgid ""
@@ -143,30 +144,30 @@ msgid ""
 "                If you already have an account with HOT, please log in using the log in form on this page.\n"
 "                More detailed help is available on our <a href=\"/help\">help</a> page.\n"
 "                "
-msgstr ""
+msgstr "Puede ver y buscar a través de las exportaciones HOT existentes en nuestra página de <a href=\"/jobs\">Exportaciones </a> . No necesita una cuenta para ver o buscar exportaciones existentes.\nSi desea crear una exportación y es un usuario nuevo, por favor <a href=\"/accounts/register\"> regístrese </a> para una cuenta.\nSi ya tiene una cuenta con HOT, por favor, inicie sesión usando el formulario de inicio de sesión en esta página.\nAyuda más detallada está disponible en nuestra página de <a href=\"/help\"> ayuda </a>."
 
 #: ui/templates/osm/login.html:24 ui/templates/osm/login.html.py:34
 #: ui/templates/ui/base.html:75
 msgid "Login to OpenStreetMap"
-msgstr ""
+msgstr "Iniciar sesión en OpenStreetMap"
 
 #: ui/templates/osm/login.html:30
 msgid ""
 "If you don't have an OpenStreetMap account you can register for one <a "
 "href='http://www.openstreetmap.org/user/new'>here</a>."
-msgstr ""
+msgstr "Si no tiene una cuenta OpenStreetMap puede registrarse por una <a href='http://www.openstreetmap.org/user/new'>aquí</a>."
 
 #: ui/templates/osm/logout.html:8
 msgid "You have successfully logged out of OpenStreetMap"
-msgstr ""
+msgstr "Ha cerrado sesión de OpenStreetMap exitosamente."
 
 #: ui/templates/osm/logout.html:11
 msgid "Please click <a href=\"//login\">here</a> to login again."
-msgstr ""
+msgstr "Por favor da click  <a href=\"//login\">aquí</a>  para iniciar sesión de nuevo."
 
 #: ui/templates/ui/404.html:8
 msgid "Page Not Found"
-msgstr ""
+msgstr "Página no encontrada"
 
 #: ui/templates/ui/404.html:10
 msgid ""
@@ -177,7 +178,7 @@ msgstr ""
 
 #: ui/templates/ui/500.html:9
 msgid "Server Error"
-msgstr ""
+msgstr "Error del servidor"
 
 #: ui/templates/ui/500.html:11
 msgid ""
@@ -196,73 +197,73 @@ msgstr ""
 
 #: ui/templates/ui/base.html:14
 msgid "HOT Export Tool"
-msgstr ""
+msgstr "Herramienta de exportación HOT"
 
 #: ui/templates/ui/base.html:58
 msgid "OSM Export Tool"
-msgstr ""
+msgstr "Herramienta de exportación OSM"
 
 #: ui/templates/ui/base.html:62 ui/templates/ui/help.html:17
 #: ui/templates/ui/help_pages.html:18
 msgid "Create"
-msgstr ""
+msgstr "Crear"
 
 #: ui/templates/ui/base.html:63 ui/templates/ui/help.html:18
 #: ui/templates/ui/help_pages.html:33
 msgid "Exports"
-msgstr ""
+msgstr "Exportaciones"
 
 #: ui/templates/ui/base.html:64 ui/templates/ui/help.html:49
 msgid "Presets"
-msgstr ""
+msgstr "Preestablecidos"
 
 #: ui/templates/ui/base.html:71
 msgid "Log Out"
-msgstr ""
+msgstr "Cerrar sesión"
 
 #: ui/templates/ui/clone.html:20 ui/templates/ui/create.html:20
 msgid "Describe Export"
-msgstr ""
+msgstr "Describir exportaciones"
 
 #: ui/templates/ui/clone.html:21 ui/templates/ui/create.html:21
 msgid "Select Formats"
-msgstr ""
+msgstr "Seleccionar formatos"
 
 #: ui/templates/ui/clone.html:22 ui/templates/ui/create.html:22
 msgid "Select Features"
-msgstr ""
+msgstr "Seleccionar características"
 
 #: ui/templates/ui/clone.html:23 ui/templates/ui/create.html:23
 msgid "Select Preset"
-msgstr ""
+msgstr "Seleccionar Preestablecido"
 
 #: ui/templates/ui/clone.html:24 ui/templates/ui/create.html:24
 #: ui/templates/ui/detail.html:9
 msgid "Export Summary"
-msgstr ""
+msgstr "Resumen de exportación"
 
 #: ui/templates/ui/clone.html:32 ui/templates/ui/clone.html.py:378
 #: ui/templates/ui/configurations.html:59 ui/templates/ui/create.html:32
 #: ui/templates/ui/create.html.py:378 ui/templates/ui/list.html:65
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: ui/templates/ui/clone.html:39 ui/templates/ui/create.html:39
 #: ui/templates/ui/list.html:65
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: ui/templates/ui/clone.html:46 ui/templates/ui/create.html:46
 msgid "Activation"
-msgstr ""
+msgstr "Activación"
 
 #: ui/templates/ui/clone.html:53 ui/templates/ui/create.html:53
 msgid "Coordinates"
-msgstr ""
+msgstr "Coordenadas"
 
 #: ui/templates/ui/clone.html:66
 msgid "Select Export Formats:"
-msgstr ""
+msgstr "Selecciona los formatos de exportación:"
 
 #: ui/templates/ui/clone.html:67 ui/templates/ui/create.html:67
 msgid ""
@@ -270,23 +271,23 @@ msgid ""
 "Esri Shapefile options, as the Thematic Schema provides the data in a set of"
 " themed geometry tables (points, lines and polygons), whereas the OSM Schema"
 " provides all attributes in layers grouped by geometry type"
-msgstr ""
+msgstr "Más de un formato de exportación puede ser seleccionado. Tenga en cuenta que hay dos opciones de Esri Shapefile, ya que el Esquema Temático proporciona los datos en un conjunto de tablas de geometría temáticas (puntos, líneas y polígonos), mientras que el esquema OSM  proporciona todos los atributos de las capas agrupadas por tipo de geometría"
 
 #: ui/templates/ui/clone.html:79
 msgid "Select from either the HDM or OSM data models."
-msgstr ""
+msgstr "Elija entre cualquiera de los modelos de datos OSM o HDM."
 
 #: ui/templates/ui/clone.html:80 ui/templates/ui/create.html:80
 msgid ""
 "Features can only be selected from one tree, either from the HDM or the OSM data model.\n"
 "                                    Feature tags can not be mixed between the two,\n"
 "                                    with the other tree deactivating as soon as a tag from the other tree has been selected."
-msgstr ""
+msgstr "Las características sólo se pueden seleccionar de un árbol, ya sea desde el modelo de datos HDM u OSM.\nLas etiquetas de características no se pueden mezclar entre los dos,\ncon el otro árbol desactivando tan pronto como la etiqueta del otro árbol ha sido seleccionada."
 
 #: ui/templates/ui/clone.html:115 ui/templates/ui/configurations.html:124
 #: ui/templates/ui/create.html:115
 msgid "Upload a preset file"
-msgstr ""
+msgstr "Cargar un archivo preestablecido"
 
 #: ui/templates/ui/clone.html:117 ui/templates/ui/create.html:117
 msgid ""
@@ -300,319 +301,319 @@ msgstr ""
 #: ui/templates/ui/clone.html:127 ui/templates/ui/configurations.html:132
 #: ui/templates/ui/create.html:127
 msgid "Filename:"
-msgstr ""
+msgstr "Nombre de archivo:"
 
 #: ui/templates/ui/clone.html:150
 msgid "Publish this preset globally."
-msgstr ""
+msgstr "Publicar este preestablecido globalmente."
 
 #: ui/templates/ui/clone.html:166 ui/templates/ui/create.html:166
 msgid "Select a preset to upload"
-msgstr ""
+msgstr "Seleccionar un preestablecido para cargar"
 
 #: ui/templates/ui/clone.html:171 ui/templates/ui/configurations.html:183
 #: ui/templates/ui/create.html:171
 msgid "Upload"
-msgstr ""
+msgstr "Cargar"
 
 #: ui/templates/ui/clone.html:177
 msgid "Select a stored preset"
-msgstr ""
+msgstr "Seleccionar un preestablecido almacenado"
 
 #: ui/templates/ui/clone.html:184 ui/templates/ui/clone.html.py:249
 #: ui/templates/ui/clone.html:378 ui/templates/ui/configurations.html:163
 #: ui/templates/ui/create.html:184 ui/templates/ui/create.html.py:249
 #: ui/templates/ui/create.html:378 ui/templates/ui/detail.html:144
 msgid "Filename"
-msgstr ""
+msgstr "Nombre de archivo"
 
 #: ui/templates/ui/clone.html:201 ui/templates/ui/create.html:201
 msgid "Export Details"
-msgstr ""
+msgstr "Detalles de exportación"
 
 #: ui/templates/ui/clone.html:203 ui/templates/ui/create.html:203
 #: ui/templates/ui/detail.html:17
 msgid "Name:"
-msgstr ""
+msgstr "Nombre:"
 
 #: ui/templates/ui/clone.html:204 ui/templates/ui/create.html:204
 #: ui/templates/ui/detail.html:18
 msgid "Description:"
-msgstr ""
+msgstr "Descripción:"
 
 #: ui/templates/ui/clone.html:205 ui/templates/ui/create.html:205
 #: ui/templates/ui/detail.html:19
 msgid "Activation:"
-msgstr ""
+msgstr "Activación:"
 
 #: ui/templates/ui/clone.html:206 ui/templates/ui/create.html:206
 msgid "Export formats:"
-msgstr ""
+msgstr "Formatos de exportación:"
 
 #: ui/templates/ui/clone.html:210 ui/templates/ui/create.html:210
 msgid "Export Options"
-msgstr ""
+msgstr "Opciones de exportación:"
 
 #: ui/templates/ui/clone.html:217
 msgid "Save feature selection locally"
-msgstr ""
+msgstr "Guardar selección de característica localmente"
 
 #: ui/templates/ui/clone.html:227
 msgid "Publish feature selection globally"
-msgstr ""
+msgstr "Publicar selección de característica globalmente"
 
 #: ui/templates/ui/clone.html:237
 msgid "Publish export globally"
-msgstr ""
+msgstr "Publicar exportación globalmente"
 
 #: ui/templates/ui/clone.html:246 ui/templates/ui/create.html:246
 msgid "Configurations:"
-msgstr ""
+msgstr "Configuraciones:"
 
 #: ui/templates/ui/clone.html:249 ui/templates/ui/clone.html.py:378
 #: ui/templates/ui/configurations.html:59
 #: ui/templates/ui/configurations.html:163 ui/templates/ui/create.html:184
 #: ui/templates/ui/create.html.py:249 ui/templates/ui/create.html:378
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: ui/templates/ui/clone.html:249 ui/templates/ui/configurations.html:163
 #: ui/templates/ui/create.html:184 ui/templates/ui/create.html.py:249
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: ui/templates/ui/clone.html:256 ui/templates/ui/create.html:256
 msgid "Create Export"
-msgstr ""
+msgstr "Crear exportación"
 
 #: ui/templates/ui/clone.html:261 ui/templates/ui/create.html:261
 msgid "Skip"
-msgstr ""
+msgstr "Saltar"
 
 #: ui/templates/ui/clone.html:279 ui/templates/ui/create.html:279
 msgid "Select Export Area"
-msgstr ""
+msgstr "Seleccionar área de exportación"
 
 #: ui/templates/ui/clone.html:280 ui/templates/ui/create.html:280
 msgid "Zoom To Selection"
-msgstr ""
+msgstr "Acercar a selección"
 
 #: ui/templates/ui/clone.html:281 ui/templates/ui/create.html:281
 msgid "Reset Map"
-msgstr ""
+msgstr "Reiniciar mapa"
 
 #: ui/templates/ui/clone.html:290 ui/templates/ui/create.html:290
 msgid "Search for a place or enter xmin,ymin,xmax,ymax"
-msgstr ""
+msgstr "Buscar un lugar o introducir xmin, ymin, xmax, ymax"
 
 #: ui/templates/ui/clone.html:304 ui/templates/ui/create.html:304
 msgid "Error Uploading Configuration File"
-msgstr ""
+msgstr "Error cargando archivo de configuración"
 
 #: ui/templates/ui/clone.html:310 ui/templates/ui/create.html:310
 msgid "There was a problem with your configuration upload."
-msgstr ""
+msgstr "Hubo un problema con tu configuración cargada."
 
 #: ui/templates/ui/clone.html:327
 msgid "Select configuration files to apply to this export"
-msgstr ""
+msgstr "Seleccionar archivos de configuración para aplicar a esta exportación"
 
 #: ui/templates/ui/clone.html:328 ui/templates/ui/create.html:328
 msgid "Only one preset file can be selected."
-msgstr ""
+msgstr "Solo un archivo preestablecido puede ser seleccionado."
 
 #: ui/templates/ui/clone.html:338 ui/templates/ui/create.html:338
 msgid "Filter Configurations"
-msgstr ""
+msgstr "Configuraciones de filtro"
 
 #: ui/templates/ui/clone.html:344 ui/templates/ui/configurations.html:25
 #: ui/templates/ui/create.html:344 ui/templates/ui/list.html:25
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: ui/templates/ui/clone.html:355 ui/templates/ui/configurations.html:36
 #: ui/templates/ui/create.html:355 ui/templates/ui/list.html:36
 msgid "Start Date:"
-msgstr ""
+msgstr "Fecha de inicio:"
 
 #: ui/templates/ui/clone.html:365 ui/templates/ui/configurations.html:46
 #: ui/templates/ui/create.html:365 ui/templates/ui/list.html:46
 msgid "End Date:"
-msgstr ""
+msgstr "Fecha de fin:"
 
 #: ui/templates/ui/clone.html:378 ui/templates/ui/configurations.html:59
 #: ui/templates/ui/create.html:378 ui/templates/ui/list.html:65
 msgid "Created"
-msgstr ""
+msgstr "Creado"
 
 #: ui/templates/ui/clone.html:378 ui/templates/ui/clone.html.py:433
 #: ui/templates/ui/create.html:378 ui/templates/ui/create.html.py:433
 msgid "Select"
-msgstr ""
+msgstr "Seleccionar"
 
 #: ui/templates/ui/clone.html:391 ui/templates/ui/configurations.html:79
 #: ui/templates/ui/create.html:391
 msgid "My Presets"
-msgstr ""
+msgstr "Mis preestablecidos"
 
 #: ui/templates/ui/clone.html:408 ui/templates/ui/configurations.html:96
 #: ui/templates/ui/create.html:408 ui/templates/ui/list.html:104
 msgid "Display"
-msgstr ""
+msgstr "Mostrar"
 
 #: ui/templates/ui/clone.html:414 ui/templates/ui/configurations.html:103
 #: ui/templates/ui/create.html:414
 msgid "presets per page"
-msgstr ""
+msgstr "preestablecidos por página"
 
 #: ui/templates/ui/configurations.html:19
 msgid "Filter Presets"
-msgstr ""
+msgstr "Filtrar preestablecidos"
 
 #: ui/templates/ui/configurations.html:59
 msgid "Download Configuration"
-msgstr ""
+msgstr "Descargar configuración"
 
 #: ui/templates/ui/configurations.html:126
 msgid ""
 "Use this form to upload a <a href=\"http://learnosm.org/en/josm/creating-"
 "presets/\" target=\"_blank\">JOSM Preset</a> configuration file."
-msgstr ""
+msgstr "Use este formulario para cargar un archivo de configuración <a href=\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">predeterminado de JOSM</a>."
 
 #: ui/templates/ui/configurations.html:155 ui/templates/ui/create.html:150
 msgid "Publish this preset publicly"
-msgstr ""
+msgstr "Publicar este preestablecido públicamente"
 
 #: ui/templates/ui/configurations.html:178
 msgid "Upload Preset"
-msgstr ""
+msgstr "Cargar preestablecido"
 
 #: ui/templates/ui/configurations.html:194
 msgid "Login"
-msgstr ""
+msgstr "Iniciar sesión"
 
 #: ui/templates/ui/configurations.html:194
 msgid "to upload a preset configuration file."
-msgstr ""
+msgstr "para cargar un archivo de configuración preestablecido."
 
 #: ui/templates/ui/create.html:66
 msgid "Select Export Formats"
-msgstr ""
+msgstr "Seleccionar formatos de exportación"
 
 #: ui/templates/ui/create.html:79
 msgid "Select from either the HDM or OSM data models"
-msgstr ""
+msgstr "Elija entre cualquiera de los modelos de datos OSM o HDM."
 
 #: ui/templates/ui/create.html:177
 msgid "Select Stored Preset"
-msgstr ""
+msgstr "Seleccionar Preestablecido Almacenado"
 
 #: ui/templates/ui/create.html:217
 msgid "Save feature selection privately"
-msgstr ""
+msgstr "Guardar selección de característica privadamente"
 
 #: ui/templates/ui/create.html:227
 msgid "Publish feature selection publicly"
-msgstr ""
+msgstr "Publicar selección de característica públicamente"
 
 #: ui/templates/ui/create.html:237
 msgid "Publish export publicly"
-msgstr ""
+msgstr "Publicar exportación públicamente"
 
 #: ui/templates/ui/create.html:327
 msgid "Select a preset configuration file to apply to this export"
-msgstr ""
+msgstr "Seleccionar un archivo de configuración preestablecido para aplicar a esta exportación"
 
 #: ui/templates/ui/detail.html:16
 msgid "Job Id:"
-msgstr ""
+msgstr "Id de trabajo:"
 
 #: ui/templates/ui/detail.html:20
 msgid "Region:"
-msgstr ""
+msgstr "Región:"
 
 #: ui/templates/ui/detail.html:21
 msgid "Area:"
-msgstr ""
+msgstr "Área:"
 
 #: ui/templates/ui/detail.html:22
 msgid "Created:"
-msgstr ""
+msgstr "Creado:"
 
 #: ui/templates/ui/detail.html:23
 msgid "Created By:"
-msgstr ""
+msgstr "Creado por:"
 
 #: ui/templates/ui/detail.html:24
 msgid "Published:"
-msgstr ""
+msgstr "Publicado:"
 
 #: ui/templates/ui/detail.html:25 ui/templates/ui/help_pages.html:23
 msgid "Export Formats:"
-msgstr ""
+msgstr "Formatos de exportación:"
 
 #: ui/templates/ui/detail.html:38
 msgid "Rerun this Export"
-msgstr ""
+msgstr "Reponer esta exportación"
 
 #: ui/templates/ui/detail.html:41
 msgid "Clone this Export"
-msgstr ""
+msgstr "Duplicar esta exportación"
 
 #: ui/templates/ui/detail.html:44 ui/templates/ui/help_tags.html:9
 msgid "Features"
-msgstr ""
+msgstr "Características"
 
 #: ui/templates/ui/detail.html:50
 msgid "Delete this Export"
-msgstr ""
+msgstr "Eliminar esta exportación"
 
 #: ui/templates/ui/detail.html:61
 msgid "Export Runs"
-msgstr ""
+msgstr "Ejecutar exportación"
 
 #: ui/templates/ui/detail.html:132
 msgid "Features selected for this export"
-msgstr ""
+msgstr "Características seleccionadas para esta exportación"
 
 #: ui/templates/ui/email.html:7
 msgid "This is an automated email from HOT Exports."
-msgstr ""
+msgstr "Este es un correo electrónico automático de exportaciones HOT."
 
 #: ui/templates/ui/email.html:8
 msgid "Your HOT Export is ready."
-msgstr ""
+msgstr "Tu exportación HOT está lista."
 
 #: ui/templates/ui/email.html:9
 msgid "Please follow this link"
-msgstr ""
+msgstr "Por favor sigue este enlace"
 
 #: ui/templates/ui/email.html:9
 msgid "to download your files."
-msgstr ""
+msgstr "para descargar tus archivos."
 
 #: ui/templates/ui/email.html:11
 msgid "Thank you for using the HOT Export Service"
-msgstr ""
+msgstr "Gracias por usar el Servicio de Exportación HOT"
 
 #: ui/templates/ui/email.html:14
 msgid "Humanitarian OpenStreetMap Team"
-msgstr ""
+msgstr "Equipo Humanitario de OpenStreetMap"
 
 #: ui/templates/ui/error.html:9
 msgid "Error Creating Export"
-msgstr ""
+msgstr "Error creando exportación"
 
 #: ui/templates/ui/error.html:11
 msgid ""
 "\n"
 "                There was an error creating your export. Please <a href=\"mailto:exports@hotosm.org\">email us</a> if this problem persists.\n"
 "                "
-msgstr ""
+msgstr "\nHubo un error creando su exportación. Por favor <a href=\"mailto:exports@hotosm.org\">envíanos un correo electrónico</a> si el problema persiste."
 
 #: ui/templates/ui/help.html:7
 msgid "Help Documentation"
-msgstr ""
+msgstr "Documentación de Ayuda"
 
 #: ui/templates/ui/help.html:10
 msgid ""
@@ -620,11 +621,11 @@ msgid ""
 "selected HOT regions. This help documentation is split into the following "
 "sections to assist users to navigate the site, use the functions effectively"
 " and successfullly create and run exports."
-msgstr ""
+msgstr "La Herramienta de Exportación de OSM permite a los usuarios crear  exportaciones personalizadas de OpenStreetMap para regiones HOT seleccionadas. Esta documentación de ayuda se divide en las siguientes secciones para ayudar a los usuarios a navegar por el sitio, utilice las funciones de manera eficaz y exitosamente creará y ejecutará las exportaciones."
 
 #: ui/templates/ui/help.html:13
 msgid "Page Navigation"
-msgstr ""
+msgstr "Navegación de página"
 
 #: ui/templates/ui/help.html:15
 msgid ""
@@ -635,11 +636,11 @@ msgstr ""
 
 #: ui/templates/ui/help.html:19 ui/templates/ui/help_pages.html:48
 msgid "Store"
-msgstr ""
+msgstr "Tienda"
 
 #: ui/templates/ui/help.html:24
 msgid "Export File Formats"
-msgstr ""
+msgstr "Formatos de archivo de exportación"
 
 #: ui/templates/ui/help.html:26
 msgid ""
@@ -650,27 +651,27 @@ msgstr ""
 
 #: ui/templates/ui/help.html:28 ui/templates/ui/help_formats.html:18
 msgid "Esri SHP"
-msgstr ""
+msgstr "Esri SHP"
 
 #: ui/templates/ui/help.html:29 ui/templates/ui/help_formats.html:42
 msgid "Garmin IMG"
-msgstr ""
+msgstr "Garmin IMG"
 
 #: ui/templates/ui/help.html:30 ui/templates/ui/help_formats.html:66
 msgid "Google KMZ"
-msgstr ""
+msgstr "Google KMZ"
 
 #: ui/templates/ui/help.html:31
 msgid "OSM PBF"
-msgstr ""
+msgstr "OSM PBF"
 
 #: ui/templates/ui/help.html:32
 msgid "SQlite SQL"
-msgstr ""
+msgstr "SQLite SQL"
 
 #: ui/templates/ui/help.html:36
 msgid "Feature Tag Selection"
-msgstr ""
+msgstr "Selección de etiqueta de característica"
 
 #: ui/templates/ui/help.html:38
 msgid ""
@@ -681,15 +682,15 @@ msgstr ""
 
 #: ui/templates/ui/help.html:40 ui/templates/ui/help_tags.html:19
 msgid "Humanitarian Data Model"
-msgstr ""
+msgstr "Modelo de Datos Humanitarios"
 
 #: ui/templates/ui/help.html:41
 msgid "OpenStreetMap Data Model"
-msgstr ""
+msgstr "Modelo de Datos de OpenStreetMap"
 
 #: ui/templates/ui/help.html:45
 msgid "Configuration Files"
-msgstr ""
+msgstr "Archivos de configuración"
 
 #: ui/templates/ui/help.html:47
 msgid ""
@@ -700,15 +701,15 @@ msgstr ""
 #: ui/templates/ui/help_config.html:8 ui/templates/ui/help_formats.html:8
 #: ui/templates/ui/help_pages.html:8 ui/templates/ui/help_tags.html:8
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: ui/templates/ui/help_config.html:9
 msgid "Configurations"
-msgstr ""
+msgstr "Configuraciones"
 
 #: ui/templates/ui/help_config.html:12
 msgid "Configuration File Help"
-msgstr ""
+msgstr "Ayuda del Archivo de Configuración"
 
 #: ui/templates/ui/help_config.html:14
 msgid ""
@@ -720,27 +721,27 @@ msgstr ""
 
 #: ui/templates/ui/help_config.html:17
 msgid "File Types"
-msgstr ""
+msgstr "Tipos de archivo"
 
 #: ui/templates/ui/help_config.html:21
 msgid "Preset"
-msgstr ""
+msgstr "Preestablecido"
 
 #: ui/templates/ui/help_config.html:21
 msgid "JOSM Preset"
-msgstr ""
+msgstr "Preestablecido de JOSM"
 
 #: ui/templates/ui/help_config.html:55
 msgid "Search Files"
-msgstr ""
+msgstr "Buscar archivos"
 
 #: ui/templates/ui/help_config.html:57
 msgid "Search presets info"
-msgstr ""
+msgstr "Buscar información de preestablecido"
 
 #: ui/templates/ui/help_config.html:60
 msgid "Upload Files"
-msgstr ""
+msgstr "Cargar archivos"
 
 #: ui/templates/ui/help_config.html:62
 msgid ""
@@ -751,11 +752,11 @@ msgstr ""
 
 #: ui/templates/ui/help_formats.html:9
 msgid "Formats"
-msgstr ""
+msgstr "Formatos"
 
 #: ui/templates/ui/help_formats.html:12
 msgid "Export File Format Help"
-msgstr ""
+msgstr "Ayuda de Formato de Archivo de Exportación"
 
 #: ui/templates/ui/help_formats.html:14
 msgid ""
@@ -791,39 +792,39 @@ msgstr ""
 #: ui/templates/ui/help_formats.html:69 ui/templates/ui/help_formats.html:87
 #: ui/templates/ui/help_formats.html:104 ui/templates/ui/help_formats.html:117
 msgid "Compatible Software"
-msgstr ""
+msgstr "Software compatible"
 
 #: ui/templates/ui/help_formats.html:30 ui/templates/ui/help_formats.html:73
 #: ui/templates/ui/help_formats.html:91
 msgid "QGIS"
-msgstr ""
+msgstr "QGIS"
 
 #: ui/templates/ui/help_formats.html:31
 msgid "GRASS GIS"
-msgstr ""
+msgstr "GRASS GIS"
 
 #: ui/templates/ui/help_formats.html:32 ui/templates/ui/help_formats.html:74
 #: ui/templates/ui/help_formats.html:92
 msgid "ArcMap"
-msgstr ""
+msgstr "ArcMap"
 
 #: ui/templates/ui/help_formats.html:33
 msgid "MapInfo"
-msgstr ""
+msgstr "MapInfo"
 
 #: ui/templates/ui/help_formats.html:35 ui/templates/ui/help_formats.html:59
 #: ui/templates/ui/help_formats.html:76 ui/templates/ui/help_formats.html:94
 #: ui/templates/ui/help_formats.html:108 ui/templates/ui/help_formats.html:123
 msgid "Further Information"
-msgstr ""
+msgstr "Información adicional"
 
 #: ui/templates/ui/help_formats.html:36
 msgid "ArcGIS Online | Shapefiles"
-msgstr ""
+msgstr "ArcGIS en línea | Shapefiles"
 
 #: ui/templates/ui/help_formats.html:37
 msgid "OpenStreetMap Wiki | Esri SHP File"
-msgstr ""
+msgstr "Wiki de OpenStreetMap | Archivo ESri SHP"
 
 #: ui/templates/ui/help_formats.html:43
 msgid ""
@@ -836,51 +837,51 @@ msgstr ""
 
 #: ui/templates/ui/help_formats.html:45
 msgid ".rgn - map elements; polylines, polygons and points"
-msgstr ""
+msgstr ".rgn - elementos de mapa; polilíneas, polígonos y puntos"
 
 #: ui/templates/ui/help_formats.html:46
 msgid ".lbl - labels; map elements, city names, localities, etc"
-msgstr ""
+msgstr ".lbl - etiquetas; elementos de mapa; nombres de ciudades, localidades, etc."
 
 #: ui/templates/ui/help_formats.html:47
 msgid ".tre - map structure information; data tree"
-msgstr ""
+msgstr ".tre - información de estructura de mapa; árbol de datos"
 
 #: ui/templates/ui/help_formats.html:48
 msgid ".net - road network information"
-msgstr ""
+msgstr ".net - información de red de caminos"
 
 #: ui/templates/ui/help_formats.html:49
 msgid ".nod - routing information"
-msgstr ""
+msgstr ".nod - información de enrutamiento"
 
 #: ui/templates/ui/help_formats.html:50
 msgid ".mdr - searchable address table for routing desinations"
-msgstr ""
+msgstr ".mdr - tabla de direcciones de búsqueda para los destinos de enrutamiento"
 
 #: ui/templates/ui/help_formats.html:54
 msgid "Garmin"
-msgstr ""
+msgstr "Garmin"
 
 #: ui/templates/ui/help_formats.html:55
 msgid "QLandkarte"
-msgstr ""
+msgstr "QLandkarte"
 
 #: ui/templates/ui/help_formats.html:56
 msgid "OSM Composer"
-msgstr ""
+msgstr "Compositor OSM"
 
 #: ui/templates/ui/help_formats.html:57
 msgid "GroundTruth"
-msgstr ""
+msgstr "GroundTruth"
 
 #: ui/templates/ui/help_formats.html:60
 msgid "SourceForge | Garmin IMG Format"
-msgstr ""
+msgstr "SourceForge | Formato Garmin IMG"
 
 #: ui/templates/ui/help_formats.html:61
 msgid "OpenStreetMap Wiki | Garmin IMG File"
-msgstr ""
+msgstr "Wiki OpenStreetMap | Archivo Garmin IMG"
 
 #: ui/templates/ui/help_formats.html:68
 msgid ""
@@ -892,23 +893,23 @@ msgstr ""
 
 #: ui/templates/ui/help_formats.html:71
 msgid "Google Earth"
-msgstr ""
+msgstr "Google Earth"
 
 #: ui/templates/ui/help_formats.html:72
 msgid "Google Maps"
-msgstr ""
+msgstr "Google Maps"
 
 #: ui/templates/ui/help_formats.html:77
 msgid "Google Earth | KML File"
-msgstr ""
+msgstr "Google Earth | Archivo KML"
 
 #: ui/templates/ui/help_formats.html:78
 msgid "Google Documentation | KML Tutorial"
-msgstr ""
+msgstr "Documentación de Google | Tutorial KML"
 
 #: ui/templates/ui/help_formats.html:79
 msgid "OpenStreetMap Wiki | KML File"
-msgstr ""
+msgstr "Wiki OpenStreetMap | Archivo KML"
 
 #: ui/templates/ui/help_formats.html:84
 msgid "OSM Source PBF"
@@ -924,11 +925,11 @@ msgstr ""
 
 #: ui/templates/ui/help_formats.html:89
 msgid "JOSM"
-msgstr ""
+msgstr "JOSM"
 
 #: ui/templates/ui/help_formats.html:90
 msgid "Osmosis"
-msgstr ""
+msgstr "Osmosis"
 
 #: ui/templates/ui/help_formats.html:95
 msgid "OpenStreetMap Wiki | PBF Format"
@@ -940,7 +941,7 @@ msgstr ""
 
 #: ui/templates/ui/help_formats.html:101
 msgid "OSMAnd OBF"
-msgstr ""
+msgstr "OSMAnd OBF"
 
 #: ui/templates/ui/help_formats.html:103
 msgid ""
@@ -951,15 +952,15 @@ msgstr ""
 
 #: ui/templates/ui/help_formats.html:106
 msgid "OSMAnd"
-msgstr ""
+msgstr "OSMAnd"
 
 #: ui/templates/ui/help_formats.html:109
 msgid "OSMAnd | OBF Format"
-msgstr ""
+msgstr "OSMAnd | Formato OBF"
 
 #: ui/templates/ui/help_formats.html:114
 msgid "SQLite SQL"
-msgstr ""
+msgstr "SQLite SQL"
 
 #: ui/templates/ui/help_formats.html:116
 msgid ""
@@ -972,31 +973,31 @@ msgstr ""
 
 #: ui/templates/ui/help_formats.html:119
 msgid "PostgreSQL"
-msgstr ""
+msgstr "PostgreSQL"
 
 #: ui/templates/ui/help_formats.html:120
 msgid "MySQL"
-msgstr ""
+msgstr "MySQL"
 
 #: ui/templates/ui/help_formats.html:121
 msgid "MicroSoft Access"
-msgstr ""
+msgstr "MicroSoft Access"
 
 #: ui/templates/ui/help_formats.html:124
 msgid "PostgreSQL | The SQL Language"
-msgstr ""
+msgstr "PostgreSQL | El lenguaje SQL"
 
 #: ui/templates/ui/help_formats.html:125
 msgid "Wikipedia | SQL"
-msgstr ""
+msgstr "Wikipedia | SQL"
 
 #: ui/templates/ui/help_pages.html:9
 msgid "Navigation"
-msgstr ""
+msgstr "Navegación"
 
 #: ui/templates/ui/help_pages.html:12
 msgid "Page Navigation Help"
-msgstr ""
+msgstr "Ayuda de Navegación de Página"
 
 #: ui/templates/ui/help_pages.html:14
 msgid ""
@@ -1010,11 +1011,11 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:20
 msgid "User must be registered and logged in to create a new export."
-msgstr ""
+msgstr "El usuario debe estar registrado y conectado para crear una nueva exportación."
 
 #: ui/templates/ui/help_pages.html:22
 msgid "Describe Export:"
-msgstr ""
+msgstr "Describe la exportación:"
 
 #: ui/templates/ui/help_pages.html:22
 msgid ""
@@ -1024,11 +1025,11 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:23
 msgid "Select one or more file format(s) for the export and click 'Next'."
-msgstr ""
+msgstr "Selecciona uno o más formato(s) de archivo para exportar y haz click en 'Siguiente'."
 
 #: ui/templates/ui/help_pages.html:24
 msgid "Export Features:"
-msgstr ""
+msgstr "Características de exportación:"
 
 #: ui/templates/ui/help_pages.html:24
 msgid ""
@@ -1039,7 +1040,7 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:25
 msgid "Preset File:"
-msgstr ""
+msgstr "Archivo preestablecido"
 
 #: ui/templates/ui/help_pages.html:25
 msgid ""
@@ -1050,7 +1051,7 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:26
 msgid "Export Summary:"
-msgstr ""
+msgstr "Resumen de exportación:"
 
 #: ui/templates/ui/help_pages.html:26
 msgid ""
@@ -1061,7 +1062,7 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:27
 msgid "Export Details:"
-msgstr ""
+msgstr "Detalles de exportación:"
 
 #: ui/templates/ui/help_pages.html:27
 msgid ""
@@ -1072,7 +1073,7 @@ msgstr ""
 #: ui/templates/ui/help_pages.html:29 ui/templates/ui/help_pages.html.py:44
 #: ui/templates/ui/help_pages.html:58
 msgid "top"
-msgstr ""
+msgstr "arriba"
 
 #: ui/templates/ui/help_pages.html:35
 msgid ""
@@ -1086,7 +1087,7 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:38 ui/templates/ui/help_pages.html.py:53
 msgid "Search Box:"
-msgstr ""
+msgstr "Caja de búsqueda:"
 
 #: ui/templates/ui/help_pages.html:38
 msgid "Enter Name/Description/Event keywords to filter."
@@ -1094,15 +1095,15 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:39 ui/templates/ui/help_pages.html.py:54
 msgid "Start Date/End Date:"
-msgstr ""
+msgstr "Fecha inicio/Fecha de fin:"
 
 #: ui/templates/ui/help_pages.html:39 ui/templates/ui/help_pages.html.py:54
 msgid "Filter based on date of creation."
-msgstr ""
+msgstr "Filtro basado en la fecha de creación."
 
 #: ui/templates/ui/help_pages.html:40
 msgid "Interactive Map:"
-msgstr ""
+msgstr "Mapa interactivo:"
 
 #: ui/templates/ui/help_pages.html:40
 msgid ""
@@ -1112,19 +1113,19 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:41
 msgid "My Exports:"
-msgstr ""
+msgstr "Mis Exportaciones:"
 
 #: ui/templates/ui/help_pages.html:41
 msgid "Displays personal exports if the user is logged in."
-msgstr ""
+msgstr "Mostrar exportaciones personales si el usuario ha iniciado sesión."
 
 #: ui/templates/ui/help_pages.html:42 ui/templates/ui/help_pages.html.py:56
 msgid "Next Page:"
-msgstr ""
+msgstr "Siguiente página:"
 
 #: ui/templates/ui/help_pages.html:42 ui/templates/ui/help_pages.html.py:56
 msgid "Move on to display more results."
-msgstr ""
+msgstr "Mover para mostrar más resultados."
 
 #: ui/templates/ui/help_pages.html:50
 msgid ""
@@ -1139,11 +1140,11 @@ msgstr ""
 
 #: ui/templates/ui/help_pages.html:53
 msgid "Filter presets by name."
-msgstr ""
+msgstr "Filtrar preestablecidos por nombre."
 
 #: ui/templates/ui/help_pages.html:55
 msgid "My Preset Files:"
-msgstr ""
+msgstr "Mis Archivos Preestablecidos:"
 
 #: ui/templates/ui/help_pages.html:55
 msgid "Display personal preset files if the user is logged in."
@@ -1151,7 +1152,7 @@ msgstr ""
 
 #: ui/templates/ui/help_tags.html:12
 msgid "Feature Tag Selection Help"
-msgstr ""
+msgstr "Ayuda de Selección de Etiquetas de Característica"
 
 #: ui/templates/ui/help_tags.html:14
 msgid ""
@@ -1181,7 +1182,7 @@ msgstr ""
 
 #: ui/templates/ui/help_tags.html:24
 msgid "OpenStreetMap Wiki | Humanitarian OSM Tags"
-msgstr ""
+msgstr "Wiki OpenStreetMap | Etiquetas OSM Humanitario"
 
 #: ui/templates/ui/help_tags.html:26
 msgid ""
@@ -1192,7 +1193,7 @@ msgstr ""
 
 #: ui/templates/ui/help_tags.html:30
 msgid "OpenStreetMap"
-msgstr ""
+msgstr "OpenStreetMap"
 
 #: ui/templates/ui/help_tags.html:32
 msgid ""
@@ -1204,11 +1205,11 @@ msgstr ""
 
 #: ui/templates/ui/help_tags.html:33
 msgid "OpenstreetMap Wiki | OSM Tags"
-msgstr ""
+msgstr "Wiki OpenstreetMap | Etiquetas OSM"
 
 #: ui/templates/ui/help_tags.html:36
 msgid "Tree Structure System"
-msgstr ""
+msgstr "Sistema de Estructura de Árbol"
 
 #: ui/templates/ui/help_tags.html:38
 msgid ""
@@ -1218,7 +1219,7 @@ msgstr ""
 
 #: ui/templates/ui/help_tags.html:39
 msgid "Tick the box on the right to select a feature tag for export."
-msgstr ""
+msgstr "Marca la caja de la derecha para seleccionar una etiqueta de característica para exportar."
 
 #: ui/templates/ui/help_tags.html:40
 msgid "Tick a top level-branch to select all sub-level for export."
@@ -1238,28 +1239,28 @@ msgstr ""
 
 #: ui/templates/ui/list.html:19
 msgid "Filter Exports"
-msgstr ""
+msgstr "Filtrar Exportaciones"
 
 #: ui/templates/ui/list.html:65
 msgid "Event"
-msgstr ""
+msgstr "Evento"
 
 #: ui/templates/ui/list.html:65
 msgid "Region"
-msgstr ""
+msgstr "Región"
 
 #: ui/templates/ui/list.html:86
 msgid "My Exports"
-msgstr ""
+msgstr "Mis exportaciones"
 
 #: ui/templates/ui/list.html:113
 msgid "exports per page"
-msgstr ""
+msgstr "exportaciones por página"
 
 #: ui/templates/ui/list.html:132
 msgid "Filter Area"
-msgstr ""
+msgstr "Filtrar Área"
 
 #: ui/templates/ui/list.html:133
 msgid "Clear Filter"
-msgstr ""
+msgstr "Limpiar Filtro"
