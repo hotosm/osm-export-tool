@@ -88,7 +88,8 @@ THIRD_PARTY_APPS = (
     'rest_framework.authtoken',
     'django_nose',
     'django_extensions',
-    'social.apps.django_app.default'
+    'social.apps.django_app.default',
+    'pipeline',
 )
 
 LOCAL_APPS = (
@@ -111,6 +112,7 @@ AUTHENTICATION_BACKENDS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
+    #'pipeline.middleware.MinifyHTMLMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -209,7 +211,48 @@ LOCALE_PATHS = (
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_DIRS = (
+  #os.path.join(os.path.dirname(__file__), '..', 'ui', 'static', 'ui', 'components'),
+)
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    #'pipeline.finders.FileSystemFinder',
+    #'pipeline.finders.PipelineFinder',
+)
+
+"""
+PIPELINE_ENABLED = False
+PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yuglify.YuglifyCompressor'
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yuglify.YuglifyCompressor'
+
+PIPELINE_CSS = {
+    'exports': {
+        'source_filenames': (
+          'ui/css/style.css',
+        ),
+        'output_filename': 'css/exports.css',
+    },
+}
+
+PIPELINE_JS = {
+    
+    'common': {
+        'source_filenames': (
+            'ui/js/config.js',
+            'ui/js/language.js',
+            'ui/js/layers.js'
+        ),
+        'output_filename': ''
+    }
+
+}
+"""
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

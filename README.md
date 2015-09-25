@@ -11,30 +11,30 @@ This repo contains the newly re-written version 2 of the OSM exports tool.
 
 ## Installation Instructions
 Some prior experience with Django would be helpful, but not strictly necessary.
-##### Update Packages
+### Update Packages
 <pre>
 $ sudo apt-get update
 $ sudo apt-get upgrade
 </pre>
 
-##### Python
+### Python
 Unix environments come pre-installed with Python. To check version, run the command:
 
 <code>$ python -V</code>
 
 HOT Exports requires Python 2.7.x. If you have 2.7.x installed, you can go ahead.
 
-##### pip
+### pip
 To install pip, run:
 
 <code>$ sudo apt-get install python-pip</code>
 
-##### Git
+### Git
 Git is used for version control. To check your version, and if you have it installed:
 
 <code>$ git --version</code> or run <code>$ sudo apt-get install git</code>
 
-##### Virtualenv
+### Virtualenv
 Virtualenv (virtual environment) creates self-contained environments to prevent different versions of python libraries/packages from conflicting with each other.
 
 To make your life easier install [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/install.html)
@@ -55,7 +55,7 @@ Run <code>mkvirtualenv hotosm</code> to create the hotosm virtual environment.
 
 Change to the <code>$HOME/dev/hotosm</code> directory and run <code>workon hotosm</code>.
 
-##### Postgres
+### Postgres
 Install PostgreSQL / PostGIS and its dependencies,
 
 <code>$ sudo apt-get install libpq-dev python-dev</code>
@@ -64,7 +64,7 @@ Install PostgreSQL / PostGIS and its dependencies,
 
 <code>$ sudo apt-get install postgis postgresql-9.3-postgis-2.1</code>
 
-##### Create the database and role
+### Create the database and role
 <pre>
 $ sudo su - postgres
 $ createdb 'hot_exports_dev'
@@ -89,7 +89,7 @@ Create the exports schema
 $ CREATE SCHEMA exports AUTHORIZATION hot;
 </pre>
 
-##### Install GDAL
+### Install GDAL
 
 We need gdal >=1.10.0
 
@@ -107,14 +107,14 @@ $ export CPLUS_INCLUDE_PATH=/usr/include/gdal
 $ export C_INCLUDE_PATH=/usr/include/gdal
 </pre>
 
-##### Install third-party dependencies
+### Install third-party dependencies
 The HOT Export pipeline depends on a number of third-party tools.
 
 <code>$ sudo apt-get install osmctools</code>
 
 <code>$ sudo apt-get install libspatialite5</code>
 
-###### Garmin
+#### Garmin
 
 Download the latest version of the __mkgmap__ utility for making garming img files from [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
 
@@ -122,27 +122,27 @@ Download the latest version of the __splitter__ utility for splitting larger osm
 
 Create a directory and unpack the <code>mkgmap</code> and <code>splitter</code> archives into it.
 
-###### OSMAnd OBF
+#### OSMAnd OBF
 
 For details on the OSMAnd Map Creator utility see [http://wiki.openstreetmap.org/wiki/OsmAndMapCreator](http://wiki.openstreetmap.org/wiki/OsmAndMapCreator)
 
 Download the OSMAnd MapCreator from [http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip](http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip).
 Unpack this into a directory somewhere.
 
-##### Install RabbitMQ
+### Install RabbitMQ
 
 HOT Exports depends on the **rabbitmq-server**. For more detailed installation instructions see [http://www.rabbitmq.com/install-debian.html](http://www.rabbitmq.com/install-debian.html).
 The default configuration should be fine for development purposes.
 
 <code>$ sudo apt-get install rabbitmq-server</code>
 
-##### Checkout the HOT Export Tool source
+### Checkout the HOT Export Tool source
 
 In the hotosm project directory run:
 
 <code>$ git clone git@github.com:hotosm/osm-export-tool2.git</code>
 
-##### Install the project's python dependencies
+### Install the project's python dependencies
 
 From the project directory, install the dependencies into your virtualenv:
 <pre>
@@ -150,7 +150,7 @@ $ pip install -r requirements-dev.txt
 $ pip install -r requirements.txt
 </pre>
 
-##### Project Configuration
+### Project Configuration
 
 Create a <code>settings_private.py</code> file in the hot_exports directory and add the following:
 
@@ -183,7 +183,7 @@ Once you've got all the dependencies installed, run <code>./manage.py migrate</c
 Then run <code>./manage.py runserver</code> to run the server.
 You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
 
-##### Celery Workers
+## Celery Workers
 
 HOT Exports depends on the [Celery](http://celery.readthedocs.org/en/latest/index.html) distributed task queue. As export jobs are created
 they are pushed to a Celery Worker for processing. At least two celery workers need to be started as follows:
@@ -201,6 +201,17 @@ See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>settings.py</code>.
 
 For more detailed information on Celery Workers see [here](http://celery.readthedocs.org/en/latest/userguide/workers.html)
 
+
+## Front end tools
+
+HOT Exports uses bower to manage javascript dependencies.
+
+<pre>
+sudo apt-get install nodejs
+sudo apt-get install npm
+sudo npm -g install bower
+sudo npm -g install yuglify
+</pre>
 
 ## Using Transifex service
 

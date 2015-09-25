@@ -20,21 +20,12 @@ def require_email(strategy, request, details, user=None, is_new=False, *args, **
     logger.debug(user)
     if kwargs.get('ajax') or user and user.email:
         return
-    elif not details.get('email'):
-        email = strategy.request_data().get('email')
-        if email:
-            details['email'] = email
-        else:
-            return redirect('require_email')
-    """
     elif is_new and not details.get('email'):
         email = strategy.request_data().get('email')
         if email:
             details['email'] = email
-            logger.debug(email)
         else:
             return redirect('require_email')
-    """
 
 def email_validation(strategy, backend, code): # pragma: no cover
     """
@@ -54,8 +45,7 @@ def email_validation(strategy, backend, code): # pragma: no cover
     In order to login with your new user account, you need to verify your email address with us.
     Please copy and paste the following into your browser's url bar: {verifyURL}
     """.format(verifyURL=verifyURL)
- 
-    logger.debug(code.email)
+    
     kwargs = {
         "subject": "Please Verify Your Account",
         "body": emailText,
