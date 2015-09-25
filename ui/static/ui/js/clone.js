@@ -15,8 +15,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-
-
 clone = {};
 clone.job = (function(){
     var map;
@@ -34,7 +32,6 @@ clone.job = (function(){
             initNominatim();
             initPresetSelectionHandler();
             initConfigSelectionHandler();
-            //populateForm();
         }
     }
     
@@ -73,7 +70,6 @@ clone.job = (function(){
             displayInLayerSwitcher: true,
         };
         
-        //osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors<br/>Nominatim Search Courtesy of <a href='http://www.mapquest.com/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>";
         osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors.";
         //hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayers([osm]);
@@ -196,10 +192,8 @@ clone.job = (function(){
             $('#nominatim').val('');
             unsetBounds();
             bbox.removeAllFeatures();
-            //map.zoomToExtent(regions.getDataExtent());
             transform.unsetFeature();
             box.activate();
-            //validateBounds();
         });
         
         $('#zoom-selection').bind('click', function(e){
@@ -226,7 +220,6 @@ clone.job = (function(){
         
         /* Add map controls */
         map.addControl(new OpenLayers.Control.ScaleLine());
-        //map.addControl(new OpenLayers.Control.LayerSwitcher());
         
         // set inital zoom to regions extent
         map.zoomTo(regions.getDataExtent());
@@ -338,7 +331,6 @@ clone.job = (function(){
             validateBBox(); // trigger form validation.
             $('#valid-extents').css('visibility','hidden');
             $('#alert-extents').css('visibility','visible');
-            //$('#alert-extents').html('<span>Select area to export.&nbsp;&nbsp;</span><span class="glyphicon glyphicon-remove">&nbsp;</span>');
             $('#alert-extents').html('<span>' + gettext('Select area to export') + '&nbsp;&nbsp;</span>');
             return false;
         }
@@ -476,15 +468,6 @@ clone.job = (function(){
                         }
                     }
                 },
-                /*
-                'event': {
-                    validators: {
-                        notEmpty: {
-                            message: 'The event is required and cannot be empty.'
-                        }
-                    }
-                },
-                */
                 'formats': {
                     validators: {
                         choice: {
@@ -1311,42 +1294,16 @@ clone.job = (function(){
                             
                         }
                         // if in cache use cached value
-                        /*
+                        
                         if(query_cache[query]){
                             process(query_cache[query]);
                             return;
                         }
-                        */
+                        
                         if( typeof searching != "undefined") {
                             clearTimeout(searching);
                             process([]);
                         }
-                        /*
-                        searching = setTimeout(function() {
-                            return $.getJSON(
-                                Config.MAPQUEST_SEARCH_URL,
-                                {
-                                    q: query,
-                                    format: 'json',
-                                    limit: 10,
-                                    key: 'Fmjtd|luur2h082g,b2=o5-9wbx1f'
-                                },
-                                function(data){
-                                    // build list of suggestions
-                                    var suggestions = [];
-                                    $.each(g, function(i, place){
-                                        // only interested in relations
-                                        if (place.osm_type === 'relation' || place.osm_type === 'way') {
-                                            suggestions.push(place);
-                                        }
-                                    });
-                                    // save result to cache
-                                    query_cache[query] = suggestions;
-                                    return process(suggestions);
-                                }
-                            );
-                        }, 100); // timeout before initiating search..
-                        */
                         searching = setTimeout(function() {
                             return $.getJSON(
                                 Config.GEONAMES_SEARCH_URL,
@@ -1383,20 +1340,6 @@ clone.job = (function(){
                 item.countryName.trim() != "" ? names.push(item.countryName) : null;
                 return names.join(separator=', ');
             },
-            /*
-            afterSelect: function(item){
-                var boundingbox = item.boundingbox;
-                var bottom = boundingbox[0], top = boundingbox[1],
-                    left = boundingbox[2], right = boundingbox[3];
-                var bounds = new OpenLayers.Bounds(left, bottom, right, top);
-                // add the bounds to the map..
-                var feature = buildBBoxFeature(bounds);
-                // allow bbox to be modified
-                if (feature){
-                    transform.setFeature(feature);
-                }
-            }
-            */
             afterSelect: function(item){
                 var boundingbox = item.bbox;
                 var bottom = boundingbox.south, top = boundingbox.north,

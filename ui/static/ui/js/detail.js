@@ -263,7 +263,7 @@ exports.detail = (function(){
                                 break;
                             case 'Thematic Shapefile Export':
                                 if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">Thematic ESRI Shapefile (SHP)</a></td><td>' + duration + '</td><td>' +
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Thematic ESRI Shapefile (SHP)') + '</a></td><td>' + duration + '</td><td>' +
                                         result.size + '</td></tr>');
                                 }
                                 break;
@@ -306,23 +306,23 @@ exports.detail = (function(){
                                        <div class="col-md-12"> \
                                            <div class="table-responsive"> \
                                                <table class="table"> \
-                                                   <tr><td><strong>Run Id:</strong></td><td><div id="runuid">{{ run_uid }}</div></td></tr> \
-                                                   <tr><td><strong>Status:</strong></td><td><div id="status" class="{{ status_class }}" role="alert">{{ status }}</div></td></tr> \
-                                                   <tr><td><strong>Run by:</strong></td><td><div id="user" class="{{ user }}">{{ user }}</div></td></tr> \
-                                                   <tr><td><strong>Started:</strong></td><td><div id="started">{{ started }}</div></td></tr> \
-                                                   <tr><td><strong>Finished:</strong></td><td><div id="finished">{{ finished }}</div></td></tr> \
-                                                   <tr><td><strong>Duration:</strong></td><td><div id="duration">{{ duration }}</div></td></tr> \
-                                                   <tr><td><strong>Download:</strong></td><td> \
+                                                   <tr><td><strong>' + gettext('Run Id') + ':</strong></td><td><div id="runuid">{{ run_uid }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Status') + ':</strong></td><td><div id="status" class="{{ status_class }}" role="alert">{{ status }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Run by') + ':</strong></td><td><div id="user" class="{{ user }}">{{ user }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Started') + ' :</strong></td><td><div id="started">{{ started }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Finished') + ':</strong></td><td><div id="finished">{{ finished }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Duration') + ':</strong></td><td><div id="duration">{{ duration }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Download') + ':</strong></td><td> \
                                                         <div id="tasks"> \
                                                             <table class="table table-condensed" width="100%"> \
-                                                            <thead><th>File</th><th>Duration</th><th>Size</th></thead> \
+                                                            <thead><th>' + gettext('File') + '</th><th>' + gettext('Duration') + '</th><th>' + gettext('Size') + '</th></thead> \
                                                             </table> \
                                                         </div> \
                                                     </td></tr> \
-                                                    <tr id="exceptions"><td><strong>Errors:</strong></td><td> \
+                                                    <tr id="exceptions"><td><strong>' + gettext('Errors') + ':</strong></td><td> \
                                                         <div id="errors"> \
                                                             <table class="table table-condensed" width="100%"> \
-                                                            <thead><th>Task</th><th>Error</th></thead> \
+                                                            <thead><th>Task</th><th>' + gettext('Error') + '</th></thead> \
                                                             </table> \
                                                         </div> \
                                                     </td></tr> \
@@ -534,14 +534,14 @@ exports.detail = (function(){
                                        <div class="col-md-12"> \
                                            <div class="table-responsive"> \
                                                <table class="table"> \
-                                                   <tr><td><strong>Run Id:</strong></td><td><div id="runuid">{{ run_uid }}</div></td></tr> \
-                                                   <tr><td><strong>Status:</strong></td><td><div id="status" class="{{ status_class }}" role="alert">{{ status }}</div></td></tr> \
-                                                   <tr><td><strong>Started:</strong></td><td><div id="started">{{ started }}</div></td></tr> \
-                                                   <tr><td><strong>Run by:</strong></td><td><div id="user">{{ user }}</div></td></tr> \
-                                                   <tr><td><strong>Tasks:</strong></td><td> \
+                                                   <tr><td><strong>' + gettext('Run Id') + ':</strong></td><td><div id="runuid">{{ run_uid }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Status') + ':</strong></td><td><div id="status" class="{{ status_class }}" role="alert">{{ status }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Started') + ':</strong></td><td><div id="started">{{ started }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Run by') + ':</strong></td><td><div id="user">{{ user }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Tasks') + ':</strong></td><td> \
                                                         <div id="tasks"> \
                                                             <table class="table table-condensed" width="100%"> \
-                                                            <thead><th>Name</th><th>Duration</th><th>Size</th><th>Status</th></thead> \
+                                                            <thead><th>' + gettext('Name') + '</th><th>' + gettext('Duration') + '</th><th>' + gettext('Size') + '</th><th>' + gettext('Status') + '</th></thead> \
                                                             </table> \
                                                         </div> \
                                                     </td></tr> \
@@ -681,7 +681,7 @@ exports.detail = (function(){
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
                             $tr.removeClass();
                             $tr.addClass(status.toLowerCase());
-                            $tr.html('<td>Generate OpenStreetMap Schema</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
+                            $tr.html('<td>' + gettext('Generate OpenStreetMap Schema') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
                         }
                         else {
                             $tr.removeClass();
@@ -995,7 +995,7 @@ exports.detail = (function(){
         var $filelist = $('#filelist');
         if (configurations.length > 0) {
             var config = configurations[0];
-            var published = config.published ? 'Published' : 'Private';
+            var published = config.published ? gettext('Published') : gettext('Private');
             var created = moment(config.created).format('MMMM Do YYYY h:mm:ss a');
             var $tr = $('<tr id="' + config.uid + '" data-filename="' + config.filename + '"' +
                         'data-type="' + config.config_type + '" data-published="' + config.published + '"' +

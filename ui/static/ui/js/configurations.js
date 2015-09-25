@@ -28,8 +28,6 @@ configurations.list = (function(){
         main: function(){
             
             initUploadForm();
-            $('div#search-config').css('display','none');
-            $('div#spinner').css('display','block');
             initPopovers();
             initDataTable();
             initDatePickers();
@@ -345,7 +343,6 @@ configurations.list = (function(){
     }
     
     
-    
     /**
      * Lists the configurations.
      *
@@ -445,7 +442,7 @@ configurations.list = (function(){
             url = url.slice(1, url.length -1);
             var rel = b.split(';')[1].split('=')[1];
             rel = rel.slice(1, rel.length -1);
-            paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>&nbsp;');
+            paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/>' + gettext(' Prev') + '</a></li>&nbsp;');
             $('li#prev').on('click', function(){
                 var u = this.getAttribute('data-url');
                 u == 'undefined' ? listConfigurations() : listConfigurations(u);  
@@ -458,7 +455,7 @@ configurations.list = (function(){
             var rel = a.split(';')[1].split('=')[1];
             rel = rel.slice(1, rel.length -1);
             if (rel == 'prev') {
-                paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> Prev</a></li>');
+                paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/>' + gettext('Prev') + '</a></li>');
                 $('li#prev').on('click', function(){
                     var u = this.getAttribute('data-url');
                     u == 'undefined' ? listConfigurations() : listConfigurations(u);
@@ -554,13 +551,13 @@ configurations.list = (function(){
                 if (data.published) {
                     $pubSpan.tooltip({
                         'html': true,
-                        'title': 'Published preset'
+                        'title': gettext('Published preset')
                     });
                 }
                 else {
                     $unpubSpan.tooltip({
                         'html': true,
-                        'title': 'Private preset'
+                        'title': gettext('Private preset')
                     });
                 }
                 $users.tooltip({
@@ -665,21 +662,21 @@ configurations.list = (function(){
     function initPopovers(){
         $('a#filter-toggle').popover({
             //title: 'Select Formats', 
-            content: "Filter through all the preset files based on keywords in the search box and/or between a start and end date",
+            content: gettext("Filter through all the preset files based on keywords in the search box and/or between a start and end date"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'right'
         });
         $('label[for="publish_config"]').popover({
             //title: 'Select Formats', 
-            content: "Publish the preset file to the global store for everyone to access",
+            content: gettext("Publish the preset file to the global store for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('input#filename').popover({
             //title: 'Select Formats', 
-            content: "Give the selected Preset file a name",
+            content: gettext("Give the selected Preset file a name"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
