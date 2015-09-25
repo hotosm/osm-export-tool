@@ -1,0 +1,39 @@
+{
+  "name": "hotexports",
+  "version": "2.0.0-beta",
+  "homepage": "https://github.com/hotosm/osm-export-tool2",
+  "authors": [
+    "brian.ohare@hotosm.org"
+  ],
+  "description": "HOT Export Tool v2",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "ui/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap3-typeahead": "~3.1.1",
+    "datatables": "~1.10.7",
+    "formvalidation": "https://github.com/formvalidation/formvalidation.git",
+    "handlebars": "3.0.3",
+    "jquery-color": "~2.1.2",
+    "jquery-form": "~3.46.0",
+    "moment": "~2.10.3",
+    "numeral": "https://github.com/adamwdraper/Numeral-js.git#~1.5.3",
+    "openlayers": "http://github.com/openlayers/openlayers/releases/download/release-2.13.1/OpenLayers-2.13.1.zip",
+    "bootstrap": "3.3.5",
+    "jquery": "2.1.4",
+    "eonasdan-bootstrap-datetimepicker": "~4.17.37",
+    "font-awesome": "~4.4.0",
+    "twitter-bootstrap-wizard": "44a6d38bcdebc2cb40f5344dd60581e381387ea4"
+  },
+  "resolutions": {
+    "bootstrap": "3.3.5",
+    "jquery": "2.1.4"
+  }
+}

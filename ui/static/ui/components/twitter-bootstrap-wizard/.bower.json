@@ -1,0 +1,44 @@
+{
+  "name": "twitter-bootstrap-wizard",
+  "ignore": [
+    "**/.*",
+    "examples",
+    "README.md",
+    "*.txt",
+    "*.html",
+    "prettify.js",
+    "prettify.css",
+    "bower.json",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "main": [
+    "jquery.bootstrap.wizard.min.js"
+  ],
+  "dependencies": {
+    "jquery": ">=1.9.1",
+    "bootstrap": ">=3.3.0"
+  },
+  "homepage": "https://github.com/VinceG/twitter-bootstrap-wizard",
+  "authors": [
+    "Vincent Gabriel <vadimg88@gmail.com>"
+  ],
+  "description": "This twitter bootstrap plugin builds a wizard out of a formatter tabbable structure. It allows to build a wizard functionality using buttons to go through the different wizard steps and using events allows to hook into each step individually.",
+  "keywords": [
+    "twitter",
+    "bootstrap",
+    "wizard"
+  ],
+  "license": "MIT",
+  "_release": "44a6d38bcd",
+  "_resolution": {
+    "type": "commit",
+    "commit": "44a6d38bcdebc2cb40f5344dd60581e381387ea4"
+  },
+  "_source": "git://github.com/VinceG/twitter-bootstrap-wizard.git",
+  "_target": "44a6d38bcdebc2cb40f5344dd60581e381387ea4",
+  "_originalSource": "twitter-bootstrap-wizard",
+  "_direct": true
+}
