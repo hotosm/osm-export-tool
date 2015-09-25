@@ -299,9 +299,10 @@ configurations.list = (function(){
                 {
                     data: 'created',
                     render: function(data, type, row){
-                        return moment(data).format('YYYY-MM-DD hh:mm a');
+                        return moment(data).format('YYYY-MM-DD');
                     }
                 },
+                {data: 'owner'},
                 {data: 'filename'},
                 {
                     data: 'uid',

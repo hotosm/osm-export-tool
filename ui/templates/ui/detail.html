@@ -6,7 +6,7 @@
 <div id="details-row" class="row">
     <div id="job" class="col-md-6">
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>{% trans 'Export Summary' %}</h4></div>
+            <div class="panel-heading"><h4>{% trans 'Export Details' %}</h4></div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-6">
@@ -35,19 +35,19 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div>
-                            <button id="rerun" class="btn btn-primary pull-left">{% trans 'Rerun this Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-repeat"></span></button>
-                        </div>
-                        <div>
-                            <button id="clone" class="btn btn-primary pull-left">{% trans 'Clone this Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-asterisk"></span></button>
-                        </div>
-                        <div>
                             <button id="features" class="btn btn-primary pull-left">{% trans 'Features' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-tag"></span></button>
+                        </div>
+                        <div>
+                            <button id="rerun" class="btn btn-primary pull-left">{% trans 'Rerun Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-repeat"></span></button>
+                        </div>
+                        <div>
+                            <button id="clone" class="btn btn-primary pull-left">{% trans 'Clone Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-asterisk"></span></button>
                         </div>
                         <div>
                             <form id="deleteForm" method="post" action="" role="form" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <input type="hidden" value="DELETE" name="_method"/>
-                                <button id="delete" class="btn btn-danger pull-left">{% trans 'Delete this Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-trash"></span></button>
+                                <button id="delete" class="btn btn-danger pull-left">{% trans 'Delete Export' %}&nbsp;&nbsp;<span class="glyphicon glyphicon-trash"></span></button>
                             </form> 
                         </div>
                     </div>

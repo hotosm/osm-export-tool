@@ -17,10 +17,10 @@
                 {% csrf_token %}
                 <ul id="tabs" class="nav nav-pills">
                     <li id="create-tab" role="presentation" class="active"><a data-toggle="tab" href="#create">{% trans 'Describe Export' %}</a></li>
-                    <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">{% trans 'Select Formats' %}</a></li>
-                    <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">{% trans 'Select Features' %}</a></li>
-                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">{% trans 'Select Preset' %}</a></li>
-                    <li id="summary-tab" role="presentation"><a data-toggle="tab" href="#summary">{% trans 'Export Summary' %}</a></li>
+                    <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">{% trans 'Formats File' %}</a></li>
+                    <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">{% trans 'Tree Tag' %}</a></li>
+                    <li id="upload-tab" role="presentation"><a data-toggle="tab" href="#upload">{% trans 'Preset File' %}</a></li>
+                    <li id="summary-tab" role="presentation"><a data-toggle="tab" href="#summary">{% trans 'Export Details' %}</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="create" class="tab-pane fade in active">
@@ -162,7 +162,7 @@
                             <div class="row">
                                 <span id="select-file" class="btn btn-primary btn-lg btn-file pull-left">
                                         <i class="fa fa-plus"></i>&nbsp;
-                                        {% trans 'Select a preset to upload' %} <input id="fileupload" type="file" name="upload">
+                                        {% trans 'Upload Preset' %} <input id="fileupload" type="file" name="upload">
                                 </span>
                                 <button id="upload" type="button" class="btn btn-lg btn-success pull-left">
                                     <span>
@@ -257,7 +257,7 @@
                       </div>
                     </div>
                     <ul id="create-pager" class="pager wizard">
-                        <li class="next"><a href="#">{% trans 'Skip' %}</a></li>
+                        <li class="next"><a href="#">{% trans 'Next' %}</a></li>
                     </ul>
                 </div>
                 <!-- container for job extents -->
@@ -323,8 +323,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">{% trans 'Select configuration files to apply to this export' %}</h4>
-                <h5>{% trans 'Only one preset file can be selected.' %}</h5>
+                <h4 class="modal-title" id="myModalLabel">{% trans 'Select a preset file to apply to this export' %}</h4>
+                <h5>{% trans 'Only one preset file can be selected' %}</h5>
             </div>
             <div class="container-fluid">
                 <div class="row">
@@ -332,7 +332,6 @@
                         <span id="spinner-modal"><i class="fa fa-cog fa-spin fa-5x"></i></span>
                     </div>
                     <div id="search-config-modal" class="col-md-12">
-                        
                         <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
                             <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Configurations' %}
                         </a>
@@ -344,7 +343,7 @@
                                     <div>
                                         <div class="input-group search">
                                             <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                                            <input id="search" type="text" class="form-control" placeholder="" name="search">
+                                            <input id="search" type="text" class="form-control" placeholder="Filter by name, owner" name="search">
                                         </div>
                                     </div>
                                 </div>
@@ -374,7 +373,7 @@
                                     <div class="table-responsive">
                                         <table id="configurations" class="table table-hover table-condensed">
                                             <thead>
-                                                <tr><th>{% trans 'Name' %}</th><th>{% trans 'Type' %}</th><th>{% trans 'Created' %}</th><th>{% trans 'Filename' %}</th><th>{% trans 'Select' %}</th></tr>
+                                                <tr><th>{% trans 'Name' %}</th><th>{% trans 'Type' %}</th><th>{% trans 'Created' %}</th><th>{% trans 'Owner' %}</th><th>{% trans 'Filename' %}</th><th>{% trans 'Select' %}</th></tr>
                                             </thead>
                                             <tbody></tbody>
                                         </table>
