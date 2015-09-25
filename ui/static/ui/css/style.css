@@ -41,9 +41,15 @@ html, body {
 }
 
 .logo {
+    width: 114px;
     height: 75px;
     padding: 0px;
     float: left;
+}
+
+#logotext {
+    font-size: large;
+    color: black;
 }
 
 /* nav styles */
