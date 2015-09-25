@@ -1,14 +1,14 @@
 {
   "name": "openlayers",
-  "homepage": "https://github.com/openlayers/openlayers",
-  "_release": "fed67aafc2",
-  "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "fed67aafc253b9876e6766eb30beac336a804d6f"
+  "_cacheHeaders": {
+    "ETag": "\"e41aafae93983e87e680e66fda0b83b7\"",
+    "Last-Modified": "Fri, 15 Aug 2014 12:14:25 GMT",
+    "Content-Length": "11871614",
+    "Content-Type": "application/octet-stream",
+    "Content-Disposition": "attachment; filename=OpenLayers-2.13.1.zip"
   },
-  "_source": "https://github.com/openlayers/openlayers.git",
+  "_release": "e-tag:e41aafae9",
+  "_source": "http://github.com/openlayers/openlayers/releases/download/release-2.13.1/OpenLayers-2.13.1.zip",
   "_target": "*",
-  "_originalSource": "https://github.com/openlayers/openlayers.git",
-  "_direct": true
+  "_originalSource": "http://github.com/openlayers/openlayers/releases/download/release-2.13.1/OpenLayers-2.13.1.zip"
 }

@@ -21,6 +21,5 @@
   },
   "_source": "git://github.com/malsup/form.git",
   "_target": "~3.46.0",
-  "_originalSource": "jquery-form",
-  "_direct": true
+  "_originalSource": "jquery-form"
 }

@@ -130,22 +130,6 @@
         map.destroy();
     }
 
-    function test_Map_constructor_renderTo_DOM_element_ref(t) {
-        t.plan( 1 );
-
-        var map_div = document.getElementById('map');
-        map = new OpenLayers.Map(map_div); 
-        var baseLayer = new OpenLayers.Layer.WMS("Test Layer", 
-            "http://octo.metacarta.com/cgi-bin/mapserv?",
-            {map: "/mapdata/vmap_wms.map", layers: "basic"});
-        map.addLayer(baseLayer);
-        
-        var mapDiv = document.getElementById("map");
-        t.ok(map.div == mapDiv, "Map is rendered to the 'map' div.")
-        
-        map.destroy();
-    }
-
     function test_Map_setOptions(t) {
         t.plan(2);
         map = new OpenLayers.Map('map', {maxExtent: new OpenLayers.Bounds(100, 200, 300, 400)});
@@ -283,18 +267,14 @@
         map.destroy();
     }
 
-    function test_Map_zoomstart_zoomend_event (t) {
-        t.plan(4);
+    function test_Map_zoomend_event (t) {
+        t.plan(2);
 
         map = new OpenLayers.Map('map', {zoomMethod: null});
         var baseLayer = new OpenLayers.Layer.WMS("Test Layer", 
             "http://octo.metacarta.com/cgi-bin/mapserv?",
             {map: "/mapdata/vmap_wms.map", layers: "basic"});
         map.addLayer(baseLayer);
-        map.events.register("zoomstart", {count: 0}, function() { 
-            this.count++; 
-            t.ok(true, "zoomstart event was triggered " + this.count + " times");
-            });
         map.events.register("zoomend", {count: 0}, function() { 
             this.count++; 
             t.ok(true, "zoomend event was triggered " + this.count + " times");

@@ -10,13 +10,13 @@ function init() {
         layers: [
             new OpenLayers.Layer.WMS(
                 "Natural Earth", 
-                "http://demo.boundlessgeo.com/geoserver/wms",
+                "http://demo.opengeo.org/geoserver/wms",
                 {layers: "topp:naturalearth"}
             ),
             new OpenLayers.Layer.Vector("WFS", {
                 strategies: [new OpenLayers.Strategy.BBOX()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url:  "http://demo.boundlessgeo.com/geoserver/wfs",
+                    url:  "http://demo.opengeo.org/geoserver/wfs",
                     featureType: "tasmania_roads",
                     featureNS: "http://www.openplans.org/topp"
                 }),

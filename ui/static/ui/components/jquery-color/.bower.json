@@ -10,6 +10,5 @@
   },
   "_source": "git://github.com/jquery/jquery-color.git",
   "_target": "~2.1.2",
-  "_originalSource": "jquery-color",
-  "_direct": true
+  "_originalSource": "jquery-color"
 }

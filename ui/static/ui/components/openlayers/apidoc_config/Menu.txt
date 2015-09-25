@@ -1,4 +1,4 @@
-Format: 1.52
+Format: 1.51
 
 
 Title: OpenLayers
@@ -83,7 +83,6 @@ Group: OpenLayers  {
          File: LayerSwitcher  (no auto-title, OpenLayers/Control/LayerSwitcher.js)
          File: Measure  (no auto-title, OpenLayers/Control/Measure.js)
          File: ModifyFeature  (no auto-title, OpenLayers/Control/ModifyFeature.js)
-         File: ModifyFeature.BySegment  (OpenLayers/Control/ModifyFeature/BySegment.js)
          File: MousePosition  (no auto-title, OpenLayers/Control/MousePosition.js)
          File: Navigation  (no auto-title, OpenLayers/Control/Navigation.js)
          File: NavigationHistory  (no auto-title, OpenLayers/Control/NavigationHistory.js)
@@ -102,7 +101,6 @@ Group: OpenLayers  {
          File: SLDSelect  (no auto-title, OpenLayers/Control/SLDSelect.js)
          File: Snapping  (no auto-title, OpenLayers/Control/Snapping.js)
          File: Split  (no auto-title, OpenLayers/Control/Split.js)
-         File: TextButtonPanel  (OpenLayers/Control/TextButtonPanel.js)
          File: TouchNavigation  (no auto-title, OpenLayers/Control/TouchNavigation.js)
          File: TransformFeature  (no auto-title, OpenLayers/Control/TransformFeature.js)
          File: UTFGrid  (OpenLayers/Control/UTFGrid.js)
@@ -144,8 +142,6 @@ Group: OpenLayers  {
          File: v1  (no auto-title, OpenLayers/Format/Filter/v1.js)
          File: v1_0_0  (no auto-title, OpenLayers/Format/Filter/v1_0_0.js)
          File: v1_1_0  (no auto-title, OpenLayers/Format/Filter/v1_1_0.js)
-         File: v2  (OpenLayers/Format/Filter/v2.js)
-         File: v2_0_0  (OpenLayers/Format/Filter/v2_0_0.js)
          }  # Group: Filter
 
       Group: GML  {
@@ -178,7 +174,6 @@ Group: OpenLayers  {
          File: v1  (no auto-title, OpenLayers/Format/WFSCapabilities/v1.js)
          File: v1_0_0  (no auto-title, OpenLayers/Format/WFSCapabilities/v1_0_0.js)
          File: v1_1_0  (no auto-title, OpenLayers/Format/WFSCapabilities/v1_1_0.js)
-         File: v2_0_0  (OpenLayers/Format/WFSCapabilities/v2_0_0.js)
          }  # Group: WFSCapabilities
 
       Group: WFST  {
@@ -187,7 +182,6 @@ Group: OpenLayers  {
          File: v1  (no auto-title, OpenLayers/Format/WFST/v1.js)
          File: v1_0_0  (no auto-title, OpenLayers/Format/WFST/v1_0_0.js)
          File: v1_1_0  (no auto-title, OpenLayers/Format/WFST/v1_1_0.js)
-         File: v2_0_0  (OpenLayers/Format/WFST/v2_0_0.js)
          }  # Group: WFST
 
       Group: WMC  {
@@ -243,7 +237,6 @@ Group: OpenLayers  {
          File: SOSGetFeatureOfInterest  (no auto-title, OpenLayers/Format/SOSGetFeatureOfInterest.js)
          File: SOSGetObservation  (no auto-title, OpenLayers/Format/SOSGetObservation.js)
          File: Text  (no auto-title, OpenLayers/Format/Text.js)
-         File: TMSCapabilities  (OpenLayers/Format/TMSCapabilities.js)
          File: WCSCapabilities  (OpenLayers/Format/WCSCapabilities.js)
 
          Group: WCSCapabilities  {
@@ -252,15 +245,6 @@ Group: OpenLayers  {
             File: WCSCapabilities/v1_0_0  (OpenLayers/Format/WCSCapabilities/v1_0_0.js)
             File: WCSCapabilities/v1_1_0  (OpenLayers/Format/WCSCapabilities/v1_1_0.js)
             }  # Group: WCSCapabilities
-
-         File: WCSDescribeCoverage  (OpenLayers/Format/WCSDescribeCoverage.js)
-
-         Group: WCSDescribeCoverage  {
-
-            File: WCSDescribeCoverage.v1  (OpenLayers/Format/WCSDescribeCoverage/v1.js)
-            File: WCSDescribeCoverage/v1_0_0  (OpenLayers/Format/WCSDescribeCoverage/v1_0_0.js)
-            File: WCSDescribeCoverage/v1_1_0  (OpenLayers/Format/WCSDescribeCoverage/v1_1_0.js)
-            }  # Group: WCSDescribeCoverage
 
          File: WCSGetCoverage version 1.1.0  (no auto-title, OpenLayers/Format/WCSGetCoverage.js)
          File: WFS  (no auto-title, OpenLayers/Format/WFS.js)
@@ -445,7 +429,6 @@ Group: OpenLayers  {
          File: v1  (no auto-title, OpenLayers/Protocol/WFS/v1.js)
          File: v1_0_0  (no auto-title, OpenLayers/Protocol/WFS/v1_0_0.js)
          File: v1_1_0  (no auto-title, OpenLayers/Protocol/WFS/v1_1_0.js)
-         File: v2_0_0  (OpenLayers/Protocol/WFS/v2_0_0.js)
          }  # Group: WFS
 
       }  # Group: Protocol

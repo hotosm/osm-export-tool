@@ -46,7 +46,7 @@ function init() {
     });
     var gphy = new OpenLayers.Layer.Google(
         "Google Physical",
-        {type: google.maps.MapTypeId.PHYSICAL, sphericalMercator: true}
+        {type: G_PHYSICAL_MAP, sphericalMercator: true}
     );
 
     var saveStrategy = new OpenLayers.Strategy.Save();
@@ -57,11 +57,11 @@ function init() {
         protocol: new OpenLayers.Protocol.WFS({
             version: "1.1.0",
             srsName: "EPSG:4326",
-            url: "http://demo.boundlessgeo.com/geoserver/wfs",
+            url: "http://demo.opengeo.org/geoserver/wfs",
             featureNS :  "http://opengeo.org",
             featureType: "restricted",
             geometryName: "the_geom",
-            schema: "http://demo.boundlessgeo.com/geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=og:restricted"
+            schema: "http://demo.opengeo.org/geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=og:restricted"
         })
     }); 
    
