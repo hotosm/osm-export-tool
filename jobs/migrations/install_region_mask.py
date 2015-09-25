@@ -17,6 +17,5 @@ class Migration(migrations.Migration):
                           select 1 as id,
                           st_multi(st_symdifference(st_polyfromtext('POLYGON((-180 90, -180 -90, 180 -90, 180 90, -180 90))', 4326), st_union(the_geom)))
                           AS the_geom
-                          FROM exports.regions;"""),
-        migrations.RunSQL("ALTER TABLE exports.region_mask OWNER TO hot;")
+                          FROM exports.regions;""")
     ]
