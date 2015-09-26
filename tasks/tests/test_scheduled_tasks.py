@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class TestPurgeUnpublishedExportsTask(TestCase):
     
     def setUp(self,):
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40))

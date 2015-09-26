@@ -26,7 +26,7 @@ class TestOverpass(TestCase):
         self.bbox = '6.25,-10.85,6.40,-10.62' # monrovia
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)

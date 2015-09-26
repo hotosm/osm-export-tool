@@ -25,7 +25,7 @@ class TestJobViewSet(APITestCase):
     
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.group = Group.objects.create(name='DefaultExportExtentGroup')
+        self.group = Group.objects.create(name='TestDefaultExportExtentGroup')
         profile = ExportProfile.objects.create(
             name='DefaultExportProfile',
             max_extent=2500000,
@@ -525,7 +525,7 @@ class TestBBoxSearch(APITestCase):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
         # create dummy user
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create_user(
             username='demo', email='demo@demo.com', password='demo'
         )
@@ -605,7 +605,7 @@ class TestExportRunViewSet(APITestCase):
     Test cases for ExportRunViewSet
     """
     def setUp(self, ):
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
@@ -650,7 +650,7 @@ class TestExportConfigViewSet(APITestCase):
     """
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -741,7 +741,7 @@ class TestExportTaskViewSet(APITestCase):
     """
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)

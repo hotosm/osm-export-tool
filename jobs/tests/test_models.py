@@ -23,7 +23,7 @@ class TestJob(TestCase):
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -218,7 +218,7 @@ class TestJobRegionIntersection(TestCase):
     
     def setUp(self,):
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((36.90, 13.54, 48.52, 20.24)) # overlaps africa / central asia
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -280,7 +280,7 @@ class TestExportConfig(TestCase):
     
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -327,7 +327,7 @@ class TestTag(TestCase):
     
     def setUp(self, ):
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -410,7 +410,7 @@ class TestTag(TestCase):
 class TestExportProfile(TestCase):
     
     def setUp(self,):
-        self.group = Group.objects.create(name='DefaultExportExtentGroup')
+        self.group = Group.objects.create(name='TestDefaultExportExtentGroup')
         
     def test_export_profile(self,):
         profile = ExportProfile.objects.create(

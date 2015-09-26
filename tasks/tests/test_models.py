@@ -18,7 +18,7 @@ class TestExportRun(TestCase):
     """
     def setUp(self,):
         formats = ExportFormat.objects.all()
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -78,7 +78,7 @@ class TestExportTask(TestCase):
     """
     def setUp(self,):
         formats = ExportFormat.objects.all()
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
