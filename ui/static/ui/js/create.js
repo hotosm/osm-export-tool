@@ -1962,7 +1962,7 @@ create.job = (function(){
         });
         $('label[for="publish_config"]').popover({
             //title: 'Select Formats', 
-            content: gettext("Publish the preset file to the global store for everyone to access"),
+            content: gettext("Publish the preset file to the global storage for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
@@ -1983,14 +1983,14 @@ create.job = (function(){
         });
         $('label[for="feature_save"]').popover({
             //title: 'Select Formats', 
-            content: gettext("Save the feature tag selection to your personal preset storeage"),
+            content: gettext("Save the feature tag selection to your personal preset storage"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="feature_pub"]').popover({
             //title: 'Select Formats', 
-            content: gettext("Publish the feature tag selection to the global preset storeage for everyone to access"),
+            content: gettext("Publish the feature tag selection to the global preset storage for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'

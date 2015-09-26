@@ -10,3 +10,13 @@ trans.fr = locales/fr/LC_MESSAGES/django.po
 trans.id = locales/id/LC_MESSAGES/django.po
 trans.ja = locales/ja/LC_MESSAGES/django.po
 
+[osm-export-tool2.djangojs]
+source_file = locales/en/LC_MESSAGES/djangojs.po
+source_lang = en
+trans.de = locales/de/LC_MESSAGES/djangojs.po
+trans.es = locales/es/LC_MESSAGES/djangojs.po
+trans.fr = locales/fr/LC_MESSAGES/djangojs.po
+trans.id = locales/id/LC_MESSAGES/djangojs.po
+trans.ja = locales/ja/LC_MESSAGES/djangojs.po
+
+
