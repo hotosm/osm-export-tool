@@ -342,6 +342,7 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
 """
 NOSE_ARGS = [
     '--with-coverage',
@@ -350,6 +351,7 @@ NOSE_ARGS = [
     '--cover-package=api,tasks,jobs,utils'
 ]
 """
+
 # Celery config
 CELERY_TRACK_STARTED = True
 
