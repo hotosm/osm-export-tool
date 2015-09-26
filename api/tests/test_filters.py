@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class TestJobFilter(APITestCase):
     
     def setUp(self,):
-        Group.objects.create(name='DefaultExportExtentGroup')
+        Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user1 = User.objects.create_user(
             username='demo1', email='demo@demo.com', password='demo'
         )
