@@ -64,7 +64,9 @@ Install PostgreSQL / PostGIS and its dependencies,
 <pre>
 $ sudo su - postgres
 $ createdb 'hot_exports_dev'
-$ create role hot with password '<-password->'
+$ createuser hot -s -P
+Enter password for new role: '<-password->'
+Enter it again: '<-password->'
 </pre>
 
 You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
@@ -72,8 +74,6 @@ allow trusted connections from localhost.
 
 Run <code>$ psql -h localhost -U hot -W hot_exports_dev</code>
 <pre>
-$ ALTER ROLE hot SUPERUSER;
-$ ALTER ROLE hot WITH LOGIN;
 $ GRANT ALL PRIVILEGES ON DATABASE hot_exports_dev TO hot;
 $ CREATE EXTENSION POSTGIS;
 $ CREATE EXTENSION HSTORE;
