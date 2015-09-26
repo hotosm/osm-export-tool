@@ -18,11 +18,7 @@ $ sudo apt-get upgrade
 </pre>
 
 ### Python
-Unix environments come pre-installed with Python. To check version, run the command:
-
-<code>$ python -V</code>
-
-HOT Exports requires Python 2.7.x. If you have 2.7.x installed, you can go ahead.
+HOT Exports requires Python 2.7.x. 
 
 ### pip
 To install pip, run:
@@ -112,11 +108,11 @@ The HOT Export pipeline depends on a number of third-party tools.
 
 <code>$ sudo apt-get install osmctools</code>
 
-<code>$ sudo apt-get install libspatialite5</code>
+<code>$ sudo apt-get install libspatialite5 libspatialite-dev</code>
 
 #### Garmin
 
-Download the latest version of the __mkgmap__ utility for making garming img files from [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
+Download the latest version of the __mkgmap__ utility for making garmin IMG files from [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
 
 Download the latest version of the __splitter__ utility for splitting larger osm files into tiles. [http://www.mkgmap.org.uk/download/splitter.html](http://www.mkgmap.org.uk/download/splitter.html)
 
@@ -145,10 +141,13 @@ In the hotosm project directory run:
 ### Install the project's python dependencies
 
 From the project directory, install the dependencies into your virtualenv:
-<pre>
-$ pip install -r requirements-dev.txt
-$ pip install -r requirements.txt
-</pre>
+
+<code>$ pip install -r requirements-dev.txt</code>
+
+or
+
+<code>$ pip install -r requirements.txt</code>
+
 
 ### Project Configuration
 
