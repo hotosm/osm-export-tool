@@ -1,7 +1,7 @@
 import oauth2 as oauth
 import urlparse
 
-from django.shortcuts import render_to_response, RequestContext
+from django.shortcuts import render_to_response, RequestContext, redirect
 from django.views.decorators.http import require_http_methods
 from django.template.context_processors import csrf
 from django.contrib.auth.models import Group
@@ -33,7 +33,7 @@ def clone_export(request, uuid=None):
     Handles display of the clone export page.
     """
     user = request.user
-    max_extent = {'extent': 2500000} # default
+    max_extent = {'extent': settings.JOB_MAX_EXTENT} # default
     for group in user.groups.all():
         if hasattr(group, 'export_profile'):
             max_extent['extent'] = group.export_profile.max_extent
@@ -44,7 +44,10 @@ def clone_export(request, uuid=None):
 
 
 def login(request):
-    return render_to_response('osm/login.html', {}, RequestContext(request))
+    if not request.user.is_authenticated():
+        return render_to_response('osm/login.html', {}, RequestContext(request))
+    else:
+        return redirect('create')
 
 def logout(request):
     """Logs out user"""

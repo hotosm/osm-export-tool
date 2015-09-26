@@ -1,21 +1,20 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-25 13:09+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2015-09-26 07:56+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language-Team: French (http://www.transifex.com/hotosm/osm-export-tool2/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ui/static/ui/js/clone.js:300 ui/static/ui/js/create.js:298
@@ -77,7 +76,8 @@ msgid "Select one or more file formats for export"
 msgstr ""
 
 #: ui/static/ui/js/clone.js:1975 ui/static/ui/js/create.js:1937
-msgid "Expand and select feature tags from the HDM or OSM tree list for export"
+msgid ""
+"Expand and select feature tags from the HDM or OSM tree list for export"
 msgstr ""
 
 #: ui/static/ui/js/clone.js:1982 ui/static/ui/js/create.js:1944
@@ -111,8 +111,8 @@ msgstr ""
 
 #: ui/static/ui/js/clone.js:2031 ui/static/ui/js/create.js:1993
 msgid ""
-"Publish the feature tag selection to the global preset storeage for everyone "
-"to access"
+"Publish the feature tag selection to the global preset storeage for everyone"
+" to access"
 msgstr ""
 
 #: ui/static/ui/js/clone.js:2038 ui/static/ui/js/create.js:2000
@@ -143,8 +143,8 @@ msgstr ""
 
 #: ui/static/ui/js/configurations.js:665
 msgid ""
-"Filter through all the preset files based on keywords in the search box and/"
-"or between a start and end date"
+"Filter through all the preset files based on keywords in the search box "
+"and/or between a start and end date"
 msgstr ""
 
 #: ui/static/ui/js/configurations.js:672 ui/static/ui/js/create.js:1965

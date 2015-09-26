@@ -185,12 +185,12 @@ DATABASES = settings_private.DATABASES
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('en', 'English'),
-    ('id', 'Bahasa Indonesia'),
-    ('de', 'Deutsch'),
-    ('es', 'Spanish'),
-    ('ja', 'Japanese'),
-    ('fr', 'French'),
+    ('en', _('English')),
+    ('id', _('Bahasa Indonesia')),
+    ('de', _('German')),
+    ('es', _('Spanish')),
+    ('ja', _('Japanese')),
+    ('fr', _('French')),
 )
 
 DEFAULT_CHARSET = 'UTF-8'
