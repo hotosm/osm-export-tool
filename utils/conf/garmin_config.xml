@@ -4,8 +4,8 @@
     @see utils/garmin.py
 -->
 <garmin obj="prog" src="export.hotosm.org">
-    <mkgmap>/home/ubuntu/garmin/mkgmap/mkgmap.jar</mkgmap>
-    <splitter>/home/ubuntu/garmin/splitter/splitter.jar</splitter>
+    <mkgmap>/project/garmin/mkgmap-r3643/mkgmap.jar</mkgmap>
+    <splitter>/project/garmin/splitter-r427/splitter.jar</splitter>
     <xmx>1024m</xmx>
     <description>HOT Export Garmin Map</description>
     <family-name>HOT Exports</family-name>
