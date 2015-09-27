@@ -50,7 +50,7 @@ from serializers import (JobSerializer, ExportFormatSerializer,
 
 from tasks.task_runners import ExportTaskRunner
 
-from hot_exports import settings
+from django.conf import settings
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -63,10 +63,10 @@ class JobViewSet(viewsets.ModelViewSet):
     """
     ## Job API Endpoint.
     Endpoint for job creation and managment.
-    
+
     More docs here...
     """
-    
+
     serializer_class = JobSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
@@ -75,10 +75,10 @@ class JobViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = JobFilter
     search_fields = ('name', 'description', 'event', 'user__username')
-    
+
     def get_queryset(self,):
         return Job.objects.all()
-    
+
     def list(self, request, uid=None, *args, **kwargs):
         params = self.request.QUERY_PARAMS.get('bbox', None)
         if params == None:
@@ -96,7 +96,7 @@ class JobViewSet(viewsets.ModelViewSet):
             errors['message'] = _('Missing bounding box parameter')
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            extents = params.split(',')   
+            extents = params.split(',')
             data = {'xmin': extents[0],
                     'ymin': extents[1],
                     'xmax': extents[2],
@@ -116,7 +116,7 @@ class JobViewSet(viewsets.ModelViewSet):
             except ValidationError as e:
                 logger.debug(e.detail)
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
@@ -203,7 +203,7 @@ class JobViewSet(viewsets.ModelViewSet):
                 error_data = OrderedDict()
                 error_data['formats'] = [_('Invalid format provided.')]
                 return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
-            
+
             # run the tasks
             task_runner = ExportTaskRunner()
             job_uid = str(job.uid)
@@ -217,13 +217,13 @@ class JobViewSet(viewsets.ModelViewSet):
 
 class RunJob(views.APIView):
     """ Class to re-run an export."""
-    
+
     permission_classes = (permissions.IsAuthenticated,)
-    
+
     def get(self, request, uid=None, format=None):
         job_uid = request.QUERY_PARAMS.get('job_uid', None)
         user = request.user
-        if (job_uid):    
+        if (job_uid):
             # run the tasks
             job = Job.objects.get(uid=job_uid)
             task_runner = ExportTaskRunner()
@@ -235,21 +235,21 @@ class RunJob(views.APIView):
                 return Response([{'detail': _('Failed to run Export')}], status.HTTP_400_BAD_REQUEST)
         else:
             return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
-        
+
 
 
 class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ### ExportFormat API endpoint.
     Endpoint exposing the supported export formats.
-    
+
     """
     serializer_class = ExportFormatSerializer
     permission_classes = (permissions.AllowAny,)
     queryset = ExportFormat.objects.all()
     lookup_field = 'slug'
     ordering = ['description']
-    
+
 
 class RegionViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -260,7 +260,7 @@ class RegionViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = Region.objects.all()
     lookup_field = 'uid'
-    
+
 
 class RegionMaskViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -280,15 +280,15 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ExportRunFilter
     lookup_field = 'uid'
-    
+
     def get_queryset(self):
          return ExportRun.objects.all().order_by('-started_at')
-        
+
     def retrieve(self, request, uid=None, *args, **kwargs):
         queryset = ExportRun.objects.filter(uid=uid)
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def list(self, request, *args, **kwargs):
         job_uid = self.request.QUERY_PARAMS.get('job_uid', None)
         queryset = self.filter_queryset(ExportRun.objects.filter(job__uid=job_uid).order_by('-started_at'))
@@ -310,7 +310,7 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     queryset = ExportConfig.objects.filter(config_type='PRESET')
     lookup_field = 'uid'
-    
+
 class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Endpoint for ExportTasks
@@ -319,12 +319,12 @@ class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportTask.objects.all()
     lookup_field = 'uid'
-        
+
     def retrieve(self, request, uid=None, *args, **kwargs):
         queryset = ExportTask.objects.filter(uid=uid)
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
 
 class PresetViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -360,9 +360,9 @@ class TransformViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class HDMDataModelView(views.APIView):
-    
+
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    
+
     def get(self, request, format='json'):
         path = os.path.dirname(os.path.realpath(__file__))
         parser = PresetParser(path + '/hdm_presets.xml')
@@ -371,9 +371,9 @@ class HDMDataModelView(views.APIView):
 
 
 class OSMDataModelView(views.APIView):
-    
+
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    
+
     def get(self, request, format='json'):
         path = os.path.dirname(os.path.realpath(__file__))
         parser = PresetParser(path + '/osm_presets.xml')

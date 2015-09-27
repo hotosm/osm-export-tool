@@ -2,7 +2,7 @@ import os
 import logging
 import shutil
 import subprocess
-from hot_exports import settings
+from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 from StringIO import StringIO
@@ -19,7 +19,7 @@ class TestOSMToIMG(TestCase):
     """
     Test case to for garmin.OSMToIMG
     """
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         # just for testing
@@ -27,7 +27,7 @@ class TestOSMToIMG(TestCase):
         self.work_dir = self.path + '/files/garmin'
         self.pbffile = self.path + '/files/query.pbf'
         self.region = "Indonesia, Sri Lanka, and Bangladesh"
-        
+
     def test_config_parser(self,):
         parser = GarminConfigParser(self.config)
         params = parser.get_config()
@@ -36,7 +36,7 @@ class TestOSMToIMG(TestCase):
         splitter = params.get('splitter')
         self.assertEquals('/home/ubuntu/garmin/mkgmap/mkgmap.jar', mkgmap)
         self.assertEquals('/home/ubuntu/garmin/splitter/splitter.jar', splitter)
-    
+
     @patch('os.path.exists')
     @patch('os.makedirs')
     @patch('subprocess.PIPE')
@@ -61,7 +61,7 @@ class TestOSMToIMG(TestCase):
         # test subprocess getting called with correct command
         popen.assert_called_once_with(splitter_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
-        
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -100,9 +100,9 @@ class TestOSMToIMG(TestCase):
                                 stdout=pipe, stderr=pipe)
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
-        
+
         self.assertEquals(imgfile, '/home/ubuntu/www/hotosm/utils/tests/files/garmin/gmapsupp.img')
-    
+
     @patch('os.path.exists')
     @patch('os.remove')
     @patch('subprocess.PIPE')

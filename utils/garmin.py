@@ -6,7 +6,7 @@ import subprocess
 from StringIO import StringIO
 from lxml import etree
 from string import Template
-from hot_exports import settings
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class GarminConfigParser(object):
     """
     def __init__(self, config=None):
         self.config = config
-        
+
     def get_config(self, ):
         params = {}
         f = open(self.config)
@@ -52,7 +52,7 @@ class GarminConfigParser(object):
         params['family_id'] = family_id
         params['series_name'] = series_name
         return params
-        
+
 
 class OSMToIMG(object):
     """
@@ -97,15 +97,15 @@ class OSMToIMG(object):
         """)
         self.zip_cmd = Template("zip -j $zipfile $imgfile")
         self.imgfile = self.work_dir + '/gmapsupp.img'
-       
-    
+
+
     def run_splitter(self, ):
         if not os.path.exists(self.work_dir):
             os.makedirs(self.work_dir, 6600)
         # get the configuration params
         splitter = self.params.get('splitter')
         xmx = self.params.get('xmx')
-        
+
         # run the pbf splitter
         splitter_cmd = self.splitter_cmd.safe_substitute(
             {'xmx': xmx, 'splitter': splitter,
@@ -121,7 +121,7 @@ class OSMToIMG(object):
             raise Exception, " {0} process failed with returncode: {1}".format(splitter, returncode)
         if self.debug:
             print 'splitter returned: %s' % returncode
-    
+
     def run_mkgmap(self,):
         # get the template.args file created by splitter
         # see: http://wiki.openstreetmap.org/wiki/Mkgmap/help/splitter
@@ -157,8 +157,8 @@ class OSMToIMG(object):
             return img_zipped
         else:
             return self.imgfile
-        
-    
+
+
     def _zip_img_file(self, ):
         img_zipped = self.work_dir + '/garmin.zip'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': img_zipped,
