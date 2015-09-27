@@ -138,6 +138,10 @@ In the hotosm project directory run:
 
 <code>$ git clone git@github.com:hotosm/osm-export-tool2.git</code>
 
+### Install lxml dependencies
+
+<code>sudo apt-get install libxml2-dev libxslt-dev python-dev</code>
+
 ### Install the project's python dependencies
 
 From the project directory, install the dependencies into your virtualenv:
@@ -147,7 +151,6 @@ From the project directory, install the dependencies into your virtualenv:
 or
 
 <code>$ pip install -r requirements.txt</code>
-
 
 ### Project Configuration
 
