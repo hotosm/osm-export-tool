@@ -91,7 +91,7 @@ class OSMParser(object):
             9 : ('motorway_link', 'motorway')
         }
         layer_count = ds.GetLayerCount()
-        assert layer_count == 4, """Incorrect number of layers found. Run 'create_default_schema()' method first."""
+        assert layer_count == 3, """Incorrect number of layers found. Run 'create_default_schema()' method first."""
         for layer_idx in range(layer_count):
             layer = ds.GetLayerByIndex(layer_idx).GetName()
             # update highway z_indexes
