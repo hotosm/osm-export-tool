@@ -93,21 +93,18 @@ class ThematicSQliteToShp(object):
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_point','Geometry')")
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_line','Geometry')")
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_polygon','Geometry')")
-        cur.execute("SELECT DiscardGeometryColumn('planet_osm_roads','Geometry')")
         conn.commit()
 
         # drop existing spatial indexes
         cur.execute('DROP TABLE idx_planet_osm_point_GEOMETRY')
         cur.execute('DROP TABLE idx_planet_osm_line_GEOMETRY')
         cur.execute('DROP TABLE idx_planet_osm_polygon_GEOMETRY')
-        cur.execute('DROP TABLE idx_planet_osm_roads_GEOMETRY')
         conn.commit()
 
         # drop default schema tables
         cur.execute('DROP TABLE planet_osm_point')
         cur.execute('DROP TABLE planet_osm_line')
         cur.execute('DROP TABLE planet_osm_polygon')
-        cur.execute('DROP TABLE planet_osm_roads')
         conn.commit()
         cur.close()
 
