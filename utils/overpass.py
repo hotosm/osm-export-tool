@@ -97,6 +97,7 @@ class Overpass(object):
             (stdout,stderr) = proc.communicate()
             returncode = proc.wait()
             if (returncode != 0):
+                logger.error('%s', stderr)
                 raise Exception, "osmfilter process failed with returncode {0}".format(returncode)
             return self.filtered_osm
 
@@ -115,6 +116,7 @@ class Overpass(object):
         (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
+            logger.error('%s', stderr)
             raise Exception, "osmconvert process failed with returncode {0}: {1}".format(returncode, stderr)
         return om5
 

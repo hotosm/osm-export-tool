@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 class TransformSQlite(object):
     """
     Applies a schema transformation to a sqlite database.
-    
+
     NOT IMPLEMENTED YET
     """
-    
+
     def __init__(self, sqlite=None, transform=None, transform_sqlite=None, debug=None):
         self.sqlite = sqlite
         self.transform = transform
@@ -30,12 +30,12 @@ class TransformSQlite(object):
         self.cmd = Template("""
             spatialite $sqlite < $transform
         """)
-        
+
         # Enable GDAL/OGR exceptions
         gdal.UseExceptions()
         self.srs = osr.SpatialReference()
         self.srs.ImportFromEPSG(4326) # configurable
-            
+
     def transform_default_schema(self, ):
         assert os.path.exists(self.sqlite), "No spatialite file found for schema transformation"
         # transform the spatialite schema
@@ -46,10 +46,13 @@ class TransformSQlite(object):
             print 'Running: %s' % sql_cmd
         proc = subprocess.Popen(sql_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate() 
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
+        if returncode != 1:
+            logger.error('%s', stderr)
+            raise Exception, "{0} process failed with returncode: {1}".format(sql_cmd, returncode)
         if self.debug:
-            print 'spatialite returned: %s' % returncodeW
+            print 'spatialite returned: %s' % returncode
 
 
 if __name__ == '__main__':

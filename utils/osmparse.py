@@ -14,7 +14,7 @@ class OSMParser(object):
     Parses a OSM file (.osm or .pbf) dumped from overpass query.
     Creates an ouput spatialite file to be used in export pipeline.
     """
-    
+
     def __init__(self, osm=None, sqlite=None, osmconf=None, schema=None, debug=None):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.osm = osm
@@ -39,13 +39,13 @@ class OSMParser(object):
             --config OGR_INTERLEAVED_READING YES \
             --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
         """)
-        
+
         # Enable GDAL/OGR exceptions
         gdal.UseExceptions()
         self.srs = osr.SpatialReference()
         self.srs.ImportFromEPSG(4326) # configurable
-        
-    def create_spatialite(self, ):        
+
+    def create_spatialite(self, ):
         # create spatialite from osm data
         ogr_cmd = self.ogr_cmd.safe_substitute({'sqlite': self.sqlite,
                                                 'osm': self.osm, 'osmconf': self.osmconf})
@@ -53,13 +53,14 @@ class OSMParser(object):
             print 'Running: %s' % ogr_cmd
         proc = subprocess.Popen(ogr_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate()   
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-                raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
+            logger.error('%s', stderr)
+            raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
-            
+
     def create_default_schema(self, ):
         assert os.path.exists(self.sqlite), "No spatialite file. Run 'create_spatialite()' method first."
         # update the spatialite schema
@@ -70,11 +71,14 @@ class OSMParser(object):
             print 'Running: %s' % sql_cmd
         proc = subprocess.Popen(sql_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate() 
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
+        if returncode != 1:
+            logger.error('%s', stderr)
+            raise Exception, "{0} process failed with returncode: {1}".format(sql_cmd, returncode)
         if self.debug:
             print 'spatialite returned: %s' % returncode
- 
+
     def update_zindexes(self, ):
         assert os.path.exists(self.sqlite), "No spatialite file. Run 'create_spatialite()' method first."
         ds = ogr.Open(self.sqlite, update=True)
@@ -106,10 +110,10 @@ class OSMParser(object):
             # update tunnel z_index
             sql = "UPDATE {0} SET z_index = z_index - 10 WHERE tunnel IN ('yes', 'true', 1)".format(layer);
             ds.ExecuteSQL(sql)
-        
+
         # close connection
         ds.Destroy()
-            
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="""Converts OSM (xml|pbf) to Spatialite.
