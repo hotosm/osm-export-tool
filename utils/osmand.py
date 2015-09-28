@@ -12,13 +12,13 @@ from unittest import skip
 logger = logging.getLogger(__name__)
 
 class UpdateBatchXML(object,):
-    
+
     def __init__(self, batch_xml=None, work_dir=None):
         self.batch_xml = batch_xml
         self.work_dir = work_dir
         if not os.path.exists(self.work_dir):
             os.makedirs(self.work_dir, 6600)
-    
+
     def update(self,):
         f = open(self.batch_xml)
         xml = f.read()
@@ -35,10 +35,10 @@ class UpdateBatchXML(object,):
                 etree.tostring(tree, encoding='utf-8', pretty_print=True)
             )
         return updated_path
-        
+
 
 class OSMToOBF(object):
-    
+
     def __init__(self, pbffile=None, work_dir=None,
                  map_creator_dir=None, debug=False):
         self.path = os.path.dirname(os.path.realpath(__file__))
@@ -57,7 +57,7 @@ class OSMToOBF(object):
                 -Xms256M -Xmx1024M -cp "./OsmAndMapCreator.jar:./lib/OsmAnd-core.jar:./lib/*.jar" \
                 net.osmand.data.index.IndexBatchCreator $batch_xml
         """)
-    
+
     def convert(self,):
         # create the batch.xml file in the staging dir
         batch_update = UpdateBatchXML(
@@ -82,6 +82,7 @@ class OSMToOBF(object):
         """
         returncode = proc.wait()
         if (returncode != 0):
+            logger.error('%s', stderr)
             raise Exception, "{0} process failed with returncode: {1}".format(osmand_cmd, returncode)
         if self.debug:
             print 'OsmAndMapCreator returned: %s' % returncode
@@ -90,8 +91,8 @@ class OSMToOBF(object):
             if f.endswith('.obf'):
                 obffile = f
         return self.work_dir + '/' + obffile
-        
-        
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Converts OSM PBF to OSMAnd OBF Format.")
     parser.add_argument('-p','--pbf-file', required=True,
@@ -116,4 +117,3 @@ if __name__ == '__main__':
         pbffile=pbffile, work_dir=work_dir,
         map_creator_dir=map_creator_dir, debug=debug
     )
-        

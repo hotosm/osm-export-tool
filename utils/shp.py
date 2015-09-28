@@ -34,10 +34,11 @@ class SQliteToShp(object):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate() 
+        (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            raise Exception, "ogr2ogr process failed with returncode {0}".format(returncode)  
+            logger.error('%s', stderr)
+            raise Exception, "ogr2ogr process failed with returncode {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
         if self.zipped and returncode == 0:
@@ -45,15 +46,17 @@ class SQliteToShp(object):
             return zipfile
         else:
             return self.shapefile
-    
+
     def _zip_shape_dir(self, ):
         zipfile = self.shapefile + '.zip'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': zipfile, 'shp_dir': self.shapefile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()  
+        (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
+
         if (returncode != 0):
+            logger.error('%s', stderr)
             raise Exception, 'Error zipping shape directory. Exited with returncode: {0}'.format(returncode)
         if returncode == 0:
             # remove the shapefile directory
@@ -85,5 +88,4 @@ if __name__ == '__main__':
         zipped = True
     s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile, debug=debug)
     s2s.convert()
- 
-    
+

@@ -212,7 +212,7 @@ class ThematicLayersExportTask(ExportTask):
             out = t2s.convert()
             return {'result': out}
         except Exception as e:
-            logger.error('Raised exception in thematic task', e)
+            logger.error('Raised exception in thematic task, %s', str(e))
             raise Exception(e) # hand off to celery..
 
 
@@ -231,7 +231,7 @@ class ShpExportTask(ExportTask):
             out = s2s.convert()
             return {'result': out}
         except Exception as e:
-            logger.error('Raised exception in shapefile export.', e)
+            logger.error('Raised exception in shapefile export, %s', str(e))
             raise Exception(e)
 
 
@@ -250,7 +250,7 @@ class KmlExportTask(ExportTask):
             out = s2k.convert()
             return {'result': out}
         except Exception as e:
-            logger.error('Raised exception in kml export.', e)
+            logger.error('Raised exception in kml export, %s', str(e))
             raise Exception(e)
 
 
@@ -275,7 +275,7 @@ class ObfExportTask(ExportTask):
             shutil.rmtree(work_dir)
             return {'result': obffile}
         except Exception as e:
-            logger.error('Raised exception in obf export.', e)
+            logger.error('Raised exception in obf export, %s', str(e))
             raise Exception(e)
 
 
@@ -326,7 +326,7 @@ class GarminExportTask(ExportTask):
             shutil.rmtree(work_dir)
             return {'result': imgfile}
         except Exception as e:
-            logger.error('Raised exception in garmin export.', e)
+            logger.error('Raised exception in garmin export, %s', str(e))
             raise Exception(e)
 
 
@@ -360,8 +360,7 @@ class GeneratePresetTask(ExportTask):
                 user=user, published=feature_pub
             )
             config.upload.save(filename, preset_file)
-            base_dir = settings.BASE_DIR
-            output_path = base_dir + config.upload.url
+            output_path = settings.ABS_PATH(config.upload.url)
             job.configs.add(config)
             return {'result': output_path}
 

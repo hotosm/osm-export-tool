@@ -35,7 +35,7 @@ class ThematicSQliteToShp(object):
         self.thematic_sqlite = self.stage_dir + '/' + self.job_name + '_thematic.sqlite'
         shutil.copy(self.sqlite, self.thematic_sqlite)
         assert os.path.exists(self.thematic_sqlite), 'Thematic sqlite file not found.'
-        
+
         # think more about how to generate this, eg. using admin / json in db?
         self.thematic_spec = {
             'amenities_all_points': {'type': 'point', 'key':'amenity', 'table':'planet_osm_point', 'select_clause': 'amenity is not null'},
@@ -56,7 +56,7 @@ class ThematicSQliteToShp(object):
             'harbours_points': {'key':'harbour', 'table':'planet_osm_point', 'select_clause': 'harbour is not null'},
             'grassy_fields_polygons': {'key':'leisure', 'table':'planet_osm_polygon', 'select_clause': 'leisure="pitch" OR leisure="common" OR leisure="golf_course"'},
         }
-    
+
     def generate_thematic_schema(self,):
         # setup sqlite connection
         conn = sqlite3.connect(self.thematic_sqlite)
@@ -82,27 +82,27 @@ class ThematicSQliteToShp(object):
             sql = sql_tmpl.safe_substitute(params)
             cur.execute(sql)
             geom_type = geom_types[layer_type]
-            
+
             recover_geom_sql = recover_geom_tmpl.safe_substitute({'tablename': "'" + layer + "'", 'geom_type': "'" + geom_type + "'"})
             conn.commit()
             cur.execute(recover_geom_sql)
             cur.execute("SELECT CreateSpatialIndex({0}, 'GEOMETRY')".format("'" + layer + "'"))
             conn.commit()
-        
+
         # remove existing geometry columns
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_point','Geometry')")
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_line','Geometry')")
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_polygon','Geometry')")
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_roads','Geometry')")
         conn.commit()
-        
+
         # drop existing spatial indexes
         cur.execute('DROP TABLE idx_planet_osm_point_GEOMETRY')
         cur.execute('DROP TABLE idx_planet_osm_line_GEOMETRY')
         cur.execute('DROP TABLE idx_planet_osm_polygon_GEOMETRY')
         cur.execute('DROP TABLE idx_planet_osm_roads_GEOMETRY')
         conn.commit()
-        
+
         # drop default schema tables
         cur.execute('DROP TABLE planet_osm_point')
         cur.execute('DROP TABLE planet_osm_line')
@@ -110,7 +110,7 @@ class ThematicSQliteToShp(object):
         cur.execute('DROP TABLE planet_osm_roads')
         conn.commit()
         cur.close()
-        
+
 
     def convert(self, ):
         convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'sqlite': self.thematic_sqlite})
@@ -118,10 +118,11 @@ class ThematicSQliteToShp(object):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate() 
+        (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            raise Exception, "ogr2ogr process failed with returncode {0}".format(returncode)  
+            logger.error('%s', stderr)
+            raise Exception, "ogr2ogr process failed with returncode {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
         if self.zipped and returncode == 0:
@@ -129,15 +130,16 @@ class ThematicSQliteToShp(object):
             return zipfile
         else:
             return self.shapefile
-    
+
     def _zip_shape_dir(self, ):
         zipfile = self.shapefile + '.zip'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': zipfile, 'shp_dir': self.shapefile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()  
+        (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
+            logger.error('%s', stderr)
             raise Exception, 'Error zipping shape directory. Exited with returncode: {0}'.format(returncode)
         if returncode == 0:
             # remove the shapefile directory
