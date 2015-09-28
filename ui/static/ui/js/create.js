@@ -16,7 +16,6 @@
 
 */
 
-
 create = {};
 create.job = (function(){
     var map;
@@ -529,8 +528,15 @@ create.job = (function(){
              * on successful validation as this is done by ajax call
              * when the submit button is clicked.
              */
-            $('#btn-submit-job').prop('disabled', 'false');
+            $('#btn-submit-job').prop('disabled', false);
             $('#btn-submit-job').removeClass('disabled');
+        })
+        .on('err.form.fv', function(e){
+            /*
+             * Disable submit button when form is invalid.
+             */
+            $('#btn-submit-job').prop('disabled', true);
+            $('#btn-submit-job').addClass('disabled');
         })
         .on('success.field.fv', function(e) {
             // re-enable the file upload button when field is valid
@@ -555,21 +561,6 @@ create.job = (function(){
                 // The current tab
                 $tab = $('#create-job-form').find('.tab-pane').eq(index),
                 $bbox = $('#bbox');
-            
-            // ignore upload tab as we apply custom validation there..
-            var id = $tab.attr('id');
-            if (id === 'features' || id === 'summary' || id === 'upload') {
-                fv.resetField('filename');
-                $('#select-file').prop('disabled', false);
-                return true;
-            }
-            
-            /*
-             * Disable config form field validation
-             * as validation of these fields is
-             * only required on config upload.
-             */
-            fv.enableFieldValidators('filename', false);
                 
             // validate the form first
             fv.validate();
@@ -577,11 +568,30 @@ create.job = (function(){
             if (!isFormValid) {
                 // disable submit button unless form is valid
                 $('#btn-submit-job').prop('disabled', true);
+                $('#btn-submit-job').addClass('disabled');
             }
             else {
                 $('#btn-submit-job').prop('disabled', false);
+                $('#btn-submit-job').removeClass('disabled');
             }
-    
+            
+            // ignore upload tab as we apply custom validation there..
+            /*
+            var id = $tab.attr('id');
+            if (id === 'features' || id === 'summary' || id === 'upload'){
+                fv.resetField('filename');
+                $('#select-file').prop('disabled', false);
+                return true;
+            }
+            */
+            
+            /*
+             * Disable config form field validation
+             * as validation of these fields is
+             * only required on config upload.
+             */
+            fv.enableFieldValidators('filename', false);
+            
             // validate the bounding box extents
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
@@ -592,7 +602,7 @@ create.job = (function(){
             // validate the form panel contents
             fv.validateContainer($tab);
             var isValidStep = fv.isValidContainer($tab);
-            if ((isValidStep === false || isValidStep === null) ||
+            if ((isValidStep === false) ||
                 (isValidBBox === false || isValidBBox === null)) {
                 // stay on this tab
                 return false;
@@ -912,8 +922,22 @@ create.job = (function(){
             var fvIsValidForm = fv.isValid();
             if (!fvIsValidForm) {
                 // alert user here..
-                alert('invalid form');
                 e.preventDefault();
+                var modalOpts = {
+                    keyboard: true,
+                    backdrop: 'static',
+                }
+                var message = ''
+                var fields = fv.getInvalidFields();
+                var field = $(fields[0]).attr('name');
+                if (field === 'formats') {
+                    message = 'Please select an export format.';
+                }
+                else {
+                    message = 'The <strong>' + field + '</strong> field is required'
+                }
+                $('p#validation-message').html(gettext(message));
+                $("#validationErrorModal").modal(modalOpts, 'show');
             }
             else {
                 // submit the form..
