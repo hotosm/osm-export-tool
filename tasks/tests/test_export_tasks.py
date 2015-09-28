@@ -322,7 +322,7 @@ class TestExportTasks(TestCase):
         result = task.run(run_uid=run_uid, job_name='testjob')
         expected_result = stage_dir + 'testjob_preset.xml'
         config = self.job.configs.all()[0]
-        expected_path = settings.BASE_DIR + config.upload.url
+        expected_path = settings.ABS_PATH(config.upload.url)
         self.assertEquals(result['result'], expected_path)
         os.remove(expected_path)
 
