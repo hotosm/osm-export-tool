@@ -148,7 +148,7 @@ class JobViewSet(viewsets.ModelViewSet):
                             logger.debug('Found preset with uid: %s' % preset);
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
-                            preset_path = settings.ABS_PATH(config.upload.url)
+                            preset_path = config.upload.path
                             parser = presets.PresetParser(preset=preset_path)
                             tags_dict = parser.parse()
                             for entry in tags_dict:

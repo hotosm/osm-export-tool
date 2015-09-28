@@ -360,7 +360,8 @@ class GeneratePresetTask(ExportTask):
                 user=user, published=feature_pub
             )
             config.upload.save(filename, preset_file)
-            output_path = settings.ABS_PATH(config.upload.url)
+
+            output_path = config.upload.path
             job.configs.add(config)
             return {'result': output_path}
 
