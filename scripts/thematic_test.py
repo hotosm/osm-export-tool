@@ -1,6 +1,6 @@
 """
     Harness for running thematic transformations against a spatialite db.
-    
+
     From the project directory run:
     ./manage.py runscript thematic_test --settings=hot_exports.settings -v2
     Depends on django-extensions.
@@ -36,18 +36,18 @@ thematic_spec = {
 }
 
 def run(*script_args):
-    
+
     sqlite = '/home/ubuntu/export_downloads/5c095634-1591-4f31-aa75-b6a7952b29e9/query.sqlite'
     thematic = '/home/ubuntu/export_downloads/5c095634-1591-4f31-aa75-b6a7952b29e9/thematic.sqlite'
-    
+
     # get the job tags
     job = Job.objects.get(uid='0a835fe4-1fbc-43ad-ab37-940fab415085')
     tags = job.categorised_tags
-    
+
     # create the thematic sqlite file (a copy of the original)
     thematic_sqlite = shutil.copy(sqlite, thematic)
     assert os.path.exists(thematic), 'Thematic sqlite file not found.'
-    
+
     # setup sqlite connection
     conn = sqlite3.connect(thematic)
     # load spatialite extension
@@ -73,35 +73,31 @@ def run(*script_args):
         print sql
         cur.execute(sql)
         geom_type = geom_types[layer_type]
-        
+
         recover_geom_sql = recover_geom_tmpl.safe_substitute({'tablename': "'" + layer + "'", 'geom_type': "'" + geom_type + "'"})
         print recover_geom_sql
         conn.commit()
         cur.execute(recover_geom_sql)
         cur.execute("SELECT CreateSpatialIndex({0}, 'GEOMETRY')".format("'" + layer + "'"))
         conn.commit()
-    
+
     # remove existing geometry columns
     cur.execute("SELECT DiscardGeometryColumn('planet_osm_point','Geometry')")
     cur.execute("SELECT DiscardGeometryColumn('planet_osm_line','Geometry')")
     cur.execute("SELECT DiscardGeometryColumn('planet_osm_polygon','Geometry')")
-    cur.execute("SELECT DiscardGeometryColumn('planet_osm_roads','Geometry')")
     conn.commit()
-    
+
     # drop existing spatial indexes
     cur.execute('DROP TABLE idx_planet_osm_point_GEOMETRY')
     cur.execute('DROP TABLE idx_planet_osm_line_GEOMETRY')
     cur.execute('DROP TABLE idx_planet_osm_polygon_GEOMETRY')
-    cur.execute('DROP TABLE idx_planet_osm_roads_GEOMETRY')
     conn.commit()
-    
+
     # drop default schema tables
     cur.execute('DROP TABLE planet_osm_point')
     cur.execute('DROP TABLE planet_osm_line')
     cur.execute('DROP TABLE planet_osm_polygon')
-    cur.execute('DROP TABLE planet_osm_roads')
     conn.commit()
     cur.close()
 
-    
-    
+
