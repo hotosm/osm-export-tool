@@ -348,8 +348,8 @@ create.job = (function(){
          */
         var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
         // format the area and max bounds for display..
-        var area_str = numeral(area).format('0,0');
-        var max_bounds_str = numeral(max_bounds_area).format('0,0');
+        var area_str = numeral(area).format('0 0');
+        var max_bounds_str = numeral(max_bounds_area).format('0 0');
         
         if (!valid_region) {
            // invalid region
@@ -363,8 +363,8 @@ create.job = (function(){
            validateBBox(); // trigger validation on extents
            $('#valid-extents').css('visibility','hidden');
            $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>' + gettext('Invalid Exent') + '</strong><br/>Selected area is ' + area_str
-                                 + ' sq km.<br/>' + gettext('Must be less than ') + max_bounds_str + ' sq km.');
+           $('#alert-extents').html('<strong>' + gettext('Invalid Extent') + '</strong><br/>' + gettext('Selected area is ') + area_str
+                                 + gettext(' sq km.') + '<br/>' + gettext('Must be less than ') + max_bounds_str + gettext(' sq km.'));
            return false;
         } else {
             // extents are valid so display success message..

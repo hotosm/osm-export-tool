@@ -35,9 +35,10 @@ class SQliteToKml(object):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()  
+        (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
+            logger.error('%s', stderr)
             raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
@@ -46,7 +47,7 @@ class SQliteToKml(object):
             return kmzfile
         else:
             return self.kmlfile
-    
+
     def _zip_kml_file(self, ):
         kmzfile = self.kmlfile.split('.')[0] + '.kmz'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': kmzfile,
@@ -56,6 +57,7 @@ class SQliteToKml(object):
         (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 0:
+            logger.error('%s', stderr)
             raise Exception, 'Failed to create zipfile for {0}'.format(self.kmlfile)
         if returncode == 0:
             # remove the kml file
@@ -91,5 +93,4 @@ if __name__ == '__main__':
         zipped = True
     s2k = SQliteToKml(sqlite=sqlite, kmlfile=kmlfile, zipped=zipped, debug=debug)
     s2k.convert()
- 
-    
+

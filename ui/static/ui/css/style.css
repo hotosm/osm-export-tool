@@ -277,7 +277,6 @@ span#submit-spinner i {
 }
 
 #create-pager li {
-    float: left !important;
     margin-left: 15px !important;
 }
 
@@ -300,7 +299,7 @@ div#gazetteer {
 }
 
 #nominatim {
-    max-width: 330px !important;
+    min-width: 330px !important;
 }
 
 span.gazetteer {

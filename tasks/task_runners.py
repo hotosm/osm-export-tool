@@ -4,7 +4,7 @@ import os
 import re
 import importlib
 from datetime import datetime, timedelta
-from hot_exports import settings
+from django.conf import settings
 from jobs.models import Job
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
 from jobs.presets import PresetParser
@@ -25,17 +25,17 @@ class TaskRunner(object):
     """
     class Meta:
         abstract = True
-        
+
     def run_task(self, *args, **kwargs):
         raise NotImplementedError('Override in subclass.')
-       
+
 
 class ExportTaskRunner(TaskRunner):
     """
     Runs HOT Export Tasks
     """
     export_task_registry = settings.EXPORT_TASKS
-    
+
     def run_task(self, job_uid=None, user=None):
         run_uid = ''
         logger.debug('Running Job with id: {0}'.format(job_uid))
@@ -60,8 +60,8 @@ class ExportTaskRunner(TaskRunner):
             except ImportError as e:
                 msg = 'Error importing export task: {0}'.format(e)
                 logger.debug(msg)
-        
-        # run the tasks 
+
+        # run the tasks
         if len(export_tasks) > 0:
             # start the run
             run = None
@@ -83,29 +83,29 @@ class ExportTaskRunner(TaskRunner):
             except DatabaseError as e:
                 logger.error('Error saving export run: {0}'.format(e))
                 raise e
-            
+
             # setup the staging directory
             stage_dir = settings.EXPORT_STAGING_ROOT + str(run_uid) + '/'
             os.makedirs(stage_dir, 6600)
-            
+
             # pull out the tags to create the conf file
             categories = job.categorised_tags # dict of points/lines/polygons
             bbox = job.overpass_extents # extents of job in order required by overpass
-            
+
             # setup the initial tasks
             conf = OSMConfTask()
             query = OverpassQueryTask()
             pbfconvert = OSMToPBFConvertTask()
             prep_schema = OSMPrepSchemaTask()
-            
+
             # check for transform and/or translate configurations
             """
             Not implemented for now.
-            
+
             transform = job.configs.filter(config_type='TRANSFORM')
             translate = job.configs.filter(config_type='TRANSLATION')
             """
-            
+
             # save initial tasks to the db with 'PENDING' state..
             for initial_task in [conf, query, pbfconvert, prep_schema]:
                 try:
@@ -130,7 +130,7 @@ class ExportTaskRunner(TaskRunner):
                 except DatabaseError as e:
                     logger.error('Saving task {0} threw: {1}'.format(export_task.name, e))
                     raise e
-            # check if we need to generate a preset file from Job feature selections    
+            # check if we need to generate a preset file from Job feature selections
             if job.feature_save or job.feature_pub:
                 # run GeneratePresetTask
                 preset_task = GeneratePresetTask()
@@ -139,8 +139,8 @@ class ExportTaskRunner(TaskRunner):
                 logger.debug('Saved task: {0}'.format(preset_task.name))
                 # add to export tasks
                 export_tasks.append(preset_task)
-            
-            
+
+
             """
                 Create a celery chain which runs the initial conf and query tasks (initial_tasks),
                 followed by a chain of pbfconvert and prep_schema (schema_tasks).
@@ -152,18 +152,18 @@ class ExportTaskRunner(TaskRunner):
                     conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name) |
                     query.si(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid, filters=job.filters)
             )
-            
+
             schema_tasks = chain(
-                    pbfconvert.si(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid) | 
+                    pbfconvert.si(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid) |
                     prep_schema.si(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid)
             )
-            
+
             format_tasks = group(
                 task.si(run_uid=run_uid, stage_dir=stage_dir, job_name=job_name) for task in export_tasks
             )
-            
+
             finalize_task = FinalizeRunTask()
-            
+
             """
                 If header tasks fail, errors will not propagate to the finalize_task.
                 This means that the finalize_task will always be called, and will update the
@@ -174,9 +174,9 @@ class ExportTaskRunner(TaskRunner):
                     chord(header=format_tasks,
                         body=finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)).set(link_error=finalize_task.si())
             ).apply_async(expires=datetime.now() + timedelta(days=1)) # tasks expire after one day.
-            
-            return run  
-            
+
+            return run
+
         else:
             return False
 
@@ -186,8 +186,8 @@ class ExportTaskRunner(TaskRunner):
         # Replace all whitespace with a single underscore
         s = re.sub(r"\s+", '_', s)
         return s.lower()
-        
-        
+
+
 def error_handler(task_id=None):
     logger.debug('In error handler %s' % task_id)
-        
+
