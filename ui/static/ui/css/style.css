@@ -299,7 +299,7 @@ div#gazetteer {
 }
 
 #nominatim {
-    max-width: 330px !important;
+    min-width: 330px !important;
 }
 
 span.gazetteer {
