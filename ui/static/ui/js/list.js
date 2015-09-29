@@ -615,7 +615,7 @@ jobs.list = (function(){
                     });
                 }
                 else {
-                    var expires = moment(data.created_at).add(2, 'days').format('YYYY-MM-DD hh:mm a');
+                    var expires = moment(data.created_at).add(2, 'days').format('hh a YYYY-MM-DD');
                     $unpubSpan.tooltip({
                         'html': true,
                         'title': gettext('Unpublished export') + '<br/>' + gettext('Expires: ') + expires

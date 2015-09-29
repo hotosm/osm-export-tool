@@ -3,13 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Kokou Elolo AMEGAYIBO <amazanake@gmail.com>, 2015
+# RAGATOA David <rmandavid@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-25 13:09+0000\n"
-"PO-Revision-Date: 2015-09-26 07:56+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2015-09-29 13:59+0000\n"
+"PO-Revision-Date: 2015-09-29 16:05+0000\n"
+"Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/hotosm/osm-export-tool2/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,276 +19,278 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ui/static/ui/js/clone.js:300 ui/static/ui/js/create.js:298
+#: ui/static/ui/js/clone.js:300 ui/static/ui/js/create.js:297
 msgid "(East, South, West, North): "
-msgstr ""
+msgstr "(Est, Sud, Ouest, Nord):"
 
-#: ui/static/ui/js/clone.js:334 ui/static/ui/js/create.js:333
+#: ui/static/ui/js/clone.js:334 ui/static/ui/js/create.js:332
 msgid "Select area to export"
-msgstr ""
+msgstr "Sélectionner la zone à exporter"
 
-#: ui/static/ui/js/clone.js:361 ui/static/ui/js/create.js:360
+#: ui/static/ui/js/clone.js:361 ui/static/ui/js/clone.js:368
+#: ui/static/ui/js/create.js:359 ui/static/ui/js/create.js:366
 msgid "Invalid Extent"
-msgstr ""
+msgstr "Dimensions non valide"
 
-#: ui/static/ui/js/clone.js:361 ui/static/ui/js/create.js:360
+#: ui/static/ui/js/clone.js:361 ui/static/ui/js/create.js:359
 msgid "Selected area is outside"
-msgstr ""
+msgstr "la zone sélectionnée est à l'exterieur"
 
-#: ui/static/ui/js/clone.js:361 ui/static/ui/js/create.js:360
+#: ui/static/ui/js/clone.js:361 ui/static/ui/js/create.js:359
 msgid "a valid HOT Export Region"
+msgstr "Une région HOT Export valide"
+
+#: ui/static/ui/js/clone.js:368 ui/static/ui/js/create.js:366
+msgid "Selected area is "
 msgstr ""
 
-#: ui/static/ui/js/clone.js:368 ui/static/ui/js/create.js:367
-msgid "Invalid Exent"
+#: ui/static/ui/js/clone.js:369 ui/static/ui/js/create.js:367
+msgid " sq km."
 msgstr ""
 
-#: ui/static/ui/js/clone.js:369 ui/static/ui/js/create.js:368
+#: ui/static/ui/js/clone.js:369 ui/static/ui/js/create.js:367
 msgid "Must be less than "
-msgstr ""
+msgstr "doit être inférieur à "
 
-#: ui/static/ui/js/clone.js:460 ui/static/ui/js/create.js:459
+#: ui/static/ui/js/clone.js:460 ui/static/ui/js/create.js:458
 msgid "The export job name is required and cannot be empty"
-msgstr ""
+msgstr "Le nom de la tâche d'export est requis et ne peut être vide"
 
-#: ui/static/ui/js/clone.js:467 ui/static/ui/js/create.js:466
+#: ui/static/ui/js/clone.js:467 ui/static/ui/js/create.js:465
 msgid "The description is required and cannot be empty"
-msgstr ""
+msgstr "La description est réquise et ne peut  être vide"
 
-#: ui/static/ui/js/clone.js:476 ui/static/ui/js/create.js:475
+#: ui/static/ui/js/clone.js:476 ui/static/ui/js/create.js:474
 msgid "At least one export format must be selected"
-msgstr ""
+msgstr "Au moins un format d'export doit être sélectionné"
 
-#: ui/static/ui/js/clone.js:511 ui/static/ui/js/create.js:510
+#: ui/static/ui/js/clone.js:511 ui/static/ui/js/create.js:509
 msgid "The filename is required and cannot be empty"
-msgstr ""
+msgstr "Le nom du fichier est réquis et ne peut  être vide"
 
-#: ui/static/ui/js/clone.js:1590 ui/static/ui/js/create.js:1553
+#: ui/static/ui/js/clone.js:1590 ui/static/ui/js/create.js:1577
 msgid "Delete"
-msgstr ""
+msgstr "suprimer"
 
-#: ui/static/ui/js/clone.js:1961 ui/static/ui/js/create.js:1923
+#: ui/static/ui/js/clone.js:1961 ui/static/ui/js/create.js:1947
 msgid ""
 "Select the area on the Map for export and enter the Name, Description and "
 "Event"
-msgstr ""
+msgstr "Sélectionner la zone à exporter sur la carte et entrer le nom, la description "
 
-#: ui/static/ui/js/clone.js:1968 ui/static/ui/js/create.js:1930
+#: ui/static/ui/js/clone.js:1968 ui/static/ui/js/create.js:1954
 msgid "Select one or more file formats for export"
-msgstr ""
+msgstr "Sélectionner un ou plusieurs formats de fichiers pour l'export"
 
-#: ui/static/ui/js/clone.js:1975 ui/static/ui/js/create.js:1937
+#: ui/static/ui/js/clone.js:1975 ui/static/ui/js/create.js:1961
 msgid ""
 "Expand and select feature tags from the HDM or OSM tree list for export"
-msgstr ""
+msgstr "Augmentez et sélectionnez la liste d'attribut HDM ou OSM pour l'exportation"
 
-#: ui/static/ui/js/clone.js:1982 ui/static/ui/js/create.js:1944
+#: ui/static/ui/js/clone.js:1982 ui/static/ui/js/create.js:1968
 msgid "Upload or select a preset file. Save and/or publish"
-msgstr ""
+msgstr "Télécharger ou sélectionner un fichier de presets. Sauvegarder et / ou de publier"
 
-#: ui/static/ui/js/clone.js:1989 ui/static/ui/js/create.js:1951
+#: ui/static/ui/js/clone.js:1989 ui/static/ui/js/create.js:1975
 msgid ""
 "Summary of the export settings. Select “Create Export” to start the export"
-msgstr ""
+msgstr "Résumé des arrangements d'exportation. Choisissez «créez l'exportation» pour commencer l'exportation"
 
 #: ui/static/ui/js/clone.js:1996 ui/static/ui/js/configurations.js:679
 msgid "Give the selected Preset file a name"
+msgstr "Donnez un nom au fichier de Preset sélectionné"
+
+#: ui/static/ui/js/clone.js:2003 ui/static/ui/js/create.js:1989
+msgid "Publish the preset file to the global storage for everyone to access"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:2003
-msgid "Publish the preset file to the global storeage for everyone to access"
-msgstr ""
-
-#: ui/static/ui/js/clone.js:2010 ui/static/ui/js/create.js:1972
+#: ui/static/ui/js/clone.js:2010 ui/static/ui/js/create.js:1996
 msgid "Find and upload a preset file from desktop"
-msgstr ""
+msgstr "Trouver et télécharger un fichier  preset depuis votre ordinateur"
 
-#: ui/static/ui/js/clone.js:2017 ui/static/ui/js/create.js:1979
+#: ui/static/ui/js/clone.js:2017 ui/static/ui/js/create.js:2003
 msgid "Find and select preset file from the store"
+msgstr "Trouvez et sélectionnez le fichier de preset de la boutique"
+
+#: ui/static/ui/js/clone.js:2024 ui/static/ui/js/create.js:2010
+msgid "Save the feature tag selection to your personal preset storage"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:2024 ui/static/ui/js/create.js:1986
-msgid "Save the feature tag selection to your personal preset storeage"
-msgstr ""
-
-#: ui/static/ui/js/clone.js:2031 ui/static/ui/js/create.js:1993
+#: ui/static/ui/js/clone.js:2031 ui/static/ui/js/create.js:2017
 msgid ""
-"Publish the feature tag selection to the global preset storeage for everyone"
-" to access"
+"Publish the feature tag selection to the global preset storage for everyone "
+"to access"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:2038 ui/static/ui/js/create.js:2000
+#: ui/static/ui/js/clone.js:2038 ui/static/ui/js/create.js:2024
 msgid "Publish the export to the global exports for everyone to access"
-msgstr ""
+msgstr "Publiez le fichier d'attribut en libre accès à tout le monde dans la mémoire générale"
 
 #: ui/static/ui/js/configurations.js:445
 msgid " Prev"
-msgstr ""
+msgstr "précédent "
 
 #: ui/static/ui/js/configurations.js:458 ui/static/ui/js/list.js:511
 #: ui/static/ui/js/list.js:524
 msgid "Prev"
-msgstr ""
+msgstr "précédent "
 
 #: ui/static/ui/js/configurations.js:554
 msgid "Published preset"
-msgstr ""
+msgstr "preset publié"
 
 #: ui/static/ui/js/configurations.js:560
 msgid "Private preset"
-msgstr ""
+msgstr "Preset privé"
 
 #: ui/static/ui/js/configurations.js:565 ui/static/ui/js/configurations.js:569
 #: ui/static/ui/js/list.js:626 ui/static/ui/js/list.js:630
 msgid "Created by "
-msgstr ""
+msgstr "Crée par"
 
 #: ui/static/ui/js/configurations.js:665
 msgid ""
 "Filter through all the preset files based on keywords in the search box "
 "and/or between a start and end date"
-msgstr ""
+msgstr "Filtrez à l'aide de tous les dossiers de préréglage basés sur des mots-clés dans la boîte de recherche et/ou entre un début et une date de fin"
 
-#: ui/static/ui/js/configurations.js:672 ui/static/ui/js/create.js:1965
+#: ui/static/ui/js/configurations.js:672
 msgid "Publish the preset file to the global store for everyone to access"
-msgstr ""
+msgstr "Publiez le fichier de preset  en libre accès à tout le monde"
 
-#: ui/static/ui/js/create.js:1593
+#: ui/static/ui/js/create.js:1617
 msgid "Requested file not found"
-msgstr ""
+msgstr "Fichier requis introuvable"
 
 #: ui/static/ui/js/detail.js:230 ui/static/ui/js/detail.js:421
 #: ui/static/ui/js/detail.js:598
 msgid "Google Earth (KMZ) File"
-msgstr ""
+msgstr "Fichier Google Earth (KMZ)"
 
 #: ui/static/ui/js/detail.js:236 ui/static/ui/js/detail.js:428
 #: ui/static/ui/js/detail.js:432 ui/static/ui/js/detail.js:606
 #: ui/static/ui/js/detail.js:611
 msgid "OpenStreetMap (PBF) File"
-msgstr ""
+msgstr "Fichier OpenStreetMap (PBF)"
 
 #: ui/static/ui/js/detail.js:242 ui/static/ui/js/detail.js:439
 #: ui/static/ui/js/detail.js:443 ui/static/ui/js/detail.js:619
 #: ui/static/ui/js/detail.js:624
 msgid "ESRI Shapefile (SHP)"
-msgstr ""
+msgstr "ESRI Shapefile (SHP)"
 
 #: ui/static/ui/js/detail.js:248 ui/static/ui/js/detail.js:461
 #: ui/static/ui/js/detail.js:465 ui/static/ui/js/detail.js:645
 #: ui/static/ui/js/detail.js:650
 msgid "OSMAnd (OBF) File"
-msgstr ""
+msgstr "Fichier OSMAnd (OBF)"
 
-#: ui/static/ui/js/detail.js:254 ui/static/ui/js/detail.js:476
+#: ui/static/ui/js/detail.js:254 ui/static/ui/js/detail.js:472
+#: ui/static/ui/js/detail.js:476 ui/static/ui/js/detail.js:658
 #: ui/static/ui/js/detail.js:663
 msgid "Garmin Map (IMG) File"
-msgstr ""
+msgstr "Fichier de Carte Garmin (IMG)"
 
 #: ui/static/ui/js/detail.js:260 ui/static/ui/js/detail.js:483
 #: ui/static/ui/js/detail.js:487 ui/static/ui/js/detail.js:671
 #: ui/static/ui/js/detail.js:676
 msgid "SQlite Database File"
-msgstr ""
+msgstr "Fichier de Base de Données SQlite"
 
 #: ui/static/ui/js/detail.js:266 ui/static/ui/js/detail.js:450
 #: ui/static/ui/js/detail.js:454 ui/static/ui/js/detail.js:632
 #: ui/static/ui/js/detail.js:637
 msgid "Thematic ESRI Shapefile (SHP)"
-msgstr ""
+msgstr "Fichier thématique ESRI Shapefile (SHP) "
 
 #: ui/static/ui/js/detail.js:272
 msgid "Custom JOSM Preset (XML)"
-msgstr ""
+msgstr "Personnaliser Preset de JOSM (XML)"
 
 #: ui/static/ui/js/detail.js:309 ui/static/ui/js/detail.js:537
 msgid "Run Id"
-msgstr ""
+msgstr "lancer l'identification"
 
 #: ui/static/ui/js/detail.js:310 ui/static/ui/js/detail.js:538
 #: ui/static/ui/js/detail.js:544
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: ui/static/ui/js/detail.js:311 ui/static/ui/js/detail.js:540
 msgid "Run by"
-msgstr ""
+msgstr "lancer par "
 
 #: ui/static/ui/js/detail.js:312 ui/static/ui/js/detail.js:539
 msgid "Started"
-msgstr ""
+msgstr "Commencé "
 
 #: ui/static/ui/js/detail.js:313
 msgid "Finished"
-msgstr ""
+msgstr "Terminé"
 
 #: ui/static/ui/js/detail.js:314 ui/static/ui/js/detail.js:318
 #: ui/static/ui/js/detail.js:544
 msgid "Duration"
-msgstr ""
+msgstr "Durée"
 
 #: ui/static/ui/js/detail.js:315
 msgid "Download"
-msgstr ""
+msgstr "télécharger"
 
 #: ui/static/ui/js/detail.js:318
 msgid "File"
-msgstr ""
+msgstr "Fichier"
 
 #: ui/static/ui/js/detail.js:318 ui/static/ui/js/detail.js:544
 msgid "Size"
-msgstr ""
+msgstr "Taille "
 
 #: ui/static/ui/js/detail.js:322
 msgid "Errors"
-msgstr ""
+msgstr "Erreurs "
 
 #: ui/static/ui/js/detail.js:325
 msgid "Error"
-msgstr ""
+msgstr "Erreur "
 
 #: ui/static/ui/js/detail.js:407 ui/static/ui/js/detail.js:411
 #: ui/static/ui/js/detail.js:581 ui/static/ui/js/detail.js:586
 msgid "Extract OpenStreetMap Data"
-msgstr ""
+msgstr "Extraire Données OpenStreetMap"
 
 #: ui/static/ui/js/detail.js:417 ui/static/ui/js/detail.js:593
 msgid "Google Earth (KMZ)"
-msgstr ""
-
-#: ui/static/ui/js/detail.js:472 ui/static/ui/js/detail.js:658
-msgid "Garamin Map (IMG) File"
-msgstr ""
+msgstr "Google Earth (KMZ)"
 
 #: ui/static/ui/js/detail.js:494 ui/static/ui/js/detail.js:498
 #: ui/static/ui/js/detail.js:684 ui/static/ui/js/detail.js:689
 msgid "Generate OpenStreetMap Schema"
-msgstr ""
+msgstr "Produisez un schéma d'OpenStreetMap"
 
 #: ui/static/ui/js/detail.js:504
 msgid "Genrerate JOSM Preset"
-msgstr ""
+msgstr "Générer Preset de JOSM"
 
 #: ui/static/ui/js/detail.js:508 ui/static/ui/js/detail.js:696
 #: ui/static/ui/js/detail.js:701
 msgid "Generate JOSM Preset"
-msgstr ""
+msgstr "Générer Preset de JOSM"
 
 #: ui/static/ui/js/detail.js:541
 msgid "Tasks"
-msgstr ""
+msgstr "Tâches"
 
 #: ui/static/ui/js/detail.js:544
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: ui/static/ui/js/detail.js:806
 msgid "Run the export with the same geographic location and settings"
-msgstr ""
+msgstr "Faire l'exportation avec la mêmes situation géographique et paramètres"
 
 #: ui/static/ui/js/detail.js:812
 msgid "Clone this export while adjusting the settings"
-msgstr ""
+msgstr "Copiez cette exportation tout en ajustant les paramètres"
 
 #: ui/static/ui/js/detail.js:818
 msgid "Show the selected features for this export"
@@ -294,19 +298,19 @@ msgstr ""
 
 #: ui/static/ui/js/detail.js:998
 msgid "Published"
-msgstr ""
+msgstr "Publié"
 
 #: ui/static/ui/js/detail.js:998
 msgid "Private"
-msgstr ""
+msgstr "Privé"
 
 #: ui/static/ui/js/list.js:614
 msgid "Published export."
-msgstr ""
+msgstr "Export publié"
 
 #: ui/static/ui/js/list.js:621
 msgid "Unpublished export"
-msgstr ""
+msgstr "Export non publié"
 
 #: ui/static/ui/js/list.js:621
 msgid "Expires: "
@@ -318,7 +322,7 @@ msgstr ""
 
 #: ui/static/ui/js/list.js:638
 msgid "click to zoom"
-msgstr ""
+msgstr "cliquer pour zoomer "
 
 #: ui/static/ui/js/list.js:825
 msgid ""
@@ -328,4 +332,4 @@ msgstr ""
 
 #: ui/static/ui/js/list.js:832
 msgid "Show your personal export(s)"
-msgstr ""
+msgstr "Montrez vos exports individuel(s)"

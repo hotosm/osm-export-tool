@@ -76,4 +76,8 @@ api/tests/examples
 celerybeat.pid
 celerybeat-schedule
 
+# PyCharm
+.idea
 
+# project specific files
+hot_exports/settings/secret.py

@@ -1,7 +1,7 @@
 import logging
 import json
 import uuid
-from hot_exports import settings
+from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
@@ -15,7 +15,7 @@ from tasks.models import ExportRun, ExportTask, ExportTaskResult
 logger = logging.getLogger(__name__)
 
 class TestPurgeUnpublishedExportsTask(TestCase):
-    
+
     def setUp(self,):
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
@@ -29,7 +29,7 @@ class TestPurgeUnpublishedExportsTask(TestCase):
         Job.objects.create(name='TestJob', created_at=created_at, published=True,
                         description='Test description', user=self.user,
                         the_geom=the_geom)
-    
+
     def test_purge_export_jobs(self,):
         jobs = Job.objects.all()
         self.assertEquals(2, jobs.count())

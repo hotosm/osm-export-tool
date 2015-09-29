@@ -35,10 +35,7 @@
     <div id="banner" class="container-fluid">
         <div class="row">
             <div class="col-md-4"><img class="logo" src="{% static 'ui/images/hot_logo.png' %}"/>
-                <span id="logotext">
-                        Humanitarian <br/>
-                        OpenStreetMap <br/>
-                        Team
+                <span id="logotext">{% blocktrans %}Humanitarian <br/>OpenStreetMap <br/>Team{% endblocktrans %}
                 </span>
             </div>
             <div class="col-md-4 pull-right">
@@ -69,8 +66,8 @@
             <li><a href="{% url 'create' %}">{% trans 'Create' %}</a></li>
             <li><a href="{% url 'list' %}">{% trans 'Exports' %}</a></li>
             <li><a href="{% url 'configurations' %}">{% trans 'Presets' %}</a></li>
-            <li><a href="{% url 'help' %}">Help</a></li>
-            <li><a href="{% url 'about' %}">About</a></li>
+            <li><a href="{% url 'help' %}">{% trans 'Help' %}</a></li>
+            <li><a href="{% url 'about' %}">{% trans 'About' %}</a></li>
             {% if user.is_authenticated %}
                 <li id="logout" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>

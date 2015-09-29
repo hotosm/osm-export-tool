@@ -30,9 +30,10 @@ class OSMToPBF(object):
         if(self.debug):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate() 
+        (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
+            logger.error('%s', stderr)
             raise Exception, "osmconvert failed with return code: {0}".format(returncode)
         if(self.debug):
             print 'Osmconvert returned: %s' % returncode
@@ -57,6 +58,5 @@ if __name__ == '__main__':
         debug = True
     o2p = OSMToPBF(osm=osm, pbf=pbf, debug=debug)
     o2p.convert()
-    
-        
-    
+
+

@@ -469,7 +469,7 @@ exports.detail = (function(){
                     case 'Garmin Export':
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
                             cls = status.toLowerCase();
-                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>' + gettext('Garamin Map (IMG) File') + '</td><td> -- <td> -- </td><td>' + task.status + '</td></tr>');
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>' + gettext('Garmin Map (IMG) File') + '</td><td> -- <td> -- </td><td>' + task.status + '</td></tr>');
                         }
                         else {
                             cls = status.toLowerCase();
@@ -655,7 +655,7 @@ exports.detail = (function(){
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
                             $tr.removeClass();
                             $tr.addClass(status.toLowerCase());
-                            $tr.html('<td>' + gettext('Garamin Map (IMG) File') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
+                            $tr.html('<td>' + gettext('Garmin Map (IMG) File') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
                         }
                         else {
                             $tr.removeClass();

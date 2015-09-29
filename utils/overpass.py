@@ -4,7 +4,7 @@ import string
 import argparse
 import shutil
 import subprocess
-from hot_exports import settings
+from django.conf import settings
 from osgeo import ogr, osr, gdal
 from django.utils import timezone
 from django.utils import timezone
@@ -21,7 +21,7 @@ class Overpass(object):
     Returns all nodes, ways and relations within the specified bounding box
     and filtered by the provided tags.
     """
-    
+
     def __init__(self, url=None, bbox=None, stage_dir=None, job_name=None, filters=None, debug=False):
         if settings.OVERPASS_API_URL:
             self.url = settings.OVERPASS_API_URL
@@ -38,24 +38,24 @@ class Overpass(object):
         else:
             raise Exception('A bounding box is required: miny,minx,maxy,maxx')
         self.default_template = Template('(node($bbox);<;);out body;')
-        
+
         # see http://wiki.openstreetmap.org/wiki/Osmfilter#Object_Filter
         self.filter_template = '--keep={0}'.format(' or '.join(self.filters))
-        
+
         # dump out all osm data for the specified bounding box
         self.query = self.default_template.safe_substitute({'bbox': self.bbox})
-        
+
         # set up required paths
         self.raw_osm = self.stage_dir + 'query.osm'
         self.filtered_osm = self.stage_dir + job_name + '.osm'
 
     def get_query(self,):
         return self.query
-        
+
     def run_query(self,):
         q = self.get_query()
         if self.debug:
-            print 'Query started at: %s' % datetime.now()   
+            print 'Query started at: %s' % datetime.now()
         try:
             req = requests.post(self.url, data=q, stream=True)
             CHUNK = 1024 * 1024 * 5 # 5MB chunks
@@ -69,7 +69,7 @@ class Overpass(object):
             print 'Query finished at %s' % datetime.now()
             print 'Wrote overpass query results to: %s' % self.raw_osm
         return self.raw_osm
-    
+
     def filter(self, ):
         if (self.filters and len(self.filters) > 0):
             self.filter_params = self.stage_dir + 'filters.txt'
@@ -81,10 +81,10 @@ class Overpass(object):
                 # can't filter so return the raw data
                 shutil.copy(self.raw_osm, self.filtered_osm)
                 return self.filtered_osm
-            
+
             # convert to om5 for faster processing
             om5 = self._convert_om5()
-            
+
             # filter om5 data
             filter_tmpl = Template(
                 'osmfilter $om5 --parameter-file=$params --out-osm >$filtered_osm'
@@ -94,30 +94,32 @@ class Overpass(object):
                                                       'filtered_osm': self.filtered_osm})
             proc = subprocess.Popen(filter_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            (stdout,stderr) = proc.communicate() 
+            (stdout,stderr) = proc.communicate()
             returncode = proc.wait()
             if (returncode != 0):
+                logger.error('%s', stderr)
                 raise Exception, "osmfilter process failed with returncode {0}".format(returncode)
             return self.filtered_osm
-            
+
         else:
             logger.error('No filters found. Returning raw osm data.')
             shutil.copy(self.raw_osm, self.filtered_osm)
             return self.filtered_osm
-    
-    
+
+
     def _convert_om5(self,):
         om5 = self.stage_dir + 'query.om5'
         convert_tmpl = Template('osmconvert $raw_osm -o=$om5')
         convert_cmd = convert_tmpl.safe_substitute({'raw_osm': self.raw_osm, 'om5': om5})
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate() 
+        (stdout,stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
+            logger.error('%s', stderr)
             raise Exception, "osmconvert process failed with returncode {0}: {1}".format(returncode, stderr)
         return om5
-    
+
     """
     Overpass  imposes a limit of 1023 statements per query.
     This is no good for us when querying with the OSM Data Model
@@ -127,7 +129,7 @@ class Overpass(object):
     we decide to build our own overpass api in future.
     """
     def _build_overpass_query(self, ): # pragma: no cover
-        
+
         template = Template("""
                 [out:xml][timeout:3600][bbox:$bbox];
                 (
@@ -142,11 +144,11 @@ class Overpass(object):
         nodes = []
         ways = []
         relations = []
-        
+
         node_tmpl = Template('node[$tags];')
         way_tmpl = Template('way[$tags];')
         rel_tmpl = Template('rel[$tags];')
-        
+
         for tag in self.tags:
             try:
                 (k, v) = tag.split(':')
@@ -164,10 +166,10 @@ class Overpass(object):
         node_filter = '\n'.join(nodes)
         way_filter = '\n'.join(ways)
         rel_filter = '\n'.join(relations)
-        
+
         q = template.safe_substitute({'bbox':self.bbox, 'nodes': node_filter, 'ways': way_filter,
                                                  'relations': rel_filter})
-        return q    
+        return q
 
 
 
@@ -192,5 +194,4 @@ if __name__ == '__main__':
         debug = config.get('debug')
     overpass = Overpass(url=url, bbox=bbox, osm=osm, debug=debug)
     overpass.run_query()
-    
-    
+

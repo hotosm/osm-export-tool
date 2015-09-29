@@ -6,7 +6,9 @@ import cPickle
 import shutil
 import os
 import pdb
-from hot_exports import settings
+
+from django.conf import settings
+
 from celery import app, shared_task, Task
 from celery.result import AsyncResult
 from celery.registry import tasks
@@ -32,10 +34,10 @@ class ExportTask(Task):
     """
     Abstract base class for export tasks.
     """
-    
+
     # whether to abort the whole run if this task fails.
     abort_on_error = False
-    
+
     class Meta:
         abstract = True
 
@@ -43,7 +45,7 @@ class ExportTask(Task):
         from tasks.models import ExportTask, ExportTaskResult
         # update the task
         finished = timezone.now()
-        task = ExportTask.objects.get(celery_uid=task_id)   
+        task = ExportTask.objects.get(celery_uid=task_id)
         task.finished_at = finished
         # get the output
         output_url = retval['result']
@@ -100,14 +102,14 @@ class ExportTask(Task):
 
     def after_return(self, *args, **kwargs):
         logger.debug('Task returned: {0}'.format(self.request))
-        
+
     def update_task_state(self, run_uid=None, name=None):
         """
         Update the task state and celery task uid.
-        Can use the celery uid for diagnostics. 
+        Can use the celery uid for diagnostics.
         """
         started = timezone.now()
-        from tasks.models import ExportRun, ExportTask 
+        from tasks.models import ExportRun, ExportTask
         celery_uid = self.request.id
         try:
             task = ExportTask.objects.get(run__uid=run_uid, name=name)
@@ -128,13 +130,13 @@ class OSMConfTask(ExportTask):
     """
     name = 'OSMConf'
     abort_on_error = True
-    
+
     def run(self, run_uid=None, categories=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         conf = osmconf.OSMConfig(categories, job_name=job_name)
         configfile = conf.create_osm_conf(stage_dir=stage_dir)
         return {'result': configfile}
-   
+
 
 class OverpassQueryTask(ExportTask):
     """
@@ -142,7 +144,7 @@ class OverpassQueryTask(ExportTask):
     """
     name = 'OverpassQuery'
     abort_on_error = True
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None, filters=None, bbox=None):
         """
         Runs the query and returns the path to the filtered osm file.
@@ -154,7 +156,7 @@ class OverpassQueryTask(ExportTask):
         )
         op.run_query() # run the query
         filtered_osm = op.filter() # filter the results
-        return {'result': filtered_osm}        
+        return {'result': filtered_osm}
 
 
 class OSMToPBFConvertTask(ExportTask):
@@ -164,7 +166,7 @@ class OSMToPBFConvertTask(ExportTask):
     """
     name = 'OSM2PBF'
     abort_on_error = True
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         osm = stage_dir + job_name + '.osm'
@@ -172,15 +174,15 @@ class OSMToPBFConvertTask(ExportTask):
         o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
         pbffile = o2p.convert()
         return {'result': pbffile}
-    
- 
+
+
 class OSMPrepSchemaTask(ExportTask):
     """
     Task to create the default sqlite schema.
     """
     name = 'OSMSchema'
     abort_on_error = True
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         osm = stage_dir + job_name + '.pbf'
@@ -191,12 +193,12 @@ class OSMPrepSchemaTask(ExportTask):
         osmparser.create_default_schema()
         osmparser.update_zindexes()
         return {'result': sqlite}
-    
+
 
 class ThematicLayersExportTask(ExportTask):
-    
+
     name = "Thematic Shapefile Export"
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
         from jobs.models import Job
@@ -210,16 +212,16 @@ class ThematicLayersExportTask(ExportTask):
             out = t2s.convert()
             return {'result': out}
         except Exception as e:
-            logger.error('Raised exception in thematic task', e)
+            logger.error('Raised exception in thematic task, %s', str(e))
             raise Exception(e) # hand off to celery..
- 
+
 
 class ShpExportTask(ExportTask):
     """
     Class defining SHP export function.
     """
     name = 'Default Shapefile Export'
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         sqlite = stage_dir + job_name + '.sqlite'
@@ -229,7 +231,7 @@ class ShpExportTask(ExportTask):
             out = s2s.convert()
             return {'result': out}
         except Exception as e:
-            logger.error('Raised exception in shapefile export.', e)
+            logger.error('Raised exception in shapefile export, %s', str(e))
             raise Exception(e)
 
 
@@ -238,7 +240,7 @@ class KmlExportTask(ExportTask):
     Class defining KML export function.
     """
     name = 'KML Export'
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         sqlite = stage_dir + job_name + '.sqlite'
@@ -248,16 +250,16 @@ class KmlExportTask(ExportTask):
             out = s2k.convert()
             return {'result': out}
         except Exception as e:
-            logger.error('Raised exception in kml export.', e)
+            logger.error('Raised exception in kml export, %s', str(e))
             raise Exception(e)
 
 
-class ObfExportTask(ExportTask):    
+class ObfExportTask(ExportTask):
     """
     Class defining OBF export function.
     """
     name = 'OBF Export'
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         pbffile = stage_dir + job_name + '.pbf'
@@ -273,7 +275,7 @@ class ObfExportTask(ExportTask):
             shutil.rmtree(work_dir)
             return {'result': obffile}
         except Exception as e:
-            logger.error('Raised exception in obf export.', e)
+            logger.error('Raised exception in obf export, %s', str(e))
             raise Exception(e)
 
 
@@ -281,9 +283,9 @@ class SqliteExportTask(ExportTask):
     """
     Class defining SQLITE export function.
     """
-    
+
     name = 'SQLITE Export'
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         # sqlite already generated by OSMPrepSchema so just return path.
@@ -295,18 +297,18 @@ class GarminExportTask(ExportTask):
     """
     Class defining GARMIN export function.
     """
-    
+
     name = 'Garmin Export'
     _region = '' # set by the task_runner
-    
+
     @property
     def region(self,):
         return self._region
-    
+
     @region.setter
     def region(self, value):
         self._region = value
-    
+
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         work_dir = stage_dir + 'garmin'
@@ -324,7 +326,7 @@ class GarminExportTask(ExportTask):
             shutil.rmtree(work_dir)
             return {'result': imgfile}
         except Exception as e:
-            logger.error('Raised exception in garmin export.', e)
+            logger.error('Raised exception in garmin export, %s', str(e))
             raise Exception(e)
 
 
@@ -332,7 +334,7 @@ class GeneratePresetTask(ExportTask):
     """
     Generates a JOSM Preset from the exports selected features.
     """
-    
+
     name = 'Generate Preset'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
@@ -358,8 +360,8 @@ class GeneratePresetTask(ExportTask):
                 user=user, published=feature_pub
             )
             config.upload.save(filename, preset_file)
-            base_dir = settings.BASE_DIR
-            output_path = base_dir + config.upload.url
+
+            output_path = config.upload.path
             job.configs.add(config)
             return {'result': output_path}
 
@@ -371,9 +373,9 @@ class FinalizeRunTask(Task):
     Updates run with finish time.
     Emails user notification.
     """
-    
+
     name = 'Finalize Export Run'
-    
+
     def run(self, run_uid=None, stage_dir=None):
         from tasks.models import ExportRun
         run =  ExportRun.objects.get(uid=run_uid)
@@ -390,7 +392,7 @@ class FinalizeRunTask(Task):
             shutil.rmtree(stage_dir)
         except IOError as e:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
-            
+
         # send notification email to user
         hostname = settings.HOSTNAME
         url = 'http://{0}/exports/{1}'.format(hostname, run.job.uid)
@@ -412,9 +414,9 @@ class ExportTaskErrorHandler(Task):
     """
     Handles un-recoverable errors in export tasks.
     """
-    
+
     name = "Export Task Error Handler"
-    
+
     def run(self, run_uid, task_id=None, stage_dir=None):
         from tasks.models import ExportRun
         finished = timezone.now()
