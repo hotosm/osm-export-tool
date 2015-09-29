@@ -277,7 +277,6 @@ span#submit-spinner i {
 }
 
 #create-pager li {
-    float: left !important;
     margin-left: 15px !important;
 }
 
