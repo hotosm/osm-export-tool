@@ -18,7 +18,7 @@ $ sudo apt-get upgrade
 </pre>
 
 ### Python
-HOT Exports requires Python 2.7.x. 
+HOT Exports requires Python 2.7.x.
 
 ### pip
 To install pip, run:
@@ -41,7 +41,7 @@ Add the following to <code>.bashrc</code> or <code>.profile</code>
 
 <pre>
 export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/dev 
+export PROJECT_HOME=$HOME/dev
 source /usr/local/bin/virtualenvwrapper.sh
 </pre>
 
@@ -90,7 +90,7 @@ $ CREATE SCHEMA exports AUTHORIZATION hot;
 We need gdal >=1.10.0
 
 <pre>
-$ sudo apt-get install python-software-properties
+$ sudo apt-get install software-properties-common
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 $ sudo apt-get update
 $ sudo apt-get install gdal-bin libgdal-dev
@@ -108,7 +108,9 @@ The HOT Export pipeline depends on a number of third-party tools.
 
 <code>$ sudo apt-get install osmctools</code>
 
-<code>$ sudo apt-get install libspatialite5 libspatialite-dev</code>
+<code>$ sudo apt-get install spatialite-bin libspatialite5 libspatialite-dev</code>
+
+<code>$ sudo apt-get install default-jre zip unzip</code>
 
 #### Garmin
 
