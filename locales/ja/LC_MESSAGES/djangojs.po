@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 13:37+0000\n"
-"PO-Revision-Date: 2015-09-29 13:30+0000\n"
+"POT-Creation-Date: 2015-09-29 13:59+0000\n"
+"PO-Revision-Date: 2015-09-29 13:43+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/hotosm/osm-export-tool2/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,8 @@ msgstr ""
 msgid "Select area to export"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:361 ui/static/ui/js/create.js:359
+#: ui/static/ui/js/clone.js:361 ui/static/ui/js/clone.js:368
+#: ui/static/ui/js/create.js:359 ui/static/ui/js/create.js:366
 msgid "Invalid Extent"
 msgstr ""
 
@@ -38,7 +39,11 @@ msgid "a valid HOT Export Region"
 msgstr ""
 
 #: ui/static/ui/js/clone.js:368 ui/static/ui/js/create.js:366
-msgid "Invalid Exent"
+msgid "Selected area is "
+msgstr ""
+
+#: ui/static/ui/js/clone.js:369 ui/static/ui/js/create.js:367
+msgid " sq km."
 msgstr ""
 
 #: ui/static/ui/js/clone.js:369 ui/static/ui/js/create.js:367
