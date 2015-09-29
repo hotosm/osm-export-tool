@@ -6,7 +6,7 @@ import sys
 import cPickle
 import traceback
 import os
-from hot_exports import settings
+from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from mock import Mock, patch, PropertyMock, MagicMock
@@ -26,9 +26,9 @@ from celery.datastructures import ExceptionInfo
 from django.core.mail import EmailMessage
 
 logger = logging.getLogger(__name__)
-  
+
 class TestExportTasks(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='TestDefaultExportExtentGroup')
@@ -57,7 +57,7 @@ class TestExportTasks(TestCase):
                 geom_types = tag_dict['geom_types']
             )
         self.assertEquals(238, self.job.tags.all().count())
-    
+
     @patch('celery.app.task.Task.request')
     @patch('utils.osmconf.OSMConfig')
     def test_run_osmconf_task(self, mock_config, mock_request):
@@ -77,7 +77,7 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-        
+
     @patch('celery.app.task.Task.request')
     @patch('utils.overpass.Overpass')
     def test_run_overpass_task(self, overpass, mock_request):
@@ -93,14 +93,14 @@ class TestExportTasks(TestCase):
         overpass.filter.return_value = expected_output_path
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
         result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
-        overpass.run_query.assert_called_once()        
+        overpass.run_query.assert_called_once()
         overpass.filter.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-        
+
     @patch('celery.app.task.Task.request')
     @patch('utils.pbf.OSMToPBF')
     def test_run_osmtopbf_task(self, mock_overpass, mock_request):
@@ -120,7 +120,7 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-    
+
     @patch('celery.app.task.Task.request')
     @patch('utils.osmparse.OSMParser')
     def test_run_osmprepschema_task(self, mock_parser, mock_request):
@@ -143,8 +143,8 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-        
-    
+
+
     @patch('celery.app.task.Task.request')
     @patch('utils.shp.SQliteToShp')
     def test_run_shp_export_task(self, mock, mock_request):
@@ -155,7 +155,7 @@ class TestExportTasks(TestCase):
         job_name = self.job.name.lower()
         sqlite_to_shp.convert.return_value = '/path/to/' + job_name + '.shp'
         stage_dir = settings.EXPORT_STAGING_ROOT  + str(self.run.uid)
-        
+
         saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
         result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
         sqlite_to_shp.convert.assert_called_once()
@@ -164,7 +164,7 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-    
+
     @patch('shutil.rmtree')
     @patch('shutil.move')
     @patch('celery.app.task.Task.request')
@@ -191,7 +191,7 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-        
+
     @patch('shutil.rmtree')
     @patch('shutil.move')
     @patch('celery.app.task.Task.request')
@@ -238,7 +238,7 @@ class TestExportTasks(TestCase):
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
         self.assertIsNotNone(run_task)
         self.assertEquals('RUNNING', run_task.status)
-    
+
     @patch('os.makedirs')
     @patch('os.path.exists')
     @patch('shutil.copy')
@@ -276,7 +276,7 @@ class TestExportTasks(TestCase):
         result = ExportTaskResult.objects.get(task__celery_uid=celery_uid)
         self.assertIsNotNone(result)
         self.assertEquals(download_url, result.download_url)
-    
+
     def test_task_on_failure(self,):
         shp_export_task = ShpExportTask()
         celery_uid = str(uuid.uuid4())
@@ -305,7 +305,7 @@ class TestExportTasks(TestCase):
         self.assertEquals(error_type, ValueError)
         self.assertEquals('some unexpected error', str(msg))
         #traceback.print_exception(error_type, msg, tb)
-    
+
     @patch('celery.app.task.Task.request')
     def test_generate_preset_task(self, mock_request):
         task = GeneratePresetTask()
@@ -322,10 +322,10 @@ class TestExportTasks(TestCase):
         result = task.run(run_uid=run_uid, job_name='testjob')
         expected_result = stage_dir + 'testjob_preset.xml'
         config = self.job.configs.all()[0]
-        expected_path = settings.BASE_DIR + config.upload.url
+        expected_path = config.upload.path
         self.assertEquals(result['result'], expected_path)
         os.remove(expected_path)
-    
+
     @patch('django.core.mail.EmailMessage')
     @patch('shutil.rmtree')
     def test_finalize_run_task(self, rmtree, email):
@@ -346,7 +346,7 @@ class TestExportTasks(TestCase):
         email.return_value = msg
         msg.send.assert_called_once()
         #self.assertEquals('SUCCESS', self.run.status)
-    
+
     @patch('django.core.mail.EmailMessage')
     @patch('shutil.rmtree')
     @patch('os.path.isdir')
@@ -369,5 +369,5 @@ class TestExportTasks(TestCase):
         email.return_value = msg
         msg.send.assert_called_once()
         #self.assertEquals('FAILED', self.run.status)
-        
-        
+
+

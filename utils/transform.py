@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 class TransformSQlite(object):
     """
     Applies a schema transformation to a sqlite database.
-    
+
     NOT IMPLEMENTED YET
     """
-    
+
     def __init__(self, sqlite=None, transform=None, transform_sqlite=None, debug=None):
         self.sqlite = sqlite
         self.transform = transform
@@ -30,12 +30,12 @@ class TransformSQlite(object):
         self.cmd = Template("""
             spatialite $sqlite < $transform
         """)
-        
+
         # Enable GDAL/OGR exceptions
         gdal.UseExceptions()
         self.srs = osr.SpatialReference()
         self.srs.ImportFromEPSG(4326) # configurable
-            
+
     def transform_default_schema(self, ):
         assert os.path.exists(self.sqlite), "No spatialite file found for schema transformation"
         # transform the spatialite schema
@@ -46,17 +46,23 @@ class TransformSQlite(object):
             print 'Running: %s' % sql_cmd
         proc = subprocess.Popen(sql_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate() 
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
+        if returncode != 1:
+            logger.error('%s', stderr)
+            raise Exception, "{0} process failed with returncode: {1}".format(sql_cmd, returncode)
         if self.debug:
-            print 'spatialite returned: %s' % returncodeW
+            print 'spatialite returned: %s' % returncode
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="""Converts OSM (xml|pbf) to Spatialite.
-                                                    Updates schema to create planet_osm_* tables.
-                                                    Creates planet_osm_roads tables.
-                                                    Updates z_indexes on all layers.""")
+    parser = argparse.ArgumentParser(
+        description=(
+            'Converts OSM (xml|pbf) to Spatialite.\n'
+            'Updates schema to create planet_osm_* tables.\n'
+            'Updates z_indexes on all layers.'
+        )
+    )
     parser.add_argument('-o','--osm-file', required=True, dest="osm", help='The OSM file to convert (xml or pbf)')
     parser.add_argument('-s','--spatialite-file', required=True, dest="sqlite", help='The sqlite output file')
     parser.add_argument('-q','--schema-sql', required=False, dest="schema", help='A sql file to refactor the output schema')

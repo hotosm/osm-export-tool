@@ -1,7 +1,7 @@
 import os
 import logging
 import shutil
-from hot_exports import settings
+from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 from StringIO import StringIO
@@ -14,10 +14,10 @@ from ..osmand import UpdateBatchXML, OSMToOBF
 logger = logging.getLogger(__name__)
 
 class TestUpdateBatchXML(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        
+
     def test_update_batch_xml(self, ):
         batch_xml = self.path + '/files/batch.xml'
         batch_update = UpdateBatchXML(batch_xml=batch_xml, work_dir=self.path)
@@ -33,19 +33,19 @@ class TestOSMToOBF(TestCase):
     Depends on install of OsmAndMapCreator
     so skipping for general run of tests.
     """
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         # just for testing
         self.map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
         self.work_dir = self.path + '/files'
         self.pbffile = self.path + '/files/query.pbf'
-    
+
     @patch('os.path.exists')
     @patch('shutil.copy')
     @patch('os.listdir')
     @patch('subprocess.PIPE')
-    @patch('subprocess.Popen')   
+    @patch('subprocess.Popen')
     def test_create_obf(self, popen, pipe, listdir, copy, exists):
         obf_cmd = """
             cd /home/ubuntu/osmand/OsmAndMapCreator && \
@@ -73,8 +73,8 @@ class TestOSMToOBF(TestCase):
         proc.wait.assert_called_once()
         listdir.assert_called_once_with(self.work_dir)
         self.assertEquals(obffile, self.work_dir + '/query.obf')
-        
-        
+
+
 
 
 
