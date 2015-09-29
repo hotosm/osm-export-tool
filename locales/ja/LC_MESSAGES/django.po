@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 13:35+0000\n"
-"PO-Revision-Date: 2015-09-29 13:28+0000\n"
+"POT-Creation-Date: 2015-09-29 16:23+0000\n"
+"PO-Revision-Date: 2015-09-29 16:16+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/hotosm/osm-export-tool2/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -281,15 +281,15 @@ msgstr ""
 msgid "Preset File"
 msgstr ""
 
-#: ui/templates/ui/clone.html:23 ui/templates/ui/clone.html.py:198
-#: ui/templates/ui/create.html:23 ui/templates/ui/create.html.py:198
+#: ui/templates/ui/clone.html:23 ui/templates/ui/clone.html.py:197
+#: ui/templates/ui/create.html:23 ui/templates/ui/create.html.py:197
 #: ui/templates/ui/detail.html:9
 msgid "Export Details"
 msgstr ""
 
-#: ui/templates/ui/clone.html:31 ui/templates/ui/clone.html.py:374
+#: ui/templates/ui/clone.html:31 ui/templates/ui/clone.html.py:373
 #: ui/templates/ui/configurations.html:61 ui/templates/ui/create.html:31
-#: ui/templates/ui/create.html.py:396 ui/templates/ui/list.html:68
+#: ui/templates/ui/create.html.py:395 ui/templates/ui/list.html:68
 msgid "Name"
 msgstr ""
 
@@ -325,192 +325,191 @@ msgstr ""
 #: ui/templates/ui/clone.html:79 ui/templates/ui/create.html:79
 msgid ""
 "Features can only be selected from one tree, either from the HDM or the OSM data model.\n"
-"                                    Feature tags can not be mixed between the two,\n"
-"                                    with the other tree deactivating as soon as a tag from the other tree has been selected."
+"                                    Feature tags can not be mixed between the two. Deselect the HDM Tree to enable the OSM Tree."
 msgstr ""
 
-#: ui/templates/ui/clone.html:114 ui/templates/ui/configurations.html:126
-#: ui/templates/ui/create.html:114
+#: ui/templates/ui/clone.html:113 ui/templates/ui/configurations.html:126
+#: ui/templates/ui/create.html:113
 msgid "Upload a preset file"
 msgstr ""
 
-#: ui/templates/ui/clone.html:116 ui/templates/ui/create.html:116
+#: ui/templates/ui/clone.html:115 ui/templates/ui/create.html:115
 msgid ""
 "Use this form to either upload a <a href=\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">JOSM Preset</a> configuration file,\n"
 "                                    or to select a previously published preset configuration. Only one preset file can be selected at a time.\n"
 "                                    Any selections of features you have made from the HDM Data Model or the OSM Data Model will be cleared."
 msgstr ""
 
-#: ui/templates/ui/clone.html:124 ui/templates/ui/configurations.html:134
-#: ui/templates/ui/create.html:124
+#: ui/templates/ui/clone.html:123 ui/templates/ui/configurations.html:134
+#: ui/templates/ui/create.html:123
 msgid "Filename:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:147
+#: ui/templates/ui/clone.html:146
 msgid "Publish this preset globally."
 msgstr ""
 
-#: ui/templates/ui/clone.html:163 ui/templates/ui/configurations.html:180
-#: ui/templates/ui/create.html:163
+#: ui/templates/ui/clone.html:162 ui/templates/ui/configurations.html:180
+#: ui/templates/ui/create.html:162
 msgid "Upload Preset"
 msgstr ""
 
-#: ui/templates/ui/clone.html:168 ui/templates/ui/configurations.html:185
-#: ui/templates/ui/create.html:168
+#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:185
+#: ui/templates/ui/create.html:167
 msgid "Upload"
 msgstr ""
 
-#: ui/templates/ui/clone.html:174
+#: ui/templates/ui/clone.html:173
 msgid "Select a stored preset"
 msgstr ""
 
-#: ui/templates/ui/clone.html:181 ui/templates/ui/clone.html.py:246
-#: ui/templates/ui/clone.html:374 ui/templates/ui/configurations.html:165
-#: ui/templates/ui/create.html:181 ui/templates/ui/create.html.py:246
-#: ui/templates/ui/create.html:396 ui/templates/ui/detail.html:152
+#: ui/templates/ui/clone.html:180 ui/templates/ui/clone.html.py:245
+#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
+#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
 msgid "Filename"
 msgstr ""
 
-#: ui/templates/ui/clone.html:200 ui/templates/ui/create.html:200
+#: ui/templates/ui/clone.html:199 ui/templates/ui/create.html:199
 #: ui/templates/ui/detail.html:17
 msgid "Name:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:201 ui/templates/ui/create.html:201
+#: ui/templates/ui/clone.html:200 ui/templates/ui/create.html:200
 #: ui/templates/ui/detail.html:18
 msgid "Description:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:202 ui/templates/ui/create.html:202
+#: ui/templates/ui/clone.html:201 ui/templates/ui/create.html:201
 msgid "Activation:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:203 ui/templates/ui/create.html:203
+#: ui/templates/ui/clone.html:202 ui/templates/ui/create.html:202
 msgid "Export formats:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:207 ui/templates/ui/create.html:207
+#: ui/templates/ui/clone.html:206 ui/templates/ui/create.html:206
 msgid "Export Options"
 msgstr ""
 
-#: ui/templates/ui/clone.html:214
+#: ui/templates/ui/clone.html:213
 msgid "Save feature selection locally"
 msgstr ""
 
-#: ui/templates/ui/clone.html:224
+#: ui/templates/ui/clone.html:223
 msgid "Publish feature selection globally"
 msgstr ""
 
-#: ui/templates/ui/clone.html:234
+#: ui/templates/ui/clone.html:233
 msgid "Publish export globally"
 msgstr ""
 
-#: ui/templates/ui/clone.html:243 ui/templates/ui/create.html:243
+#: ui/templates/ui/clone.html:242 ui/templates/ui/create.html:242
 msgid "Configurations:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:246 ui/templates/ui/clone.html.py:374
+#: ui/templates/ui/clone.html:245 ui/templates/ui/clone.html.py:373
 #: ui/templates/ui/configurations.html:61
-#: ui/templates/ui/configurations.html:165 ui/templates/ui/create.html:181
-#: ui/templates/ui/create.html.py:246 ui/templates/ui/create.html:396
+#: ui/templates/ui/configurations.html:165 ui/templates/ui/create.html:180
+#: ui/templates/ui/create.html.py:245 ui/templates/ui/create.html:395
 #: ui/templates/ui/detail.html:152
 msgid "Type"
 msgstr ""
 
-#: ui/templates/ui/clone.html:246 ui/templates/ui/configurations.html:165
-#: ui/templates/ui/create.html:181 ui/templates/ui/create.html.py:246
+#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
 #: ui/templates/ui/detail.html:152
 msgid "Status"
 msgstr ""
 
-#: ui/templates/ui/clone.html:253 ui/templates/ui/create.html:253
+#: ui/templates/ui/clone.html:252 ui/templates/ui/create.html:252
 msgid "Create Export"
 msgstr ""
 
-#: ui/templates/ui/clone.html:258 ui/templates/ui/create.html:258
+#: ui/templates/ui/clone.html:257 ui/templates/ui/create.html:257
 msgid "Skip"
 msgstr ""
 
-#: ui/templates/ui/clone.html:276 ui/templates/ui/create.html:276
+#: ui/templates/ui/clone.html:275 ui/templates/ui/create.html:275
 msgid "Select Export Area"
 msgstr ""
 
-#: ui/templates/ui/clone.html:277 ui/templates/ui/create.html:277
+#: ui/templates/ui/clone.html:276 ui/templates/ui/create.html:276
 msgid "Zoom To Selection"
 msgstr ""
 
-#: ui/templates/ui/clone.html:278 ui/templates/ui/create.html:278
+#: ui/templates/ui/clone.html:277 ui/templates/ui/create.html:277
 #: ui/templates/ui/list.html:137
 msgid "Reset Map"
 msgstr ""
 
-#: ui/templates/ui/clone.html:287 ui/templates/ui/create.html:287
+#: ui/templates/ui/clone.html:286 ui/templates/ui/create.html:286
 msgid "Search for a place or enter xmin,ymin,xmax,ymax"
 msgstr ""
 
-#: ui/templates/ui/clone.html:301 ui/templates/ui/create.html:301
+#: ui/templates/ui/clone.html:300 ui/templates/ui/create.html:300
 msgid "Error Uploading Configuration File"
 msgstr ""
 
-#: ui/templates/ui/clone.html:307 ui/templates/ui/create.html:307
+#: ui/templates/ui/clone.html:306 ui/templates/ui/create.html:306
 msgid "There was a problem with your configuration upload."
 msgstr ""
 
-#: ui/templates/ui/clone.html:324 ui/templates/ui/create.html:346
+#: ui/templates/ui/clone.html:323 ui/templates/ui/create.html:345
 msgid "Select a preset file to apply to this export"
 msgstr ""
 
-#: ui/templates/ui/clone.html:325 ui/templates/ui/create.html:347
+#: ui/templates/ui/clone.html:324 ui/templates/ui/create.html:346
 msgid "Only one preset file can be selected"
 msgstr ""
 
-#: ui/templates/ui/clone.html:334 ui/templates/ui/create.html:356
+#: ui/templates/ui/clone.html:333 ui/templates/ui/create.html:355
 msgid "Filter Configurations"
 msgstr ""
 
-#: ui/templates/ui/clone.html:340 ui/templates/ui/configurations.html:24
-#: ui/templates/ui/create.html:362 ui/templates/ui/list.html:24
+#: ui/templates/ui/clone.html:339 ui/templates/ui/configurations.html:24
+#: ui/templates/ui/create.html:361 ui/templates/ui/list.html:24
 msgid "Search"
 msgstr ""
 
-#: ui/templates/ui/clone.html:351 ui/templates/ui/configurations.html:35
-#: ui/templates/ui/create.html:373 ui/templates/ui/list.html:35
+#: ui/templates/ui/clone.html:350 ui/templates/ui/configurations.html:35
+#: ui/templates/ui/create.html:372 ui/templates/ui/list.html:35
 msgid "Start Date:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:361 ui/templates/ui/configurations.html:45
-#: ui/templates/ui/create.html:383 ui/templates/ui/list.html:45
+#: ui/templates/ui/clone.html:360 ui/templates/ui/configurations.html:45
+#: ui/templates/ui/create.html:382 ui/templates/ui/list.html:45
 msgid "End Date:"
 msgstr ""
 
-#: ui/templates/ui/clone.html:374 ui/templates/ui/configurations.html:61
-#: ui/templates/ui/create.html:396 ui/templates/ui/detail.html:152
+#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:61
+#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
 #: ui/templates/ui/list.html:68
 msgid "Created"
 msgstr ""
 
-#: ui/templates/ui/clone.html:374 ui/templates/ui/create.html:396
+#: ui/templates/ui/clone.html:373 ui/templates/ui/create.html:395
 #: ui/templates/ui/list.html:68
 msgid "Owner"
 msgstr ""
 
-#: ui/templates/ui/clone.html:374 ui/templates/ui/clone.html.py:429
-#: ui/templates/ui/create.html:396 ui/templates/ui/create.html.py:451
+#: ui/templates/ui/clone.html:373 ui/templates/ui/clone.html.py:428
+#: ui/templates/ui/create.html:395 ui/templates/ui/create.html.py:450
 msgid "Select"
 msgstr ""
 
-#: ui/templates/ui/clone.html:387 ui/templates/ui/configurations.html:81
-#: ui/templates/ui/create.html:409
+#: ui/templates/ui/clone.html:386 ui/templates/ui/configurations.html:81
+#: ui/templates/ui/create.html:408
 msgid "My Presets"
 msgstr ""
 
-#: ui/templates/ui/clone.html:404 ui/templates/ui/configurations.html:98
-#: ui/templates/ui/create.html:426 ui/templates/ui/list.html:107
+#: ui/templates/ui/clone.html:403 ui/templates/ui/configurations.html:98
+#: ui/templates/ui/create.html:425 ui/templates/ui/list.html:107
 msgid "Display"
 msgstr ""
 
-#: ui/templates/ui/clone.html:410 ui/templates/ui/configurations.html:105
-#: ui/templates/ui/create.html:432
+#: ui/templates/ui/clone.html:409 ui/templates/ui/configurations.html:105
+#: ui/templates/ui/create.html:431
 msgid "presets per page"
 msgstr ""
 
@@ -532,7 +531,7 @@ msgid ""
 "presets/\" target=\"_blank\">JOSM Preset</a> configuration file."
 msgstr ""
 
-#: ui/templates/ui/configurations.html:157 ui/templates/ui/create.html:147
+#: ui/templates/ui/configurations.html:157 ui/templates/ui/create.html:146
 msgid "Publish this preset publicly"
 msgstr ""
 
@@ -552,23 +551,23 @@ msgstr ""
 msgid "Select from either the HDM or OSM data models"
 msgstr ""
 
-#: ui/templates/ui/create.html:174
+#: ui/templates/ui/create.html:173
 msgid "Select Stored Preset"
 msgstr ""
 
-#: ui/templates/ui/create.html:214
+#: ui/templates/ui/create.html:213
 msgid "Save feature selection privately"
 msgstr ""
 
-#: ui/templates/ui/create.html:224
+#: ui/templates/ui/create.html:223
 msgid "Publish feature selection publicly"
 msgstr ""
 
-#: ui/templates/ui/create.html:234
+#: ui/templates/ui/create.html:233
 msgid "Publish export publicly"
 msgstr ""
 
-#: ui/templates/ui/create.html:324
+#: ui/templates/ui/create.html:323
 msgid "Invalid Form"
 msgstr ""
 
