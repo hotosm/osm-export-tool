@@ -365,7 +365,7 @@ clone.job = (function(){
            validateBBox(); // trigger validation on extents
            $('#valid-extents').css('visibility','hidden');
            $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>' + gettext('Invalid Exent') + '</strong><br/>Selected area is ' + area_str
+           $('#alert-extents').html('<strong>' + gettext('Invalid Extent') + '</strong><br/>' + gettext('Selected area is ') + area_str
                                  + ' sq km.<br/>' + gettext('Must be less than ') + max_bounds_str + ' sq km.');
            return false;
         } else {
