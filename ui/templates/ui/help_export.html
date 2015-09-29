@@ -23,9 +23,10 @@
 <ol>
     <li><strong>{% trans 'Search Box:' %}</strong> {% trans "Enter Name/Description/Event/Username keywords to filter." %}</li>
     <li><strong>{% trans "Start Date/End Date:" %}</strong> {% trans "Filter based on date of creation." %}</li>
+    <li><strong>{% trans "Reset Form:" %}</strong> {% trans "Reset the filter options." %}</li>
     <li><strong>{% trans 'Interactive Map:' %}</strong> {% trans "Visually displays location of filtered exports and can also be used to filter geographically by selecting on the map." %}</li>
-	<li><strong>{% trans 'Zoom Icon:' %}</strong> {% trans "Zoom to the location of the export on the interactive map"." %}</li>
-	<li><strong>{% trans 'Eye Icon:' %}</strong> {% trans "Toggle the visibility of the export on the interactive map"." %}</li>
+    <li><strong>{% trans 'Zoom Icon:' %}</strong> {% trans "Zoom to the location of the export on the interactive map." %}</li>
+    <li><strong>{% trans 'Eye Icon:' %}</strong> {% trans "Toggle the visibility of the export on the interactive map. This will hide an export that might be overlapping another." %}</li>
     <li><strong>{% trans 'My Exports:' %}</strong> {% trans "Displays private exports if the user is logged in." %}</li>
     <li><strong>{% trans 'Next:' %}</strong> {% trans "Move on to the next page to display more results." %}</li>
 </ol>
@@ -44,9 +45,9 @@
 <p>There are several options available on this page to apply to the Export, which include the ability to 'Rerun Export', 'Clone Export', or 'Delete Export'. The functionality of these options are detailed below:' %}</p>
 
 <ol>
-    <li><strong>{% trans 'Re-run Export:' %}</strong> {% trans "This function will rerun the export with the original area of interest and settings." %}</li>
-    <li><strong>{% trans 'Clone Export:' %}</strong> {% trans "This function will clone the export, maintaining the original area of interest but allows the user to modify the settings." %}</li>
-    <li><strong>{% trans 'Delete Export:' %}</strong> {% trans "Delete the saved export. Please note that this function is only available to the user that originally created the export." %}</li>
+    <li><strong>{% trans 'Re-run Export:' %}</strong> {% trans "This function will rerun the export with the original area of interest and settings for feature tags and file formats." %}</li>
+    <li><strong>{% trans 'Clone Export:' %}</strong> {% trans "This function will clone the export, maintaining the original area of interest but allows the user to modify the settings for feature tags and file formats." %}</li>
+    <li><strong>{% trans 'Delete Export:' %}</strong> {% trans "Delete the saved export. Please note that this function is only available to the user who originally created the export." %}</li>
 </ol>
 
 <b><p><!--ADD SCREENSHOT: Export Details Page--><img style="width:300px;height:200px" src="{% static 'ui/images/help_export/Export_Detail.png' %}"/></p></b>
