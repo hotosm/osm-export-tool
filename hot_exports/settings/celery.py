@@ -23,6 +23,6 @@ CELERY_CHORD_PROPAGATES = False
 CELERYBEAT_SCHEDULE = {
     'purge-unpublished-exports': {
         'task': 'Purge Unpublished Exports',
-        'schedule': crontab(minute='*', hour='*', day_of_week='*')
+        'schedule': crontab(minute='0', hour='*', day_of_week='*')
     },
 }
