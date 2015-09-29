@@ -41,13 +41,13 @@ def email_validation(strategy, backend, code): # pragma: no cover
     verifyURL = strategy.request.build_absolute_uri(verifyURL)   
  
     emailText = ''
-    emailHTML = """Welcome to MyApp!
+    emailHTML = """Welcome to Hot Exports
     In order to login with your new user account, you need to verify your email address with us.
     Please copy and paste the following into your browser's url bar: {verifyURL}
     """.format(verifyURL=verifyURL)
     
     kwargs = {
-        "subject": "Please Verify Your Account",
+        "subject": "Please Verify HOT Exports Account",
         "body": emailText,
         "from_email": "HOT Exports <exports@hotosm.org>",
         "to": [code.email]
@@ -61,13 +61,7 @@ def email_validation(strategy, backend, code): # pragma: no cover
 
 def partial_pipeline_data(backend, user=None, *args, **kwargs): # pragma: no cover
     """
-    Monkey-patch utils.partial_pipeline_data to enable us to retrieve session data by signature key in request.
-    This is necessary to allow users to follow a link in an email to validate their account from a different
-    browser than the one they were using to sign up for the account, or after they've closed/re-opened said
-    browser and potentially flushed their cookies. By adding the session key to a signed base64 encoded signature
-    on the email request, we can retrieve the necessary details from our Django session table.
-    We fetch only the needed details to complete the pipeline authorization process from the session, to prevent
-    nefarious use.
+    Add the session key to a signed base64 encoded signature on the email request.
     """
     data = backend.strategy.request_data()
     if 'signature' in data:
