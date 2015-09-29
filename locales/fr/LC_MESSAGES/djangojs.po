@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 13:37+0000\n"
-"PO-Revision-Date: 2015-09-29 13:30+0000\n"
+"POT-Creation-Date: 2015-09-29 13:59+0000\n"
+"PO-Revision-Date: 2015-09-29 13:43+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/hotosm/osm-export-tool2/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,8 @@ msgstr "(Est, Sud, Ouest, Nord):"
 msgid "Select area to export"
 msgstr "Sélectionner la zone à exporter"
 
-#: ui/static/ui/js/clone.js:361 ui/static/ui/js/create.js:359
+#: ui/static/ui/js/clone.js:361 ui/static/ui/js/clone.js:368
+#: ui/static/ui/js/create.js:359 ui/static/ui/js/create.js:366
 msgid "Invalid Extent"
 msgstr "Dimensions non valide"
 
@@ -40,8 +41,12 @@ msgid "a valid HOT Export Region"
 msgstr "Une région HOT Export valide"
 
 #: ui/static/ui/js/clone.js:368 ui/static/ui/js/create.js:366
-msgid "Invalid Exent"
-msgstr "Dimensions non valide"
+msgid "Selected area is "
+msgstr ""
+
+#: ui/static/ui/js/clone.js:369 ui/static/ui/js/create.js:367
+msgid " sq km."
+msgstr ""
 
 #: ui/static/ui/js/clone.js:369 ui/static/ui/js/create.js:367
 msgid "Must be less than "
