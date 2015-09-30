@@ -42,14 +42,14 @@
     $(document).ready(function() {
         $('#registerEmail').formValidation({
                 framework: 'bootstrap',
-        
+
                 // Feedback icons
                 icon: {
                     valid: 'glyphicon glyphicon-ok',
                     invalid: 'glyphicon glyphicon-remove',
                     validating: 'glyphicon glyphicon-refresh'
                 },
-        
+
                 // List of fields and their validation rules
                 fields: {
                     email: {
@@ -64,7 +64,7 @@
                         }
                     },
                 }
-        }); 
+        });
     })
     .on('err.validator.fv', function(e, data) {
             if (data.field === 'email') {

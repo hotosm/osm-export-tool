@@ -1,14 +1,14 @@
 notifications:
   email: false
-  
+
 language: python
 
 python:
   - "2.7"
-  
+
 addons:
   postgresql: "9.4"
-  
+
 before_install:
     - sudo apt-get install -y libspatialite5 libspatialite-dev
     - sudo apt-get install -y python-software-properties
@@ -19,7 +19,7 @@ before_install:
     - sudo apt-get install -y gdal-bin libgdal-dev
     - export CPLUS_INCLUDE_PATH=/usr/include/gdal
     - export C_INCLUDE_PATH=/usr/include/gdal
-  
+
 before_script:
     - psql -U postgres -c "create extension postgis"
     - createuser hot --superuser --createdb -U postgres
@@ -32,4 +32,3 @@ script:
     ./manage.py test
 
 
-  

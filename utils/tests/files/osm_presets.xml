@@ -4812,7 +4812,7 @@
             <optional>
                 <check key="lit" text="Lit" />
             </optional>
-        </item> <!-- Billboard -->   
+        </item> <!-- Billboard -->
     </group> <!-- Facilities -->
   </group>  <!-- Facilities -->
   <group name="Sports" icon="styles/standard/sport/soccer.png">
@@ -8436,7 +8436,7 @@
             <preset_link preset_name="Description" />
         </item> <!-- Fixme -->
     </group> <!-- Annotation -->
-    
+
     <group name="Relations" icon="presets/relations.png">
         <item name="Multipolygon" icon="presets/multipolygon.png" type="relation" preset_name_label="true">
             <link href="http://wiki.openstreetmap.org/wiki/Relation:multipolygon"
