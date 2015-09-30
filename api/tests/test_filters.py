@@ -1,15 +1,20 @@
-import logging
 import json
-import uuid
+import logging
 import os
-from django.test import TestCase
-from django.contrib.auth.models import User, Group
+import uuid
+
+from mock import Mock, PropertyMock, patch
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import Job, ExportFormat
-from rest_framework.test import APITestCase
+from django.test import TestCase
+
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
-from mock import Mock, PropertyMock, patch
+from rest_framework.test import APITestCase
+
+from jobs.models import ExportFormat, Job
+
 from ..filters import JobFilter
 
 logger = logging.getLogger(__name__)
@@ -60,6 +65,3 @@ class TestJobFilter(APITestCase):
         url += '?start=2015-01-01&end=2030-08-01&user=demo1';
         response = self.client.get(url)
         self.assertEquals(1, len(response.data))
-        
-    
-    

@@ -1,8 +1,10 @@
-import logging
 import datetime
+import logging
+
 from django.utils import timezone
-from celery.utils.log import get_task_logger
+
 from celery import Task
+from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 

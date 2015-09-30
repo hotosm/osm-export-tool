@@ -1,29 +1,33 @@
 # test cases for HOT Export Tasks
-import logging
-import json
-import uuid
-import sys
 import cPickle
-import traceback
+import json
+import logging
 import os
-from django.conf import settings
-from django.test import TestCase
-from django.contrib.auth.models import User, Group
-from mock import Mock, patch, PropertyMock, MagicMock
+import sys
+import traceback
+import uuid
 from unittest import skip
-from ..task_runners import ExportTaskRunner
-from jobs.models import ExportFormat, Job, Tag
-from jobs import presets
+
+from mock import MagicMock, Mock, PropertyMock, patch
+
+from django.conf import settings
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from tasks.export_tasks import (ExportTask, ShpExportTask,
-                                ObfExportTask, GarminExportTask,
-                                KmlExportTask, OSMConfTask,
-                                OverpassQueryTask, OSMToPBFConvertTask,
-                                OSMPrepSchemaTask, GeneratePresetTask,
-                                FinalizeRunTask, ExportTaskErrorHandler)
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
-from celery.datastructures import ExceptionInfo
 from django.core.mail import EmailMessage
+from django.test import TestCase
+
+from celery.datastructures import ExceptionInfo
+
+from jobs import presets
+from jobs.models import ExportFormat, Job, Tag
+from tasks.export_tasks import (
+    ExportTask, ExportTaskErrorHandler, FinalizeRunTask, GarminExportTask,
+    GeneratePresetTask, KmlExportTask, ObfExportTask, OSMConfTask,
+    OSMPrepSchemaTask, OSMToPBFConvertTask, OverpassQueryTask, ShpExportTask
+)
+from tasks.models import ExportRun, ExportTask, ExportTaskResult
+
+from ..task_runners import ExportTaskRunner
 
 logger = logging.getLogger(__name__)
 
@@ -369,5 +373,3 @@ class TestExportTasks(TestCase):
         email.return_value = msg
         msg.send.assert_called_once()
         #self.assertEquals('FAILED', self.run.status)
-
-

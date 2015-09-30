@@ -1,13 +1,15 @@
 import logging
+import os
 import sys
 import uuid
-import os
+from unittest import skip
+
+import mock
+from mock import Mock, patch
+
+from django.core.files import File
 from django.test import SimpleTestCase
 from django.utils import timezone
-from django.core.files import File
-from unittest import skip
-import mock
-from mock import patch, Mock
 
 from ..kml import SQliteToKml
 

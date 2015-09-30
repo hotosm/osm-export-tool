@@ -1,17 +1,16 @@
 import logging
+
 from social import utils
 from social.exceptions import InvalidEmail
+from social.pipeline.partial import partial
 
-from django.core import signing
-from django.core.signing import BadSignature
-from django.contrib.sessions.models import Session
 from django.conf import settings
-from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
+from django.contrib.sessions.models import Session
 from django.core import signing
 from django.core.mail import EmailMultiAlternatives
-
-from social.pipeline.partial import partial
+from django.core.signing import BadSignature
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
 logger = logging.getLogger(__name__)
 

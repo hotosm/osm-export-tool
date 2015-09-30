@@ -1,11 +1,12 @@
 from __future__ import with_statement
-import os
+
+import argparse
 import json
 import logging
+import os
 import shutil
-import argparse
-import subprocess
 import string
+import subprocess
 from string import Template
 
 logger = logging.getLogger(__name__)
@@ -88,4 +89,3 @@ if __name__ == '__main__':
         zipped = True
     s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile, debug=debug)
     s2s.convert()
-

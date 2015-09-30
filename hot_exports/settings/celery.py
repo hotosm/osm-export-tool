@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from .contrib import *  # NOQA
 
 from celery.schedules import crontab
+
+from .contrib import *  # NOQA
 
 # Celery config
 CELERY_TRACK_STARTED = True

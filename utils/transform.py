@@ -1,11 +1,12 @@
+import argparse
 import logging
 import os
 import string
-import argparse
 import subprocess
-from osgeo import ogr, osr, gdal
 from datetime import datetime
 from string import Template
+
+from osgeo import gdal, ogr, osr
 
 logger = logging.getLogger(__name__)
 

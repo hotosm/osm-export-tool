@@ -1,16 +1,18 @@
-import os
 import logging
+import os
 import shutil
 import subprocess
+from StringIO import StringIO
+from unittest import skip
+
+import mock
+from mock import MagicMock, Mock, patch
+
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
-from StringIO import StringIO
-from unittest import skip
-import mock
-from mock import patch, Mock, MagicMock
 
-from ..garmin import OSMToIMG, GarminConfigParser
+from ..garmin import GarminConfigParser, OSMToIMG
 
 logger = logging.getLogger(__name__)
 
@@ -129,5 +131,3 @@ class TestOSMToIMG(TestCase):
         proc.wait.assert_called_once()
         remove.assert_called_once_with(imgfile)
         self.assertEquals(result, zipfile)
-
-

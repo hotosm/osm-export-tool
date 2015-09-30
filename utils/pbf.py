@@ -1,10 +1,11 @@
 from __future__ import with_statement
-import json
-import os
-import logging
+
 import argparse
-import subprocess
+import json
+import logging
+import os
 import string
+import subprocess
 from string import Template
 
 logger = logging.getLogger(__name__)
@@ -58,5 +59,3 @@ if __name__ == '__main__':
         debug = True
     o2p = OSMToPBF(osm=osm, pbf=pbf, debug=debug)
     o2p.convert()
-
-

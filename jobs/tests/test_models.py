@@ -1,17 +1,20 @@
 import logging
+import os
 import sys
 import uuid
-import os
-from django.test import TestCase, TransactionTestCase
-from django.contrib.auth.models import User, Group
-from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import Job, ExportFormat, Region, ExportConfig, Tag, ExportProfile
-from tasks.models import ExportTask, ExportRun
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.gdal import DataSource
-from django.utils import timezone
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.core.files import File
+from django.test import TestCase, TransactionTestCase
+from django.utils import timezone
 
 import jobs.presets as presets
+from jobs.models import (
+    ExportConfig, ExportFormat, ExportProfile, Job, Region, Tag
+)
+from tasks.models import ExportRun, ExportTask
 
 logger = logging.getLogger(__name__)   
 

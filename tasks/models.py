@@ -1,15 +1,17 @@
 from __future__ import unicode_literals
-import uuid
+
 import logging
 import shutil
+import uuid
 
 from django.conf import settings
+from django.contrib.auth.models import Group, User
 from django.db import models
-from django.utils import timezone
-from django.contrib.auth.models import User, Group
-from jobs.models import Job
 from django.db.models.signals import post_delete
 from django.dispatch.dispatcher import receiver
+from django.utils import timezone
+
+from jobs.models import Job
 
 logger = logging.getLogger(__name__)
 
@@ -118,4 +120,3 @@ def exportrun_delete_exports(sender, instance, **kwargs):
     run_uid = instance.uid
     run_dir = '{0}{1}'.format(download_root, run_uid)
     shutil.rmtree(run_dir, ignore_errors=True)
-

@@ -1,22 +1,26 @@
-import logging
 import json
-import uuid
+import logging
 import os
-from django.test import TestCase
-from django.core.files import File
+import uuid
 from unittest import skip
-from rest_framework.reverse import reverse
-from rest_framework import status
-from django.contrib.auth.models import User, Group
-from django.contrib.gis.geos import GEOSGeometry, Polygon
-from rest_framework.test import APITestCase, APITransactionTestCase
-from rest_framework.authtoken.models import Token
+
 from mock import Mock, PropertyMock, patch
-from tasks.task_runners import ExportTaskRunner
-from jobs.models import Job, ExportFormat, ExportConfig, ExportProfile
-from tasks.models import ExportTask, ExportRun
+
+from django.contrib.auth.models import Group, User
+from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.core.files import File
+from django.test import TestCase
+
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase, APITransactionTestCase
+
 from api.pagination import LinkHeaderPagination
 from api.views import ExportConfigViewSet
+from jobs.models import ExportConfig, ExportFormat, ExportProfile, Job
+from tasks.models import ExportRun, ExportTask
+from tasks.task_runners import ExportTaskRunner
 
 logger = logging.getLogger(__name__)
 
@@ -786,5 +790,3 @@ class TestExportTaskViewSet(APITestCase):
         self.assertEquals(1, len(data))
         # make sure we get the correct uid back out
         self.assertEquals(self.task_uid, data[0].get('uid'))
-        
-        

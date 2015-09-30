@@ -1,21 +1,24 @@
 from __future__ import unicode_literals
-import logging
+
 import json
-import sys
+import logging
 import os
-from lxml import etree
+import sys
 from StringIO import StringIO
-from django.test import TestCase
-from django.utils import timezone
-from django.core.files import File
 from unittest import skip
-from ..presets import PresetParser, TagParser
-from ..hdm_tags import HOT_HDM
-from ..models import Job, ExportFormat, ExportConfig, Tag
-from django.contrib.auth.models import User, Group
+
+from lxml import etree
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.core.files import File
 from django.core.files.base import ContentFile
+from django.test import TestCase
+from django.utils import timezone
+
+from ..hdm_tags import HOT_HDM
+from ..models import ExportConfig, ExportFormat, Job, Tag
+from ..presets import PresetParser, TagParser
 
 logger = logging.getLogger(__name__)
 
@@ -149,4 +152,3 @@ class TestTagParser(TestCase):
         valid = xmlschema.validate(tree)
         self.assertTrue(valid)
         saved_config.delete() # clean up
-    

@@ -7,9 +7,10 @@
     Depends on django-extensions.
 """
 
-import sqlite3
 import os
+import sqlite3
 from string import Template
+
 
 def run(*script_args):
     path = os.path.dirname(os.path.realpath(__file__))
@@ -67,4 +68,3 @@ def run(*script_args):
     cur.execute('INSERT INTO planet_osm_point SELECT * FROM planet_osm_point_temp;')
     conn.commit()
     cur.close()
-    

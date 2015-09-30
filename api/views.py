@@ -1,56 +1,53 @@
-import logging
 import json
+import logging
 import os
-import shutil
 import pdb
-import django_filters
-from datetime import datetime
+import shutil
 from collections import OrderedDict
-from django.http import HttpResponse
-from django.http import JsonResponse
-from django.contrib.auth.models import User, Group
-from django.shortcuts import get_object_or_404
-from django.db.models import FileField
-from django.db import Error, transaction
-from django.core.files.base import ContentFile
-from django.utils.translation import ugettext as _
+from datetime import datetime
 
-from rest_framework import views
-from rest_framework import viewsets
-from rest_framework import authentication
-from rest_framework import permissions
-from rest_framework import mixins
-from rest_framework import status
-from rest_framework import renderers
-from rest_framework import generics
-from rest_framework import filters
-from rest_framework.reverse import reverse
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.serializers import ValidationError
-from rest_framework.pagination import PageNumberPagination
-
-from .renderers import HOTExportApiRenderer
-from .validators import validate_bbox_params, validate_search_bbox
-from .pagination import LinkHeaderPagination
-from .filters import JobFilter, ExportRunFilter, ExportConfigFilter
-
-from jobs import presets
-from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
-from jobs.hdm_tags import HOT_HDM
-from jobs.osm_tags import OSM_DM
-from jobs.presets import PresetParser, TagParser
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
-from serializers import (JobSerializer, ExportFormatSerializer,
-                         RegionSerializer, RegionMaskSerializer,
-                         ExportRunSerializer, ExportConfigSerializer,
-                         TagSerializer, ExportTaskSerializer)
-
-from tasks.task_runners import ExportTaskRunner
+import django_filters
 
 from django.conf import settings
+from django.contrib.auth.models import Group, User
+from django.core.files.base import ContentFile
+from django.db import Error, transaction
+from django.db.models import FileField
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
+
+from rest_framework import (
+    authentication, filters, generics, mixins, permissions, renderers, status,
+    views, viewsets
+)
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.serializers import ValidationError
+
+from jobs import presets
+from jobs.hdm_tags import HOT_HDM
+from jobs.models import (
+    ExportConfig, ExportFormat, Job, Region, RegionMask, Tag
+)
+from jobs.osm_tags import OSM_DM
+from jobs.presets import PresetParser, TagParser
+from serializers import (
+    ExportConfigSerializer, ExportFormatSerializer, ExportRunSerializer,
+    ExportTaskSerializer, JobSerializer, RegionMaskSerializer,
+    RegionSerializer, TagSerializer
+)
+from tasks.models import ExportRun, ExportTask, ExportTaskResult
+from tasks.task_runners import ExportTaskRunner
+
+from .filters import ExportConfigFilter, ExportRunFilter, JobFilter
+from .pagination import LinkHeaderPagination
+from .renderers import HOTExportApiRenderer
+from .validators import validate_bbox_params, validate_search_bbox
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -379,4 +376,3 @@ class OSMDataModelView(views.APIView):
         parser = PresetParser(path + '/osm_presets.xml')
         data = parser.build_hdm_preset_dict()
         return JsonResponse(data, status=status.HTTP_200_OK)
-

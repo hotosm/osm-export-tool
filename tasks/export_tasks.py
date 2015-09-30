@@ -1,28 +1,30 @@
 #from __future__ import absolute_import
-import logging
-import time
-import sys
 import cPickle
-import shutil
+import logging
 import os
 import pdb
+import shutil
+import sys
+import time
 
 from django.conf import settings
-
-from celery import app, shared_task, Task
-from celery.result import AsyncResult
-from celery.registry import tasks
-from celery.contrib.methods import task
-from celery.utils.log import get_task_logger
-from django.utils import timezone
-from django.db import transaction, DatabaseError
+from django.core.files.base import ContentFile
+from django.core.mail import EmailMessage
+from django.db import DatabaseError, transaction
 from django.template import Context
 from django.template.loader import get_template
-from django.core.mail import EmailMessage
-from django.core.files.base import ContentFile
+from django.utils import timezone
+
+from celery import Task, app, shared_task
+from celery.contrib.methods import task
+from celery.registry import tasks
+from celery.result import AsyncResult
+from celery.utils.log import get_task_logger
+
 from jobs.presets import TagParser
-from utils import (overpass, osmconf, osmparse,
-                   pbf, shp, kml, osmand, garmin, thematic_shp)
+from utils import (
+    garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp
+)
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)

@@ -1,8 +1,10 @@
 import logging
 import pdb
 from collections import OrderedDict
-from lxml import etree
 from StringIO import StringIO
+
+from lxml import etree
+
 from jobs.models import Job, Tag
 
 logger = logging.getLogger(__name__)
@@ -162,4 +164,3 @@ class TagParser():
             if gtype is not None:
                 types.append(self.types[geom_type])
         return ','.join(types)
-        

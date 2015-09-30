@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-from .utils import ABS_PATH
 from django.utils.translation import ugettext_lazy as _
+
+# import SECRET_KEY into current namespace
+from .secret import SECRET_KEY  # NOQA
+from .utils import ABS_PATH
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -66,8 +69,6 @@ STATICFILES_DIRS = (
     # ABS_PATH('core', 'base_static'),
 )
 
-# import SECRET_KEY into current namespace
-from .secret import SECRET_KEY  # NOQA
 
 # default middleware classes
 MIDDLEWARE_CLASSES = [

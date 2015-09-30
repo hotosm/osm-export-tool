@@ -1,17 +1,18 @@
 from __future__ import unicode_literals
-import uuid
+
 import logging
 import pdb
+import uuid
+
+from django.contrib.auth.models import Group, User
 #from django.db import models
 from django.contrib.gis.db import models
-from django.contrib.postgres.fields import HStoreField
-from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import GEOSGeometry
-from django.utils import timezone
-from django.contrib.auth.models import User, Group
+from django.contrib.postgres.fields import ArrayField, HStoreField
 from django.db.models.fields import CharField
 from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
+from django.utils import timezone
 
 logger = logging.getLogger(__name__) 
 
@@ -266,8 +267,3 @@ def user_post_save(sender, instance, created, **kwargs):
     """
     if created:
         instance.groups.add(Group.objects.get(name='DefaultExportExtentGroup'))
-
-
-
-
-

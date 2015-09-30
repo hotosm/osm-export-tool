@@ -1,14 +1,15 @@
-import oauth2 as oauth
 import urlparse
 
-from django.shortcuts import render_to_response, RequestContext, redirect
-from django.views.decorators.http import require_http_methods
-from django.template.context_processors import csrf
-from django.contrib.auth.models import Group
-from django.contrib.auth import logout as auth_logout
-from social.backends.utils import load_backends
+import oauth2 as oauth
 from social.apps.django_app.utils import psa
+from social.backends.utils import load_backends
+
 from django.conf import settings
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.models import Group
+from django.shortcuts import RequestContext, redirect, render_to_response
+from django.template.context_processors import csrf
+from django.views.decorators.http import require_http_methods
 
 
 @require_http_methods(['GET'])

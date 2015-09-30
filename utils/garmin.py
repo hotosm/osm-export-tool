@@ -1,11 +1,13 @@
-import os
 import argparse
 import logging
+import os
 import string
 import subprocess
-from StringIO import StringIO
-from lxml import etree
 from string import Template
+from StringIO import StringIO
+
+from lxml import etree
+
 from django.conf import settings
 
 logger = logging.getLogger(__name__)

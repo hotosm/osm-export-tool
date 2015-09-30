@@ -1,12 +1,14 @@
 import logging
+import os
 import sys
 import uuid
-import os
+
+import mock
+from mock import Mock, patch
+
+from django.core.files import File
 from django.test import SimpleTestCase
 from django.utils import timezone
-from django.core.files import File
-import mock
-from mock import patch, Mock
 
 from ..pbf import OSMToPBF
 
@@ -33,4 +35,3 @@ class TestOSMToPBF(SimpleTestCase):
         popen.assert_called_once_with(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         self.assertEquals(out, pbffile)
-        
