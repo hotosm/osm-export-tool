@@ -151,27 +151,11 @@ or
 <code>$ pip install -r requirements.txt</code>
 
 
-### Project Configuration
+### Project Settings
 
-Create a <code>settings_private.py</code> file in the hot_exports directory and add the following:
+Create a copy of <code>hot_exports/settings/dev_dodobas.py</code> and update to reflect your development environment.
 
-<pre>
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'hot_exports_dev',
-        'OPTIONS': {
-            'options': '-c search_path=exports,public'
-        },
-        'CONN_MAX_AGE': None,
-        'HOST': 'localhost',
-        'USER': 'hot',
-        'PASSWORD': 'your password',
-    }
-}
-</pre>
-
-Update the <code>settings.py</code> file. Set the following config variables:
+Make sure the following configuration variables are set:
 
 Set <code>OSMAND_MAP_CREATOR_DIR</code> to the directory where you installed the OSMAnd MapCreator.
 
@@ -184,6 +168,21 @@ Once you've got all the dependencies installed, run <code>./manage.py migrate</c
 Then run <code>./manage.py runserver</code> to run the server.
 You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
 
+## Overpass API
+
+The HOT Exports service uses a local instance of [Overpass v07.52](http://overpass-api.de/) for data extraction.
+Detailed instructions for installing Overpass are available [here](http://wiki.openstreetmap.org/w/index.php?title=Overpass_API/Installation&redirect=no).
+
+Download a (latest) planet pbf file from (for example) [http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/](http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/).
+
+To prime the database we've used `osmconvert` as follows:
+
+<code>osmconvert --out-osm planet-latest.osm.pbf | ./update_database --meta --db-dir=$DBDIR --flush-size=1</code>
+
+If the dispatcher fails to start, check for, and remove <code>osm3s_v0.7.52_osm_base</code> from <code>/dev/shm</code>.
+
+We apply minutely updates as per Overpass installation instructions.
+
 ## Celery Workers
 
 HOT Exports depends on the [Celery](http://celery.readthedocs.org/en/latest/index.html) distributed task queue. As export jobs are created
@@ -191,16 +190,22 @@ they are pushed to a Celery Worker for processing. At least two celery workers n
 
 From a 'hotosm' virtualenv directory (use screen), run:
 
+<code>export DJANGO_SETTINGS_MODULE=hot_exports.settings.your_settings_module</code>
+
 <code>$ celery -A hot_exports worker --loglevel debug --logfile=celery.log</code>.
 
 This will start a celery worker which will process export tasks. An additional celery worker needs to be started to handle purging of expired unpublished
 export jobs. From another hotosm virtualenv terminal session, run:
+
+<code>export DJANGO_SETTINGS_MODULE=hot_exports.settings.your_settings_module</code>
 
 <code>$ celery -A hot_exports beat --loglevel debug --logfile=celery-beat.log</code>
 
 See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>settings.py</code>.
 
 For more detailed information on Celery Workers see [here](http://celery.readthedocs.org/en/latest/userguide/workers.html)
+
+For help with daemonizing Celery workers see [here](http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html)
 
 
 ## Front end tools
@@ -216,7 +221,9 @@ sudo npm -g install yuglify
 
 ## Using Transifex service
 
-To work with Transifex you need to create `~/.transifexrc`, and modify it's access privileges `chmod 600 ~/.transifexrc`
+To work with Transifex you need to create `~/.transifexrc`, and modify it's access privileges
+
+`chmod 600 ~/.transifexrc`
 
 Example `.transifexrc` file:
 
@@ -226,22 +233,43 @@ Example `.transifexrc` file:
     token =
     username = my_transifex_username
 
-### Manage source files
+### Managing source files
 
-* update source language (English) file
-  * `python manage.py makemessages -l en`
+To update source language (English) for Django templates run:
 
-* push the new source file to Transifex service, it will overwrite current source file
-  * `tx push -s`
+`python manage.py makemessages -l en`
+
+To update source language for javascript files run:
+
+`python manage.py makemessages -d djangojs -l en`
+  
+
+then, push the new source files to the Transifex service, it will overwrite the current source files
+
+`tx push -s`
 
 ### Pulling latest changes from the Transfex
 
-* when adding a new language, it's resource file does not exists in the project, but it's ok as it will be automatically created when pulling new translations from the service
-  * add a local mapping: `tx set -r osm-export-tool2.master -l hr osmtm/locale/hr/LC_MESSAGES/osmtm.po`
-* after there are some translation updates, pull latest changes for mapped resources
-  * for a specific language(s):
-    * `tx pull -l fr,hr`
-  * for all languages:
-    * `tx pull`
-* finally, compile language files
-  * `python manage.py compilemessages`
+When adding a new language, it's resource file does not exist in the project,
+but it's ok as it will be automatically created when pulling new translations from the service. To add a local mapping:
+
+`tx set -r osm-export-tool2.master -l hr locales/hr/LC_MESSAGES/django.po`
+
+or for javascript files:
+
+`tx set -r osm-export-tool2.djangojs -l hr locales/hr/LC_MESSAGES/djangojs.po`
+
+
+Once there are some translation updates, pull the latest changes for mapped resources
+  
+For a specific language(s):
+
+`tx pull -l fr,hr`
+    
+For all languages:
+
+`tx pull`
+
+Finally, compile language files
+
+`python manage.py compilemessages`
