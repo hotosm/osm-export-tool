@@ -1,17 +1,14 @@
-import os
-from unittest import skip
+# -*- coding: utf-8 -*-
 
-import mock
 from mock import MagicMock, Mock, patch
 
 from django.test import TestCase
-from django.utils import timezone
 
 from ..osmparse import OSMParser
 
 
 class TestOSMParser(TestCase):
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -34,7 +31,7 @@ class TestOSMParser(TestCase):
                                 stdout=pipe, stderr=pipe)
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -52,7 +49,7 @@ class TestOSMParser(TestCase):
                                 stdout=pipe, stderr=pipe)
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
-    
+
     @patch('utils.osmparse.ogr.Open')
     @patch('os.path.exists')
     def test_update_zindexes(self, exists, ogr_open):

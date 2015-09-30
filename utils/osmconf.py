@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import ConfigParser
 import logging
 import os
@@ -29,7 +30,7 @@ class OSMConfig(object):
         self.categories = categories
         self.config = ConfigParser.SafeConfigParser()
         self.job_name = job_name
-    
+
     def create_osm_conf(self, stage_dir=None):
         self.config.read(self.tmpl) # read in the template
         self.config.set('points', 'attributes', ','.join(self.categories['points']))

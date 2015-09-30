@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 
 from rest_framework import status
@@ -7,10 +8,10 @@ from rest_framework.response import Response
 logger = logging.getLogger(__name__)
 
 class LinkHeaderPagination(PageNumberPagination):
-    
+
     page_size = 10
     page_size_query_param = 'page_size'
-    
+
     def get_paginated_response(self, data):
         next_url = self.get_next_link()
         previous_url = self.get_previous_link()
@@ -25,7 +26,7 @@ class LinkHeaderPagination(PageNumberPagination):
             link = ''
             status_code = status.HTTP_200_OK
         link = link.format(next_url=next_url, previous_url=previous_url)
-        
+
         logger.debug('Total results: %s' % self.page.paginator.count)
         logger.debug('Num pages: %s' % self.page.paginator.num_pages)
         logger.debug('Page range: %s' % self.page.paginator.page_range)

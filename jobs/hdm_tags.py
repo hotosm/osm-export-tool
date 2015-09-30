@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from collections import OrderedDict
 
 t = {
@@ -23,7 +24,7 @@ t = {
     },
     'Transportation':{
         'Roads':[
-            'Roads and streets','Roads under construction','Paths'  
+            'Roads and streets','Roads under construction','Paths'
         ],
         'Other road objects':[
             'Parking', 'Car Park', 'Parking entrance', 'Motorcycle Parking', 'Bicycle Parking', 'Roundabout'
@@ -141,7 +142,7 @@ t = {
             'Park','Garden','Playground'
         ],
     },
-        
+
     'Physical environment':{
         'Nature':[
             'Peak','Tree','Wood','Forest','Nature Reserve','Scree','Fell','Scrub','Heath'
@@ -168,7 +169,7 @@ tags =  {
     },
     'Transportation':{
         'Roads':[
-            'Roads and streets','Roads under construction','Paths'  
+            'Roads and streets','Roads under construction','Paths'
         ],
         'Other road objects':[
             'Parking', 'Car Park', 'Parking entrance', 'Motorcycle Parking', 'Bicycle Parking', 'Roundabout'
@@ -286,7 +287,7 @@ tags =  {
             'Park','Garden','Playground'
         ],
     },
-        
+
     'Physical environment':{
         'Nature':[
             'Peak','Tree','Wood','Forest','Nature Reserve','Scree','Fell','Scrub','Heath'

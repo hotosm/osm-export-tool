@@ -1,12 +1,9 @@
+# -*- coding: utf-8 -*-
 import os
-import sys
-import uuid
-from unittest import skip
 
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
-from django.utils import timezone
 
 from jobs import presets
 from jobs.models import ExportFormat, Job, Tag
@@ -15,7 +12,7 @@ from ..osmconf import OSMConfig
 
 
 class TestOSMConf(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -43,7 +40,7 @@ class TestOSMConf(TestCase):
                 geom_types = tag['geom_types']
             )
         self.categories = self.job.categorised_tags
-    
+
     def test_create_osm_conf(self,):
         conf = OSMConfig(self.categories, job_name=self.job.name)
         path = conf.create_osm_conf(stage_dir=self.path + '/files/')

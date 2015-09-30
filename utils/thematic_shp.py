@@ -1,16 +1,12 @@
+# -*- coding: utf-8 -*-
 from __future__ import with_statement
 
-import argparse
-import json
 import logging
 import os
 import shutil
 import sqlite3
-import string
 import subprocess
 from string import Template
-
-from jobs.models import Job
 
 logger = logging.getLogger(__name__)
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     API url configuration
 """
@@ -6,8 +7,8 @@ from rest_framework.routers import DefaultRouter
 
 from api.views import (
     ExportConfigViewSet, ExportFormatViewSet, ExportRunViewSet,
-    ExportTaskViewSet, HDMDataModelView, JobViewSet, PresetViewSet,
-    RegionMaskViewSet, RegionViewSet, TransformViewSet, TranslationViewSet
+    ExportTaskViewSet, JobViewSet, PresetViewSet, RegionMaskViewSet,
+    RegionViewSet, TransformViewSet, TranslationViewSet
 )
 
 router = DefaultRouter(trailing_slash=False)

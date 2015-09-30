@@ -1,14 +1,9 @@
+# -*- coding: utf-8 -*-
 import logging
-import os
-import sys
-import uuid
 
-import mock
 from mock import Mock, patch
 
-from django.core.files import File
 from django.test import SimpleTestCase
-from django.utils import timezone
 
 from ..pbf import OSMToPBF
 
@@ -16,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class TestOSMToPBF(SimpleTestCase):
-    
+
     @patch('os.path.exists')
     @patch('utils.garmin.subprocess.PIPE')
     @patch('utils.garmin.subprocess.Popen')

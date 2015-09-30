@@ -1,24 +1,19 @@
-#from __future__ import absolute_import
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import cPickle
-import logging
 import os
-import pdb
 import shutil
-import sys
-import time
 
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage
-from django.db import DatabaseError, transaction
+from django.db import DatabaseError
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import timezone
 
-from celery import Task, app, shared_task
-from celery.contrib.methods import task
-from celery.registry import tasks
-from celery.result import AsyncResult
+from celery import Task
 from celery.utils.log import get_task_logger
 
 from jobs.presets import TagParser
@@ -111,7 +106,7 @@ class ExportTask(Task):
         Can use the celery uid for diagnostics.
         """
         started = timezone.now()
-        from tasks.models import ExportRun, ExportTask
+        from tasks.models import ExportTask
         celery_uid = self.request.id
         try:
             task = ExportTask.objects.get(run__uid=run_uid, name=name)
@@ -203,7 +198,6 @@ class ThematicLayersExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
-        from jobs.models import Job
         self.update_task_state(run_uid=run_uid, name=self.name)
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
@@ -341,7 +335,7 @@ class GeneratePresetTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
-        from jobs.models import Job, ExportConfig
+        from jobs.models import ExportConfig
         self.update_task_state(run_uid=run_uid, name=self.name)
         run = ExportRun.objects.get(uid=run_uid)
         job = run.job

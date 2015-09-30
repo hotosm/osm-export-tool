@@ -1,16 +1,14 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
-import sys
-import uuid
 from unittest import skip
 
 import mock
-from mock import MagicMock, Mock, patch
+from mock import patch
 
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
-from django.utils import timezone
 
 from jobs import presets
 from jobs.models import ExportFormat, Job, Tag
@@ -20,7 +18,7 @@ from ..overpass import Overpass
 logger = logging.getLogger(__name__)
 
 class TestOverpass(TestCase):
-    
+
     def setUp(self,):
         self.url = 'http://localhost/interpreter'
         self.bbox = '6.25,-10.85,6.40,-10.62' # monrovia
@@ -54,7 +52,7 @@ class TestOverpass(TestCase):
                 geom_types = tag_dict['geom_types']
             )
         self.assertEquals(256, self.job.tags.all().count())
-        
+
     def test_get_query(self,):
         overpass = Overpass(
             stage_dir=self.path + '/files/',
@@ -63,18 +61,18 @@ class TestOverpass(TestCase):
         )
         q = overpass.get_query()
         self.assertEquals(q, self.query)
-    
-    @skip  
+
+    @skip
     def test_op_query_no_tags(self, ):
         op = Overpass(osm=self.osm, bbox=self.bbox)
         op.run_query()
-    
+
     @skip
     def test_op_query_with_tags(self, ):
         op = Overpass(osm=self.osm, bbox=self.bbox, tags=self.job.filters)
         logger.debug(op.get_query())
         op.run_query()
-    
+
     @skip
     def test_with_hdm_tags(self, ):
         parser = presets.PresetParser(preset=self.path + '/files/hdm_presets.xml')
@@ -86,7 +84,7 @@ class TestOverpass(TestCase):
             filters.append(filter_tag)
         op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
         op.run_query()
-        
+
     @skip
     def test_with_osm_tags(self, ):
         parser = presets.PresetParser(preset=self.path + '/files/osm_presets.xml')
@@ -98,7 +96,7 @@ class TestOverpass(TestCase):
             filters.append(filter_tag)
         op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
         op.run_query()
-    
+
     @patch('utils.overpass.requests.post')
     def test_run_query(self, mock_post):
         op = Overpass(

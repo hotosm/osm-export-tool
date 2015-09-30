@@ -1,12 +1,7 @@
-import urlparse
-
-import oauth2 as oauth
-from social.apps.django_app.utils import psa
-from social.backends.utils import load_backends
+# -*- coding: utf-8 -*-
 
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth.models import Group
 from django.shortcuts import RequestContext, redirect, render_to_response
 from django.template.context_processors import csrf
 from django.views.decorators.http import require_http_methods

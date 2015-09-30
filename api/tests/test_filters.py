@@ -1,13 +1,10 @@
-import json
+# -*- coding: utf-8 -*-
 import logging
-import os
-import uuid
 
-from mock import Mock, PropertyMock, patch
+from mock import patch
 
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from django.test import TestCase
 
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
@@ -15,12 +12,10 @@ from rest_framework.test import APITestCase
 
 from jobs.models import ExportFormat, Job
 
-from ..filters import JobFilter
-
 logger = logging.getLogger(__name__)
 
 class TestJobFilter(APITestCase):
-    
+
     def setUp(self,):
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user1 = User.objects.create_user(
@@ -46,7 +41,7 @@ class TestJobFilter(APITestCase):
                                 HTTP_ACCEPT='application/json; version=1.0',
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
-    
+
 
     @patch('api.views.ExportTaskRunner')
     def test_filterset_no_user(self, mock):
@@ -56,7 +51,7 @@ class TestJobFilter(APITestCase):
         url += '?start=2015-01-01&end=2030-08-01';
         response = self.client.get(url)
         self.assertEquals(2, len(response.data))
-    
+
     @patch('api.views.ExportTaskRunner')
     def test_filterset_with_user(self, mock):
         task_runner = mock.return_value

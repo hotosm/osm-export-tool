@@ -1,22 +1,20 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
-import sys
-import uuid
 
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.core.files import File
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.utils import timezone
 
 import jobs.presets as presets
 from jobs.models import (
     ExportConfig, ExportFormat, ExportProfile, Job, Region, Tag
 )
-from tasks.models import ExportRun, ExportTask
 
-logger = logging.getLogger(__name__)   
+logger = logging.getLogger(__name__)
 
 
 class TestJob(TestCase):
@@ -45,7 +43,7 @@ class TestJob(TestCase):
                 value = tag[1],
                 job = self.job
             )
-    
+
     def test_job_creation(self,):
         saved_job = Job.objects.all()[0]
         self.assertEqual(self.job, saved_job)
@@ -59,7 +57,7 @@ class TestJob(TestCase):
         self.assertEquals(4, len(tags))
         self.assertEquals('Test description', saved_job.description)
         self.assertEquals(0, saved_job.configs.all().count())
-        
+
     def test_job_creation_with_config(self,):
         saved_job = Job.objects.all()[0]
         self.assertEqual(self.job, saved_job)
@@ -81,7 +79,7 @@ class TestJob(TestCase):
         saved_config = saved_job.configs.all()[0]
         self.assertEqual(config, saved_config)
         saved_config.delete() #cleanup
-        
+
     def test_spatial_fields(self,):
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12)) # in africa
         the_geom = GEOSGeometry(bbox, srid=4326)
@@ -95,18 +93,18 @@ class TestJob(TestCase):
         self.assertEqual(the_geom, geom)
         self.assertEqual(the_geog, geog)
         self.assertEqual(the_geom_webmercator, geom_web)
-        
+
     def test_fields(self, ):
         job = Job.objects.all()[0]
         self.assertEquals('TestJob', job.name)
         self.assertEquals('Test description', job.description)
         self.assertEquals('Nepal activation', job.event)
         self.assertEqual(self.user, job.user)
-        
+
     def test_str(self, ):
         job = Job.objects.all()[0]
         self.assertEquals(str(job), 'TestJob')
-        
+
     def test_job_region(self, ):
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12)) # africa
         region = Region.objects.filter(the_geom__contains=bbox)[0]
@@ -116,13 +114,13 @@ class TestJob(TestCase):
         self.job.save()
         saved_job = Job.objects.all()[0]
         self.assertEqual(saved_job.region, region)
-        
+
     def test_overpass_extents(self,):
         job = Job.objects.all()[0]
         extents = job.overpass_extents
         self.assertIsNotNone(extents)
         self.assertEquals(4, len(extents.split(',')))
-        
+
     def test_categorised_tags(self, ):
         # delete existing tags
         self.job.tags.all().delete()
@@ -140,14 +138,14 @@ class TestJob(TestCase):
                 geom_types = tag_dict['geom_types']
             )
         self.assertEquals(238, self.job.tags.all().count())
-        
+
         job = Job.objects.all()[0]
         categories = job.categorised_tags
         self.assertIsNotNone(categories)
         self.assertEquals(24, len(categories['points']))
         self.assertEquals(12, len(categories['lines']))
         self.assertEquals(22, len(categories['polygons']))
-        
+
     def test_tags(self,):
         self.job.tags.all().delete()
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -164,21 +162,21 @@ class TestJob(TestCase):
                 geom_types = tag_dict['geom_types']
             )
         self.assertEquals(238, self.job.tags.all().count())
-        
+
         job = Job.objects.all()[0]
         filters = job.filters
-        
+
 
 class TestExportFormat(TestCase):
-    
+
     def test_str(self,):
         kml = ExportFormat.objects.get(slug='kml')
         self.assertEquals(unicode(kml), 'kml')
         self.assertEquals(str(kml), 'KML Format')
-        
+
 
 class TestRegion(TestCase):
-            
+
     def test_load_region(self,):
         ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/../migrations/africa.geojson')
         layer = ds[0]
@@ -191,20 +189,20 @@ class TestRegion(TestCase):
         )
         saved_region = Region.objects.get(uid=region.uid)
         self.assertEqual(region, saved_region)
-    
+
     def test_africa_region(self, ):
         africa = Region.objects.get(name='Africa')
         self.assertIsNotNone(africa)
         self.assertEquals('Africa', africa.name)
         self.assertIsNotNone(africa.the_geom)
-        
+
     def test_bbox_intersects_region(self, ):
         bbox = Polygon.from_bbox((-3.9, 16.6, 7.0, 27.6))
         self.assertIsNotNone(bbox)
         africa = Region.objects.get(name='Africa')
         self.assertIsNotNone(africa)
         self.assertTrue(africa.the_geom.intersects(bbox))
-        
+
     def test_get_region_for_bbox(self, ):
         bbox = Polygon.from_bbox((-3.9, 16.6, 7.0, 27.6))
         regions = Region.objects.all()
@@ -215,10 +213,10 @@ class TestRegion(TestCase):
                 break
         self.assertTrue(len(found) == 1)
         self.assertEquals('Africa', found[0].name)
-    
+
 
 class TestJobRegionIntersection(TestCase):
-    
+
     def setUp(self,):
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='TestDefaultExportExtentGroup')
@@ -232,7 +230,7 @@ class TestJobRegionIntersection(TestCase):
         # add the formats to the job
         self.job.formats = self.formats
         self.job.save()
-        
+
     def test_job_region_intersection(self, ):
         job = Job.objects.all()[0]
         # use the_geog
@@ -250,9 +248,9 @@ class TestJobRegionIntersection(TestCase):
         self.assertEquals('Central Asia/Middle East', asia.name)
         self.assertEquals('Africa', africa.name)
         self.assertTrue(asia.intersection.area > africa.intersection.area)
-        
+
         regions = None
-        
+
         #use the_geom
         started = timezone.now()
         regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(job.the_geom, field_name='the_geom').order_by( '-intersection')
@@ -268,7 +266,7 @@ class TestJobRegionIntersection(TestCase):
         self.assertEquals('Central Asia/Middle East', asia.name)
         self.assertEquals('Africa', africa.name)
         self.assertTrue(asia.intersection.area > africa.intersection.area)
-    
+
     def test_job_outside_region(self, ):
         job = Job.objects.all()[0]
         bbox = Polygon.from_bbox((2.74, 47.66, 21.61, 60.24)) # outside any region
@@ -280,7 +278,7 @@ class TestJobRegionIntersection(TestCase):
 
 
 class TestExportConfig(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='TestDefaultExportExtentGroup')
@@ -291,8 +289,8 @@ class TestExportConfig(TestCase):
                                  description='Test description', user=self.user,
                                  the_geom=the_geom)
         self.uid = self.job.uid
-        
-    
+
+
     def test_create_config(self,):
         f = open(self.path + '/files/hdm_presets.xml')
         test_file = File(f)
@@ -312,7 +310,7 @@ class TestExportConfig(TestCase):
         self.assertIsNotNone(sf) # check the file gets created on disk
         saved_config.delete() # clean up
         sf.close()
-        
+
     def test_add_config_to_job(self,):
         f = open(self.path + '/files/hdm_presets.xml')
         test_file = File(f)
@@ -324,10 +322,10 @@ class TestExportConfig(TestCase):
         uid = config.uid
         self.job.configs.add(config)
         self.assertEquals(1, self.job.configs.all().count())
-        
-        
+
+
 class TestTag(TestCase):
-    
+
     def setUp(self, ):
         self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='TestDefaultExportExtentGroup')
@@ -342,7 +340,7 @@ class TestTag(TestCase):
         self.job.formats = self.formats
         self.job.save()
         self.path = os.path.dirname(os.path.realpath(__file__))
-        
+
     def test_create_tags(self,):
         tags = [
             {
@@ -369,8 +367,8 @@ class TestTag(TestCase):
         self.assertEqual(['node','area'], geom_types)
         groups = saved_tags[0].groups
         self.assertEquals(4, len(groups))
-        
-        
+
+
     def test_save_tags_from_preset(self,):
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
         tags = parser.parse()
@@ -390,7 +388,7 @@ class TestTag(TestCase):
         saved_tag = self.job.tags.filter(value='service')[0]
         self.assertIsNotNone(saved_tag)
         self.assertEquals(3, len(saved_tag.groups))
-        
+
 
     def test_get_categorised_tags(self,):
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -408,13 +406,13 @@ class TestTag(TestCase):
             )
         self.assertEquals(238, self.job.tags.all().count())
         categorised_tags = self.job.categorised_tags
-        
+
 
 class TestExportProfile(TestCase):
-    
+
     def setUp(self,):
         self.group = Group.objects.create(name='TestDefaultExportExtentGroup')
-        
+
     def test_export_profile(self,):
         profile = ExportProfile.objects.create(
             name='DefaultExportProfile',

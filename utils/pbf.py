@@ -1,10 +1,9 @@
+# -*- coding: utf-8 -*-
 from __future__ import with_statement
 
 import argparse
-import json
 import logging
 import os
-import string
 import subprocess
 from string import Template
 

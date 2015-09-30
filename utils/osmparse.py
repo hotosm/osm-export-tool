@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*-
 import argparse
 import logging
 import os
-import string
 import subprocess
-from datetime import datetime
 from string import Template
 
 from osgeo import gdal, ogr, osr

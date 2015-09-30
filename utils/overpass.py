@@ -1,18 +1,15 @@
+# -*- coding: utf-8 -*-
 import argparse
 import logging
-import os
 import shutil
-import string
 import subprocess
 from datetime import datetime
 from string import Template
 
 import requests
-from osgeo import gdal, ogr, osr
 from requests import exceptions
 
 from django.conf import settings
-from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 

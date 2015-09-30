@@ -1,19 +1,17 @@
+# -*- coding: utf-8 -*-
 import importlib
 import logging
 import os
-import pdb
 import re
-import sys
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.db import DatabaseError, transaction
+from django.db import DatabaseError
 
 from celery import chain, chord, group
 
 from jobs.models import Job
-from jobs.presets import PresetParser
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
+from tasks.models import ExportRun, ExportTask
 
 from .export_tasks import (
     FinalizeRunTask, GeneratePresetTask, OSMConfTask, OSMPrepSchemaTask,

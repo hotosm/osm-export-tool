@@ -1,14 +1,12 @@
+# -*- coding: utf-8 -*-
 """
 HOT Exports URL Configuration
 """
 from django.conf.urls import include, patterns, url
 from django.conf.urls.i18n import i18n_patterns
-from django.contrib import admin, auth
-from django.contrib.auth.decorators import login_required
+from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
-
-from rest_framework.routers import DefaultRouter
 
 from api.urls import router
 from api.views import HDMDataModelView, OSMDataModelView, RunJob

@@ -1,17 +1,15 @@
+# -*- coding: utf-8 -*-
 import logging
-import pdb
 from collections import OrderedDict
 from StringIO import StringIO
 
 from lxml import etree
 
-from jobs.models import Job, Tag
-
 logger = logging.getLogger(__name__)
 
 
 class PresetParser():
-    
+
     types = {
         'node': 'point',
         'way': 'line',
@@ -19,13 +17,13 @@ class PresetParser():
         'closedway': 'polygon',
         'relation': 'polygon'
     }
-    
+
     namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
-    
+
     def __init__(self, preset=None, *args, **kwargs):
         self.preset = preset
         self.tags = []
-    
+
     def parse(self,):
         """
         Reads in the JOSM Preset.
@@ -42,7 +40,7 @@ class PresetParser():
             self.process_item_and_children(item)
         #tags = OrderedDict(sorted(self.tags.items()))
         return self.tags
-        
+
     def process_item_and_children(self, item, geometrytype=None):
         geometrytypes = None
         if item.get('type'):
@@ -77,7 +75,7 @@ class PresetParser():
         for osmtype in osmtypes:
             geometrytypes.append(self.types[osmtype])
         return geometrytypes
-    
+
     def build_hdm_preset_dict(self, ):
         hdm = {}
         xml = StringIO(open(self.preset).read())
@@ -89,8 +87,8 @@ class PresetParser():
             hdm[name] = group_dict
             self._parse_group(group, group_dict)
         return OrderedDict(sorted(hdm.items()))
-        
-                
+
+
     def _parse_group(self, group, group_dict):
         items = group.xpath('./ns:item', namespaces=self.namespaces)
         for item in items:
@@ -114,21 +112,21 @@ class PresetParser():
             group_dict[name] = sub_group_dict
             self._parse_group(sub_group, sub_group_dict)
 
-      
+
 class TagParser():
-    
+
     namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
     nsmap = {None: 'http://josm.openstreetmap.de/tagging-preset-1.0'}
-    
+
     types = {
         'point': 'node',
         'line': 'way',
         'polygon': 'area,closedway,relation',
     }
-    
+
     def __init__(self, tags=None, *args, **kwargs):
         self.tags = tags
-    
+
     def parse_tags(self, ):
         root = etree.Element('presets', nsmap=self.nsmap)
         doc = etree.ElementTree(root)
