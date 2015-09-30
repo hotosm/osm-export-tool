@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 16:23+0000\n"
-"PO-Revision-Date: 2015-09-29 16:16+0000\n"
+"POT-Creation-Date: 2015-09-30 09:32+0000\n"
+"PO-Revision-Date: 2015-09-30 10:01+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/hotosm/osm-export-tool2/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -155,7 +155,7 @@ msgid ""
 "devices and Smartphones."
 msgstr ""
 
-#: ui/templates/osm/login.html:12 ui/templates/ui/about.html:11
+#: ui/templates/osm/login.html:12
 msgid ""
 "This platform allows you to create custom OpenStreetMap exports for various "
 "HOT regions. You can specify an area of interest and a list of features "
@@ -213,12 +213,20 @@ msgid ""
 "href=\"mailto:exports@hotosm.org\">email us</a> if this problem persists."
 msgstr ""
 
+#: ui/templates/ui/about.html:11
+msgid ""
+"This platform allows you to create custom OpenStreetMap (OSM) exports for "
+"various HOT regions. You can specify an area of interest and a list of OSM "
+"feature tags for the export. There are a number of file formats available "
+"for exporting the data in, which includes Esri SHP, Garmin IMG, Google KMZ, "
+"OSM PBF and SQlite SQL. The OSM data available from the Export Tool is taken"
+" from the <a href=\"/osm/login/openstreetmap\">Overpass</a> site and is "
+"updated regularly at minute intervals."
+msgstr ""
+
 #: ui/templates/ui/about.html:13
 msgid ""
-"You can view and search through existing HOT exports at our <a href=\"/jobs\">Exports</a> page. You do not need an account to view or search for existing exports.\n"
-"                If you want to create an export and you are a new user, please <a href=\"/osm/login/openstreetmap\">login</a> with your OpenStreetMap account. If this is the first\n"
-"                time you have logged into HOT Exports you will be asked to provide a valid email address.\n"
-"                More detailed help on using HOT Exports is available on our <a href=\"/help\">help</a> page.\n"
+"You can view and search through existing HOT exports at our <a href=\"/jobs\">Exports</a> page. It is not required to have an account to view or search existing exports, however if you would like to create a new export please <a href=\"/osm/login/openstreetmap\">Login</a> with your OSM account. If this is the first time you have logged into the HOT Export Tool, you will be asked to provide a valid email address. More detailed help information on how to use the Export Tool is available on our <a href=\"/help\">Help</a> page.\n"
 "            "
 msgstr ""
 
@@ -235,21 +243,27 @@ msgid "OSM Export Tool"
 msgstr "OSM Export Werkzeug"
 
 #: ui/templates/ui/base.html:66 ui/templates/ui/help.html:17
+#: ui/templates/ui/help_create.html:9 ui/templates/ui/help_create.html:13
 #: ui/templates/ui/help_pages.html:18
 msgid "Create"
 msgstr ""
 
 #: ui/templates/ui/base.html:67 ui/templates/ui/help.html:18
+#: ui/templates/ui/help_export.html:9 ui/templates/ui/help_export.html:12
 #: ui/templates/ui/help_pages.html:33
 msgid "Exports"
 msgstr "Exporte"
 
-#: ui/templates/ui/base.html:68 ui/templates/ui/help.html:49
+#: ui/templates/ui/base.html:68 ui/templates/ui/help.html:19
+#: ui/templates/ui/help_pages.html:48 ui/templates/ui/help_presets.html:10
+#: ui/templates/ui/help_presets.html:13 ui/templates/ui/help_presets.html:84
 msgid "Presets"
 msgstr "Voreinstellungen"
 
 #: ui/templates/ui/base.html:69 ui/templates/ui/help_config.html:8
-#: ui/templates/ui/help_formats.html:8 ui/templates/ui/help_pages.html:8
+#: ui/templates/ui/help_create.html:8 ui/templates/ui/help_export.html:8
+#: ui/templates/ui/help_features.html:8 ui/templates/ui/help_formats.html:8
+#: ui/templates/ui/help_pages.html:8 ui/templates/ui/help_presets.html:9
 #: ui/templates/ui/help_tags.html:8
 msgid "Help"
 msgstr ""
@@ -270,21 +284,25 @@ msgstr "Anmelden"
 msgid "Describe Export"
 msgstr "Export beschreiben"
 
-#: ui/templates/ui/clone.html:20
-msgid "Formats File"
+#: ui/templates/ui/clone.html:20 ui/templates/ui/create.html:20
+#: ui/templates/ui/help.html:25 ui/templates/ui/help_formats.html:12
+msgid "File Formats"
 msgstr ""
 
 #: ui/templates/ui/clone.html:21 ui/templates/ui/create.html:21
+#: ui/templates/ui/help.html:43 ui/templates/ui/help_features.html:18
 msgid "Tree Tag"
 msgstr ""
 
 #: ui/templates/ui/clone.html:22 ui/templates/ui/create.html:22
+#: ui/templates/ui/help.html:44 ui/templates/ui/help_features.html:55
 msgid "Preset File"
 msgstr ""
 
 #: ui/templates/ui/clone.html:23 ui/templates/ui/clone.html.py:197
 #: ui/templates/ui/create.html:23 ui/templates/ui/create.html.py:197
-#: ui/templates/ui/detail.html:9
+#: ui/templates/ui/detail.html:9 ui/templates/ui/help_create.html:38
+#: ui/templates/ui/help_export.html:39 ui/templates/ui/help_presets.html:83
 msgid "Export Details"
 msgstr "Export-Details"
 
@@ -351,7 +369,8 @@ msgid "Publish this preset globally."
 msgstr "Diese Voreinstellung global veröffentlichen."
 
 #: ui/templates/ui/clone.html:162 ui/templates/ui/configurations.html:180
-#: ui/templates/ui/create.html:162
+#: ui/templates/ui/create.html:162 ui/templates/ui/help_features.html:62
+#: ui/templates/ui/help_presets.html:53
 msgid "Upload Preset"
 msgstr "Voreinstellungen zum Hochladen"
 
@@ -540,10 +559,6 @@ msgstr ""
 msgid "to upload a preset configuration file."
 msgstr ""
 
-#: ui/templates/ui/create.html:20
-msgid "File Formats"
-msgstr ""
-
 #: ui/templates/ui/create.html:65
 msgid "Select Export Formats"
 msgstr "Export-Formate auswählen"
@@ -552,7 +567,7 @@ msgstr "Export-Formate auswählen"
 msgid "Select from either the HDM or OSM data models"
 msgstr "von HDM- oder OSM-Datenmodellen auswählen"
 
-#: ui/templates/ui/create.html:173
+#: ui/templates/ui/create.html:173 ui/templates/ui/help_features.html:71
 msgid "Select Stored Preset"
 msgstr "Gespeicherte Voreinstellung auswählen"
 
@@ -605,7 +620,7 @@ msgid "Export Formats:"
 msgstr "Export Formate:"
 
 #: ui/templates/ui/detail.html:38 ui/templates/ui/detail.html.py:59
-#: ui/templates/ui/help_tags.html:9
+#: ui/templates/ui/help_features.html:9 ui/templates/ui/help_tags.html:9
 msgid "Features"
 msgstr ""
 
@@ -747,85 +762,73 @@ msgstr ""
 
 #: ui/templates/ui/help.html:10
 msgid ""
-"The OSM Export Tool allows users to create custom OpenStreetMap exports for "
-"selected HOT regions. This help documentation is split into the following "
-"sections to assist users to navigate the site, use the functions effectively"
-" and successfully create and run exports."
+"The Export Tool allows users to create custom OpenStreetMap (OSM) exports "
+"for selected HOT regions in various data file formats. The OSM data "
+"available for download is taken from the <a "
+"href=\"/osm/login/openstreetmap\">Overpass</a> site and is updated regularly"
+" at minute intervals. This help documentation will assist users in "
+"navigating the site, and use the available functionality effectively to "
+"generate OSM exports."
 msgstr ""
 
 #: ui/templates/ui/help.html:13
-msgid "Page Navigation"
+msgid "Main Pages"
 msgstr ""
 
 #: ui/templates/ui/help.html:15
 msgid ""
-"This section takes the user through the three main areas of the OSM Export "
-"Tool website and provides step by step directions on what functions are "
-"available and how to use them:"
+"The OSM Export Tool has three main sections; an area to create new exports "
+"(Create), an area where existing exports are stored and can be re-run "
+"(Exports), and an area where preset files are stored and can be accessed "
+"(Presets). The following links will take the user step by step through the "
+"each section, providing guidance for the available functions:"
 msgstr ""
 
-#: ui/templates/ui/help.html:19 ui/templates/ui/help_pages.html:48
-msgid "Store"
-msgstr ""
-
-#: ui/templates/ui/help.html:24
-msgid "Export File Formats"
-msgstr ""
-
-#: ui/templates/ui/help.html:26
+#: ui/templates/ui/help.html:27
 msgid ""
-"This section takes the user through the five file formats available for "
-"selection to export the OSM data into, as well as provide useful links for "
-"users to find further information on their application:"
+"The OSM Export Tool can download data in five different file formats; Esri "
+"SHP, Garmin IMG, Google KMZ, OSM PBF and SQlite SQL. The following links "
+"will provide users with information regarding each file format:"
 msgstr ""
 
-#: ui/templates/ui/help.html:28 ui/templates/ui/help_formats.html:18
+#: ui/templates/ui/help.html:29 ui/templates/ui/help_formats.html:17
 msgid "Esri SHP"
 msgstr ""
 
-#: ui/templates/ui/help.html:29 ui/templates/ui/help_formats.html:42
+#: ui/templates/ui/help.html:30 ui/templates/ui/help_formats.html:51
 msgid "Garmin IMG"
 msgstr ""
 
-#: ui/templates/ui/help.html:30 ui/templates/ui/help_formats.html:66
+#: ui/templates/ui/help.html:31 ui/templates/ui/help_formats.html:75
 msgid "Google KMZ"
 msgstr ""
 
-#: ui/templates/ui/help.html:31
+#: ui/templates/ui/help.html:32
 msgid "OSM PBF"
 msgstr ""
 
-#: ui/templates/ui/help.html:32
+#: ui/templates/ui/help.html:33
 msgid "SQlite SQL"
 msgstr ""
 
-#: ui/templates/ui/help.html:36
-msgid "Feature Tag Selection"
-msgstr ""
-
-#: ui/templates/ui/help.html:38
-msgid ""
-"This section takes the user through the feature selection functionality "
-"built into the Export Tool, which allows the user to select OSM tags to "
-"export specific map features for export:"
-msgstr ""
-
-#: ui/templates/ui/help.html:40 ui/templates/ui/help_tags.html:19
-msgid "Humanitarian Data Model"
+#: ui/templates/ui/help.html:39 ui/templates/ui/help_features.html:12
+msgid "Feature Selection"
 msgstr ""
 
 #: ui/templates/ui/help.html:41
-msgid "OpenStreetMap Data Model"
-msgstr ""
-
-#: ui/templates/ui/help.html:45
-msgid "Configuration Files"
-msgstr ""
-
-#: ui/templates/ui/help.html:47
 msgid ""
-"This section takes the user through the configuration files that can be used"
-" with the Export Tool to provide extra functionality:"
+"The OSM Export Tool provides two ways a user can specify which feature tags "
+"they would like to export from a selected area; either from the built-in "
+"interactive 'Tree Tag' or load a customised 'Preset File' created outside of"
+" the tool. This section provides the user guidance on how to do both:"
+msgstr ""
+
+#: ui/templates/ui/help.html:48
+msgid "Tag Selection Tree"
+msgstr ""
+
+#: ui/templates/ui/help.html:49
+msgid "Preset Upload"
 msgstr ""
 
 #: ui/templates/ui/help_config.html:9
@@ -875,83 +878,423 @@ msgid ""
 "<p>Once the configuration file has been selected, the user will be brought back to the 'Create' wizard where they can choose to publish the file globally by clicking 'Publish File'.</p>\n"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:9
-msgid "Formats"
+#: ui/templates/ui/help_create.html:15
+#, python-format
+msgid ""
+"The <a href=\"http://hot.geoweb.io/en/exports/create/\" "
+"target=\"_blank\">{%% trans "
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:12
-msgid "Export File Format Help"
+#: ui/templates/ui/help_create.html:19
+msgid "Export Wizard"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:27 ui/templates/ui/help_pages.html:22
+msgid "Describe Export:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:27 ui/templates/ui/help_pages.html:22
+msgid ""
+"Enter the name, description and activation (optional) of the new export, "
+"select the area of interest on the map (right section) and click 'Next'."
+msgstr ""
+
+#: ui/templates/ui/help_create.html:28
+msgid "File Formats:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:28 ui/templates/ui/help_pages.html:23
+msgid "Select one or more file format(s) for the export and click 'Next'."
+msgstr ""
+
+#: ui/templates/ui/help_create.html:29
+msgid "Tree Tag:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:29
+msgid ""
+"Expand and select features from the HDM or OSM tree tag for export and click"
+" 'Next'. Preset files on the next tab can not be used if tags are selected "
+"from either tree."
+msgstr ""
+
+#: ui/templates/ui/help_create.html:30 ui/templates/ui/help_pages.html:25
+msgid "Preset File:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:30
+msgid ""
+"Select a preset file to apply to the export area by either specifying a name"
+" and loading a file from the desktop, or select a preset file from the saved"
+" presets. Tick the 'Publish this preset publicly' button to share the loaded"
+" preset publicly and save it to the 'Presets' page. Click 'Next'."
+msgstr ""
+
+#: ui/templates/ui/help_create.html:31 ui/templates/ui/help_pages.html:26
+msgid "Export Summary:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:31
+msgid ""
+"This tab provides an overview of the export settings, along with the options"
+" to 'Save feature selection privately', 'Publish feature selection publicly'"
+" and 'Publish export publicly'. Click 'Create Export' to complete and run "
+"the new export."
+msgstr ""
+
+#: ui/templates/ui/help_create.html:36 ui/templates/ui/help_create.html:56
+#: ui/templates/ui/help_export.html:36 ui/templates/ui/help_export.html:55
+#: ui/templates/ui/help_pages.html:29 ui/templates/ui/help_pages.html.py:44
+#: ui/templates/ui/help_pages.html:58 ui/templates/ui/help_presets.html:38
+#: ui/templates/ui/help_presets.html:49 ui/templates/ui/help_presets.html:59
+#: ui/templates/ui/help_presets.html:88
+msgid "top"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:47 ui/templates/ui/help_export.html:48
+msgid "Re-run Export:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:47
+msgid ""
+"This function will rerun the export with the original area of interest and "
+"settings."
+msgstr ""
+
+#: ui/templates/ui/help_create.html:48 ui/templates/ui/help_export.html:49
+msgid "Clone Export:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:48
+msgid ""
+"This function will clone the export, maintaining the original area of "
+"interest but allows the user to modify the settings."
+msgstr ""
+
+#: ui/templates/ui/help_create.html:49 ui/templates/ui/help_export.html:50
+msgid "Delete Export:"
+msgstr ""
+
+#: ui/templates/ui/help_create.html:49
+msgid ""
+"Delete the saved export. Please note that this function is only available to"
+" the user that originally created the export."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:14
+#, python-format
+msgid "The <a href=\"http://hot.geoweb.io/en/exports/\" target=\"_blank\">{%% trans "
+msgstr ""
+
+#: ui/templates/ui/help_export.html:20
+msgid "Filter Options"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:22 ui/templates/ui/help_features.html:64
+#: ui/templates/ui/help_features.html:66 ui/templates/ui/help_features.html:73
+msgid "The "
+msgstr ""
+
+#: ui/templates/ui/help_export.html:24 ui/templates/ui/help_pages.html:38
+#: ui/templates/ui/help_pages.html.py:53 ui/templates/ui/help_presets.html:28
+msgid "Search Box:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:24
+msgid "Enter Name/Description/Event/Username keywords to filter."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:25 ui/templates/ui/help_pages.html:39
+#: ui/templates/ui/help_pages.html.py:54 ui/templates/ui/help_presets.html:29
+msgid "Start Date/End Date:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:25 ui/templates/ui/help_pages.html:39
+#: ui/templates/ui/help_pages.html.py:54 ui/templates/ui/help_presets.html:29
+msgid "Filter based on date of creation."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:26 ui/templates/ui/help_presets.html:31
+msgid "Reset Form:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:26 ui/templates/ui/help_presets.html:31
+msgid "Reset the filter options."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:27 ui/templates/ui/help_pages.html:40
+msgid "Interactive Map:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:27 ui/templates/ui/help_pages.html:40
+msgid ""
+"Visually displays location of filtered exports and can also be used to "
+"filter geographically by selecting on the map."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:28
+msgid "Zoom Icon:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:28
+msgid "Zoom to the location of the export on the interactive map."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:29
+msgid "Eye Icon:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:29
+msgid ""
+"Toggle the visibility of the export on the interactive map. This will hide "
+"an export that might be overlapping another."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:30 ui/templates/ui/help_pages.html:41
+msgid "My Exports:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:30
+msgid "Displays private exports if the user is logged in."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:31 ui/templates/ui/help_presets.html:33
+msgid "Next:"
+msgstr ""
+
+#: ui/templates/ui/help_export.html:31
+msgid "Move on to the next page to display more results."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:48
+msgid ""
+"This function will rerun the export with the original area of interest and "
+"settings for feature tags and file formats."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:49
+msgid ""
+"This function will clone the export, maintaining the original area of "
+"interest but allows the user to modify the settings for feature tags and "
+"file formats."
+msgstr ""
+
+#: ui/templates/ui/help_export.html:50
+msgid ""
+"Delete the saved export. Please note that this function is only available to"
+" the user who originally created the export."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:14
+msgid ""
+"The user can choose specific map features for download by selecting tags "
+"from the "
+msgstr ""
+
+#: ui/templates/ui/help_features.html:20
+msgid ""
+"Interactively selecting features from the 'Tree Tag' tab is part of the "
+"'Export Wizard' on the 'Create' page that takes the user through the steps "
+"to create a new export, it can only be accessed once the previous nessessary"
+" steps have been completed. The 'Tree Tag' tab provides the user with two "
+"trees to select features from: Humanitarian Data Model (HDM) and the "
+"OpenStreetMap (OSM)."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:26 ui/templates/ui/help_tags.html:19
+msgid "Humanitarian Data Model"
+msgstr ""
+
+#: ui/templates/ui/help_features.html:28 ui/templates/ui/help_tags.html:21
+msgid ""
+"HDM was developed and is aimed at reconciling schemas from humanitarian "
+"response agencies, as OSM was traditionally developed for mapping in "
+"nonemergency situations. Humanitarian field responders need to know how OSM "
+"tags relate to their existing data models, and how to include features that "
+"may be relevant only in disaster response, recovery, or development "
+"contexts."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:31 ui/templates/ui/help_tags.html:24
+msgid "OpenStreetMap Wiki | Humanitarian OSM Tags"
+msgstr ""
+
+#: ui/templates/ui/help_features.html:33 ui/templates/ui/help_tags.html:26
+msgid ""
+"It is recommended that the HDM tree structure be selected to export OSM data"
+" for humanitarian purposes, as the feature tags listed are aimed for ease of"
+" use and efficiency during disaster situations providing required key data."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:37 ui/templates/ui/help_tags.html:30
+msgid "OpenStreetMap"
+msgstr ""
+
+#: ui/templates/ui/help_features.html:39 ui/templates/ui/help_tags.html:32
+msgid ""
+"OSM represents physical features on the ground using tags attached to its "
+"basic data structures such as its nodes, ways, and relations. Each tag "
+"describes a geographic attribute of the feature being shown by that specific"
+" node, way or relation."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:40 ui/templates/ui/help_tags.html:33
+msgid "OpenstreetMap Wiki | OSM Tags"
+msgstr ""
+
+#: ui/templates/ui/help_features.html:43
+msgid "Step by Step"
+msgstr ""
+
+#: ui/templates/ui/help_features.html:45 ui/templates/ui/help_tags.html:38
+msgid ""
+"Top-level branches can be expanded by clicking on the name of those with a "
+"plus-sign + to the left."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:46 ui/templates/ui/help_tags.html:39
+msgid "Tick the box on the right to select a feature tag for export."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:47 ui/templates/ui/help_tags.html:40
+msgid "Tick a top level-branch to select all sub-level for export."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:48 ui/templates/ui/help_tags.html:41
+msgid ""
+"Tick the HDM or OSM top-level to select all features in either tree for "
+"export."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:49 ui/templates/ui/help_tags.html:42
+msgid ""
+"Features from both the HDM and OSM can not be mixed. Once one is selected "
+"the other will be deactivated."
+msgstr ""
+
+#: ui/templates/ui/help_features.html:57
+msgid "Files can be uploaded on the "
+msgstr ""
+
+#: ui/templates/ui/help_features.html:75
+msgid ""
+"The pop-up window will close and the selected preset will be loaded "
+"automatically into the "
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:9
+msgid "Formats"
 msgstr ""
 
 #: ui/templates/ui/help_formats.html:14
 msgid ""
 "The OSM Export Tool allows the data selected by the user to be exported into"
-" any of the following five file formats: Esri SHP, Garmin IMG, Google KMZ, "
-"OSM PBF, and SQLite SQL. This help page provides the user with information "
-"about these formats, as well as provide links to further sources"
+" any of the following five file formats: Esri SHP (OSM and Thematic), Garmin"
+" IMG, Google KMZ, OSM PBF, and SQLite SQL. This help page provides the user "
+"with information about these file formats. It also lists some external links"
+" where the user can find further information."
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:20
+#: ui/templates/ui/help_formats.html:19
 msgid ""
-" \"The shapefile format developed by Esri spatially describes geometries as either 'points', 'polylines', or 'polygons' with a set of associated attributes. Similar to OSM these can be considered as 'nodes', 'ways','closed ways', and 'relations' respectively.\n"
-"The shapefile is made up of several files formatted to represent different aspects of geodata:"
+"The shapefile format developed by Esri spatially describes geometries as "
+"either 'points', 'polylines', or 'polygons' with a set of associated "
+"attributes. Similar to OSM these can be considered as 'nodes', 'ways', "
+"'closed ways', and 'relations' respectively. The shapefile is made up of "
+"several files formatted to represent different aspects of geodata:"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:23
+#: ui/templates/ui/help_formats.html:21
 msgid ".shp - shape format; feature geometry"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:24
+#: ui/templates/ui/help_formats.html:22
 msgid ".shx - index format; positional index"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:25
+#: ui/templates/ui/help_formats.html:23
 msgid ".dbf - attribute format; columnar information"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:26
+#: ui/templates/ui/help_formats.html:24
 msgid ".prj - coordinate format; projection information"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:28 ui/templates/ui/help_formats.html:52
-#: ui/templates/ui/help_formats.html:69 ui/templates/ui/help_formats.html:87
-#: ui/templates/ui/help_formats.html:104 ui/templates/ui/help_formats.html:117
-msgid "Compatible Software"
+#: ui/templates/ui/help_formats.html:28
+msgid "Schema Options"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:30 ui/templates/ui/help_formats.html:73
-#: ui/templates/ui/help_formats.html:91
-msgid "QGIS"
+#: ui/templates/ui/help_formats.html:30
+msgid ""
+"The data is available for download from the Export Tool in two different "
+"shapefile schema formats which are detailed below:"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:31
-msgid "GRASS GIS"
-msgstr ""
-
-#: ui/templates/ui/help_formats.html:32 ui/templates/ui/help_formats.html:74
-#: ui/templates/ui/help_formats.html:92
-msgid "ArcMap"
+#: ui/templates/ui/help_formats.html:32
+msgid "OSM "
 msgstr ""
 
 #: ui/templates/ui/help_formats.html:33
+msgid ""
+"The OSM schema is the default shapefile export, which provides all the "
+"selected features for an area of interest in a single point, polyline and "
+"polygon table."
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:34
+msgid "Thematic"
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:35
+msgid ""
+"The HOT generated thematic schema provides the features selected for an area"
+" of interest in their individual point, polyline and polygon tables. The "
+"following <a "
+"href=\"http://wiki.openstreetmap.org/wiki/User:Bgirardot/How_To_Convert_osm_.pbf_files_to_Esri_Shapefiles\""
+" target=\"_blank\">process</a> has been applied to the selected data in "
+"order to split the features into their own tables for ease of use by the "
+"user. "
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:37 ui/templates/ui/help_formats.html:61
+#: ui/templates/ui/help_formats.html:78 ui/templates/ui/help_formats.html:96
+#: ui/templates/ui/help_formats.html:113 ui/templates/ui/help_formats.html:126
+msgid "Compatible Software"
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:39 ui/templates/ui/help_formats.html:82
+#: ui/templates/ui/help_formats.html:100
+msgid "QGIS"
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:40
+msgid "GRASS GIS"
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:41 ui/templates/ui/help_formats.html:83
+#: ui/templates/ui/help_formats.html:101
+msgid "ArcMap"
+msgstr ""
+
+#: ui/templates/ui/help_formats.html:42
 msgid "MapInfo"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:35 ui/templates/ui/help_formats.html:59
-#: ui/templates/ui/help_formats.html:76 ui/templates/ui/help_formats.html:94
-#: ui/templates/ui/help_formats.html:108 ui/templates/ui/help_formats.html:123
+#: ui/templates/ui/help_formats.html:44 ui/templates/ui/help_formats.html:68
+#: ui/templates/ui/help_formats.html:85 ui/templates/ui/help_formats.html:103
+#: ui/templates/ui/help_formats.html:117 ui/templates/ui/help_formats.html:132
 msgid "Further Information"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:36
+#: ui/templates/ui/help_formats.html:45
 msgid "ArcGIS Online | Shapefiles"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:37
+#: ui/templates/ui/help_formats.html:46
 msgid "OpenStreetMap Wiki | Esri SHP File"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:43
+#: ui/templates/ui/help_formats.html:52
 msgid ""
 "The image file contains all the information needed to render a map on a "
 "Garmin GPS unit. The hard-disk image is a flat file system complete with a "
@@ -960,55 +1303,55 @@ msgid ""
 "image file contains several subfiles:"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:45
+#: ui/templates/ui/help_formats.html:54
 msgid ".rgn - map elements; polylines, polygons and points"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:46
+#: ui/templates/ui/help_formats.html:55
 msgid ".lbl - labels; map elements, city names, localities, etc"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:47
+#: ui/templates/ui/help_formats.html:56
 msgid ".tre - map structure information; data tree"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:48
+#: ui/templates/ui/help_formats.html:57
 msgid ".net - road network information"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:49
+#: ui/templates/ui/help_formats.html:58
 msgid ".nod - routing information"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:50
+#: ui/templates/ui/help_formats.html:59
 msgid ".mdr - searchable address table for routing destinations"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:54
+#: ui/templates/ui/help_formats.html:63
 msgid "Garmin"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:55
+#: ui/templates/ui/help_formats.html:64
 msgid "QLandkarte"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:56
+#: ui/templates/ui/help_formats.html:65
 msgid "OSM Composer"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:57
+#: ui/templates/ui/help_formats.html:66
 msgid "GroundTruth"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:60
+#: ui/templates/ui/help_formats.html:69
 msgid "SourceForge | Garmin IMG Format"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:61
+#: ui/templates/ui/help_formats.html:70
 msgid "OpenStreetMap Wiki | Garmin IMG File"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:68
+#: ui/templates/ui/help_formats.html:77
 msgid ""
 "The KMZ file is a compressed version of a KML file. The Keyhole Markup "
 "Language (KML) is an Extensible Markup Language (XML) grammar and file "
@@ -1016,31 +1359,31 @@ msgid ""
 "images polygons and models."
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:71
+#: ui/templates/ui/help_formats.html:80
 msgid "Google Earth"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:72
+#: ui/templates/ui/help_formats.html:81
 msgid "Google Maps"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:77
+#: ui/templates/ui/help_formats.html:86
 msgid "Google Earth | KML File"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:78
+#: ui/templates/ui/help_formats.html:87
 msgid "Google Documentation | KML Tutorial"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:79
+#: ui/templates/ui/help_formats.html:88
 msgid "OpenStreetMap Wiki | KML File"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:84
+#: ui/templates/ui/help_formats.html:93
 msgid "OSM Source PBF"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:86
+#: ui/templates/ui/help_formats.html:95
 msgid ""
 "The Protocolbuffer Binary Format (PBF) is a highly compressed format "
 "intended as an alternative to OSM XML. PBF and XML are the two main formats "
@@ -1048,46 +1391,46 @@ msgid ""
 "the nodes, ways and relations that make up the map."
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:89
+#: ui/templates/ui/help_formats.html:98
 msgid "JOSM"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:90
+#: ui/templates/ui/help_formats.html:99
 msgid "Osmosis"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:95
+#: ui/templates/ui/help_formats.html:104
 msgid "OpenStreetMap Wiki | PBF Format"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:96
+#: ui/templates/ui/help_formats.html:105
 msgid "OpenStreetMap Wiki | Planet.osm"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:101
+#: ui/templates/ui/help_formats.html:110
 msgid "OSMAnd OBF"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:103
+#: ui/templates/ui/help_formats.html:112
 msgid ""
 "OsmAnd is a GPS Navigation and map application that runs on many Android and"
 " iOS smartphones and tablets, featuring optional offline maps and turn by "
 "turn directions."
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:106
+#: ui/templates/ui/help_formats.html:115
 msgid "OSMAnd"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:109
+#: ui/templates/ui/help_formats.html:118
 msgid "OSMAnd | OBF Format"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:114
+#: ui/templates/ui/help_formats.html:123
 msgid "SQLite SQL"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:116
+#: ui/templates/ui/help_formats.html:125
 msgid ""
 "The .sql file is related to the Structured Query Language (SQL) and are used"
 " to modify the contents of a relation database. These files written in ASCII"
@@ -1096,23 +1439,23 @@ msgid ""
 "operations."
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:119
+#: ui/templates/ui/help_formats.html:128
 msgid "PostgreSQL"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:120
+#: ui/templates/ui/help_formats.html:129
 msgid "MySQL"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:121
+#: ui/templates/ui/help_formats.html:130
 msgid "MicroSoft Access"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:124
+#: ui/templates/ui/help_formats.html:133
 msgid "PostgreSQL | The SQL Language"
 msgstr ""
 
-#: ui/templates/ui/help_formats.html:125
+#: ui/templates/ui/help_formats.html:134
 msgid "Wikipedia | SQL"
 msgstr ""
 
@@ -1138,20 +1481,6 @@ msgstr ""
 msgid "User must be registered and logged in to create a new export."
 msgstr ""
 
-#: ui/templates/ui/help_pages.html:22
-msgid "Describe Export:"
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:22
-msgid ""
-"Enter the name, description and activation (optional) of the new export, "
-"select the area of interest on the map (right section) and click 'Next'."
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:23
-msgid "Select one or more file format(s) for the export and click 'Next'."
-msgstr ""
-
 #: ui/templates/ui/help_pages.html:24
 msgid "Export Features:"
 msgstr ""
@@ -1164,18 +1493,10 @@ msgid ""
 msgstr ""
 
 #: ui/templates/ui/help_pages.html:25
-msgid "Preset File:"
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:25
 msgid ""
 "Upload a JOSM preset file by locating the file and specifying a name and "
 "type. Choose whether to save it to your personal account and/or publish it "
 "to the global store for everyone to access and click 'Next'."
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:26
-msgid "Export Summary:"
 msgstr ""
 
 #: ui/templates/ui/help_pages.html:26
@@ -1195,11 +1516,6 @@ msgid ""
 "runs and options to either re-run or clone the job."
 msgstr ""
 
-#: ui/templates/ui/help_pages.html:29 ui/templates/ui/help_pages.html.py:44
-#: ui/templates/ui/help_pages.html:58
-msgid "top"
-msgstr ""
-
 #: ui/templates/ui/help_pages.html:35
 msgid ""
 "Existing exports can be searched, viewed and re-run from the Exports page. "
@@ -1210,34 +1526,8 @@ msgstr ""
 msgid "On the Exports page there are the following filter options:"
 msgstr ""
 
-#: ui/templates/ui/help_pages.html:38 ui/templates/ui/help_pages.html.py:53
-msgid "Search Box:"
-msgstr ""
-
 #: ui/templates/ui/help_pages.html:38
 msgid "Enter Name/Description/Event keywords to filter."
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:39 ui/templates/ui/help_pages.html.py:54
-msgid "Start Date/End Date:"
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:39 ui/templates/ui/help_pages.html.py:54
-msgid "Filter based on date of creation."
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:40
-msgid "Interactive Map:"
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:40
-msgid ""
-"Visually displays location of filtered exports and can also be used to "
-"filter geographically by selecting on the map."
-msgstr ""
-
-#: ui/templates/ui/help_pages.html:41
-msgid "My Exports:"
 msgstr ""
 
 #: ui/templates/ui/help_pages.html:41
@@ -1249,30 +1539,97 @@ msgid "Next Page:"
 msgstr ""
 
 #: ui/templates/ui/help_pages.html:42 ui/templates/ui/help_pages.html.py:56
+#: ui/templates/ui/help_presets.html:33
 msgid "Move on to display more results."
 msgstr ""
 
 #: ui/templates/ui/help_pages.html:50
 msgid ""
 "Saved configuration files can be searched, viewed and downloaded from the "
-"Store page. An account is not needed to filter and search the saved "
-"configuration files."
+"Presets page. An account is not needed to filter and search the saved preset"
+" files."
 msgstr ""
 
 #: ui/templates/ui/help_pages.html:51
-msgid "On the Store page there are the following filter options:"
+msgid "On the Presets page there are the following filter options:"
 msgstr ""
 
 #: ui/templates/ui/help_pages.html:53
 msgid "Filter presets by name."
 msgstr ""
 
-#: ui/templates/ui/help_pages.html:55
+#: ui/templates/ui/help_pages.html:55 ui/templates/ui/help_presets.html:32
 msgid "My Preset Files:"
 msgstr ""
 
-#: ui/templates/ui/help_pages.html:55
+#: ui/templates/ui/help_pages.html:55 ui/templates/ui/help_presets.html:32
 msgid "Display personal preset files if the user is logged in."
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:15
+msgid ""
+"<p>The <a href=\"http://hot.geoweb.io/en/exports/configurations/\" target=\"_blank\">Presets</a> page is where the user can filter and search existing saved preset files, as well as upload one from their local desktop. Please note an account is not needed to view or search existing presets,\n"
+"but is required to upload one and only the user who originally uploaded the preset can delete it.</p>\n"
+"<p>The user can use an XML preset file with the Export Tool to specify which features they would like to export from the selected area based on identified tags. This help page will provide step by step guidance for the 'Presets' page, and how to search, download, upload and customise presets.</p>\n"
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:24
+msgid "Filter Options:"
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:26
+msgid ""
+"The 'Presets' page has several filtering options to make it eaiser to find "
+"the right preset file. The following filter options are detailed below:"
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:28
+msgid "Filter presets by Name/Owner."
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:43
+msgid "Download Preset:"
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:45
+msgid ""
+"To download a preset, the user must select the specific file under the "
+"'Download Configuration' column in the table, which will open the XML file "
+"in a new tab. Please note this does not download the preset automatically to"
+" your desktop. The user will have to maunally save the preset as a XML file."
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:55
+msgid ""
+"To upload a preset, the user must enter a 'Filename' and click the 'Upload "
+"Preset' button. This will bring up a search finder for your desktop, where "
+"you can navigate to your desired XML file and select it. The file will then "
+"be listed at the bottom right of the 'Presets' page. Check that this is the "
+"correct file and click the green 'Upload' button to add it."
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:64
+msgid "Customise"
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:67
+msgid ""
+"To customise a preset, a user can use external software such as JOSM, or "
+"save their feature selection from the 'Tree Tag' tab on the 'Create' page."
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:69
+msgid ""
+"The link below will redirect you to the 'Creating Custom Presets' page in "
+"the 'JOSM - Detailed Editing' section of LearnOSM."
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:71
+msgid "LearnOSM"
+msgstr ""
+
+#: ui/templates/ui/help_presets.html:71
+msgid "Creating Custom Presets"
 msgstr ""
 
 #: ui/templates/ui/help_tags.html:12
@@ -1295,71 +1652,8 @@ msgid ""
 "OpenStreetMap (OSM)."
 msgstr ""
 
-#: ui/templates/ui/help_tags.html:21
-msgid ""
-"HDM was developed and is aimed at reconciling schemas from humanitarian "
-"response agencies, as OSM was traditionally developed for mapping in "
-"nonemergency situations. Humanitarian field responders need to know how OSM "
-"tags relate to their existing data models, and how to include features that "
-"may be relevant only in disaster response, recovery, or development "
-"contexts."
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:24
-msgid "OpenStreetMap Wiki | Humanitarian OSM Tags"
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:26
-msgid ""
-"It is recommended that the HDM tree structure be selected to export OSM data"
-" for humanitarian purposes, as the feature tags listed are aimed for ease of"
-" use and efficiency during disaster situations providing required key data."
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:30
-msgid "OpenStreetMap"
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:32
-msgid ""
-"OSM represents physical features on the ground using tags attached to its "
-"basic data structures such as its nodes, ways, and relations. Each tag "
-"describes a geographic attribute of the feature being shown by that specific"
-" node, way or relation."
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:33
-msgid "OpenstreetMap Wiki | OSM Tags"
-msgstr ""
-
 #: ui/templates/ui/help_tags.html:36
 msgid "Tree Structure System"
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:38
-msgid ""
-"Top-level branches can be expanded by clicking on the name of those with a "
-"plus-sign + to the left."
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:39
-msgid "Tick the box on the right to select a feature tag for export."
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:40
-msgid "Tick a top level-branch to select all sub-level for export."
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:41
-msgid ""
-"Tick the HDM or OSM top-level to select all features in either tree for "
-"export."
-msgstr ""
-
-#: ui/templates/ui/help_tags.html:42
-msgid ""
-"Features from both the HDM and OSM can not be mixed. Once one is selected "
-"the other will be deactivated."
 msgstr ""
 
 #: ui/templates/ui/list.html:18

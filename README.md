@@ -87,8 +87,6 @@ $ CREATE SCHEMA exports AUTHORIZATION hot;
 
 ### Install GDAL
 
-We need gdal >=1.10.0
-
 <pre>
 $ sudo apt-get install software-properties-common
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
