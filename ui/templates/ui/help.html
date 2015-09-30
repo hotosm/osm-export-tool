@@ -7,11 +7,7 @@
 <h2>{% trans 'Help Documentation' %}</h2>
 
 <div class="well">
-<<<<<<< HEAD
 {% trans 'The Export Tool allows users to create custom OpenStreetMap (OSM) exports for selected HOT regions in various data file formats. The OSM data available for download is taken from the <a href="/osm/login/openstreetmap">Overpass</a> site and is updated regularly at minute intervals. This help documentation will assist users in navigating the site, and use the available functionality effectively to generate OSM exports.' %}
-=======
-{% trans 'The OSM Export Tool allows users to create custom OpenStreetMap exports for selected HOT regions. This help documentation is split into the following sections to assist users to navigate the site, use the functions effectively and successfully create and run exports.' %}
->>>>>>> upstream/master
 </div>
 
 <h3>{% trans 'Main Pages' %}</h3>
@@ -24,7 +20,7 @@
 </ul>
 </div>
 
-<b><p><!--ADD SCREENSHOT: Red Toolbar--><img style="width:300px;height:200px" src="{% static 'ui/images/help/Red_Toolbar.png' %}"/></p></b>
+<!--<p><img width="50%" src="{% static 'ui/images/help/Red_Toolbar.png' %}"/></p>-->
 
 <h3>{% trans 'File Formats' %}</h3>
 <div class="well">
@@ -38,20 +34,20 @@
 </ul>
 </div>
 
-<b><p><!--ADD SCREENSHOT: File Format Tab--><img style="width:300px;height:200px" src="{% static 'ui/images/help/File_Format.png' %}"/></p></b>
+<p><img src="{% static 'ui/images/help/File_Format.png' %}"/></p>
 
 <h3>{% trans 'Feature Selection' %}</h3>
 <div class="well">
-{% trans 'The OSM Export Tool provides two ways a user can specify which feature tags they would like to export from a selected area; either from the built-in interactive 'Tree Tag' or load a customised 'Preset File' created outside of the tool. This section provides the user guidance on how to do both:' %}<br>
+{% trans "The OSM Export Tool provides two ways a user can specify which feature tags they would like to export from a selected area; either from the built-in interactive 'Tree Tag' or load a customised 'Preset File' created outside of the tool. This section provides the user guidance on how to do both:" %}<br>
 <ul>
-    <li><a href="help/features#tree">{% trans 'Tree Tag' %}</a></li>
-    <li><a href="help/features#presets">{% trans 'Preset File' %}</a></li>
+    <li><a href="help/tags#tree">{% trans 'Tree Tag' %}</a></li>
+    <li><a href="help/presets">{% trans 'Preset File' %}</a></li>
 </ul>
 </div>
-
-<b><p><!--ADD SCREENSHOT: Tree Tag and Preset File Tab--><img style="width:300px;height:200px" src="{% static 'ui/images/help/Tree_Tag.png' %}"/></p></b>
-
-<b><p><!--ADD SCREENSHOT: Tree Tag and Preset File Tab--><img style="width:300px;height:200px" src="{% static 'ui/images/help/Preset_File.png' %}"/></p></b>
+<div>
+<img style="width: 45%; vertical-align: top !important;" src="{% static 'ui/images/help/Tree_Tag.png' %}" title="{% trans 'Tag Selection Tree' %}"/>
+<img style="width: 45%; vertical-align: top !important;" src="{% static 'ui/images/help/Preset_File.png' %}" title="{% trans 'Preset Upload' %}"/>
+</div>
 </div>
 
 
