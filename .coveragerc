@@ -3,7 +3,7 @@
 omit = */migrations/*, api/renderers.py, */__init__.py, */admin.py
 
 [report]
-exclude_lines = 
+exclude_lines =
     # Have to re-enable the standard pragma
     pragma: no cover
 
@@ -18,7 +18,7 @@ exclude_lines =
     # Don't complain if non-runnable code isn't run:
     if 0:
     if __name__ == .__main__.:
-    
+
     except ImportError:
     ^pass$
 

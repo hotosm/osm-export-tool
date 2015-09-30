@@ -4812,7 +4812,7 @@
             <optional>
                 <check key="lit" text="Lit" />
             </optional>
-        </item> <!-- Billboard -->   
+        </item> <!-- Billboard -->
     </group> <!-- Facilities -->
   </group>  <!-- Facilities -->
   <group name="Sports" icon="styles/standard/sport/soccer.png">

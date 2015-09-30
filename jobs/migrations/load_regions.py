@@ -9,10 +9,10 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.gdal import DataSource
 
 class Migration(migrations.Migration):
-    
+
     def insert_regions(apps, schema_editor):
         Region = apps.get_model('jobs', 'Region')
-        
+
         ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/africa.geojson')
         layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                         the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
         )
         ds = None
-        
+
         ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/burma.geojson')
         layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                         the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
         )
         ds = None
-        
+
         ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/central_asia.geojson')
         layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                         the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
         )
         ds = None
-        
+
         ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/indonesia.geojson')
         layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                         the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
         )
         ds = None
-        
+
         ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/philippines.geojson')
         layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                         the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
         )
         ds = None
-        
+
         ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/south_america.geojson')
         layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                         the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
         )
         ds = None
-        
+
 
     dependencies = [
         ('jobs', '0001_initial'),

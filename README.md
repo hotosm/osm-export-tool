@@ -240,7 +240,7 @@ To update source language (English) for Django templates run:
 To update source language for javascript files run:
 
 `python manage.py makemessages -d djangojs -l en`
-  
+
 
 then, push the new source files to the Transifex service, it will overwrite the current source files
 
@@ -259,11 +259,11 @@ or for javascript files:
 
 
 Once there are some translation updates, pull the latest changes for mapped resources
-  
+
 For a specific language(s):
 
 `tx pull -l fr,hr`
-    
+
 For all languages:
 
 `tx pull`
