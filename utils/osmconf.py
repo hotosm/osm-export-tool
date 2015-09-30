@@ -1,6 +1,6 @@
 import ConfigParser
-import os
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -44,10 +44,3 @@ class OSMConfig(object):
             logger.error(e)
             raise IOError('Failed to create osmconf ini file.')
         return config_file
-        
-        
-    
-    
-    
-    
-    

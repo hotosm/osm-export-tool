@@ -4,13 +4,15 @@
     ./manage.py runscript export_task_test_harness --settings=hot_exports.settings -v2
     Depends on django-extensions.
 """
-import os
 import logging
-from jobs.models import Job, Tag, ExportFormat, Region
-from tasks.task_runners import ExportTaskRunner
+import os
+
 from django.contrib.auth.models import User
-from jobs.presets import PresetParser
 from django.contrib.gis.geos import GEOSGeometry, Polygon
+
+from jobs.models import ExportFormat, Job, Region, Tag
+from jobs.presets import PresetParser
+from tasks.task_runners import ExportTaskRunner
 
 
 def run(*script_args):
@@ -49,4 +51,3 @@ def run(*script_args):
     # results available at /api/runs url
     runner = ExportTaskRunner()
     runner.run_task(job_uid=str(job.uid))
-

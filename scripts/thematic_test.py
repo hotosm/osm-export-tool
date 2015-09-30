@@ -6,12 +6,13 @@
     Depends on django-extensions.
 """
 
-import os
 import logging
+import os
 import shutil
 import sqlite3
-from jobs.models import Job
 from string import Template
+
+from jobs.models import Job
 
 logger = logging.getLogger(__name__)
 
@@ -99,5 +100,3 @@ def run(*script_args):
     cur.execute('DROP TABLE planet_osm_polygon')
     conn.commit()
     cur.close()
-
-

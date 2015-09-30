@@ -1,9 +1,10 @@
 import os
+
 from django.utils import timezone
 
+from jobs import presets
 from utils.overpass import Overpass
 from utils.pbf import OSMToPBF
-from jobs import presets
 
 
 """

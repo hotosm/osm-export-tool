@@ -1,18 +1,19 @@
 """
 HOT Exports URL Configuration
 """
-from django.conf.urls import include, url, patterns
+from django.conf.urls import include, patterns, url
 from django.conf.urls.i18n import i18n_patterns
+from django.contrib import admin, auth
 from django.contrib.auth.decorators import login_required
-from django.contrib import admin
-from django.contrib import auth
-from ui import urls as ui_urls
-from ui.views import create_error_view
 from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
+
 from rest_framework.routers import DefaultRouter
+
 from api.urls import router
 from api.views import HDMDataModelView, OSMDataModelView, RunJob
+from ui import urls as ui_urls
+from ui.views import create_error_view
 
 admin.autodiscover()
 
@@ -72,5 +73,3 @@ urlpatterns += patterns('',
 #handler500 = 'ui.views.internal_error_view'
 
 #handler404 = 'ui.views.not_found_error_view'
-
-

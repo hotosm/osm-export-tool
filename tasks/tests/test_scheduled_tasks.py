@@ -1,16 +1,19 @@
-import logging
 import json
+import logging
 import uuid
-from django.conf import settings
-from django.test import TestCase
-from django.contrib.auth.models import User, Group
-from django.utils import timezone
-from mock import Mock, patch, PropertyMock, MagicMock
 from unittest import skip
-from jobs.models import ExportFormat, Job
+
+from mock import MagicMock, Mock, PropertyMock, patch
+
+from django.conf import settings
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from tasks.scheduled_tasks import PurgeUnpublishedExportsTask
+from django.test import TestCase
+from django.utils import timezone
+
+from jobs.models import ExportFormat, Job
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
+from tasks.scheduled_tasks import PurgeUnpublishedExportsTask
 
 logger = logging.getLogger(__name__)
 

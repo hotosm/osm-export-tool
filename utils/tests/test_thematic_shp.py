@@ -1,21 +1,24 @@
 import logging
-import sys
-import uuid
 import os
 import shutil
 import sqlite3
+import sys
+import uuid
+from unittest import skip
+
+import mock
+from mock import Mock, patch
+
+from django.contrib.auth.models import Group, User
+from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.core.files import File
 from django.test import TestCase
 from django.utils import timezone
-from django.core.files import File
-from unittest import skip
-import mock
-from mock import patch, Mock
-from django.contrib.auth.models import User, Group
-from django.contrib.gis.geos import GEOSGeometry, Polygon
+
+import jobs.presets as presets
 from jobs.models import Job, Tag
 
 from ..thematic_shp import ThematicSQliteToShp
-import jobs.presets as presets
 
 logger = logging.getLogger(__name__)
 
@@ -152,6 +155,3 @@ class TestThematicShp(TestCase):
                                 stdout=pipe, stderr=pipe)
         rmtree.assert_called_once_with(shapefile)
         self.assertEquals(result, zipfile)
-        
-        
-        

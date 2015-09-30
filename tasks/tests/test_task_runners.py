@@ -1,15 +1,20 @@
-import logging
 import json
-import uuid
+import logging
 import os
-from django.test import TestCase
-from django.contrib.auth.models import User, Group
-from mock import Mock, patch, PropertyMock
+import uuid
 from unittest import skip
-from ..task_runners import ExportTaskRunner
-from jobs.models import ExportFormat, Job, Region
+
+from mock import Mock, PropertyMock, patch
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.test import TestCase
+
 from celery.datastructures import ExceptionInfo
+
+from jobs.models import ExportFormat, Job, Region
+
+from ..task_runners import ExportTaskRunner
 
 logger = logging.getLogger(__name__)
   

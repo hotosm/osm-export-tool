@@ -1,13 +1,14 @@
-import os
+import argparse
 import logging
+import os
 import shutil
 import string
 import subprocess
-import argparse
-from lxml import etree
 from string import Template
 from StringIO import StringIO
 from unittest import skip
+
+from lxml import etree
 
 logger = logging.getLogger(__name__)
 

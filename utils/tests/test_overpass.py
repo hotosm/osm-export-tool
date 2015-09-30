@@ -1,21 +1,21 @@
 import logging
+import os
 import sys
 import uuid
-import os
+from unittest import skip
+
+import mock
+from mock import MagicMock, Mock, patch
+
+from django.contrib.auth.models import Group, User
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
 from django.utils import timezone
-from django.contrib.auth.models import User, Group
-from django.contrib.gis.geos import GEOSGeometry, Polygon
-from unittest import skip
-import mock
-from mock import patch, MagicMock, Mock
-from jobs.models import Job, ExportFormat, Tag
 
-from unittest import skip
+from jobs import presets
+from jobs.models import ExportFormat, Job, Tag
 
 from ..overpass import Overpass
-from jobs import presets
-
 
 logger = logging.getLogger(__name__)
 
@@ -121,11 +121,3 @@ class TestOverpass(TestCase):
         self.assertEqual(data, expected[0])
         f.close()
         os.remove(out)
-        
-    
-        
-        
-
-
-    
-    

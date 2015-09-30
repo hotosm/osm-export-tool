@@ -1,14 +1,17 @@
 import logging
+import os
 import sys
 import uuid
-import os
-from django.test import TestCase, TransactionTestCase
-from django.contrib.auth.models import User, Group
-from django.contrib.gis.geos import GEOSGeometry, Polygon
-from jobs.models import Job, ExportFormat
-from ..models import ExportRun, ExportTask, ExportTaskResult
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.gdal import DataSource
+from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
+
+from jobs.models import ExportFormat, Job
+
+from ..models import ExportRun, ExportTask, ExportTaskResult
 
 logger = logging.getLogger(__name__)
 
@@ -114,5 +117,3 @@ class TestExportTask(TestCase):
         saved_result = task.result
         self.assertIsNotNone(saved_result)
         self.assertEqual(result, saved_result)
-
-

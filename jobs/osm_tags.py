@@ -69,10 +69,3 @@ tags = {
 }
 
 OSM_DM = OrderedDict(sorted(tags.items()))
-
-
-
-
-
-
-

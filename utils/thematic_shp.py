@@ -1,13 +1,15 @@
 from __future__ import with_statement
-import os
+
+import argparse
 import json
 import logging
+import os
 import shutil
-import argparse
-import subprocess
-import string
 import sqlite3
+import string
+import subprocess
 from string import Template
+
 from jobs.models import Job
 
 logger = logging.getLogger(__name__)

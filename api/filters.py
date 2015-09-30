@@ -1,8 +1,11 @@
 import logging
 import pdb
+
 import django_filters
+
 from django.db.models import Q
-from jobs.models import Job, ExportConfig
+
+from jobs.models import ExportConfig, Job
 from tasks.models import ExportRun
 
 logger = logging.getLogger(__name__)
@@ -67,4 +70,3 @@ class ExportConfigFilter(django_filters.FilterSet):
             # or all other users published only
             (Q(user__username=value) | (~Q(user__username=value) & Q(published=True)))
         )
-    

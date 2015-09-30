@@ -1,19 +1,24 @@
-import logging
-import sys
-import os
-import re
 import importlib
-from datetime import datetime, timedelta
-from django.conf import settings
-from jobs.models import Job
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
-from jobs.presets import PresetParser
-from celery import chain, group, chord
-from .export_tasks import (OSMConfTask, OverpassQueryTask,
-                           OSMPrepSchemaTask, OSMToPBFConvertTask,
-                           GeneratePresetTask, FinalizeRunTask)
-from django.db import transaction, DatabaseError
+import logging
+import os
 import pdb
+import re
+import sys
+from datetime import datetime, timedelta
+
+from django.conf import settings
+from django.db import DatabaseError, transaction
+
+from celery import chain, chord, group
+
+from jobs.models import Job
+from jobs.presets import PresetParser
+from tasks.models import ExportRun, ExportTask, ExportTaskResult
+
+from .export_tasks import (
+    FinalizeRunTask, GeneratePresetTask, OSMConfTask, OSMPrepSchemaTask,
+    OSMToPBFConvertTask, OverpassQueryTask
+)
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -190,4 +195,3 @@ class ExportTaskRunner(TaskRunner):
 
 def error_handler(task_id=None):
     logger.debug('In error handler %s' % task_id)
-

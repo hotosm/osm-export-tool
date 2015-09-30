@@ -1,17 +1,18 @@
+import argparse
 import logging
 import os
-import string
-import argparse
 import shutil
+import string
 import subprocess
-from django.conf import settings
-from osgeo import ogr, osr, gdal
-from django.utils import timezone
-from django.utils import timezone
 from datetime import datetime
 from string import Template
+
 import requests
+from osgeo import gdal, ogr, osr
 from requests import exceptions
+
+from django.conf import settings
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -194,4 +195,3 @@ if __name__ == '__main__':
         debug = config.get('debug')
     overpass = Overpass(url=url, bbox=bbox, osm=osm, debug=debug)
     overpass.run_query()
-

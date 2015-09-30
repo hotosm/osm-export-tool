@@ -1,15 +1,17 @@
 import logging
-import magic
-import StringIO
 import pdb
+import StringIO
 from collections import OrderedDict
 from uuid import UUID
+
+import magic
+
+from django.conf import settings
+from django.contrib.gis.geos import GEOSException, GEOSGeometry, Polygon
+from django.utils.datastructures import MultiValueDictKeyError
+
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from django.utils.datastructures import MultiValueDictKeyError
-from django.conf import settings
-from django.contrib.gis.geos import Polygon, GEOSException, GEOSGeometry
-
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -125,4 +127,3 @@ def validate_content_type(upload, config_type):
         detail['message'] = 'Uploaded config file has invalid content: {0}'.format(content_type)
         raise serializers.ValidationError(detail)
     return content_type
-
