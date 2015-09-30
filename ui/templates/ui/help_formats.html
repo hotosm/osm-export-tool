@@ -16,7 +16,7 @@
 <a name="shp"></a>
 <h3>{% trans 'Esri SHP' %}</h3>
 <div class="well">
-{% blocktrans %} "The shapefile format developed by Esri spatially describes geometries as either 'points', 'polylines', or 'polygons' with a set of associated attributes. Similar to OSM these can be considered as 'nodes', 'ways','closed ways', and 'relations' respectively. The shapefile is made up of several files formatted to represent different aspects of geodata:{% endblocktrans %}
+{% blocktrans %}The shapefile format developed by Esri spatially describes geometries as either 'points', 'polylines', or 'polygons' with a set of associated attributes. Similar to OSM these can be considered as 'nodes', 'ways', 'closed ways', and 'relations' respectively. The shapefile is made up of several files formatted to represent different aspects of geodata:{% endblocktrans %}
 <ul>
 <li>{% trans '.shp - shape format; feature geometry' %}</li>
 <li>{% trans '.shx - index format; positional index' %}</li>
@@ -24,16 +24,15 @@
 <li>{% trans '.prj - coordinate format; projection information' %}</li>
 </ul>
 
+
 <h4><strong>{% trans 'Schema Options' %}</strong></h4>
-<div class="well">
-{% blocktrans %} "The data is available for download from the Export Tool in two different shapefile schema formats which are detailsed below:' {% endblocktrans %}
+
+{% blocktrans %}The data is available for download from the Export Tool in two different shapefile schema formats which are detailed below:{% endblocktrans %}
 <ul>
 <li>{% trans 'OSM ' %}</li>
-{% blocktrans %} "The OSM schema is the default shapefile export, which provides all the selected features for an area of interest in a single point, polyline and polygon table.{% endblocktrans %}
+{% blocktrans %}The OSM schema is the default shapefile export, which provides all the selected features for an area of interest in a single point, polyline and polygon table.{% endblocktrans %}
 <li>{% trans 'Thematic' %}</li>
-{% blocktrans %} "The HOT generated thematic schema provides the features selected for an area of interest in their individual point, polyline and polygon tables. The following <a href="http://wiki.openstreetmap.org/wiki/User:Bgirardot/How_To_Convert_osm_.pbf_files_to_Esri_Shapefiles" target="_blank">{% trans 'process' %}</a> has been applied to the selected data in order to split the features into their own tables for ease of use by the user. {% endblocktrans %}
-
-
+{% blocktrans %}The HOT generated thematic schema provides the features selected for an area of interest in their individual point, polyline and polygon tables. The following <a href="http://wiki.openstreetmap.org/wiki/User:Bgirardot/How_To_Convert_osm_.pbf_files_to_Esri_Shapefiles" target="_blank">process</a> has been applied to the selected data in order to split the features into their own tables for ease of use by the user. {% endblocktrans %}
 </ul>
 <h4><strong>{% trans 'Compatible Software' %}</strong></h4>
 <ul>

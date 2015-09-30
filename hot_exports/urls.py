@@ -35,6 +35,7 @@ urlpatterns += i18n_patterns('ui.help',
     url(r'^help/pages$', TemplateView.as_view(template_name='ui/help_pages.html'), name='help_pages'),
     url(r'^help/formats$', TemplateView.as_view(template_name='ui/help_formats.html'), name='help_formats'),
     url(r'^help/tags$', TemplateView.as_view(template_name='ui/help_tags.html'), name='help_tags'),
+    url(r'^help/presets$', TemplateView.as_view(template_name='ui/help_presets.html'), name='help_presets'),
     url(r'^help/config$', TemplateView.as_view(template_name='ui/help_config.html'), name='help_config'),
 )
 
