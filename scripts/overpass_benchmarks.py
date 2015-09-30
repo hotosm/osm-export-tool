@@ -4,7 +4,6 @@ from django.utils import timezone
 
 from jobs import presets
 from utils.overpass import Overpass
-from utils.pbf import OSMToPBF
 
 
 """
@@ -28,7 +27,7 @@ def run(*script_args):
         filter_tag = '{0}={1}'.format(kvp['key'], kvp['value'])
         filters.append(filter_tag)
     print filters
-    
+
     print "=============="
     print "Querying Monrovia with OSM filters."
     print timezone.now()
@@ -41,13 +40,13 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
-    
+
     filtered = op.filter()
-    
+
     # check pbf conversion
     #pbf = OSMToPBF(osm=path + '/files/filter.osm', pbffile=path + '/files/filter.pbf', debug=True)
     #pbf.convert()
-    
+
     """
     print "=============="
     print "Querying Monrovia without filters."
@@ -58,8 +57,8 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
-    
-    
+
+
     print "=============="
     print "Querying Liberia with HDM filters."
     print timezone.now()
@@ -69,8 +68,8 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
-    
-    
+
+
     print "=============="
     print "Querying Liberia without filters."
     print timezone.now()

@@ -1,47 +1,29 @@
-import json
+# -*- coding: utf-8 -*-
 import logging
 import os
-import pdb
-import shutil
 from collections import OrderedDict
-from datetime import datetime
 
-import django_filters
-
-from django.conf import settings
-from django.contrib.auth.models import Group, User
-from django.core.files.base import ContentFile
 from django.db import Error, transaction
-from django.db.models import FileField
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from django.utils.translation import ugettext as _
 
-from rest_framework import (
-    authentication, filters, generics, mixins, permissions, renderers, status,
-    views, viewsets
-)
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
 
 from jobs import presets
-from jobs.hdm_tags import HOT_HDM
 from jobs.models import (
     ExportConfig, ExportFormat, Job, Region, RegionMask, Tag
 )
-from jobs.osm_tags import OSM_DM
-from jobs.presets import PresetParser, TagParser
+from jobs.presets import PresetParser
 from serializers import (
     ExportConfigSerializer, ExportFormatSerializer, ExportRunSerializer,
     ExportTaskSerializer, JobSerializer, RegionMaskSerializer,
-    RegionSerializer, TagSerializer
+    RegionSerializer
 )
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
+from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
 
 from .filters import ExportConfigFilter, ExportRunFilter, JobFilter

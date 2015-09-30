@@ -1,13 +1,10 @@
+# -*- coding: utf-8 -*-
 import logging
-import os
-import sys
 import uuid
 
 from django.contrib.auth.models import Group, User
-from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from django.test import TestCase, TransactionTestCase
-from django.utils import timezone
+from django.test import TestCase
 
 from jobs.models import ExportFormat, Job
 
@@ -31,15 +28,15 @@ class TestExportRun(TestCase):
         job = Job.objects.all()[0]
         # add the formats to the job
         job.formats = formats
-    
+
     def test_export_run(self, ):
         job = Job.objects.all()[0]
         run = ExportRun.objects.create(job=job, status='SUBMITTED')
         saved_run = ExportRun.objects.get(uid=str(run.uid))
         self.assertIsNotNone(saved_run)
         self.assertEqual(run, saved_run)
-        
-        
+
+
     def test_get_tasks_for_run(self, ):
         job = Job.objects.all()[0]
         run = ExportRun.objects.create(job=job)
@@ -62,7 +59,7 @@ class TestExportRun(TestCase):
         tasks = runs[0].tasks.all()
         self.assertEquals(5 , len(runs))
         self.assertEquals(1, len(tasks))
-        
+
     def test_delete_export_run(self, ):
         job = Job.objects.all()[0]
         run =  ExportRun.objects.create(job=job)
@@ -71,9 +68,9 @@ class TestExportRun(TestCase):
         runs = job.runs.all()
         self.assertEquals(1, runs.count())
         run_uid = run.uid
-        
+
         run.delete()
-  
+
 
 class TestExportTask(TestCase):
     """
@@ -100,7 +97,7 @@ class TestExportTask(TestCase):
         self.assertEqual(self.uid, self.task.uid)
         saved_task = ExportTask.objects.get(uid=self.uid)
         self.assertEqual(saved_task, self.task)
-        
+
 
     def test_export_task_result(self, ):
         """

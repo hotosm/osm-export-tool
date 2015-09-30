@@ -1,19 +1,12 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
-import shutil
-import sqlite3
-import sys
-import uuid
-from unittest import skip
 
-import mock
 from mock import Mock, patch
 
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from django.core.files import File
 from django.test import TestCase
-from django.utils import timezone
 
 import jobs.presets as presets
 from jobs.models import Job, Tag
@@ -23,7 +16,7 @@ from ..thematic_shp import ThematicSQliteToShp
 logger = logging.getLogger(__name__)
 
 class TestThematicShp(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -45,9 +38,9 @@ class TestThematicShp(TestCase):
                 data_model = 'PRESET',
                 job = self.job
             )
-    
+
     @patch('shutil.copy')
-    @patch('os.path.exists')   
+    @patch('os.path.exists')
     def testInit(self, exists, copy):
         sqlite = self.path + '/files/test.sqlite'
         shapefile= self.path + '/files/thematic_shp'
@@ -62,7 +55,7 @@ class TestThematicShp(TestCase):
         )
         exists.assert_called_twice()
         copy.assert_called_once()
-    
+
     @patch('shutil.copy')
     @patch('os.path.exists')
     @patch('sqlite3.connect')
@@ -91,8 +84,8 @@ class TestThematicShp(TestCase):
         conn.load_extention.assert_called_once()
         conn.cursor.assert_called_once()
         #cur.execute.assert_called_with(cmd)
-    
-    @patch('shutil.copy')   
+
+    @patch('shutil.copy')
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -125,8 +118,8 @@ class TestThematicShp(TestCase):
         popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         self.assertEquals(out, shapefile)
-    
-    @patch('shutil.copy')  
+
+    @patch('shutil.copy')
     @patch('os.path.exists')
     @patch('shutil.rmtree')
     @patch('subprocess.PIPE')

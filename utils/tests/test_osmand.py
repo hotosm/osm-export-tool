@@ -1,15 +1,11 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
-import shutil
-from StringIO import StringIO
-from unittest import skip
 
-import mock
 from mock import Mock, patch
 
 from django.conf import settings
 from django.test import TestCase
-from django.utils import timezone
 
 from ..osmand import OSMToOBF, UpdateBatchXML
 

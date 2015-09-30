@@ -1,9 +1,9 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 import json
 import logging
 import os
-import sys
 from StringIO import StringIO
 from unittest import skip
 
@@ -14,7 +14,6 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.test import TestCase
-from django.utils import timezone
 
 from ..hdm_tags import HOT_HDM
 from ..models import ExportConfig, ExportFormat, Job, Tag
@@ -23,16 +22,16 @@ from ..presets import PresetParser, TagParser
 logger = logging.getLogger(__name__)
 
 class TestPresetParser(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
-    
+
     def test_parse_preset(self,):
         parser = PresetParser(self.path + '/files/hdm_presets.xml')
         tags = parser.parse()
         self.assertIsNotNone(tags)
         self.assertEquals(238, len(tags))
-    
+
     @skip
     def test_validate_hdm_presets(self, ):
         schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
@@ -42,7 +41,7 @@ class TestPresetParser(TestCase):
         tree = etree.parse(xml)
         valid = xmlschema.validate(tree)
         self.assertTrue(valid)
-        
+
     def test_validate_osm_presets(self, ):
         schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
         xmlschema_doc = etree.parse(schema)
@@ -51,13 +50,13 @@ class TestPresetParser(TestCase):
         tree = etree.parse(xml)
         valid = xmlschema.validate(tree)
         self.assertTrue(valid)
-        
+
     def test_build_hdm_preset_dict(self,):
         parser = PresetParser(self.path + '/files/hdm_presets.xml')
         group_dict = parser.build_hdm_preset_dict()
         #logger.debug(group_dict)
         #logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
-        
+
     def test_build_osm_preset_dict(self,):
         parser = PresetParser(self.path + '/files/osm_presets.xml')
         group_dict = parser.build_hdm_preset_dict()
@@ -66,10 +65,10 @@ class TestPresetParser(TestCase):
 
 
 class TestHDMToJSON(TestCase):
-    
+
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-    
+
     @skip
     def test_hdm_to_json(self,):
         js = json.dumps(HOT_HDM, sort_keys=False)
@@ -97,7 +96,7 @@ class TestTagParser(TestCase):
         # add the formats to the job
         self.job.formats = self.formats
         self.job.save()
-        
+
         # add tags
         parser = PresetParser(self.path + '/files/hdm_presets.xml')
         tags = parser.parse()
@@ -114,7 +113,7 @@ class TestTagParser(TestCase):
                 groups = tag_dict['groups']
             )
         self.assertEquals(238, self.job.tags.all().count())
-        
+
     def test_parse_tags(self,):
         job = Job.objects.all()[0]
         tag_parser = TagParser(tags=job.tags.all())
@@ -142,7 +141,7 @@ class TestTagParser(TestCase):
         sf = File(open(os.path.abspath('.') + '/media/export/config/preset/hdm_custom_preset.xml'))
         self.assertIsNotNone(sf) # check the file gets created on disk
         sf.close()
-        
+
         # validate the custom preset
         schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
         xmlschema_doc = etree.parse(schema)

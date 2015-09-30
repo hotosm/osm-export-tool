@@ -1,33 +1,28 @@
+# -*- coding: utf-8 -*-
 # test cases for HOT Export Tasks
 import cPickle
-import json
 import logging
 import os
 import sys
-import traceback
 import uuid
-from unittest import skip
 
-from mock import MagicMock, Mock, PropertyMock, patch
+from mock import Mock, PropertyMock, patch
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from django.core.mail import EmailMessage
 from django.test import TestCase
 
 from celery.datastructures import ExceptionInfo
 
 from jobs import presets
-from jobs.models import ExportFormat, Job, Tag
+from jobs.models import Job, Tag
 from tasks.export_tasks import (
-    ExportTask, ExportTaskErrorHandler, FinalizeRunTask, GarminExportTask,
+    ExportTaskErrorHandler, FinalizeRunTask, GarminExportTask,
     GeneratePresetTask, KmlExportTask, ObfExportTask, OSMConfTask,
     OSMPrepSchemaTask, OSMToPBFConvertTask, OverpassQueryTask, ShpExportTask
 )
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
-
-from ..task_runners import ExportTaskRunner
 
 logger = logging.getLogger(__name__)
 

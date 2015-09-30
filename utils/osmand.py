@@ -1,12 +1,11 @@
+# -*- coding: utf-8 -*-
 import argparse
 import logging
 import os
 import shutil
-import string
 import subprocess
 from string import Template
 from StringIO import StringIO
-from unittest import skip
 
 from lxml import etree
 

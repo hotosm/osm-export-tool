@@ -4,7 +4,6 @@
     ./manage.py runscript export_task_test_harness --settings=hot_exports.settings -v2
     Depends on django-extensions.
 """
-import logging
 import os
 
 from django.contrib.auth.models import User

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 
 from social import utils
@@ -37,25 +38,25 @@ def email_validation(strategy, backend, code): # pragma: no cover
     verifyURL = "{0}?verification_code={1}&signature={2}".format(
         reverse('osm:complete', args=(backend.name,)),
         code.code, signature)
-    verifyURL = strategy.request.build_absolute_uri(verifyURL)   
- 
+    verifyURL = strategy.request.build_absolute_uri(verifyURL)
+
     emailText = ''
     emailHTML = """Welcome to Hot Exports
     In order to login with your new user account, you need to verify your email address with us.
     Please copy and paste the following into your browser's url bar: {verifyURL}
     """.format(verifyURL=verifyURL)
-    
+
     kwargs = {
         "subject": "Please Verify HOT Exports Account",
         "body": emailText,
         "from_email": "HOT Exports <exports@hotosm.org>",
         "to": [code.email]
     }
-    
+
     email = EmailMultiAlternatives(**kwargs)
     email.attach_alternative(emailHTML, "text/html")
     email.send()
-    
+
 
 
 def partial_pipeline_data(backend, user=None, *args, **kwargs): # pragma: no cover
@@ -91,5 +92,5 @@ def partial_pipeline_data(backend, user=None, *args, **kwargs): # pragma: no cov
             return xargs, xkwargs
         else:
             backend.strategy.clean_partial_pipeline()
-            
+
 utils.partial_pipeline_data = partial_pipeline_data

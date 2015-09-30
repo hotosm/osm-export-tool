@@ -1,15 +1,10 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
-import sys
-import uuid
-from unittest import skip
 
-import mock
 from mock import Mock, patch
 
-from django.core.files import File
 from django.test import SimpleTestCase
-from django.utils import timezone
 
 from ..shp import SQliteToShp
 
@@ -17,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 class TestSQliteToShp(SimpleTestCase):
-    
+
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -41,7 +36,7 @@ class TestSQliteToShp(SimpleTestCase):
         popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         self.assertEquals(out, shapefile)
-    
+
     @patch('os.path.exists')
     @patch('shutil.rmtree')
     @patch('subprocess.PIPE')

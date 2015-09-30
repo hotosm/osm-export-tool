@@ -1,8 +1,7 @@
-import json
+# -*- coding: utf-8 -*-
 import logging
 import os
 import uuid
-from unittest import skip
 
 from mock import Mock, PropertyMock, patch
 
@@ -10,17 +9,15 @@ from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
 
-from celery.datastructures import ExceptionInfo
-
 from jobs.models import ExportFormat, Job, Region
 
 from ..task_runners import ExportTaskRunner
 
 logger = logging.getLogger(__name__)
-  
+
 
 class TestExportTaskRunner(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='TestDefaultExportExtentGroup')
@@ -35,7 +32,7 @@ class TestExportTaskRunner(TestCase):
         self.job.region = self.region
         self.uid = str(self.job.uid)
         self.job.save()
-    
+
     @patch('tasks.task_runners.chain')
     @patch('tasks.export_tasks.GarminExportTask')
     @patch('tasks.export_tasks.ShpExportTask')
@@ -64,4 +61,4 @@ class TestExportTaskRunner(TestCase):
         tasks = run.tasks.all()
         self.assertIsNotNone(tasks)
         self.assertEquals(6, len(tasks)) # 4 initial tasks + 1 shape export task
-        self.assertFalse(hasattr(tasks[0], 'result')) # no result yet..    
+        self.assertFalse(hasattr(tasks[0], 'result')) # no result yet..

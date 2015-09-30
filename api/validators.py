@@ -1,17 +1,13 @@
+# -*- coding: utf-8 -*-
 import logging
-import pdb
-import StringIO
 from collections import OrderedDict
-from uuid import UUID
 
 import magic
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSException, GEOSGeometry, Polygon
-from django.utils.datastructures import MultiValueDictKeyError
 
 from rest_framework import serializers
-from rest_framework.reverse import reverse
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -44,7 +40,7 @@ def validate_search_bbox(extents):
         else:
             raise serializers.ValidationError(detail)
     except GEOSException as e:
-        raise serializers.ValidationError(detail) 
+        raise serializers.ValidationError(detail)
 
 def validate_bbox(extents, user=None):
     max_extent = settings.JOB_MAX_EXTENT
@@ -67,11 +63,11 @@ def validate_bbox(extents, user=None):
         else:
             raise serializers.ValidationError(detail)
     except GEOSException as e:
-        raise serializers.ValidationError(detail) 
+        raise serializers.ValidationError(detail)
 
 def validate_bbox_params(data):
     detail = OrderedDict()
-    
+
     # test for number
     lon_coords = [float(data['xmin']), float(data['xmax'])]
     lat_coords = [float(data['ymin']), float(data['ymax'])]
@@ -81,13 +77,13 @@ def validate_bbox_params(data):
         detail['id'] = 'inverted_coordinates'
         detail['message'] = 'xmin greater than xmax.'
         raise serializers.ValidationError(detail)
-   
+
     if ((lat_coords[0] >= 0 and lat_coords[0] > lat_coords[1])
         or (lat_coords[0] < 0 and lat_coords[0] > lat_coords[1])):
         detail['id'] = 'inverted_coordinates'
         detail['message'] = 'ymin greater than ymax.'
         raise serializers.ValidationError(detail)
-    
+
     # test lat long extents
     for lon in lon_coords:
         if (lon < -180 or lon > 180):
@@ -99,9 +95,9 @@ def validate_bbox_params(data):
             detail['id'] = 'invalid_latitude'
             detail['message'] = 'Invalid latitude coordinate: {0}'.format(lat)
             raise serializers.ValidationError(detail)
-    
+
     return (data['xmin'], data['ymin'], data['xmax'], data['ymax'])
-   
+
 def validate_string_field(name=None, data=None):
     detail = OrderedDict()
     detail['id'] = 'missing_parameter'
@@ -115,7 +111,7 @@ def validate_string_field(name=None, data=None):
             return value
     except Exception:
         raise serializers.ValidationError(detail)
-    
+
 def validate_content_type(upload, config_type):
     ACCEPT_MIME_TYPES = {'PRESET': ('application/xml',),
                         'TRANSFORM': ('application/x-sql', 'text/plain'),

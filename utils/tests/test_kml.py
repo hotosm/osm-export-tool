@@ -1,15 +1,10 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
-import sys
-import uuid
-from unittest import skip
 
-import mock
 from mock import Mock, patch
 
-from django.core.files import File
 from django.test import SimpleTestCase
-from django.utils import timezone
 
 from ..kml import SQliteToKml
 
@@ -17,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 class TestSQliteToKml(SimpleTestCase):
-    
+
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -43,7 +38,7 @@ class TestSQliteToKml(SimpleTestCase):
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
         self.assertEquals(out, kmlfile)
-    
+
     @patch('os.path.exists')
     @patch('os.remove')
     @patch('subprocess.PIPE')
