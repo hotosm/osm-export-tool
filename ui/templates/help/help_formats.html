@@ -13,26 +13,29 @@
 <div class="well">
 {% trans 'The OSM Export Tool allows the data selected by the user to be exported into any of the following five file formats: Esri SHP (OSM and Thematic), Garmin IMG, Google KMZ, OSM PBF, and SQLite SQL. This help page provides the user with information about these file formats. It also lists some external links where the user can find further information.' %}
 </div>
+
 <a name="shp"></a>
 <h3>{% trans 'Esri SHP' %}</h3>
 <div class="well">
-{% blocktrans %}The shapefile format developed by Esri spatially describes geometries as either 'points', 'polylines', or 'polygons' with a set of associated attributes. Similar to OSM these can be considered as 'nodes', 'ways', 'closed ways', and 'relations' respectively. The shapefile is made up of several files formatted to represent different aspects of geodata:{% endblocktrans %}
+{% blocktrans %}The shapefile format developed by Esri spatially describes geometries as either 'points', 'polylines', or 'polygons' with a set of associated attributes. Similar to OSM these can be considered as 'nodes', 'ways','closed ways', and 'relations' respectively. The shapefile is made up of several files formatted to represent different aspects of geodata:{% endblocktrans %}
 <ul>
 <li>{% trans '.shp - shape format; feature geometry' %}</li>
 <li>{% trans '.shx - index format; positional index' %}</li>
 <li>{% trans '.dbf - attribute format; columnar information' %}</li>
 <li>{% trans '.prj - coordinate format; projection information' %}</li>
 </ul>
-
+</div>
 
 <h4><strong>{% trans 'Schema Options' %}</strong></h4>
-
-{% blocktrans %}The data is available for download from the Export Tool in two different shapefile schema formats which are detailed below:{% endblocktrans %}
+<div class="well">
+{% blocktrans %}The data is available for download from the Export Tool in two different shapefile schema formats which are detailsed below:{% endblocktrans %}
 <ul>
 <li>{% trans 'OSM ' %}</li>
 {% blocktrans %}The OSM schema is the default shapefile export, which provides all the selected features for an area of interest in a single point, polyline and polygon table.{% endblocktrans %}
 <li>{% trans 'Thematic' %}</li>
 {% blocktrans %}The HOT generated thematic schema provides the features selected for an area of interest in their individual point, polyline and polygon tables. The following <a href="http://wiki.openstreetmap.org/wiki/User:Bgirardot/How_To_Convert_osm_.pbf_files_to_Esri_Shapefiles" target="_blank">process</a> has been applied to the selected data in order to split the features into their own tables for ease of use by the user. {% endblocktrans %}
+
+
 </ul>
 <h4><strong>{% trans 'Compatible Software' %}</strong></h4>
 <ul>
@@ -49,14 +52,15 @@
 
 <a name="img"></a>
 <h3>{% trans 'Garmin IMG' %}</h3>
-<div class="well">{% trans 'The image file contains all the information needed to render a map on a Garmin GPS unit. The hard-disk image is a flat file system complete with a partition table, that does not directly support the concept of subdirectories, but does provide a kind of sub-directory structure. The image file contains several subfiles:' %}
+<div class="well">
+{% trans 'The image file contains all the information needed to render a map on a Garmin GPS unit. The hard-disk image is a flat file system complete with a partition table, that does not directly support the concept of subdirectories, but does provide a kind of sub-directory structure. The image file contains several subfiles:' %}
 <ul>
 <li>{% trans '.rgn - map elements; polylines, polygons and points' %}</li>
 <li>{% trans '.lbl - labels; map elements, city names, localities, etc' %}</li>
 <li>{% trans '.tre - map structure information; data tree' %}</li>
 <li>{% trans '.net - road network information' %}</li>
 <li>{% trans '.nod - routing information' %}</li>
-<li>{% trans '.mdr - searchable address table for routing destinations' %}</li>
+<li>{% trans '.mdr - searchable address table for routing desinations' %}</li>
 </ul>
 <h4><strong>{% trans 'Compatible Software' %}</strong></h4>
 <ul>
@@ -92,7 +96,7 @@
 <a name="pbf"></a>
 <h3>{% trans 'OSM Source PBF' %}</h3>
 <div class="well">
-{% trans 'The Protocolbuffer Binary Format (PBF) is a highly compressed format intended as an alternative to OSM XML. PBF and XML are the two main formats of the OSM Planet file. The Planet.osm is the OSM data in one file with all the nodes, ways and relations that make up the map.' %}
+{% trans 'The Protocolbuffer Binary Format (PBF) is a highly compressed optimisted format intended as an alternative to the XML, which are the two main formats of the OSM Planet file. The Planet.osm is the OSM data in one file with all the nodes, ways and relations that make up the map.' %}
 <h4><strong>{% trans 'Compatible Software' %}</strong></h4>
 <ul>
 <li>{% trans 'JOSM' %}</li>
