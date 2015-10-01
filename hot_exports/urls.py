@@ -12,7 +12,7 @@ from api.urls import router
 from api.views import HDMDataModelView, OSMDataModelView, RunJob
 from ui import urls as ui_urls
 from ui.views import (
-    create_error_view, help_create, help_exports, help_features, help_formats,
+    about, create_error_view, help_create, help_exports, help_features, help_formats,
     help_main, help_presets
 )
 
@@ -26,7 +26,7 @@ urlpatterns += i18n_patterns('ui.views',
     url(r'^login/$', 'login', name="login"),
     url(r'^logout$', 'logout', name='logout'),
     url(r'^error$', create_error_view, name='error'),
-    url(r'^about$', TemplateView.as_view(template_name='ui/about.html'), name='about'),
+    url(r'^about$', about, name='about'),
     url(r'^update$', TemplateView.as_view(template_name='ui/upgrade.html'), name='update'),
     url(r'^email/$', 'require_email', name='require_email'),
 )

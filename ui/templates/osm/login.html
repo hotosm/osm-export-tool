@@ -11,10 +11,10 @@
                 <h3>{% trans 'Download up-to-date humanitarian maps for GIS analysis or for use in GPS devices and Smartphones.' %}</h3>
                 {% trans 'This platform allows you to create custom OpenStreetMap exports for various HOT regions. You can specify an area of interest and a list of features (OpenStreetMap tags) for the export. A current OpenStreetMap data extract for that area in various data formats is then created for you within minutes.' %}
                 <h2>{% trans 'How to Get Started'  %}</h2>
-                {% blocktrans %}You can view and search through existing HOT exports at our <a href="/jobs">Exports</a> page. You do not need an account to view or search for existing exports.
+                {% blocktrans %}You can view and search through existing HOT exports at our <a href="{{ exports_url }}">Exports</a> page. You do not need an account to view or search for existing exports.
                 If you want to create an export and you are a new user, please <a href="/osm/login/openstreetmap">login</a> with your OpenStreetMap account. If this is the first
                 time you have logged into HOT Exports you will be asked to provide a valid email address.
-                More detailed help on using HOT Exports is available on our <a href="/help">help</a> page.
+                More detailed help on using HOT Exports is available on our <a href="{{ help_url }}">help</a> page.
                 {% endblocktrans %}
             </div>
         </div>

@@ -42,8 +42,14 @@ def clone_export(request, uuid=None):
 
 
 def login(request):
+    exports_url = reverse('list')
+    help_url = reverse('help')
     if not request.user.is_authenticated():
-        return render_to_response('osm/login.html', {}, RequestContext(request))
+        return render_to_response(
+            'osm/login.html',
+            {'exports_url': exports_url, 'help_url': help_url},
+            RequestContext(request)
+        )
     else:
         return redirect('create')
 
@@ -63,9 +69,18 @@ def require_email(request):
 
 
 @require_http_methods(['GET'])
+def about(request):
+    exports_url = reverse('list')
+    help_url = reverse('help')
+    return render_to_response(
+        'ui/about.html',
+        {'exports_url': exports_url, 'help_url': help_url},
+        RequestContext(request)
+    )
+
+@require_http_methods(['GET'])
 def help_main(request):
     return render_to_response('help/help.html', {}, RequestContext(request))
-
 
 @require_http_methods(['GET'])
 def help_create(request):
@@ -77,13 +92,11 @@ def help_create(request):
         RequestContext(request)
     )
 
-
 @require_http_methods(['GET'])
 def help_features(request):
     return render_to_response(
         'help/help_features.html', {}, RequestContext(request)
     )
-
 
 @require_http_methods(['GET'])
 def help_exports(request):
@@ -93,13 +106,11 @@ def help_exports(request):
         'help/help_exports.html', {'export_url': export_url}, RequestContext(request)
     )
 
-
 @require_http_methods(['GET'])
 def help_formats(request):
     return render_to_response(
         'help/help_formats.html', {}, RequestContext(request)
     )
-
 
 @require_http_methods(['GET'])
 def help_presets(request):
@@ -109,7 +120,6 @@ def help_presets(request):
         {'configurations_url': configurations_url},
         RequestContext(request)
     )
-
 
 # error views
 
