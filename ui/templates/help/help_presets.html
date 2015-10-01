@@ -6,13 +6,13 @@
 <div class="help">
 <a name="top"></a>
 <ol class="breadcrumb">
-  <li><a href="/help">{% trans 'Help' %}</a></li>
+  <li><a href="{% url 'help' %}">{% trans 'Help' %}</a></li>
   <li class="active">{% trans 'Presets' %}</li>
 </ol>
 
 <h2>{% trans 'Presets' %}</h2>
 <div class="well">
-{% trans 'The <a href="http://hot.geoweb.io/en/exports/configurations/" target="_blank">Presets</a> page is where the user can filter and search existing saved preset files, as well as upload one from their local desktop. Please note an account is not needed to view or search existing presets, but is required to upload one and only the user who originally uploaded the preset can delete it.' %}
+{% blocktrans %}The <a href="{{ configurations_url }}" target="_blank">Presets</a> page is where the user can filter and search existing saved preset files, as well as upload one from their local desktop. Please note an account is not needed to view or search existing presets, but is required to upload one and only the user who originally uploaded the preset can delete it.{% endblocktrans %}
 
 <p>{% trans "The user can use an XML preset file with the Export Tool to specify which features they would like to export from the selected area based on identified tags. This help page will provide step by step guidance for the 'Presets' page, and how to search, download, upload and customise presets." %}</p>
 </div>
@@ -66,7 +66,7 @@
 
 <p>Once the export has run, you can access your customised preset file from either the list of files on the right side of the 'Export Details' page or from the preset table on the 'Presets' page.</p>{% endblocktrans %}
 <ul>
-    <li><strong>{% trans 'Export Tool' %}:</strong> <a href="http://hot.geoweb.io/en/exports/configurations/" target="_blank">{% trans 'Presets' %}</a>.</li>
+    <li><strong>{% trans 'Export Tool' %}:</strong> <a href="{{ configurations_url }}" target="_blank">{% trans 'Presets' %}</a>.</li>
 </ul>
 
 <a href="#top">{% trans 'top' %}</a>

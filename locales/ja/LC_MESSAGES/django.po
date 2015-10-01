@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-30 16:56+0000\n"
-"PO-Revision-Date: 2015-09-30 16:49+0000\n"
+"POT-Creation-Date: 2015-10-01 14:46+0000\n"
+"PO-Revision-Date: 2015-10-01 14:40+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/hotosm/osm-export-tool2/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -17,92 +17,92 @@ msgstr ""
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: api/serializers.py:349
+#: api/serializers.py:350
 msgid "invalid export format."
 msgstr ""
 
-#: api/serializers.py:350
+#: api/serializers.py:351
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr ""
 
-#: api/serializers.py:380
+#: api/serializers.py:381
 msgid "xmin is required."
 msgstr ""
 
-#: api/serializers.py:381
+#: api/serializers.py:382
 msgid "invalid xmin value."
 msgstr ""
 
-#: api/serializers.py:387
+#: api/serializers.py:388
 msgid "ymin is required."
 msgstr ""
 
-#: api/serializers.py:388
+#: api/serializers.py:389
 msgid "invalid ymin value."
 msgstr ""
 
-#: api/serializers.py:394
+#: api/serializers.py:395
 msgid "xmax is required."
 msgstr ""
 
-#: api/serializers.py:395
+#: api/serializers.py:396
 msgid "invalid xmax value."
 msgstr ""
 
-#: api/serializers.py:401
+#: api/serializers.py:402
 msgid "ymax is required."
 msgstr ""
 
-#: api/serializers.py:402
+#: api/serializers.py:403
 msgid "invalid ymax value."
 msgstr ""
 
-#: api/views.py:95
+#: api/views.py:74
 msgid "missing_bbox_parameter"
 msgstr ""
 
-#: api/views.py:96
+#: api/views.py:75
 msgid "Missing bounding box parameter"
 msgstr ""
 
-#: api/views.py:199
+#: api/views.py:178
 msgid "server_error"
 msgstr ""
 
-#: api/views.py:204
+#: api/views.py:183
 msgid "Invalid format provided."
 msgstr ""
 
-#: api/views.py:235
+#: api/views.py:214
 msgid "Failed to run Export"
 msgstr ""
 
-#: api/views.py:237
+#: api/views.py:216
 msgid "Export not found"
 msgstr ""
 
-#: hot_exports/settings/base.py:18
+#: hot_exports/settings/base.py:21
 msgid "English"
 msgstr ""
 
-#: hot_exports/settings/base.py:19
+#: hot_exports/settings/base.py:22
 msgid "Bahasa Indonesia"
 msgstr ""
 
-#: hot_exports/settings/base.py:20
+#: hot_exports/settings/base.py:23
 msgid "German"
 msgstr ""
 
-#: hot_exports/settings/base.py:21
+#: hot_exports/settings/base.py:24
 msgid "Spanish"
 msgstr ""
 
-#: hot_exports/settings/base.py:22
+#: hot_exports/settings/base.py:25
 msgid "Japanese"
 msgstr ""
 
-#: hot_exports/settings/base.py:23
+#: hot_exports/settings/base.py:26
 msgid "French"
 msgstr ""
 
@@ -210,12 +210,13 @@ msgid "Help"
 msgstr ""
 
 #: ui/templates/help/help_create.html:15
+#, python-format
 msgid ""
-"The <a href=\"http://hot.geoweb.io/en/exports/create/\" "
-"target=\"_blank\">Create</a> page is where the user can select an area of "
-"interest, describe the export, select file formats and feature tags, load a "
-"preset file and specify to either keep the export private or share it "
-"publicly. Please note that an account is needed to create an export."
+"The <a href=\"%(create_url)s\" target=\"_blank\">Create</a> page is where "
+"the user can select an area of interest, describe the export, select file "
+"formats and feature tags, load a preset file and specify to either keep the "
+"export private or share it publicly. Please note that an account is needed "
+"to create an export."
 msgstr ""
 
 #: ui/templates/help/help_create.html:17
@@ -225,7 +226,7 @@ msgstr ""
 #: ui/templates/help/help_create.html:19
 msgid ""
 "The 'Create' page is set up like a wizard so that the user is guided through the required steps to create an export. The user can not move on to the next section until they have completed the neccessary parts of the current section.\n"
-"<p>Similarly, certain functionaly will be locked if another method has been chosen, such as the 'Tree Tag' and 'Preset File'. These can not be both applied to the same export, and the use of one method will deactivate the other.</p>\n"
+"<p>Similarly, certain functionality will be locked if another method has been chosen, such as the 'Tree Tag' and 'Preset File'. These can not be both applied to the same export, and the use of one method will deactivate the other.</p>\n"
 "There are five tabs that make up the 'Export Wizard' on the 'Create' page. These include the 'Describe Export', 'File Formats', 'Tree Tag', 'Preset File' and 'Export Summary', which are detailed below: "
 msgstr ""
 
@@ -252,12 +253,12 @@ msgid "Tree Tag:"
 msgstr ""
 
 #: ui/templates/help/help_create.html:25
+#, python-format
 msgid ""
 "Expand and select features from the HDM or OSM tree tag for export and click"
 " 'Next'. Preset files on the next tab can not be used if tags are selected "
-"from either tree. Please see the <a "
-"href='http://hot.geoweb.io/en/help/features' target='_blank'>Feature "
-"Selection</a> help page for further information."
+"from either tree. Please see the <a href=\"%(help_features_url)s\" "
+"target='_blank'>Feature Selection</a> help page for further information."
 msgstr ""
 
 #: ui/templates/help/help_create.html:26
@@ -348,12 +349,12 @@ msgid ""
 msgstr ""
 
 #: ui/templates/help/help_exports.html:14
+#, python-format
 msgid ""
-"The <a href=\"http://hot.geoweb.io/en/exports/\" "
-"target=\"_blank\">Exports</a> page is where the user can filter and search "
-"existing saved exports, and either rerun or clone it. Please note an account"
-" is not needed view or search for existing exports, but is required to "
-"rerun."
+"The <a href=\"%(export_url)s\" target=\"_blank\">Exports</a> page is where "
+"the user can filter and search existing saved exports, and either rerun or "
+"clone it. Please note an account is not needed view or search for existing "
+"exports, but is required to rerun. "
 msgstr ""
 
 #: ui/templates/help/help_exports.html:18
@@ -882,13 +883,13 @@ msgid "Wikipedia | SQL"
 msgstr ""
 
 #: ui/templates/help/help_presets.html:15
+#, python-format
 msgid ""
-"The <a href=\"http://hot.geoweb.io/en/exports/configurations/\" "
-"target=\"_blank\">Presets</a> page is where the user can filter and search "
-"existing saved preset files, as well as upload one from their local desktop."
-" Please note an account is not needed to view or search existing presets, "
-"but is required to upload one and only the user who originally uploaded the "
-"preset can delete it."
+"The <a href=\"%(configurations_url)s\" target=\"_blank\">Presets</a> page is"
+" where the user can filter and search existing saved preset files, as well "
+"as upload one from their local desktop. Please note an account is not needed"
+" to view or search existing presets, but is required to upload one and only "
+"the user who originally uploaded the preset can delete it."
 msgstr ""
 
 #: ui/templates/help/help_presets.html:17
@@ -974,7 +975,7 @@ msgstr ""
 msgid ""
 "<p>To customise a preset file using the 'Tree Tag' tab as part of the 'Export Wizard', you must go through the process of creating a new export. </p>\n"
 "\n"
-"<p>To save the tag selection for your customised preset file, make sure you tick either the 'Save feature selection privately' or the 'Publish feature selection publicly' button on the 'Export Summary' tab.</p>\t\n"
+"<p>To save the tag selection for your customised preset file, make sure you tick either the 'Save feature selection privately' or the 'Publish feature selection publicly' button on the 'Export Summary' tab.</p>\n"
 "\n"
 "<p>Once the export has run, you can access your customised preset file from either the list of files on the right side of the 'Export Details' page or from the preset table on the 'Presets' page.</p>"
 msgstr ""

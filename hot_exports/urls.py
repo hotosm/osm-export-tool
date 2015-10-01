@@ -11,7 +11,10 @@ from django.views.i18n import javascript_catalog
 from api.urls import router
 from api.views import HDMDataModelView, OSMDataModelView, RunJob
 from ui import urls as ui_urls
-from ui.views import create_error_view
+from ui.views import (
+    create_error_view, help_create, help_exports, help_features, help_formats,
+    help_main, help_presets
+)
 
 admin.autodiscover()
 
@@ -29,12 +32,12 @@ urlpatterns += i18n_patterns('ui.views',
 )
 
 urlpatterns += i18n_patterns('ui.help',
-    url(r'^help$', TemplateView.as_view(template_name='help/help.html'), name='help'),
-    url(r'^help/create$', TemplateView.as_view(template_name='help/help_create.html'), name='help_create'),
-    url(r'^help/features$', TemplateView.as_view(template_name='help/help_features.html'), name='help_features'),
-    url(r'^help/exports$', TemplateView.as_view(template_name='help/help_exports.html'), name='help_exports'),
-    url(r'^help/formats$', TemplateView.as_view(template_name='help/help_formats.html'), name='help_formats'),
-    url(r'^help/presets$', TemplateView.as_view(template_name='help/help_presets.html'), name='help_presets'),
+    url(r'^help$', help_main, name='help'),
+    url(r'^help/create$', help_create, name='help_create'),
+    url(r'^help/features$', help_features, name='help_features'),
+    url(r'^help/exports$', help_exports, name='help_exports'),
+    url(r'^help/formats$', help_formats, name='help_formats'),
+    url(r'^help/presets$', help_presets, name='help_presets'),
 )
 
 urlpatterns += i18n_patterns('admin.views',

@@ -5,13 +5,13 @@
 <div class="help">
 <a name="top"></a>
 <ol class="breadcrumb">
-  <li><a href="/help">{% trans 'Help' %}</a></li>
+  <li><a href="{% url 'help' %}">{% trans 'Help' %}</a></li>
   <li class="active">{% trans 'Exports' %}</li>
 </ol>
 
 <h2>{% trans 'Exports' %}</h2>
 <div class="well">
-{% trans 'The <a href="http://hot.geoweb.io/en/exports/" target="_blank">Exports</a> page is where the user can filter and search existing saved exports, and either rerun or clone it. Please note an account is not needed view or search for existing exports, but is required to rerun.' %}
+{% blocktrans %}The <a href="{{ export_url }}" target="_blank">Exports</a> page is where the user can filter and search existing saved exports, and either rerun or clone it. Please note an account is not needed view or search for existing exports, but is required to rerun. {% endblocktrans %}
 </div>
 
 <a name="filter"></a>

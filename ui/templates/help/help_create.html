@@ -5,14 +5,14 @@
 <div class="help">
 <a name="top"></a>
 <ol class="breadcrumb">
-  <li><a href="/help">{% trans 'Help' %}</a></li>
+  <li><a href="{% url 'help' %}">{% trans 'Help' %}</a></li>
   <li class="active">{% trans 'Create' %}</li>
 </ol>
 
 <a name="create"></a>
 <h2>{% trans 'Create' %}</h2>
 <div class="well">
-{% trans 'The <a href="http://hot.geoweb.io/en/exports/create/" target="_blank">Create</a> page is where the user can select an area of interest, describe the export, select file formats and feature tags, load a preset file and specify to either keep the export private or share it publicly. Please note that an account is needed to create an export.' %}
+{% blocktrans %}The <a href="{{ create_url }}" target="_blank">Create</a> page is where the user can select an area of interest, describe the export, select file formats and feature tags, load a preset file and specify to either keep the export private or share it publicly. Please note that an account is needed to create an export.{% endblocktrans %}
 </div>
 <h3>{% trans 'Export Wizard' %}</h3>
 <div class="well">
@@ -22,7 +22,7 @@ There are five tabs that make up the 'Export Wizard' on the 'Create' page. These
 <ol>
     <li><strong>{% trans 'Describe Export:' %}</strong> {% trans "Enter the name, description and project (optional) of the new export. Select the area of interest on the map (right section)." %}</li>
     <li><strong>{% trans 'File Formats:' %}</strong> {% trans "Select one or more file format(s) for the export." %}</li>
-    <li><strong>{% trans 'Tree Tag:' %}</strong> {% trans "Expand and select features from the HDM or OSM tree tag for export and click 'Next'. Preset files on the next tab can not be used if tags are selected from either tree. Please see the <a href='http://hot.geoweb.io/en/help/features' target='_blank'>Feature Selection</a> help page for further information." %}</li>
+    <li><strong>{% trans 'Tree Tag:' %}</strong> {% blocktrans %}Expand and select features from the HDM or OSM tree tag for export and click 'Next'. Preset files on the next tab can not be used if tags are selected from either tree. Please see the <a href="{{ help_features_url }}" target='_blank'>Feature Selection</a> help page for further information.{% endblocktrans %}</li>
     <li><strong>{% trans 'Preset File:' %}</strong> {% trans "Select a preset file to apply to the export area by either specifying a name and loading a file from the desktop, or select a preset file from the saved presets. Tick the 'Publish this preset publicly' button to share the loaded preset publicly and save it to the 'Presets' page." %}</li>
     <li><strong>{% trans 'Export Summary:' %}</strong> {% trans "This tab provides an overview of the export settings, along with the options to 'Save feature selection privately', 'Publish feature selection publicly' and 'Publish export publicly'. Click 'Create Export' to complete and run the new export." %}</li>
 </ol>
