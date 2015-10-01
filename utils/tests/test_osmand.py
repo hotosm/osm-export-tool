@@ -11,6 +11,7 @@ from ..osmand import OSMToOBF, UpdateBatchXML
 
 logger = logging.getLogger(__name__)
 
+
 class TestUpdateBatchXML(TestCase):
 
     def setUp(self,):

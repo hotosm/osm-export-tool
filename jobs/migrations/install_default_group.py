@@ -5,8 +5,8 @@ from django.db import models, migrations
 from django.contrib.auth.models import Group
 from jobs.models import ExportProfile
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
 
     def insert_default_group(apps, schema_editor):
         """
@@ -21,11 +21,9 @@ class Migration(migrations.Migration):
             group=group
         )
 
-
     dependencies = [
         ('jobs', 'install_region_mask'),
     ]
-
 
     operations = [
         migrations.RunPython(insert_default_group),

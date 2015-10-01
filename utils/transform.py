@@ -9,6 +9,7 @@ from osgeo import gdal, ogr, osr
 
 logger = logging.getLogger(__name__)
 
+
 class TransformSQlite(object):
     """
     Applies a schema transformation to a sqlite database.
@@ -34,7 +35,7 @@ class TransformSQlite(object):
         # Enable GDAL/OGR exceptions
         gdal.UseExceptions()
         self.srs = osr.SpatialReference()
-        self.srs.ImportFromEPSG(4326) # configurable
+        self.srs.ImportFromEPSG(4326)  # configurable
 
     def transform_default_schema(self, ):
         assert os.path.exists(self.sqlite), "No spatialite file found for schema transformation"
@@ -63,20 +64,22 @@ if __name__ == '__main__':
             'Updates z_indexes on all layers.'
         )
     )
-    parser.add_argument('-o','--osm-file', required=True, dest="osm", help='The OSM file to convert (xml or pbf)')
-    parser.add_argument('-s','--spatialite-file', required=True, dest="sqlite", help='The sqlite output file')
-    parser.add_argument('-q','--schema-sql', required=False, dest="schema", help='A sql file to refactor the output schema')
-    parser.add_argument('-d','--debug', action="store_true", help="Turn on debug output")
+    parser.add_argument('-o', '--osm-file', required=True, dest="osm", help='The OSM file to convert (xml or pbf)')
+    parser.add_argument('-s', '--spatialite-file', required=True, dest="sqlite", help='The sqlite output file')
+    parser.add_argument('-q', '--schema-sql', required=False, dest="schema", help='A sql file to refactor the output schema')
+    parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
     args = parser.parse_args()
     config = {}
-    for k,v in vars(args).items():
-        if (v == None): continue
+    for k, v in vars(args).items():
+        if (v == None):
+            continue
         else:
-           config[k] = v
+            config[k] = v
     osm = config.get('osm')
     sqlite = config.get('sqlite')
     debug = False
-    if config.get('debug'): debug = True
+    if config.get('debug'):
+        debug = True
     parser = OSMParser(osm=osm, sqlite=sqlite, debug=debug)
     parser.create_spatialite()
     parser.create_default_schema()

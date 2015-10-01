@@ -45,6 +45,7 @@ class UserGroupSerializer(serializers.Serializer):
     groups = GroupSerializer(many=True)
 """
 
+
 class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -75,7 +76,7 @@ class ExportConfigSerializer(serializers.Serializer):
        lookup_field='uid'
     )
     name = serializers.CharField(max_length=255)
-    config_type = serializers.ChoiceField(['PRESET','TRANSLATION','TRANSFORM'])
+    config_type = serializers.ChoiceField(['PRESET', 'TRANSLATION', 'TRANSFORM'])
     filename = serializers.CharField(max_length=255, read_only=True, default='')
     size = serializers.SerializerMethodField()
     content_type = serializers.CharField(max_length=50, read_only=True)
@@ -93,7 +94,7 @@ class ExportConfigSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         instance.config_type = validated_data.get('config_type', instance.config_type)
-        instance.upload.delete(False) # delete the old file..
+        instance.upload.delete(False)  # delete the old file..
         instance.upload = validated_data.get('upload', instance.upload)
         instance.name = validated_data.get('name', instance.name)
         instance.filename = validated_data.get('filename', instance.filename)
@@ -109,7 +110,7 @@ class ExportConfigSerializer(serializers.Serializer):
         content_type = validators.validate_content_type(upload, config_type)
         data['content_type'] = content_type
         fname = data['upload'].name
-        data['filename'] = fname.replace(' ','_').lower()
+        data['filename'] = fname.replace(' ', '_').lower()
         return data
 
     def get_size(self, obj):
@@ -120,14 +121,14 @@ class ExportConfigSerializer(serializers.Serializer):
         return obj.created_at
 
     def get_owner(self, obj):
-        return obj.user.username;
-
+        return obj.user.username
 
 
 class ExportTaskResultSerializer(serializers.ModelSerializer):
 
     url = serializers.SerializerMethodField()
     size = serializers.SerializerMethodField()
+
     class Meta:
         model = ExportTaskResult
         fields = ('filename', 'size', 'url',)
@@ -174,7 +175,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
             serializer = ExportTaskResultSerializer(result, many=False, context=self.context)
             return serializer.data
         except ExportTaskResult.DoesNotExist as e:
-            return None # no result yet
+            return None  # no result yet
 
     def get_errors(self, obj):
         try:
@@ -186,13 +187,13 @@ class ExportTaskSerializer(serializers.ModelSerializer):
 
     def get_started_at(self, obj):
         if (not obj.started_at):
-            return None # not started yet
+            return None  # not started yet
         else:
             return obj.started_at
 
     def get_finished_at(self, obj):
         if (not obj.finished_at):
-            return None # not finished yet
+            return None  # not finished yet
         else:
             return obj.finished_at
 
@@ -200,9 +201,9 @@ class ExportTaskSerializer(serializers.ModelSerializer):
         started = obj.started_at
         finished = obj.finished_at
         if started and finished:
-            return  str(finished - started)
+            return str(finished - started)
         else:
-            return None # can't compute yet
+            return None  # can't compute yet
 
 
 class SimpleJobSerializer(serializers.Serializer):
@@ -240,6 +241,7 @@ class ExportRunSerializer(serializers.ModelSerializer):
     finished_at = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+
     class Meta:
         model = ExportRun
         fields = ('uid', 'url', 'started_at', 'finished_at', 'duration', 'user', 'status', 'job', 'tasks')
@@ -254,7 +256,7 @@ class ExportRunSerializer(serializers.ModelSerializer):
         started = obj.started_at
         finished = obj.finished_at
         if started and finished:
-            return  str(finished - started)
+            return str(finished - started)
         else:
             return None
 
@@ -285,10 +287,11 @@ class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
        lookup_field='uid'
     )
     id = serializers.SerializerMethodField()
+
     class Meta:
         model = Region
         geo_field = 'the_geom'
-        fields = ('id', 'uid','name','description', 'url','the_geom')
+        fields = ('id', 'uid', 'name', 'description', 'url', 'the_geom')
 
     def get_id(self, obj):
         return obj.uid
@@ -302,9 +305,10 @@ class SimpleRegionSerializer(serializers.ModelSerializer):
        view_name='api:regions-detail',
        lookup_field='uid'
     )
+
     class Meta:
         model = Region
-        fields = ('uid','name','description', 'url')
+        fields = ('uid', 'name', 'description', 'url')
 
 
 class ExportFormatSerializer(serializers.ModelSerializer):
@@ -335,14 +339,14 @@ class JobSerializer(serializers.Serializer):
         ('kml', 'KML Format'),
         ('garmin', 'Garmin Format'),
         ('sqlite', 'SQLITE Format'),
-        ('thematic','Thematic Shapefile Format')
+        ('thematic', 'Thematic Shapefile Format')
     )
 
     formats = serializers.MultipleChoiceField(
-        choices = EXPORT_FORMAT_CHOICES,
-        allow_blank = False,
-        write_only = True,
-        error_messages = {
+        choices=EXPORT_FORMAT_CHOICES,
+        allow_blank=False,
+        write_only=True,
+        error_messages={
             'invalid_choice': _("invalid export format."),
             'not_a_list': _('Expected a list of items but got type "{input_type}".')
         }
@@ -350,8 +354,8 @@ class JobSerializer(serializers.Serializer):
 
     uid = serializers.UUIDField(read_only=True)
     url = serializers.HyperlinkedIdentityField(
-        view_name = 'api:jobs-detail',
-        lookup_field = 'uid'
+        view_name='api:jobs-detail',
+        lookup_field='uid'
     )
     name = serializers.CharField(
         max_length=100,
@@ -373,28 +377,28 @@ class JobSerializer(serializers.Serializer):
     #configs = ExportConfigSerializer(many=True)
     xmin = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,
-        error_messages = {
+        error_messages={
             'required': _('xmin is required.'),
             'invalid': _('invalid xmin value.'),
         }
     )
     ymin = serializers.FloatField(
         max_value=90, min_value=-90, write_only=True,
-        error_messages = {
+        error_messages={
             'required': _('ymin is required.'),
             'invalid': _('invalid ymin value.'),
         }
     )
     xmax = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,
-        error_messages = {
+        error_messages={
             'required': _('xmax is required.'),
             'invalid': _('invalid xmax value.'),
         }
     )
     ymax = serializers.FloatField(
         max_value=90, min_value=-90, write_only=True,
-        error_messages = {
+        error_messages={
             'required': _('ymax is required.'),
             'invalid': _('invalid ymax value.'),
         }
@@ -420,10 +424,10 @@ class JobSerializer(serializers.Serializer):
         the_geom = GEOSGeometry(bbox, srid=4326)
         data['the_geom'] = the_geom
         regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom')
-        sorted_regions =  sorted(regions.all(), key=lambda a: a.intersection.area, reverse=True) # order by largest area of intersection
+        sorted_regions = sorted(regions.all(), key=lambda a: a.intersection.area, reverse=True)  # order by largest area of intersection
         data['region'] = validators.validate_region(sorted_regions)
         # remove unwanted fields
-        data.pop('xmin'),  data.pop('ymin'), data.pop('xmax'), data.pop('ymax'), data.pop('formats')
+        data.pop('xmin'), data.pop('ymin'), data.pop('xmax'), data.pop('ymax'), data.pop('formats')
         return data
 
     def get_extent(self, obj):
@@ -454,4 +458,4 @@ class JobSerializer(serializers.Serializer):
         return serializer.data
 
     def get_owner(self, obj):
-        return obj.user.username;
+        return obj.user.username

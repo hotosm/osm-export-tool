@@ -8,6 +8,7 @@ from ..models import Region
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.gdal import DataSource
 
+
 class Migration(migrations.Migration):
 
     def insert_regions(apps, schema_editor):
@@ -78,7 +79,6 @@ class Migration(migrations.Migration):
                         the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
         )
         ds = None
-
 
     dependencies = [
         ('jobs', '0001_initial'),

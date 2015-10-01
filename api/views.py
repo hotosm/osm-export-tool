@@ -67,7 +67,7 @@ class JobViewSet(viewsets.ModelViewSet):
                 serializer = self.get_serializer(page, many=True, context={'request': request})
                 return self.get_paginated_response(serializer.data)
             else:
-                serializer = JobSerializer(queryset,  many=True, context={'request': request})
+                serializer = JobSerializer(queryset, many=True, context={'request': request})
                 return Response(serializer.data)
         if (len(params.split(',')) < 4):
             errors = OrderedDict()
@@ -90,7 +90,7 @@ class JobViewSet(viewsets.ModelViewSet):
                     serializer = self.get_serializer(page, many=True, context={'request': request})
                     return self.get_paginated_response(serializer.data)
                 else:
-                    serializer = JobSerializer(queryset,  many=True, context={'request': request})
+                    serializer = JobSerializer(queryset, many=True, context={'request': request})
                     return Response(serializer.data)
             except ValidationError as e:
                 logger.debug(e.detail)
@@ -124,7 +124,7 @@ class JobViewSet(viewsets.ModelViewSet):
                         job.formats = export_formats
                         if preset:
                             # get the tags from the uploaded preset
-                            logger.debug('Found preset with uid: %s' % preset);
+                            logger.debug('Found preset with uid: %s' % preset)
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = config.upload.path
@@ -132,38 +132,38 @@ class JobViewSet(viewsets.ModelViewSet):
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
-                                    name = entry['name'],
-                                    key = entry['key'],
-                                    value = entry['value'],
-                                    geom_types = entry['geom_types'],
-                                    data_model = 'PRESET',
-                                    job = job
+                                    name=entry['name'],
+                                    key=entry['key'],
+                                    value=entry['value'],
+                                    geom_types=entry['geom_types'],
+                                    data_model='PRESET',
+                                    job=job
                                 )
                         elif tags:
                             # get tags from request
                             for entry in tags:
                                 tag = Tag.objects.create(
-                                    name = entry['name'],
-                                    key = entry['key'],
-                                    value = entry['value'],
-                                    job = job,
-                                    data_model = entry['data_model'],
-                                    geom_types = entry['geom_types'],
-                                    groups = entry['groups']
+                                    name=entry['name'],
+                                    key=entry['key'],
+                                    value=entry['value'],
+                                    job=job,
+                                    data_model=entry['data_model'],
+                                    geom_types=entry['geom_types'],
+                                    groups=entry['groups']
                                 )
                         else:
                             # use hdm preset as default tags
                             path = os.path.dirname(os.path.realpath(__file__))
-                            parser = presets.PresetParser(preset= path + '/hdm_presets.xml')
+                            parser = presets.PresetParser(preset=path + '/hdm_presets.xml')
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
-                                    name = entry['name'],
-                                    key = entry['key'],
-                                    value = entry['value'],
-                                    geom_types = entry['geom_types'],
-                                    data_model = 'HDM',
-                                    job = job
+                                    name=entry['name'],
+                                    key=entry['key'],
+                                    value=entry['value'],
+                                    geom_types=entry['geom_types'],
+                                    data_model='HDM',
+                                    job=job
                                 )
                         # check for translation file
                         if translation:
@@ -216,7 +216,6 @@ class RunJob(views.APIView):
             return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
 
 
-
 class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ### ExportFormat API endpoint.
@@ -261,7 +260,7 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'uid'
 
     def get_queryset(self):
-         return ExportRun.objects.all().order_by('-started_at')
+        return ExportRun.objects.all().order_by('-started_at')
 
     def retrieve(self, request, uid=None, *args, **kwargs):
         queryset = ExportRun.objects.filter(uid=uid)
@@ -282,13 +281,14 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ExportConfigSerializer
     pagination_class = LinkHeaderPagination
-    filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
+    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = ExportConfigFilter
     search_fields = ('name', 'config_type', 'user__username')
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     queryset = ExportConfig.objects.filter(config_type='PRESET')
     lookup_field = 'uid'
+
 
 class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
     """

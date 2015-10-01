@@ -15,6 +15,7 @@ from ..thematic_shp import ThematicSQliteToShp
 
 logger = logging.getLogger(__name__)
 
+
 class TestThematicShp(TestCase):
 
     def setUp(self,):
@@ -31,19 +32,19 @@ class TestThematicShp(TestCase):
         tags_dict = parser.parse()
         for entry in self.tags:
             tag = Tag.objects.create(
-                name = entry['name'],
-                key = entry['key'],
-                value = entry['value'],
-                geom_types = entry['geom_types'],
-                data_model = 'PRESET',
-                job = self.job
+                name=entry['name'],
+                key=entry['key'],
+                value=entry['value'],
+                geom_types=entry['geom_types'],
+                data_model='PRESET',
+                job=self.job
             )
 
     @patch('shutil.copy')
     @patch('os.path.exists')
     def testInit(self, exists, copy):
         sqlite = self.path + '/files/test.sqlite'
-        shapefile= self.path + '/files/thematic_shp'
+        shapefile = self.path + '/files/thematic_shp'
         cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
         proc = Mock()
         exists.return_value = True
@@ -61,7 +62,7 @@ class TestThematicShp(TestCase):
     @patch('sqlite3.connect')
     def test_generate_thematic_schema(self, connect, exists, copy):
         sqlite = self.path + '/files/test.sqlite'
-        shapefile= self.path + '/files/thematic_shp'
+        shapefile = self.path + '/files/thematic_shp'
         thematic_sqlite = self.path + '/files/test_thematic_shp_thematic.sqlite'
         exists.return_value = True
         conn = Mock()
@@ -92,7 +93,7 @@ class TestThematicShp(TestCase):
     @patch('sqlite3.connect')
     def test_convert(self, connect, popen, pipe, exists, copy):
         sqlite = self.path + '/files/test_thematic_shp_thematic.sqlite'
-        shapefile= self.path + '/files/shp'
+        shapefile = self.path + '/files/shp'
         cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
         proc = Mock()
         exists.return_value = True

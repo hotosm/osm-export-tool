@@ -21,7 +21,7 @@ class TestSQliteToKml(SimpleTestCase):
     @patch('subprocess.Popen')
     def test_convert(self, popen, pipe, exists):
         sqlite = '/path/to/query.sqlite'
-        kmlfile= '/path/to/query.kml'
+        kmlfile = '/path/to/query.kml'
         cmd = "ogr2ogr -f 'KML' {0} {1}".format(kmlfile, sqlite)
         exists.return_value = True
         proc = Mock()
@@ -45,10 +45,10 @@ class TestSQliteToKml(SimpleTestCase):
     @patch('subprocess.Popen')
     def test_zip_kml_file(self, popen, pipe, remove, exists):
         sqlite = '/path/to/query.sqlite'
-        kmlfile= '/path/to/query.kml'
+        kmlfile = '/path/to/query.kml'
         zipfile = '/path/to/query.kmz'
         zip_cmd = "zip -j {0} {1}".format(zipfile, kmlfile)
-        exists.return_value =  True
+        exists.return_value = True
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())

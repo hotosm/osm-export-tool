@@ -15,8 +15,9 @@ from django.shortcuts import redirect
 
 logger = logging.getLogger(__name__)
 
+
 @partial
-def require_email(strategy, request, details, user=None, is_new=False, *args, **kwargs): # pragma: no cover
+def require_email(strategy, request, details, user=None, is_new=False, *args, **kwargs):  # pragma: no cover
     logger.debug(user)
     if kwargs.get('ajax') or user and user.email:
         return
@@ -27,7 +28,8 @@ def require_email(strategy, request, details, user=None, is_new=False, *args, **
         else:
             return redirect('require_email')
 
-def email_validation(strategy, backend, code): # pragma: no cover
+
+def email_validation(strategy, backend, code):  # pragma: no cover
     """
     Send an email with an embedded verification code and the necessary details to restore the required session
     elements to complete the verification and sign-in, regardless of what browser the user completes the
@@ -58,8 +60,7 @@ def email_validation(strategy, backend, code): # pragma: no cover
     email.send()
 
 
-
-def partial_pipeline_data(backend, user=None, *args, **kwargs): # pragma: no cover
+def partial_pipeline_data(backend, user=None, *args, **kwargs):  # pragma: no cover
     """
     Add the session key to a signed base64 encoded signature on the email request.
     """

@@ -13,6 +13,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+
 class Overpass(object):
     """
     Wrapper around an Overpass query.
@@ -30,7 +31,8 @@ class Overpass(object):
         self.job_name = job_name
         self.filters = filters
         self.debug = debug
-        if url: self.url = url
+        if url:
+            self.url = url
         if bbox:
             self.bbox = bbox
         else:
@@ -56,7 +58,7 @@ class Overpass(object):
             print 'Query started at: %s' % datetime.now()
         try:
             req = requests.post(self.url, data=q, stream=True)
-            CHUNK = 1024 * 1024 * 5 # 5MB chunks
+            CHUNK = 1024 * 1024 * 5  # 5MB chunks
             with open(self.raw_osm, 'wb') as fd:
                 for chunk in req.iter_content(CHUNK):
                     fd.write(chunk)
@@ -92,7 +94,7 @@ class Overpass(object):
                                                       'filtered_osm': self.filtered_osm})
             proc = subprocess.Popen(filter_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            (stdout,stderr) = proc.communicate()
+            (stdout, stderr) = proc.communicate()
             returncode = proc.wait()
             if (returncode != 0):
                 logger.error('%s', stderr)
@@ -104,14 +106,13 @@ class Overpass(object):
             shutil.copy(self.raw_osm, self.filtered_osm)
             return self.filtered_osm
 
-
     def _convert_om5(self,):
         om5 = self.stage_dir + 'query.om5'
         convert_tmpl = Template('osmconvert $raw_osm -o=$om5')
         convert_cmd = convert_tmpl.safe_substitute({'raw_osm': self.raw_osm, 'om5': om5})
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
             logger.error('%s', stderr)
@@ -126,7 +127,8 @@ class Overpass(object):
     step in this task. Leaving this here in case things change or
     we decide to build our own overpass api in future.
     """
-    def _build_overpass_query(self, ): # pragma: no cover
+
+    def _build_overpass_query(self, ):  # pragma: no cover
 
         template = Template("""
                 [out:xml][timeout:3600][bbox:$bbox];
@@ -150,7 +152,7 @@ class Overpass(object):
         for tag in self.tags:
             try:
                 (k, v) = tag.split(':')
-                tag_str = '"' + k  + '"="' + v + '"'
+                tag_str = '"' + k + '"="' + v + '"'
                 node_tag = node_tmpl.safe_substitute({'tags': tag_str})
                 way_tag = way_tmpl.safe_substitute({'tags': tag_str})
                 rel_tag = rel_tmpl.safe_substitute({'tags': tag_str})
@@ -165,25 +167,25 @@ class Overpass(object):
         way_filter = '\n'.join(ways)
         rel_filter = '\n'.join(relations)
 
-        q = template.safe_substitute({'bbox':self.bbox, 'nodes': node_filter, 'ways': way_filter,
+        q = template.safe_substitute({'bbox': self.bbox, 'nodes': node_filter, 'ways': way_filter,
                                                  'relations': rel_filter})
         return q
 
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runs an overpass query using the provided bounding box')
-    parser.add_argument('-o','--osm-file', required=False, dest="osm", help='The OSM file to write the query results to')
-    parser.add_argument('-b','--bounding-box', required=True, dest="bbox",
+    parser.add_argument('-o', '--osm-file', required=False, dest="osm", help='The OSM file to write the query results to')
+    parser.add_argument('-b', '--bounding-box', required=True, dest="bbox",
                         help='A comma separated list of coordinates in the format: miny,minx,maxy,maxx')
-    parser.add_argument('-u','--url', required=False, dest="url", help='The url endpoint of the overpass interpreter')
-    parser.add_argument('-d','--debug', action="store_true", help="Turn on debug output")
+    parser.add_argument('-u', '--url', required=False, dest="url", help='The url endpoint of the overpass interpreter')
+    parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
     args = parser.parse_args()
     config = {}
-    for k,v in vars(args).items():
-        if (v == None): continue
+    for k, v in vars(args).items():
+        if (v == None):
+            continue
         else:
-           config[k] = v
+            config[k] = v
     osm = config.get('osm')
     url = config.get('url')
     bbox = config.get('bbox')

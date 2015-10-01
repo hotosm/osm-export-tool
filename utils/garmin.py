@@ -15,6 +15,7 @@ class GarminConfigParser(object):
     """
         Parse the conf/garmin_config.xml file.
     """
+
     def __init__(self, config=None):
         self.config = config
 
@@ -61,6 +62,7 @@ class OSMToIMG(object):
         then patches the .img files back into a single .img file
         suitable for deployment to a Garmin GPS unit.
     """
+
     def __init__(self, pbffile=None, work_dir=None, config=None,
                  region=None, zipped=True, debug=False):
         self.pbffile = pbffile
@@ -97,7 +99,6 @@ class OSMToIMG(object):
         """)
         self.zip_cmd = Template("zip -j $zipfile $imgfile")
         self.imgfile = self.work_dir + '/gmapsupp.img'
-
 
     def run_splitter(self, ):
         if not os.path.exists(self.work_dir):
@@ -160,14 +161,13 @@ class OSMToIMG(object):
         else:
             return self.imgfile
 
-
     def _zip_img_file(self, ):
         img_zipped = self.work_dir + '/garmin.zip'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': img_zipped,
                                                 'imgfile': self.imgfile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 0:
             logger.error('%s', stderr)
@@ -182,24 +182,26 @@ class OSMToIMG(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Converts OSM PBF to Garmin IMG Format.")
-    parser.add_argument('-p','--pbf-file', required=True,
+    parser.add_argument('-p', '--pbf-file', required=True,
                         dest="pbffile", help='The PBF file to convert')
-    parser.add_argument('-w','--work-dir', required=True,
+    parser.add_argument('-w', '--work-dir', required=True,
                         dest="work_dir", help='The path to the working directory')
-    parser.add_argument('-c','--config-file', required=True,
+    parser.add_argument('-c', '--config-file', required=True,
                         dest="config", help='The path to the garmin config file')
-    parser.add_argument('-d','--debug', action="store_true", help="Turn on debug output")
+    parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
     args = parser.parse_args()
     config = {}
-    for k,v in vars(args).items():
-        if (v == None): continue
+    for k, v in vars(args).items():
+        if (v == None):
+            continue
         else:
-           config[k] = v
+            config[k] = v
     pbffile = config.get('pbffile')
     work_dir = config.get('work_dir')
     map_creator_dir = config.get('config')
     debug = False
-    if config.get('debug'): debug = True
+    if config.get('debug'):
+        debug = True
     OSMToIMG(
         pbffile=pbffile, work_dir=work_dir,
         config=config, debug=debug)

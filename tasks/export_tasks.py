@@ -151,8 +151,8 @@ class OverpassQueryTask(ExportTask):
             bbox=bbox, stage_dir=stage_dir,
             job_name=job_name, filters=filters
         )
-        op.run_query() # run the query
-        filtered_osm = op.filter() # filter the results
+        op.run_query()  # run the query
+        filtered_osm = op.filter()  # filter the results
         return {'result': filtered_osm}
 
 
@@ -203,13 +203,13 @@ class ThematicLayersExportTask(ExportTask):
         tags = run.job.categorised_tags
         sqlite = stage_dir + job_name + '.sqlite'
         try:
-            t2s= thematic_shp.ThematicSQliteToShp(sqlite=sqlite, tags=tags, job_name=job_name)
+            t2s = thematic_shp.ThematicSQliteToShp(sqlite=sqlite, tags=tags, job_name=job_name)
             t2s.generate_thematic_schema()
             out = t2s.convert()
             return {'result': out}
         except Exception as e:
             logger.error('Raised exception in thematic task, %s', str(e))
-            raise Exception(e) # hand off to celery..
+            raise Exception(e)  # hand off to celery..
 
 
 class ShpExportTask(ExportTask):
@@ -295,7 +295,7 @@ class GarminExportTask(ExportTask):
     """
 
     name = 'Garmin Export'
-    _region = '' # set by the task_runner
+    _region = ''  # set by the task_runner
 
     @property
     def region(self,):
@@ -308,7 +308,7 @@ class GarminExportTask(ExportTask):
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         work_dir = stage_dir + 'garmin'
-        config = settings.GARMIN_CONFIG # get path to garmin config
+        config = settings.GARMIN_CONFIG  # get path to garmin config
         pbffile = stage_dir + job_name + '.pbf'
         try:
             o2i = garmin.OSMToIMG(
@@ -374,7 +374,7 @@ class FinalizeRunTask(Task):
 
     def run(self, run_uid=None, stage_dir=None):
         from tasks.models import ExportRun
-        run =  ExportRun.objects.get(uid=run_uid)
+        run = ExportRun.objects.get(uid=run_uid)
         run.status = 'COMPLETED'
         tasks = run.tasks.all()
         # mark run as incomplete if any tasks fail
@@ -416,7 +416,7 @@ class ExportTaskErrorHandler(Task):
     def run(self, run_uid, task_id=None, stage_dir=None):
         from tasks.models import ExportRun
         finished = timezone.now()
-        run =  ExportRun.objects.get(uid=run_uid)
+        run = ExportRun.objects.get(uid=run_uid)
         run.finished_at = finished
         run.status = 'FAILED'
         run.save()
