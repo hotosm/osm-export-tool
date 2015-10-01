@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 from .project import *  # NOQA
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -28,9 +29,9 @@ DATABASES = {
 
 
 # session settings
-SESSION_COOKIE_NAME='hot_exports_sessionid'
-SESSION_COOKIE_DOMAIN='hot.geoweb.io'
-SESSION_COOKIE_PATH='/'
+SESSION_COOKIE_NAME = 'hot_exports_sessionid'
+SESSION_COOKIE_DOMAIN = 'hot.geoweb.io'
+SESSION_COOKIE_PATH = '/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
@@ -39,8 +40,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -61,9 +62,9 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers':['file'],
+            'handlers': ['file'],
             'propagate': True,
-            'level':'ERROR',
+            'level': 'ERROR',
         },
         'api': {
             'handlers': ['file'],

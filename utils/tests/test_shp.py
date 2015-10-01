@@ -1,13 +1,10 @@
+# -*- coding: utf-8 -*-
 import logging
-import sys
-import uuid
 import os
+
+from mock import Mock, patch
+
 from django.test import SimpleTestCase
-from django.utils import timezone
-from django.core.files import File
-from unittest import skip
-import mock
-from mock import patch, Mock
 
 from ..shp import SQliteToShp
 
@@ -15,16 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 class TestSQliteToShp(SimpleTestCase):
-    
+
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_convert(self, popen, pipe, exists):
         sqlite = self.path + '/files/test.sqlite'
-        shapefile= self.path + '/files/shp'
+        shapefile = self.path + '/files/shp'
         cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
         proc = Mock()
         exists.return_value = True
@@ -39,7 +36,7 @@ class TestSQliteToShp(SimpleTestCase):
         popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         self.assertEquals(out, shapefile)
-    
+
     @patch('os.path.exists')
     @patch('shutil.rmtree')
     @patch('subprocess.PIPE')

@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 import ConfigParser
-import os
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -11,11 +12,12 @@ class EqualsSpaceRemover:
     causes ogr2ogr to ignore required attributes.
     """
     output_file = None
-    def __init__( self, new_output_file ):
+
+    def __init__(self, new_output_file):
         self.output_file = new_output_file
 
-    def write( self, what ):
-        self.output_file.write( what.replace( " = ", "=" ))
+    def write(self, what):
+        self.output_file.write(what.replace(" = ", "="))
 
 
 class OSMConfig(object):
@@ -23,15 +25,16 @@ class OSMConfig(object):
     Creates ogr2ogr OSM conf file based on the template
     at utils/conf/hotosm.ini.tmpl
     """
+
     def __init__(self, categories=None, job_name=None):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.tmpl = self.path + '/conf/hotosm.ini.tmpl'
         self.categories = categories
         self.config = ConfigParser.SafeConfigParser()
         self.job_name = job_name
-    
+
     def create_osm_conf(self, stage_dir=None):
-        self.config.read(self.tmpl) # read in the template
+        self.config.read(self.tmpl)  # read in the template
         self.config.set('points', 'attributes', ','.join(self.categories['points']))
         self.config.set('lines', 'attributes', ','.join(self.categories['lines']))
         self.config.set('multipolygons', 'attributes', ','.join(self.categories['polygons']))
@@ -44,10 +47,3 @@ class OSMConfig(object):
             logger.error(e)
             raise IOError('Failed to create osmconf ini file.')
         return config_file
-        
-        
-    
-    
-    
-    
-    

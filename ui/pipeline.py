@@ -1,22 +1,23 @@
+# -*- coding: utf-8 -*-
 import logging
+
 from social import utils
 from social.exceptions import InvalidEmail
+from social.pipeline.partial import partial
 
-from django.core import signing
-from django.core.signing import BadSignature
-from django.contrib.sessions.models import Session
 from django.conf import settings
-from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
+from django.contrib.sessions.models import Session
 from django.core import signing
 from django.core.mail import EmailMultiAlternatives
-
-from social.pipeline.partial import partial
+from django.core.signing import BadSignature
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
 logger = logging.getLogger(__name__)
 
+
 @partial
-def require_email(strategy, request, details, user=None, is_new=False, *args, **kwargs): # pragma: no cover
+def require_email(strategy, request, details, user=None, is_new=False, *args, **kwargs):  # pragma: no cover
     logger.debug(user)
     if kwargs.get('ajax') or user and user.email:
         return
@@ -27,7 +28,8 @@ def require_email(strategy, request, details, user=None, is_new=False, *args, **
         else:
             return redirect('require_email')
 
-def email_validation(strategy, backend, code): # pragma: no cover
+
+def email_validation(strategy, backend, code):  # pragma: no cover
     """
     Send an email with an embedded verification code and the necessary details to restore the required session
     elements to complete the verification and sign-in, regardless of what browser the user completes the
@@ -38,28 +40,27 @@ def email_validation(strategy, backend, code): # pragma: no cover
     verifyURL = "{0}?verification_code={1}&signature={2}".format(
         reverse('osm:complete', args=(backend.name,)),
         code.code, signature)
-    verifyURL = strategy.request.build_absolute_uri(verifyURL)   
- 
+    verifyURL = strategy.request.build_absolute_uri(verifyURL)
+
     emailText = ''
     emailHTML = """Welcome to Hot Exports
     In order to login with your new user account, you need to verify your email address with us.
     Please copy and paste the following into your browser's url bar: {verifyURL}
     """.format(verifyURL=verifyURL)
-    
+
     kwargs = {
         "subject": "Please Verify HOT Exports Account",
         "body": emailText,
         "from_email": "HOT Exports <exports@hotosm.org>",
         "to": [code.email]
     }
-    
+
     email = EmailMultiAlternatives(**kwargs)
     email.attach_alternative(emailHTML, "text/html")
     email.send()
-    
 
 
-def partial_pipeline_data(backend, user=None, *args, **kwargs): # pragma: no cover
+def partial_pipeline_data(backend, user=None, *args, **kwargs):  # pragma: no cover
     """
     Add the session key to a signed base64 encoded signature on the email request.
     """
@@ -92,5 +93,5 @@ def partial_pipeline_data(backend, user=None, *args, **kwargs): # pragma: no cov
             return xargs, xkwargs
         else:
             backend.strategy.clean_partial_pipeline()
-            
+
 utils.partial_pipeline_data = partial_pipeline_data

@@ -1,19 +1,20 @@
+# -*- coding: utf-8 -*-
 from __future__ import with_statement
-import os
-import json
-import logging
-import shutil
+
 import argparse
+import logging
+import os
 import subprocess
-import string
 from string import Template
 
 logger = logging.getLogger(__name__)
+
 
 class SQliteToKml(object):
     """
     Thin wrapper around ogr2ogr to convert sqlite to KML.
     """
+
     def __init__(self, sqlite=None, kmlfile=None, zipped=True, debug=False):
         self.sqlite = sqlite
         if not os.path.exists(self.sqlite):
@@ -35,7 +36,7 @@ class SQliteToKml(object):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
             logger.error('%s', stderr)
@@ -54,7 +55,7 @@ class SQliteToKml(object):
                                                 'kmlfile': self.kmlfile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 0:
             logger.error('%s', stderr)
@@ -69,20 +70,21 @@ class SQliteToKml(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Converts a SQlite database to KML.')
-    parser.add_argument('-i','--sqlite-file', required=True,
+    parser.add_argument('-i', '--sqlite-file', required=True,
                         dest="sqlite", help='The SQlite file to convert.')
-    parser.add_argument('-k','--kml-file', required=True,
+    parser.add_argument('-k', '--kml-file', required=True,
                         dest="kmlfile", help='The KML file to write to.')
-    parser.add_argument('-z','--zipped', action="store_true",
+    parser.add_argument('-z', '--zipped', action="store_true",
                         help="Whether to zip the KML. Default true.")
-    parser.add_argument('-d','--debug', action="store_true",
+    parser.add_argument('-d', '--debug', action="store_true",
                         help="Turn on debug output")
     args = parser.parse_args()
     config = {}
-    for k,v in vars(args).items():
-        if (v == None): continue
+    for k, v in vars(args).items():
+        if (v == None):
+            continue
         else:
-           config[k] = v
+            config[k] = v
     sqlite = config['sqlite']
     kmlfile = config['kmlfile']
     debug = False
@@ -93,4 +95,3 @@ if __name__ == '__main__':
         zipped = True
     s2k = SQliteToKml(sqlite=sqlite, kmlfile=kmlfile, zipped=zipped, debug=debug)
     s2k.convert()
-

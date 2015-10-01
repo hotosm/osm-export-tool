@@ -1,9 +1,9 @@
 import os
+
 from django.utils import timezone
 
-from utils.overpass import Overpass
-from utils.pbf import OSMToPBF
 from jobs import presets
+from utils.overpass import Overpass
 
 
 """
@@ -14,9 +14,10 @@ from jobs import presets
     Depends on django-extensions.
 """
 
+
 def run(*script_args):
     url = 'http://localhost/interpreter'
-    bbox = '6.25,-10.85,6.40,-10.62' # monrovia
+    bbox = '6.25,-10.85,6.40,-10.62'  # monrovia
     lib_bbox = '4.15,-11.60,8.55,-7.36'
     path = '/home/ubuntu/www/hotosm/utils/tests'
     query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'
@@ -27,7 +28,7 @@ def run(*script_args):
         filter_tag = '{0}={1}'.format(kvp['key'], kvp['value'])
         filters.append(filter_tag)
     print filters
-    
+
     print "=============="
     print "Querying Monrovia with OSM filters."
     print timezone.now()
@@ -40,13 +41,13 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
-    
+
     filtered = op.filter()
-    
+
     # check pbf conversion
-    #pbf = OSMToPBF(osm=path + '/files/filter.osm', pbffile=path + '/files/filter.pbf', debug=True)
-    #pbf.convert()
-    
+    # pbf = OSMToPBF(osm=path + '/files/filter.osm', pbffile=path + '/files/filter.pbf', debug=True)
+    # pbf.convert()
+
     """
     print "=============="
     print "Querying Monrovia without filters."
@@ -57,8 +58,8 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
-    
-    
+
+
     print "=============="
     print "Querying Liberia with HDM filters."
     print timezone.now()
@@ -68,8 +69,8 @@ def run(*script_args):
     stat = os.stat(osm)
     size = stat.st_size / 1024 / 1024.00
     print 'Result file size: {0}'.format(size)
-    
-    
+
+
     print "=============="
     print "Querying Liberia without filters."
     print timezone.now()

@@ -1,17 +1,16 @@
-import os
+# -*- coding: utf-8 -*-
 import logging
-import shutil
+import os
+
+from mock import Mock, patch
+
 from django.conf import settings
 from django.test import TestCase
-from django.utils import timezone
-from StringIO import StringIO
-from unittest import skip
-import mock
-from mock import patch, Mock
 
-from ..osmand import UpdateBatchXML, OSMToOBF
+from ..osmand import OSMToOBF, UpdateBatchXML
 
 logger = logging.getLogger(__name__)
+
 
 class TestUpdateBatchXML(TestCase):
 
@@ -73,8 +72,3 @@ class TestOSMToOBF(TestCase):
         proc.wait.assert_called_once()
         listdir.assert_called_once_with(self.work_dir)
         self.assertEquals(obffile, self.work_dir + '/query.obf')
-
-
-
-
-

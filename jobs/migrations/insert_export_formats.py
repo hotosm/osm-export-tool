@@ -8,7 +8,7 @@ from ..models import ExportFormat
 
 
 class Migration(migrations.Migration):
-    
+
     def insert_export_formats(apps, schema_editor):
         ExportFormat = apps.get_model('jobs', 'ExportFormat')
         ExportFormat.objects.create(name='OBF Format', description='OSMAnd OBF',

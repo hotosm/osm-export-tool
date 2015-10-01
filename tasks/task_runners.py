@@ -1,19 +1,22 @@
+# -*- coding: utf-8 -*-
+import importlib
 import logging
-import sys
 import os
 import re
-import importlib
 from datetime import datetime, timedelta
+
 from django.conf import settings
+from django.db import DatabaseError
+
+from celery import chain, chord, group
+
 from jobs.models import Job
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
-from jobs.presets import PresetParser
-from celery import chain, group, chord
-from .export_tasks import (OSMConfTask, OverpassQueryTask,
-                           OSMPrepSchemaTask, OSMToPBFConvertTask,
-                           GeneratePresetTask, FinalizeRunTask)
-from django.db import transaction, DatabaseError
-import pdb
+from tasks.models import ExportRun, ExportTask
+
+from .export_tasks import (
+    FinalizeRunTask, GeneratePresetTask, OSMConfTask, OSMPrepSchemaTask,
+    OSMToPBFConvertTask, OverpassQueryTask
+)
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -70,13 +73,13 @@ class ExportTaskRunner(TaskRunner):
                 max_runs = settings.EXPORT_MAX_RUNS
                 run_count = job.runs.count()
                 if run_count > 0:
-                    while run_count > max_runs -1:
-                        job.runs.earliest(field_name='started_at').delete() # delete earliest
+                    while run_count > max_runs - 1:
+                        job.runs.earliest(field_name='started_at').delete()  # delete earliest
                         run_count -= 1
                 # add the new run
                 if not user:
                     user = job.user
-                run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED') # persist the run
+                run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED')  # persist the run
                 run.save()
                 run_uid = str(run.uid)
                 logger.debug('Saved run with id: {0}'.format(run_uid))
@@ -89,8 +92,8 @@ class ExportTaskRunner(TaskRunner):
             os.makedirs(stage_dir, 6600)
 
             # pull out the tags to create the conf file
-            categories = job.categorised_tags # dict of points/lines/polygons
-            bbox = job.overpass_extents # extents of job in order required by overpass
+            categories = job.categorised_tags  # dict of points/lines/polygons
+            bbox = job.overpass_extents  # extents of job in order required by overpass
 
             # setup the initial tasks
             conf = OSMConfTask()
@@ -122,7 +125,8 @@ class ExportTaskRunner(TaskRunner):
                     The region gets written to the exported '.img' file.
                     Could set additional params here in future if required.
                 """
-                if export_task.name == 'Garmin Export': export_task.region = job.region.name
+                if export_task.name == 'Garmin Export':
+                    export_task.region = job.region.name
                 try:
                     ExportTask.objects.create(run=run,
                                               status='PENDING', name=export_task.name)
@@ -139,7 +143,6 @@ class ExportTaskRunner(TaskRunner):
                 logger.debug('Saved task: {0}'.format(preset_task.name))
                 # add to export tasks
                 export_tasks.append(preset_task)
-
 
             """
                 Create a celery chain which runs the initial conf and query tasks (initial_tasks),
@@ -173,7 +176,7 @@ class ExportTaskRunner(TaskRunner):
                     chain(initial_tasks, schema_tasks),
                     chord(header=format_tasks,
                         body=finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)).set(link_error=finalize_task.si())
-            ).apply_async(expires=datetime.now() + timedelta(days=1)) # tasks expire after one day.
+            ).apply_async(expires=datetime.now() + timedelta(days=1))  # tasks expire after one day.
 
             return run
 
@@ -190,4 +193,3 @@ class ExportTaskRunner(TaskRunner):
 
 def error_handler(task_id=None):
     logger.debug('In error handler %s' % task_id)
-

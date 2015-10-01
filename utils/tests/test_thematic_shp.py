@@ -1,26 +1,23 @@
+# -*- coding: utf-8 -*-
 import logging
-import sys
-import uuid
 import os
-import shutil
-import sqlite3
-from django.test import TestCase
-from django.utils import timezone
-from django.core.files import File
-from unittest import skip
-import mock
-from mock import patch, Mock
-from django.contrib.auth.models import User, Group
+
+from mock import Mock, patch
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.test import TestCase
+
+import jobs.presets as presets
 from jobs.models import Job, Tag
 
 from ..thematic_shp import ThematicSQliteToShp
-import jobs.presets as presets
 
 logger = logging.getLogger(__name__)
 
+
 class TestThematicShp(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
@@ -35,19 +32,19 @@ class TestThematicShp(TestCase):
         tags_dict = parser.parse()
         for entry in self.tags:
             tag = Tag.objects.create(
-                name = entry['name'],
-                key = entry['key'],
-                value = entry['value'],
-                geom_types = entry['geom_types'],
-                data_model = 'PRESET',
-                job = self.job
+                name=entry['name'],
+                key=entry['key'],
+                value=entry['value'],
+                geom_types=entry['geom_types'],
+                data_model='PRESET',
+                job=self.job
             )
-    
+
     @patch('shutil.copy')
-    @patch('os.path.exists')   
+    @patch('os.path.exists')
     def testInit(self, exists, copy):
         sqlite = self.path + '/files/test.sqlite'
-        shapefile= self.path + '/files/thematic_shp'
+        shapefile = self.path + '/files/thematic_shp'
         cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
         proc = Mock()
         exists.return_value = True
@@ -59,13 +56,13 @@ class TestThematicShp(TestCase):
         )
         exists.assert_called_twice()
         copy.assert_called_once()
-    
+
     @patch('shutil.copy')
     @patch('os.path.exists')
     @patch('sqlite3.connect')
     def test_generate_thematic_schema(self, connect, exists, copy):
         sqlite = self.path + '/files/test.sqlite'
-        shapefile= self.path + '/files/thematic_shp'
+        shapefile = self.path + '/files/thematic_shp'
         thematic_sqlite = self.path + '/files/test_thematic_shp_thematic.sqlite'
         exists.return_value = True
         conn = Mock()
@@ -87,16 +84,16 @@ class TestThematicShp(TestCase):
         connect.assert_called_once()
         conn.load_extention.assert_called_once()
         conn.cursor.assert_called_once()
-        #cur.execute.assert_called_with(cmd)
-    
-    @patch('shutil.copy')   
+        # cur.execute.assert_called_with(cmd)
+
+    @patch('shutil.copy')
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     @patch('sqlite3.connect')
     def test_convert(self, connect, popen, pipe, exists, copy):
         sqlite = self.path + '/files/test_thematic_shp_thematic.sqlite'
-        shapefile= self.path + '/files/shp'
+        shapefile = self.path + '/files/shp'
         cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
         proc = Mock()
         exists.return_value = True
@@ -122,8 +119,8 @@ class TestThematicShp(TestCase):
         popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         self.assertEquals(out, shapefile)
-    
-    @patch('shutil.copy')  
+
+    @patch('shutil.copy')
     @patch('os.path.exists')
     @patch('shutil.rmtree')
     @patch('subprocess.PIPE')
@@ -152,6 +149,3 @@ class TestThematicShp(TestCase):
                                 stdout=pipe, stderr=pipe)
         rmtree.assert_called_once_with(shapefile)
         self.assertEquals(result, zipfile)
-        
-        
-        

@@ -1,14 +1,14 @@
-import os
+# -*- coding: utf-8 -*-
+
+from mock import MagicMock, Mock, patch
+
 from django.test import TestCase
-from django.utils import timezone
-from unittest import skip
-import mock
-from mock import patch, Mock, MagicMock
 
 from ..osmparse import OSMParser
 
+
 class TestOSMParser(TestCase):
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -31,7 +31,7 @@ class TestOSMParser(TestCase):
                                 stdout=pipe, stderr=pipe)
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
@@ -49,7 +49,7 @@ class TestOSMParser(TestCase):
                                 stdout=pipe, stderr=pipe)
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
-    
+
     @patch('utils.osmparse.ogr.Open')
     @patch('os.path.exists')
     def test_update_zindexes(self, exists, ogr_open):
@@ -65,5 +65,3 @@ class TestOSMParser(TestCase):
         ogr_open.assert_called_once_with('/path/to/query.sqlite', update=True)
         self.assertEquals(40, ogr_ds.ExecuteSQL.call_count)
         ogr_ds.Destroy.assert_called_once()
-        
-    

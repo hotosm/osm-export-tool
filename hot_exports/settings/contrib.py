@@ -44,8 +44,8 @@ SOCIAL_AUTH_FORCE_EMAIL_VALIDATION = True
 SOCIAL_AUTH_EMAIL_VALIDATION_FUNCTION = 'ui.pipeline.email_validation'
 SOCIAL_AUTH_EMAIL_VALIDATION_URL = '/osm/email_verify_sent/'
 
-#SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
-#SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
+# SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
+# SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
 
 SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_details',

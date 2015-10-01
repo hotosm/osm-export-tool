@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-from .views import create_export, clone_export
+
+from .views import clone_export, create_export
 
 urlpatterns = patterns('ui.views',
     url(r'^$', TemplateView.as_view(template_name='ui/list.html'), name='list'),

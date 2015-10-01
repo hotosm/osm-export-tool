@@ -1,28 +1,25 @@
-#from __future__ import absolute_import
-import logging
-import time
-import sys
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import cPickle
-import shutil
 import os
-import pdb
+import shutil
 
 from django.conf import settings
-
-from celery import app, shared_task, Task
-from celery.result import AsyncResult
-from celery.registry import tasks
-from celery.contrib.methods import task
-from celery.utils.log import get_task_logger
-from django.utils import timezone
-from django.db import transaction, DatabaseError
+from django.core.files.base import ContentFile
+from django.core.mail import EmailMessage
+from django.db import DatabaseError
 from django.template import Context
 from django.template.loader import get_template
-from django.core.mail import EmailMessage
-from django.core.files.base import ContentFile
+from django.utils import timezone
+
+from celery import Task
+from celery.utils.log import get_task_logger
+
 from jobs.presets import TagParser
-from utils import (overpass, osmconf, osmparse,
-                   pbf, shp, kml, osmand, garmin, thematic_shp)
+from utils import (
+    garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp
+)
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
@@ -109,7 +106,7 @@ class ExportTask(Task):
         Can use the celery uid for diagnostics.
         """
         started = timezone.now()
-        from tasks.models import ExportRun, ExportTask
+        from tasks.models import ExportTask
         celery_uid = self.request.id
         try:
             task = ExportTask.objects.get(run__uid=run_uid, name=name)
@@ -154,8 +151,8 @@ class OverpassQueryTask(ExportTask):
             bbox=bbox, stage_dir=stage_dir,
             job_name=job_name, filters=filters
         )
-        op.run_query() # run the query
-        filtered_osm = op.filter() # filter the results
+        op.run_query()  # run the query
+        filtered_osm = op.filter()  # filter the results
         return {'result': filtered_osm}
 
 
@@ -201,19 +198,18 @@ class ThematicLayersExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
-        from jobs.models import Job
         self.update_task_state(run_uid=run_uid, name=self.name)
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
         sqlite = stage_dir + job_name + '.sqlite'
         try:
-            t2s= thematic_shp.ThematicSQliteToShp(sqlite=sqlite, tags=tags, job_name=job_name)
+            t2s = thematic_shp.ThematicSQliteToShp(sqlite=sqlite, tags=tags, job_name=job_name)
             t2s.generate_thematic_schema()
             out = t2s.convert()
             return {'result': out}
         except Exception as e:
             logger.error('Raised exception in thematic task, %s', str(e))
-            raise Exception(e) # hand off to celery..
+            raise Exception(e)  # hand off to celery..
 
 
 class ShpExportTask(ExportTask):
@@ -299,7 +295,7 @@ class GarminExportTask(ExportTask):
     """
 
     name = 'Garmin Export'
-    _region = '' # set by the task_runner
+    _region = ''  # set by the task_runner
 
     @property
     def region(self,):
@@ -312,7 +308,7 @@ class GarminExportTask(ExportTask):
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         work_dir = stage_dir + 'garmin'
-        config = settings.GARMIN_CONFIG # get path to garmin config
+        config = settings.GARMIN_CONFIG  # get path to garmin config
         pbffile = stage_dir + job_name + '.pbf'
         try:
             o2i = garmin.OSMToIMG(
@@ -339,7 +335,7 @@ class GeneratePresetTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
-        from jobs.models import Job, ExportConfig
+        from jobs.models import ExportConfig
         self.update_task_state(run_uid=run_uid, name=self.name)
         run = ExportRun.objects.get(uid=run_uid)
         job = run.job
@@ -378,7 +374,7 @@ class FinalizeRunTask(Task):
 
     def run(self, run_uid=None, stage_dir=None):
         from tasks.models import ExportRun
-        run =  ExportRun.objects.get(uid=run_uid)
+        run = ExportRun.objects.get(uid=run_uid)
         run.status = 'COMPLETED'
         tasks = run.tasks.all()
         # mark run as incomplete if any tasks fail
@@ -420,13 +416,13 @@ class ExportTaskErrorHandler(Task):
     def run(self, run_uid, task_id=None, stage_dir=None):
         from tasks.models import ExportRun
         finished = timezone.now()
-        run =  ExportRun.objects.get(uid=run_uid)
+        run = ExportRun.objects.get(uid=run_uid)
         run.finished_at = finished
         run.status = 'FAILED'
         run.save()
         try:
             if os.path.isdir(stage_dir):
-                #shutil.rmtree(stage_dir)
+                # shutil.rmtree(stage_dir)
                 pass
         except IOError as e:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))

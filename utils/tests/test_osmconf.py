@@ -1,11 +1,10 @@
-import sys
+# -*- coding: utf-8 -*-
 import os
-import uuid
-from django.test import TestCase
-from django.utils import timezone
-from django.contrib.auth.models import User, Group
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from unittest import skip
+from django.test import TestCase
+
 from jobs import presets
 from jobs.models import ExportFormat, Job, Tag
 
@@ -13,14 +12,14 @@ from ..osmconf import OSMConfig
 
 
 class TestOSMConf(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
         self.tags = parser.parse()
         self.assertIsNotNone(self.tags)
         self.assertEquals(256, len(self.tags))
-        self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -34,17 +33,16 @@ class TestOSMConf(TestCase):
         self.job.save()
         for tag in self.tags:
             Tag.objects.create(
-                key = tag['key'],
-                value = tag['value'],
-                job = self.job,
-                data_model = 'osm',
-                geom_types = tag['geom_types']
+                key=tag['key'],
+                value=tag['value'],
+                job=self.job,
+                data_model='osm',
+                geom_types=tag['geom_types']
             )
         self.categories = self.job.categorised_tags
-    
+
     def test_create_osm_conf(self,):
         conf = OSMConfig(self.categories, job_name=self.job.name)
         path = conf.create_osm_conf(stage_dir=self.path + '/files/')
         self.assertTrue(os.path.exists(path))
         os.remove(path)
-        

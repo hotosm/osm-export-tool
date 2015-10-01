@@ -1,27 +1,29 @@
+# -*- coding: utf-8 -*-
 import logging
-import json
-import uuid
 import os
-from django.test import TestCase
-from django.contrib.auth.models import User, Group
-from mock import Mock, patch, PropertyMock
-from unittest import skip
-from ..task_runners import ExportTaskRunner
-from jobs.models import ExportFormat, Job, Region
+import uuid
+
+from mock import Mock, PropertyMock, patch
+
+from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
-from celery.datastructures import ExceptionInfo
+from django.test import TestCase
+
+from jobs.models import ExportFormat, Job, Region
+
+from ..task_runners import ExportTaskRunner
 
 logger = logging.getLogger(__name__)
-  
+
 
 class TestExportTaskRunner(TestCase):
-    
+
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
-        bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40))
+        # bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        bbox = Polygon.from_bbox((-10.85, 6.25, -10.62, 6.40))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
@@ -30,7 +32,7 @@ class TestExportTaskRunner(TestCase):
         self.job.region = self.region
         self.uid = str(self.job.uid)
         self.job.save()
-    
+
     @patch('tasks.task_runners.chain')
     @patch('tasks.export_tasks.GarminExportTask')
     @patch('tasks.export_tasks.ShpExportTask')
@@ -58,5 +60,5 @@ class TestExportTaskRunner(TestCase):
         celery_chain.delay.assert_called_once()
         tasks = run.tasks.all()
         self.assertIsNotNone(tasks)
-        self.assertEquals(6, len(tasks)) # 4 initial tasks + 1 shape export task
-        self.assertFalse(hasattr(tasks[0], 'result')) # no result yet..    
+        self.assertEquals(6, len(tasks))  # 4 initial tasks + 1 shape export task
+        self.assertFalse(hasattr(tasks[0], 'result'))  # no result yet..

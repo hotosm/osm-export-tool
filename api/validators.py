@@ -1,21 +1,21 @@
+# -*- coding: utf-8 -*-
 import logging
-import magic
-import StringIO
-import pdb
 from collections import OrderedDict
-from uuid import UUID
-from rest_framework import serializers
-from rest_framework.reverse import reverse
-from django.utils.datastructures import MultiValueDictKeyError
-from django.conf import settings
-from django.contrib.gis.geos import Polygon, GEOSException, GEOSGeometry
 
+import magic
+
+from django.conf import settings
+from django.contrib.gis.geos import GEOSException, GEOSGeometry, Polygon
+
+from rest_framework import serializers
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+
 def validate_conifg(uid):
     pass
+
 
 def validate_region(regions):
     if len(regions) == 0:
@@ -26,10 +26,12 @@ def validate_region(regions):
     # region with largest area of intersection returned.
     return regions[0]
 
+
 def validate_formats(data):
     formats = data['formats']
     if formats == None or len(formats) == 0:
         raise serializers.ValidationError({'formats': ['Select an export format.']})
+
 
 def validate_search_bbox(extents):
     detail = OrderedDict()
@@ -42,7 +44,8 @@ def validate_search_bbox(extents):
         else:
             raise serializers.ValidationError(detail)
     except GEOSException as e:
-        raise serializers.ValidationError(detail) 
+        raise serializers.ValidationError(detail)
+
 
 def validate_bbox(extents, user=None):
     max_extent = settings.JOB_MAX_EXTENT
@@ -65,27 +68,28 @@ def validate_bbox(extents, user=None):
         else:
             raise serializers.ValidationError(detail)
     except GEOSException as e:
-        raise serializers.ValidationError(detail) 
+        raise serializers.ValidationError(detail)
+
 
 def validate_bbox_params(data):
     detail = OrderedDict()
-    
+
     # test for number
     lon_coords = [float(data['xmin']), float(data['xmax'])]
     lat_coords = [float(data['ymin']), float(data['ymax'])]
     # test lat long value order
-    if ((lon_coords[0] >= 0 and lon_coords[0] > lon_coords[1])
-        or (lon_coords[0] < 0 and lon_coords[0] > lon_coords[1])):
+    if ((lon_coords[0] >= 0 and lon_coords[0] > lon_coords[1]) or
+            (lon_coords[0] < 0 and lon_coords[0] > lon_coords[1])):
         detail['id'] = 'inverted_coordinates'
         detail['message'] = 'xmin greater than xmax.'
         raise serializers.ValidationError(detail)
-   
-    if ((lat_coords[0] >= 0 and lat_coords[0] > lat_coords[1])
-        or (lat_coords[0] < 0 and lat_coords[0] > lat_coords[1])):
+
+    if ((lat_coords[0] >= 0 and lat_coords[0] > lat_coords[1]) or
+            (lat_coords[0] < 0 and lat_coords[0] > lat_coords[1])):
         detail['id'] = 'inverted_coordinates'
         detail['message'] = 'ymin greater than ymax.'
         raise serializers.ValidationError(detail)
-    
+
     # test lat long extents
     for lon in lon_coords:
         if (lon < -180 or lon > 180):
@@ -97,9 +101,10 @@ def validate_bbox_params(data):
             detail['id'] = 'invalid_latitude'
             detail['message'] = 'Invalid latitude coordinate: {0}'.format(lat)
             raise serializers.ValidationError(detail)
-    
+
     return (data['xmin'], data['ymin'], data['xmax'], data['ymax'])
-   
+
+
 def validate_string_field(name=None, data=None):
     detail = OrderedDict()
     detail['id'] = 'missing_parameter'
@@ -113,7 +118,8 @@ def validate_string_field(name=None, data=None):
             return value
     except Exception:
         raise serializers.ValidationError(detail)
-    
+
+
 def validate_content_type(upload, config_type):
     ACCEPT_MIME_TYPES = {'PRESET': ('application/xml',),
                         'TRANSFORM': ('application/x-sql', 'text/plain'),
@@ -125,4 +131,3 @@ def validate_content_type(upload, config_type):
         detail['message'] = 'Uploaded config file has invalid content: {0}'.format(content_type)
         raise serializers.ValidationError(detail)
     return content_type
-

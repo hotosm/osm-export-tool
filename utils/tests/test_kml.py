@@ -1,13 +1,10 @@
+# -*- coding: utf-8 -*-
 import logging
-import sys
-import uuid
 import os
+
+from mock import Mock, patch
+
 from django.test import SimpleTestCase
-from django.utils import timezone
-from django.core.files import File
-from unittest import skip
-import mock
-from mock import patch, Mock
 
 from ..kml import SQliteToKml
 
@@ -15,16 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 class TestSQliteToKml(SimpleTestCase):
-    
+
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-    
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_convert(self, popen, pipe, exists):
         sqlite = '/path/to/query.sqlite'
-        kmlfile= '/path/to/query.kml'
+        kmlfile = '/path/to/query.kml'
         cmd = "ogr2ogr -f 'KML' {0} {1}".format(kmlfile, sqlite)
         exists.return_value = True
         proc = Mock()
@@ -41,17 +38,17 @@ class TestSQliteToKml(SimpleTestCase):
         proc.communicate.assert_called_once()
         proc.wait.assert_called_once()
         self.assertEquals(out, kmlfile)
-    
+
     @patch('os.path.exists')
     @patch('os.remove')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_zip_kml_file(self, popen, pipe, remove, exists):
         sqlite = '/path/to/query.sqlite'
-        kmlfile= '/path/to/query.kml'
+        kmlfile = '/path/to/query.kml'
         zipfile = '/path/to/query.kmz'
         zip_cmd = "zip -j {0} {1}".format(zipfile, kmlfile)
-        exists.return_value =  True
+        exists.return_value = True
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())

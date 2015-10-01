@@ -5,12 +5,13 @@
     Depends on django-extensions.
 """
 import os
-import logging
-from jobs.models import Job, Tag, ExportFormat, Region
-from tasks.task_runners import ExportTaskRunner
+
 from django.contrib.auth.models import User
-from jobs.presets import PresetParser
 from django.contrib.gis.geos import GEOSGeometry, Polygon
+
+from jobs.models import ExportFormat, Job, Region, Tag
+from jobs.presets import PresetParser
+from tasks.task_runners import ExportTaskRunner
 
 
 def run(*script_args):
@@ -18,8 +19,8 @@ def run(*script_args):
     # pull out the demo user
     user = User.objects.get(username='bjohare')
     # create the test job
-    bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40)) #monrovia
-    #bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n) horn of africa
+    bbox = Polygon.from_bbox((-10.85, 6.25, -10.62, 6.40))  # monrovia
+    # bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n) horn of africa
     the_geom = GEOSGeometry(bbox, srid=4326)
     job = Job.objects.create(name='TestJob',
                              description='Test description', user=user,
@@ -39,14 +40,13 @@ def run(*script_args):
     tags_dict = parser.parse()
     for entry in tags_dict:
         tag = Tag.objects.create(
-            key = entry['key'],
-            value = entry['value'],
-            geom_types = entry['geom_types'],
-            data_model = 'HDM',
-            job = job
+            key=entry['key'],
+            value=entry['value'],
+            geom_types=entry['geom_types'],
+            data_model='HDM',
+            job=job
         )
     # run the export.. tasks processed on celery queue
     # results available at /api/runs url
     runner = ExportTaskRunner()
     runner.run_task(job_uid=str(job.uid))
-

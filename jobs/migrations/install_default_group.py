@@ -5,9 +5,9 @@ from django.db import models, migrations
 from django.contrib.auth.models import Group
 from jobs.models import ExportProfile
 
+
 class Migration(migrations.Migration):
-    
-    
+
     def insert_default_group(apps, schema_editor):
         """
         Set up the default group and group profile.
@@ -20,13 +20,11 @@ class Migration(migrations.Migration):
             max_extent=2500000,
             group=group
         )
-    
-    
+
     dependencies = [
         ('jobs', 'install_region_mask'),
     ]
-    
-    
+
     operations = [
         migrations.RunPython(insert_default_group),
     ]

@@ -1,6 +1,6 @@
---renommage des tables 
-ALTER TABLE planet_osm_point RENAME TO old_planet_osm_point;       
-ALTER TABLE planet_osm_line  RENAME TO old_planet_osm_line; 
+--renommage des tables
+ALTER TABLE planet_osm_point RENAME TO old_planet_osm_point;
+ALTER TABLE planet_osm_line  RENAME TO old_planet_osm_line;
 ALTER TABLE planet_osm_polygon  RENAME TO old_planet_osm_polygon ;
 
 --creation des nouvelles tables avec colonnes en Francais
@@ -34,13 +34,13 @@ CREATE TABLE planet_osm_point(
 				tourisme VARCHAR (80),
 				velo VARCHAR (80),
 				voie VARCHAR (80)
-				); 
+				);
 
---creation de la colonne spatiale dans la table point			
-SELECT AddGeometryColumn('planet_osm_point', 'the_geom', 3857, 'POINT', 'XY');  
+--creation de la colonne spatiale dans la table point
+SELECT AddGeometryColumn('planet_osm_point', 'the_geom', 3857, 'POINT', 'XY');
 
 --copie des donnÃƒÂ©es de la table source renommÃƒÂ©e dans la nouvelle
-INSERT INTO planet_osm_point ( 
+INSERT INTO planet_osm_point (
 				the_geom,
 				acces,
 				artificiel,
@@ -69,9 +69,9 @@ INSERT INTO planet_osm_point (
 				tourisme,
 				velo,
 				voie
-				) 
+				)
 
-SELECT 
+SELECT
 		  		Geometry,
 				access,
 				man_made,
@@ -123,10 +123,10 @@ CREATE TABLE planet_osm_line (
 				velo VARCHAR (80),
 				voie VARCHAR (80)
  				);
- 			
-SELECT AddGeometryColumn('planet_osm_line', 'the_geom', 3857, 'LINESTRING', 'XY');   
 
-INSERT INTO planet_osm_line (  
+SELECT AddGeometryColumn('planet_osm_line', 'the_geom', 3857, 'LINESTRING', 'XY');
+
+INSERT INTO planet_osm_line (
 				the_geom,
 				acces,
 				artificiel,
@@ -144,9 +144,9 @@ INSERT INTO planet_osm_line (
 				sensunique,
 				tourisme,
 				velo,
-				voie			
-) 
-SELECT 
+				voie
+)
+SELECT
 		  		Geometry,
 				access,
 				man_made,
@@ -167,7 +167,7 @@ SELECT
 				highway
 
 FROM old_planet_osm_line ;
- 
+
 
 CREATE TABLE planet_osm_polygon (
 				id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -195,7 +195,7 @@ CREATE TABLE planet_osm_polygon (
 				tourisme VARCHAR (80),
 				voie VARCHAR (80)
 				);
-			
+
 SELECT AddGeometryColumn('planet_osm_polygon', 'the_geom', 3857, 'MULTIPOLYGON', 'XY');
 
 INSERT INTO planet_osm_polygon (
@@ -223,9 +223,9 @@ INSERT INTO planet_osm_polygon (
 				sport,
 				tourisme,
 				voie
-				) 
+				)
 
-SELECT  
+SELECT
 				Geometry,
 				access,
 				man_made,
@@ -250,12 +250,12 @@ SELECT
 				sport,
 				tourism,
 				highway
-		
-FROM old_planet_osm_polygon ;    
+
+FROM old_planet_osm_polygon ;
 
 
-DROP TABLE old_planet_osm_point ;  
+DROP TABLE old_planet_osm_point ;
 DROP TABLE old_planet_osm_line ;
 DROP TABLE old_planet_osm_polygon ;
 
---fin 
+--fin

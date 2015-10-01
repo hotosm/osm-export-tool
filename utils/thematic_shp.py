@@ -1,21 +1,21 @@
+# -*- coding: utf-8 -*-
 from __future__ import with_statement
-import os
-import json
+
 import logging
+import os
 import shutil
-import argparse
-import subprocess
-import string
 import sqlite3
+import subprocess
 from string import Template
-from jobs.models import Job
 
 logger = logging.getLogger(__name__)
+
 
 class ThematicSQliteToShp(object):
     """
     Thin wrapper around ogr2ogr to convert sqlite to shp using thematic layers.
     """
+
     def __init__(self, sqlite=None, shapefile=None, tags=None, job_name=None, zipped=True, debug=False):
         self.sqlite = sqlite
         self.tags = tags
@@ -38,23 +38,23 @@ class ThematicSQliteToShp(object):
 
         # think more about how to generate this, eg. using admin / json in db?
         self.thematic_spec = {
-            'amenities_all_points': {'type': 'point', 'key':'amenity', 'table':'planet_osm_point', 'select_clause': 'amenity is not null'},
-            'amenities_all_polygons': {'type': 'polygon','key':'amenity', 'table':'planet_osm_polygon', 'select_clause': 'amenity is not null'},
-            'health_schools_points': {'type': 'point', 'key':'amenity', 'table':'planet_osm_point', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
-            'health_schools_polygons': {'key':'amenity', 'table':'planet_osm_polygon', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
-            'airports_all_points': {'key':'aeroway', 'table':'planet_osm_point', 'select_clause': 'aeroway is not null'},
-            'airports_all_polygons': {'key':'aeroway', 'table':'planet_osm_polygon', 'select_clause': 'aeroway is not null'},
-            'villages_points': {'key':'place', 'table':'planet_osm_point', 'select_clause': 'place is not null'},
-            'buildings_polygons': {'key':'building', 'table':'planet_osm_polygon', 'select_clause': 'building is not null'},
-            'natural_polygons': {'key':'natural', 'table':'planet_osm_polygon', 'select_clause': 'natural is not null'},
-            'natural_lines': {'key':'natural', 'table':'planet_osm_line', 'select_clause': 'natural is not null'},
-            'landuse_other_polygons': {'key':'landuse', 'table':'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse!="residential"'},
-            'landuse_residential_polygons': {'key':'landuse', 'table':'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse="residential"'},
-            'roads_paths_lines': {'key':'highway', 'table':'planet_osm_line', 'select_clause': 'highway is not null'},
-            'waterways_lines': {'key':'waterway', 'table':'planet_osm_line', 'select_clause': 'waterway is not null'},
-            'towers_antennas_points': {'key':'man_made', 'table':'planet_osm_point', 'select_clause': 'man_made="antenna" OR man_made="mast" OR man_made="tower"'},
-            'harbours_points': {'key':'harbour', 'table':'planet_osm_point', 'select_clause': 'harbour is not null'},
-            'grassy_fields_polygons': {'key':'leisure', 'table':'planet_osm_polygon', 'select_clause': 'leisure="pitch" OR leisure="common" OR leisure="golf_course"'},
+            'amenities_all_points': {'type': 'point', 'key': 'amenity', 'table': 'planet_osm_point', 'select_clause': 'amenity is not null'},
+            'amenities_all_polygons': {'type': 'polygon', 'key': 'amenity', 'table': 'planet_osm_polygon', 'select_clause': 'amenity is not null'},
+            'health_schools_points': {'type': 'point', 'key': 'amenity', 'table': 'planet_osm_point', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
+            'health_schools_polygons': {'key': 'amenity', 'table': 'planet_osm_polygon', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
+            'airports_all_points': {'key': 'aeroway', 'table': 'planet_osm_point', 'select_clause': 'aeroway is not null'},
+            'airports_all_polygons': {'key': 'aeroway', 'table': 'planet_osm_polygon', 'select_clause': 'aeroway is not null'},
+            'villages_points': {'key': 'place', 'table': 'planet_osm_point', 'select_clause': 'place is not null'},
+            'buildings_polygons': {'key': 'building', 'table': 'planet_osm_polygon', 'select_clause': 'building is not null'},
+            'natural_polygons': {'key': 'natural', 'table': 'planet_osm_polygon', 'select_clause': 'natural is not null'},
+            'natural_lines': {'key': 'natural', 'table': 'planet_osm_line', 'select_clause': 'natural is not null'},
+            'landuse_other_polygons': {'key': 'landuse', 'table': 'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse!="residential"'},
+            'landuse_residential_polygons': {'key': 'landuse', 'table': 'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse="residential"'},
+            'roads_paths_lines': {'key': 'highway', 'table': 'planet_osm_line', 'select_clause': 'highway is not null'},
+            'waterways_lines': {'key': 'waterway', 'table': 'planet_osm_line', 'select_clause': 'waterway is not null'},
+            'towers_antennas_points': {'key': 'man_made', 'table': 'planet_osm_point', 'select_clause': 'man_made="antenna" OR man_made="mast" OR man_made="tower"'},
+            'harbours_points': {'key': 'harbour', 'table': 'planet_osm_point', 'select_clause': 'harbour is not null'},
+            'grassy_fields_polygons': {'key': 'leisure', 'table': 'planet_osm_polygon', 'select_clause': 'leisure="pitch" OR leisure="common" OR leisure="golf_course"'},
         }
 
     def generate_thematic_schema(self,):
@@ -74,8 +74,10 @@ class ThematicSQliteToShp(object):
             isPoly = layer_type == 'polygons'
             osm_way_id = ''
             # check if the thematic tag is in the jobs tags, if not skip this thematic layer
-            if not spec['key'] in self.tags[layer_type]: continue
-            if isPoly: osm_way_id = 'osm_way_id,'
+            if not spec['key'] in self.tags[layer_type]:
+                continue
+            if isPoly:
+                osm_way_id = 'osm_way_id,'
             params = {'tablename': layer, 'osm_way_id': osm_way_id,
                       'columns': ', '.join(self.tags[layer_type]),
                       'planet_table': spec['table'], 'select_clause': spec['select_clause']}
@@ -108,14 +110,13 @@ class ThematicSQliteToShp(object):
         conn.commit()
         cur.close()
 
-
     def convert(self, ):
         convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'sqlite': self.thematic_sqlite})
         if(self.debug):
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
             logger.error('%s', stderr)
@@ -133,7 +134,7 @@ class ThematicSQliteToShp(object):
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': zipfile, 'shp_dir': self.shapefile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout,stderr) = proc.communicate()
+        (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
             logger.error('%s', stderr)

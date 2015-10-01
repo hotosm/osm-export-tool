@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 
-from celery import Celery
 from django.conf import settings
+
+from celery import Celery
 
 # celery is going to be executed on the command line or via system scripts
 # it's assumed that DJANGO_SETTINGS_MODULE environment variable is set

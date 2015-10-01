@@ -1,15 +1,15 @@
+# -*- coding: utf-8 -*-
 """
     API url configuration
 """
 
-from api.views import (JobViewSet, ExportFormatViewSet,
-                       RegionViewSet, RegionMaskViewSet,
-                       ExportRunViewSet, ExportConfigViewSet,
-                       PresetViewSet, TranslationViewSet,
-                       TransformViewSet, ExportTaskViewSet,
-                       HDMDataModelView)
-
 from rest_framework.routers import DefaultRouter
+
+from api.views import (
+    ExportConfigViewSet, ExportFormatViewSet, ExportRunViewSet,
+    ExportTaskViewSet, JobViewSet, PresetViewSet, RegionMaskViewSet,
+    RegionViewSet, TransformViewSet, TranslationViewSet
+)
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'jobs', JobViewSet, base_name='jobs')

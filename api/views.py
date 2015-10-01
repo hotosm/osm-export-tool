@@ -1,56 +1,35 @@
+# -*- coding: utf-8 -*-
 import logging
-import json
 import os
-import shutil
-import pdb
-import django_filters
-from datetime import datetime
 from collections import OrderedDict
-from django.http import HttpResponse
-from django.http import JsonResponse
-from django.contrib.auth.models import User, Group
-from django.shortcuts import get_object_or_404
-from django.db.models import FileField
+
 from django.db import Error, transaction
-from django.core.files.base import ContentFile
+from django.http import JsonResponse
 from django.utils.translation import ugettext as _
 
-from rest_framework import views
-from rest_framework import viewsets
-from rest_framework import authentication
-from rest_framework import permissions
-from rest_framework import mixins
-from rest_framework import status
-from rest_framework import renderers
-from rest_framework import generics
-from rest_framework import filters
-from rest_framework.reverse import reverse
+from rest_framework import filters, permissions, status, views, viewsets
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.serializers import ValidationError
-from rest_framework.pagination import PageNumberPagination
-
-from .renderers import HOTExportApiRenderer
-from .validators import validate_bbox_params, validate_search_bbox
-from .pagination import LinkHeaderPagination
-from .filters import JobFilter, ExportRunFilter, ExportConfigFilter
 
 from jobs import presets
-from jobs.models import Job, ExportFormat, Region, RegionMask, ExportConfig, Tag
-from jobs.hdm_tags import HOT_HDM
-from jobs.osm_tags import OSM_DM
-from jobs.presets import PresetParser, TagParser
-from tasks.models import ExportRun, ExportTask, ExportTaskResult
-from serializers import (JobSerializer, ExportFormatSerializer,
-                         RegionSerializer, RegionMaskSerializer,
-                         ExportRunSerializer, ExportConfigSerializer,
-                         TagSerializer, ExportTaskSerializer)
-
+from jobs.models import (
+    ExportConfig, ExportFormat, Job, Region, RegionMask, Tag
+)
+from jobs.presets import PresetParser
+from serializers import (
+    ExportConfigSerializer, ExportFormatSerializer, ExportRunSerializer,
+    ExportTaskSerializer, JobSerializer, RegionMaskSerializer,
+    RegionSerializer
+)
+from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
 
-from django.conf import settings
+from .filters import ExportConfigFilter, ExportRunFilter, JobFilter
+from .pagination import LinkHeaderPagination
+from .renderers import HOTExportApiRenderer
+from .validators import validate_bbox_params, validate_search_bbox
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -88,7 +67,7 @@ class JobViewSet(viewsets.ModelViewSet):
                 serializer = self.get_serializer(page, many=True, context={'request': request})
                 return self.get_paginated_response(serializer.data)
             else:
-                serializer = JobSerializer(queryset,  many=True, context={'request': request})
+                serializer = JobSerializer(queryset, many=True, context={'request': request})
                 return Response(serializer.data)
         if (len(params.split(',')) < 4):
             errors = OrderedDict()
@@ -111,7 +90,7 @@ class JobViewSet(viewsets.ModelViewSet):
                     serializer = self.get_serializer(page, many=True, context={'request': request})
                     return self.get_paginated_response(serializer.data)
                 else:
-                    serializer = JobSerializer(queryset,  many=True, context={'request': request})
+                    serializer = JobSerializer(queryset, many=True, context={'request': request})
                     return Response(serializer.data)
             except ValidationError as e:
                 logger.debug(e.detail)
@@ -145,7 +124,7 @@ class JobViewSet(viewsets.ModelViewSet):
                         job.formats = export_formats
                         if preset:
                             # get the tags from the uploaded preset
-                            logger.debug('Found preset with uid: %s' % preset);
+                            logger.debug('Found preset with uid: %s' % preset)
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = config.upload.path
@@ -153,38 +132,38 @@ class JobViewSet(viewsets.ModelViewSet):
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
-                                    name = entry['name'],
-                                    key = entry['key'],
-                                    value = entry['value'],
-                                    geom_types = entry['geom_types'],
-                                    data_model = 'PRESET',
-                                    job = job
+                                    name=entry['name'],
+                                    key=entry['key'],
+                                    value=entry['value'],
+                                    geom_types=entry['geom_types'],
+                                    data_model='PRESET',
+                                    job=job
                                 )
                         elif tags:
                             # get tags from request
                             for entry in tags:
                                 tag = Tag.objects.create(
-                                    name = entry['name'],
-                                    key = entry['key'],
-                                    value = entry['value'],
-                                    job = job,
-                                    data_model = entry['data_model'],
-                                    geom_types = entry['geom_types'],
-                                    groups = entry['groups']
+                                    name=entry['name'],
+                                    key=entry['key'],
+                                    value=entry['value'],
+                                    job=job,
+                                    data_model=entry['data_model'],
+                                    geom_types=entry['geom_types'],
+                                    groups=entry['groups']
                                 )
                         else:
                             # use hdm preset as default tags
                             path = os.path.dirname(os.path.realpath(__file__))
-                            parser = presets.PresetParser(preset= path + '/hdm_presets.xml')
+                            parser = presets.PresetParser(preset=path + '/hdm_presets.xml')
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
-                                    name = entry['name'],
-                                    key = entry['key'],
-                                    value = entry['value'],
-                                    geom_types = entry['geom_types'],
-                                    data_model = 'HDM',
-                                    job = job
+                                    name=entry['name'],
+                                    key=entry['key'],
+                                    value=entry['value'],
+                                    geom_types=entry['geom_types'],
+                                    data_model='HDM',
+                                    job=job
                                 )
                         # check for translation file
                         if translation:
@@ -237,7 +216,6 @@ class RunJob(views.APIView):
             return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
 
 
-
 class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ### ExportFormat API endpoint.
@@ -282,7 +260,7 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'uid'
 
     def get_queryset(self):
-         return ExportRun.objects.all().order_by('-started_at')
+        return ExportRun.objects.all().order_by('-started_at')
 
     def retrieve(self, request, uid=None, *args, **kwargs):
         queryset = ExportRun.objects.filter(uid=uid)
@@ -303,13 +281,14 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ExportConfigSerializer
     pagination_class = LinkHeaderPagination
-    filter_backends = (filters.DjangoFilterBackend,filters.SearchFilter)
+    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = ExportConfigFilter
     search_fields = ('name', 'config_type', 'user__username')
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     queryset = ExportConfig.objects.filter(config_type='PRESET')
     lookup_field = 'uid'
+
 
 class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -379,4 +358,3 @@ class OSMDataModelView(views.APIView):
         parser = PresetParser(path + '/osm_presets.xml')
         data = parser.build_hdm_preset_dict()
         return JsonResponse(data, status=status.HTTP_200_OK)
-

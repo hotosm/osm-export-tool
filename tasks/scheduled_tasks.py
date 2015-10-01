@@ -1,15 +1,16 @@
-import logging
-import datetime
+# -*- coding: utf-8 -*-
 from django.utils import timezone
-from celery.utils.log import get_task_logger
+
 from celery import Task
+from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
+
 class PurgeUnpublishedExportsTask(Task):
-    
+
     name = "Purge Unpublished Exports"
-    
+
     def run(self,):
         from jobs.models import Job
         time_limit = timezone.now() - timezone.timedelta(hours=48)

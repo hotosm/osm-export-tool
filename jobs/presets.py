@@ -1,15 +1,15 @@
+# -*- coding: utf-8 -*-
 import logging
-import pdb
 from collections import OrderedDict
-from lxml import etree
 from StringIO import StringIO
-from jobs.models import Job, Tag
+
+from lxml import etree
 
 logger = logging.getLogger(__name__)
 
 
 class PresetParser():
-    
+
     types = {
         'node': 'point',
         'way': 'line',
@@ -17,13 +17,13 @@ class PresetParser():
         'closedway': 'polygon',
         'relation': 'polygon'
     }
-    
-    namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
-    
+
+    namespaces = {'ns': 'http://josm.openstreetmap.de/tagging-preset-1.0'}
+
     def __init__(self, preset=None, *args, **kwargs):
         self.preset = preset
         self.tags = []
-    
+
     def parse(self,):
         """
         Reads in the JOSM Preset.
@@ -38,9 +38,9 @@ class PresetParser():
         items = tree.xpath('//ns:item', namespaces=self.namespaces)
         for item in items:
             self.process_item_and_children(item)
-        #tags = OrderedDict(sorted(self.tags.items()))
+        # tags = OrderedDict(sorted(self.tags.items()))
         return self.tags
-        
+
     def process_item_and_children(self, item, geometrytype=None):
         geometrytypes = None
         if item.get('type'):
@@ -75,7 +75,7 @@ class PresetParser():
         for osmtype in osmtypes:
             geometrytypes.append(self.types[osmtype])
         return geometrytypes
-    
+
     def build_hdm_preset_dict(self, ):
         hdm = {}
         xml = StringIO(open(self.preset).read())
@@ -87,15 +87,15 @@ class PresetParser():
             hdm[name] = group_dict
             self._parse_group(group, group_dict)
         return OrderedDict(sorted(hdm.items()))
-        
-                
+
     def _parse_group(self, group, group_dict):
         items = group.xpath('./ns:item', namespaces=self.namespaces)
         for item in items:
             item_dict = {}
             name = item.get('name')
-            types = item.get('type') # get the type attr on the item element
-            if types == None: continue # pass those items with no geom type
+            types = item.get('type')  # get the type attr on the item element
+            if types == None:
+                continue  # pass those items with no geom type
             geom_types = self.get_geometrytype(types)
             keys = item.xpath('./ns:key', namespaces=self.namespaces)
             if not len(keys) > 0:
@@ -112,21 +112,21 @@ class PresetParser():
             group_dict[name] = sub_group_dict
             self._parse_group(sub_group, sub_group_dict)
 
-      
+
 class TagParser():
-    
-    namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
+
+    namespaces = {'ns': 'http://josm.openstreetmap.de/tagging-preset-1.0'}
     nsmap = {None: 'http://josm.openstreetmap.de/tagging-preset-1.0'}
-    
+
     types = {
         'point': 'node',
         'line': 'way',
         'polygon': 'area,closedway,relation',
     }
-    
+
     def __init__(self, tags=None, *args, **kwargs):
         self.tags = tags
-    
+
     def parse_tags(self, ):
         root = etree.Element('presets', nsmap=self.nsmap)
         doc = etree.ElementTree(root)
@@ -162,4 +162,3 @@ class TagParser():
             if gtype is not None:
                 types.append(self.types[geom_type])
         return ','.join(types)
-        
