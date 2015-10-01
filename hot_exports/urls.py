@@ -18,24 +18,23 @@ admin.autodiscover()
 urlpatterns = []
 
 urlpatterns += i18n_patterns('ui.views',
-    #url(r'^$', TemplateView.as_view(template_name='osm/login.html'), name='index'),
     url(r'^$', 'login', name='index'),
     url(r'^exports/', include(ui_urls)),
     url(r'^login/$', 'login', name="login"),
     url(r'^logout$', 'logout', name='logout'),
     url(r'^error$', create_error_view, name='error'),
+    url(r'^about$', TemplateView.as_view(template_name='ui/about.html'), name='about'),
     url(r'^update$', TemplateView.as_view(template_name='ui/upgrade.html'), name='update'),
     url(r'^email/$', 'require_email', name='require_email'),
 )
 
 urlpatterns += i18n_patterns('ui.help',
-    url(r'^about$', TemplateView.as_view(template_name='ui/about.html'), name='about'),
-    url(r'^help$', TemplateView.as_view(template_name='ui/help.html'), name='help'),
-    url(r'^help/pages$', TemplateView.as_view(template_name='ui/help_pages.html'), name='help_pages'),
-    url(r'^help/formats$', TemplateView.as_view(template_name='ui/help_formats.html'), name='help_formats'),
-    url(r'^help/tags$', TemplateView.as_view(template_name='ui/help_tags.html'), name='help_tags'),
-    url(r'^help/presets$', TemplateView.as_view(template_name='ui/help_presets.html'), name='help_presets'),
-    url(r'^help/config$', TemplateView.as_view(template_name='ui/help_config.html'), name='help_config'),
+    url(r'^help$', TemplateView.as_view(template_name='help/help.html'), name='help'),
+    url(r'^help/create$', TemplateView.as_view(template_name='help/help_create.html'), name='help_create'),
+    url(r'^help/features$', TemplateView.as_view(template_name='help/help_features.html'), name='help_features'),
+    url(r'^help/exports$', TemplateView.as_view(template_name='help/help_exports.html'), name='help_exports'),
+    url(r'^help/formats$', TemplateView.as_view(template_name='help/help_formats.html'), name='help_formats'),
+    url(r'^help/presets$', TemplateView.as_view(template_name='help/help_presets.html'), name='help_presets'),
 )
 
 urlpatterns += i18n_patterns('admin.views',
