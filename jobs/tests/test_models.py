@@ -239,11 +239,11 @@ class TestJobRegionIntersection(TestCase):
         regions = Region.objects.filter(the_geog__intersects=job.the_geog).intersection(job.the_geog, field_name='the_geog').order_by('-intersection')
         finished = timezone.now()
         geog_time = finished - started
-        #logger.debug('Geography lookup took: %s' % geog_time)
+        # logger.debug('Geography lookup took: %s' % geog_time)
         self.assertEquals(2, len(regions))
         asia = regions[0]
         africa = regions[1]
-        #logger.debug('Asian Geog intersection area: %s' % asia.intersection.area)
+        # logger.debug('Asian Geog intersection area: %s' % asia.intersection.area)
         self.assertIsNotNone(asia)
         self.assertIsNotNone(africa)
         self.assertEquals('Central Asia/Middle East', asia.name)
@@ -252,16 +252,16 @@ class TestJobRegionIntersection(TestCase):
 
         regions = None
 
-        #use the_geom
+        # use the_geom
         started = timezone.now()
         regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(job.the_geom, field_name='the_geom').order_by('-intersection')
         finished = timezone.now()
         geom_time = finished - started
-        #logger.debug('Geometry lookup took: %s' % geom_time)
+        # logger.debug('Geometry lookup took: %s' % geom_time)
         self.assertEquals(2, len(regions))
         asia = regions[0]
         africa = regions[1]
-        #logger.debug('Asian Geom intersection area: %s' % asia.intersection.area)
+        # logger.debug('Asian Geom intersection area: %s' % asia.intersection.area)
         self.assertIsNotNone(asia)
         self.assertIsNotNone(africa)
         self.assertEquals('Central Asia/Middle East', asia.name)

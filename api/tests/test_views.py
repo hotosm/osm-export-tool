@@ -228,7 +228,7 @@ class TestJobViewSet(APITestCase):
             'xmax': 7.0,
             'ymax': 27.6,
             'formats': formats,
-            #'preset': config_uid,
+            # 'preset': config_uid,
             'transform': '',
             'translate': '',
             'tags': self.tags
@@ -249,7 +249,7 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
         configs = self.job.configs.all()
-        #self.assertIsNotNone(configs[0])
+        # self.assertIsNotNone(configs[0])
 
     def test_missing_bbox_param(self, ):
         url = reverse('api:jobs-list')
@@ -258,7 +258,7 @@ class TestJobViewSet(APITestCase):
             'name': 'TestJob',
             'description': 'Test description',
             'event': 'Test Activation',
-            #'xmin': -3.9, missing
+            # 'xmin': -3.9, missing
             'ymin': 16.1,
             'xmax': 7.0,
             'ymax': 27.6,
@@ -394,7 +394,7 @@ class TestJobViewSet(APITestCase):
             'ymin': 16.1,
             'xmax': 7.0,
             'ymax': 27.6,
-            #'formats': '', # missing
+            # 'formats': '', # missing
         }
         response = self.client.post(url, request_data)
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)

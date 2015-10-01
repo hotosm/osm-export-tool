@@ -33,7 +33,7 @@ class TestExportTasks(TestCase):
         self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        # bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         bbox = Polygon.from_bbox((-10.85, 6.25, -10.62, 6.40))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
@@ -303,7 +303,7 @@ class TestExportTasks(TestCase):
         error_type, msg, tb = exc_info[0], exc_info[1], exc_info[2]
         self.assertEquals(error_type, ValueError)
         self.assertEquals('some unexpected error', str(msg))
-        #traceback.print_exception(error_type, msg, tb)
+        # traceback.print_exception(error_type, msg, tb)
 
     @patch('celery.app.task.Task.request')
     def test_generate_preset_task(self, mock_request):
@@ -344,7 +344,7 @@ class TestExportTasks(TestCase):
         msg = Mock()
         email.return_value = msg
         msg.send.assert_called_once()
-        #self.assertEquals('SUCCESS', self.run.status)
+        # self.assertEquals('SUCCESS', self.run.status)
 
     @patch('django.core.mail.EmailMessage')
     @patch('shutil.rmtree')
@@ -363,8 +363,8 @@ class TestExportTasks(TestCase):
         self.assertEquals('Export Task Error Handler', task.name)
         task.run(run_uid=run_uid, stage_dir=stage_dir)
         isdir.assert_called_once_with(stage_dir)
-        #rmtree.assert_called_once_with(stage_dir)
+        # rmtree.assert_called_once_with(stage_dir)
         msg = Mock()
         email.return_value = msg
         msg.send.assert_called_once()
-        #self.assertEquals('FAILED', self.run.status)
+        # self.assertEquals('FAILED', self.run.status)

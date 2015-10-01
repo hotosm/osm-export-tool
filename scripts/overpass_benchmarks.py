@@ -45,8 +45,8 @@ def run(*script_args):
     filtered = op.filter()
 
     # check pbf conversion
-    #pbf = OSMToPBF(osm=path + '/files/filter.osm', pbffile=path + '/files/filter.pbf', debug=True)
-    #pbf.convert()
+    # pbf = OSMToPBF(osm=path + '/files/filter.osm', pbffile=path + '/files/filter.pbf', debug=True)
+    # pbf.convert()
 
     """
     print "=============="

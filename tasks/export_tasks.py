@@ -422,7 +422,7 @@ class ExportTaskErrorHandler(Task):
         run.save()
         try:
             if os.path.isdir(stage_dir):
-                #shutil.rmtree(stage_dir)
+                # shutil.rmtree(stage_dir)
                 pass
         except IOError as e:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
