@@ -84,7 +84,7 @@ class TestThematicShp(TestCase):
         connect.assert_called_once()
         conn.load_extention.assert_called_once()
         conn.cursor.assert_called_once()
-        #cur.execute.assert_called_with(cmd)
+        # cur.execute.assert_called_with(cmd)
 
     @patch('shutil.copy')
     @patch('os.path.exists')

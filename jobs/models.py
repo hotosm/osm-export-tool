@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_upload_path(instance, filename):
-    #pdb.set_trace()
     configtype = instance.config_type.lower()
     # sanitize the filename here..
     path = 'export/config/{0}/{1}'.format(configtype, instance.filename)

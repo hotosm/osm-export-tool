@@ -58,7 +58,7 @@ def run(*script_args):
 
     colstr = ','.join(new_columns)
     sql = sql_templ.safe_substitute({'columns': colstr})
-    #cursor = conn.execute('ALTER TABLE planet_osm_point RENAME TO planet_osm_point_temp;')
+    # cursor = conn.execute('ALTER TABLE planet_osm_point RENAME TO planet_osm_point_temp;')
     cur.execute(sql)
 
     # add the geometry column and spatial index

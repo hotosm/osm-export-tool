@@ -55,14 +55,14 @@ class TestPresetParser(TestCase):
     def test_build_hdm_preset_dict(self,):
         parser = PresetParser(self.path + '/files/hdm_presets.xml')
         group_dict = parser.build_hdm_preset_dict()
-        #logger.debug(group_dict)
-        #logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
+        # logger.debug(group_dict)
+        # logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
 
     def test_build_osm_preset_dict(self,):
         parser = PresetParser(self.path + '/files/osm_presets.xml')
         group_dict = parser.build_hdm_preset_dict()
-        #logger.debug(group_dict)
-        #logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
+        # logger.debug(group_dict)
+        # logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
 
 
 class TestHDMToJSON(TestCase):
@@ -139,7 +139,7 @@ class TestTagParser(TestCase):
         self.assertIsNotNone(saved_config)
         self.assertEqual(config, saved_config)
         self.assertIsNotNone(saved_config.upload)
-        #logger.debug(saved_config.upload)
+        # logger.debug(saved_config.upload)
         sf = File(open(os.path.abspath('.') + '/media/export/config/preset/hdm_custom_preset.xml'))
         self.assertIsNotNone(sf)  # check the file gets created on disk
         sf.close()

@@ -374,7 +374,7 @@ class JobSerializer(serializers.Serializer):
     published = serializers.BooleanField(required=False)
     feature_save = serializers.BooleanField(required=False)
     feature_pub = serializers.BooleanField(required=False)
-    #configs = ExportConfigSerializer(many=True)
+    # configs = ExportConfigSerializer(many=True)
     xmin = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,
         error_messages={

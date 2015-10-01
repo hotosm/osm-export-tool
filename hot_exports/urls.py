@@ -67,6 +67,6 @@ urlpatterns += patterns('',
     url(r'^i18n/', include('django.conf.urls.i18n')),
 )
 
-#handler500 = 'ui.views.internal_error_view'
+# handler500 = 'ui.views.internal_error_view'
 
-#handler404 = 'ui.views.not_found_error_view'
+# handler404 = 'ui.views.not_found_error_view'

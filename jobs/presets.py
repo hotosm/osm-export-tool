@@ -38,7 +38,7 @@ class PresetParser():
         items = tree.xpath('//ns:item', namespaces=self.namespaces)
         for item in items:
             self.process_item_and_children(item)
-        #tags = OrderedDict(sorted(self.tags.items()))
+        # tags = OrderedDict(sorted(self.tags.items()))
         return self.tags
 
     def process_item_and_children(self, item, geometrytype=None):

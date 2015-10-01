@@ -20,7 +20,7 @@ def run(*script_args):
     user = User.objects.get(username='bjohare')
     # create the test job
     bbox = Polygon.from_bbox((-10.85, 6.25, -10.62, 6.40))  # monrovia
-    #bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n) horn of africa
+    # bbox = Polygon.from_bbox((13.84,-33.87,34.05,-25.57))  #(w,s,e,n) horn of africa
     the_geom = GEOSGeometry(bbox, srid=4326)
     job = Job.objects.create(name='TestJob',
                              description='Test description', user=user,
