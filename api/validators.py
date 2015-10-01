@@ -78,14 +78,14 @@ def validate_bbox_params(data):
     lon_coords = [float(data['xmin']), float(data['xmax'])]
     lat_coords = [float(data['ymin']), float(data['ymax'])]
     # test lat long value order
-    if ((lon_coords[0] >= 0 and lon_coords[0] > lon_coords[1])
-        or (lon_coords[0] < 0 and lon_coords[0] > lon_coords[1])):
+    if ((lon_coords[0] >= 0 and lon_coords[0] > lon_coords[1]) or
+            (lon_coords[0] < 0 and lon_coords[0] > lon_coords[1])):
         detail['id'] = 'inverted_coordinates'
         detail['message'] = 'xmin greater than xmax.'
         raise serializers.ValidationError(detail)
 
-    if ((lat_coords[0] >= 0 and lat_coords[0] > lat_coords[1])
-        or (lat_coords[0] < 0 and lat_coords[0] > lat_coords[1])):
+    if ((lat_coords[0] >= 0 and lat_coords[0] > lat_coords[1]) or
+            (lat_coords[0] < 0 and lat_coords[0] > lat_coords[1])):
         detail['id'] = 'inverted_coordinates'
         detail['message'] = 'ymin greater than ymax.'
         raise serializers.ValidationError(detail)
