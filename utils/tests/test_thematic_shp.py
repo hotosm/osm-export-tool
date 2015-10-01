@@ -52,7 +52,7 @@ class TestThematicShp(TestCase):
         t2s = ThematicSQliteToShp(
             sqlite=sqlite, shapefile=shapefile,
             tags=None, job_name='test_thematic_shp',
-            zipped=False, debug=True
+            zipped=False, debug=False
         )
         exists.assert_called_twice()
         copy.assert_called_once()
@@ -76,7 +76,7 @@ class TestThematicShp(TestCase):
         t2s = ThematicSQliteToShp(
             sqlite=sqlite, shapefile=shapefile,
             tags=tags, job_name='test_thematic_shp',
-            zipped=False, debug=True
+            zipped=False, debug=False
         )
         exists.assert_called_twice()
         copy.assert_called_once()
@@ -111,7 +111,7 @@ class TestThematicShp(TestCase):
         t2s = ThematicSQliteToShp(
             sqlite=sqlite, shapefile=shapefile,
             tags=tags, job_name='test_thematic_shp',
-            zipped=False, debug=True
+            zipped=False, debug=False
         )
         exists.assert_called_twice()
         copy.assert_called_once()
@@ -139,7 +139,7 @@ class TestThematicShp(TestCase):
         t2s = ThematicSQliteToShp(
             sqlite=sqlite, shapefile=shapefile,
             tags=tags, job_name='test_thematic_shp',
-            zipped=False, debug=True
+            zipped=False, debug=False
         )
         exists.assert_called_twice()
         copy.assert_called_once()

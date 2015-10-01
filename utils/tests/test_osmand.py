@@ -60,7 +60,7 @@ class TestOSMToOBF(TestCase):
         listdir.return_value = ['query.obf']
         o2o = OSMToOBF(
             pbffile=self.pbffile, work_dir=self.work_dir,
-            map_creator_dir=self.map_creator_dir, debug=True
+            map_creator_dir=self.map_creator_dir, debug=False
         )
         obffile = o2o.convert()
         exists.assert_called_twice_with(self.work_dir + '/query.osm.pbf')

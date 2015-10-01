@@ -50,7 +50,7 @@ class TestOSMToIMG(TestCase):
         exists.return_value = True
         o2i = OSMToIMG(
             pbffile=self.pbffile, work_dir=self.work_dir,
-            config=self.config, region=self.region, debug=True
+            config=self.config, region=self.region, debug=False
         )
         exists.assert_called_once_with(self.pbffile)
         o2i.run_splitter()
@@ -86,7 +86,7 @@ class TestOSMToIMG(TestCase):
         # set zipped to False for testing
         o2i = OSMToIMG(
             pbffile=self.pbffile, work_dir=self.work_dir,
-            config=self.config, zipped=False, region=self.region, debug=True
+            config=self.config, zipped=False, region=self.region, debug=False
         )
         exists.assert_called_once_with(self.pbffile)
         imgfile = o2i.run_mkgmap()
@@ -114,7 +114,7 @@ class TestOSMToIMG(TestCase):
         proc.wait.return_value = 0
         o2i = OSMToIMG(
             pbffile=self.pbffile, work_dir=self.work_dir,
-            config=self.config, region=self.region, debug=True
+            config=self.config, region=self.region, debug=False
         )
         exists.assert_called_once_with(self.pbffile)
         result = o2i._zip_img_file()

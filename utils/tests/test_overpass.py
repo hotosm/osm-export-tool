@@ -63,41 +63,6 @@ class TestOverpass(TestCase):
         q = overpass.get_query()
         self.assertEquals(q, self.query)
 
-    @skip
-    def test_op_query_no_tags(self, ):
-        op = Overpass(osm=self.osm, bbox=self.bbox)
-        op.run_query()
-
-    @skip
-    def test_op_query_with_tags(self, ):
-        op = Overpass(osm=self.osm, bbox=self.bbox, tags=self.job.filters)
-        logger.debug(op.get_query())
-        op.run_query()
-
-    @skip
-    def test_with_hdm_tags(self, ):
-        parser = presets.PresetParser(preset=self.path + '/files/hdm_presets.xml')
-        tags = parser.parse()
-        filters = []
-        for tag in tags:
-            logger.debug(tag)
-            filter_tag = '{0}={1}'.format(tag['key'], tag['value'])
-            filters.append(filter_tag)
-        op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
-        op.run_query()
-
-    @skip
-    def test_with_osm_tags(self, ):
-        parser = presets.PresetParser(preset=self.path + '/files/osm_presets.xml')
-        tags = parser.parse()
-        filters = []
-        for tag in tags:
-            logger.debug(tag)
-            filter_tag = '{0}={1}'.format(tag['key'], tag['value'])
-            filters.append(filter_tag)
-        op = Overpass(osm=self.osm, bbox=self.bbox, tags=filters)
-        op.run_query()
-
     @patch('utils.overpass.requests.post')
     def test_run_query(self, mock_post):
         op = Overpass(

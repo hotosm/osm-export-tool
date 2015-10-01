@@ -33,7 +33,6 @@ class TestPresetParser(TestCase):
         self.assertIsNotNone(tags)
         self.assertEquals(238, len(tags))
 
-    @skip
     def test_validate_hdm_presets(self, ):
         schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
         xmlschema_doc = etree.parse(schema)
@@ -65,24 +64,8 @@ class TestPresetParser(TestCase):
         # logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
 
 
-class TestHDMToJSON(TestCase):
-
-    def setUp(self, ):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-
-    @skip
-    def test_hdm_to_json(self,):
-        js = json.dumps(HOT_HDM, sort_keys=False)
-        f = open(self.path + '/hdm.json', 'w')
-        f.write(js)
-        f.close()
-        os.remove(self.path + '/hdm.json')
-
-
 class TestTagParser(TestCase):
-    """
-        Test generation of preset from HDM tags.
-    """
+    """Test generation of preset from HDM tags."""
 
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))

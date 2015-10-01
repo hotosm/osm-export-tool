@@ -30,7 +30,7 @@ class TestSQliteToKml(SimpleTestCase):
         proc.wait.return_value = 0
         # set zipped to False for testing
         s2k = SQliteToKml(sqlite=sqlite, kmlfile=kmlfile,
-                          zipped=False, debug=True)
+                          zipped=False, debug=False)
         exists.assert_called_once_with(sqlite)
         out = s2k.convert()
         popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
@@ -54,7 +54,7 @@ class TestSQliteToKml(SimpleTestCase):
         proc.communicate.return_value = (Mock(), Mock())
         proc.wait.return_value = 0
         s2k = SQliteToKml(sqlite=sqlite, kmlfile=kmlfile,
-                          zipped=False, debug=True)
+                          zipped=False, debug=False)
         result = s2k._zip_kml_file()
         exists.assert_called_once_with(sqlite)
         # test subprocess getting called with correct command

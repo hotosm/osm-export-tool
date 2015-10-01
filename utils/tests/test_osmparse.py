@@ -55,7 +55,7 @@ class TestOSMParser(TestCase):
     def test_update_zindexes(self, exists, ogr_open):
         exists.return_value = True
         ogr_ds = MagicMock()
-        ogr_ds.GetLayerCount.return_value = 4
+        ogr_ds.GetLayerCount.return_value = 3
         ogr_ds.ExecuteSQL = MagicMock()
         ogr_ds.Destroy = MagicMock()
         ogr_open.return_value = ogr_ds
@@ -63,5 +63,5 @@ class TestOSMParser(TestCase):
         parser.update_zindexes()
         exists.assert_called_twice_with('/path/to/query.sqlite')
         ogr_open.assert_called_once_with('/path/to/query.sqlite', update=True)
-        self.assertEquals(40, ogr_ds.ExecuteSQL.call_count)
+        self.assertEquals(30, ogr_ds.ExecuteSQL.call_count)
         ogr_ds.Destroy.assert_called_once()

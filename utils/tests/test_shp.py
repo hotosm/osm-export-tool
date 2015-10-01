@@ -30,7 +30,7 @@ class TestSQliteToShp(SimpleTestCase):
         proc.wait.return_value = 0
         # set zipped to False for testing
         s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile,
-                          zipped=False, debug=True)
+                          zipped=False, debug=False)
         out = s2s.convert()
         exists.assert_called_once_with(sqlite)
         popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
@@ -52,7 +52,7 @@ class TestSQliteToShp(SimpleTestCase):
         proc.communicate.return_value = (Mock(), Mock())
         proc.wait.return_value = 0
         s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile,
-                          zipped=False, debug=True)
+                          zipped=False, debug=False)
         result = s2s._zip_shape_dir()
         exists.assert_called_once_with(sqlite)
         # test subprocess getting called with correct command
