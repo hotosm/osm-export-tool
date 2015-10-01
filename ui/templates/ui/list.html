@@ -3,9 +3,9 @@
 {% load i18n %}
 {% block css %}
 {{ block.super}}
-<link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/jquery.dataTables.min.css' %}"/>
-<link rel="stylesheet" href="{% static 'ui/components/datatables/media/css/dataTables.bootstrap.css' %}"/>
-<link rel="stylesheet" href="{% static 'ui/components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/contrib/datatables/media/css/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/contrib/datatables/media/css/dataTables.bootstrap.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/contrib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}"/>
 {% endblock %}
 
 {% block container %}
@@ -160,15 +160,15 @@
 {% endblock %}
 {% block corejs %}
 {{ block.super}}
-<script src="{% static 'ui/components/openlayers/OpenLayers.js' %}"></script>
-<script src="{% static 'ui/components/numeral/min/numeral.min.js' %}"></script>
-<script src="{% static 'ui/components/moment/min/moment.min.js' %}"></script>
-<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
-<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
-<script src="{% static 'ui/components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'ui/contrib/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/contrib/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/contrib/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script src="{% static 'ui/contrib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
 
-<script src="{% static 'ui/components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'ui/components/datatables/media/js/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'ui/contrib/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ui/contrib/datatables/media/js/dataTables.bootstrap.js' %}"></script>
 
 <script src="{% static 'ui/js/layers.js' %}"></script>
 <script src="{% static 'ui/js/config.js' %}"></script>
