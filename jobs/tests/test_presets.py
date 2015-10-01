@@ -21,6 +21,7 @@ from ..presets import PresetParser, TagParser
 
 logger = logging.getLogger(__name__)
 
+
 class TestPresetParser(TestCase):
 
     def setUp(self,):
@@ -82,9 +83,10 @@ class TestTagParser(TestCase):
     """
         Test generation of preset from HDM tags.
     """
+
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -104,13 +106,13 @@ class TestTagParser(TestCase):
         self.assertEquals(238, len(tags))
         for tag_dict in tags:
             tag = Tag.objects.create(
-                name = tag_dict['name'],
-                key = tag_dict['key'],
-                value = tag_dict['value'],
-                job = self.job,
-                data_model = 'PRESET',
-                geom_types = tag_dict['geom_types'],
-                groups = tag_dict['groups']
+                name=tag_dict['name'],
+                key=tag_dict['key'],
+                value=tag_dict['value'],
+                job=self.job,
+                data_model='PRESET',
+                geom_types=tag_dict['geom_types'],
+                groups=tag_dict['groups']
             )
         self.assertEquals(238, self.job.tags.all().count())
 
@@ -139,7 +141,7 @@ class TestTagParser(TestCase):
         self.assertIsNotNone(saved_config.upload)
         #logger.debug(saved_config.upload)
         sf = File(open(os.path.abspath('.') + '/media/export/config/preset/hdm_custom_preset.xml'))
-        self.assertIsNotNone(sf) # check the file gets created on disk
+        self.assertIsNotNone(sf)  # check the file gets created on disk
         sf.close()
 
         # validate the custom preset
@@ -150,4 +152,4 @@ class TestTagParser(TestCase):
         tree = etree.parse(xml)
         valid = xmlschema.validate(tree)
         self.assertTrue(valid)
-        saved_config.delete() # clean up
+        saved_config.delete()  # clean up

@@ -17,7 +17,8 @@ def run(*script_args):
     translations = open(path + '/translations.txt')
     trans = []
     for line in translations.readlines():
-        if line.strip() == '': continue
+        if line.strip() == '':
+            continue
         pair = line.strip().split(',')
         trans.append(pair)
     for entry in trans:
@@ -46,7 +47,7 @@ def run(*script_args):
         column_type = column[2]
         # translate column
 
-        new_columns.append('{0} {1}'.format(column_name, column_type));
+        new_columns.append('{0} {1}'.format(column_name, column_type))
 
     # create the new table
     sql_templ = Template("""
@@ -58,7 +59,7 @@ def run(*script_args):
     colstr = ','.join(new_columns)
     sql = sql_templ.safe_substitute({'columns': colstr})
     #cursor = conn.execute('ALTER TABLE planet_osm_point RENAME TO planet_osm_point_temp;')
-    cur.execute(sql);
+    cur.execute(sql)
 
     # add the geometry column and spatial index
     cur.execute("SELECT RecoverGeometryColumn('planet_osm_point', 'GEOMETRY', 4326, 'POINT', 'XY')")

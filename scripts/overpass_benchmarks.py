@@ -14,9 +14,10 @@ from utils.overpass import Overpass
     Depends on django-extensions.
 """
 
+
 def run(*script_args):
     url = 'http://localhost/interpreter'
-    bbox = '6.25,-10.85,6.40,-10.62' # monrovia
+    bbox = '6.25,-10.85,6.40,-10.62'  # monrovia
     lib_bbox = '4.15,-11.60,8.55,-7.36'
     path = '/home/ubuntu/www/hotosm/utils/tests'
     query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'

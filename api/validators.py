@@ -12,8 +12,10 @@ from rest_framework import serializers
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+
 def validate_conifg(uid):
     pass
+
 
 def validate_region(regions):
     if len(regions) == 0:
@@ -24,10 +26,12 @@ def validate_region(regions):
     # region with largest area of intersection returned.
     return regions[0]
 
+
 def validate_formats(data):
     formats = data['formats']
     if formats == None or len(formats) == 0:
         raise serializers.ValidationError({'formats': ['Select an export format.']})
+
 
 def validate_search_bbox(extents):
     detail = OrderedDict()
@@ -41,6 +45,7 @@ def validate_search_bbox(extents):
             raise serializers.ValidationError(detail)
     except GEOSException as e:
         raise serializers.ValidationError(detail)
+
 
 def validate_bbox(extents, user=None):
     max_extent = settings.JOB_MAX_EXTENT
@@ -64,6 +69,7 @@ def validate_bbox(extents, user=None):
             raise serializers.ValidationError(detail)
     except GEOSException as e:
         raise serializers.ValidationError(detail)
+
 
 def validate_bbox_params(data):
     detail = OrderedDict()
@@ -98,6 +104,7 @@ def validate_bbox_params(data):
 
     return (data['xmin'], data['ymin'], data['xmax'], data['ymax'])
 
+
 def validate_string_field(name=None, data=None):
     detail = OrderedDict()
     detail['id'] = 'missing_parameter'
@@ -111,6 +118,7 @@ def validate_string_field(name=None, data=None):
             return value
     except Exception:
         raise serializers.ValidationError(detail)
+
 
 def validate_content_type(upload, config_type):
     ACCEPT_MIME_TYPES = {'PRESET': ('application/xml',),

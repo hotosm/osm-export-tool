@@ -16,6 +16,7 @@ from jobs.models import Job
 
 logger = logging.getLogger(__name__)
 
+
 class TimeStampedModelMixin(models.Model):
     """
     Mixin for timestamped models.
@@ -64,7 +65,7 @@ class ExportTask(models.Model):
     """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    celery_uid = models.UUIDField(null=True) # celery task uid
+    celery_uid = models.UUIDField(null=True)  # celery task uid
     name = models.CharField(max_length=50)
     run = models.ForeignKey(ExportRun, related_name='tasks')
     status = models.CharField(blank=True, max_length=20, db_index=True)
@@ -115,6 +116,8 @@ class ExportTaskException(models.Model):
 """
 Delete the associated export files when a ExportRun is deleted.
 """
+
+
 @receiver(post_delete, sender=ExportRun)
 def exportrun_delete_exports(sender, instance, **kwargs):
     download_root = settings.EXPORT_DOWNLOAD_ROOT

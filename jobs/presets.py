@@ -18,7 +18,7 @@ class PresetParser():
         'relation': 'polygon'
     }
 
-    namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
+    namespaces = {'ns': 'http://josm.openstreetmap.de/tagging-preset-1.0'}
 
     def __init__(self, preset=None, *args, **kwargs):
         self.preset = preset
@@ -88,14 +88,14 @@ class PresetParser():
             self._parse_group(group, group_dict)
         return OrderedDict(sorted(hdm.items()))
 
-
     def _parse_group(self, group, group_dict):
         items = group.xpath('./ns:item', namespaces=self.namespaces)
         for item in items:
             item_dict = {}
             name = item.get('name')
-            types = item.get('type') # get the type attr on the item element
-            if types == None: continue # pass those items with no geom type
+            types = item.get('type')  # get the type attr on the item element
+            if types == None:
+                continue  # pass those items with no geom type
             geom_types = self.get_geometrytype(types)
             keys = item.xpath('./ns:key', namespaces=self.namespaces)
             if not len(keys) > 0:
@@ -115,7 +115,7 @@ class PresetParser():
 
 class TagParser():
 
-    namespaces={'ns':'http://josm.openstreetmap.de/tagging-preset-1.0'}
+    namespaces = {'ns': 'http://josm.openstreetmap.de/tagging-preset-1.0'}
     nsmap = {None: 'http://josm.openstreetmap.de/tagging-preset-1.0'}
 
     types = {

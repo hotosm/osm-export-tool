@@ -14,6 +14,7 @@ from jobs.models import ExportFormat, Job
 
 logger = logging.getLogger(__name__)
 
+
 class TestJobFilter(APITestCase):
 
     def setUp(self,):
@@ -42,13 +43,12 @@ class TestJobFilter(APITestCase):
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
 
-
     @patch('api.views.ExportTaskRunner')
     def test_filterset_no_user(self, mock):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
         formats = [format.slug for format in ExportFormat.objects.all()]
-        url += '?start=2015-01-01&end=2030-08-01';
+        url += '?start=2015-01-01&end=2030-08-01'
         response = self.client.get(url)
         self.assertEquals(2, len(response.data))
 
@@ -57,6 +57,6 @@ class TestJobFilter(APITestCase):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
         formats = [format.slug for format in ExportFormat.objects.all()]
-        url += '?start=2015-01-01&end=2030-08-01&user=demo1';
+        url += '?start=2015-01-01&end=2030-08-01&user=demo1'
         response = self.client.get(url)
         self.assertEquals(1, len(response.data))

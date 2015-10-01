@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 logger = logging.getLogger(__name__)
 
+
 class LinkHeaderPagination(PageNumberPagination):
 
     page_size = 10

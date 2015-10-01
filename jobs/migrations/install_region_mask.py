@@ -3,13 +3,12 @@ from __future__ import unicode_literals
 import os
 from django.db import models, migrations
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
 
     dependencies = [
         ('jobs', '0012_auto_20150908_1226'),
     ]
-
 
     operations = [
         migrations.RunSQL('DROP VIEW IF EXISTS region_mask;'),

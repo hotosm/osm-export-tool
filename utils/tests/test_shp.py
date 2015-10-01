@@ -21,7 +21,7 @@ class TestSQliteToShp(SimpleTestCase):
     @patch('subprocess.Popen')
     def test_convert(self, popen, pipe, exists):
         sqlite = self.path + '/files/test.sqlite'
-        shapefile= self.path + '/files/shp'
+        shapefile = self.path + '/files/shp'
         cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
         proc = Mock()
         exists.return_value = True

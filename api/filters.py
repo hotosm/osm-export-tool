@@ -10,10 +10,11 @@ from tasks.models import ExportRun
 
 logger = logging.getLogger(__name__)
 
+
 class JobFilter(django_filters.FilterSet):
 
-    name = django_filters.CharFilter(name="name",lookup_type="icontains")
-    description = django_filters.CharFilter(name="description",lookup_type="icontains")
+    name = django_filters.CharFilter(name="name", lookup_type="icontains")
+    description = django_filters.CharFilter(name="description", lookup_type="icontains")
     event = django_filters.CharFilter(name="event", lookup_type="icontains")
     start = django_filters.DateTimeFilter(name="created_at", lookup_type="gte")
     end = django_filters.DateTimeFilter(name="created_at", lookup_type="lte")
@@ -40,7 +41,7 @@ class JobFilter(django_filters.FilterSet):
 
 class ExportRunFilter(django_filters.FilterSet):
 
-    status = django_filters.CharFilter(name="status",lookup_type="icontains")
+    status = django_filters.CharFilter(name="status", lookup_type="icontains")
 
     class Meta:
         model = ExportRun

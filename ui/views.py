@@ -29,7 +29,7 @@ def clone_export(request, uuid=None):
     Handles display of the clone export page.
     """
     user = request.user
-    max_extent = {'extent': settings.JOB_MAX_EXTENT} # default
+    max_extent = {'extent': settings.JOB_MAX_EXTENT}  # default
     for group in user.groups.all():
         if hasattr(group, 'export_profile'):
             max_extent['extent'] = group.export_profile.max_extent
@@ -44,6 +44,7 @@ def login(request):
         return render_to_response('osm/login.html', {}, RequestContext(request))
     else:
         return redirect('create')
+
 
 def logout(request):
     """Logs out user"""
@@ -60,15 +61,19 @@ def require_email(request):
 
 # error views
 
+
 @require_http_methods(['GET'])
 def create_error_view(request):
     return render_to_response('ui/error.html', {}, RequestContext(request), status=500)
 
+
 def internal_error_view(request):
     return render_to_response('ui/500.html', {}, RequestContext(request), status=500)
 
+
 def not_found_error_view(request):
     return render_to_response('ui/404.html', {}, RequestContext(request), status=404)
+
 
 def not_allowed_error_view(request):
     return render_to_response('ui/403.html', {}, RequestContext(request), status=403)

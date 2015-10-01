@@ -17,24 +17,25 @@ from jobs.models import Job
 logger = logging.getLogger(__name__)
 
 thematic_spec = {
-    'amenities_all_points': {'type': 'point', 'key':'amenity', 'table':'planet_osm_point', 'select_clause': 'amenity is not null'},
-    'amenities_all_polygons': {'type': 'polygon','key':'amenity', 'table':'planet_osm_polygon', 'select_clause': 'amenity is not null'},
-    'health_schools_points': {'type': 'point', 'key':'amenity', 'table':'planet_osm_point', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
-    'health_schools_polygons': {'key':'amenity', 'table':'planet_osm_polygon', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
-    'airports_all_points': {'key':'aeroway', 'table':'planet_osm_point', 'select_clause': 'aeroway is not null'},
-    'airports_all_polygons': {'key':'aeroway', 'table':'planet_osm_polygon', 'select_clause': 'aeroway is not null'},
-    'villages_points': {'key':'place', 'table':'planet_osm_point', 'select_clause': 'place is not null'},
-    'buildings_polygons': {'key':'building', 'table':'planet_osm_polygon', 'select_clause': 'building is not null'},
-    'natural_polygons': {'key':'natural', 'table':'planet_osm_polygon', 'select_clause': 'natural is not null'},
-    'natural_lines': {'key':'natural', 'table':'planet_osm_line', 'select_clause': 'natural is not null'},
-    'landuse_other_polygons': {'key':'landuse', 'table':'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse!="residential"'},
-    'landuse_residential_polygons': {'key':'landuse', 'table':'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse="residential"'},
-    'roads_paths_lines': {'key':'highway', 'table':'planet_osm_line', 'select_clause': 'highway is not null'},
-    'waterways_lines': {'key':'waterway', 'table':'planet_osm_line', 'select_clause': 'waterway is not null'},
-    'towers_antennas_points': {'key':'man_made', 'table':'planet_osm_point', 'select_clause': 'man_made="antenna" OR man_made="mast" OR man_made="tower"'},
-    'harbours_points': {'key':'harbour', 'table':'planet_osm_point', 'select_clause': 'harbour is not null'},
-    'grassy_fields_polygons': {'key':'leisure', 'table':'planet_osm_polygon', 'select_clause': 'leisure="pitch" OR leisure="common" OR leisure="golf_course"'},
+    'amenities_all_points': {'type': 'point', 'key': 'amenity', 'table': 'planet_osm_point', 'select_clause': 'amenity is not null'},
+    'amenities_all_polygons': {'type': 'polygon', 'key': 'amenity', 'table': 'planet_osm_polygon', 'select_clause': 'amenity is not null'},
+    'health_schools_points': {'type': 'point', 'key': 'amenity', 'table': 'planet_osm_point', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
+    'health_schools_polygons': {'key': 'amenity', 'table': 'planet_osm_polygon', 'select_clause': 'amenity="clinic" OR amenity="hospital" OR amenity="school" OR amenity="pharmacy"'},
+    'airports_all_points': {'key': 'aeroway', 'table': 'planet_osm_point', 'select_clause': 'aeroway is not null'},
+    'airports_all_polygons': {'key': 'aeroway', 'table': 'planet_osm_polygon', 'select_clause': 'aeroway is not null'},
+    'villages_points': {'key': 'place', 'table': 'planet_osm_point', 'select_clause': 'place is not null'},
+    'buildings_polygons': {'key': 'building', 'table': 'planet_osm_polygon', 'select_clause': 'building is not null'},
+    'natural_polygons': {'key': 'natural', 'table': 'planet_osm_polygon', 'select_clause': 'natural is not null'},
+    'natural_lines': {'key': 'natural', 'table': 'planet_osm_line', 'select_clause': 'natural is not null'},
+    'landuse_other_polygons': {'key': 'landuse', 'table': 'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse!="residential"'},
+    'landuse_residential_polygons': {'key': 'landuse', 'table': 'planet_osm_polygon', 'select_clause': 'landuse is not null AND landuse="residential"'},
+    'roads_paths_lines': {'key': 'highway', 'table': 'planet_osm_line', 'select_clause': 'highway is not null'},
+    'waterways_lines': {'key': 'waterway', 'table': 'planet_osm_line', 'select_clause': 'waterway is not null'},
+    'towers_antennas_points': {'key': 'man_made', 'table': 'planet_osm_point', 'select_clause': 'man_made="antenna" OR man_made="mast" OR man_made="tower"'},
+    'harbours_points': {'key': 'harbour', 'table': 'planet_osm_point', 'select_clause': 'harbour is not null'},
+    'grassy_fields_polygons': {'key': 'leisure', 'table': 'planet_osm_polygon', 'select_clause': 'leisure="pitch" OR leisure="common" OR leisure="golf_course"'},
 }
+
 
 def run(*script_args):
 
@@ -65,8 +66,10 @@ def run(*script_args):
         isPoly = layer_type == 'polygons'
         osm_way_id = ''
         # check if the thematic tag is in the jobs tags, if not skip this thematic layer
-        if not spec['key'] in tags[layer_type]: continue
-        if isPoly: osm_way_id = 'osm_way_id,'
+        if not spec['key'] in tags[layer_type]:
+            continue
+        if isPoly:
+            osm_way_id = 'osm_way_id,'
         params = {'tablename': layer, 'osm_way_id': osm_way_id,
                   'columns': ', '.join(tags[layer_type]),
                   'planet_table': spec['table'], 'select_clause': spec['select_clause']}

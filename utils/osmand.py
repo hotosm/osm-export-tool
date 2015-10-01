@@ -11,6 +11,7 @@ from lxml import etree
 
 logger = logging.getLogger(__name__)
 
+
 class UpdateBatchXML(object,):
 
     def __init__(self, batch_xml=None, work_dir=None):
@@ -95,24 +96,26 @@ class OSMToOBF(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Converts OSM PBF to OSMAnd OBF Format.")
-    parser.add_argument('-p','--pbf-file', required=True,
+    parser.add_argument('-p', '--pbf-file', required=True,
                         dest="pbffile", help='The PBF file to convert')
-    parser.add_argument('-w','--work-dir', required=True,
+    parser.add_argument('-w', '--work-dir', required=True,
                         dest="work_dir", help='The path to the working directory')
-    parser.add_argument('-m','--map-creator-dir', required=True,
+    parser.add_argument('-m', '--map-creator-dir', required=True,
                         dest="map_creator_dir", help="The path to the OsmAndMapCreator directory")
-    parser.add_argument('-d','--debug', action="store_true", help="Turn on debug output")
+    parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
     args = parser.parse_args()
     config = {}
-    for k,v in vars(args).items():
-        if (v == None): continue
+    for k, v in vars(args).items():
+        if (v == None):
+            continue
         else:
-           config[k] = v
+            config[k] = v
     pbffile = config.get('pbffile')
     work_dir = config.get('work_dir')
     map_creator_dir = config.get('map_creator_dir')
     debug = False
-    if config.get('debug'): debug = True
+    if config.get('debug'):
+        debug = True
     OSMToOBF(
         pbffile=pbffile, work_dir=work_dir,
         map_creator_dir=map_creator_dir, debug=debug

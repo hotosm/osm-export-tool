@@ -23,7 +23,7 @@ class TestExportTaskRunner(TestCase):
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         #bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
-        bbox = Polygon.from_bbox((-10.85,6.25,-10.62,6.40))
+        bbox = Polygon.from_bbox((-10.85, 6.25, -10.62, 6.40))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
@@ -60,5 +60,5 @@ class TestExportTaskRunner(TestCase):
         celery_chain.delay.assert_called_once()
         tasks = run.tasks.all()
         self.assertIsNotNone(tasks)
-        self.assertEquals(6, len(tasks)) # 4 initial tasks + 1 shape export task
-        self.assertFalse(hasattr(tasks[0], 'result')) # no result yet..
+        self.assertEquals(6, len(tasks))  # 4 initial tasks + 1 shape export task
+        self.assertFalse(hasattr(tasks[0], 'result'))  # no result yet..

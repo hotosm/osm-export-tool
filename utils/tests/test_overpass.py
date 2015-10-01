@@ -17,13 +17,14 @@ from ..overpass import Overpass
 
 logger = logging.getLogger(__name__)
 
+
 class TestOverpass(TestCase):
 
     def setUp(self,):
         self.url = 'http://localhost/interpreter'
-        self.bbox = '6.25,-10.85,6.40,-10.62' # monrovia
+        self.bbox = '6.25,-10.85,6.40,-10.62'  # monrovia
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -45,11 +46,11 @@ class TestOverpass(TestCase):
         # save all the tags from the preset
         for tag_dict in tags:
             tag = Tag.objects.create(
-                key = tag_dict['key'],
-                value = tag_dict['value'],
-                job = self.job,
-                data_model = 'osm',
-                geom_types = tag_dict['geom_types']
+                key=tag_dict['key'],
+                value=tag_dict['value'],
+                job=self.job,
+                data_model='osm',
+                geom_types=tag_dict['geom_types']
             )
         self.assertEquals(256, self.job.tags.all().count())
 

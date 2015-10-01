@@ -12,10 +12,12 @@ from ..models import ExportRun, ExportTask, ExportTaskResult
 
 logger = logging.getLogger(__name__)
 
+
 class TestExportRun(TestCase):
     """
     Test cases for ExportRun model
     """
+
     def setUp(self,):
         formats = ExportFormat.objects.all()
         Group.objects.create(name='TestDefaultExportExtentGroup')
@@ -36,13 +38,12 @@ class TestExportRun(TestCase):
         self.assertIsNotNone(saved_run)
         self.assertEqual(run, saved_run)
 
-
     def test_get_tasks_for_run(self, ):
         job = Job.objects.all()[0]
         run = ExportRun.objects.create(job=job)
         saved_run = ExportRun.objects.get(uid=str(run.uid))
         self.assertEqual(run, saved_run)
-        task_uid = str(uuid.uuid4()) # from celery
+        task_uid = str(uuid.uuid4())  # from celery
         task = ExportTask.objects.create(run=run, uid=task_uid)
         saved_task = ExportTask.objects.get(uid=task_uid)
         self.assertIsNotNone(saved_task)
@@ -53,17 +54,17 @@ class TestExportRun(TestCase):
         job = Job.objects.all()[0]
         for x in range(5):
             run = ExportRun.objects.create(job=job)
-            task_uid = str(uuid.uuid4()) # from celery
+            task_uid = str(uuid.uuid4())  # from celery
             task = ExportTask.objects.create(run=run, uid=task_uid)
         runs = job.runs.all()
         tasks = runs[0].tasks.all()
-        self.assertEquals(5 , len(runs))
+        self.assertEquals(5, len(runs))
         self.assertEquals(1, len(tasks))
 
     def test_delete_export_run(self, ):
         job = Job.objects.all()[0]
-        run =  ExportRun.objects.create(job=job)
-        task_uid = str(uuid.uuid4()) # from celery
+        run = ExportRun.objects.create(job=job)
+        task_uid = str(uuid.uuid4())  # from celery
         task = ExportTask.objects.create(run=run, uid=task_uid)
         runs = job.runs.all()
         self.assertEquals(1, runs.count())
@@ -76,6 +77,7 @@ class TestExportTask(TestCase):
     """
     Test cases for ExportTask model
     """
+
     def setUp(self,):
         formats = ExportFormat.objects.all()
         Group.objects.create(name='TestDefaultExportExtentGroup')
@@ -97,7 +99,6 @@ class TestExportTask(TestCase):
         self.assertEqual(self.uid, self.task.uid)
         saved_task = ExportTask.objects.get(uid=self.uid)
         self.assertEqual(saved_task, self.task)
-
 
     def test_export_task_result(self, ):
         """

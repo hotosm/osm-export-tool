@@ -19,7 +19,7 @@ class TestOSMConf(TestCase):
         self.tags = parser.parse()
         self.assertIsNotNone(self.tags)
         self.assertEquals(256, len(self.tags))
-        self.formats = ExportFormat.objects.all() #pre-loaded by 'insert_export_formats' migration
+        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -33,11 +33,11 @@ class TestOSMConf(TestCase):
         self.job.save()
         for tag in self.tags:
             Tag.objects.create(
-                key = tag['key'],
-                value = tag['value'],
-                job = self.job,
-                data_model = 'osm',
-                geom_types = tag['geom_types']
+                key=tag['key'],
+                value=tag['value'],
+                job=self.job,
+                data_model='osm',
+                geom_types=tag['geom_types']
             )
         self.categories = self.job.categorised_tags
 
