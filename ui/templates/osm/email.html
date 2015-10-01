@@ -36,8 +36,8 @@
 {% endblock %}
 {% block corejs %}
 {{ block.super }}
-<script src="{% static 'ui/components/formvalidation/dist/js/formValidation.min.js' %}"></script>
-<script src="{% static 'ui/components/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         $('#registerEmail').formValidation({

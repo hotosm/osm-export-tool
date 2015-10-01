@@ -15,10 +15,9 @@
     <title>{% trans 'HOT Export Tool' %}</title>
     {% block css %}
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'ui/components/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'ui/contrib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'ui/css/style.css' %}" rel="stylesheet">
-    <!--<link href="{% static 'ui/css/font-awesome.min.css' %}" rel="stylesheet">-->
-    <link rel="stylesheet" href="{% static 'ui/components/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'ui/contrib/font-awesome/css/font-awesome.min.css' %}">
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     {% endblock %}
 
@@ -93,8 +92,8 @@
     ================================================== -->
     {% block corejs %}
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
-    <script src="{% static 'ui/components/jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'ui/components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ui/contrib/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'ui/contrib/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'ui/js/language.js' %}"></script>
     {% endblock %}
   </body>

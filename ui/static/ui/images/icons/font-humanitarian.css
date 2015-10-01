@@ -1,5 +1,5 @@
 /*!
- *  Humanitarian Font 
+ *  Humanitarian Font
  *  the iconic font designed for the Humanitarian
  *  -------------------------------------------------------
  *  The full suite of pictographic icons, examples, and documentation
@@ -22,10 +22,10 @@
  */
 @font-face {
   font-family: 'FontAwesome';
-  src: url('../font/humanitarian-webfont.eot');
-  src: url('../font/humanitarian-webfont.eot') format('embedded-opentype'),
-    url('../font/humanitarian-webfont.woff') format('woff'),
-    url('../font/humanitarian-webfont.ttf') format('truetype');
+  src: url('../icons/humanitarian-webfont.eot');
+  src: url('../icons/humanitarian-webfont.eot') format('embedded-opentype'),
+    url('../icons/humanitarian-webfont.woff') format('woff'),
+    url('../icons/humanitarian-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -628,7 +628,7 @@ ul.icons li [class*=" icon-"] {
 .icon-event-register:before             { content: "\f560"; }
 .icon-event-violence:before             { content: "\f55e"; }
 
-/* Relief Item 
+/* Relief Item
 .icon-ocha-security:before             { content: "\f327"; }
 .icon-ocha-security:before             { content: "\f328"; }
 .icon-ocha-security:before             { content: "\f329"; }
@@ -756,7 +756,7 @@ ul.icons li [class*=" icon-"] {
 .icon-office-diplomatic:before             { content: "\f5e2"; }
 .icon-office-united-nations:before             { content: "\f57d"; }
 .icon-office-ngo:before             { content: "\f57c"; }
- 
+
  /* Humanitarian Organisation */
 .icon-orga-acp:before             { content: "\f800"; }
 .icon-orga-amnesty-international:before             { content: "\f801"; }
