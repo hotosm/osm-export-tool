@@ -84,9 +84,11 @@ def about(request):
         RequestContext(request)
     )
 
+
 @require_http_methods(['GET'])
 def help_main(request):
     return render_to_response('help/help.html', {}, RequestContext(request))
+
 
 @require_http_methods(['GET'])
 def help_create(request):
@@ -98,11 +100,13 @@ def help_create(request):
         RequestContext(request)
     )
 
+
 @require_http_methods(['GET'])
 def help_features(request):
     return render_to_response(
         'help/help_features.html', {}, RequestContext(request)
     )
+
 
 @require_http_methods(['GET'])
 def help_exports(request):
@@ -112,11 +116,13 @@ def help_exports(request):
         'help/help_exports.html', {'export_url': export_url}, RequestContext(request)
     )
 
+
 @require_http_methods(['GET'])
 def help_formats(request):
     return render_to_response(
         'help/help_formats.html', {}, RequestContext(request)
     )
+
 
 @require_http_methods(['GET'])
 def help_presets(request):
@@ -128,6 +134,7 @@ def help_presets(request):
     )
 
 # error views
+
 
 @require_http_methods(['GET'])
 def create_error_view(request):

@@ -12,8 +12,8 @@ from api.urls import router
 from api.views import HDMDataModelView, OSMDataModelView, RunJob
 from ui import urls as ui_urls
 from ui.views import (
-    about, create_error_view, help_create, help_exports, help_features, help_formats,
-    help_main, help_presets
+    about, create_error_view, help_create, help_exports, help_features,
+    help_formats, help_main, help_presets
 )
 
 admin.autodiscover()
