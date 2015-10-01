@@ -56,8 +56,14 @@ def login(request):
 
 def logout(request):
     """Logs out user"""
+    exports_url = reverse('list')
+    help_url = reverse('help')
     auth_logout(request)
-    return render_to_response('osm/login.html', {}, RequestContext(request))
+    return render_to_response(
+        'osm/login.html',
+        {'exports_url': exports_url, 'help_url': help_url},
+        RequestContext(request)
+    )
 
 
 def require_email(request):
