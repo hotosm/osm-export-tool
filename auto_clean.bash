@@ -2,7 +2,7 @@
 
 # find all files, ignore directories .git, *static*, locales, doc
 # clear any whitespace/trailingspace
-find . -not \( -name .git -prune -o -wholename '*static*' -prune -o -name locales -prune -o -name doc -prune \) -type f -print0 | xargs -0 sed -i 's/[ \t]*$//'
+find . -not \( -name .git -prune -o -wholename '*/static/ui/contrib/*' -prune -o -name locales -prune -o -name doc -prune \) -type f \( -name "*.py" -o -name "*.css" -o -name "*.js" -o -name "*.html" -o name "*.md" \) -print0 | xargs -0 sed -i 's/[ \t]*$//'
 
 # apply specific autopep8 rules, exclude anything in ./ui/static directory
 # https://github.com/hhatto/autopep8#features
