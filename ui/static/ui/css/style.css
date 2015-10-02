@@ -12,7 +12,7 @@
 
 @media (min-width: 768px){
     .container, .container-fluid {
-       width: 100% !important;  
+       width: 100% !important;
     }
     #start-date {
         padding-right: 0px;
@@ -206,7 +206,7 @@ span.heading {
     z-index: 100;
 }
 
-.olControlDrawFeatureActive { 
+.olControlDrawFeatureActive {
   cursor: crosshair;
 }
 
@@ -295,7 +295,7 @@ div#gazetteer {
     top: 50px;
     left: 50px;
     z-index: 100;
-    
+
 }
 
 #nominatim {
@@ -312,7 +312,7 @@ span.gazetteer {
 
 .typeahead { z-index: 1051;}
 
-ul.typeahead { 
+ul.typeahead {
     max-width: 500px !important;
     overflow: hidden !important;
 }
@@ -400,7 +400,7 @@ div#summary-configs {
 }
 
 table#summary-configs {
-    
+
     font-size: small;
 }
 
@@ -420,7 +420,7 @@ div#details {
 /* config selection modal dialog */
 
 #configSelectionModal {
-    
+
 }
 
 #configSelectionModal container-fluid {
@@ -513,7 +513,7 @@ ul.sub-level {
     -moz-transition : height 15s;
     -webkit-transition : height 15s;
     -o-transition : height 15s;
-    transition : height 15s; 
+    transition : height 15s;
 }
 */
 
