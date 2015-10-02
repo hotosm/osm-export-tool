@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2015  Humanitarian OpenStreetMap Team
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
 jobs = {};
 jobs.list = (function(){
     var map;
@@ -22,7 +5,7 @@ jobs.list = (function(){
     var bbox;
     var filtering = false;
     var searchForm = $('form#search');
-    
+
     /*
      * Override unselect so hidden features don't get reset
      * with the 'default' style on unselect.
@@ -42,16 +25,16 @@ jobs.list = (function(){
             this.onUnselect.call(this.scope, feature);
         }
     }
-    
-    
+
+
     /*
      * Handle stickiness of map on window scroll
      */
-    var stickyTop = $('#map-column').offset().top;  
+    var stickyTop = $('#map-column').offset().top;
     $(window).scroll(function(){
         var windowTop = $(window).scrollTop();
         // only make sticky on larger screens
-        if (stickyTop < windowTop && $(window).width() > 992) { 
+        if (stickyTop < windowTop && $(window).width() > 992) {
             $('#map-column').css({
                 position: 'fixed',
                 top: 0,
@@ -63,9 +46,9 @@ jobs.list = (function(){
                 position: 'relative',
             });
         }
-     
+
     });
-    
+
     return {
         main: function(){
             $('div#search').css('display','none');
@@ -76,11 +59,11 @@ jobs.list = (function(){
             initDatePickers();
             loadRegions();
             initSearch();
-            runSearch(); 
+            runSearch();
         },
     }
-    
-    
+
+
     /**
      * Initialize the job list map
      */
@@ -90,8 +73,8 @@ jobs.list = (function(){
                 displayProjection: new OpenLayers.Projection("EPSG:4326"),
                 controls: [new OpenLayers.Control.Attribution(),
                            new OpenLayers.Control.ScaleLine()],
-                maxExtent: maxExtent,          
-                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
+                maxExtent: maxExtent,
+                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
                 units: 'm',
                 sphericalMercator: true,
                 noWrap: true // don't wrap world extents
@@ -99,31 +82,31 @@ jobs.list = (function(){
         map = new OpenLayers.Map('list-export-map', {
             options: mapOptions
         });
-        
+
         // restrict extent to world bounds to prevent panning..
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
-        
+
         // add base layers
         var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
         osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayer(osm);
         map.zoomToMaxExtent();
-        
+
         job_extents = new OpenLayers.Layer.Vector('extents', {
             displayInLayerSwitcher: false,
             styleMap: getExtentStyles()
         });
         // add export extents to map
         map.addLayer(job_extents);
-        
+
         /* required to fire selection events on bounding boxes */
         var selectControl = new OpenLayers.Control.SelectFeature(job_extents,{
             id: 'selectControl'
         });
         map.addControl(selectControl);
         selectControl.activate();
-        
-        
+
+
         /*
          * Feature selection and hover events
          */
@@ -131,22 +114,22 @@ jobs.list = (function(){
             var uid = e.feature.data.uid;
             $('tr#' + uid).css('background-color', '#E8E8E8');
         });
-        
+
         job_extents.events.register("featureunselected", this, function(e){
             var uid = e.feature.data.uid;
             $('tr#' + uid).css('background-color', '#FFF');
         });
-        
+
         job_extents.events.register('featureover', this, function(e){
             $popup = $('#feature-popup');
             $popup.css('display', 'block');
         });
-        
+
         job_extents.events.register('featureout', this, function(e){
             $('#feature-popup').css('display', 'none');
         });
-    
-        
+
+
         /*
          * Double-click handler.
          * Does redirection to export detail page on feature double click.
@@ -167,17 +150,17 @@ jobs.list = (function(){
                 }
         )
         dblClickHandler.activate();
-        
-        
+
+
         // add filter selection layer
         bbox = new OpenLayers.Layer.Vector("filter", {
            displayInLayerSwitcher: false,
            styleMap: getTransformStyleMap(),
         });
         map.addLayers([bbox]);
-        
+
         // add a draw feature control for bbox selection.
-        var box = new OpenLayers.Control.DrawFeature(bbox, OpenLayers.Handler.RegularPolygon, { 
+        var box = new OpenLayers.Control.DrawFeature(bbox, OpenLayers.Handler.RegularPolygon, {
            handlerOptions: {
               sides: 4,
               snapAngle: 90,
@@ -186,38 +169,38 @@ jobs.list = (function(){
            }
         });
         map.addControl(box);
-       
-       
+
+
         // add a transform control to enable modifications to bounding box (drag, resize)
         var transform = new OpenLayers.Control.TransformFeature(bbox, {
            rotate: false,
            irregular: true,
            renderIntent: "transform",
         });
-        
+
         // listen for selection box being added to bbox layer
         box.events.register('featureadded', this, function(e){
             // get selection bounds
             bounds = e.feature.geometry.bounds.clone();
-            
+
             // clear existing selection features
             bbox.removeAllFeatures();
             box.deactivate();
-            
+
             // add a bbox feature based on user selection
             var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
             bbox.addFeatures(feature);
-            
+
             // enable bbox modification
             transform.setFeature(feature);
-            
+
             // filter the results by bbox
             filtering = true;
             setBounds(bounds);
             map.zoomToExtent(bbox.getDataExtent());
-            
+
         });
-        
+
         // filter results after bbox is moved / modified
         transform.events.register("transformcomplete", this, function(e){
             var bounds = e.feature.geometry.bounds.clone();
@@ -225,10 +208,10 @@ jobs.list = (function(){
             filtering = true;
             setBounds(bounds);
         });
-        
+
         // add the transform control
         map.addControl(transform);
-        
+
         // handles click on filter area button
         $("#filter-area").bind('click', function(e){
             /*
@@ -238,10 +221,10 @@ jobs.list = (function(){
             transform.unsetFeature();
             box.activate();
         });
-        
-        map.setLayerIndex(bbox, 0); 
+
+        map.setLayerIndex(bbox, 0);
         map.setLayerIndex(job_extents, 100);
-        
+
         // clears the search selection area
         $('#clear-filter').bind('click', function(e){
             /*
@@ -259,7 +242,7 @@ jobs.list = (function(){
                 runSearch();
             }
         });
-        
+
         /*
          * Reset the map to the job extents.
          */
@@ -268,8 +251,8 @@ jobs.list = (function(){
         });
 
     }
-    
-    
+
+
     /*
      * get the style map for the filter bounding box.
      */
@@ -306,8 +289,8 @@ jobs.list = (function(){
                     })
                 });
     }
-    
-    
+
+
     /**
      * Returns the styles for job extent display.
      */
@@ -328,23 +311,23 @@ jobs.list = (function(){
             fillOpacity: 0.1,
             //graphicZIndex : 40,
         });
-        
+
         var hiddenStyle = new OpenLayers.Style({
             display: 'none'
         });
-        
+
         var styles = new OpenLayers.StyleMap(
         {
             "default": defaultStyle,
             "select": selectStyle,
             "hidden": hiddenStyle
         });
-        
+
         return styles;
-        
+
     }
-    
-    
+
+
     /**
      * Lists the jobs.
      *
@@ -359,10 +342,10 @@ jobs.list = (function(){
         $.ajax({
             url: url,
         })
-        .done(function(data, textStatus, jqXHR){    
+        .done(function(data, textStatus, jqXHR){
             // generate pagination on UI
             paginate(jqXHR);
-            
+
             // clear the existing data on results table and add new page
             var tbody = $('table#jobs tbody');
             var table = $('table#jobs').DataTable();
@@ -371,7 +354,7 @@ jobs.list = (function(){
             $('div#spinner').css('display', 'none');
             $('div#search').css('display', 'block');
             $('div#search').fadeIn(1500);
-            
+
             // toggle feature visibility
             $('span.toggle-feature').on('click', function(e){
                 var selectControl = map.getControlsBy('id','selectControl')[0];
@@ -395,7 +378,7 @@ jobs.list = (function(){
                 }
                 $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
             });
-            
+
             $('span.zoom-feature').on('click', function(e){
                 var uid = $(e.target).attr('data-zoom');
                 for(var f=0; f < job_extents.features.length; f++){
@@ -403,12 +386,12 @@ jobs.list = (function(){
                     if(feature.attributes.uid === uid){;
                         var bounds = feature.geometry.bounds;
                         map.zoomToExtent(bounds);
-                        
+
                    }
                 }
-                
+
             });
-            
+
             // clear the existing export extent features and add the new ones..
             job_extents.destroyFeatures();
             $.each(data, function(idx, job){
@@ -420,7 +403,7 @@ jobs.list = (function(){
                  var feature = geojson.read(extent);
                  job_extents.addFeatures(feature);
              });
-           
+
             /*
              * Zoom to extents depending on whether
              * bbox filtering is applied or not..
@@ -438,17 +421,17 @@ jobs.list = (function(){
                     map.zoomToMaxExtent();
                 }
             }
-            
+
             // select bbox features based on row hovering
             $('table#jobs tbody tr').hover(
                 // mouse in
                 function(e){
                     var selectControl = map.getControlsBy('id','selectControl')[0];
-                    var uid = $(this).attr('id');                    
+                    var uid = $(this).attr('id');
                     for(var f=0; f < job_extents.features.length; f++){
                         var feature = job_extents.features[f];
                         if(feature.attributes.uid === uid && feature.renderIntent != 'hidden'){
-                            selectControl.select(feature);  
+                            selectControl.select(feature);
                         }
                         else {
                             selectControl.unselect(feature);
@@ -461,31 +444,31 @@ jobs.list = (function(){
                     selectControl.unselectAll();
                 }
             );
-            
+
             // set message if no results returned from this url..
-            $('td.dataTables_empty').html('No search results found.'); 
+            $('td.dataTables_empty').html('No search results found.');
         });
     }
-    
+
     /*
      * Creates the pagination links based on the Content-Range and Link headers.
      *
      * jqXHR: the ajax xhr
      */
     function paginate(jqXHR){
-        
+
         // get the pagination ul
         var paginate = $('ul.pager');
         paginate.empty();
         var info = $('#info');
         info.empty();
-        
+
         // set the content range info
         var rangeHeader = jqXHR.getResponseHeader('Content-Range');
         var total = rangeHeader.split('/')[1];
         var range = rangeHeader.split('/')[0].split(' ')[1];
         info.append('<span>Displaying ' + range + ' of ' + total + ' results');
-        
+
         // check if we have a link header
         var a, b;
         var link = jqXHR.getResponseHeader('Link');
@@ -498,7 +481,7 @@ jobs.list = (function(){
             // no link header so only one page of results returned
             return;
         }
-        
+
         /*
          * Configure next/prev links for pagination
          * and handle pagination events
@@ -511,10 +494,10 @@ jobs.list = (function(){
             paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/> ' + gettext('Prev') + '</a></li>&nbsp;');
             $('li#prev').on('click', function(){
                 var u = this.getAttribute('data-url');
-                u == 'undefined' ? listJobs() : listJobs(u);  
+                u == 'undefined' ? listJobs() : listJobs(u);
             });
         }
-        
+
         if (a) {
             var url = a.split(';')[0].trim();
             url = url.slice(1, url.length -1);
@@ -536,7 +519,7 @@ jobs.list = (function(){
             }
         }
     }
-    
+
     /*
      * Initialize the exports list data table.
      */
@@ -593,7 +576,7 @@ jobs.list = (function(){
                         $div.append($toggleSpan);
                         var $zoomSpan = $('<span class="fa fa-search-plus zoom-feature" data-zoom="' + row.uid + '"></span>');
                         $div.append($zoomSpan);
-                        
+
                         // return the html
                         return $div[0].outerHTML;
                     }
@@ -643,7 +626,7 @@ jobs.list = (function(){
         // clear the empty results message on initial draw..
         $('td.dataTables_empty').html('');
     }
-    
+
     /**
      * Initialize the start / end date pickers.
      */
@@ -666,9 +649,9 @@ jobs.list = (function(){
         $("#end-date").on("dp.change", function(e){
             runSearch();
         });
-        
+
     }
-    
+
     /**
      * Populates the search form's region selection input.
      */
@@ -682,17 +665,17 @@ jobs.list = (function(){
             })
         });
     }
-    
+
     /**
      * Initializes the feature tag filter.
      *  -- NOT IMPLEMENTED YET --
      */
     function initFeatureTagFilter() {
-        
+
         var cities = new Bloodhound({
             /*
             datumTokenizer: function(d) {
-                return Bloodhound.tokenizers.whitespace(d.value); 
+                return Bloodhound.tokenizers.whitespace(d.value);
             },
             */
             datumTokenizer: Bloodhound.tokenizers.whitespace,
@@ -708,7 +691,7 @@ jobs.list = (function(){
                 */
             }
         });
-        
+
         $('#features').tagsinput({
             typeaheadjs: {
               name: 'cities',
@@ -717,8 +700,8 @@ jobs.list = (function(){
               source: cities.ttAdapter()
             }
         });
-        
-        
+
+
         function lookupOSMTags(q, sync) {
             if (q === '') {
                 sync(osm_tags.get('Detroit Lions', 'Green Bay Packers', 'Chicago Bears'));
@@ -739,10 +722,10 @@ jobs.list = (function(){
             }
         });
         */
-        
+
         $(".twitter-typeahead").css('display', 'inline');
     }
-    
+
     /*
      * update the bbox extents on the form
      * used in bbox filtering of results.
@@ -758,10 +741,10 @@ jobs.list = (function(){
         // set the bbox extents on the form and trigger search..
         $('input#bbox').val(extents).trigger('input');
     }
-    
+
     /*
      * Search export jobs.
-     */ 
+     */
     function initSearch(){
         // update state on filter toggle button
         $('a#filter-toggle').click(function(e){
@@ -769,35 +752,35 @@ jobs.list = (function(){
                 'glyphicon-chevron-down glyphicon-chevron-up'
             );
         });
-        
+
         // run search on search form input events
         $('form#search input').bind('input', function(e){
             setTimeout(function(){
                 runSearch();
             }, 450);
         });
-        
+
         // run search on selection changes
         $('select').bind('change', function(e){
-           runSearch(); 
+           runSearch();
         });
-        
+
         // run search on user filtering state change
         $('input#user-check').bind('change', function(e){
             // pull the username out of the dom
             var username = $('span#user').text();
             var $this = $(this);
-            // $this will contain a reference to the checkbox   
+            // $this will contain a reference to the checkbox
             if ($this.is(':checked')) {
                 // set the username on the form input
                 $('input#user').val(username);
-                runSearch(); 
+                runSearch();
             } else {
                 $('input#user').val('');
                 runSearch();
             }
         });
-        
+
         $('button#reset-form').on('click', function(e){
             $('input#search').val('');
             $('input#user-check').prop('checked', false).trigger('change');
@@ -805,7 +788,7 @@ jobs.list = (function(){
             $('#end-date').data('DateTimePicker').date(moment());
         });
     }
-    
+
     /*
      * Runs a search.
      * Takes query params from serialized form inputs.
@@ -815,27 +798,27 @@ jobs.list = (function(){
         url += searchForm.serialize();
         listJobs(url); // update results table
     }
-    
+
     /*
      * Initialise UI popovers.
      */
     function initPopovers(){
         $('a#filter-toggle').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Filter the exports based on keywords in the search box and/or between a start and end date"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'right'
         });
         $('div#myexports').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Show your personal export(s)"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
     }
-    
+
 }());
 
 
