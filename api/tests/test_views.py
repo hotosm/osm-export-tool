@@ -170,7 +170,7 @@ class TestJobViewSet(APITestCase):
         job = Job.objects.get(uid=job_uid)
         tags = job.tags.all()
         self.assertIsNotNone(tags)
-        self.assertEquals(238, len(tags))
+        self.assertEquals(233, len(tags))
 
     @patch('api.views.ExportTaskRunner')
     def test_create_job_with_config_success(self, mock):

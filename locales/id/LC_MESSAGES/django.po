@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-01 15:33+0000\n"
-"PO-Revision-Date: 2015-10-01 15:27+0000\n"
+"POT-Creation-Date: 2015-10-03 17:51+0000\n"
+"PO-Revision-Date: 2015-10-03 17:44+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/hotosm/osm-export-tool2/language/id/)\n"
 "MIME-Version: 1.0\n"
@@ -67,43 +67,43 @@ msgstr ""
 msgid "Missing bounding box parameter"
 msgstr ""
 
-#: api/views.py:178
+#: api/views.py:180
 msgid "server_error"
 msgstr ""
 
-#: api/views.py:183
+#: api/views.py:185
 msgid "Invalid format provided."
 msgstr ""
 
-#: api/views.py:214
+#: api/views.py:216
 msgid "Failed to run Export"
 msgstr ""
 
-#: api/views.py:216
+#: api/views.py:218
 msgid "Export not found"
 msgstr ""
 
-#: hot_exports/settings/base.py:21
+#: hot_exports/settings/base.py:22
 msgid "English"
 msgstr ""
 
-#: hot_exports/settings/base.py:22
+#: hot_exports/settings/base.py:23
 msgid "Bahasa Indonesia"
 msgstr ""
 
-#: hot_exports/settings/base.py:23
+#: hot_exports/settings/base.py:24
 msgid "German"
 msgstr ""
 
-#: hot_exports/settings/base.py:24
+#: hot_exports/settings/base.py:25
 msgid "Spanish"
 msgstr ""
 
-#: hot_exports/settings/base.py:25
+#: hot_exports/settings/base.py:26
 msgid "Japanese"
 msgstr ""
 
-#: hot_exports/settings/base.py:26
+#: hot_exports/settings/base.py:27
 msgid "French"
 msgstr ""
 
@@ -134,18 +134,18 @@ msgid ""
 msgstr ""
 
 #: ui/templates/help/help.html:17 ui/templates/help/help_create.html:9
-#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:66
+#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:65
 msgid "Create"
 msgstr ""
 
 #: ui/templates/help/help.html:18 ui/templates/help/help_exports.html:9
-#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:67
+#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:66
 msgid "Exports"
 msgstr ""
 
 #: ui/templates/help/help.html:19 ui/templates/help/help_presets.html:10
 #: ui/templates/help/help_presets.html:13
-#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:68
+#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:67
 msgid "Presets"
 msgstr ""
 
@@ -206,7 +206,7 @@ msgstr ""
 #: ui/templates/help/help_create.html:8 ui/templates/help/help_exports.html:8
 #: ui/templates/help/help_features.html:8
 #: ui/templates/help/help_formats.html:8 ui/templates/help/help_presets.html:9
-#: ui/templates/ui/base.html:69
+#: ui/templates/ui/base.html:68
 msgid "Help"
 msgstr ""
 
@@ -1033,34 +1033,38 @@ msgid ""
 "devices and Smartphones."
 msgstr ""
 
-#: ui/templates/osm/login.html:12
+#: ui/templates/osm/login.html:12 ui/templates/ui/about.html:11
 msgid ""
-"This platform allows you to create custom OpenStreetMap exports for various "
-"HOT regions. You can specify an area of interest and a list of features "
-"(OpenStreetMap tags) for the export. A current OpenStreetMap data extract "
-"for that area in various data formats is then created for you within "
-"minutes."
+"This platform allows you to create custom OpenStreetMap (OSM) exports for "
+"various HOT regions. You can specify an area of interest and a list of OSM "
+"feature tags for the export. There are a number of file formats available "
+"for exporting the data in, which includes Esri SHP, Garmin IMG, Google KMZ, "
+"OSM PBF and SQlite SQL. The OSM data available from the Export Tool is "
+"updated at one minute intervals."
 msgstr ""
 
 #: ui/templates/osm/login.html:13 ui/templates/ui/about.html:12
 msgid "How to Get Started"
 msgstr ""
 
-#: ui/templates/osm/login.html:14
+#: ui/templates/osm/login.html:14 ui/templates/ui/about.html:13
 #, python-format
 msgid ""
-"You can view and search through existing HOT exports at our <a href=\"%(exports_url)s\">Exports</a> page. You do not need an account to view or search for existing exports.\n"
-"                If you want to create an export and you are a new user, please <a href=\"/osm/login/openstreetmap\">login</a> with your OpenStreetMap account. If this is the first\n"
-"                time you have logged into HOT Exports you will be asked to provide a valid email address.\n"
-"                More detailed help on using HOT Exports is available on our <a href=\"%(help_url)s\">help</a> page.\n"
-"                "
+"You can view and search through existing HOT exports at our <a "
+"href=\"%(exports_url)s\">Exports</a> page. It is not required to have an "
+"account to view or search existing exports, however if you would like to "
+"create a new export please <a href=\"/osm/login/openstreetmap\">Login</a> "
+"with your OSM account. If this is the first time you have logged into the "
+"HOT Export Tool, you will be asked to provide a valid email address. More "
+"detailed help information on how to use the Export Tool is available on our "
+"<a href=\"%(help_url)s\">Help</a> page."
 msgstr ""
 
-#: ui/templates/osm/login.html:24 ui/templates/osm/login.html.py:34
+#: ui/templates/osm/login.html:20 ui/templates/osm/login.html.py:30
 msgid "Login to OpenStreetMap"
 msgstr ""
 
-#: ui/templates/osm/login.html:30
+#: ui/templates/osm/login.html:26
 msgid ""
 "If you don't have an OpenStreetMap account you can register for one <a "
 "href='http://www.openstreetmap.org/user/new'>here</a>."
@@ -1092,50 +1096,27 @@ msgid ""
 "href=\"mailto:exports@hotosm.org\">email us</a> if this problem persists."
 msgstr ""
 
-#: ui/templates/ui/about.html:11
-msgid ""
-"This platform allows you to create custom OpenStreetMap (OSM) exports for "
-"various HOT regions. You can specify an area of interest and a list of OSM "
-"feature tags for the export. There are a number of file formats available "
-"for exporting the data in, which includes Esri SHP, Garmin IMG, Google KMZ, "
-"OSM PBF and SQlite SQL. The OSM data available from the Export Tool is "
-"updated at one minute intervals."
-msgstr ""
-
-#: ui/templates/ui/about.html:13
-#, python-format
-msgid ""
-"You can view and search through existing HOT exports at our <a "
-"href=\"%(exports_url)s\">Exports</a> page. It is not required to have an "
-"account to view or search existing exports, however if you would like to "
-"create a new export please <a href=\"/osm/login/openstreetmap\">Login</a> "
-"with your OSM account. If this is the first time you have logged into the "
-"HOT Export Tool, you will be asked to provide a valid email address. More "
-"detailed help information on how to use the Export Tool is available on our "
-"<a href=\"%(help_url)s\">Help</a> page."
-msgstr ""
-
 #: ui/templates/ui/base.html:15
 msgid "HOT Export Tool"
 msgstr ""
 
-#: ui/templates/ui/base.html:38
+#: ui/templates/ui/base.html:37
 msgid "Humanitarian <br/>OpenStreetMap <br/>Team"
 msgstr ""
 
-#: ui/templates/ui/base.html:62
+#: ui/templates/ui/base.html:61
 msgid "OSM Export Tool"
 msgstr ""
 
-#: ui/templates/ui/base.html:70
+#: ui/templates/ui/base.html:69
 msgid "About"
 msgstr ""
 
-#: ui/templates/ui/base.html:75
+#: ui/templates/ui/base.html:74
 msgid "Log Out"
 msgstr ""
 
-#: ui/templates/ui/base.html:79 ui/templates/ui/configurations.html:196
+#: ui/templates/ui/base.html:78 ui/templates/ui/configurations.html:196
 msgid "Login"
 msgstr ""
 
@@ -1198,7 +1179,7 @@ msgstr ""
 
 #: ui/templates/ui/clone.html:123 ui/templates/ui/configurations.html:134
 #: ui/templates/ui/create.html:123
-msgid "Filename:"
+msgid "Preset name:"
 msgstr ""
 
 #: ui/templates/ui/clone.html:146
@@ -1510,7 +1491,11 @@ msgstr ""
 msgid "Features selected for this export"
 msgstr ""
 
-#: ui/templates/ui/detail.html:158
+#: ui/templates/ui/detail.html:155
+msgid "The preset associated with this export has been deleted."
+msgstr ""
+
+#: ui/templates/ui/detail.html:159
 msgid "Close"
 msgstr ""
 

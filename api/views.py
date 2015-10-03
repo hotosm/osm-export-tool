@@ -17,7 +17,7 @@ from jobs import presets
 from jobs.models import (
     ExportConfig, ExportFormat, Job, Region, RegionMask, Tag
 )
-from jobs.presets import PresetParser
+from jobs.presets import PresetParser, UnfilteredPresetParser
 from serializers import (
     ExportConfigSerializer, ExportFormatSerializer, ExportRunSerializer,
     ExportTaskSerializer, JobSerializer, RegionMaskSerializer,
@@ -128,7 +128,9 @@ class JobViewSet(viewsets.ModelViewSet):
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = config.upload.path
-                            parser = presets.PresetParser(preset=preset_path)
+                            logger.debug(config.upload.path)
+                            # use unfiltered preset parser
+                            parser = presets.UnfilteredPresetParser(preset=preset_path)
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(

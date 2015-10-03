@@ -17,7 +17,7 @@ from django.test import TestCase
 
 from ..hdm_tags import HOT_HDM
 from ..models import ExportConfig, ExportFormat, Job, Tag
-from ..presets import PresetParser, TagParser
+from ..presets import PresetParser, TagParser, UnfilteredPresetParser
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,77 @@ class TestPresetParser(TestCase):
         group_dict = parser.build_hdm_preset_dict()
         # logger.debug(group_dict)
         # logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
+
+
+class TestUnfilteredPresetParser(TestCase):
+
+    def setUp(self,):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
+        Group.objects.create(name='TestDefaultExportExtentGroup')
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
+        the_geom = GEOSGeometry(bbox, srid=4326)
+        self.job = Job.objects.create(name='TestJob',
+                                 description='Test description', event='Nepal activation',
+                                 user=self.user, the_geom=the_geom)
+        self.uid = self.job.uid
+        # add the formats to the job
+        self.job.formats = self.formats
+        self.job.save()
+
+    def test_parse_preset(self,):
+        parser = UnfilteredPresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(233, len(tags))
+
+    def test_validate_hdm_presets(self, ):
+        schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
+        xmlschema_doc = etree.parse(schema)
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+        xml = StringIO(open(self.path + '/files/hdm_presets.xml').read())
+        tree = etree.parse(xml)
+        valid = xmlschema.validate(tree)
+        self.assertTrue(valid)
+
+    def test_validate_osm_presets(self, ):
+        schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
+        xmlschema_doc = etree.parse(schema)
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+        xml = StringIO(open(self.path + '/files/osm_presets.xml').read())
+        tree = etree.parse(xml)
+        valid = xmlschema.validate(tree)
+        self.assertTrue(valid)
+
+    def test_build_hdm_preset_dict(self,):
+        parser = UnfilteredPresetParser(self.path + '/files/hdm_presets.xml')
+        group_dict = parser.build_hdm_preset_dict()
+        # logger.debug(group_dict)
+        # logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
+
+    def test_build_osm_preset_dict(self,):
+        parser = UnfilteredPresetParser(self.path + '/files/osm_presets.xml')
+        group_dict = parser.build_hdm_preset_dict()
+        # logger.debug(group_dict)
+        # logger.debug(json.dumps(group_dict, indent=4, sort_keys=True))
+
+    def test_save_tags(self, ):
+        parser = UnfilteredPresetParser(self.path + '/files/hdm_presets.xml')
+        tags = parser.parse()
+        self.assertIsNotNone(tags)
+        self.assertEquals(233, len(tags))
+        for tag_dict in tags:
+            tag = Tag.objects.create(
+                name=tag_dict['name'],
+                key=tag_dict['key'],
+                value=tag_dict['value'],
+                job=self.job,
+                data_model='PRESET',
+                geom_types=tag_dict['geom_types'],
+                groups=tag_dict['groups']
+            )
+        self.assertEquals(233, self.job.tags.all().count())
 
 
 class TestTagParser(TestCase):

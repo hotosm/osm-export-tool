@@ -986,6 +986,11 @@ exports.detail = (function(){
                         '<td>' + config.config_type + '</td><td>' + published + '</td><td>' + created + '</td></tr>');
             $filelist.append($tr);
         }
+        else {
+            // config most likely deleted
+            $filelist.css('display','none');
+            $('#config-deleted-message').css('display', 'block');
+        }
     }
 
 })();

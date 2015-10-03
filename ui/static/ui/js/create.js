@@ -488,7 +488,7 @@ create.job = (function(){
                 'filename': {
                     validators: {
                         notEmpty: {
-                            message: gettext('The filename is required and cannot be empty')
+                            message: gettext('The preset name is required and cannot be empty')
                         },
                     }
                 },

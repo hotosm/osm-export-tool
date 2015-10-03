@@ -43,7 +43,7 @@ configurations.list = (function(){
                 'filename': {
                     validators: {
                         notEmpty: {
-                            message: 'The filename is required and cannot be empty.'
+                            message: gettext('The preset name is required and cannot be empty.')
                         },
                     }
                 },

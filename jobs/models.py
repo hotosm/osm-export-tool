@@ -210,8 +210,8 @@ class Tag(models.Model):
     """
     id = models.AutoField(primary_key=True, editable=False)
     name = models.CharField(max_length=100, blank=False, default='', db_index=True)
-    key = models.CharField(max_length=30, blank=False, default='', db_index=True)
-    value = models.CharField(max_length=30, blank=False, default='', db_index=True)
+    key = models.CharField(max_length=50, blank=False, default='', db_index=True)
+    value = models.CharField(max_length=50, blank=False, default='', db_index=True)
     job = models.ForeignKey(Job, related_name='tags')
     data_model = models.CharField(max_length=10, blank=False, default='', db_index=True)
     geom_types = ArrayField(models.CharField(max_length=10, blank=True, default=''), default=[])
@@ -256,17 +256,18 @@ Delete the associated file when the export config is deleted.
 @receiver(post_delete, sender=ExportConfig)
 def exportconfig_delete_upload(sender, instance, **kwargs):
     instance.upload.delete(False)
-
-
-"""
-Add each newly registered user to the DefaultExportExtentGroup
-"""
+    # remove config from related jobs
+    exports = Job.objects.filter(configs__uid=instance.uid)
+    for export in exports.all():
+        export.configs.remove(instance)
 
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, created, **kwargs):
     """
-    This method is executed whenever an user object is saved
+    This method is executed whenever an user object is saved.
+
+    Adds user to DefaultExportExtentGroup
     """
     if created:
         instance.groups.add(Group.objects.get(name='DefaultExportExtentGroup'))
