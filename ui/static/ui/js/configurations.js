@@ -1,21 +1,3 @@
-/*
-    Copyright (C) 2015  Humanitarian OpenStreetMap Team
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
 configurations = {};
 configurations.list = (function(){
     var map;
@@ -23,27 +5,27 @@ configurations.list = (function(){
     var bbox;
     var filtering = false;
     var searchForm = $('form#search');
-    
+
     return {
         main: function(){
-            
+
             initUploadForm();
             initPopovers();
             initDataTable();
             initDatePickers();
             initSearch();
-            runSearch(); 
+            runSearch();
         },
     }
-    
+
     /*
      * Initialize the configuration upload form.
      */
     function initUploadForm(){
-        
+
         // track the number of uploaded files.
         var numUploadedFiles = 0;
-        
+
         /*
          * Set up form validation.
          */
@@ -98,15 +80,15 @@ configurations.list = (function(){
                 $('#select-file').prop('disabled', true);
             }
         });
-        
+
         // ----- CONFIGURATION UPLOAD ----- //
-        
+
         /*
          * Validates the file upload tab.
          */
         function validateFileUploadForm() {
             var fv = $('#create-configuration-form').data('formValidation');// FormValidation instance
-            
+
             // validate the form panel contents
             fv.validate();
             var isValid = fv.isValid();
@@ -116,21 +98,21 @@ configurations.list = (function(){
                 return false;
             }
             $('button#upload').prop('disabled', false);
-            
+
             // reset validation on fields
             fv.resetField($('input#filename'));
             //fv.resetField($('select#config_type'));
-            
+
             return true;
         }
-        
+
         $('#select-file').on('click', function(e){
             if (!validateFileUploadForm()) {
                 e.preventDefault();
                 $(this).prop('disabled', true);
             }
         });
-        
+
         /*
          * Listen for changes on file selection button.
          */
@@ -140,7 +122,7 @@ configurations.list = (function(){
                 label = $input.val().replace(/\\/g, '/').replace(/.*\//, '');
                 $input.trigger('fileselect', [numFiles, label]);
         });
-        
+
         /*
          * Handle file selection.
          */
@@ -201,7 +183,7 @@ configurations.list = (function(){
                 $('#create-configuration-form').trigger('change');
             });
         });
-        
+
         /*
          * Handle config file upload.
          */
@@ -262,7 +244,7 @@ configurations.list = (function(){
                     }
                     // reset the form for more file uploads..
                     resetUploadConfigTab(textStatus);
-                    
+
                     // add the new configuration to the table
                     var $table = $('table#configurations').DataTable();
                     var rowNode = $table
@@ -286,7 +268,7 @@ configurations.list = (function(){
                 }
             });
         });
-        
+
         /*
          * Resets the upload config tab on success or failure.
          */
@@ -294,23 +276,23 @@ configurations.list = (function(){
             // hide the progress bar
             $('.progress').css('display', 'none');
             $('.progress-bar').css('width', '0%');
-            
+
             // toggle file selection and upload buttons
             $('button#upload').css('visibility', 'hidden');
             $('.btn-file').css('visibility', 'visible');
-            
+
             // reset the fields.
             $('input#filename').val('');
             $('option#select-message').prop('selected', true);
             $('input#publish_config').prop('checked', false);
-            
-            
+
+
             // re-enable the fields
             $('input#filename').prop('disabled', false);
             $('select#config_type').prop('disabled', false);
             $('input#publish_config').prop('disabled', false);
             $('#select-file').prop('disabled', false);
-            
+
             if (textStatus === 'error') {
                 // clear the selected files list
                 var $fileupload = $('#fileupload');
@@ -328,7 +310,7 @@ configurations.list = (function(){
                 }
             }
         }
-        
+
         /*
          * Updates progressbar on file upload.
          */
@@ -339,10 +321,10 @@ configurations.list = (function(){
                 $('.progress-bar').css('width', percent + '%');
             }
         }
-        
+
     }
-    
-    
+
+
     /**
      * Lists the configurations.
      *
@@ -358,7 +340,7 @@ configurations.list = (function(){
         .done(function(data, textStatus, jqXHR){
             // generate pagination on UI
             paginate(jqXHR);
-            
+
             // clear the existing data on results table and add new page
             var tbody = $('table#configurations tbody');
             var table = $('table#configurations').DataTable();
@@ -368,7 +350,7 @@ configurations.list = (function(){
             $('div#search-config').css('display', 'block').fadeIn(1500);
             // set message if no results returned from this url..
             $('td.dataTables_empty').html('No configuration files found.');
-            
+
             // handle delete events on table rows..
             $('.delete-file').bind('click', function(e){
                 var that = $(this);
@@ -391,35 +373,35 @@ configurations.list = (function(){
                         // handle deletion on the table..
                         var row = table.row('#' + uid);
                         $(row.node()).css('background-color', '#f2dede');
-                        row.remove(); 
+                        row.remove();
                         $(row.node()).fadeOut(400, function(){
                             runSearch();
-                        });   
+                        });
                     }
                 });
             });
         });
     }
-    
+
     /*
      * Creates the pagination links based on the Content-Range and Link headers.
      *
      * jqXHR: the ajax xhr
      */
     function paginate(jqXHR){
-        
+
         // get the pagination ul
         var paginate = $('ul.pager');
         paginate.empty();
         var info = $('#info');
         info.empty();
-        
+
         // set the content range info
         var rangeHeader = jqXHR.getResponseHeader('Content-Range');
         var total = rangeHeader.split('/')[1];
         var range = rangeHeader.split('/')[0].split(' ')[1];
         info.append('<span>Displaying ' + range + ' of ' + total + ' results');
-        
+
         // check if we have a link header
         var a, b;
         var link = jqXHR.getResponseHeader('Link');
@@ -432,7 +414,7 @@ configurations.list = (function(){
             // no link header so only one page of results returned
             return;
         }
-        
+
         /*
          * Configure next/prev links for pagination
          * and handle pagination events
@@ -445,10 +427,10 @@ configurations.list = (function(){
             paginate.append('<li id="prev" data-url="' + url + '"><a href="#"><span class="glyphicon glyphicon-chevron-left"/>' + gettext(' Prev') + '</a></li>&nbsp;');
             $('li#prev').on('click', function(){
                 var u = this.getAttribute('data-url');
-                u == 'undefined' ? listConfigurations() : listConfigurations(u);  
+                u == 'undefined' ? listConfigurations() : listConfigurations(u);
             });
         }
-        
+
         if (a) {
             var url = a.split(';')[0].trim();
             url = url.slice(1, url.length -1);
@@ -470,7 +452,7 @@ configurations.list = (function(){
             }
         }
     }
-    
+
     /*
      * Initialize the configuration list data table.
      */
@@ -537,7 +519,7 @@ configurations.list = (function(){
                         }
                         else {
                             return '';
-                        } 
+                        }
                     }
                 }
             ],
@@ -573,7 +555,7 @@ configurations.list = (function(){
         // clear the empty results message on initial draw..
         $('td.dataTables_empty').html('');
     }
-    
+
     /**
      * Initialize the start / end date pickers.
      */
@@ -596,12 +578,12 @@ configurations.list = (function(){
         $("#end-date").on("dp.change", function(e){
             runSearch();
         });
-        
+
     }
-    
+
     /*
      * Search configurations.
-     */ 
+     */
     function initSearch(){
         // update state on filter toggle button
         $('a#filter-toggle').click(function(e){
@@ -609,35 +591,35 @@ configurations.list = (function(){
                 'glyphicon-chevron-down glyphicon-chevron-up'
             );
         });
-        
+
         // run search on search form input events
         $('form#search input').bind('input', function(e){
             runSearch();
         });
-        
+
         // run search on selection changes
         $('select').bind('change', function(e){
-           runSearch(); 
+           runSearch();
         });
-        
+
         // run search on user filtering state change
         $('input#user-check').bind('change', function(e){
             // pull the username out of the dom
             var username = $('span#user').text();
             var $this = $(this);
-            // $this will contain a reference to the checkbox   
+            // $this will contain a reference to the checkbox
             if ($this.is(':checked')) {
                 // set the username on the form input
                 $('input#user').val(username);
                 $('input#published').val('');
-                runSearch(); 
+                runSearch();
             } else {
                 $('input#user').val('');
                 //$('input#published').val('True');
                 runSearch();
             }
         });
-        
+
         $('button#reset-form').on('click', function(e){
             $('input#search').val('');
             $('input#user-check').prop('checked', false).trigger('change');
@@ -645,7 +627,7 @@ configurations.list = (function(){
             $('#end-date').data('DateTimePicker').date(moment());
         });
     }
-    
+
     /*
      * Runs a search.
      * Takes query params from serialized form inputs.
@@ -655,34 +637,34 @@ configurations.list = (function(){
         url += searchForm.serialize();
         listConfigurations(url); // update results table
     }
-    
+
     /*
      * Initialise UI popovers.
      */
     function initPopovers(){
         $('a#filter-toggle').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Filter through all the preset files based on keywords in the search box and/or between a start and end date"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'right'
         });
         $('label[for="publish_config"]').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Publish the preset file to the global store for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('input#filename').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Give the selected Preset file a name"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
     }
-    
+
 }());
 
 

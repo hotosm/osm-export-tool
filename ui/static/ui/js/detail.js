@@ -1,24 +1,7 @@
-/*
-    Copyright (C) 2015  Humanitarian OpenStreetMap Team
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
 exports = {}
 exports.detail = (function(){
-    
-        
+
+
     return {
         init: function(){
             parts = window.location.href.split('/');
@@ -32,7 +15,7 @@ exports.detail = (function(){
             loadCompletedRunDetails();
         },
     }
-    
+
     /**
      * Initialize the export overview map.
      */
@@ -42,20 +25,20 @@ exports.detail = (function(){
                 displayProjection: new OpenLayers.Projection("EPSG:4326"),
                 controls: [new OpenLayers.Control.Attribution(),
                            new OpenLayers.Control.ScaleLine()],
-                maxExtent: maxExtent,          
-                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
+                maxExtent: maxExtent,
+                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
                 units: 'm',
                 sphericalMercator: true,
                 noWrap: true // don't wrap world extents
         }
         map = new OpenLayers.Map('extents', {options: mapOptions});
-        
+
         // add base layers
         osm = Layers.OSM
         osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayer(osm);
         map.zoomToMaxExtent();
-        
+
         job_extents = new OpenLayers.Layer.Vector('extents', {
             displayInLayerSwitcher: false,
             style: {
@@ -65,12 +48,12 @@ exports.detail = (function(){
                 fillOpacity: 0.8,
             }
         });
-        
+
         map.addLayer(job_extents);
         map.restrictedExtent = map.getExtent();
         return map;
     }
-  
+
     /**
      * Loads the job details.
      */
@@ -93,10 +76,10 @@ exports.detail = (function(){
             for (i = 0; i < formats.length; i++){
                 $('#formats').append(formats[i].name + '<br/>');
             }
-            
+
             // features
             var model = data.tags.length > 0 ? data.tags[0].data_model : null;
-            
+
             switch (model){
                 case 'HDM':
                     $('#osm-feature-tree').css('display','none');
@@ -119,7 +102,7 @@ exports.detail = (function(){
                 default:
                     break;
             }
-            
+
             var extent = data.extent;
             var geojson = new OpenLayers.Format.GeoJSON({
                     'internalProjection': new OpenLayers.Projection("EPSG:3857"),
@@ -144,18 +127,18 @@ exports.detail = (function(){
             }
             buildDeleteDialog();
             buildFeatureDialog();
-            
+
         }).fail(function(jqxhr, textStatus, error) {
             if (jqxhr.status == 404) {
                 $('#details-row').css('display', 'none');
                 // display error info..
-                $('#error-info').css('display', 'block'); 
+                $('#error-info').css('display', 'block');
             }
         });
-        
+
         // handle re-run click events..
         $('button#rerun').bind('click', function(e){
-            $(this).popover('hide');            
+            $(this).popover('hide');
             $.ajax({
                 cache: false,
                 url: Config.RERUN_URL + exports.detail.job_uid,
@@ -173,16 +156,16 @@ exports.detail = (function(){
                 }
             })
         });
-        
+
         // handle clone event
         $('button#clone').bind('click', function(e){
             window.location.href = '/exports/clone/' + exports.detail.job_uid;
         });
     }
-    
+
     /**
       * Loads the completed run details.
-      * 
+      *
       * Parameters:
       * expand_first {Object} - whether to expand the first completed run.
       */
@@ -201,7 +184,7 @@ exports.detail = (function(){
                     $('#submitted_runs > .panel-group').empty();
                     $('#submitted_runs').css('display', 'none');
                 }
-                
+
                 $.each(data, function(index, run){
                     var started = moment(run.started_at).format('h:mm:ss a, MMMM Do YYYY');
                     var finished = moment(run.finished_at).format('h:mm:ss a, MMMM Do YYYY');
@@ -215,7 +198,7 @@ exports.detail = (function(){
                     var template = getCompletedRunTemplate();
                     var html = template(context);
                     $runPanel.append(html);
-                    
+
                     // add task info
                     $taskDiv = $runPanel.find('div#' + run.uid).find('#tasks').find('table');
                     var tasks = run.tasks;
@@ -274,7 +257,7 @@ exports.detail = (function(){
                                 }
                                 break;
                         }
-                        
+
                         if (errors.length > 0) {
                             $tr = $('tr#exceptions');
                             $tr.css('display', 'table-row');
@@ -286,7 +269,7 @@ exports.detail = (function(){
             }
         });
     }
-    
+
     /**
      * Gets a template for displaying completed run details.
      */
@@ -336,8 +319,8 @@ exports.detail = (function(){
         var template = Handlebars.compile(html);
         return template;
     }
-    
-    
+
+
     /**
       * Loads the job details.
       * This occurs initially on page load..
@@ -356,7 +339,7 @@ exports.detail = (function(){
             }
         });
     }
-    
+
     /**
      * Initializes the submitted run panel.
      */
@@ -399,7 +382,7 @@ exports.detail = (function(){
             $.each(tasks, function(i, task){
                 var result = task.result;
                 var status = task.status;
-                var duration = task.duration ? numeral(task.duration).format("HH:mm:ss.SSS") : ' -- '; 
+                var duration = task.duration ? numeral(task.duration).format("HH:mm:ss.SSS") : ' -- ';
                 switch (task.name) {
                     case 'OverpassQuery':
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
@@ -512,7 +495,7 @@ exports.detail = (function(){
             });
         });
     }
-    
+
     /**
      * Gets a template for displaying submitted run details.
      */
@@ -555,7 +538,7 @@ exports.detail = (function(){
         var template = Handlebars.compile(html);
         return template;
     }
-    
+
     /**
      * Updates the submitted run details to show task status.
      *
@@ -700,25 +683,25 @@ exports.detail = (function(){
                             $tr.addClass(status.toLowerCase());
                             $tr.html('<td>' + gettext('Generate JOSM Preset') + '</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td>');
                         }
-                        break; 
+                        break;
                 }
-               
+
             });
         }
         else {
             // stop the interval timer..
             clearInterval(exports.detail.timer);
             exports.detail.timer = false;
-            
+
             // reload the completed runs to show the latest run..
             loadCompletedRunDetails();
-            
+
             // enable the re-run button..
             $('button#rerun').prop('disabled', false);
             $('button#delete').prop('disabled', false);
         }
-    } 
-    
+    }
+
     /*
      * Starts an interval timer to periodically
      * report the status of a currently running job.
@@ -733,7 +716,7 @@ exports.detail = (function(){
         if (!exports.detail.timer) {
             $('#completed_runs .panel-collapse').removeClass('in');
         }
-        
+
         /*
          * Run a check on the submitted job
          * at an interval of 3 seconds.
@@ -751,9 +734,9 @@ exports.detail = (function(){
             });
         }, 3000);
     }
-    
+
     function buildDeleteDialog(){
-        
+
         var that = this;
         var options = {
             url: Config.JOBS_URL + '/' + exports.detail.job_uid,
@@ -765,32 +748,32 @@ exports.detail = (function(){
                     $('#details-row').css('display', 'none');
                     // display delete info..
                     $('#delete-info').css('display', 'block');
-                } 
+                }
             },
             error: function(xhr, status, error){
                 var json = xhr.responseJSON
                 console.log(error);
             },
         }
-        
+
        var modalOpts = {
             keyboard: true,
             backdrop: 'static',
         }
-        
+
         $("button#delete").bind('click', function(e){
             // stop form getting posted..
-            e.preventDefault(); 
+            e.preventDefault();
             $("#deleteExportModal").modal(modalOpts, 'show');
         });
-        
+
         $("#deleteConfirm").click(function(){
             // post form..
             $('#deleteForm').ajaxSubmit(options);
             $("#deleteExportModal").modal('hide');
         });
     }
-    
+
     function buildFeatureDialog(){
         var modalOpts = {
             keyboard: true,
@@ -800,15 +783,15 @@ exports.detail = (function(){
             $("#featuresModal").modal(modalOpts, 'show');
         });
     }
-    
+
     function initPopovers(){
-        $('button#rerun').popover({ 
+        $('button#rerun').popover({
             content: gettext("Run the export with the same geographic location and settings"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
-        $('button#clone').popover({ 
+        $('button#clone').popover({
             content: gettext("Clone this export while adjusting the settings"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
@@ -820,23 +803,23 @@ exports.detail = (function(){
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
-        
+
     }
-    
+
     // ----- FEATURE SELECTION TREES ----- //
-    
+
     /*
      * Initialises the HDM feature tree.
      */
     function initHDMFeatureTree(tags){
-        
+
         $.get(Config.HDM_TAGS_URL, function(data){
             var level_idx = 0;
             var $tree = $('#hdm-feature-tree ul.nav-list');
             if (typeof data == 'object') {
                 traverse(data, $tree, level_idx);
             }
-            
+
             /*
              * Recursively builds the feature tree.
              */
@@ -860,7 +843,7 @@ exports.detail = (function(){
                         var state = level_idx == 0 ? 'open' : 'closed';
                         var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
                         var root = level_idx == 0 ? 'root' : '';
-                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' +
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -870,7 +853,7 @@ exports.detail = (function(){
                     }
                 });
             }
-            
+
             $.each(tags, function(idx, tag){
                 var key = tag.key;
                 var val = tag.value;
@@ -885,7 +868,7 @@ exports.detail = (function(){
                     $(level).children('div.tree-checkbox').find('input.level').prop('disabled', false);
                 });
             });
-                    
+
             // toggle level collapse
             $('#hdm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
@@ -898,15 +881,15 @@ exports.detail = (function(){
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
             });
-            
+
             // prevent checkboxes from being deselected
             $('#hdm-feature-tree input[type="checkbox"]').on('click', function(e){
                 e.preventDefault();
             });
-            
+
         });
     }
-    
+
     /*
      * Initialises the OSM feature tree.
      */
@@ -918,7 +901,7 @@ exports.detail = (function(){
             if (typeof data == 'object') {
                 traverse(v, $tree, level_idx);
             }
-            
+
             /*
              * Recursively builds the feature tree.
              */
@@ -942,7 +925,7 @@ exports.detail = (function(){
                         var state = level_idx == 0 ? 'open' : 'closed';
                         var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
                         var root = level_idx == 0 ? 'root' : '';
-                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' +
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled /></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -952,7 +935,7 @@ exports.detail = (function(){
                     }
                 });
             }
-            
+
             // toggle level collapse
             $('#osm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
@@ -965,7 +948,7 @@ exports.detail = (function(){
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
             });
-            
+
             $.each(tags, function(idx, tag){
                 var key = tag.key;
                 var val = tag.value;
@@ -980,14 +963,14 @@ exports.detail = (function(){
                     $(level).children('div.tree-checkbox').find('input.level').prop('disabled', false);
                 });
             });
-            
+
             // prevent checkboxes from being deselected
             $('#osm-feature-tree input[type="checkbox"]').on('click', function(e){
                 e.preventDefault();
             });
         });
     }
-    
+
     /*
      * Loads preset details on fetaures modal.
      */
@@ -1004,7 +987,7 @@ exports.detail = (function(){
             $filelist.append($tr);
         }
     }
-  
+
 })();
 
 

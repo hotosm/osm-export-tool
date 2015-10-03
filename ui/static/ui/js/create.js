@@ -1,21 +1,3 @@
-/*
-    Copyright (C) 2015  Humanitarian OpenStreetMap Team
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
 create = {};
 create.job = (function(){
     var map;
@@ -23,7 +5,7 @@ create.job = (function(){
     var mask;
     var transform;
     var max_bounds_area = $('#user-max-extent').text();
-    
+
     return {
         init: function(){
             initMap();
@@ -35,7 +17,7 @@ create.job = (function(){
             initConfigSelectionHandler();
         }
     }
-    
+
     /*
      * Initialize the map
      * and the UI controls.
@@ -47,17 +29,17 @@ create.job = (function(){
                 displayProjection: new OpenLayers.Projection("EPSG:4326"),
                 controls: [new OpenLayers.Control.Attribution(),
                            new OpenLayers.Control.ScaleLine()],
-                maxExtent: maxExtent,          
-                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],   
+                maxExtent: maxExtent,
+                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
                 units: 'm',
                 sphericalMercator: true,
-                noWrap: true, // don't wrap world extents  
+                noWrap: true, // don't wrap world extents
         }
         map = new OpenLayers.Map('create-export-map', {options: mapOptions});
-        
+
         // restrict extent to world bounds to prevent panning..
         map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
-        
+
         // add base layers
         var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
         var hotosm = Layers.HOT
@@ -70,7 +52,7 @@ create.job = (function(){
         osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors.";
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayers([osm]);
-        
+
         // add the regions layer
         regions = new OpenLayers.Layer.Vector('regions', {
             displayInLayerSwitcher: false,
@@ -81,7 +63,7 @@ create.job = (function(){
                 fillOpacity: 0.8,
             }
         });
-        
+
         // add the region mask layer
         mask = new OpenLayers.Layer.Vector('mask', {
             displayInLayerSwitcher: false,
@@ -96,23 +78,23 @@ create.job = (function(){
             }),
         });
         map.addLayers([regions, mask]);
-        
+
         // add region and mask features
         addRegionMask();
         addRegions();
-        
+
         // add export format checkboxes
         buildExportFormats();
-        
+
         // add bounding box selection layer
         bbox = new OpenLayers.Layer.Vector("bbox", {
            displayInLayerSwitcher: false,
            styleMap: getTransformStyleMap(),
         });
         map.addLayers([bbox]);
-        
+
         // add a draw feature control for bbox selection.
-        box = new OpenLayers.Control.DrawFeature(bbox, OpenLayers.Handler.RegularPolygon, { 
+        box = new OpenLayers.Control.DrawFeature(bbox, OpenLayers.Handler.RegularPolygon, {
            handlerOptions: {
               sides: 4,
               snapAngle: 90,
@@ -121,31 +103,31 @@ create.job = (function(){
            }
         });
         map.addControl(box);
-       
-       
+
+
         // add a transform control to enable modifications to bounding box (drag, resize)
         transform = new OpenLayers.Control.TransformFeature(bbox, {
            rotate: false,
            irregular: true,
            renderIntent: "transform",
         });
-        
+
         // listen for selection box being added to bbox layer
         box.events.register('featureadded', this, function(e){
             // get selection bounds
             bounds = e.feature.geometry.bounds;
-            
+
             // clear existing features
             bbox.removeAllFeatures();
             box.deactivate();
-            
+
             // add a bbox feature based on user selection
             var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
             bbox.addFeatures(feature);
-            
+
             // enable bbox modification
             transform.setFeature(feature);
-            
+
             // validate the selected extents
             if (validateBounds(bounds)) {
                 setBounds(bounds);
@@ -154,7 +136,7 @@ create.job = (function(){
                 unsetBounds();
             }
         });
-        
+
         // update the bounds after bbox is moved / modified
         transform.events.register("transformcomplete", this, function(e){
             var bounds = e.feature.geometry.bounds.clone();
@@ -165,7 +147,7 @@ create.job = (function(){
                 unsetBounds();
             }
         });
-        
+
         // update bounds during bbox modification
         transform.events.register("transform", this, function(e){
             var bounds = e.object.feature.geometry.bounds.clone();
@@ -178,7 +160,7 @@ create.job = (function(){
         });
         // add the transform control
         map.addControl(transform);
-        
+
         // handles click on select area button
         $("#select-area").bind('click', function(e){
             /*
@@ -192,14 +174,14 @@ create.job = (function(){
             transform.unsetFeature();
             box.activate();
         });
-        
+
         $('#zoom-selection').bind('click', function(e){
             // zoom to the bounding box extent
             if (bbox.features.length > 0) {
                 map.zoomToExtent(bbox.getDataExtent(), false);
             }
         });
-        
+
         $('#reset-map').bind('click', function(e){
             /*
              * Unsets the bounds on the form
@@ -214,14 +196,14 @@ create.job = (function(){
             map.zoomToExtent(regions.getDataExtent());
             validateBounds();
         });
-        
+
         /* Add map controls */
         map.addControl(new OpenLayers.Control.ScaleLine());
-        
+
         // set inital zoom to regions extent
         map.zoomTo(regions.getDataExtent());
     }
-    
+
     /*
      * Add the regions to the map.
      * Calls into region api.
@@ -236,9 +218,9 @@ create.job = (function(){
             var features = geojson.read(data);
             regions.addFeatures(features);
             map.zoomToExtent(regions.getDataExtent());
-        }); 
+        });
     }
-    
+
     /*
      * Add the region mask to the map.
      * Calls into region mask api.
@@ -252,9 +234,9 @@ create.job = (function(){
             });
             var features = geojson.read(data);
             mask.addFeatures(features);
-        }); 
+        });
     }
-    
+
     /*
      * build the export format checkboxes.
      */
@@ -266,7 +248,7 @@ create.job = (function(){
                 formatsDiv.append('<div class="checkbox"><label>'
                                  + '<input type="checkbox"'
                                  + 'name="formats"'
-                                 + 'value="' + format.slug + '"' 
+                                 + 'value="' + format.slug + '"'
                                  + 'data-description="' + format.description + '"/>'
                                  + format.description
                                  + '</label></div>');
@@ -276,9 +258,9 @@ create.job = (function(){
              * all form elements have been loaded.
              */
             initForm();
-        }); 
+        });
     }
-    
+
     /*
      * update the bbox extents on the form.
      */
@@ -297,7 +279,7 @@ create.job = (function(){
         var coords = gettext('(East, South, West, North): ') + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
         $('span#coordinates').html(coords);
     }
-    
+
     /*
      * clear extents from the form.
      */
@@ -309,18 +291,18 @@ create.job = (function(){
         $('#ymax').val('').trigger('input');
         $('span#coordinates').empty();
     }
-    
+
     /*
      * triggers validation of the extents on the form.
      */
     function validateBBox(){
         $('#create-job-form').data('formValidation').validateContainer('#form-group-bbox');
     }
-    
+
     /*
      * Validate the export extent.
      * Display error message in case of validation error.
-     * Display success message when extents are valid. 
+     * Display success message when extents are valid.
      */
     function validateBounds(bounds) {
         if (!bounds) {
@@ -350,7 +332,7 @@ create.job = (function(){
         // format the area and max bounds for display..
         var area_str = numeral(area).format('0 0');
         var max_bounds_str = numeral(max_bounds_area).format('0 0');
-        
+
         if (!valid_region) {
            // invalid region
            validateBBox(); // trigger validation on extents
@@ -374,7 +356,7 @@ create.job = (function(){
             return true;
         }
     }
-    
+
     /*
      * get the style map for the selection bounding box.
      */
@@ -409,12 +391,12 @@ create.job = (function(){
                     })
                 });
     }
-    
+
     /*
      * Initialize the form validation.
      */
     function initForm(){
-        
+
         /*
          * Initialize the bootstrap form wizard.
          */
@@ -432,12 +414,12 @@ create.job = (function(){
                 }
             },
             onNext: function(tab, navigation, index){
-                return validateTab(index);  
+                return validateTab(index);
             }
         });
-        
+
         // ----  FORM VALIDATION ---- //
-        
+
         /*
          * Set up form validation.
          */
@@ -551,8 +533,8 @@ create.job = (function(){
                 $('#select-file').prop('disabled', true);
             }
         });
-        
-        
+
+
         /*
          * Validates a wizard tab given the tab index.
          */
@@ -561,7 +543,7 @@ create.job = (function(){
                 // The current tab
                 $tab = $('#create-job-form').find('.tab-pane').eq(index),
                 $bbox = $('#bbox');
-                
+
             // validate the form first
             fv.validate();
             var isFormValid = fv.isValid();
@@ -574,7 +556,7 @@ create.job = (function(){
                 $('#btn-submit-job').prop('disabled', false);
                 $('#btn-submit-job').removeClass('disabled');
             }
-            
+
             // ignore upload tab as we apply custom validation there..
             /*
             var id = $tab.attr('id');
@@ -584,21 +566,21 @@ create.job = (function(){
                 return true;
             }
             */
-            
+
             /*
              * Disable config form field validation
              * as validation of these fields is
              * only required on config upload.
              */
             fv.enableFieldValidators('filename', false);
-            
+
             // validate the bounding box extents
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
             if (isValidBBox === false || isValidBBox === null) {
                 validateBounds(bbox.getDataExtent());
             }
-            
+
             // validate the form panel contents
             fv.validateContainer($tab);
             var isValidStep = fv.isValidContainer($tab);
@@ -609,7 +591,7 @@ create.job = (function(){
             }
             return true;
         }
-        
+
         /*
          * Validates the file upload tab.
          */
@@ -617,7 +599,7 @@ create.job = (function(){
             var fv = $('#create-job-form').data('formValidation'), // FormValidation instance
                 // The current tab
                 $tab = $('#create-job-form').find('.tab-pane').eq(3);
-            
+
             // validate the form panel contents
             fv.validateContainer($tab);
             var isValid = fv.isValidContainer($tab);
@@ -627,16 +609,16 @@ create.job = (function(){
                 return false;
             }
             $('button#upload').prop('disabled', false);
-            
+
             // reset validation on fields
             fv.resetField($('input#filename'));
             fv.resetField($('select#config_type'));
-            
+
             return true;
         }
-        
+
         // ----- UPLOAD TAB ----- //
-        
+
         $('#select-file').on('click', function(e){
             var fv = $('#create-job-form').data('formValidation');
             fv.enableFieldValidators('filename', true);
@@ -646,7 +628,7 @@ create.job = (function(){
                 $(this).prop('disabled', true);
             }
         });
-        
+
         /*
          * Listen for changes on file selection button.
          */
@@ -661,23 +643,23 @@ create.job = (function(){
                 selection['filename'] = filename;
                 selection['config_type'] = type;
                 selection['published'] = published;
-                
+
                 // disable form fields
                 $('input#filename').prop('disabled', true);
                 $('select#config_type').prop('disabled', true);
                 $('input#publish_config').prop('disabled', true);
-                
+
                 // toggle select and upload button visibility
                 $('.btn-file').css('visibility', 'hidden');
                 $('button#upload').prop('disabled', false).css('visibility', 'visible');
-                
+
                 // disable config-browser
                 $('button#select-config').prop('disabled', true);
-                
+
                 // trigger the selection event
                 $filelist.trigger({type: 'config:fileselected', source: 'config-upload', selection: selection});
         });
-        
+
         /*
          * Handle config file upload.
          */
@@ -689,22 +671,22 @@ create.job = (function(){
             // disable the upload button
             $('button#upload').prop('disabled', true);
             $('button#remove-upload').prop('disabled', true);
-            
+
             // disable the config-select button
             $('button#select-config').prop('disabled', true);
-            
+
             // disable selected config remove buttons until file uploaded
             $(this).find('tr.config').find('button').each(function(idx, btn){
                 $(btn).prop('disabled', true);
             });
-            
+
             // show progress bar
             $('button#remove').css('display', 'none');
             $('.progress').css('display', 'block');
             var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
             var filename = $('input#filename').val();
             var config_type = $('input#config_type').val();
-            
+
             /*
              * Put this back later if we implement translation or transforms
              *
@@ -721,7 +703,7 @@ create.job = (function(){
                     break;
             }
             */
-            
+
             var published = $('input[name="publish_config"]').is(':checked');
             var data = new FormData();
             data.append('name', filename);
@@ -752,7 +734,7 @@ create.job = (function(){
                     jqxhr.setRequestHeader("X-CSRFToken", csrftoken);
                 },
                 success: function(result, textStatus, jqxhr) {
-                    
+
                     // trigger preset:selected event
                     if (result.config_type === 'PRESET') {
                         $(document).trigger({type: 'preset:selected', source: 'config-upload'});
@@ -764,7 +746,7 @@ create.job = (function(){
                     selection['published'] = result.published;
                     // notify the file list
                     $('#filelist').trigger({type: 'config:uploaded', source: 'config-upload', selection: selection});
-                    
+
                 },
                 error: function(jqxhr, textStatus, errorThrown){
                     console.log(jqxhr);
@@ -779,7 +761,7 @@ create.job = (function(){
                 }
             });
         });
-        
+
         /*
          * Handle click on select config button (config-browser)
          */
@@ -795,8 +777,8 @@ create.job = (function(){
             $('#select-file').prop('disabled', false);
             $("#configSelectionModal").modal(modalOpts, 'show');
         });
-        
-        
+
+
         /*
          * Updates progressbar on file upload.
          */
@@ -807,10 +789,10 @@ create.job = (function(){
                 $('.progress-bar').css('width', percent + '%');
             }
         }
-        
-        
+
+
         // ----- SUMMARY TAB ----- //
-        
+
         /*
          * Listen for changes to the form
          * and update the export summary tab.
@@ -830,7 +812,7 @@ create.job = (function(){
             });
             $('#summary-formats').html($ul);
         });
-        
+
          /*
          * Listen for configurations being added to the filelist
          * and update state on this.
@@ -845,7 +827,7 @@ create.job = (function(){
                  $('table#summary-configs').append('<tr id="' + selection.uid + '" class="config"><td>' + filename + '</td><td>' + config_type + '</td><td>' + status + '</td></tr>');
             });
         });
-        
+
         $('table#summary-configs').on('config:removed', function(e){
             var selection = e.selection;
             // remove the selected config from the table
@@ -855,14 +837,14 @@ create.job = (function(){
                 // remove the config from the table
                 $tr.remove();
                 // hide the file list
-                $('div#summary-configs').css('visibility', 'hidden'); 
+                $('div#summary-configs').css('visibility', 'hidden');
             }
             else {
                 // just remove this row..
                 $tr.remove();
             }
         });
-        
+
         /*
          * Handle selection events on config publish options.
          * Only one can be selected at at time.
@@ -872,29 +854,29 @@ create.job = (function(){
             $featPub =  $('input#feature_pub');
             if (checked) {
                 $featPub.prop('checked', false);
-                $featPub.prop('disabled', true);   
+                $featPub.prop('disabled', true);
             }
             else {
                 $featPub.prop('checked', false);
-                $featPub.prop('disabled', false); 
+                $featPub.prop('disabled', false);
             }
         });
-        
+
         $('input#feature_pub').on('change', function(e){
             var checked = $(this).is(':checked');
             $featSave =  $('input#feature_save');
             if (checked) {
                 $featSave.prop('checked', false);
-                $featSave.prop('disabled', true);   
+                $featSave.prop('disabled', true);
             }
             else {
                 $featSave.prop('checked', false);
-                $featSave.prop('disabled', false); 
+                $featSave.prop('disabled', false);
             }
         });
-        
+
         // ----- FORM SUBMISSION ----- //
-        
+
         /*
          * Submits the export job.
          */
@@ -909,7 +891,7 @@ create.job = (function(){
             if (isValidBBox === false || isValidBBox === null) {
                 validateBounds(bbox.getDataExtent());
             }
-            
+
             /*
              * Disable config form field validation
              * as validation of these fields is
@@ -917,7 +899,7 @@ create.job = (function(){
              */
             fv.enableFieldValidators('filename', false);
             //fv.enableFieldValidators('config_type', false);
-            
+
             fv.validate(); // validate the form
             var fvIsValidForm = fv.isValid();
             if (!fvIsValidForm) {
@@ -1020,9 +1002,9 @@ create.job = (function(){
             }
         });
     }
-    
+
     // ----- FEATURE SELECTION TREES ----- //
-    
+
     /*
      * Initialises the HDM feature tree.
      */
@@ -1034,14 +1016,14 @@ create.job = (function(){
          * to set the state of preset related controls.
          */
         $(document).trigger({type: 'preset:selected', source: 'hdm-feature-tree'});
-        
+
         $.get(Config.HDM_TAGS_URL, function(data){
             var level_idx = 0;
             var $tree = $('#hdm-feature-tree ul.nav-list');
             if (typeof data == 'object') {
                 traverse(data, $tree, level_idx);
             }
-            
+
             /*
              * Recursively builds the feature tree.
              */
@@ -1065,7 +1047,7 @@ create.job = (function(){
                         var state = level_idx == 0 ? 'open' : 'closed';
                         var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
                         var root = level_idx == 0 ? 'root' : '';
-                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' +
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" checked/></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -1075,7 +1057,7 @@ create.job = (function(){
                     }
                 });
             }
-        
+
             // toggle level collapse
             $('#hdm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
@@ -1088,7 +1070,7 @@ create.job = (function(){
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
             });
-            
+
             /*
              * Handle events on sub-level checkboxes.
              */
@@ -1109,7 +1091,7 @@ create.job = (function(){
                 });
 
             });
-            
+
             /*
             * Handle events on entry checkboxes.
             */
@@ -1117,7 +1099,7 @@ create.job = (function(){
                 // fire changed event on levels
                 $('#hdm-feature-tree input.level').trigger("entry:changed", e);
             });
-            
+
             /*
              * Listen for changes on entry level checkboxes
              * and update levels accordingly.
@@ -1134,7 +1116,7 @@ create.job = (function(){
                     $input.prop('checked', false);
                 }
             });
-            
+
             /*
              * Listen for changes to the HDM root node.
              * Trigger preset selection / deselection events.
@@ -1153,7 +1135,7 @@ create.job = (function(){
             });
         });
     }
-    
+
     /*
      * Initialises the OSM feature tree.
      */
@@ -1165,7 +1147,7 @@ create.job = (function(){
             if (typeof data == 'object') {
                 traverse(v, $tree, level_idx);
             }
-            
+
             /*
              * Recursively builds the feature tree.
              */
@@ -1189,7 +1171,7 @@ create.job = (function(){
                         var state = level_idx == 0 ? 'open' : 'closed';
                         var icon = level_idx == 0 ? 'fa-minus-square-o' : 'fa-plus-square-o';
                         var root = level_idx == 0 ? 'root' : '';
-                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' + 
+                        var $nextLevel = $('<li class="level nav-header ' + state + ' ' + root + '"><label><i class="level fa ' + icon + ' fa-fw"></i>' + k + '</label>' +
                                             '<div class="checkbox tree-checkbox"><input class="level" type="checkbox" disabled /></div>');
                         var $nextUL = $('<ul class="nav nav-list sub-level ' + collapse + '">');
                         $nextLevel.append($nextUL);
@@ -1199,7 +1181,7 @@ create.job = (function(){
                     }
                 });
             }
-            
+
             // toggle level collapse
             $('#osm-feature-tree li.level > label').bind('click', function(e){
                 if ($(this).parent().hasClass('open')) {
@@ -1212,7 +1194,7 @@ create.job = (function(){
                 }
                 $(this).parent().children('ul.sub-level').toggle(150);
             });
-            
+
             /*
              * Handle events on sub-level checkboxes.
              */
@@ -1233,7 +1215,7 @@ create.job = (function(){
                 });
 
             });
-            
+
             /*
             * Handle events on entry checkboxes.
             */
@@ -1241,7 +1223,7 @@ create.job = (function(){
                 // fire changed event on levels
                 $('#osm-feature-tree input.level').trigger("entry:changed", e);
             });
-            
+
             /*
              * Listen for changes on entry level checkboxes
              * and update levels accordingly.
@@ -1258,7 +1240,7 @@ create.job = (function(){
                     $input.prop('checked', false);
                 }
             });
-            
+
             /*
              * Listen for changes to the OSM root node.
              */
@@ -1273,10 +1255,10 @@ create.job = (function(){
                 else {
                     $(document).trigger({type: 'preset:deselected', source: 'feature-tree'});
                 }
-            });  
+            });
         });
     }
-    
+
     /*
      * Handles placename lookups using nominatim.
      * Only interested in relations.
@@ -1295,7 +1277,7 @@ create.job = (function(){
                             transform.unsetFeature();
                             unsetBounds();
                             map.zoomToExtent(regions.getDataExtent());
-                            
+
                         }
                         // if in cache use cached value
                         if(query_cache[query]){
@@ -1354,7 +1336,7 @@ create.job = (function(){
                 }
             }
         });
-        
+
         /**
         * Tests if the query is a float
         */
@@ -1364,7 +1346,7 @@ create.job = (function(){
                 return true;
             }
         }
-        
+
         /**
          * Construct the feature from the bounds.
          */
@@ -1386,7 +1368,7 @@ create.job = (function(){
                 return feature;
             }
         }
-        
+
         /**
          * Validate manually entered bounding box.
          */
@@ -1424,7 +1406,7 @@ create.job = (function(){
                 }
                 var left = coords[0], bottom = coords[1],
                     right = coords[2], top = coords[3];
-                // check for valid lat long extents 
+                // check for valid lat long extents
                 if ((parseFloat(left) < -180 || parseFloat(left) > 180) ||
                     (parseFloat(right) < -180 || parseFloat(right) > 180) ||
                     (parseFloat(bottom) < -90 || parseFloat(bottom) > 90) ||
@@ -1435,11 +1417,11 @@ create.job = (function(){
                 }
                 // add feature
                 var bounds = new OpenLayers.Bounds(left, bottom, right, top);
-                buildBBoxFeature(bounds); 
+                buildBBoxFeature(bounds);
             }
         });
     }
-    
+
     /*
      * Listens for preset selection events
      * and updates state on preset related
@@ -1450,7 +1432,7 @@ create.job = (function(){
      *  - config-upload
      *  - config-browser
      */
-    function initPresetSelectionHandler(){        
+    function initPresetSelectionHandler(){
         // handle preset selections
         $(document).on('preset:selected', function(e){
             switch (e.source){
@@ -1480,11 +1462,11 @@ create.job = (function(){
                         $(input).prop('checked', false);
                         $(input).prop('disabled', true);
                     });
-                    break;  
+                    break;
             }
-            
+
         });
-        
+
         // handle deselections
         $(document).on('preset:deselected', function(e){
             switch (e.source){
@@ -1492,7 +1474,7 @@ create.job = (function(){
                     // disable and uncheck feature save and publish inputs
                     $('input#feature_save').prop('disabled', true);
                     $('input#feature_save').prop('checked', false);
-                    
+
                     $('input#feature_pub').prop('disabled', true);
                     $('input#feature_pub').prop('checked', false);
                     // enable the preset option on the config type selection control
@@ -1509,7 +1491,7 @@ create.job = (function(){
                     $('#hdm-feature-tree').find('input').each(function(idx, input){
                         $(input).prop('disabled', false);
                         $(input).prop('checked', true);
-                        
+
                     });
                     // enable preset config types in the config browser
                     $('input[data-type="PRESET"]')
@@ -1530,10 +1512,10 @@ create.job = (function(){
                     });
                     break;
             }
-            
+
         });
     }
-    
+
     /*
      * Handles configuration selection events
      * when configurations are added or removed
@@ -1549,27 +1531,27 @@ create.job = (function(){
      *
      *  Other events fired:
      *  -   notification to the config-browser that a file is removed = filelist:removed
-     *  
+     *
      */
     function initConfigSelectionHandler(){
-        
+
         var filesSelected = 0;
-        
+
         $('#filelist').on('config:added config:uploaded', function(e){
             var selection = e.selection;
             var source = e.source;
             var uid = selection.uid;
-            
+
             if (source == 'config-upload') {
                 // add the uploaded uid to the table row
                 $tr = $('#filelist').find('tr#upload');
                 $tr.attr('id', selection.uid);
-                
+
                 // re-enable any remove buttons on the filelist
                 $(this).find('tr.config').find('button').each(function(idx, btn){
                     $(btn).prop('disabled', false);
                 });
-                
+
                 // add the delete button to the uploaded file
                 var $td = $tr.find('td').last();
                 $td.empty();
@@ -1577,13 +1559,13 @@ create.job = (function(){
                                     gettext('Delete') + '&nbsp;&nbsp;<span class="glyphicon glyphicon-trash">' +
                             '</span></button>';
                 $td.html(html);
-                
+
                 // reset the form for more file uploads..
                 resetUploadConfigTab('success');
-                
+
                 // notify the config-browser
                 $('table#configurations').trigger({type: 'config:added', selection:selection});
-                
+
                 // handle delete events
                 $tr.on('click', 'button#' + selection.uid, function(e){
                     var data = new FormData();
@@ -1623,7 +1605,7 @@ create.job = (function(){
                             $("#uploadConfigError").modal(modalOpts, 'show');
                         }
                     });
-                    
+
                 });
             }
             else {
@@ -1638,7 +1620,7 @@ create.job = (function(){
                         filesSelected -= 1;
                     }
                 })
-                
+
                 // add the selected config from config-browser to the table
                 var $tr = $('<tr id="' + selection.uid + '" data-filename="' + selection.filename + '" data-source="' + source + '"' +
                                 'data-type="' + selection.config_type + '" data-published="' + selection.published + '"' +
@@ -1652,23 +1634,23 @@ create.job = (function(){
                     // remove from filelist
                     $('#filelist').trigger({type: 'config:removed', selection: selection});
                 });
-                
+
                 // notify the config-browser
                 $('table#configurations').trigger({type: 'config:added', selection:selection});
             }
-              
+
             $(this).css('display', 'block');
             filesSelected += 1;
             updateConfigInputs(selection);
-            
+
             // notify the summary config table on the summary tab
             $('table#summary-configs').trigger({type: 'config:added', selection:selection});
-            
+
             // trigger max files check
             $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
 
         });
-        
+
         // a configuration file is selected for upload
         $('#filelist').on('config:fileselected', function(e){
             var selection = e.selection;
@@ -1680,26 +1662,26 @@ create.job = (function(){
                        '<td><button id="remove-upload" type="button" class="btn btn-warning btn-sm pull-right">Remove&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button></td></tr>';
             $(this).append(html);
             $(this).css('display', 'block');
-            
+
             // handle events on the remove button
             $('button#remove-upload').bind('click', function(e){
                 $('#filelist').trigger({type: 'config:remove-upload'});
             });
         });
-        
+
         // handle config selection removal from file list
         $('#filelist').on('config:removed', function(e){
             filesSelected -= 1;
             var selection = e.selection;
-            
+
             // get the row being removed
             var $tr = $(this).find('tr#' + selection.uid);
             var config_type = $tr.find('td').eq(1).html();
-            
+
             // re-enable that config type in the dropdown
             var $option = $('option[value="' + config_type + '"]');
             $option.prop('disabled', false);
-            
+
             /*
              * If preset is being removed trigger deselected event
              * to notify other preset related ui controls.
@@ -1707,11 +1689,11 @@ create.job = (function(){
             if (config_type === 'PRESET') {
                 $(document).trigger({type: 'preset:deselected', source: 'config-upload'});
             }
-            
+
             // remove the config form input value
             var config_type_lwr = config_type.toLowerCase();
             $('input#' + config_type_lwr).val('');
-            
+
             // remove the selected config from the table
             var configs = $('#filelist tr.config').length;
             var $tr = $(this).find('tr#' + selection.uid);
@@ -1721,25 +1703,25 @@ create.job = (function(){
                     $(this).remove();
                     // hide the file list
                     $('#filelist').css('display', 'none');
-                });  
+                });
             }
             else {
                 // just remove this row..
                 $tr.fadeOut(300, function(){
                     // remove the upload from the table
                     $(this).remove();
-                });  
+                });
             }
-            
+
             // trigger change event on form to update summary tab
             $('#create-job-form').trigger('change');
-            
+
             $('table#summary-configs').trigger({type: 'config:removed', selection: selection});
-            
+
             // trigger max files check
             $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
         });
-        
+
         // handle pending upload selection removal
         $('#filelist').on('config:remove-upload', function(e){
             // re-enable the upload input fields to allow another upload
@@ -1749,26 +1731,26 @@ create.job = (function(){
             $('input#filename').val('');
             $('option#select-message').prop('selected', true);
             $('input#publish_config').prop('checked', false);
-            
+
             // reenable the select config button
             $('button#select-config').prop('disabled', false);
-            
+
             // reset the input field validation
             var fv = $('#create-job-form').data('formValidation');
             fv.resetField($('input#filename'));
             //fv.resetField($('select#config_type'));
-            
+
             // toggle file select and upload buttons
             $('#select-file').css('visibility', 'visible');
             $('button#upload').css('visibility', 'hidden');
-            
+
             // clear the selected files list on the file input
             var $fileupload = $('#fileupload');
             $fileupload.val('');
-            
+
             // clear configuration hidden inputs
             $('input#preset').val('');
-            
+
             // remove the pending upload from the table
             var configs = $('#filelist tr.config').length;
             var $tr = $(this).find('tr#upload');
@@ -1778,55 +1760,55 @@ create.job = (function(){
                     $(this).remove();
                     // hide the file list
                     $('#filelist').css('display', 'none');
-                });  
+                });
             }
             else {
                 // just remove this row..
                 $tr.fadeOut(300, function(){
                     // remove the upload from the table
                     $(this).remove();
-                });  
+                });
             }
-            
+
             // trigger change event on form to update summary tab
             $('#create-job-form').trigger('change');
         });
-        
+
         // an uploaded file is deleted
         $('#filelist').on('config:delete-upload', function(e){
             var selection = e.selection;
-            
+
             // get the row being deleted.
             var $tr = $(this).find('tr#' + selection.uid);
             // decrement the number of uploaded files
             filesSelected -= 1;
-            
+
             // reset the upload ui
             resetUploadConfigTab('success');
-            
+
             // clear the selected files list
             var $fileupload = $('#fileupload');
             $fileupload.val('');
-            
+
             // clear configuration hidden inputs
             $('input#preset').val('');
-            
+
             // re-enable this config_type in the select combo
             var config_type = $tr.find('td').eq(1).html();
             var $option = $('option[value="' + config_type + '"]');
             $option.prop('disabled', false);
-            
+
             /*
              * Re-enable the HDM feature selection tree.
              */
             if (config_type === 'PRESET') {
                 $(document).trigger({type: 'preset:deselected', source: 'config-upload'});
             }
-            
+
             // remove the config form input value
             var config_type_lwr = config_type.toLowerCase();
             $('input#' + config_type_lwr).val();
-            
+
             // get number of configuration files in the table
             var configs = $('#filelist tr.config').length;
             if (configs == 1) {
@@ -1838,7 +1820,7 @@ create.job = (function(){
                     $('#filelist').css('display', 'none');
                     // trigger change event on form when config deleted
                     $('#create-job-form').trigger('change');
-                });  
+                });
             }
             else {
                 // just remove the deleted row
@@ -1848,15 +1830,15 @@ create.job = (function(){
                     $('#create-job-form').trigger('change');
                 });
             }
-            
+
             // update the summary tab
             $('table#summary-configs').trigger({type: 'config:removed', selection: selection});
-            
+
             // trigger max files check
-            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});           
+            $(document).trigger({type: 'config:checkmaxfiles', filesSelected: filesSelected});
         });
-        
-        
+
+
         $(document).on('config:checkmaxfiles', function(e){
             var maxFiles = 1;
             var filesSelected = e.filesSelected;
@@ -1877,7 +1859,7 @@ create.job = (function(){
             }
         });
     }
-    
+
     /*
      * Updates the form with the uploaded config ids
      */
@@ -1898,7 +1880,7 @@ create.job = (function(){
                 break;
         }
     }
-    
+
     /*
      * Resets the upload config tab on success or failure.
      */
@@ -1906,21 +1888,21 @@ create.job = (function(){
         // hide the progress bar
         $('.progress').css('display', 'none');
         $('.progress-bar').css('width', '0%');
-        
+
         // toggle file selection and upload buttons
         $('button#upload').css('visibility', 'hidden');
         $('.btn-file').css('visibility', 'visible');
-        
+
         // re-enabled config browser button
         $('button#select-config').prop('disabled', false);
-        
+
         // reset the fields.
         $('input#filename').val('');
         $('input#filename').prop('disabled', false);
         $('option#select-message').prop('selected', true);
         $('input#publish_config').prop('disabled', false);
         $('input#publish_config').prop('checked', false);
-        
+
         if (textStatus === 'error') {
             // clear the selected files list
             var $fileupload = $('#fileupload');
@@ -1938,7 +1920,7 @@ create.job = (function(){
             }
         }
     }
-    
+
     /*
      * Initialize the UI popovers.
      */
@@ -1950,77 +1932,77 @@ create.job = (function(){
             placement: 'top'
         });
         $('#formats-tab').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Select one or more file formats for export"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#features-tab').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Expand and select feature tags from the HDM or OSM tree list for export"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#upload-tab').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Upload or select a preset file. Save and/or publish"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#summary-tab').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Summary of the export settings. Select “Create Export” to start the export"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('input#filename').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: "Give the selected Preset file a name",
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('label[for="publish_config"]').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Publish the preset file to the global storage for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 100},
             placement: 'top'
         });
         $('#select-file').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Find and upload a preset file from desktop"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('button#select-config').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Find and select preset file from the store"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="feature_save"]').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Save the feature tag selection to your personal preset storage"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="feature_pub"]').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Publish the feature tag selection to the global preset storage for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
             placement: 'top'
         });
         $('label[for="published"]').popover({
-            //title: 'Select Formats', 
+            //title: 'Select Formats',
             content: gettext("Publish the export to the global exports for everyone to access"),
             trigger: 'hover',
             delay: {show: 0, hide: 0},
