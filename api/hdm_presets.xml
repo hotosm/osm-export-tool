@@ -7,7 +7,7 @@
 	description="HDM Data Model adapted for Eurosha from OTI STM020 program in Haiti">
     <group name="Humanitarian Data Model" fr.name="HOT Presets v2.11" en.name="HOT Presets v2.11">
 		<!-- -->
-		<item name="Building digitizing" fr.name="Digitalisation de batiment" en.name="Building digitizing" icon="styles/standard/misc/landmark/building.png" type="closedway,relation">
+		<item name="Building" fr.name="Digitalisation de batiment" en.name="Building digitizing" icon="styles/standard/misc/landmark/building.png" type="closedway,relation">
 			<!--<key key="project:eurosha_2012" value="yes" />-->
 			<label text="** Edit a building based on imagery **"
 				fr.text="** Creer/mettre a jour un batiment a partir d'une imagerie **"
@@ -29,6 +29,10 @@
 			<label text=" " />
 			<text key="NOTE" text="NOTE" fr.text="NOTES" en.text="NOTE" />
 			<label text=" " />
+		</item>
+        <item name="Building residential" fr.name="Digitalisation de batiment" en.name="Building digitizing" icon="styles/standard/misc/landmark/building.png" type="closedway,relation">
+			<!--<key key="project:eurosha_2012" value="yes" />-->
+			<key key="building" value="residential" />
 		</item>
 		<item name="Building features" fr.name="Caracteristiques du batiment" en.name="Building features" icon="styles/standard/misc/landmark/building.png" type="closedway,relation">
 			<!--<key key="project:eurosha_2012" value="yes" />-->

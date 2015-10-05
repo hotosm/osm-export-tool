@@ -14,7 +14,7 @@ class PresetParser():
     types = {
         'node': 'point',
         'way': 'line',
-        #'area': 'polygon',
+        'area': 'polygon',
         'closedway': 'polygon',
         'relation': 'polygon'
     }
@@ -117,7 +117,7 @@ class UnfilteredPresetParser():
     types = {
         'node': 'point',
         'way': 'line',
-        #'area': 'polygon',
+        'area': 'polygon',
         'closedway': 'polygon',
         'relation': 'polygon'
     }

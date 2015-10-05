@@ -406,6 +406,11 @@ create.job = (function(){
                 return validateTab(index);
             },
             onTabShow: function(tab, navigation, index){
+                if (index == 1) {
+                    $('#create-job-wizard').bootstrapWizard('enable', 2);
+                    $('#create-job-wizard').bootstrapWizard('enable', 3);
+                    $('#create-job-wizard').bootstrapWizard('enable', 4);
+                }
                 if (index == 2 || index == 3) {
                     $('li.next').css('display', 'block');
                 }

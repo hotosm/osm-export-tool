@@ -75,7 +75,7 @@ class Overpass(object):
             self.filter_params = self.stage_dir + 'filters.txt'
             try:
                 with open(self.filter_params, 'w') as f:
-                    f.write('--keep="{0}"\n'.format(' or '.join(self.filters)))
+                    f.write(self.filter_template)
             except IOError as e:
                 logger.error('Error saving filter params file', e)
                 # can't filter so return the raw data
