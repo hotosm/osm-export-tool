@@ -50,7 +50,7 @@ class TestPresetParser(TestCase):
         tree = etree.parse(xml)
         valid = xmlschema.validate(tree)
         self.assertTrue(valid)
-        
+
     def test_validate_custom_preset(self, ):
         schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
         xmlschema_doc = etree.parse(schema)
