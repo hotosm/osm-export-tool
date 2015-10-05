@@ -1,0 +1,16 @@
+{% load i18n %}
+<html>
+    <head>
+        <title>HOT Exports</title>
+    </head>
+    <body>
+        {% trans 'This is an automated email from HOT Exports.' %}<br/>
+        {% trans 'Please follow this link' %} {{ verifyUrl }} {% trans 'to login to HOT Exports' %}<br/>
+        <p>
+            {% trans 'Thank you for registering with the HOT Export Service.' %}
+        </p>
+        <p>
+            {% trans 'Humanitarian OpenStreetMap Team' %}
+        </p>
+    </body>
+</html>

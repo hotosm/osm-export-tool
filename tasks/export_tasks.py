@@ -358,6 +358,7 @@ class GeneratePresetTask(ExportTask):
             config.upload.save(filename, preset_file)
 
             output_path = config.upload.path
+            job.configs.clear()
             job.configs.add(config)
             return {'result': output_path}
 
@@ -395,7 +396,7 @@ class FinalizeRunTask(Task):
         addr = run.user.email
         subject = "Your HOT Export is ready"
         to = [addr]
-        from_email = 'exports@hotosm.org'
+        from_email = 'HOT Exports <exports@hotosm.org>'
         ctx = {
             'url': url,
             'status': run.status
@@ -431,8 +432,8 @@ class ExportTaskErrorHandler(Task):
         addr = run.user.email
         subject = "Your HOT Export Failed"
         # email user and administrator
-        to = [addr, 'bjohare+hotadmin@gmail.com']
-        from_email = 'exports@hotosm.org'
+        to = [addr]
+        from_email = 'HOT Exports <exports@hotosm.org>'
         ctx = {
             'url': url,
             'task_id': task_id

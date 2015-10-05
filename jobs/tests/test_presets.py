@@ -50,6 +50,15 @@ class TestPresetParser(TestCase):
         tree = etree.parse(xml)
         valid = xmlschema.validate(tree)
         self.assertTrue(valid)
+        
+    def test_validate_custom_preset(self, ):
+        schema = StringIO(open(self.path + '/files/tagging-preset.xsd').read())
+        xmlschema_doc = etree.parse(schema)
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+        xml = StringIO(open(self.path + '/files/custom_preset.xml').read())
+        tree = etree.parse(xml)
+        valid = xmlschema.validate(tree)
+        self.assertTrue(valid)
 
     def test_build_hdm_preset_dict(self,):
         parser = PresetParser(self.path + '/files/hdm_presets.xml')

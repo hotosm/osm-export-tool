@@ -59,7 +59,7 @@ class JobViewSet(viewsets.ModelViewSet):
         return Job.objects.all()
 
     def list(self, request, uid=None, *args, **kwargs):
-        params = self.request.QUERY_PARAMS.get('bbox', None)
+        params = self.request.query_params.get('bbox', None)
         if params == None:
             queryset = self.filter_queryset(self.get_queryset())
             page = self.paginate_queryset(queryset)
@@ -202,7 +202,7 @@ class RunJob(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, uid=None, format=None):
-        job_uid = request.QUERY_PARAMS.get('job_uid', None)
+        job_uid = request.query_params.get('job_uid', None)
         user = request.user
         if (job_uid):
             # run the tasks
@@ -270,7 +270,7 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
-        job_uid = self.request.QUERY_PARAMS.get('job_uid', None)
+        job_uid = self.request.query_params.get('job_uid', None)
         queryset = self.filter_queryset(ExportRun.objects.filter(job__uid=job_uid).order_by('-started_at'))
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
