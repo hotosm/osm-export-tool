@@ -34,11 +34,12 @@ class TestOSMToOBF(TestCase):
     """
 
     def setUp(self,):
-        self.path = os.path.dirname(os.path.realpath(__file__))
+        #self.path = os.path.dirname(os.path.realpath(__file__))
+        self.path = settings.ABS_PATH()
         # just for testing
         self.map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
-        self.work_dir = self.path + '/files'
-        self.pbffile = self.path + '/files/query.pbf'
+        self.work_dir = self.path + '/utils/tests/files'
+        self.pbffile = self.path + '/utils/tests/files/query.pbf'
 
     @patch('os.path.exists')
     @patch('shutil.copy')
@@ -50,8 +51,8 @@ class TestOSMToOBF(TestCase):
             cd /home/ubuntu/osmand/OsmAndMapCreator && \
             java -Djava.util.logging.config.file=logging.properties \
                 -Xms256M -Xmx1024M -cp "./OsmAndMapCreator.jar:./lib/OsmAnd-core.jar:./lib/*.jar" \
-                net.osmand.data.index.IndexBatchCreator /home/ubuntu/www/hotosm/utils/tests/files/batch.xml
-        """
+                net.osmand.data.index.IndexBatchCreator {0}
+        """.format(self.work_dir + '/batch.xml')
         exists.return_value = True
         proc = Mock()
         popen.return_value = proc
