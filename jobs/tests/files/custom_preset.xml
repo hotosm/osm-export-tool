@@ -1,0 +1,875 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<presets xmlns="http://josm.openstreetmap.de/tagging-preset-1.0">
+  <group name="Humanitarian Data Model">
+    <group name="Commercial and Economic">
+      <group name="Clothes">
+        <item name="Outdoor" type="node">
+          <key key="shop" value="outdoor"/>
+        </item>
+        <item name="Clothes" type="node,closedway,relation">
+          <key key="shop" value="clothes"/>
+        </item>
+        <item name="Dry Cleaning" type="node">
+          <key key="shop" value="dry_cleaning"/>
+        </item>
+        <item name="Tailor" type="node">
+          <key key="shop" value="tailor"/>
+        </item>
+        <item name="Fabric" type="node">
+          <key key="shop" value="fabric"/>
+        </item>
+        <item name="Sports" type="node">
+          <key key="shop" value="sports"/>
+        </item>
+        <item name="Boutique" type="node">
+          <key key="shop" value="boutique"/>
+        </item>
+        <item name="Shoes" type="node">
+          <key key="shop" value="shoes"/>
+        </item>
+        <item name="Laundry" type="node">
+          <key key="shop" value="laundry"/>
+        </item>
+      </group>
+      <group name="Accommodation">
+        <item name="Hostel" type="node,closedway,relation">
+          <key key="tourism" value="hostel"/>
+        </item>
+        <item name="Camping Site" type="node,closedway,relation">
+          <key key="tourism" value="camp_site"/>
+        </item>
+        <item name="Alpine Hut" type="node,closedway,relation">
+          <key key="tourism" value="alpine_hut"/>
+        </item>
+        <item name="Caravan Site" type="node,closedway,relation">
+          <key key="tourism" value="caravan_site"/>
+        </item>
+        <item name="Hotel" type="node,closedway,relation">
+          <key key="tourism" value="hotel"/>
+        </item>
+        <item name="Motel" type="node,closedway,relation">
+          <key key="tourism" value="motel"/>
+        </item>
+        <item name="Guest House" type="node,closedway,relation">
+          <key key="tourism" value="guest_house"/>
+        </item>
+      </group>
+      <group name="Tourism">
+        <item name="Information Board" type="node">
+          <key key="tourism" value="information"/>
+        </item>
+        <item name="Attraction" type="node,closedway,relation">
+          <key key="tourism" value="attraction"/>
+        </item>
+        <item name="Beach resort" type="node,closedway,relation">
+          <key key="leisure" value="beach_resort"/>
+        </item>
+        <item name="Information Office" type="node,closedway,relation">
+          <key key="tourism" value="information"/>
+        </item>
+        <item name="Viewpoint" type="node,closedway,relation">
+          <key key="tourism" value="viewpoint"/>
+        </item>
+        <item name="Map" type="node">
+          <key key="tourism" value="information"/>
+        </item>
+      </group>
+      <item name="Information centre" type="node,closedway,relation">
+        <key key="information" value="office"/>
+      </item>
+      <group name="Other">
+        <item name="Furniture" type="node">
+          <key key="shop" value="furniture"/>
+        </item>
+        <item name="Florist" type="node">
+          <key key="shop" value="florist"/>
+        </item>
+        <item name="Toys" type="node">
+          <key key="shop" value="toys"/>
+        </item>
+        <item name="Variety Store" type="node">
+          <key key="shop" value="variety_store"/>
+        </item>
+        <item name="Funeral directors" type="node">
+          <key key="shop" value="funeral_directors"/>
+        </item>
+        <item name="Erotic" type="node">
+          <key key="shop" value="erotic"/>
+        </item>
+        <item name="Hardware" type="node">
+          <key key="shop" value="hardware"/>
+        </item>
+        <item name="Mall" type="node">
+          <key key="shop" value="mall"/>
+        </item>
+        <item name="Frame" type="node">
+          <key key="shop" value="frame"/>
+        </item>
+        <item name="Recording Studio" type="node">
+          <key key="amenity" value="studio"/>
+        </item>
+        <item name="Do-it-yourself-store" type="node">
+          <key key="shop" value="doityourself"/>
+        </item>
+        <item name="Department Store" type="node">
+          <key key="shop" value="department_store"/>
+        </item>
+        <item name="Blacksmith" type="node">
+          <key key="craft" value="blacksmith"/>
+        </item>
+        <item name="Travel Agency" type="node">
+          <key key="shop" value="travel_agency"/>
+        </item>
+        <item name="Book Store" type="node">
+          <key key="shop" value="books"/>
+        </item>
+        <item name="Optician" type="node">
+          <key key="shop" value="optician"/>
+        </item>
+        <item name="Copyshop" type="node">
+          <key key="shop" value="copyshop"/>
+        </item>
+        <item name="Kitchen" type="node">
+          <key key="shop" value="kitchen"/>
+        </item>
+        <item name="Garden Centre" type="node">
+          <key key="shop" value="garden_centre"/>
+        </item>
+        <item name="Hairdresser" type="node">
+          <key key="shop" value="hairdresser"/>
+        </item>
+        <item name="Chemist" type="node">
+          <key key="shop" value="chemist"/>
+        </item>
+        <item name="Curtain" type="node">
+          <key key="shop" value="curtain"/>
+        </item>
+        <item name="Stationery" type="node">
+          <key key="shop" value="stationery"/>
+        </item>
+        <item name="Musical Instrument" type="node">
+          <key key="shop" value="musical_instrument"/>
+        </item>
+        <item name="Paint" type="node">
+          <key key="shop" value="paint"/>
+        </item>
+        <item name="Photo Shop" type="node">
+          <key key="shop" value="photo"/>
+        </item>
+        <item name="Jewelry" type="node">
+          <key key="shop" value="jewelry"/>
+        </item>
+      </group>
+      <group name="Food+Drinks">
+        <item name="Food Court" type="node,closedway,relation">
+          <key key="amenity" value="food_court"/>
+        </item>
+        <item name="Biergarten" type="node,closedway,relation">
+          <key key="amenity" value="biergarten"/>
+        </item>
+        <item name="Fast Food" type="node,closedway,relation">
+          <key key="amenity" value="fast_food"/>
+        </item>
+        <item name="Nightclub" type="node,closedway,relation">
+          <key key="amenity" value="nightclub"/>
+        </item>
+        <item name="Pub" type="node,closedway,relation">
+          <key key="amenity" value="pub"/>
+        </item>
+        <item name="Restaurant" type="node,closedway,relation">
+          <key key="amenity" value="restaurant"/>
+        </item>
+        <item name="Bar" type="node,closedway,relation">
+          <key key="amenity" value="bar"/>
+        </item>
+        <item name="Cafe" type="node,closedway,relation">
+          <key key="amenity" value="cafe"/>
+        </item>
+      </group>
+      <group name="Cash">
+        <item name="Automated Teller Machine" type="node">
+          <key key="amenity" value="atm"/>
+        </item>
+        <item name="Bank" type="node">
+          <key key="amenity" value="bank"/>
+        </item>
+        <item name="Money Exchange" type="node">
+          <key key="amenity" value="bureau_de_change"/>
+        </item>
+        <item name="Lottery kiosk" type="node">
+          <key key="amenity" value="gambling"/>
+        </item>
+      </group>
+      <group name="Vehicles">
+        <group name="Motorcycle">
+          <item name="Motorcycle Dealer" type="node">
+            <key key="shop" value="motorcycle"/>
+          </item>
+        </group>
+        <group name="Bicycle">
+          <item name="Bike Dealer" type="node">
+            <key key="shop" value="bicycle"/>
+          </item>
+          <item name="Rental" type="node">
+            <key key="amenity" value="bicycle_rental"/>
+          </item>
+        </group>
+        <group name="Car">
+          <item name="Car Dealer" type="node">
+            <key key="shop" value="car"/>
+          </item>
+          <item name="Rental" type="node">
+            <key key="amenity" value="car_rental"/>
+          </item>
+          <item name="Fuel" type="node">
+            <key key="amenity" value="fuel"/>
+          </item>
+          <item name="Wash" type="node">
+            <key key="amenity" value="car_wash"/>
+          </item>
+          <item name="Sharing" type="node">
+            <key key="amenity" value="car_sharing"/>
+          </item>
+          <item name="Repair" type="node">
+            <key key="shop" value="car_repair"/>
+          </item>
+          <item name="Tyres" type="node">
+            <key key="shop" value="tyres"/>
+          </item>
+        </group>
+      </group>
+      <group name="Electronic">
+        <item name="Internet cafe" type="node,closedway,relation">
+          <key key="amenity" value="cafe"/>
+        </item>
+        <item name="Electronics" type="node">
+          <key key="shop" value="electronics"/>
+        </item>
+        <item name="Mobile Phone" type="node">
+          <key key="shop" value="mobile_phone"/>
+        </item>
+        <item name="Video" type="node">
+          <key key="shop" value="video"/>
+        </item>
+        <item name="Computer" type="node">
+          <key key="shop" value="computer"/>
+        </item>
+        <item name="Hifi" type="node">
+          <key key="shop" value="hifi"/>
+        </item>
+        <item name="Vacuum Cleaner" type="node">
+          <key key="shop" value="vacuum_cleaner"/>
+        </item>
+      </group>
+      <group name="Food">
+        <item name="Baker" type="node">
+          <key key="shop" value="bakery"/>
+        </item>
+        <item name="Greengrocer" type="node">
+          <key key="shop" value="greengrocer"/>
+        </item>
+        <item name="Supermarket" type="node">
+          <key key="shop" value="supermarket"/>
+        </item>
+        <item name="Deli (Fine Food)" type="node">
+          <key key="shop" value="deli"/>
+        </item>
+        <item name="Convenience Store" type="node">
+          <key key="shop" value="convenience"/>
+        </item>
+        <item name="Butcher" type="node">
+          <key key="shop" value="butcher"/>
+        </item>
+        <item name="Kiosk" type="node">
+          <key key="shop" value="kiosk"/>
+        </item>
+        <item name="Beverages" type="node">
+          <key key="shop" value="beverages"/>
+        </item>
+        <item name="Seafood" type="node">
+          <key key="shop" value="seafood"/>
+        </item>
+        <item name="Alcohol" type="node">
+          <key key="shop" value="alcohol"/>
+        </item>
+        <item name="Organic" type="node">
+          <key key="shop" value="organic"/>
+        </item>
+        <item name="Confectionery" type="node">
+          <key key="shop" value="confectionery"/>
+        </item>
+        <item name="Marketplace" type="node,way">
+          <key key="amenity" value="marketplace"/>
+        </item>
+      </group>
+      <group name="Telecommunication">
+        <item name="Telecommunication company retail office" type="node,closedway,relation">
+          <key key="office" value="telecommunication"/>
+        </item>
+        <item name="Telecommunication antenna" type="node,closedway,relation">
+          <key key="man_made" value="tower"/>
+        </item>
+        <item name="Radio or TV studio" type="node,closedway,relation">
+          <key key="amenity" value="studio"/>
+        </item>
+        <item name="Telecommunication office" type="node,closedway,relation">
+          <key key="office" value="telecommunication"/>
+        </item>
+      </group>
+    </group>
+    <group name="Public services">
+      <group name="Educational facilities">
+        <item name="University" type="node,closedway,relation">
+          <key key="amenity" value="university"/>
+        </item>
+        <item name="College" type="node,closedway,relation">
+          <key key="amenity" value="college"/>
+        </item>
+        <item name="School" type="node,closedway,relation">
+          <key key="amenity" value="school"/>
+        </item>
+        <item name="Kindergarten" type="node,closedway,relation">
+          <key key="amenity" value="kindergarten"/>
+        </item>
+      </group>
+      <group name="Health facilities">
+        <item name="Baby Hatch" type="node">
+          <key key="amenity" value="baby_hatch"/>
+        </item>
+        <item name="Doctors" type="node">
+          <key key="amenity" value="doctors"/>
+        </item>
+        <item name="Dentist" type="node">
+          <key key="amenity" value="dentist"/>
+        </item>
+        <item name="Pharmacy" type="node">
+          <key key="amenity" value="pharmacy"/>
+        </item>
+        <item name="Veterinary" type="node">
+          <key key="amenity" value="veterinary"/>
+        </item>
+        <item name="Hospital" type="node,closedway,relation">
+          <key key="amenity" value="hospital"/>
+        </item>
+        <item name="Hearing Aids" type="node">
+          <key key="shop" value="hearing_aids"/>
+        </item>
+        <item name="Nursing Home" type="node">
+          <key key="amenity" value="nursing_home"/>
+        </item>
+      </group>
+      <item name="Orphanage" type="node">
+        <key key="amenity" value="social_facility"/>
+      </item>
+      <group name="Public and government facilities">
+        <item name="Other governmental office" type="node">
+          <key key="office" value="government"/>
+        </item>
+        <item name="Prison" type="node,closedway,relation">
+          <key key="amenity" value="prison"/>
+        </item>
+        <item name="Other non-governmental office" type="node">
+          <key key="office" value="administrative"/>
+        </item>
+        <item name="Post Office" type="node,closedway,relation">
+          <key key="amenity" value="post_office"/>
+        </item>
+        <item name="Fire Station" type="node,closedway,relation">
+          <key key="amenity" value="fire_station"/>
+        </item>
+        <item name="Town hall" type="node,closedway,relation">
+          <key key="amenity" value="townhall"/>
+        </item>
+        <item name="Post Box" type="node">
+          <key key="amenity" value="post_box"/>
+        </item>
+        <item name="Courthouse" type="node,closedway,relation">
+          <key key="amenity" value="courthouse"/>
+        </item>
+        <item name="Police" type="node,closedway,relation">
+          <key key="amenity" value="police"/>
+        </item>
+      </group>
+    </group>
+    <group name="Hazards">
+      <item name="Landslide prone" type="node,way,closedway,relation">
+        <key key="hazard_prone" value="yes"/>
+      </item>
+      <item name="Flood prone" type="node,way,closedway,relation">
+        <key key="hazard_prone" value="yes"/>
+      </item>
+      <item name="Windstorm prone" type="node,way,closedway,relation">
+        <key key="hazard_prone" value="yes"/>
+      </item>
+    </group>
+    <group name="Places">
+      <item name="Village" type="node">
+        <key key="place" value="village"/>
+      </item>
+      <item name="Suburb" type="node">
+        <key key="place" value="suburb"/>
+      </item>
+      <item name="Hamlet" type="node">
+        <key key="place" value="hamlet"/>
+      </item>
+      <item name="Locality" type="node">
+        <key key="place" value="locality"/>
+      </item>
+      <item name="Isolated Dwelling" type="node">
+        <key key="place" value="isolated_dwelling"/>
+      </item>
+      <item name="Neighborhood" type="node">
+        <key key="place" value="neighbourhood"/>
+      </item>
+      <item name="City" type="node">
+        <key key="place" value="city"/>
+      </item>
+      <item name="Town" type="node">
+        <key key="place" value="town"/>
+      </item>
+    </group>
+    <group name="Transportation">
+      <group name="Barriers">
+        <item name="Retaining Wall" type="way,closedway,relation">
+          <key key="barrier" value="retaining_wall"/>
+        </item>
+        <item name="Border Control" type="node">
+          <key key="barrier" value="border_control"/>
+        </item>
+        <item name="Hedge" type="way,closedway,relation">
+          <key key="barrier" value="hedge"/>
+        </item>
+        <item name="Gate" type="node">
+          <key key="barrier" value="gate"/>
+        </item>
+        <item name="Bollard" type="node,way">
+          <key key="barrier" value="bollard"/>
+        </item>
+        <item name="Wall" type="way,closedway,relation">
+          <key key="barrier" value="wall"/>
+        </item>
+        <item name="City Wall" type="way,closedway,relation">
+          <key key="barrier" value="city_wall"/>
+        </item>
+        <item name="Fence" type="way,closedway,relation">
+          <key key="barrier" value="fence"/>
+        </item>
+        <item name="Toll Booth" type="node">
+          <key key="barrier" value="toll_booth"/>
+        </item>
+        <item name="Spikes" type="node">
+          <key key="barrier" value="spikes"/>
+        </item>
+        <item name="Entrance" type="node">
+          <key key="barrier" value="entrance"/>
+        </item>
+      </group>
+      <item name="Obstacles" type="node,way,closedway,relation">
+        <key key="barrier" value="block"/>
+      </item>
+      <group name="Other road objects">
+        <item name="Turning Circle" type="node">
+          <key key="highway" value="turning_circle"/>
+        </item>
+        <item name="Traffic Calming" type="node">
+          <key key="traffic_calming" value="yes"/>
+        </item>
+        <item name="Fire Hydrant" type="node">
+          <key key="emergency" value="fire_hydrant"/>
+        </item>
+        <item name="Traffic Signal" type="node">
+          <key key="highway" value="traffic_signals"/>
+        </item>
+        <item name="Pedestrian Crossing" type="node">
+          <key key="highway" value="crossing"/>
+        </item>
+        <item name="Roundabout" type="closedway,relation">
+          <key key="junction" value="roundabout"/>
+        </item>
+        <item name="Ford" type="node,way">
+          <key key="ford" value="yes"/>
+        </item>
+        <item name="Stop" type="node">
+          <key key="highway" value="stop"/>
+        </item>
+        <group name="Parking">
+          <group name="Car Park">
+            <item name="Car Park" type="node,closedway,relation">
+              <key key="amenity" value="parking"/>
+            </item>
+            <item name="Parking entrance" type="node,closedway,relation">
+              <key key="amenity" value="parking_entrance"/>
+            </item>
+          </group>
+          <item name="Motorcycle Parking" type="node,closedway,relation">
+            <key key="amenity" value="motorcycle_parking"/>
+          </item>
+          <item name="Bicycle Parking" type="node,closedway,relation">
+            <key key="amenity" value="bicycle_parking"/>
+          </item>
+        </group>
+        <item name="Passing Place" type="node">
+          <key key="highway" value="passing_place"/>
+        </item>
+        <item name="Tunnel" type="way">
+          <key key="tunnel" value="yes"/>
+        </item>
+        <item name="Mini-roundabout" type="node">
+          <key key="highway" value="mini_roundabout"/>
+        </item>
+        <item name="Bridge" type="way">
+          <key key="layer" value="1"/>
+        </item>
+      </group>
+      <group name="Transportation means">
+        <item name="Bus Platform" type="node,closedway,relation">
+          <key key="highway" value="platform"/>
+        </item>
+        <item name="Bus Stop" type="node">
+          <key key="highway" value="bus_stop"/>
+        </item>
+        <group name="Airport">
+          <item name="Hangar" type="node,closedway,relation">
+            <key key="building" value="hangar"/>
+          </item>
+          <item name="Gate" type="node">
+            <key key="aeroway" value="gate"/>
+          </item>
+          <item name="Helipad" type="node,closedway,relation">
+            <key key="aeroway" value="helipad"/>
+          </item>
+          <item name="Terminal" type="node,closedway,relation">
+            <key key="aeroway" value="terminal"/>
+          </item>
+          <item name="Taxiway" type="way">
+            <key key="aeroway" value="taxiway"/>
+          </item>
+          <item name="Airport Ground" type="node,closedway,relation">
+            <key key="aeroway" value="aerodrome"/>
+          </item>
+          <item name="Runway" type="way">
+            <key key="aeroway" value="runway"/>
+          </item>
+          <item name="Apron" type="closedway,relation">
+            <key key="aeroway" value="apron"/>
+          </item>
+        </group>
+        <item name="Bus Station" type="node,closedway,relation">
+          <key key="amenity" value="bus_station"/>
+        </item>
+        <item name="Taxi" type="node,closedway,relation">
+          <key key="amenity" value="taxi"/>
+        </item>
+      </group>
+      <group name="Roads">
+        <item name="Secondary" type="way,closedway,relation">
+          <key key="highway" value="secondary"/>
+        </item>
+        <item name="Tertiary" type="way,closedway,relation">
+          <key key="highway" value="tertiary"/>
+        </item>
+        <item name="Living Street" type="way,closedway,relation">
+          <key key="highway" value="living_street"/>
+        </item>
+        <item name="Bicycle Road" type="way">
+          <key key="bicycle_road" value="yes"/>
+        </item>
+        <item name="Service roads" type="way">
+          <key key="highway" value="service"/>
+        </item>
+        <item name="Trunk" type="way">
+          <key key="highway" value="trunk"/>
+        </item>
+        <item name="Motorway Link" type="way">
+          <key key="highway" value="motorway_link"/>
+        </item>
+        <item name="Trunk Link" type="way">
+          <key key="highway" value="trunk_link"/>
+        </item>
+        <item name="Tracks" type="way">
+          <key key="highway" value="track"/>
+        </item>
+        <item name="Pedestrian" type="way,closedway,relation">
+          <key key="highway" value="pedestrian"/>
+        </item>
+        <item name="Motorway" type="way">
+          <key key="highway" value="motorway"/>
+        </item>
+        <item name="Primary" type="way,closedway,relation">
+          <key key="highway" value="primary"/>
+        </item>
+        <item name="Primary Link" type="way">
+          <key key="highway" value="primary_link"/>
+        </item>
+        <item name="Residential" type="way,closedway,relation">
+          <key key="highway" value="residential"/>
+        </item>
+        <item name="Tertiary Link" type="way">
+          <key key="highway" value="tertiary_link"/>
+        </item>
+        <item name="Secondary Link" type="way">
+          <key key="highway" value="secondary_link"/>
+        </item>
+        <item name="Roads under construction" type="way">
+          <key key="highway" value="construction"/>
+        </item>
+        <item name="Unclassified" type="way,closedway,relation">
+          <key key="highway" value="unclassified"/>
+        </item>
+        <item name="Corridors and paths" type="way">
+          <key key="highway" value="path"/>
+        </item>
+      </group>
+    </group>
+    <group name="Landuse">
+      <item name="Residential Area" type="closedway,relation">
+        <key key="landuse" value="residential"/>
+      </item>
+      <item name="Common" type="closedway,relation">
+        <key key="leisure" value="common"/>
+      </item>
+      <item name="Park" type="closedway,relation">
+        <key key="leisure" value="park"/>
+      </item>
+      <item name="Village Green" type="closedway,relation">
+        <key key="landuse" value="village_green"/>
+      </item>
+      <group name="Urban landuse">
+        <item name="Square" type="closedway,relation">
+          <key key="area" value="yes"/>
+        </item>
+        <item name="Grass" type="closedway,relation">
+          <key key="surface" value="grass"/>
+        </item>
+      </group>
+      <item name="Recreation Ground" type="closedway,relation">
+        <key key="landuse" value="recreation_ground"/>
+      </item>
+    </group>
+    <item name="Building digitizing" type="closedway,relation">
+      <key key="building" value="yes"/>
+    </item>
+    <group name="Cultural and social">
+      <group name="Sport Facilities">
+        <item name="Golf Course" type="node,closedway,relation">
+          <key key="leisure" value="golf_course"/>
+        </item>
+        <item name="Pitch" type="closedway,relation">
+          <key key="leisure" value="pitch"/>
+        </item>
+        <item name="Stadium" type="closedway,relation">
+          <key key="leisure" value="stadium"/>
+        </item>
+        <item name="Racetrack" type="way,closedway,relation">
+          <key key="leisure" value="track"/>
+        </item>
+        <item name="Sports Centre" type="node">
+          <key key="leisure" value="sports_centre"/>
+        </item>
+        <item name="Miniature Golf" type="node,closedway,relation">
+          <key key="leisure" value="miniature_golf"/>
+        </item>
+      </group>
+      <group name="Place of worship">
+        <item name="Place of worship" type="node,closedway,relation">
+          <key key="amenity" value="place_of_worship"/>
+        </item>
+        <item name="Graveyard" type="node,closedway,relation">
+          <key key="amenity" value="grave_yard"/>
+        </item>
+      </group>
+      <group name="Historic Places">
+        <item name="Monument" type="node,closedway,relation">
+          <key key="historic" value="monument"/>
+        </item>
+        <item name="Memorial" type="node,closedway,relation">
+          <key key="historic" value="memorial"/>
+        </item>
+        <item name="Castle" type="node,closedway,relation">
+          <key key="historic" value="castle"/>
+        </item>
+      </group>
+      <group name="Culture">
+        <item name="Artwork" type="node,way,closedway,relation">
+          <key key="tourism" value="artwork"/>
+        </item>
+        <item name="Library" type="node,closedway,relation">
+          <key key="amenity" value="library"/>
+        </item>
+        <item name="Museum" type="node,closedway,relation">
+          <key key="tourism" value="museum"/>
+        </item>
+        <item name="Cinema" type="node,closedway,relation">
+          <key key="amenity" value="cinema"/>
+        </item>
+        <item name="Theatre" type="node,closedway,relation">
+          <key key="amenity" value="theatre"/>
+        </item>
+        <item name="Arts Centre" type="node,closedway,relation">
+          <key key="amenity" value="arts_centre"/>
+        </item>
+      </group>
+      <group name="Social and communautary facilities">
+        <item name="Community Centre" type="node,closedway,relation">
+          <key key="amenity" value="community_centre"/>
+        </item>
+        <item name="Social facility" type="node,closedway,relation">
+          <key key="amenity" value="social_facility"/>
+        </item>
+      </group>
+    </group>
+    <group name="Utilities">
+      <group name="Water and sanitation">
+        <item name="Toilets and latrines" type="node,closedway,relation">
+          <key key="amenity" value="toilets"/>
+        </item>
+        <group name="Watering places">
+          <item name="Tap" type="node,closedway,relation">
+            <key key="tap" value="yes"/>
+          </item>
+          <item name="Borehole" type="node,closedway,relation">
+            <key key="borehole" value="yes"/>
+          </item>
+          <item name="Fountain" type="node,closedway,relation">
+            <key key="amenity" value="fountain"/>
+          </item>
+          <item name="Bladder" type="node,closedway,relation">
+            <key key="bladder" value="yes"/>
+          </item>
+          <item name="Well" type="node,closedway,relation">
+            <key key="man_made" value="well"/>
+          </item>
+          <item name="Spring" type="node,closedway,relation">
+            <key key="natural" value="spring"/>
+          </item>
+          <item name="Tank" type="node,closedway,relation">
+            <key key="tank" value="yes"/>
+          </item>
+        </group>
+        <group name="Water Canals">
+          <item name="Wastewater canal" type="way,closedway,relation">
+            <key key="man_made" value="water_canal"/>
+          </item>
+        </group>
+        <item name="Showers" type="node,closedway,relation">
+          <key key="amenity" value="shower"/>
+        </item>
+        <item name="Water Tower" type="node,closedway,relation">
+          <key key="man_made" value="water_tower"/>
+        </item>
+        <item name="Wastewater Plant" type="node,closedway,relation">
+          <key key="man_made" value="wastewater_plant"/>
+        </item>
+        <item name="Watermill" type="node">
+          <key key="man_made" value="watermill"/>
+        </item>
+        <item name="Pipeline" type="way,closedway,relation">
+          <key key="man_made" value="pipeline"/>
+        </item>
+        <item name="Water Works" type="node,closedway,relation">
+          <key key="man_made" value="water_works"/>
+        </item>
+      </group>
+      <group name="Power">
+        <item name="Power Generator" type="node,closedway,relation">
+          <key key="power" value="generator"/>
+        </item>
+        <item name="Power Tower" type="node">
+          <key key="power" value="tower"/>
+        </item>
+        <item name="Power Sub Station" type="node,closedway,relation">
+          <key key="power" value="sub_station"/>
+        </item>
+        <item name="Power Station" type="node,closedway,relation">
+          <key key="power" value="station"/>
+        </item>
+        <item name="Cable Distribution Cabinet" type="node">
+          <key key="power" value="cable_distribution_cabinet"/>
+        </item>
+        <item name="Pole" type="node">
+          <key key="power" value="pole"/>
+        </item>
+        <item name="Street Lamp" type="node">
+          <key key="highway" value="street_lamp"/>
+        </item>
+      </group>
+      <group name="Solid waste management">
+        <item name="Recycling" type="node">
+          <key key="amenity" value="recycling"/>
+        </item>
+        <item name="Landill" type="closedway,relation">
+          <key key="landuse" value="landfill"/>
+        </item>
+        <item name="Waste Disposal" type="node">
+          <key key="amenity" value="waste_disposal"/>
+        </item>
+        <item name="Waste Basket" type="node">
+          <key key="amenity" value="waste_basket"/>
+        </item>
+      </group>
+    </group>
+    <group name="Physical environment">
+      <group name="Nature">
+        <item name="Forest" type="closedway,relation">
+          <key key="landuse" value="forest"/>
+        </item>
+        <item name="Fell" type="closedway,relation">
+          <key key="natural" value="fell"/>
+        </item>
+        <item name="Peak" type="node">
+          <key key="natural" value="peak"/>
+        </item>
+        <item name="Scree" type="closedway,relation">
+          <key key="natural" value="scree"/>
+        </item>
+        <item name="Heath" type="closedway,relation">
+          <key key="natural" value="heath"/>
+        </item>
+        <item name="Wood" type="closedway,relation">
+          <key key="natural" value="wood"/>
+        </item>
+        <item name="Tree" type="node">
+          <key key="natural" value="tree"/>
+        </item>
+        <item name="Nature Reserve" type="closedway,relation">
+          <key key="leisure" value="nature_reserve"/>
+        </item>
+        <item name="Scrub" type="closedway,relation">
+          <key key="natural" value="scrub"/>
+        </item>
+      </group>
+      <group name="Water">
+        <item name="Cliff" type="node,way,closedway,relation">
+          <key key="natural" value="cliff"/>
+        </item>
+        <item name="Beach" type="node,closedway,relation">
+          <key key="natural" value="beach"/>
+        </item>
+        <item name="River" type="way">
+          <key key="waterway" value="river"/>
+        </item>
+        <item name="Wetland" type="node,closedway,relation">
+          <key key="natural" value="wetland"/>
+        </item>
+        <item name="Waterfall" type="node,way">
+          <key key="waterway" value="waterfall"/>
+        </item>
+        <item name="Mud" type="node,closedway,relation">
+          <key key="natural" value="mud"/>
+        </item>
+        <item name="Water" type="node,closedway,relation">
+          <key key="natural" value="water"/>
+        </item>
+        <item name="Bay" type="node,closedway,relation">
+          <key key="natural" value="bay"/>
+        </item>
+        <item name="Spring" type="node,closedway,relation">
+          <key key="natural" value="spring"/>
+        </item>
+        <item name="Stream" type="way">
+          <key key="waterway" value="stream"/>
+        </item>
+      </group>
+    </group>
+  </group>
+</presets>

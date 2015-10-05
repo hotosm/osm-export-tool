@@ -8,10 +8,12 @@ from social.pipeline.partial import partial
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.core import signing
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMessage
 from django.core.signing import BadSignature
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
+from django.template import Context
+from django.template.loader import get_template
 
 logger = logging.getLogger(__name__)
 
@@ -41,23 +43,14 @@ def email_validation(strategy, backend, code):  # pragma: no cover
         reverse('osm:complete', args=(backend.name,)),
         code.code, signature)
     verifyURL = strategy.request.build_absolute_uri(verifyURL)
-
-    emailText = ''
-    emailHTML = """Welcome to Hot Exports
-    In order to login with your new user account, you need to verify your email address with us.
-    Please copy and paste the following into your browser's url bar: {verifyURL}
-    """.format(verifyURL=verifyURL)
-
-    kwargs = {
-        "subject": "Please Verify HOT Exports Account",
-        "body": emailText,
-        "from_email": "HOT Exports <exports@hotosm.org>",
-        "to": [code.email]
+    ctx = {
+            'verifyUrl': verifyURL,
     }
-
-    email = EmailMultiAlternatives(**kwargs)
-    email.attach_alternative(emailHTML, "text/html")
-    email.send()
+    subject = "Please verify your email address"
+    message = get_template('osm/verify_osm_email.html').render(Context(ctx))
+    msg = EmailMessage(subject, message, to=[code.email], from_email="HOT Exports <exports@hotosm.org>")
+    msg.content_subtype = 'html'
+    msg.send()
 
 
 def partial_pipeline_data(backend, user=None, *args, **kwargs):  # pragma: no cover

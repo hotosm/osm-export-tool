@@ -1453,6 +1453,8 @@ create.job = (function(){
                             $(input).prop('disabled', true);
                             $(input).closest('tr').css('opacity', .5);
                     });
+                    $('input#feature_save').prop('disabled', true);
+                    $('input#feature_pub').prop('disabled', true);
                     break;
                 case 'config-browser':
                     // disable the preset option on the config type selection control
@@ -1462,6 +1464,8 @@ create.job = (function(){
                         $(input).prop('checked', false);
                         $(input).prop('disabled', true);
                     });
+                    $('input#feature_save').prop('disabled', true);
+                    $('input#feature_pub').prop('disabled', true);
                     break;
             }
 
@@ -1856,6 +1860,8 @@ create.job = (function(){
                 $('input#publish_config').prop('disabled', false);
                 $('#select-file').removeClass('disabled');
                 $('button#select-config').prop('disabled', false);
+                $('input#feature_save').prop('disabled', false);
+                $('input#feature_pub').prop('disabled', false);
             }
         });
     }

@@ -14,7 +14,7 @@ class PresetParser():
     types = {
         'node': 'point',
         'way': 'line',
-        'area': 'polygon',
+        #'area': 'polygon',
         'closedway': 'polygon',
         'relation': 'polygon'
     }
@@ -117,7 +117,7 @@ class UnfilteredPresetParser():
     types = {
         'node': 'point',
         'way': 'line',
-        'area': 'polygon',
+        #'area': 'polygon',
         'closedway': 'polygon',
         'relation': 'polygon'
     }
@@ -176,40 +176,6 @@ class UnfilteredPresetParser():
                     tag['groups'] = list(reversed(groups))
                     self.tags.append(tag)
                     self.keys.append(key)
-
-        """  
-        if len(elements) > 0 and geometrytypes:
-            for key_ele in elements:
-                key = key_ele.get('key')
-                value = key_ele.get('value')
-                
-                tag = {}
-                tag['name'] = item.get('name')
-                tag['key'] = key
-                tag['value'] = value
-                geom_types = []
-                for geomtype in geometrytypes:
-                    geom_types.append(geomtype)
-                tag['geom_types'] = list(set(geom_types))
-                tag['groups'] = list(reversed(groups))
-                self.tags.append(tag)
-        """
-        """
-            if keys[0].get('key'):
-                # get kv pair
-                key = keys[0].get('key')
-                value = keys[0].get('value')
-                tag = {}
-                tag['name'] = item.get('name')
-                tag['key'] = key
-                tag['value'] = value
-                geom_types = []
-                for geomtype in geometrytypes:
-                    geom_types.append(geomtype)
-                tag['geom_types'] = list(set(geom_types))
-                tag['groups'] = list(reversed(groups))
-                self.tags.append(tag)
-            """
         for child in list(item):
             self.process_item_and_children(child)
 
@@ -265,7 +231,7 @@ class TagParser():
     types = {
         'point': 'node',
         'line': 'way',
-        'polygon': 'area,closedway,relation',
+        'polygon': 'closedway,relation',
     }
 
     def __init__(self, tags=None, *args, **kwargs):
@@ -303,6 +269,6 @@ class TagParser():
         types = []
         for geom_type in geom_types:
             gtype = self.types.get(geom_type)
-            if gtype is not None:
+            if gtype is not None and gtype not in types:
                 types.append(self.types[geom_type])
         return ','.join(types)

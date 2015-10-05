@@ -1870,6 +1870,8 @@ clone.job = (function(){
                 $('input#publish_config').prop('disabled', false);
                 $('#select-file').removeClass('disabled');
                 $('button#select-config').prop('disabled', false);
+                $('input#feature_save').prop('disabled', false);
+                $('input#feature_pub').prop('disabled', false);
             }
 
         });
