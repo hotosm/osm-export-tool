@@ -87,10 +87,10 @@ MIDDLEWARE_CLASSES = [
     'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
 ]
 
-ROOT_URLCONF = 'hot_exports.urls'
+ROOT_URLCONF = 'core.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'hot_exports.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 TEMPLATES = [
     {

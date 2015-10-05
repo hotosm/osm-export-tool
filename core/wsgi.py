@@ -1,5 +1,5 @@
 """
-WSGI config for hot_exports project.
+WSGI config for osm-export-tool2 project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hot_exports.settings.prod")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings.prod")
 
 application = get_wsgi_application()

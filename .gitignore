@@ -80,4 +80,4 @@ celerybeat-schedule
 .idea
 
 # project specific files
-hot_exports/settings/secret.py
+core/settings/secret.py
