@@ -11,7 +11,7 @@ ALLOWED_HOSTS = ['hot.geoweb.io']
 USE_X_FORWARDED_HOST = True
 
 # Set debug to false for production
-DEBUG = TEMPLATE_DEBUG = False
+DEBUG = False
 
 
 DATABASES = {
@@ -26,6 +26,27 @@ DATABASES = {
         'USER': 'hot',
     }
 }
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['api/templates/', 'ui/templates', 'ui/static/ui/js'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
+            ],
+            'debug': DEBUG
+        },
+    },
+]
 
 
 # session settings

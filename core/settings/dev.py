@@ -5,7 +5,6 @@ from .project import *  # NOQA
 
 # Set debug to True for development
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 LOGGING_OUTPUT_ENABLED = DEBUG
 LOGGING_LOG_SQL = DEBUG
 
@@ -27,6 +26,27 @@ DATABASES = {
     }
 }
 
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['api/templates/', 'ui/templates', 'ui/static/ui/js'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
+            ],
+            'debug': DEBUG
+        },
+    },
+]
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

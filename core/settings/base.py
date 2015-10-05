@@ -14,6 +14,9 @@ from .secret import SECRET_KEY  # NOQA  # isort:skip
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = 'UTC'
 
+# default DEBUG setting
+DEBUG = False
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en'
@@ -91,26 +94,6 @@ ROOT_URLCONF = 'core.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'core.wsgi.application'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['api/templates/', 'ui/templates', 'ui/static/ui/js'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.i18n',
-                'django.core.context_processors.media',
-                'django.contrib.messages.context_processors.messages',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
-            ],
-        },
-    },
-]
 
 INSTALLED_APPS = (
     'django.contrib.admin',
