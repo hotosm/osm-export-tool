@@ -2,6 +2,7 @@
 
 from mock import MagicMock, Mock, patch
 
+from django.conf import settings
 from django.test import TestCase
 
 from ..osmparse import OSMParser
@@ -9,16 +10,19 @@ from ..osmparse import OSMParser
 
 class TestOSMParser(TestCase):
 
+    def setUp(self,):
+        self.path = settings.ABS_PATH()
+
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_create_spatialite(self, popen, pipe, exists):
         ogr_cmd = """
             ogr2ogr -f SQlite -dsco SPATIALITE=YES /path/to/query.sqlite /path/to/query.pbf \
-            --config OSM_CONFIG_FILE /home/ubuntu/www/hotosm/utils/conf/hotosm.ini \
+            --config OSM_CONFIG_FILE {0} \
             --config OGR_INTERLEAVED_READING YES \
             --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
-        """
+        """.format(self.path + '/utils/conf/hotosm.ini')
         exists.return_value = True
         proc = Mock()
         popen.return_value = proc
@@ -36,7 +40,7 @@ class TestOSMParser(TestCase):
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_create_default_schema(self, popen, pipe, exists):
-        sql_cmd = "spatialite /path/to/query.sqlite < /home/ubuntu/www/hotosm/utils/sql/planet_osm_schema.sql"
+        sql_cmd = "spatialite /path/to/query.sqlite < {0}".format(self.path + '/utils/sql/planet_osm_schema.sql')
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())

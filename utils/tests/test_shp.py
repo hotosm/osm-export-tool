@@ -4,6 +4,7 @@ import os
 
 from mock import Mock, patch
 
+from django.conf import settings
 from django.test import SimpleTestCase
 
 from ..shp import SQliteToShp
@@ -14,14 +15,14 @@ logger = logging.getLogger(__name__)
 class TestSQliteToShp(SimpleTestCase):
 
     def setUp(self, ):
-        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.path = settings.ABS_PATH()
 
     @patch('os.path.exists')
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_convert(self, popen, pipe, exists):
-        sqlite = self.path + '/files/test.sqlite'
-        shapefile = self.path + '/files/shp'
+        sqlite = self.path + '/utils/tests/files/test.sqlite'
+        shapefile = self.path + '/utils/tests/files/shp'
         cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
         proc = Mock()
         exists.return_value = True
@@ -42,9 +43,9 @@ class TestSQliteToShp(SimpleTestCase):
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_zip_img_file(self, popen, pipe, rmtree, exists):
-        sqlite = self.path + '/files/test.sqlite'
-        shapefile = self.path + '/files/shp'
-        zipfile = '/home/ubuntu/www/hotosm/utils/tests/files/shp.zip'
+        sqlite = self.path + '/utils/tests/files/test.sqlite'
+        shapefile = self.path + '/utils/tests/files/shp'
+        zipfile = self.path + '/utils/tests/files/shp.zip'
         zip_cmd = "zip -j -r {0} {1}".format(zipfile, shapefile)
         exists.return_value = True
         proc = Mock()

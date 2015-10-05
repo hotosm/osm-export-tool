@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
@@ -14,8 +15,8 @@ from ..osmconf import OSMConfig
 class TestOSMConf(TestCase):
 
     def setUp(self,):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        self.path = settings.ABS_PATH()
+        parser = presets.PresetParser(self.path + '/utils/tests/files/hdm_presets.xml')
         self.tags = parser.parse()
         self.assertIsNotNone(self.tags)
         self.assertEquals(256, len(self.tags))
@@ -43,6 +44,6 @@ class TestOSMConf(TestCase):
 
     def test_create_osm_conf(self,):
         conf = OSMConfig(self.categories, job_name=self.job.name)
-        path = conf.create_osm_conf(stage_dir=self.path + '/files/')
+        path = conf.create_osm_conf(stage_dir=self.path + '/utils/tests/files/')
         self.assertTrue(os.path.exists(path))
         os.remove(path)

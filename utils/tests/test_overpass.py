@@ -6,6 +6,7 @@ from unittest import skip
 import mock
 from mock import patch
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
@@ -23,7 +24,7 @@ class TestOverpass(TestCase):
     def setUp(self,):
         self.url = 'http://localhost/interpreter'
         self.bbox = '6.25,-10.85,6.40,-10.62'  # monrovia
-        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.path = settings.ABS_PATH()
         self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
@@ -39,7 +40,7 @@ class TestOverpass(TestCase):
         self.osm = self.path + '/files/query.osm'
         self.query = '(node(6.25,-10.85,6.40,-10.62);<;);out body;'
         self.job.tags.all().delete()
-        parser = presets.PresetParser(self.path + '/files/hdm_presets.xml')
+        parser = presets.PresetParser(self.path + '/utils/tests/files/hdm_presets.xml')
         tags = parser.parse()
         self.assertIsNotNone(tags)
         self.assertEquals(256, len(tags))
@@ -56,7 +57,7 @@ class TestOverpass(TestCase):
 
     def test_get_query(self,):
         overpass = Overpass(
-            stage_dir=self.path + '/files/',
+            stage_dir=self.path + '/utils/tests/files/',
             bbox=self.bbox, job_name='testjob',
             filters=self.job.filters
         )
@@ -66,12 +67,12 @@ class TestOverpass(TestCase):
     @patch('utils.overpass.requests.post')
     def test_run_query(self, mock_post):
         op = Overpass(
-            stage_dir=self.path + '/files/',
+            stage_dir=self.path + '/utils/tests/files/',
             bbox=self.bbox, job_name='testjob',
             filters=self.job.filters
         )
         q = op.get_query()
-        out = self.path + '/files/query.osm'
+        out = self.path + '/utils/tests/files/query.osm'
         mock_response = mock.Mock()
         expected = ['<osm>some data</osm>']
         mock_response.iter_content.return_value = expected
