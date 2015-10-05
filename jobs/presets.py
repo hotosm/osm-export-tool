@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class PresetParser():
     """Used solely for parsing OSM and HDM Data Models.
-    
+
     Looks for 'key' child elements of 'item' elements in the preset
     and extracts key value pairs. This is used to build
     the OSM and HDM Trees in the UI using the
