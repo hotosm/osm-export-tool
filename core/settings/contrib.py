@@ -9,9 +9,7 @@ INSTALLED_APPS += (
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
-    'django_extensions',
-    'social.apps.django_app.default',
-    'pipeline',
+    'social.apps.django_app.default'
 )
 
 # 3rd party specific app settings
@@ -63,31 +61,3 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.user_details'
 )
 
-
-"""
-PIPELINE_ENABLED = False
-PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yuglify.YuglifyCompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yuglify.YuglifyCompressor'
-
-PIPELINE_CSS = {
-    'exports': {
-        'source_filenames': (
-          'ui/css/style.css',
-        ),
-        'output_filename': 'css/exports.css',
-    },
-}
-
-PIPELINE_JS = {
-
-    'common': {
-        'source_filenames': (
-            'ui/js/config.js',
-            'ui/js/language.js',
-            'ui/js/layers.js'
-        ),
-        'output_filename': ''
-    }
-
-}
-"""

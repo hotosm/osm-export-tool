@@ -9,6 +9,9 @@ TEMPLATE_DEBUG = DEBUG
 LOGGING_OUTPUT_ENABLED = DEBUG
 LOGGING_LOG_SQL = DEBUG
 
+INSTALLED_APPS += (
+    'django_extensions',
+)
 
 DATABASES = {
     'default': {
