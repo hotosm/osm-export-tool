@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-03 17:52+0000\n"
+"POT-Creation-Date: 2015-10-05 21:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,76 +55,76 @@ msgstr ""
 msgid "Must be less than "
 msgstr ""
 
-#: ui/static/ui/js/clone.js:443 ui/static/ui/js/create.js:440
+#: ui/static/ui/js/clone.js:443 ui/static/ui/js/create.js:445
 msgid "The export job name is required and cannot be empty"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:450 ui/static/ui/js/create.js:447
+#: ui/static/ui/js/clone.js:450 ui/static/ui/js/create.js:452
 msgid "The description is required and cannot be empty"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:459 ui/static/ui/js/create.js:456
+#: ui/static/ui/js/clone.js:459 ui/static/ui/js/create.js:461
 msgid "At least one export format must be selected"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:494 ui/static/ui/js/create.js:491
+#: ui/static/ui/js/clone.js:494 ui/static/ui/js/create.js:496
 msgid "The preset name is required and cannot be empty"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1573 ui/static/ui/js/create.js:1559
+#: ui/static/ui/js/clone.js:1572 ui/static/ui/js/create.js:1567
 msgid "Delete"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1944 ui/static/ui/js/create.js:1929
+#: ui/static/ui/js/clone.js:1945 ui/static/ui/js/create.js:1939
 msgid ""
 "Select the area on the Map for export and enter the Name, Description and "
 "Event"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1951 ui/static/ui/js/create.js:1936
+#: ui/static/ui/js/clone.js:1952 ui/static/ui/js/create.js:1946
 msgid "Select one or more file formats for export"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1958 ui/static/ui/js/create.js:1943
+#: ui/static/ui/js/clone.js:1959 ui/static/ui/js/create.js:1953
 msgid "Expand and select feature tags from the HDM or OSM tree list for export"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1965 ui/static/ui/js/create.js:1950
+#: ui/static/ui/js/clone.js:1966 ui/static/ui/js/create.js:1960
 msgid "Upload or select a preset file. Save and/or publish"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1972 ui/static/ui/js/create.js:1957
+#: ui/static/ui/js/clone.js:1973 ui/static/ui/js/create.js:1967
 msgid ""
 "Summary of the export settings. Select “Create Export” to start the export"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1979 ui/static/ui/js/configurations.js:661
+#: ui/static/ui/js/clone.js:1980 ui/static/ui/js/configurations.js:661
 msgid "Give the selected Preset file a name"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1986 ui/static/ui/js/create.js:1971
+#: ui/static/ui/js/clone.js:1987 ui/static/ui/js/create.js:1981
 msgid "Publish the preset file to the global storage for everyone to access"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:1993 ui/static/ui/js/create.js:1978
+#: ui/static/ui/js/clone.js:1994 ui/static/ui/js/create.js:1988
 msgid "Find and upload a preset file from desktop"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:2000 ui/static/ui/js/create.js:1985
+#: ui/static/ui/js/clone.js:2001 ui/static/ui/js/create.js:1995
 msgid "Find and select preset file from the store"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:2007 ui/static/ui/js/create.js:1992
+#: ui/static/ui/js/clone.js:2008 ui/static/ui/js/create.js:2002
 msgid "Save the feature tag selection to your personal preset storage"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:2014 ui/static/ui/js/create.js:1999
+#: ui/static/ui/js/clone.js:2015 ui/static/ui/js/create.js:2009
 msgid ""
 "Publish the feature tag selection to the global preset storage for everyone "
 "to access"
 msgstr ""
 
-#: ui/static/ui/js/clone.js:2021 ui/static/ui/js/create.js:2006
+#: ui/static/ui/js/clone.js:2022 ui/static/ui/js/create.js:2016
 msgid "Publish the export to the global exports for everyone to access"
 msgstr ""
 
@@ -164,7 +164,7 @@ msgstr ""
 msgid "Publish the preset file to the global store for everyone to access"
 msgstr ""
 
-#: ui/static/ui/js/create.js:1599
+#: ui/static/ui/js/create.js:1607
 msgid "Requested file not found"
 msgstr ""
 
@@ -302,11 +302,11 @@ msgstr ""
 msgid "Show the selected features for this export"
 msgstr ""
 
-#: ui/static/ui/js/detail.js:981
+#: ui/static/ui/js/detail.js:980
 msgid "Published"
 msgstr ""
 
-#: ui/static/ui/js/detail.js:981
+#: ui/static/ui/js/detail.js:980
 msgid "Private"
 msgstr ""
 

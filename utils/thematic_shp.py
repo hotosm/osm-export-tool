@@ -79,7 +79,7 @@ class ThematicSQliteToShp(object):
             if isPoly:
                 osm_way_id = 'osm_way_id,'
             params = {'tablename': layer, 'osm_way_id': osm_way_id,
-                      'columns': ', '.join(self.tags[layer_type]),
+                      'columns': ', '.join([tag.replace(':', '_') for tag in self.tags[layer_type]]),
                       'planet_table': spec['table'], 'select_clause': spec['select_clause']}
             sql = sql_tmpl.safe_substitute(params)
             cur.execute(sql)

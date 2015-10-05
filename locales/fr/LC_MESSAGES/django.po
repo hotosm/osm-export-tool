@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-03 17:51+0000\n"
-"PO-Revision-Date: 2015-10-03 17:44+0000\n"
+"POT-Creation-Date: 2015-10-05 21:36+0000\n"
+"PO-Revision-Date: 2015-10-05 21:28+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/hotosm/osm-export-tool2/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -87,27 +87,27 @@ msgstr "Echec de Export"
 msgid "Export not found"
 msgstr "Export non trouvé"
 
-#: hot_exports/settings/base.py:22
+#: core/settings/base.py:22
 msgid "English"
 msgstr "Anglais"
 
-#: hot_exports/settings/base.py:23
+#: core/settings/base.py:23
 msgid "Bahasa Indonesia"
 msgstr "Bahasa Indonesia"
 
-#: hot_exports/settings/base.py:24
+#: core/settings/base.py:24
 msgid "German"
 msgstr "Allemand"
 
-#: hot_exports/settings/base.py:25
+#: core/settings/base.py:25
 msgid "Spanish"
 msgstr "Espagnol"
 
-#: hot_exports/settings/base.py:26
+#: core/settings/base.py:26
 msgid "Japanese"
 msgstr "Japonais"
 
-#: hot_exports/settings/base.py:27
+#: core/settings/base.py:27
 msgid "French"
 msgstr "Français"
 
@@ -187,7 +187,7 @@ msgstr "SQlite SQL"
 
 #: ui/templates/help/help.html:35 ui/templates/help/help_features.html:12
 msgid "Feature Selection"
-msgstr ""
+msgstr "Sélection des paramètres"
 
 #: ui/templates/help/help.html:37
 msgid ""
@@ -255,7 +255,7 @@ msgstr "Sélectionner un ou plusieurs format(s) de fichiers pour l'Export"
 
 #: ui/templates/help/help_create.html:25
 msgid "Tree Tag:"
-msgstr ""
+msgstr "arborescence des attributs"
 
 #: ui/templates/help/help_create.html:25
 #, python-format
@@ -368,7 +368,7 @@ msgstr "Option de filtre"
 
 #: ui/templates/help/help_exports.html:20
 msgid "The "
-msgstr ""
+msgstr "le"
 
 #: ui/templates/help/help_exports.html:22
 #: ui/templates/help/help_presets.html:25
@@ -433,7 +433,7 @@ msgstr "Mes Exports"
 
 #: ui/templates/help/help_exports.html:28
 msgid "Displays private exports if the user is logged in."
-msgstr ""
+msgstr "Afficher les exports privés si l'utilisateur est connecté"
 
 #: ui/templates/help/help_exports.html:29
 #: ui/templates/help/help_presets.html:30
@@ -642,7 +642,7 @@ msgstr ".prj - format du Système de Coordonnées de Référence"
 
 #: ui/templates/help/help_formats.html:29
 msgid "Schema Options"
-msgstr ""
+msgstr "Les options de schéma "
 
 #: ui/templates/help/help_formats.html:31
 msgid ""
@@ -663,7 +663,7 @@ msgstr ""
 
 #: ui/templates/help/help_formats.html:35
 msgid "Thematic"
-msgstr ""
+msgstr "Thematique"
 
 #: ui/templates/help/help_formats.html:36
 msgid ""
@@ -1082,6 +1082,29 @@ msgstr "Vous avez réussi à vous déconnecter d'OpenStreetMap"
 msgid "Please click <a href=\"/login\">here</a> to login again."
 msgstr "Svp cliquez <a href=\"/login\">ici</a> pour vous connecter"
 
+#: ui/templates/osm/verify_osm_email.html:7 ui/templates/ui/email.html:7
+#: ui/templates/ui/error_email.html:7
+msgid "This is an automated email from HOT Exports."
+msgstr "Ceci est un mail automatique de HOT Exports"
+
+#: ui/templates/osm/verify_osm_email.html:8 ui/templates/ui/email.html:9
+#: ui/templates/ui/error_email.html:9
+msgid "Please follow this link"
+msgstr "S'il-vous-plaît cliquez sur ce lien"
+
+#: ui/templates/osm/verify_osm_email.html:8
+msgid "to login to HOT Exports"
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.html:10
+msgid "Thank you for registering with the HOT Export Service."
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.html:13 ui/templates/ui/email.html:14
+#: ui/templates/ui/error_email.html:15
+msgid "Humanitarian OpenStreetMap Team"
+msgstr "Équipe humanitaire OpenStreetMap"
+
 #: ui/templates/ui/404.html:8
 msgid "Page Not Found"
 msgstr "Page introuvable"
@@ -1184,7 +1207,7 @@ msgstr ""
 #: ui/templates/ui/clone.html:123 ui/templates/ui/configurations.html:134
 #: ui/templates/ui/create.html:123
 msgid "Preset name:"
-msgstr ""
+msgstr "Nom d'attribut"
 
 #: ui/templates/ui/clone.html:146
 msgid "Publish this preset globally."
@@ -1329,8 +1352,8 @@ msgstr "Créé"
 msgid "Owner"
 msgstr "Propriétaire "
 
-#: ui/templates/ui/clone.html:373 ui/templates/ui/clone.html.py:428
-#: ui/templates/ui/create.html:395 ui/templates/ui/create.html.py:450
+#: ui/templates/ui/clone.html:373 ui/templates/ui/clone.html.py:429
+#: ui/templates/ui/create.html:395 ui/templates/ui/create.html.py:451
 msgid "Select"
 msgstr "Sélectionner"
 
@@ -1339,13 +1362,13 @@ msgstr "Sélectionner"
 msgid "My Presets"
 msgstr "Mon Presets"
 
-#: ui/templates/ui/clone.html:403 ui/templates/ui/configurations.html:98
-#: ui/templates/ui/create.html:425 ui/templates/ui/list.html:107
+#: ui/templates/ui/clone.html:404 ui/templates/ui/configurations.html:98
+#: ui/templates/ui/create.html:426 ui/templates/ui/list.html:107
 msgid "Display"
 msgstr "Afficher"
 
-#: ui/templates/ui/clone.html:409 ui/templates/ui/configurations.html:105
-#: ui/templates/ui/create.html:431
+#: ui/templates/ui/clone.html:410 ui/templates/ui/configurations.html:105
+#: ui/templates/ui/create.html:432
 msgid "presets per page"
 msgstr "presets par page"
 
@@ -1497,23 +1520,15 @@ msgstr "Les fonctions sélectionnées pour cet export"
 
 #: ui/templates/ui/detail.html:155
 msgid "The preset associated with this export has been deleted."
-msgstr ""
+msgstr "L'attribut associé à l'export à été supprimé"
 
 #: ui/templates/ui/detail.html:159
 msgid "Close"
 msgstr "Fermé"
 
-#: ui/templates/ui/email.html:7 ui/templates/ui/error_email.html:7
-msgid "This is an automated email from HOT Exports."
-msgstr "Ceci est un mail automatique de HOT Exports"
-
 #: ui/templates/ui/email.html:8
 msgid "Your HOT Export is ready."
 msgstr "Votre HOT Exports est prêt"
-
-#: ui/templates/ui/email.html:9 ui/templates/ui/error_email.html:9
-msgid "Please follow this link"
-msgstr "S'il-vous-plaît cliquez sur ce lien"
 
 #: ui/templates/ui/email.html:9
 msgid "to download your files."
@@ -1522,10 +1537,6 @@ msgstr "pour télécharger vos fichiers"
 #: ui/templates/ui/email.html:11
 msgid "Thank you for using the HOT Export Service"
 msgstr "Merci d'utiliser le service HOT Export"
-
-#: ui/templates/ui/email.html:14 ui/templates/ui/error_email.html:15
-msgid "Humanitarian OpenStreetMap Team"
-msgstr "Équipe humanitaire OpenStreetMap"
 
 #: ui/templates/ui/error.html:8
 msgid "Error Creating Export"
