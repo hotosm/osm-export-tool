@@ -5,9 +5,7 @@ OSM Export Tool
 
 **Osm Export Tool** platform allows you to create custom OpenStreetMap exports for various HOT regions. You can specify an area of interest and a list of features (OpenStreetMap tags) for the export. A current OpenStreetMap data extract for that area in various data formats is then created for you within minutes.
 
-The live site http://export.hotosm.org is currently still powered by the older version 1 code living at https://github.com/hotosm/hot-exports
-
-This repo contains the newly re-written version 2 of the OSM exports tool.
+This repo contains the newly re-written version 2 of the OSM exports tool. The live site http://export.hotosm.org is now powered by this repo. The older version 1 site is still available at: http://old-export.hotosm.org/ running code from this repo: https://github.com/hotosm/hot-exports
 
 ## Installation Instructions
 Some prior experience with Django would be helpful, but not strictly necessary.
