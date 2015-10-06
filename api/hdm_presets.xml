@@ -26,14 +26,14 @@
         <item name="Synagogue" type="closedway,relation">
             <key key="building" value="synagogue"/>
         </item>
-    </group>
-    <group name="Building features">
-        <item name="Building address" type="node,closedway,relation">
-            <key key="addr:housenumber" value=""/>
-        </item>
-        <item name="Building street" type="node,closedway,relation">
-            <key key="addr:street" value=""/>
-        </item>
+        <group name="Building features">
+            <item name="Building address" type="node,closedway,relation">
+                <key key="addr:housenumber" value=""/>
+            </item>
+            <item name="Building street" type="node,closedway,relation">
+                <key key="addr:street" value=""/>
+            </item>
+        </group>
     </group>
     <group name="Landuse">
       <item name="Residential Area" type="closedway,relation">
