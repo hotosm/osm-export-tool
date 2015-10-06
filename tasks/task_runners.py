@@ -150,7 +150,6 @@ class ExportTaskRunner(TaskRunner):
                 The export format tasks (format_tasks) are then run in parallel, followed
                 by the finalize_task at the end to clean up staging dirs, update run status, email user etc..
             """
-
             initial_tasks = chain(
                     conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name) |
                     query.si(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid, filters=job.filters)

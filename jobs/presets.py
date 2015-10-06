@@ -10,11 +10,18 @@ logger = logging.getLogger(__name__)
 
 
 class PresetParser():
+    """Used solely for parsing OSM and HDM Data Models.
+
+    Looks for 'key' child elements of 'item' elements in the preset
+    and extracts key value pairs. This is used to build
+    the OSM and HDM Trees in the UI using the
+    HDMDataModelView and OSMDataModelView in api/views.py
+    """
 
     types = {
         'node': 'point',
         'way': 'line',
-        #'area': 'polygon',
+        'area': 'polygon',
         'closedway': 'polygon',
         'relation': 'polygon'
     }
@@ -43,6 +50,7 @@ class PresetParser():
         return self.tags
 
     def process_item_and_children(self, item, geometrytype=None):
+        """Recursively parses 'item' elements."""
         geometrytypes = None
         if item.get('type'):
             item_type = item.get('type')
@@ -101,7 +109,7 @@ class PresetParser():
                 continue
             key = keys[0]
             item_dict['displayName'] = name
-            item_dict['tag'] = '{0}:{1}'.format(key.get('key'), key.get('value'))
+            item_dict['tag'] = '{0}={1}'.format(key.get('key'), key.get('value'))
             item_dict['geom'] = geom_types
             group_dict[name] = OrderedDict(sorted(item_dict.items()))
         groups = group.xpath('./ns:group', namespaces=self.namespaces)
@@ -117,7 +125,7 @@ class UnfilteredPresetParser():
     types = {
         'node': 'point',
         'way': 'line',
-        #'area': 'polygon',
+        'area': 'polygon',
         'closedway': 'polygon',
         'relation': 'polygon'
     }
@@ -212,7 +220,7 @@ class UnfilteredPresetParser():
                 continue
             key = keys[0]
             item_dict['displayName'] = name
-            item_dict['tag'] = '{0}:{1}'.format(key.get('key'), key.get('value'))
+            item_dict['tag'] = '{0}={1}'.format(key.get('key'), key.get('value'))
             item_dict['geom'] = geom_types
             group_dict[name] = OrderedDict(sorted(item_dict.items()))
         groups = group.xpath('./ns:group', namespaces=self.namespaces)

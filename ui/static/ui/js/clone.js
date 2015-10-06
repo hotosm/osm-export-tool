@@ -1027,11 +1027,11 @@ clone.job = (function(){
                     if ($(v).attr('displayName')){
                         var name = $(v).attr('displayName');
                         var tag = $(v).attr('tag');
-                        var key = tag.split(':')[0];
-                        var val = tag.split(':')[1];
+                        var key = tag.split('=')[0];
+                        var val = tag.split('=')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry" data-toggle="tooltip" data-placement="right" title="' + key + ':' + val + '"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
+                        var $entry = $('<li class="entry" data-toggle="tooltip" data-placement="right" title="' + key + '=' + val + '"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="HDM" data-geom="' +
                                             geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '" checked/></div>' +
                                         '</li>');
@@ -1136,11 +1136,10 @@ clone.job = (function(){
      */
     function initOSMFeatureTree(){
         $.get(Config.OSM_TAGS_URL, function(data){
-            var v = {'OSM Data Model': data}
             var level_idx = 0;
             var $tree = $('#osm-feature-tree ul.nav-list');
             if (typeof data == 'object') {
-                traverse(v, $tree, level_idx);
+                traverse(data, $tree, level_idx);
             }
 
             /*
@@ -1151,11 +1150,11 @@ clone.job = (function(){
                     if ($(v).attr('displayName')){
                         var name = $(v).attr('displayName');
                         var tag = $(v).attr('tag');
-                        var key = tag.split(':')[0];
-                        var val = tag.split(':')[1];
+                        var key = tag.split('=')[0];
+                        var val = tag.split('=')[1];
                         var geom = $(v).attr('geom');
                         geom_str = geom.join([separator=',']);
-                        var $entry = $('<li class="entry" data-toggle="tooltip" data-placement="right" title="' + key + ':' + val + '"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
+                        var $entry = $('<li class="entry" data-toggle="tooltip" data-placement="right" title="' + key + '=' + val + '"><label><i class="fa fa-square-o fa-fw"></i>' + name + '</label>' +
                                            '<div class="checkbox tree-checkbox"><input class="entry" type="checkbox" data-model="OSM" data-geom="' +
                                             geom_str + '" data-key="' + key + '" data-val="' + val +'" data-name="' + name + '"/></div>' +
                                         '</li>');
