@@ -2,7 +2,7 @@
 
 coverage
 django-nose
-mock
+mock=>1.0,<1.1
 nose
 transifex-client
 flake8
