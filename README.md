@@ -62,7 +62,8 @@ Install PostgreSQL / PostGIS and its dependencies,
 <pre>
 $ sudo su - postgres
 $ createdb 'hot_exports_dev'
-$ create role hot with password '<-password->'
+$ psql
+postgres=# create role hot with password '<-password->'
 </pre>
 
 You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
