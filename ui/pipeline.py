@@ -8,7 +8,7 @@ from social.pipeline.partial import partial
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.core import signing
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.core.signing import BadSignature
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
@@ -47,9 +47,10 @@ def email_validation(strategy, backend, code):  # pragma: no cover
             'verifyUrl': verifyURL,
     }
     subject = "Please verify your email address"
-    message = get_template('osm/verify_osm_email.html').render(Context(ctx))
-    msg = EmailMessage(subject, message, to=[code.email], from_email="HOT Exports <exports@hotosm.org>")
-    msg.content_subtype = 'html'
+    text = get_template('osm/verify_osm_email.txt').render(Context(ctx))
+    html = get_template('osm/verify_osm_email.html').render(Context(ctx))
+    msg = EmailMultiAlternatives(subject, text, to=[code.email], from_email="HOT Exports <exports@hotosm.org>")
+    msg.attach_alternative(html, "text/html")
     msg.send()
 
 

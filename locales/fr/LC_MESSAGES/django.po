@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# AGBADONOU <samagbadonou@gmail.com>, 2015
 # Brian O'Hare <bjohare@gmail.com>, 2015
 # kasssa <hermann.kass@gmail.com>, 2015
 # Kokou Elolo AMEGAYIBO <amazanake@gmail.com>, 2015
@@ -13,8 +14,8 @@ msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-05 21:36+0000\n"
-"PO-Revision-Date: 2015-10-05 21:28+0000\n"
-"Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
+"PO-Revision-Date: 2015-10-08 09:34+0000\n"
+"Last-Translator: severin.menard <severin.menard@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/hotosm/osm-export-tool2/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -255,7 +256,7 @@ msgstr "Sélectionner un ou plusieurs format(s) de fichiers pour l'Export"
 
 #: ui/templates/help/help_create.html:25
 msgid "Tree Tag:"
-msgstr "arborescence des attributs"
+msgstr "Arborescence des attributs :"
 
 #: ui/templates/help/help_create.html:25
 #, python-format
@@ -280,7 +281,7 @@ msgstr ""
 
 #: ui/templates/help/help_create.html:27
 msgid "Export Summary:"
-msgstr "Résumé de l'exportation:"
+msgstr "Résumé de l'export"
 
 #: ui/templates/help/help_create.html:27
 msgid ""
@@ -305,7 +306,7 @@ msgstr "haut"
 #: ui/templates/ui/clone.html.py:197 ui/templates/ui/create.html:23
 #: ui/templates/ui/create.html.py:197 ui/templates/ui/detail.html:9
 msgid "Export Details"
-msgstr "Exporter les détails"
+msgstr "Détails de l'export"
 
 #: ui/templates/help/help_create.html:34
 msgid ""
@@ -339,7 +340,7 @@ msgid ""
 "This function will clone the export, maintaining the original area of "
 "interest but allows the user to modify the settings for feature tags and "
 "file formats."
-msgstr ""
+msgstr "Cette fonction va dupliquer l'exportation , maintenir la zone d'intérêt initialle, mais permet à l'utilisateur de modifier les paramètres des prochaines attributs et formats de fichiers."
 
 #: ui/templates/help/help_create.html:43
 #: ui/templates/help/help_exports.html:46
@@ -351,7 +352,7 @@ msgstr "Supprimer l'Export"
 msgid ""
 "Delete the saved export. Please note that this function is only available to"
 " the user who originally created the export."
-msgstr ""
+msgstr "Supprimer l'exportation sauvé . S'il vous plaît noter que cette fonction est disponible uniquement pour l'utilisateur qui a initialement créé l'exportation."
 
 #: ui/templates/help/help_exports.html:14
 #, python-format
@@ -382,7 +383,7 @@ msgstr "Entrez Nom / Description / Mots-clés de l'événement à filtrer."
 #: ui/templates/help/help_exports.html:23
 #: ui/templates/help/help_presets.html:26
 msgid "Start Date/End Date:"
-msgstr "Date de début / Date de fin:"
+msgstr "Date de début / Date de fin :"
 
 #: ui/templates/help/help_exports.html:23
 #: ui/templates/help/help_presets.html:26
@@ -419,7 +420,7 @@ msgstr "Zoom sur l'emplacement de l'Export sur la carte interactive."
 
 #: ui/templates/help/help_exports.html:27
 msgid "Eye Icon:"
-msgstr ""
+msgstr "Icône d'oeil: "
 
 #: ui/templates/help/help_exports.html:27
 msgid ""
@@ -433,7 +434,7 @@ msgstr "Mes Exports"
 
 #: ui/templates/help/help_exports.html:28
 msgid "Displays private exports if the user is logged in."
-msgstr "Afficher les exports privés si l'utilisateur est connecté"
+msgstr "Affiche les exports privés si l'utilisateur est connecté"
 
 #: ui/templates/help/help_exports.html:29
 #: ui/templates/help/help_presets.html:30
@@ -480,7 +481,7 @@ msgstr ""
 
 #: ui/templates/help/help_features.html:24
 msgid "Humanitarian Data Model"
-msgstr "Modèles de données Humanitaire"
+msgstr "Modèle de Données Humanitaires"
 
 #: ui/templates/help/help_features.html:26
 msgid ""
@@ -517,7 +518,7 @@ msgstr "OSM représente les caractéristiques physiques sur le terrain en utilis
 
 #: ui/templates/help/help_features.html:38
 msgid "OpenstreetMap Wiki | OSM Tags"
-msgstr "OpenStreetMap Wiki | OSM Tags"
+msgstr "Wiki OpenStreetMap | Tags OSM "
 
 #: ui/templates/help/help_features.html:41
 msgid "Step by Step"
@@ -531,11 +532,11 @@ msgstr "Les branches de haut niveau peuvent être étendues en cliquant sur le n
 
 #: ui/templates/help/help_features.html:44
 msgid "Tick the box on the right to select a feature tag for export."
-msgstr "Cochez la case sur la droite pour sélectionner un tag pour l'exportation."
+msgstr "Cochez la case sur la droite pour sélectionner un tag pour l'export."
 
 #: ui/templates/help/help_features.html:45
 msgid "Tick a top level-branch to select all sub-level for export."
-msgstr "Cochez un niveau-branche supérieure pour sélectionner la sous-niveau pour l'exportation tout."
+msgstr "Cochez une branche de niveau supérieur pour sélectionner tous les sous-niveaux dans l'export."
 
 #: ui/templates/help/help_features.html:46
 msgid ""
@@ -626,15 +627,15 @@ msgstr ""
 
 #: ui/templates/help/help_formats.html:22
 msgid ".shp - shape format; feature geometry"
-msgstr ".shp - format shape; caractéristiques géométriques"
+msgstr ".shp - format shape ; caractéristiques géométriques"
 
 #: ui/templates/help/help_formats.html:23
 msgid ".shx - index format; positional index"
-msgstr ".shp - format d'index; indice de position"
+msgstr ".shx - format d'index ; indice de position"
 
 #: ui/templates/help/help_formats.html:24
 msgid ".dbf - attribute format; columnar information"
-msgstr ".dbf - format attribut; informations colonnaire"
+msgstr ".dbf - format d'attributs ; informations en colonnes"
 
 #: ui/templates/help/help_formats.html:25
 msgid ".prj - coordinate format; projection information"
@@ -642,7 +643,7 @@ msgstr ".prj - format du Système de Coordonnées de Référence"
 
 #: ui/templates/help/help_formats.html:29
 msgid "Schema Options"
-msgstr "Les options de schéma "
+msgstr "Options de schéma "
 
 #: ui/templates/help/help_formats.html:31
 msgid ""
@@ -663,7 +664,7 @@ msgstr ""
 
 #: ui/templates/help/help_formats.html:35
 msgid "Thematic"
-msgstr "Thematique"
+msgstr "Thématique"
 
 #: ui/templates/help/help_formats.html:36
 msgid ""
@@ -683,7 +684,7 @@ msgstr ""
 #: ui/templates/help/help_formats.html:117
 #: ui/templates/help/help_formats.html:130
 msgid "Compatible Software"
-msgstr "logiciels compatibles"
+msgstr "logiciel compatible"
 
 #: ui/templates/help/help_formats.html:42
 #: ui/templates/help/help_formats.html:86
@@ -720,7 +721,7 @@ msgstr "ArcGIS en ligne | Shapefile"
 
 #: ui/templates/help/help_formats.html:49
 msgid "OpenStreetMap Wiki | Esri SHP File"
-msgstr "OpenStreetMap Wiki |  Fichier Esri SHP"
+msgstr "Wiki OpenStreetMap |  Fichier Esri SHP"
 
 #: ui/templates/help/help_formats.html:56
 msgid ""
@@ -765,7 +766,7 @@ msgstr "QLandkarte"
 
 #: ui/templates/help/help_formats.html:69
 msgid "OSM Composer"
-msgstr "Compositeur OSM"
+msgstr "Composeur OSM"
 
 #: ui/templates/help/help_formats.html:70
 msgid "GroundTruth"
@@ -785,7 +786,7 @@ msgid ""
 "Language (KML) is an Extensible Markup Language (XML) grammar and file "
 "format for modeling and storing geographic features such as points, lines, "
 "images polygons and models."
-msgstr "Le fichier KMZ est une version compressée d'un fichier KML. Le 'Keyhole Markup Language' (KML) est un langage de balisage extensible (XML) la grammaire et le format de fichier pour la modélisation et le stockage de caractéristiques géographiques comme les points, lignes, polygones images et modèles."
+msgstr "Le fichier KMZ est une version compressée d'un fichier KML. Le 'Keyhole Markup Language' (KML) est un langage de balisage extensible (XML) et un format de fichier pour la modélisation et le stockage de caractéristiques géographiques comme les points, lignes, polygones images et modèles."
 
 #: ui/templates/help/help_formats.html:84
 msgid "Google Earth"
@@ -805,7 +806,7 @@ msgstr "Documentation Google | Tutoriel KML"
 
 #: ui/templates/help/help_formats.html:92
 msgid "OpenStreetMap Wiki | KML File"
-msgstr "OpenstreetMap Wiki | Fichier KML"
+msgstr "Wiki OpenStreetMap | Fichier KML"
 
 #: ui/templates/help/help_formats.html:97
 msgid "OSM Source PBF"
@@ -991,7 +992,7 @@ msgstr "Outil d'Export "
 
 #: ui/templates/osm/email.html:9
 msgid "Email Required"
-msgstr "Couriel réquis"
+msgstr "Courriel requis"
 
 #: ui/templates/osm/email.html:14
 msgid ""
@@ -1094,11 +1095,11 @@ msgstr "S'il-vous-plaît cliquez sur ce lien"
 
 #: ui/templates/osm/verify_osm_email.html:8
 msgid "to login to HOT Exports"
-msgstr ""
+msgstr "pour vous connecter à HOT Exports"
 
 #: ui/templates/osm/verify_osm_email.html:10
 msgid "Thank you for registering with the HOT Export Service."
-msgstr ""
+msgstr "Merci pour votre inscription au Service HOT Export "
 
 #: ui/templates/osm/verify_osm_email.html:13 ui/templates/ui/email.html:14
 #: ui/templates/ui/error_email.html:15

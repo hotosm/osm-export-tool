@@ -350,21 +350,24 @@ class TestExportTasks(TestCase):
     @patch('shutil.rmtree')
     @patch('os.path.isdir')
     def test_export_task_error_handler(self, isdir, rmtree, email):
+        msg = Mock()
+        email.return_value = msg
         celery_uid = str(uuid.uuid4())
+        task_id = str(uuid.uuid4())
         run_uid = self.run.uid
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid)
         succeeded_task = ExportTask.objects.create(
             run=self.run,
+            uid=task_id,
             celery_uid=celery_uid,
-            status='SUCCESS',
+            status='FAILED',
             name='Default Shapefile Export'
         )
         task = ExportTaskErrorHandler()
         self.assertEquals('Export Task Error Handler', task.name)
-        task.run(run_uid=run_uid, stage_dir=stage_dir)
-        isdir.assert_called_once_with(stage_dir)
+        task.run(run_uid=run_uid, task_id=task_id, stage_dir=stage_dir)
+        isdir.assert_any_call(stage_dir)
         # rmtree.assert_called_once_with(stage_dir)
-        msg = Mock()
-        email.return_value = msg
         msg.send.assert_called_once()
-        # self.assertEquals('FAILED', self.run.status)
+        run = ExportRun.objects.get(uid=run_uid)
+        self.assertEquals('FAILED', run.status)

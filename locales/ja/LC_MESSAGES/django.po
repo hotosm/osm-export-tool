@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-05 21:36+0000\n"
-"PO-Revision-Date: 2015-10-05 21:28+0000\n"
+"POT-Creation-Date: 2015-10-08 16:21+0000\n"
+"PO-Revision-Date: 2015-10-08 16:25+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/hotosm/osm-export-tool2/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -82,27 +82,27 @@ msgstr ""
 msgid "Export not found"
 msgstr ""
 
-#: core/settings/base.py:22
+#: core/settings/base.py:25
 msgid "English"
 msgstr ""
 
-#: core/settings/base.py:23
+#: core/settings/base.py:26
 msgid "Bahasa Indonesia"
 msgstr ""
 
-#: core/settings/base.py:24
+#: core/settings/base.py:27
 msgid "German"
 msgstr ""
 
-#: core/settings/base.py:25
+#: core/settings/base.py:28
 msgid "Spanish"
 msgstr ""
 
-#: core/settings/base.py:26
+#: core/settings/base.py:29
 msgid "Japanese"
 msgstr ""
 
-#: core/settings/base.py:27
+#: core/settings/base.py:30
 msgid "French"
 msgstr ""
 
@@ -133,18 +133,18 @@ msgid ""
 msgstr ""
 
 #: ui/templates/help/help.html:17 ui/templates/help/help_create.html:9
-#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:65
+#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:64
 msgid "Create"
 msgstr ""
 
 #: ui/templates/help/help.html:18 ui/templates/help/help_exports.html:9
-#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:66
+#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:65
 msgid "Exports"
 msgstr ""
 
 #: ui/templates/help/help.html:19 ui/templates/help/help_presets.html:10
 #: ui/templates/help/help_presets.html:13
-#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:67
+#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:66
 msgid "Presets"
 msgstr ""
 
@@ -205,7 +205,7 @@ msgstr ""
 #: ui/templates/help/help_create.html:8 ui/templates/help/help_exports.html:8
 #: ui/templates/help/help_features.html:8
 #: ui/templates/help/help_formats.html:8 ui/templates/help/help_presets.html:9
-#: ui/templates/ui/base.html:68
+#: ui/templates/ui/base.html:67
 msgid "Help"
 msgstr ""
 
@@ -556,7 +556,7 @@ msgstr ""
 
 #: ui/templates/help/help_features.html:56
 #: ui/templates/help/help_presets.html:46 ui/templates/ui/clone.html:162
-#: ui/templates/ui/configurations.html:180 ui/templates/ui/create.html:162
+#: ui/templates/ui/configurations.html:173 ui/templates/ui/create.html:162
 msgid "Upload Preset"
 msgstr ""
 
@@ -1077,27 +1077,42 @@ msgstr ""
 msgid "Please click <a href=\"/login\">here</a> to login again."
 msgstr ""
 
-#: ui/templates/osm/verify_osm_email.html:7 ui/templates/ui/email.html:7
+#: ui/templates/osm/verify_osm_email.html:7
+#: ui/templates/osm/verify_osm_email.txt:2 ui/templates/ui/email.html:7
 #: ui/templates/ui/error_email.html:7
 msgid "This is an automated email from HOT Exports."
 msgstr ""
 
-#: ui/templates/osm/verify_osm_email.html:8 ui/templates/ui/email.html:9
-#: ui/templates/ui/error_email.html:9
-msgid "Please follow this link"
+#: ui/templates/osm/verify_osm_email.html:8
+msgid "Please "
 msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:8
-msgid "to login to HOT Exports"
+msgid "follow this link"
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.html:8
+msgid " to login to HOT Exports"
 msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:10
 msgid "Thank you for registering with the HOT Export Service."
 msgstr ""
 
-#: ui/templates/osm/verify_osm_email.html:13 ui/templates/ui/email.html:14
+#: ui/templates/osm/verify_osm_email.html:13
+#: ui/templates/osm/verify_osm_email.txt:9 ui/templates/ui/email.html:14
 #: ui/templates/ui/error_email.html:15
 msgid "Humanitarian OpenStreetMap Team"
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.txt:3
+msgid ""
+"Please copy and paste the link below into your browser to login to HOT "
+"Exports."
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.txt:7
+msgid "Thank you for registering with the HOT Export service."
 msgstr ""
 
 #: ui/templates/ui/404.html:8
@@ -1118,27 +1133,27 @@ msgid ""
 "href=\"mailto:exports@hotosm.org\">email us</a> if this problem persists."
 msgstr ""
 
-#: ui/templates/ui/base.html:15
+#: ui/templates/ui/base.html:14
 msgid "HOT Export Tool"
 msgstr ""
 
-#: ui/templates/ui/base.html:37
+#: ui/templates/ui/base.html:36
 msgid "Humanitarian <br/>OpenStreetMap <br/>Team"
 msgstr ""
 
-#: ui/templates/ui/base.html:61
+#: ui/templates/ui/base.html:60
 msgid "OSM Export Tool"
 msgstr ""
 
-#: ui/templates/ui/base.html:69
+#: ui/templates/ui/base.html:68
 msgid "About"
 msgstr ""
 
-#: ui/templates/ui/base.html:74
+#: ui/templates/ui/base.html:73
 msgid "Log Out"
 msgstr ""
 
-#: ui/templates/ui/base.html:78 ui/templates/ui/configurations.html:196
+#: ui/templates/ui/base.html:77 ui/templates/ui/configurations.html:196
 msgid "Login"
 msgstr ""
 
@@ -1208,7 +1223,7 @@ msgstr ""
 msgid "Publish this preset globally."
 msgstr ""
 
-#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:185
+#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:178
 #: ui/templates/ui/create.html:167
 msgid "Upload"
 msgstr ""
@@ -1218,7 +1233,7 @@ msgid "Select a stored preset"
 msgstr ""
 
 #: ui/templates/ui/clone.html:180 ui/templates/ui/clone.html.py:245
-#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
 #: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
 msgid "Filename"
@@ -1264,13 +1279,13 @@ msgstr ""
 
 #: ui/templates/ui/clone.html:245 ui/templates/ui/clone.html.py:373
 #: ui/templates/ui/configurations.html:61
-#: ui/templates/ui/configurations.html:165 ui/templates/ui/create.html:180
+#: ui/templates/ui/configurations.html:185 ui/templates/ui/create.html:180
 #: ui/templates/ui/create.html.py:245 ui/templates/ui/create.html:395
 #: ui/templates/ui/detail.html:152
 msgid "Type"
 msgstr ""
 
-#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
 #: ui/templates/ui/detail.html:152
 msgid "Status"
@@ -1523,6 +1538,10 @@ msgstr ""
 
 #: ui/templates/ui/email.html:8
 msgid "Your HOT Export is ready."
+msgstr ""
+
+#: ui/templates/ui/email.html:9 ui/templates/ui/error_email.html:9
+msgid "Please follow this link"
 msgstr ""
 
 #: ui/templates/ui/email.html:9

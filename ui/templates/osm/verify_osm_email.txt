@@ -1,0 +1,9 @@
+{% load i18n %}
+{% trans 'This is an automated email from HOT Exports.' %}
+{% trans 'Please copy and paste the link below into your browser to login to HOT Exports.' %}
+
+{{ verifyUrl }}
+
+{% trans 'Thank you for registering with the HOT Export service.' %}
+
+{% trans 'Humanitarian OpenStreetMap Team' %}

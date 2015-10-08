@@ -341,6 +341,7 @@ jobs.list = (function(){
         }
         $.ajax({
             url: url,
+            cache: false,
         })
         .done(function(data, textStatus, jqXHR){
             // generate pagination on UI

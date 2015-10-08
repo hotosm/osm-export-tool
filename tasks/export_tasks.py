@@ -423,7 +423,8 @@ class ExportTaskErrorHandler(Task):
         run.save()
         try:
             if os.path.isdir(stage_dir):
-                # shutil.rmtree(stage_dir)
+                #leave the stage_dir in place for debugging
+                #shutil.rmtree(stage_dir)
                 pass
         except IOError as e:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
@@ -433,7 +434,7 @@ class ExportTaskErrorHandler(Task):
         subject = "Your HOT Export Failed"
         # email user and administrator
         to = [addr]
-        from_email = 'HOT Exports <exports@hotosm.org>'
+        from_email = ['HOT Exports <exports@hotosm.org>']
         ctx = {
             'url': url,
             'task_id': task_id

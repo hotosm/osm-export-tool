@@ -3,7 +3,6 @@ from __future__ import absolute_import
 
 from .dev import *  # NOQA
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
