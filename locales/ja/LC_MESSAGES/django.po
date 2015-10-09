@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-08 16:21+0000\n"
-"PO-Revision-Date: 2015-10-08 16:25+0000\n"
+"POT-Creation-Date: 2015-10-09 10:15+0000\n"
+"PO-Revision-Date: 2015-10-09 10:07+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/hotosm/osm-export-tool2/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -1059,11 +1059,24 @@ msgid ""
 "<a href=\"%(help_url)s\">Help</a> page."
 msgstr ""
 
-#: ui/templates/osm/login.html:20 ui/templates/osm/login.html.py:30
+#: ui/templates/osm/login.html:15
+msgid "Original Export Tool"
+msgstr ""
+
+#: ui/templates/osm/login.html:16
+msgid "The original HOT Export Tool is available"
+msgstr ""
+
+#: ui/templates/osm/login.html:16 ui/templates/ui/detail.html:89
+#: ui/templates/ui/detail.html.py:103
+msgid "here"
+msgstr ""
+
+#: ui/templates/osm/login.html:22 ui/templates/osm/login.html.py:32
 msgid "Login to OpenStreetMap"
 msgstr ""
 
-#: ui/templates/osm/login.html:26
+#: ui/templates/osm/login.html:28
 msgid ""
 "If you don't have an OpenStreetMap account you can register for one <a "
 "href='http://www.openstreetmap.org/user/new'>here</a>."
@@ -1092,7 +1105,7 @@ msgid "follow this link"
 msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:8
-msgid " to login to HOT Exports"
+msgid " to login to HOT Exports."
 msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:10
@@ -1490,10 +1503,6 @@ msgstr ""
 
 #: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
 msgid "Please start"
-msgstr ""
-
-#: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
-msgid "here"
 msgstr ""
 
 #: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103

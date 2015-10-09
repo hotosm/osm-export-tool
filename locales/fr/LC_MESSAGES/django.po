@@ -13,9 +13,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-05 21:36+0000\n"
-"PO-Revision-Date: 2015-10-08 09:34+0000\n"
-"Last-Translator: severin.menard <severin.menard@gmail.com>\n"
+"POT-Creation-Date: 2015-10-09 10:15+0000\n"
+"PO-Revision-Date: 2015-10-09 10:07+0000\n"
+"Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/hotosm/osm-export-tool2/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -88,27 +88,27 @@ msgstr "Echec de Export"
 msgid "Export not found"
 msgstr "Export non trouvé"
 
-#: core/settings/base.py:22
+#: core/settings/base.py:25
 msgid "English"
 msgstr "Anglais"
 
-#: core/settings/base.py:23
+#: core/settings/base.py:26
 msgid "Bahasa Indonesia"
 msgstr "Bahasa Indonesia"
 
-#: core/settings/base.py:24
+#: core/settings/base.py:27
 msgid "German"
 msgstr "Allemand"
 
-#: core/settings/base.py:25
+#: core/settings/base.py:28
 msgid "Spanish"
 msgstr "Espagnol"
 
-#: core/settings/base.py:26
+#: core/settings/base.py:29
 msgid "Japanese"
 msgstr "Japonais"
 
-#: core/settings/base.py:27
+#: core/settings/base.py:30
 msgid "French"
 msgstr "Français"
 
@@ -139,18 +139,18 @@ msgid ""
 msgstr ""
 
 #: ui/templates/help/help.html:17 ui/templates/help/help_create.html:9
-#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:65
+#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:64
 msgid "Create"
 msgstr "Création"
 
 #: ui/templates/help/help.html:18 ui/templates/help/help_exports.html:9
-#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:66
+#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:65
 msgid "Exports"
 msgstr "Exports"
 
 #: ui/templates/help/help.html:19 ui/templates/help/help_presets.html:10
 #: ui/templates/help/help_presets.html:13
-#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:67
+#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:66
 msgid "Presets"
 msgstr "Presets"
 
@@ -211,7 +211,7 @@ msgstr "Fichier de Preset:"
 #: ui/templates/help/help_create.html:8 ui/templates/help/help_exports.html:8
 #: ui/templates/help/help_features.html:8
 #: ui/templates/help/help_formats.html:8 ui/templates/help/help_presets.html:9
-#: ui/templates/ui/base.html:68
+#: ui/templates/ui/base.html:67
 msgid "Help"
 msgstr "Aide"
 
@@ -562,7 +562,7 @@ msgstr ""
 
 #: ui/templates/help/help_features.html:56
 #: ui/templates/help/help_presets.html:46 ui/templates/ui/clone.html:162
-#: ui/templates/ui/configurations.html:180 ui/templates/ui/create.html:162
+#: ui/templates/ui/configurations.html:173 ui/templates/ui/create.html:162
 msgid "Upload Preset"
 msgstr "Télécharger le preset"
 
@@ -1065,11 +1065,24 @@ msgid ""
 "<a href=\"%(help_url)s\">Help</a> page."
 msgstr ""
 
-#: ui/templates/osm/login.html:20 ui/templates/osm/login.html.py:30
+#: ui/templates/osm/login.html:15
+msgid "Original Export Tool"
+msgstr ""
+
+#: ui/templates/osm/login.html:16
+msgid "The original HOT Export Tool is available"
+msgstr ""
+
+#: ui/templates/osm/login.html:16 ui/templates/ui/detail.html:89
+#: ui/templates/ui/detail.html.py:103
+msgid "here"
+msgstr "ici"
+
+#: ui/templates/osm/login.html:22 ui/templates/osm/login.html.py:32
 msgid "Login to OpenStreetMap"
 msgstr "Authentification à OpenStreetMap"
 
-#: ui/templates/osm/login.html:26
+#: ui/templates/osm/login.html:28
 msgid ""
 "If you don't have an OpenStreetMap account you can register for one <a "
 "href='http://www.openstreetmap.org/user/new'>here</a>."
@@ -1083,28 +1096,43 @@ msgstr "Vous avez réussi à vous déconnecter d'OpenStreetMap"
 msgid "Please click <a href=\"/login\">here</a> to login again."
 msgstr "Svp cliquez <a href=\"/login\">ici</a> pour vous connecter"
 
-#: ui/templates/osm/verify_osm_email.html:7 ui/templates/ui/email.html:7
+#: ui/templates/osm/verify_osm_email.html:7
+#: ui/templates/osm/verify_osm_email.txt:2 ui/templates/ui/email.html:7
 #: ui/templates/ui/error_email.html:7
 msgid "This is an automated email from HOT Exports."
 msgstr "Ceci est un mail automatique de HOT Exports"
 
-#: ui/templates/osm/verify_osm_email.html:8 ui/templates/ui/email.html:9
-#: ui/templates/ui/error_email.html:9
-msgid "Please follow this link"
-msgstr "S'il-vous-plaît cliquez sur ce lien"
+#: ui/templates/osm/verify_osm_email.html:8
+msgid "Please "
+msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:8
-msgid "to login to HOT Exports"
-msgstr "pour vous connecter à HOT Exports"
+msgid "follow this link"
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.html:8
+msgid " to login to HOT Exports."
+msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:10
 msgid "Thank you for registering with the HOT Export Service."
 msgstr "Merci pour votre inscription au Service HOT Export "
 
-#: ui/templates/osm/verify_osm_email.html:13 ui/templates/ui/email.html:14
+#: ui/templates/osm/verify_osm_email.html:13
+#: ui/templates/osm/verify_osm_email.txt:9 ui/templates/ui/email.html:14
 #: ui/templates/ui/error_email.html:15
 msgid "Humanitarian OpenStreetMap Team"
 msgstr "Équipe humanitaire OpenStreetMap"
+
+#: ui/templates/osm/verify_osm_email.txt:3
+msgid ""
+"Please copy and paste the link below into your browser to login to HOT "
+"Exports."
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.txt:7
+msgid "Thank you for registering with the HOT Export service."
+msgstr ""
 
 #: ui/templates/ui/404.html:8
 msgid "Page Not Found"
@@ -1124,27 +1152,27 @@ msgid ""
 "href=\"mailto:exports@hotosm.org\">email us</a> if this problem persists."
 msgstr "HOT Eports a rencontré une erreur interne. S'il vous plaît <a href=\"mailto:exports@hotosm.org\"> nous envoyer un email </a> si ce problème persiste."
 
-#: ui/templates/ui/base.html:15
+#: ui/templates/ui/base.html:14
 msgid "HOT Export Tool"
 msgstr "Outil HOT Export"
 
-#: ui/templates/ui/base.html:37
+#: ui/templates/ui/base.html:36
 msgid "Humanitarian <br/>OpenStreetMap <br/>Team"
 msgstr "Humanitarian <br/>OpenStreetMap <br/>Team"
 
-#: ui/templates/ui/base.html:61
+#: ui/templates/ui/base.html:60
 msgid "OSM Export Tool"
 msgstr "Outil HOT Export"
 
-#: ui/templates/ui/base.html:69
+#: ui/templates/ui/base.html:68
 msgid "About"
 msgstr "À propos"
 
-#: ui/templates/ui/base.html:74
+#: ui/templates/ui/base.html:73
 msgid "Log Out"
 msgstr "Déconnexion"
 
-#: ui/templates/ui/base.html:78 ui/templates/ui/configurations.html:196
+#: ui/templates/ui/base.html:77 ui/templates/ui/configurations.html:196
 msgid "Login"
 msgstr "Authentification"
 
@@ -1214,7 +1242,7 @@ msgstr "Nom d'attribut"
 msgid "Publish this preset globally."
 msgstr "Publier ce Preset à l'échelle mondiale"
 
-#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:185
+#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:178
 #: ui/templates/ui/create.html:167
 msgid "Upload"
 msgstr "Transférer"
@@ -1224,7 +1252,7 @@ msgid "Select a stored preset"
 msgstr "Sélectionnez un preset enregistré"
 
 #: ui/templates/ui/clone.html:180 ui/templates/ui/clone.html.py:245
-#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
 #: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
 msgid "Filename"
@@ -1270,13 +1298,13 @@ msgstr "Configurations:"
 
 #: ui/templates/ui/clone.html:245 ui/templates/ui/clone.html.py:373
 #: ui/templates/ui/configurations.html:61
-#: ui/templates/ui/configurations.html:165 ui/templates/ui/create.html:180
+#: ui/templates/ui/configurations.html:185 ui/templates/ui/create.html:180
 #: ui/templates/ui/create.html.py:245 ui/templates/ui/create.html:395
 #: ui/templates/ui/detail.html:152
 msgid "Type"
 msgstr "Type"
 
-#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
 #: ui/templates/ui/detail.html:152
 msgid "Status"
@@ -1484,10 +1512,6 @@ msgid "Please start"
 msgstr "S'il vous plaît commencer"
 
 #: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
-msgid "here"
-msgstr "ici"
-
-#: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
 msgid "to create a new export."
 msgstr "pour créer un nouvel Export"
 
@@ -1530,6 +1554,10 @@ msgstr "Fermé"
 #: ui/templates/ui/email.html:8
 msgid "Your HOT Export is ready."
 msgstr "Votre HOT Exports est prêt"
+
+#: ui/templates/ui/email.html:9 ui/templates/ui/error_email.html:9
+msgid "Please follow this link"
+msgstr "S'il-vous-plaît cliquez sur ce lien"
 
 #: ui/templates/ui/email.html:9
 msgid "to download your files."
