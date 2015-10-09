@@ -13,6 +13,7 @@ exports.detail = (function(){
             loadJobDetail();
             loadSubmittedRunDetails();
             loadCompletedRunDetails();
+            //loadFailedRunDetails();
         },
     }
 
@@ -172,7 +173,7 @@ exports.detail = (function(){
     function loadCompletedRunDetails(expand_first){
         var job_uid = exports.detail.job_uid;
         var $runPanel = $('#completed_runs > .panel-group');
-        var url = Config.RUNS_URL + '?status=COMPLETE&job_uid=' + job_uid
+        var url = Config.RUNS_URL + '?job_uid=' + job_uid
         $.ajax({
             cache: false,
             url: url,
@@ -184,18 +185,31 @@ exports.detail = (function(){
                     $('#submitted_runs > .panel-group').empty();
                     $('#submitted_runs').css('display', 'none');
                 }
-
                 $.each(data, function(index, run){
+                    if (run.status == 'SUBMITTED') { return; } // ignore submitted runs
                     var started = moment(run.started_at).format('h:mm:ss a, MMMM Do YYYY');
                     var finished = moment(run.finished_at).format('h:mm:ss a, MMMM Do YYYY');
                     var duration = moment.duration(run.duration).humanize();
-                    var status_class = run.status === 'COMPLETED' ? 'alert alert-success' : 'alert alert-warning';
+                    var status_class = '';
+                    switch (run.status){
+                        case 'COMPLETED':
+                            status_class = 'alert alert-success';
+                            break;
+                        case 'INCOMPLETE':
+                            status_class = 'alert alert-warning';
+                            break;
+                        case 'FAILED':
+                            status_class = 'alert alert-danger';
+                            break;
+                        default:
+                            break;
+                    }
                     var expanded = !exports.detail.timer && index === 0 ? 'in' : '';
                     var context = { 'run_uid': run.uid, 'status': run.status, 'user': run.user,
                                     'started': started, 'finished': finished,
                                     'duration': duration,'status_class': status_class,
                                     'expanded': expanded};
-                    var template = getCompletedRunTemplate();
+                    var template = run.status == 'COMPLETED' || run.status == 'INCOMPLETE' ? getCompletedRunTemplate() : getFailedRunTemplate();
                     var html = template(context);
                     $runPanel.append(html);
 
@@ -257,10 +271,9 @@ exports.detail = (function(){
                                 }
                                 break;
                         }
-
                         if (errors.length > 0) {
-                            $tr = $('tr#exceptions');
-                            $tr.css('display', 'table-row');
+                            $exceptions = $('tr#exceptions-' + run.uid);
+                            $exceptions.css('display', 'table-row');
                             $errorsDiv = $runPanel.find('div#' + run.uid).find('#errors').find('table');
                             $errorsDiv.append('<tr><td>' + task.name + '</td><td>' + task.errors[0].exception + '</td></tr>');
                         }
@@ -295,14 +308,14 @@ exports.detail = (function(){
                                                    <tr><td><strong>' + gettext('Started') + ' :</strong></td><td><div id="started">{{ started }}</div></td></tr> \
                                                    <tr><td><strong>' + gettext('Finished') + ':</strong></td><td><div id="finished">{{ finished }}</div></td></tr> \
                                                    <tr><td><strong>' + gettext('Duration') + ':</strong></td><td><div id="duration">{{ duration }}</div></td></tr> \
-                                                   <tr><td><strong>' + gettext('Download') + ':</strong></td><td> \
+                                                   <tr id="downloads-{{ run_uid }}"><td><strong>' + gettext('Download') + ':</strong></td><td> \
                                                         <div id="tasks"> \
                                                             <table class="table table-condensed" width="100%"> \
                                                             <thead><th>' + gettext('File') + '</th><th>' + gettext('Duration') + '</th><th>' + gettext('Size') + '</th></thead> \
                                                             </table> \
                                                         </div> \
                                                     </td></tr> \
-                                                    <tr id="exceptions"><td><strong>' + gettext('Errors') + ':</strong></td><td> \
+                                                    <tr id="exceptions-{{ run_uid }}" style="display: none;"><td><strong>' + gettext('Errors') + ':</strong></td><td> \
                                                         <div id="errors"> \
                                                             <table class="table table-condensed" width="100%"> \
                                                             <thead><th>Task</th><th>' + gettext('Error') + '</th></thead> \
@@ -319,6 +332,50 @@ exports.detail = (function(){
         var template = Handlebars.compile(html);
         return template;
     }
+    
+    /**
+     * Gets a template for displaying completed run details.
+     */
+    function getFailedRunTemplate(context) {
+        var html = $('  <div class="panel panel-default"> \
+                            <div class="panel-heading" role="tab"> \
+                                <h4 class="panel-title"> \
+                                    <a role="button" data-toggle="collapse" data-parent="#completed_runs" href="#{{ run_uid }}" \
+                                        aria-expanded="true" aria-controls="{{ run_uid }}"> \
+                                        {{ finished }} \
+                                    </a> \
+                                </h4> \
+                            </div> \
+                            <div id="{{ run_uid }}" class="panel-collapse collapse {{ expanded }}" role="tabpanel"> \
+                                <div class="panel-body"> \
+                                    <div class="row"> \
+                                       <div class="col-md-12"> \
+                                           <div class="table-responsive"> \
+                                               <table class="table"> \
+                                                   <tr><td><strong>' + gettext('Run Id') + ':</strong></td><td><div id="runuid">{{ run_uid }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Status') + ':</strong></td><td><div id="status" class="{{ status_class }}" role="alert">{{ status }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Run by') + ':</strong></td><td><div id="user" class="{{ user }}">{{ user }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Started') + ' :</strong></td><td><div id="started">{{ started }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Finished') + ':</strong></td><td><div id="finished">{{ finished }}</div></td></tr> \
+                                                   <tr><td><strong>' + gettext('Duration') + ':</strong></td><td><div id="duration">{{ duration }}</div></td></tr> \
+                                                    <tr id="exceptions-{{ run_uid }}"><td><strong>' + gettext('Errors') + ':</strong></td><td> \
+                                                        <div id="errors"> \
+                                                            <table class="table table-condensed" width="100%"> \
+                                                            <thead><th>Task</th><th>' + gettext('Error') + '</th></thead> \
+                                                            </table> \
+                                                        </div> \
+                                                    </td></tr> \
+                                               </table> \
+                                           </div> \
+                                       </div> \
+                                    </div> \
+                                </div> \
+                            </div> \
+                        </div>').html();
+        var template = Handlebars.compile(html);
+        return template;
+    }
+
 
 
     /**
