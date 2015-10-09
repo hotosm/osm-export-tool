@@ -7,7 +7,7 @@ import shutil
 
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.db import DatabaseError
 from django.template import Context
 from django.template.loader import get_template
@@ -401,9 +401,10 @@ class FinalizeRunTask(Task):
             'url': url,
             'status': run.status
         }
-        message = get_template('ui/email.html').render(Context(ctx))
-        msg = EmailMessage(subject, message, to=to, from_email=from_email)
-        msg.content_subtype = 'html'
+        text = get_template('email/email.txt').render(Context(ctx))
+        html = get_template('email/email.html').render(Context(ctx))
+        msg = EmailMultiAlternatives(subject, text, to=to, from_email=from_email)
+        msg.attach_alternative(html, "text/html")
         msg.send()
 
 
@@ -433,13 +434,14 @@ class ExportTaskErrorHandler(Task):
         addr = run.user.email
         subject = "Your HOT Export Failed"
         # email user and administrator
-        to = [addr]
-        from_email = ['HOT Exports <exports@hotosm.org>']
+        to = [addr, settings.TASK_ERROR_EMAIL]
+        from_email = 'HOT Exports <exports@hotosm.org>'
         ctx = {
             'url': url,
             'task_id': task_id
         }
-        message = get_template('ui/error_email.html').render(Context(ctx))
-        msg = EmailMessage(subject, message, to=to, from_email=from_email)
-        msg.content_subtype = 'html'
+        text = get_template('email/error_email.txt').render(Context(ctx))
+        html = get_template('email/error_email.html').render(Context(ctx))
+        msg = EmailMultiAlternatives(subject, text, to=to, from_email=from_email)
+        msg.attach_alternative(html, "text/html")
         msg.send()

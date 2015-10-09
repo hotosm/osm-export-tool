@@ -52,3 +52,9 @@ JOB_MAX_EXTENT = 2500000  # default export max extent in sq km
 EXPORT_MAX_RUNS = 5
 
 HOSTNAME = 'hot.geoweb.io'
+
+"""
+Admin email address
+which receives task error notifications.
+"""
+TASK_ERROR_EMAIL = ''

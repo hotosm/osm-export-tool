@@ -1,0 +1,12 @@
+{% load i18n %}
+{% trans 'This is an automated email from HOT Exports.' %}
+
+{% trans 'Unfortunately, your HOT Export has failed.' %}
+
+{% trans 'Please copy and paste this link ' %}{{ url }}{% trans ' into your browser to see the status of your HOT Export.' %}
+
+{% trans 'Please quote this Task ID when reporting errors:' %} {{ task_id }}.
+
+{% trans 'We apologise for any inconvenience this may cause.' %}
+
+{% trans 'Humanitarian OpenStreetMap Team' %}

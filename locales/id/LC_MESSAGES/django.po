@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-09 10:15+0000\n"
-"PO-Revision-Date: 2015-10-09 10:07+0000\n"
+"POT-Creation-Date: 2015-10-09 11:52+0000\n"
+"PO-Revision-Date: 2015-10-09 11:44+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/hotosm/osm-export-tool2/language/id/)\n"
 "MIME-Version: 1.0\n"
@@ -105,6 +105,78 @@ msgstr ""
 
 #: core/settings/base.py:30
 msgid "French"
+msgstr ""
+
+#: ui/templates/email/email.html:7 ui/templates/email/email.txt:2
+#: ui/templates/email/error_email.html:7 ui/templates/email/error_email.txt:2
+#: ui/templates/osm/verify_osm_email.html:7
+#: ui/templates/osm/verify_osm_email.txt:2
+msgid "This is an automated email from HOT Exports."
+msgstr ""
+
+#: ui/templates/email/email.html:8 ui/templates/email/email.txt:4
+msgid "Your HOT Export is ready."
+msgstr ""
+
+#: ui/templates/email/email.html:9
+msgid "Please follow this link "
+msgstr ""
+
+#: ui/templates/email/email.html:9
+msgid " to download your files."
+msgstr ""
+
+#: ui/templates/email/email.html:10 ui/templates/email/email.txt:8
+msgid "Thank you for using the HOT Export Service"
+msgstr ""
+
+#: ui/templates/email/email.html:11 ui/templates/email/email.txt:10
+#: ui/templates/email/error_email.html:12
+#: ui/templates/email/error_email.txt:12
+#: ui/templates/osm/verify_osm_email.html:13
+#: ui/templates/osm/verify_osm_email.txt:9
+msgid "Humanitarian OpenStreetMap Team"
+msgstr ""
+
+#: ui/templates/email/email.txt:6
+msgid "Please copy and paste this link"
+msgstr ""
+
+#: ui/templates/email/email.txt:6
+msgid " into your browser to download your files."
+msgstr ""
+
+#: ui/templates/email/error_email.html:4
+msgid "HOT Exports"
+msgstr ""
+
+#: ui/templates/email/error_email.html:8 ui/templates/email/error_email.txt:4
+msgid "Unfortunately, your HOT Export has failed."
+msgstr ""
+
+#: ui/templates/email/error_email.html:9
+msgid "Please follow this link"
+msgstr ""
+
+#: ui/templates/email/error_email.html:9
+msgid " to see the status of your HOT Export."
+msgstr ""
+
+#: ui/templates/email/error_email.html:10 ui/templates/email/error_email.txt:8
+msgid "Please quote this Task ID when reporting errors:"
+msgstr ""
+
+#: ui/templates/email/error_email.html:11
+#: ui/templates/email/error_email.txt:10
+msgid "We apologise for any inconvenience this may cause."
+msgstr ""
+
+#: ui/templates/email/error_email.txt:6
+msgid "Please copy and paste this link "
+msgstr ""
+
+#: ui/templates/email/error_email.txt:6
+msgid " into your browser to see the status of your HOT Export."
 msgstr ""
 
 #: ui/templates/help/help.html:7
@@ -1091,12 +1163,6 @@ msgstr ""
 msgid "Please click <a href=\"/login\">here</a> to login again."
 msgstr ""
 
-#: ui/templates/osm/verify_osm_email.html:7
-#: ui/templates/osm/verify_osm_email.txt:2 ui/templates/ui/email.html:7
-#: ui/templates/ui/error_email.html:7
-msgid "This is an automated email from HOT Exports."
-msgstr ""
-
 #: ui/templates/osm/verify_osm_email.html:8
 msgid "Please "
 msgstr ""
@@ -1111,12 +1177,6 @@ msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:10
 msgid "Thank you for registering with the HOT Export Service."
-msgstr ""
-
-#: ui/templates/osm/verify_osm_email.html:13
-#: ui/templates/osm/verify_osm_email.txt:9 ui/templates/ui/email.html:14
-#: ui/templates/ui/error_email.html:15
-msgid "Humanitarian OpenStreetMap Team"
 msgstr ""
 
 #: ui/templates/osm/verify_osm_email.txt:3
@@ -1546,22 +1606,6 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: ui/templates/ui/email.html:8
-msgid "Your HOT Export is ready."
-msgstr ""
-
-#: ui/templates/ui/email.html:9 ui/templates/ui/error_email.html:9
-msgid "Please follow this link"
-msgstr ""
-
-#: ui/templates/ui/email.html:9
-msgid "to download your files."
-msgstr ""
-
-#: ui/templates/ui/email.html:11
-msgid "Thank you for using the HOT Export Service"
-msgstr ""
-
 #: ui/templates/ui/error.html:8
 msgid "Error Creating Export"
 msgstr ""
@@ -1576,30 +1620,6 @@ msgstr ""
 
 #: ui/templates/ui/error.html:10
 msgid "if this problem persists."
-msgstr ""
-
-#: ui/templates/ui/error_email.html:4
-msgid "HOT Exports"
-msgstr ""
-
-#: ui/templates/ui/error_email.html:8
-msgid "Unfortunately, your HOT Export has failed."
-msgstr ""
-
-#: ui/templates/ui/error_email.html:9
-msgid "to see the status of your HOT Export."
-msgstr ""
-
-#: ui/templates/ui/error_email.html:10
-msgid "Please quote this Task ID when reporting errors:"
-msgstr ""
-
-#: ui/templates/ui/error_email.html:11
-msgid "We apologise for any inconvenience this may cause."
-msgstr ""
-
-#: ui/templates/ui/error_email.html:13
-msgid "Yours sincerely"
 msgstr ""
 
 #: ui/templates/ui/list.html:18
