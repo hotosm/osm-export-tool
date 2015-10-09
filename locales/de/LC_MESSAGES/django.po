@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-09 11:52+0000\n"
-"PO-Revision-Date: 2015-10-09 11:44+0000\n"
+"POT-Creation-Date: 2015-10-09 12:36+0000\n"
+"PO-Revision-Date: 2015-10-09 12:28+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/hotosm/osm-export-tool2/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -521,8 +521,8 @@ msgid ""
 "<p>There are several options available on this page to apply to the Export, which include the ability to 'Rerun Export', 'Clone Export', or 'Delete Export'. The functionality of these options are detailed below: "
 msgstr ""
 
-#: ui/templates/help/help_features.html:9 ui/templates/ui/detail.html:38
-#: ui/templates/ui/detail.html.py:59
+#: ui/templates/help/help_features.html:9 ui/templates/ui/detail.html:39
+#: ui/templates/ui/detail.html.py:60
 msgid "Features"
 msgstr ""
 
@@ -571,7 +571,7 @@ msgid ""
 " use and efficiency during disaster situations, providing key data."
 msgstr ""
 
-#: ui/templates/help/help_features.html:35
+#: ui/templates/help/help_features.html:35 ui/templates/ui/detail.html:33
 msgid "OpenStreetMap"
 msgstr ""
 
@@ -1140,8 +1140,8 @@ msgstr ""
 msgid "The original HOT Export Tool is available"
 msgstr ""
 
-#: ui/templates/osm/login.html:16 ui/templates/ui/detail.html:89
-#: ui/templates/ui/detail.html.py:103
+#: ui/templates/osm/login.html:16 ui/templates/ui/detail.html:90
+#: ui/templates/ui/detail.html.py:104
 msgid "here"
 msgstr ""
 
@@ -1207,6 +1207,17 @@ msgid ""
 "href=\"mailto:exports@hotosm.org\">email us</a> if this problem persists."
 msgstr ""
 
+#: ui/templates/ui/about.html:14
+msgid "License Information"
+msgstr ""
+
+#: ui/templates/ui/about.html:15
+msgid ""
+"Data is copyright OpenStreetMap Contributors, <a "
+"href=\"http://opendatacommons.org/licenses/odbl/1-0/\">ODbL 1.0 "
+"licensed</a>."
+msgstr ""
+
 #: ui/templates/ui/base.html:14
 msgid "HOT Export Tool"
 msgstr "HOT Export Werkzeug"
@@ -1247,6 +1258,7 @@ msgid "Description"
 msgstr "Beschreibung"
 
 #: ui/templates/ui/clone.html:45 ui/templates/ui/create.html:45
+#: ui/templates/ui/list.html:68
 msgid "Project"
 msgstr ""
 
@@ -1309,7 +1321,7 @@ msgstr ""
 #: ui/templates/ui/clone.html:180 ui/templates/ui/clone.html.py:245
 #: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
-#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
+#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:153
 msgid "Filename"
 msgstr "Dateiname"
 
@@ -1355,13 +1367,13 @@ msgstr "Einstellungen:"
 #: ui/templates/ui/configurations.html:61
 #: ui/templates/ui/configurations.html:185 ui/templates/ui/create.html:180
 #: ui/templates/ui/create.html.py:245 ui/templates/ui/create.html:395
-#: ui/templates/ui/detail.html:152
+#: ui/templates/ui/detail.html:153
 msgid "Type"
 msgstr "Typ"
 
 #: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
-#: ui/templates/ui/detail.html:152
+#: ui/templates/ui/detail.html:153
 msgid "Status"
 msgstr "Status"
 
@@ -1426,7 +1438,7 @@ msgid "End Date:"
 msgstr "Enddatum:"
 
 #: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:61
-#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
+#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:153
 #: ui/templates/ui/list.html:68
 msgid "Created"
 msgstr "Erstellt"
@@ -1538,71 +1550,83 @@ msgstr ""
 msgid "Export Formats:"
 msgstr "Export Formate:"
 
-#: ui/templates/ui/detail.html:41
+#: ui/templates/ui/detail.html:33
+msgid "Data is copyright"
+msgstr ""
+
+#: ui/templates/ui/detail.html:33
+msgid "contributors"
+msgstr ""
+
+#: ui/templates/ui/detail.html:33
+msgid "ODbL 1.0 licensed"
+msgstr ""
+
+#: ui/templates/ui/detail.html:42
 msgid "Rerun Export"
 msgstr ""
 
-#: ui/templates/ui/detail.html:44
+#: ui/templates/ui/detail.html:45
 msgid "Clone Export"
 msgstr ""
 
-#: ui/templates/ui/detail.html:50 ui/templates/ui/detail.html.py:128
+#: ui/templates/ui/detail.html:51 ui/templates/ui/detail.html.py:129
 msgid "Delete Export"
 msgstr ""
 
-#: ui/templates/ui/detail.html:69
+#: ui/templates/ui/detail.html:70
 msgid "Export Runs"
 msgstr "Export-Durchläufe"
 
-#: ui/templates/ui/detail.html:84
+#: ui/templates/ui/detail.html:85
 msgid "Export Deleted"
 msgstr ""
 
-#: ui/templates/ui/detail.html:88
+#: ui/templates/ui/detail.html:89
 msgid "Your export has been deleted successfully."
 msgstr ""
 
-#: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
+#: ui/templates/ui/detail.html:90 ui/templates/ui/detail.html.py:104
 msgid "Please start"
 msgstr ""
 
-#: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
+#: ui/templates/ui/detail.html:90 ui/templates/ui/detail.html.py:104
 msgid "to create a new export."
 msgstr ""
 
-#: ui/templates/ui/detail.html:98
+#: ui/templates/ui/detail.html:99
 msgid "Export Not Found"
 msgstr ""
 
-#: ui/templates/ui/detail.html:102
+#: ui/templates/ui/detail.html:103
 msgid "The requested export was not found."
 msgstr ""
 
-#: ui/templates/ui/detail.html:116
+#: ui/templates/ui/detail.html:117
 msgid "Really delete this export?"
 msgstr ""
 
-#: ui/templates/ui/detail.html:122
+#: ui/templates/ui/detail.html:123
 msgid "This Export will be permanently deleted and cannot be recovered."
 msgstr ""
 
-#: ui/templates/ui/detail.html:123
+#: ui/templates/ui/detail.html:124
 msgid "All associated export runs and their downloads will also be deleted."
 msgstr ""
 
-#: ui/templates/ui/detail.html:127
+#: ui/templates/ui/detail.html:128
 msgid "Cancel"
 msgstr ""
 
-#: ui/templates/ui/detail.html:140
+#: ui/templates/ui/detail.html:141
 msgid "Features selected for this export"
 msgstr ""
 
-#: ui/templates/ui/detail.html:155
+#: ui/templates/ui/detail.html:156
 msgid "The preset associated with this export has been deleted."
 msgstr ""
 
-#: ui/templates/ui/detail.html:159
+#: ui/templates/ui/detail.html:160
 msgid "Close"
 msgstr ""
 
@@ -1625,10 +1649,6 @@ msgstr ""
 #: ui/templates/ui/list.html:18
 msgid "Filter Exports"
 msgstr "Filter-Exporte"
-
-#: ui/templates/ui/list.html:68
-msgid "Event"
-msgstr "Ereignis"
 
 #: ui/templates/ui/list.html:68
 msgid "Region"
