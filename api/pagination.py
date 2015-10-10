@@ -27,11 +27,6 @@ class LinkHeaderPagination(PageNumberPagination):
             link = ''
             status_code = status.HTTP_200_OK
         link = link.format(next_url=next_url, previous_url=previous_url)
-
-        logger.debug('Total results: %s' % self.page.paginator.count)
-        logger.debug('Num pages: %s' % self.page.paginator.num_pages)
-        logger.debug('Page range: %s' % self.page.paginator.page_range)
-        logger.debug('Page number: %s' % self.page.number)
         start_idx = self.page.start_index()
         end_idx = self.page.end_index()
         total = self.page.paginator.count
