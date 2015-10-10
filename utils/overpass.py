@@ -37,14 +37,17 @@ class Overpass(object):
             self.bbox = bbox
         else:
             raise Exception('A bounding box is required: miny,minx,maxy,maxx')
-        self.default_template = Template('(node($bbox);<;);out body;')
+        self.default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;);out body;')
 
         # see http://wiki.openstreetmap.org/wiki/Osmfilter#Object_Filter
         self.filter_template = '--keep={0}'.format(' or '.join(self.filters))
 
         # dump out all osm data for the specified bounding box
-        self.query = self.default_template.safe_substitute({'bbox': self.bbox})
-
+        max_size = settings.OVERPASS_MAX_SIZE
+        timeout = settings.OVERPASS_TIMEOUT
+        self.query = self.default_template.safe_substitute(
+            {'maxsize': max_size, 'timeout': timeout, 'bbox': self.bbox}
+        )
         # set up required paths
         self.raw_osm = self.stage_dir + 'query.osm'
         self.filtered_osm = self.stage_dir + job_name + '.osm'
@@ -54,6 +57,7 @@ class Overpass(object):
 
     def run_query(self,):
         q = self.get_query()
+        logger.debug(q)
         if self.debug:
             print 'Query started at: %s' % datetime.now()
         try:
