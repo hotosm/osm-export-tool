@@ -323,6 +323,38 @@ class ExportFormatSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportFormat
         fields = ('uid', 'url', 'slug', 'name', 'description')
+        
+
+class ListJobSerializer(serializers.Serializer):
+    uid = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name='api:jobs-detail',
+        lookup_field='uid'
+    )
+    name = serializers.CharField()
+    description = serializers.CharField()
+    event = serializers.CharField()
+    created_at = serializers.DateTimeField(read_only=True)
+    owner = serializers.SerializerMethodField(read_only=True)
+    extent = serializers.SerializerMethodField()
+    region = SimpleRegionSerializer(read_only=True)
+
+    def get_uid(self, obj):
+        return obj.uid
+
+    def get_extent(self, obj):
+        uid = str(obj.uid)
+        name = obj.name
+        geom = obj.the_geom
+        geometry = json.loads(GEOSGeometry(geom).geojson)
+        feature = OrderedDict()
+        feature['type'] = 'Feature'
+        feature['properties'] = {'uid': uid, 'name': name}
+        feature['geometry'] = geometry
+        return feature
+    
+    def get_owner(self, obj):
+        return obj.user.username
 
 
 class JobSerializer(serializers.Serializer):
@@ -420,8 +452,7 @@ class JobSerializer(serializers.Serializer):
         user = data['user']
         validators.validate_formats(data)
         extents = validators.validate_bbox_params(data)
-        bbox = validators.validate_bbox(extents, user=user)
-        the_geom = GEOSGeometry(bbox, srid=4326)
+        the_geom = validators.validate_bbox(extents, user=user)
         data['the_geom'] = the_geom
         regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom')
         sorted_regions = sorted(regions.all(), key=lambda a: a.intersection.area, reverse=True)  # order by largest area of intersection

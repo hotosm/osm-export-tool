@@ -21,7 +21,7 @@ from jobs.presets import PresetParser, UnfilteredPresetParser
 from serializers import (
     ExportConfigSerializer, ExportFormatSerializer, ExportRunSerializer,
     ExportTaskSerializer, JobSerializer, RegionMaskSerializer,
-    RegionSerializer
+    RegionSerializer, ListJobSerializer
 )
 from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
@@ -53,7 +53,7 @@ class JobViewSet(viewsets.ModelViewSet):
     pagination_class = LinkHeaderPagination
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = JobFilter
-    search_fields = ('name', 'description', 'event', 'user__username')
+    search_fields = ('name', 'description', 'event', 'user__username', 'region__name')
 
     def get_queryset(self,):
         return Job.objects.all()
@@ -64,10 +64,10 @@ class JobViewSet(viewsets.ModelViewSet):
             queryset = self.filter_queryset(self.get_queryset())
             page = self.paginate_queryset(queryset)
             if page is not None:
-                serializer = self.get_serializer(page, many=True, context={'request': request})
+                serializer = ListJobSerializer(page, many=True, context={'request': request})
                 return self.get_paginated_response(serializer.data)
             else:
-                serializer = JobSerializer(queryset, many=True, context={'request': request})
+                serializer = ListJobSerializer(queryset, many=True, context={'request': request})
                 return Response(serializer.data)
         if (len(params.split(',')) < 4):
             errors = OrderedDict()
@@ -87,10 +87,10 @@ class JobViewSet(viewsets.ModelViewSet):
                 queryset = self.filter_queryset(Job.objects.filter(the_geom__within=bbox))
                 page = self.paginate_queryset(queryset)
                 if page is not None:
-                    serializer = self.get_serializer(page, many=True, context={'request': request})
+                    serializer = ListJobSerializer(page, many=True, context={'request': request})
                     return self.get_paginated_response(serializer.data)
                 else:
-                    serializer = JobSerializer(queryset, many=True, context={'request': request})
+                    serializer = ListJobSerializer(queryset, many=True, context={'request': request})
                     return Response(serializer.data)
             except ValidationError as e:
                 logger.debug(e.detail)
