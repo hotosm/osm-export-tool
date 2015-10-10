@@ -327,11 +327,20 @@ clone.job = (function(){
                 valid_region = true;
             }
         }
-        /*
+       /*
          * calculate the extent area and convert to sq kilometers
          * converts to lat long which will be proj set on form if extents are valid.
          */
-        var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
+        bounds.transform('EPSG:3857', 'EPSG:4326')
+        // trim bounds to 6 decimal places before calculating geodesic area
+        var left = bounds.left.toFixed(6);
+        var bottom = bounds.bottom.toFixed(6);
+        var right = bounds.right.toFixed(6);
+        var top = bounds.top.toFixed(6);
+        
+        bounds_trunc = new OpenLayers.Bounds(left, bottom, right, top);
+        var area = bounds_trunc.toGeometry().getGeodesicArea() / 1000000; // sq km
+        
         // format the area and max bounds for display..
         var area_str = numeral(area).format('0 0');
         var max_bounds_str = numeral(max_bounds_area).format('0 0');
@@ -739,7 +748,6 @@ clone.job = (function(){
 
                 },
                 error: function(jqxhr, textStatus, errorThrown){
-                    console.log(jqxhr);
                     resetUploadConfigTab(textStatus);
                     var modalOpts = {
                         keyboard: true,
@@ -916,7 +924,6 @@ clone.job = (function(){
                 var tags = [];
                 var formats = [];
                 $.each(fields, function(idx, field){
-                    console.log(idx, field);
                     // ignore config upload related fields
                     switch (field.name){
                         case 'filename': break;
@@ -985,7 +992,6 @@ clone.job = (function(){
                         window.location.href=url;
                     },
                     error: function(jqXHR, textStatus, errorThrown){
-                        console.log(jqXHR, textStatus, errorThrown);
                         if (jqXHR.status == 500 || jqXHR.status == 400) {
                             window.location.href = Config.CREATE_ERROR_URL;
                         }

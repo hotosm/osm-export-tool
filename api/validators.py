@@ -3,6 +3,7 @@ import logging
 from collections import OrderedDict
 
 import magic
+import math
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSException, GEOSGeometry, Polygon
@@ -57,9 +58,8 @@ def validate_bbox(extents, user=None):
     detail['message'] = 'Invalid bounding box.'
     try:
         bbox = GEOSGeometry(Polygon.from_bbox(extents), srid=4326)
-        bbox_merc = bbox.transform(3857, clone=True)
-        if (bbox.valid and bbox_merc.valid):
-            area = bbox_merc.area / 1000000
+        if (bbox.valid):
+            area = get_geodesic_area(bbox) / 1000000
             if area > max_extent:
                 detail['id'] = 'invalid_extents'
                 detail['message'] = 'Job extents too large: {0}'.format(area)
@@ -131,3 +131,18 @@ def validate_content_type(upload, config_type):
         detail['message'] = 'Uploaded config file has invalid content: {0}'.format(content_type)
         raise serializers.ValidationError(detail)
     return content_type
+
+
+def get_geodesic_area(geom):
+    """Derived from http://bit.ly/1Mite1X """
+    area = 0.0
+    coords = geom.coords[0]
+    length = len(coords)
+    if length > 2:
+        for x in range(length -1):
+            p1 = coords[x]
+            p2 = coords[x+1]
+            area += math.radians(p2[0] - p1[0]) * (2 + math.sin(math.radians(p1[1]))
+                                                   +  math.sin(math.radians(p2[1])))
+        area = area * 6378137 * 6378137 / 2.0;
+    return area
