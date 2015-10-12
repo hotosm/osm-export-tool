@@ -1,3 +1,10 @@
+"""
+Provides serialization for API responses.
+
+See `DRF serializer documentation  <http://www.django-rest-framework.org/api-guide/serializers/>`_
+Serializes API responses as JSON or HTML.
+See DEFAULT_RENDERER_CLASSES setting in core.settings.contrib for the enabled renderers.
+"""
 # -*- coding: utf-8 -*-
 import cPickle
 import json
@@ -28,32 +35,16 @@ except ImportError:
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-"""
-class GroupSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-
-
-class UserSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    username = serializers.CharField()
-
-
-class UserGroupSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    username = serializers.CharField()
-    groups = GroupSerializer(many=True)
-"""
-
 
 class TagSerializer(serializers.ModelSerializer):
-
+    """Serialize the Tag model."""
     class Meta:
         model = Tag
         fields = ('key', 'value', 'data_model', 'geom_types')
 
 
 class SimpleExportConfigSerializer(serializers.Serializer):
+    """Return a sub-set of ExportConfig model attributes."""
     uid = serializers.UUIDField(read_only=True)
     name = serializers.CharField()
     config_type = serializers.CharField()
@@ -70,6 +61,7 @@ class SimpleExportConfigSerializer(serializers.Serializer):
 
 
 class ExportConfigSerializer(serializers.Serializer):
+    """Return the full set of ExportConfig model attributes."""
     uid = serializers.UUIDField(read_only=True)
     url = serializers.HyperlinkedIdentityField(
        view_name='api:configs-detail',
@@ -89,10 +81,11 @@ class ExportConfigSerializer(serializers.Serializer):
     )
 
     def create(self, validated_data):
-        logger.debug(validated_data)
+        """Create an ExportConfig instance."""
         return ExportConfig.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        """Update an ExportConfig instance."""
         instance.config_type = validated_data.get('config_type', instance.config_type)
         instance.upload.delete(False)  # delete the old file..
         instance.upload = validated_data.get('upload', instance.upload)
@@ -104,10 +97,13 @@ class ExportConfigSerializer(serializers.Serializer):
         return instance
 
     def validate(self, data):
+        """Validate the form data."""
         logger.debug(data)
         upload = data['upload']
         config_type = data['config_type']
         content_type = validators.validate_content_type(upload, config_type)
+        if config_type == 'PRESET':
+            validators.validate_preset(upload)
         data['content_type'] = content_type
         fname = data['upload'].name
         data['filename'] = fname.replace(' ', '_').lower()
@@ -125,7 +121,7 @@ class ExportConfigSerializer(serializers.Serializer):
 
 
 class ExportTaskResultSerializer(serializers.ModelSerializer):
-
+    """Serialize ExportTaskResult models."""
     url = serializers.SerializerMethodField()
     size = serializers.SerializerMethodField()
 
@@ -142,7 +138,7 @@ class ExportTaskResultSerializer(serializers.ModelSerializer):
 
 
 class ExportTaskExceptionSerializer(serializers.ModelSerializer):
-
+    """Serialize ExportTaskExceptions."""
     exception = serializers.SerializerMethodField()
 
     class Meta:
@@ -155,6 +151,7 @@ class ExportTaskExceptionSerializer(serializers.ModelSerializer):
 
 
 class ExportTaskSerializer(serializers.ModelSerializer):
+    """Serialize ExportTasks models."""
     result = serializers.SerializerMethodField()
     errors = serializers.SerializerMethodField()
     started_at = serializers.SerializerMethodField()
@@ -170,6 +167,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
         fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'result', 'errors',)
 
     def get_result(self, obj):
+        """Serialize the ExportTaskResult for this ExportTask."""
         try:
             result = obj.result
             serializer = ExportTaskResultSerializer(result, many=False, context=self.context)
@@ -178,6 +176,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
             return None  # no result yet
 
     def get_errors(self, obj):
+        """Serialize the ExportTaskExceptions for this ExportTask."""
         try:
             errors = obj.exceptions
             serializer = ExportTaskExceptionSerializer(errors, many=True, context=self.context)
@@ -198,6 +197,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
             return obj.finished_at
 
     def get_duration(self, obj):
+        """Get the duration for this ExportTask."""
         started = obj.started_at
         finished = obj.finished_at
         if started and finished:
@@ -207,6 +207,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
 
 
 class SimpleJobSerializer(serializers.Serializer):
+    """Return a sub-set of Job model attributes."""
     uid = serializers.SerializerMethodField()
     name = serializers.CharField()
     description = serializers.CharField()
@@ -220,6 +221,7 @@ class SimpleJobSerializer(serializers.Serializer):
         return obj.uid
 
     def get_extent(self, obj):
+        """Return the Job's extent as a GeoJSON Feature."""
         uid = str(obj.uid)
         name = obj.name
         geom = obj.the_geom
@@ -232,11 +234,12 @@ class SimpleJobSerializer(serializers.Serializer):
 
 
 class ExportRunSerializer(serializers.ModelSerializer):
+    """Serialize ExportRun."""
     url = serializers.HyperlinkedIdentityField(
        view_name='api:runs-detail',
        lookup_field='uid'
     )
-    job = SimpleJobSerializer()
+    job = SimpleJobSerializer()  # nest the job details
     tasks = ExportTaskSerializer(many=True)
     finished_at = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
@@ -253,6 +256,7 @@ class ExportRunSerializer(serializers.ModelSerializer):
             return obj.finished_at
 
     def get_duration(self, obj):
+        """Return the duration of the the run."""
         started = obj.started_at
         finished = obj.finished_at
         if started and finished:
@@ -269,9 +273,7 @@ class UserSerializer(serializers.Serializer):
 
 
 class RegionMaskSerializer(geo_serializers.GeoFeatureModelSerializer):
-    """
-    Returns a GeoJSON representation of the region mask.
-    """
+    """Return a GeoJSON representation of the region mask."""
     class Meta:
         model = RegionMask
         geo_field = 'the_geom'
@@ -279,9 +281,7 @@ class RegionMaskSerializer(geo_serializers.GeoFeatureModelSerializer):
 
 
 class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
-    """
-    Serializer returning GeoJSON representation of Regions.
-    """
+    """Serializer returning GeoJSON representation of Regions."""
     url = serializers.HyperlinkedIdentityField(
        view_name='api:regions-detail',
        lookup_field='uid'
@@ -298,9 +298,7 @@ class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
 
 
 class SimpleRegionSerializer(serializers.ModelSerializer):
-    """
-    Serializer for returning Region data without geometry.
-    """
+    """Serializer for returning Region model data without geometry."""
     url = serializers.HyperlinkedIdentityField(
        view_name='api:regions-detail',
        lookup_field='uid'
@@ -312,9 +310,7 @@ class SimpleRegionSerializer(serializers.ModelSerializer):
 
 
 class ExportFormatSerializer(serializers.ModelSerializer):
-    """
-    Representation of ExportFormat.
-    """
+    """Return a representation of the ExportFormat model."""
     url = serializers.HyperlinkedIdentityField(
        view_name='api:formats-detail',
        lookup_field='slug'
@@ -323,9 +319,17 @@ class ExportFormatSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportFormat
         fields = ('uid', 'url', 'slug', 'name', 'description')
-        
+
 
 class ListJobSerializer(serializers.Serializer):
+    """
+    Return a sub-set of Job model attributes.
+
+    Provides a stripped down set of export attributes.
+    Removes the selected Tags from the Job representation.
+    Used to display the list of exports in the export browser
+    where tag info is not required.
+    """
     uid = serializers.SerializerMethodField()
     url = serializers.HyperlinkedIdentityField(
         view_name='api:jobs-detail',
@@ -343,6 +347,7 @@ class ListJobSerializer(serializers.Serializer):
         return obj.uid
 
     def get_extent(self, obj):
+        """Return the export extent as a GeoJSON Feature."""
         uid = str(obj.uid)
         name = obj.name
         geom = obj.the_geom
@@ -352,19 +357,19 @@ class ListJobSerializer(serializers.Serializer):
         feature['properties'] = {'uid': uid, 'name': name}
         feature['geometry'] = geometry
         return feature
-    
+
     def get_owner(self, obj):
         return obj.user.username
 
 
 class JobSerializer(serializers.Serializer):
     """
-    Job Serializer.
+    Return a full representation of an export Job.
+
+    This is the core representation of the API.
     """
-    """
-    Would prefer if these were loaded at runtime,
-    but the MultipleChoiceField loads data from non-test db during tests.
-    """
+
+    """List of the available Export Formats."""
     EXPORT_FORMAT_CHOICES = (
         ('shp', 'Shapefile Format'),
         ('obf', 'OBF Format'),
@@ -406,7 +411,6 @@ class JobSerializer(serializers.Serializer):
     published = serializers.BooleanField(required=False)
     feature_save = serializers.BooleanField(required=False)
     feature_pub = serializers.BooleanField(required=False)
-    # configs = ExportConfigSerializer(many=True)
     xmin = serializers.FloatField(
         max_value=180, min_value=-180, write_only=True,
         error_messages={
@@ -443,12 +447,15 @@ class JobSerializer(serializers.Serializer):
     tags = serializers.SerializerMethodField()
 
     def create(self, validated_data):
+        """Creates an export Job."""
         return Job.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        """Not implemented as Jobs are cloned rather than updated."""
         pass
 
     def validate(self, data):
+        """Validates the data submitted during Job creation."""
         user = data['user']
         validators.validate_formats(data)
         extents = validators.validate_bbox_params(data)
@@ -462,6 +469,7 @@ class JobSerializer(serializers.Serializer):
         return data
 
     def get_extent(self, obj):
+        """Return the export extent as a GeoJSON Feature."""
         uid = str(obj.uid)
         name = obj.name
         geom = obj.the_geom
@@ -473,17 +481,20 @@ class JobSerializer(serializers.Serializer):
         return feature
 
     def get_exports(self, obj):
+        """Return the export formats selected for this export."""
         formats = [format for format in obj.formats.all()]
         serializer = ExportFormatSerializer(formats, many=True, context={'request': self.context['request']})
         return serializer.data
 
     def get_configurations(self, obj):
+        """Return the configurations selected for this export."""
         configs = obj.configs.all()
         serializer = SimpleExportConfigSerializer(configs, many=True,
                                                   context={'request': self.context['request']})
         return serializer.data
 
     def get_tags(self, obj):
+        """Return the Tags selected for this export."""
         tags = obj.tags.all()
         serializer = TagSerializer(tags, many=True)
         return serializer.data

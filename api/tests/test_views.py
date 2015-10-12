@@ -691,6 +691,14 @@ class TestExportConfigViewSet(APITestCase):
         response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM-WRONG'}, format='multipart')
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
 
+    def test_invalid_preset(self, ):
+        url = reverse('api:configs-list')
+        path = os.path.dirname(os.path.realpath(__file__))
+        f = open(path + '/files/invalid_hdm_presets.xml', 'r')
+        self.assertIsNotNone(f)
+        response = self.client.post(url, {'name': 'Invalid Preset', 'upload': f, 'config_type': 'PRESET'}, format='multipart')
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+
     def test_invalid_name(self, ):
         url = reverse('api:configs-list')
         path = os.path.dirname(os.path.realpath(__file__))

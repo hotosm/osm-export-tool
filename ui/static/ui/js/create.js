@@ -1010,6 +1010,11 @@ create.job = (function(){
                         var uid = result.uid;
                         var url = '/exports/' + uid;
                         window.location.href=url;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        if (jqXHR.status == 500 || jqXHR.status == 400) {
+                            window.location.href = Config.CREATE_ERROR_URL;
+                        }
                     }
                 });
             }

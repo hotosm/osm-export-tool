@@ -299,13 +299,16 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalLabel">{% trans 'Error Uploading Configuration File' %}</h4>
         </div>
-        <div class="modal-body">
-         <p><span class="glyphicon glyphicon-exclamation-sign" style="float:left; font-size: 2.0em; color: red; margin:0 7px 25px 0;">
-         </span>
-            <div>
-             <p>{% trans 'There was a problem with your configuration upload.' %}</p>
-             <p id="message"></p>
-            </div>
+        <div class="modal-body" style="font-size: large;">
+         <div>
+            <span class="glyphicon glyphicon-exclamation-sign"
+                  style="float:left; font-size: 2.0em; color: red; margin:0 7px 25px 0;">
+            </span>
+         </div>
+        <div>
+            <p>{% trans 'There was a problem with your configuration upload.' %}</p>
+            <p id="message"></p>
+        </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
