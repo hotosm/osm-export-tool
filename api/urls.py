@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-    API url configuration
-"""
+"""API url configuration."""
 
 from rest_framework.routers import DefaultRouter
 

@@ -1,3 +1,4 @@
+"""Provides classes for handling API requests."""
 # -*- coding: utf-8 -*-
 import logging
 import os
@@ -40,10 +41,12 @@ renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 class JobViewSet(viewsets.ModelViewSet):
     """
-    ## Job API Endpoint.
-    Endpoint for job creation and managment.
+    Export API Endpoint.
 
-    More docs here...
+    Main endpoint for job creation and managment. Provides endpoints
+    for creating, listing and deleting export jobs.
+
+    See DRF ModelViewSet http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset documentation.
     """
 
     serializer_class = JobSerializer
@@ -56,9 +59,29 @@ class JobViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'description', 'event', 'user__username', 'region__name')
 
     def get_queryset(self,):
+        """Return all objects by default."""
         return Job.objects.all()
 
-    def list(self, request, uid=None, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
+        """
+        List export jobs.
+
+        The list of returned exports can be filtered by the **filters.JobFilter**
+        and/or by a bounding box extent.
+
+        Args:
+            request: the HTTP request.
+            *args: Variable length argument list.
+            **kwargs: Arbitary keyword arguments.
+
+        Returns:
+            A serialized collection of export jobs.
+            Uses the **serializers.ListJobSerializer** to
+            return a simplified representation of export jobs.
+
+        Raises:
+            ValidationError: if the supplied extents are invalid.
+        """
         params = self.request.query_params.get('bbox', None)
         if params == None:
             queryset = self.filter_queryset(self.get_queryset())
@@ -97,9 +120,26 @@ class JobViewSet(viewsets.ModelViewSet):
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a Job from the supplied request data.
+
+        The request data is validated by *api.serializers.JobSerializer*.
+        Associates the *Job* with required *ExportFormats*, *ExportConfig* and *Tags*
+
+        Args:
+            request: the HTTP request.
+            *args: Variable length argument list.
+            **kwargs: Arbitary keyword arguments.
+
+        Returns:
+            the newly created Job instance.
+
+        Raises:
+            ValidationError: in case of validation errors.
+        """
         serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
-            # add the export formats
+            """Get the required data from the validated request."""
             formats = request.data.get('formats')
             tags = request.data.get('tags')
             preset = request.data.get('preset')
@@ -117,19 +157,18 @@ class JobViewSet(viewsets.ModelViewSet):
                 except ExportFormat.DoesNotExist as e:
                     logger.warn('Export format with uid: {0} does not exist'.format(slug))
             if len(export_formats) > 0:
-                # save the job and make sure it's committed before running tasks..
+                """Save the job and make sure it's committed before running tasks."""
                 try:
                     with transaction.atomic():
                         job = serializer.save()
                         job.formats = export_formats
                         if preset:
-                            # get the tags from the uploaded preset
+                            """Get the tags from the uploaded preset."""
                             logger.debug('Found preset with uid: %s' % preset)
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = config.upload.path
-                            logger.debug(config.upload.path)
-                            # use unfiltered preset parser
+                            """Use the UnfilteredPresetParser."""
                             parser = presets.UnfilteredPresetParser(preset=preset_path)
                             tags_dict = parser.parse()
                             for entry in tags_dict:
@@ -142,7 +181,7 @@ class JobViewSet(viewsets.ModelViewSet):
                                     job=job
                                 )
                         elif tags:
-                            # get tags from request
+                            """Get tags from request."""
                             for entry in tags:
                                 tag = Tag.objects.create(
                                     name=entry['name'],
@@ -154,9 +193,12 @@ class JobViewSet(viewsets.ModelViewSet):
                                     groups=entry['groups']
                                 )
                         else:
-                            # use hdm preset as default tags
+                            """
+                            Use hdm preset as default tags if no preset or tags
+                            are provided in the request.
+                            """
                             path = os.path.dirname(os.path.realpath(__file__))
-                            parser = presets.PresetParser(preset=path + '/hdm_presets.xml')
+                            parser = presets.PresetParser(preset=path + '/presets/hdm_presets.xml')
                             tags_dict = parser.parse()
                             for entry in tags_dict:
                                 tag = Tag.objects.create(
@@ -175,10 +217,10 @@ class JobViewSet(viewsets.ModelViewSet):
                         if transform:
                             config = ExportConfig.objects.get(uid=transform)
                             job.configs.add(config)
-                except Error as e:
+                except Exception as e:
                     error_data = OrderedDict()
                     error_data['id'] = _('server_error')
-                    error_data['message'] = 'Error creating export job: {0}'.format(e)
+                    error_data['message'] = _('Error creating export job: %(error)s') % {'error': e}
                     return Response(error_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 error_data = OrderedDict()
@@ -346,7 +388,7 @@ class HDMDataModelView(views.APIView):
 
     def get(self, request, format='json'):
         path = os.path.dirname(os.path.realpath(__file__))
-        parser = PresetParser(path + '/hdm_presets.xml')
+        parser = PresetParser(path + '/presets/hdm_presets.xml')
         data = parser.build_hdm_preset_dict()
         return JsonResponse(data, status=status.HTTP_200_OK)
 
@@ -357,6 +399,6 @@ class OSMDataModelView(views.APIView):
 
     def get(self, request, format='json'):
         path = os.path.dirname(os.path.realpath(__file__))
-        parser = PresetParser(path + '/osm_presets.xml')
+        parser = PresetParser(path + '/presets/osm_presets.xml')
         data = parser.build_hdm_preset_dict()
         return JsonResponse(data, status=status.HTTP_200_OK)
