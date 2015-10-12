@@ -87,7 +87,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p>{% trans 'Your export has been deleted successfully.' %}</p>
-                    <p>{% trans 'Please start' %} <a href="/jobs/create">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
+                    <p>{% trans 'Please start' %} <a href="{% url 'create' %}">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p>{% trans 'The requested export was not found.' %}</p>
-                    <p>{% trans 'Please start' %} <a href="/jobs/create">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
+                    <p>{% trans 'Please start' %} <a href="{% url 'create' %}">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
                 </div>
             </div>
         </div>
