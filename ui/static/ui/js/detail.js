@@ -1035,10 +1035,10 @@ exports.detail = (function(){
         if (configurations.length > 0) {
             var config = configurations[0];
             var published = config.published ? gettext('Published') : gettext('Private');
-            var created = moment(config.created).format('MMMM Do YYYY h:mm:ss a');
+            var created = moment(config.created).format('MMMM Do YYYY');
             var $tr = $('<tr id="' + config.uid + '" data-filename="' + config.filename + '"' +
                         'data-type="' + config.config_type + '" data-published="' + config.published + '"' +
-                        'class="config"><td><i class="fa fa-file"></i>&nbsp;&nbsp;<span>' + config.filename + '</span></td>' +
+                        'class="config"><td><i class="fa fa-file" style="margin-top: 0px !important;"></i>&nbsp;&nbsp;<span>' + config.filename + '</span></td>' +
                         '<td>' + config.config_type + '</td><td>' + published + '</td><td>' + created + '</td></tr>');
             $filelist.append($tr);
         }
