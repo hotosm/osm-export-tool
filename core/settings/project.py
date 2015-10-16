@@ -57,7 +57,7 @@ HOSTNAME = 'hot.geoweb.io'
 Admin email address
 which receives task error notifications.
 """
-TASK_ERROR_EMAIL = ''
+TASK_ERROR_EMAIL = 'export-tool@hotosm.org'
 
 """
 Overpass Element limit

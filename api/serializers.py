@@ -342,6 +342,7 @@ class ListJobSerializer(serializers.Serializer):
     owner = serializers.SerializerMethodField(read_only=True)
     extent = serializers.SerializerMethodField()
     region = SimpleRegionSerializer(read_only=True)
+    published = serializers.BooleanField()
 
     def get_uid(self, obj):
         return obj.uid
@@ -402,7 +403,8 @@ class JobSerializer(serializers.Serializer):
     )
     event = serializers.CharField(
         max_length=100,
-        allow_blank=True
+        allow_blank=True,
+        required=False
     )
     created_at = serializers.DateTimeField(read_only=True)
     owner = serializers.SerializerMethodField(read_only=True)

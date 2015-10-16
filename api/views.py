@@ -4,6 +4,7 @@ import logging
 import os
 from collections import OrderedDict
 
+from django.contrib.auth.models import User
 from django.db import Error, transaction
 from django.http import JsonResponse
 from django.utils.translation import ugettext as _
@@ -29,6 +30,7 @@ from tasks.task_runners import ExportTaskRunner
 
 from .filters import ExportConfigFilter, ExportRunFilter, JobFilter
 from .pagination import LinkHeaderPagination
+from .permissions import IsOwnerOrReadOnly
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 
@@ -41,16 +43,66 @@ renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 class JobViewSet(viewsets.ModelViewSet):
     """
-    Export API Endpoint.
+    ##Export API Endpoint.
 
-    Main endpoint for job creation and managment. Provides endpoints
+    Main endpoint for export creation and managment. Provides endpoints
     for creating, listing and deleting export jobs.
+    
+    Updates to existing jobs are not supported as exports can be cloned.
+    
+    Request data can be posted as either `application/x-www-form-urlencoded` or `application/json`.
 
-    See DRF ModelViewSet http://www.django-rest-framework.org/api-guide/viewsets/#modelviewset documentation.
+    **Request parameters**:
+    
+    * name (required): The name of the export.
+    * description (required): A description of the export.
+    * event: The project or event associated with this export, eg Nepal Activation.
+    * xmin (required): The minimum longitude coordinate.
+    * ymin (required): The minimum latitude coordinate.
+    * xmax (required): The maximum longitude coordinate.
+    * ymax (required): The maximum latitude coordinate.
+    * formats (required): One of the supported export formats ([html](/api/formats) or [json](/api/formats.json)).
+        * Use the format `slug` as the value of the formats parameter, eg `formats=thematic&formats=shp`.
+    * preset: One of the published preset files ([html](/api/configurations) or [json](/api/configurations.json)).
+        * Use the `uid` as the value of the preset parameter, eg `preset=eed84023-6874-4321-9b48-2f7840e76257`.
+        * If no preset parameter is provided, then the default [HDM](http://export.hotosm.org/api/hdm-data-model?format=json) tags will be used for the export.
+    * published: `true` if this export is to be published globally, `false` otherwise.
+        * Unpublished exports will be purged from the system 48 hours after they are created.
+        
+    ###Example JSON Request
+    
+    This example will create a publicly published export using the default set of HDM tags
+    for an area around Dar es Salaam, Tanzania. The export will create thematic shapefile, shapefile and kml files.
+    
+    <pre>
+        {
+            "name": "Dar es Salaam",
+            "description": "A description of the test export",
+            "event": "A HOT project or activation",
+            "xmin": 39.054879,
+            "ymin": -7.036697,
+            "xmax": 39.484149,
+            "ymax": -6.610281,
+            "formats": ["thematic", "shp", "kml"],
+            "published": "true"
+        }
+    </pre>
+    
+    To create an export with a default set of tags, save the example json request
+    to a local file called **request.json** and run the following command from the
+    directory where the file is saved. You will need an access token.
+    
+    <code>
+    curl -v -H "Content-Type: application/json" -H "Authorization: Token [your token]"
+    --data @request.json http://export.hotosm.org/api/jobs
+    </code>
+    
+    To monitor the resulting export run retreive the `uid` value from the returned json
+    and call http://export.hotosm.org/api/runs?job_uid=[the returned uid]
     """
 
     serializer_class = JobSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     lookup_field = 'uid'
     pagination_class = LinkHeaderPagination
@@ -239,7 +291,7 @@ class JobViewSet(viewsets.ModelViewSet):
 
 
 class RunJob(views.APIView):
-    """ Class to re-run an export."""
+    """Class to re-run an export."""
 
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -328,7 +380,8 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = ExportConfigFilter
     search_fields = ('name', 'config_type', 'user__username')
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly)
     parser_classes = (FormParser, MultiPartParser, JSONParser)
     queryset = ExportConfig.objects.filter(config_type='PRESET')
     lookup_field = 'uid'
