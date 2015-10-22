@@ -5,6 +5,9 @@
         <item name="Building" type="closedway,relation">
             <key key="building" value="yes"/>
         </item>
+        <item name="House" type="node,closedway,relation">
+            <key key="building" value="house"/>
+        </item>
         <item name="Residential" type="closedway,relation">
             <key key="building" value="residential"/>
         </item>

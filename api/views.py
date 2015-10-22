@@ -47,13 +47,13 @@ class JobViewSet(viewsets.ModelViewSet):
 
     Main endpoint for export creation and managment. Provides endpoints
     for creating, listing and deleting export jobs.
-    
+
     Updates to existing jobs are not supported as exports can be cloned.
-    
+
     Request data can be posted as either `application/x-www-form-urlencoded` or `application/json`.
 
     **Request parameters**:
-    
+
     * name (required): The name of the export.
     * description (required): A description of the export.
     * event: The project or event associated with this export, eg Nepal Activation.
@@ -68,12 +68,12 @@ class JobViewSet(viewsets.ModelViewSet):
         * If no preset parameter is provided, then the default [HDM](http://export.hotosm.org/api/hdm-data-model?format=json) tags will be used for the export.
     * published: `true` if this export is to be published globally, `false` otherwise.
         * Unpublished exports will be purged from the system 48 hours after they are created.
-        
+
     ###Example JSON Request
-    
+
     This example will create a publicly published export using the default set of HDM tags
     for an area around Dar es Salaam, Tanzania. The export will create thematic shapefile, shapefile and kml files.
-    
+
     <pre>
         {
             "name": "Dar es Salaam",
@@ -87,16 +87,16 @@ class JobViewSet(viewsets.ModelViewSet):
             "published": "true"
         }
     </pre>
-    
+
     To create an export with a default set of tags, save the example json request
     to a local file called **request.json** and run the following command from the
     directory where the file is saved. You will need an access token.
-    
+
     <code>
     curl -v -H "Content-Type: application/json" -H "Authorization: Token [your token]"
     --data @request.json http://export.hotosm.org/api/jobs
     </code>
-    
+
     To monitor the resulting export run retreive the `uid` value from the returned json
     and call http://export.hotosm.org/api/runs?job_uid=[the returned uid]
     """
@@ -291,11 +291,28 @@ class JobViewSet(viewsets.ModelViewSet):
 
 
 class RunJob(views.APIView):
-    """Class to re-run an export."""
+    """
+    ##Re-run Export
+
+    Re-runs an export job for the given `job_uid`: `/api/rerun?job_uid=<job_uid>`
+    """
 
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, uid=None, format=None):
+        """
+        Re-runs the job.
+
+        Gets the job_uid and current user from the request.
+        Creates an instance of the ExportTaskRunner and
+        calls run_task on it, passing the job_uid and user.
+
+        Args:
+            the http request
+
+        Returns:
+            the serialized run data.
+        """
         job_uid = request.query_params.get('job_uid', None)
         user = request.user
         if (job_uid):
@@ -314,9 +331,9 @@ class RunJob(views.APIView):
 
 class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ### ExportFormat API endpoint.
-    Endpoint exposing the supported export formats.
+    ###ExportFormat API endpoint.
 
+    Endpoint exposing the supported export formats.
     """
     serializer_class = ExportFormatSerializer
     permission_classes = (permissions.AllowAny,)
@@ -327,7 +344,8 @@ class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RegionViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ### Region API endpoint.
+    ###Region API endpoint.
+
     Endpoint exposing the supported regions.
     """
     serializer_class = RegionSerializer
@@ -338,7 +356,10 @@ class RegionViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RegionMaskViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    View set to return a mask of the export regions.
+    ###Region Mask API Endpoint.
+
+    Return a MULTIPOLYGON representing the mask of the
+    HOT Regions as a GeoJSON Feature Collection.
     """
     serializer_class = RegionMaskSerializer
     permission_classes = (permissions.AllowAny,)
@@ -347,7 +368,12 @@ class RegionMaskViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    View to return serialized Run data.
+    ###Export Run API Endpoint.
+
+    Provides an endpoint for querying export runs.
+    Export runs for a particular job can be filtered by status by appending one of
+    `COMPLETED`, `SUBMITTED`, `INCOMPLETE` or `FAILED` as the value of the `STATUS` parameter:
+    `/api/runs?job_uid=a_job_uid&status=STATUS`
     """
     serializer_class = ExportRunSerializer
     permission_classes = (permissions.AllowAny,)
@@ -359,11 +385,36 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
         return ExportRun.objects.all().order_by('-started_at')
 
     def retrieve(self, request, uid=None, *args, **kwargs):
+        """
+        Get an ExportRun.
+
+        Gets the run_uid from the request and returns run data for the
+        associated ExportRun.
+
+        Args:
+            request: the http request.
+            uid: the run uid.
+
+        Returns:
+            the serialized run data.
+        """
         queryset = ExportRun.objects.filter(uid=uid)
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
+        """
+        List the ExportRuns for a single Job.
+
+        Gets the job_uid from the request and returns run data for the
+        associated Job.
+
+        Args:
+            the http request.
+
+        Returns:
+            the serialized run data.
+        """
         job_uid = self.request.query_params.get('job_uid', None)
         queryset = self.filter_queryset(ExportRun.objects.filter(job__uid=job_uid).order_by('-started_at'))
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
@@ -373,6 +424,7 @@ class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
 class ExportConfigViewSet(viewsets.ModelViewSet):
     """
     Endpoint for operations on export configurations.
+
     Lists all available configuration files.
     """
     serializer_class = ExportConfigSerializer
@@ -389,7 +441,9 @@ class ExportConfigViewSet(viewsets.ModelViewSet):
 
 class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Endpoint for ExportTasks
+    ###ExportTask API endpoint.
+
+    Provides List and Retrieve endpoints for ExportTasks.
     """
     serializer_class = ExportTaskSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -397,6 +451,15 @@ class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'uid'
 
     def retrieve(self, request, uid=None, *args, **kwargs):
+        """
+        GET a single export task.
+
+        Args:
+            request: the http request.
+            uid: the uid of the export task to GET.
+        Returns:
+            the serialized ExportTask data.
+        """
         queryset = ExportTask.objects.filter(uid=uid)
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -415,7 +478,7 @@ class PresetViewSet(viewsets.ReadOnlyModelViewSet):
 
 class TranslationViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Returns the list of TRANSLATION configuration files.
+    Return the list of TRANSLATION configuration files.
     """
     CONFIG_TYPE = 'TRANSLATION'
     serializer_class = ExportConfigSerializer
@@ -426,7 +489,7 @@ class TranslationViewSet(viewsets.ReadOnlyModelViewSet):
 
 class TransformViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Returns the list of TRANSFORM configuration files.
+    Return the list of TRANSFORM configuration files.
     """
     CONFIG_TYPE = 'TRANSFORM'
     serializer_class = ExportConfigSerializer
@@ -436,7 +499,7 @@ class TransformViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class HDMDataModelView(views.APIView):
-
+    """Endpoint exposing the HDM Data Model."""
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get(self, request, format='json'):
@@ -447,7 +510,7 @@ class HDMDataModelView(views.APIView):
 
 
 class OSMDataModelView(views.APIView):
-
+    """Endpoint exposing the OSM Data Model."""
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get(self, request, format='json'):

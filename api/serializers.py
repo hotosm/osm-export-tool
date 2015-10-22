@@ -2,7 +2,7 @@
 Provides serialization for API responses.
 
 See `DRF serializer documentation  <http://www.django-rest-framework.org/api-guide/serializers/>`_
-Serializes API responses as JSON or HTML.
+Used by the View classes api/views.py to serialize API responses as JSON or HTML.
 See DEFAULT_RENDERER_CLASSES setting in core.settings.contrib for the enabled renderers.
 """
 # -*- coding: utf-8 -*-
@@ -370,7 +370,12 @@ class JobSerializer(serializers.Serializer):
     This is the core representation of the API.
     """
 
-    """List of the available Export Formats."""
+    """
+    List of the available Export Formats.
+    
+    This list should be updated to add support for
+    additional export formats.
+    """
     EXPORT_FORMAT_CHOICES = (
         ('shp', 'Shapefile Format'),
         ('obf', 'OBF Format'),
@@ -457,16 +462,21 @@ class JobSerializer(serializers.Serializer):
         pass
 
     def validate(self, data):
-        """Validates the data submitted during Job creation."""
+        """
+        Validates the data submitted during Job creation.
+
+        See api/validators.py for validation code.
+        """
         user = data['user']
         validators.validate_formats(data)
         extents = validators.validate_bbox_params(data)
         the_geom = validators.validate_bbox(extents, user=user)
         data['the_geom'] = the_geom
         regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom')
-        sorted_regions = sorted(regions.all(), key=lambda a: a.intersection.area, reverse=True)  # order by largest area of intersection
+        # sort the returned regions by area of intersection, largest first.
+        sorted_regions = sorted(regions.all(), key=lambda a: a.intersection.area, reverse=True) 
         data['region'] = validators.validate_region(sorted_regions)
-        # remove unwanted fields
+        # remove unwanted fields, these are pulled from the request in the view if the serializer is valid
         data.pop('xmin'), data.pop('ymin'), data.pop('xmax'), data.pop('ymax'), data.pop('formats')
         return data
 
@@ -502,4 +512,5 @@ class JobSerializer(serializers.Serializer):
         return serializer.data
 
     def get_owner(self, obj):
+        """Return the username for the owner of this export."""
         return obj.user.username

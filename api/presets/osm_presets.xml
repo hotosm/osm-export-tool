@@ -850,6 +850,9 @@
         <item name="Residential Building" type="node,closedway,relation">
           <key key="building" value="residential"/>
         </item>
+        <item name="House" type="node,closedway,relation">
+            <key key="building" value="house"/>
+        </item>
         <item name="Flagpole" type="node">
           <key key="man_made" value="flagpole"/>
         </item>

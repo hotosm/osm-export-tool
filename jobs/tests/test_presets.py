@@ -15,7 +15,6 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.test import TestCase
 
-from ..hdm_tags import HOT_HDM
 from ..models import ExportConfig, ExportFormat, Job, Tag
 from ..presets import PresetParser, TagParser, UnfilteredPresetParser
 

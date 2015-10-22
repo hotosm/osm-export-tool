@@ -1,4 +1,4 @@
-"""Provides validation for API."""
+"""Provides validation for API operatios."""
 
 # -*- coding: utf-8 -*-
 import logging
@@ -210,7 +210,7 @@ def validate_content_type(upload, config_type):
         the content_type of the validated uploaded file.
 
     Raises:
-        ValidationError: if the uploade file has invalid content for the provided config_type.
+        ValidationError: if the uploaded file has invalid content for the provided config_type.
     """
     ACCEPT_MIME_TYPES = {'PRESET': ('application/xml',),
                         'TRANSFORM': ('application/x-sql', 'text/plain'),

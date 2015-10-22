@@ -13,10 +13,18 @@ logger = logging.getLogger(__name__)
 
 class SQliteToShp(object):
     """
-    Thin wrapper around ogr2ogr to convert sqlite to shp.
+    Convert sqlite to shapefile.
     """
 
     def __init__(self, sqlite=None, shapefile=None, zipped=True, debug=False):
+        """
+        Initialize the SQliteToShp utility.
+
+        Args:
+            sqlite: the sqlite file to convert.
+            shapefile: the path to the shapefile output
+            zipped: whether to zip the output
+        """
         self.sqlite = sqlite
         if not os.path.exists(self.sqlite):
             raise IOError('Cannot find sqlite file for this task.')
@@ -31,6 +39,9 @@ class SQliteToShp(object):
         self.zip_cmd = Template("zip -j -r $zipfile $shp_dir")
 
     def convert(self, ):
+        """
+        Convert the sqlite to shape.
+        """
         convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'sqlite': self.sqlite})
         if(self.debug):
             print 'Running: %s' % convert_cmd
@@ -50,6 +61,9 @@ class SQliteToShp(object):
             return self.shapefile
 
     def _zip_shape_dir(self, ):
+        """
+        Zip the shapefile output.
+        """
         zipfile = self.shapefile + '.zip'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': zipfile, 'shp_dir': self.shapefile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',

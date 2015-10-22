@@ -17,11 +17,22 @@ logger = logging.getLogger(__name__)
 class Overpass(object):
     """
     Wrapper around an Overpass query.
+
     Returns all nodes, ways and relations within the specified bounding box
     and filtered by the provided tags.
     """
 
     def __init__(self, url=None, bbox=None, stage_dir=None, job_name=None, filters=None, debug=False):
+        """
+        Initialize the Overpass utility.
+
+        Args:
+            bbox: the bounding box to extract
+            stage_dir: where to stage the extract job
+            job_name: the name of the export job
+            filters: a list of key=value filters to use to filter the overpass extract.
+            debug: turn on/off debug logging
+        """
         if settings.OVERPASS_API_URL:
             self.url = settings.OVERPASS_API_URL
         else:
@@ -37,6 +48,9 @@ class Overpass(object):
             self.bbox = bbox
         else:
             raise Exception('A bounding box is required: miny,minx,maxy,maxx')
+
+        # extract all nodes / ways and relations within the bounding box
+        # see: http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL
         self.default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;);out body;')
 
         # see http://wiki.openstreetmap.org/wiki/Osmfilter#Object_Filter
@@ -53,9 +67,16 @@ class Overpass(object):
         self.filtered_osm = self.stage_dir + job_name + '.osm'
 
     def get_query(self,):
+        """Get the overpass query used for this extract."""
         return self.query
 
     def run_query(self,):
+        """
+        Run the overpass query.
+
+        Return:
+            the path to the overpass extract
+        """
         q = self.get_query()
         logger.debug(q)
         if self.debug:
@@ -75,6 +96,11 @@ class Overpass(object):
         return self.raw_osm
 
     def filter(self, ):
+        """
+        Filter the overpass extract using the export tags.
+
+        See jobs.models.Job.filters
+        """
         if (self.filters and len(self.filters) > 0):
             self.filter_params = self.stage_dir + 'filters.txt'
             try:
@@ -111,6 +137,9 @@ class Overpass(object):
             return self.filtered_osm
 
     def _convert_om5(self,):
+        """
+        Convert to om5 for faster filter processing.
+        """
         om5 = self.stage_dir + 'query.om5'
         convert_tmpl = Template('osmconvert $raw_osm -o=$om5')
         convert_cmd = convert_tmpl.safe_substitute({'raw_osm': self.raw_osm, 'om5': om5})
@@ -123,17 +152,15 @@ class Overpass(object):
             raise Exception, "osmconvert process failed with returncode {0}: {1}".format(returncode, stderr)
         return om5
 
-    """
-    Overpass  imposes a limit of 1023 statements per query.
-    This is no good for us when querying with the OSM Data Model
-    which contains 578 tags. Thats 578 * 3 statements to filter all
-    nodes, ways and relations. Instead we use 'osmfilter' as a second
-    step in this task. Leaving this here in case things change or
-    we decide to build our own overpass api in future.
-    """
-
     def _build_overpass_query(self, ):  # pragma: no cover
-
+        """
+        Overpass  imposes a limit of 1023 statements per query.
+        This is no good for us when querying with the OSM Data Model
+        which contains 578 tags. Thats 578 * 3 statements to filter all
+        nodes, ways and relations. Instead we use 'osmfilter' as a second
+        step in this task. Leaving this here in case things change or
+        we decide to build our own overpass api in future.
+        """
         template = Template("""
                 [out:xml][timeout:3600][bbox:$bbox];
                 (

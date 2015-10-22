@@ -12,10 +12,17 @@ logger = logging.getLogger(__name__)
 
 class OSMToPBF(object):
     """
-    Thin wrapper around osmconvert to convert osm xml to pbf.
+    Convert OSM to PBF.
     """
 
     def __init__(self, osm=None, pbffile=None, debug=False):
+        """
+        Initialize the OSMToPBF utility.
+
+        Args:
+            osm: the raw osm file to convert
+            pbffile: the location of the pbf output file
+        """
         self.osm = osm
         if not os.path.exists(self.osm):
             raise IOError('Cannot find raw OSM data for this task.')
@@ -28,6 +35,9 @@ class OSMToPBF(object):
         self.cmd = Template('osmconvert $osm --out-pbf >$pbf')
 
     def convert(self, ):
+        """
+        Convert the raw osm to pbf.
+        """
         convert_cmd = self.cmd.safe_substitute({'osm': self.osm, 'pbf': self.pbffile})
         if(self.debug):
             print 'Running: %s' % convert_cmd

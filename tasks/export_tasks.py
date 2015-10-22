@@ -39,6 +39,17 @@ class ExportTask(Task):
         abstract = True
 
     def on_success(self, retval, task_id, args, kwargs):
+        """
+        Update the successfuly completed task as follows:
+
+            1. update the time the task completed
+            2. caclulate the size of the output file
+            3. calculate the download path of the export
+            4. create the export download directory
+            5. copy the export file to the download directory
+            6. create the export task result
+            7. update the export task status and save it
+        """
         from tasks.models import ExportTask, ExportTaskResult
         # update the task
         finished = timezone.now()
@@ -78,6 +89,16 @@ class ExportTask(Task):
         task.save()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
+        """
+        Update the failed task as follows:
+
+            1. pull out the ExportTask
+            2. update the task status and finish time
+            3. create an export task exception
+            4. save the export task with the task exception
+            5. run ExportTaskErrorHandler if the run should be aborted
+               - this is only for initial tasks on which subsequent export tasks depend
+        """
         from tasks.models import ExportTask, ExportTaskException, ExportRun
         logger.debug('Task name: {0} failed, {1}'.format(self.name, einfo))
         task = ExportTask.objects.get(celery_uid=task_id)
@@ -193,6 +214,9 @@ class OSMPrepSchemaTask(ExportTask):
 
 
 class ThematicLayersExportTask(ExportTask):
+    """
+    Task to export thematic shapefile.
+    """
 
     name = "Thematic Shapefile Export"
 
@@ -342,6 +366,7 @@ class GeneratePresetTask(ExportTask):
         user = job.user
         feature_save = job.feature_save
         feature_pub = job.feature_pub
+        # check if we should create a josm preset
         if feature_save or feature_pub:
             tags = job.tags.all()
             tag_parser = TagParser(tags=tags)
@@ -366,6 +391,7 @@ class GeneratePresetTask(ExportTask):
 class FinalizeRunTask(Task):
     """
     Finalizes export run.
+
     Cleans up staging directory.
     Updates run with finish time.
     Emails user notification.

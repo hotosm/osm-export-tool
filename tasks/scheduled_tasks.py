@@ -8,6 +8,9 @@ logger = get_task_logger(__name__)
 
 
 class PurgeUnpublishedExportsTask(Task):
+    """
+    Purge unpublished export tasks after 48 hours.
+    """
 
     name = "Purge Unpublished Exports"
 

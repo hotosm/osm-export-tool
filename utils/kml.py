@@ -16,6 +16,15 @@ class SQliteToKml(object):
     """
 
     def __init__(self, sqlite=None, kmlfile=None, zipped=True, debug=False):
+        """
+        Initialize the SQliteToKml utility.
+
+        Args:
+            sqlite: the sqlite file to convert
+            kmlfile: where to write the kml output
+            zipped: whether to zip the output
+            debug: turn debugging on / off
+        """
         self.sqlite = sqlite
         if not os.path.exists(self.sqlite):
             raise IOError('Cannot find sqlite file for this task.')
@@ -30,6 +39,9 @@ class SQliteToKml(object):
         self.zip_cmd = Template("zip -j $zipfile $kmlfile")
 
     def convert(self, ):
+        """
+        Convert sqlite to kml.
+        """
         convert_cmd = self.cmd.safe_substitute({'kmlfile': self.kmlfile,
                                                 'sqlite': self.sqlite})
         if(self.debug):
@@ -50,6 +62,7 @@ class SQliteToKml(object):
             return self.kmlfile
 
     def _zip_kml_file(self, ):
+        """Zip the kml output file."""
         kmzfile = self.kmlfile.split('.')[0] + '.kmz'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': kmzfile,
                                                 'kmlfile': self.kmlfile})

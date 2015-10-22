@@ -12,17 +12,24 @@ logger = logging.getLogger(__name__)
 
 class OSMParser(object):
     """
-    Parses a OSM file (.osm or .pbf) dumped from overpass query.
+    Parse a OSM file (.osm or .pbf) dumped from overpass query.
     Creates an ouput spatialite file to be used in export pipeline.
     """
 
-    def __init__(self, osm=None, sqlite=None, osmconf=None, schema=None, debug=None):
+    def __init__(self, osm=None, sqlite=None, osmconf=None, debug=None):
+        """
+        Initialize the OSMParser.
+
+        Args:
+            osm: the osm file to convert
+            sqlite: the location of the sqlite output file.
+            debug: turn on / off debug output.
+        """
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.osm = osm
         if not os.path.exists(self.osm):
             raise IOError('Cannot find PBF data for this task.')
         self.sqlite = sqlite
-        self.schema = schema
         self.debug = debug
         if osmconf:
             self.osmconf = osmconf
@@ -30,9 +37,9 @@ class OSMParser(object):
             self.osmconf = self.path + '/conf/hotosm.ini'
             logger.debug('Found osmconf ini file at: {0}'.format(self.osmconf))
         """
-            OGR Command to run.
-            OSM_CONFIG_FILE determines which OSM keys should be translated into OGR layer fields.
-            See osmconf.ini for details. See gdal config options at http://www.gdal.org/drv_osm.html
+        OGR Command to run.
+        OSM_CONFIG_FILE determines which OSM keys should be translated into OGR layer fields.
+        See osmconf.ini for details. See gdal config options at http://www.gdal.org/drv_osm.html
         """
         self.ogr_cmd = Template("""
             ogr2ogr -f SQlite -dsco SPATIALITE=YES $sqlite $osm \
@@ -47,7 +54,9 @@ class OSMParser(object):
         self.srs.ImportFromEPSG(4326)  # configurable
 
     def create_spatialite(self, ):
-        # create spatialite from osm data
+        """
+        Create the spatialite file from the osm data.
+        """
         ogr_cmd = self.ogr_cmd.safe_substitute({'sqlite': self.sqlite,
                                                 'osm': self.osm, 'osmconf': self.osmconf})
         if(self.debug):
@@ -63,6 +72,11 @@ class OSMParser(object):
             print 'ogr2ogr returned: %s' % returncode
 
     def create_default_schema(self, ):
+        """
+        Create the default osm sqlite schema.
+
+        Creates planet_osm_point, planet_osm_line, planet_osm_polygon tables.
+        """
         assert os.path.exists(self.sqlite), "No spatialite file. Run 'create_spatialite()' method first."
         # update the spatialite schema
         self.update_sql = Template("spatialite $sqlite < $update_sql")
@@ -81,6 +95,9 @@ class OSMParser(object):
             print 'spatialite returned: %s' % returncode
 
     def update_zindexes(self, ):
+        """
+        Update the zindexes on sqlite layers.
+        """
         assert os.path.exists(self.sqlite), "No spatialite file. Run 'create_spatialite()' method first."
         ds = ogr.Open(self.sqlite, update=True)
         zindexes = {

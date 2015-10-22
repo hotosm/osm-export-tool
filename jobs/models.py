@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_upload_path(instance, filename):
+    """
+    Construct the path to where the uploaded config file is to be stored.
+    """
     configtype = instance.config_type.lower()
     # sanitize the filename here..
     path = 'export/config/{0}/{1}'.format(configtype, instance.filename)
@@ -80,7 +83,9 @@ class ExportConfig(TimeStampedModelMixin):
 
 
 class ExportFormat(TimeStampedModelMixin):
-    """Model for a ExportFormat"""
+    """
+    Model for a ExportFormat.
+    """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     name = models.CharField(max_length=100)
@@ -156,6 +161,9 @@ class Job(TimeStampedModelMixin):
 
     @property
     def overpass_extents(self, ):
+        """
+        Return the export extents in order required by Overpass API.
+        """
         extents = GEOSGeometry(self.the_geom).extent  # (w,s,e,n)
         # overpass needs extents in order (s,w,n,e)
         overpass_extents = '{0},{1},{2},{3}'.format(str(extents[1]), str(extents[0]),
@@ -164,6 +172,13 @@ class Job(TimeStampedModelMixin):
 
     @property
     def tag_dict(self,):
+        """
+        Return the unique set of Tag keys from this export
+        with their associated geometry types.
+
+        Used by Job.categorised_tags (below) to categorize tags
+        according to their geometry types.
+        """
         # get the unique keys from the tags for this export
         uniq_keys = list(self.tags.values('key').distinct('key'))
         tag_dict = {}  # mapping of tags to geom_types
@@ -180,6 +195,11 @@ class Job(TimeStampedModelMixin):
 
     @property
     def filters(self,):
+        """
+        Return key=value pairs for each tag in this export.
+
+        Used in utils.overpass.filter to filter the export.
+        """
         filters = []
         for tag in self.tags.all():
             kv = '{0}={1}'.format(tag.key, tag.value)
@@ -188,6 +208,9 @@ class Job(TimeStampedModelMixin):
 
     @property
     def categorised_tags(self,):
+        """
+        Return tags mapped according to their geometry types.
+        """
         points = []
         lines = []
         polygons = []
@@ -204,9 +227,10 @@ class Job(TimeStampedModelMixin):
 
 class Tag(models.Model):
     """
-        Model to hold Export tag selections.
-        Holds the data model (osm | hdm | preset)
-        and the geom_type mapping.
+    Model to hold Export tag selections.
+
+    Holds the data model (osm | hdm | preset)
+    and the geom_type mapping.
     """
     id = models.AutoField(primary_key=True, editable=False)
     name = models.CharField(max_length=100, blank=False, default='', db_index=True)
@@ -226,7 +250,9 @@ class Tag(models.Model):
 
 
 class RegionMask(models.Model):
-
+    """
+    Model to hold region mask.
+    """
     id = models.IntegerField(primary_key=True)
     the_geom = models.MultiPolygonField(verbose_name='Mask for export regions', srid=4326)
 
@@ -236,6 +262,9 @@ class RegionMask(models.Model):
 
 
 class ExportProfile(models.Model):
+    """
+    Model to hold Group export profile.
+    """
     name = models.CharField(max_length=100, blank=False, default='')
     group = models.OneToOneField(Group, related_name='export_profile')
     max_extent = models.IntegerField()
@@ -248,13 +277,11 @@ class ExportProfile(models.Model):
         return '{0}'.format(self.name)
 
 
-"""
-Delete the associated file when the export config is deleted.
-"""
-
-
 @receiver(post_delete, sender=ExportConfig)
 def exportconfig_delete_upload(sender, instance, **kwargs):
+    """
+    Delete the associated file when the export config is deleted.
+    """
     instance.upload.delete(False)
     # remove config from related jobs
     exports = Job.objects.filter(configs__uid=instance.uid)
@@ -265,9 +292,9 @@ def exportconfig_delete_upload(sender, instance, **kwargs):
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, created, **kwargs):
     """
-    This method is executed whenever an user object is saved.
+    This method is executed whenever a User object is created.
 
-    Adds user to DefaultExportExtentGroup
+    Adds the new user to DefaultExportExtentGroup.
     """
     if created:
         instance.groups.add(Group.objects.get(name='DefaultExportExtentGroup'))

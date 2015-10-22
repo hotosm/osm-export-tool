@@ -51,7 +51,7 @@ exports.detail = (function(){
         });
 
         map.addLayer(job_extents);
-        map.restrictedExtent = map.getExtent();
+        //map.restrictedExtent = map.getExtent();
         return map;
     }
 

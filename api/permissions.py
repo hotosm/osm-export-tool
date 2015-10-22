@@ -6,9 +6,9 @@ from rest_framework import permissions
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Custom permission which restricts delete and update
-    operations on models to the objects owner.
+    operations on models to the owner of the object.
     """
-    
+
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
@@ -17,5 +17,3 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Write permissions are only allowed to the owner of the object.
         return obj.user == request.user
-    
-

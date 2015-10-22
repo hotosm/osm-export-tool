@@ -129,7 +129,7 @@ class TestJobViewSet(APITestCase):
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEquals(response['Content-Length'], '0')
         self.assertEquals(response['Content-Language'], 'en')
-        
+
     def test_delete_no_permissions(self, ):
         url = reverse('api:jobs-detail', args=[self.job.uid])
         # create another user with token
@@ -146,7 +146,7 @@ class TestJobViewSet(APITestCase):
         response = self.client.delete(url)
         # test the response headers
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
-    
+
     @patch('api.views.ExportTaskRunner')
     def test_create_job_success(self, mock):
         task_runner = mock.return_value
@@ -699,7 +699,7 @@ class TestExportConfigViewSet(APITestCase):
         self.assertEquals('example_transform.sql', saved_config.filename)
         self.assertEquals('text/plain', saved_config.content_type)
         saved_config.delete()
-        
+
     def test_delete_no_permissions(self, ):
         """
         Test deletion of configuration when the user has no object permissions.
@@ -717,7 +717,7 @@ class TestExportConfigViewSet(APITestCase):
         self.assertTrue(saved_config.published)
         self.assertEquals('hdm_presets.xml', saved_config.filename)
         self.assertEquals('application/xml', saved_config.content_type)
-        
+
         delete_url = reverse('api:configs-detail', args=[uid])
         # create another user with token
         user = User.objects.create_user(
