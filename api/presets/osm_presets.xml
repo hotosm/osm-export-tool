@@ -1,6 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <presets xmlns="http://josm.openstreetmap.de/tagging-preset-1.0">
   <group name="OSM Data Model">
+    <item name="Name" type="node,way,closedway,relation">
+        <key key="name" value=""/>
+    </item>
     <group name="Annotation">
       <group name="Source">
         <item name="Historical map" type="node,way,closedway,relation">
