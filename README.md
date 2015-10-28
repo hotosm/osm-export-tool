@@ -180,6 +180,8 @@ Look at <code>core/settings/project.py</code> and make sure you update or overri
 
 **OVERPASS_API_URL** = 'http://overpass-api.de/api/interpreter'
 
+**EXPORT_MWM_ROOT** = 'path to  mapsme_generator directory'
+
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
 
