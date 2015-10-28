@@ -59,7 +59,6 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
     args = parser.parse_args()
     config = {}
-    change pbf=pbf to pbfline=pbf
     for k, v in vars(args).items():
         if (v == None):
             continue
@@ -70,5 +69,5 @@ if __name__ == '__main__':
     debug = False
     if config.get('debug'):
         debug = True
-    o2p = OSMToPBF(osm=osm, pbf=pbf, debug=debug)
+    o2p = OSMToPBF(osm=osm, pbffile=pbf, debug=debug)
     o2p.convert()
