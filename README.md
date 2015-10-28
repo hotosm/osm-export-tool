@@ -178,7 +178,7 @@ Look at <code>core/settings/project.py</code> and make sure you update or overri
 
 **GARMIN_CONFIG** = 'absolute path to utils/conf/garmin_config.xml'
 
-**OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
+**OVERPASS_API_URL** = 'http://overpass-api.de/api/interpreter'
 
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
@@ -201,8 +201,6 @@ To prime the database we've used `osmconvert` as follows:
 
 <code>osmconvert --out-osm planet-latest.osm.pbf | ./update_database --meta --db-dir=$DBDIR --flush-size=1</code>
 
-<code>export DJANGO_SETTINGS_MODULE=hot_exports.settings.your_settings_module</code> [ settings_modile is dev ]
-
 If the dispatcher fails to start, check for, and remove <code>osm3s_v0.7.52_osm_base</code> from <code>/dev/shm</code>.
 
 We apply minutely updates as per Overpass installation instructions, however this is not strictly necessary for development purposes.
@@ -214,14 +212,14 @@ they are pushed to a Celery Worker for processing. At least two celery workers n
 
 From a 'hotosm' virtualenv directory (use screen), run:
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>  [ settings_modile is dev ]
 
 <code>$ celery -A core worker --loglevel debug --logfile=celery.log</code>.
 
 This will start a celery worker which will process export tasks. An additional celery worker needs to be started to handle purging of expired unpublished
 export jobs. From another hotosm virtualenv terminal session in the project top-level directory, run:
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>  [ settings_modile is dev ]
 
 <code>$ celery -A core beat --loglevel debug --logfile=celery-beat.log</code>
 
