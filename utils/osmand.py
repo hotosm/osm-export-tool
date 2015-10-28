@@ -13,14 +13,30 @@ logger = logging.getLogger(__name__)
 
 
 class UpdateBatchXML(object,):
+    """
+    Updates the conf/batch.xml.tmpl which configures the OSMAnd process.
+    """
 
     def __init__(self, batch_xml=None, work_dir=None):
+        """
+        Initialize the batch utility.
+
+        Args:
+            batch_xml: the path to the batch_xml template
+            work_dir: where to write the updated batch_xml file
+        """
         self.batch_xml = batch_xml
         self.work_dir = work_dir
         if not os.path.exists(self.work_dir):
             os.makedirs(self.work_dir, 6600)
 
     def update(self,):
+        """
+        Update the batch_xml file with configuration.
+
+        Return:
+            the path to the updated batch_xml file.
+        """
         f = open(self.batch_xml)
         xml = f.read()
         tree = etree.parse(StringIO(xml))
@@ -39,9 +55,20 @@ class UpdateBatchXML(object,):
 
 
 class OSMToOBF(object):
+    """
+    Convert osm input to obf output.
+    """
 
     def __init__(self, pbffile=None, work_dir=None,
                  map_creator_dir=None, debug=False):
+        """
+        Initialize the OSMToOBF utility.
+
+        Args:
+            pbffile: the osm file to convert
+            work_dir: the staging dir for the conversion process
+            map_creator_dir: the location of the osmand map creator utility
+        """
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.pbffile = pbffile
         if not os.path.exists(self.pbffile):
@@ -60,6 +87,9 @@ class OSMToOBF(object):
         """)
 
     def convert(self,):
+        """
+        Perform the conversion from PBF to OBF.
+        """
         # create the batch.xml file in the staging dir
         batch_update = UpdateBatchXML(
             batch_xml=self.batch_xml, work_dir=self.work_dir

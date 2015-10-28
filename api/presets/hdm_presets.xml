@@ -1,9 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <presets xmlns="http://josm.openstreetmap.de/tagging-preset-1.0">
   <group name="Humanitarian Data Model">
+    <item name="Name" type="node,way,closedway,relation">
+        <key key="name" value=""/>
+    </item>
     <group name="Buildings">
         <item name="Building" type="closedway,relation">
             <key key="building" value="yes"/>
+        </item>
+        <item name="House" type="node,closedway,relation">
+            <key key="building" value="house"/>
         </item>
         <item name="Residential" type="closedway,relation">
             <key key="building" value="residential"/>

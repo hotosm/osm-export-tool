@@ -30,8 +30,9 @@
                         <div id="extents" class="pull-right"></div>
                     </div>
                 </div>
-                {% if user.is_authenticated %}
+                <div style="margin-left: .5em;">{% trans 'Data is copyright' %}<a href="http://www.openstreetmap.org" target="_blank"> {% trans 'OpenStreetMap' %}</a> {% trans 'contributors' %}, <a href="http://opendatacommons.org/licenses/odbl/1-0/" target="_blank">{% trans 'ODbL 1.0 licensed' %}</a>.</div>
                 <hr/>
+                {% if user.is_authenticated %}
                 <div class="row">
                     <div class="col-md-12">
                         <div>
@@ -86,7 +87,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p>{% trans 'Your export has been deleted successfully.' %}</p>
-                    <p>{% trans 'Please start' %} <a href="/jobs/create">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
+                    <p>{% trans 'Please start' %} <a href="{% url 'create' %}">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
                 </div>
             </div>
         </div>
@@ -100,7 +101,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p>{% trans 'The requested export was not found.' %}</p>
-                    <p>{% trans 'Please start' %} <a href="/jobs/create">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
+                    <p>{% trans 'Please start' %} <a href="{% url 'create' %}">{% trans 'here' %}</a> {% trans 'to create a new export.' %}</p>
                 </div>
             </div>
         </div>
@@ -115,7 +116,7 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalLabel">{% trans 'Really delete this export?' %}</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="font-size: large;">
          <p><span class="glyphicon glyphicon-exclamation-sign" style="float:left; font-size: 2.0em; color: red; margin:0 7px 25px 0;">
          </span>
             <div>
@@ -149,7 +150,7 @@
                 </div>
                 <div class="table-responsive table-stripped table-condensed col-md-12">
                     <table class="table" id="filelist">
-                        <th width="30%">{% trans 'Filename' %}</th><th width="10%">{% trans 'Type' %}</th><th width="10%">{% trans 'Status' %}</th><th width="45%">{% trans 'Created' %}</th>
+                        <th width="45%">{% trans 'Filename' %}</th><th width="10%">{% trans 'Type' %}</th><th width="10%">{% trans 'Status' %}</th><th width="35%">{% trans 'Created' %}</th>
                     </table>
                 </div>
                 <div id="config-deleted-message" style="display:none;">{% trans 'The preset associated with this export has been deleted.' %}</div>

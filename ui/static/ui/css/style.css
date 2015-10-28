@@ -348,6 +348,12 @@ ul.typeahead {
    margin-right: 5em;
 }
 
+/* hide 'name' tag by default in the feature selection trees */
+
+li.entry[title="name="]{
+    display: none;
+}
+
 /* Upload tab */
 
 .btn-file {

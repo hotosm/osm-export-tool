@@ -113,13 +113,11 @@ class ExportTaskException(models.Model):
         db_table = 'export_task_exceptions'
 
 
-"""
-Delete the associated export files when a ExportRun is deleted.
-"""
-
-
 @receiver(post_delete, sender=ExportRun)
 def exportrun_delete_exports(sender, instance, **kwargs):
+    """
+    Delete the associated export files when a ExportRun is deleted.
+    """
     download_root = settings.EXPORT_DOWNLOAD_ROOT
     run_uid = instance.uid
     run_dir = '{0}{1}'.format(download_root, run_uid)

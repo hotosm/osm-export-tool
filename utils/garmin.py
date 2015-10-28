@@ -13,10 +13,13 @@ logger = logging.getLogger(__name__)
 
 class GarminConfigParser(object):
     """
-        Parse the conf/garmin_config.xml file.
+    Parse the conf/garmin_config.xml file.
     """
 
     def __init__(self, config=None):
+        """
+        Initialize the parser with the config file.
+        """
         self.config = config
 
     def get_config(self, ):
@@ -57,14 +60,16 @@ class GarminConfigParser(object):
 
 class OSMToIMG(object):
     """
-        Converts PBF to Garmin IMG format.
-        Splits pbf into smaller tiles, generates .img files for each split,
-        then patches the .img files back into a single .img file
-        suitable for deployment to a Garmin GPS unit.
+    Converts PBF to Garmin IMG format.
+
+    Splits pbf into smaller tiles, generates .img files for each split,
+    then patches the .img files back into a single .img file
+    suitable for deployment to a Garmin GPS unit.
     """
 
     def __init__(self, pbffile=None, work_dir=None, config=None,
                  region=None, zipped=True, debug=False):
+        # the pbf file to convert to garmin
         self.pbffile = pbffile
         if not os.path.exists(self.pbffile):
             raise IOError('Cannot find PBF file for this task.')
@@ -75,11 +80,13 @@ class OSMToIMG(object):
         self.debug = debug
         config_parser = GarminConfigParser(self.config)
         self.params = config_parser.get_config()
+
         # command template for the splitter.jar utility
         self.splitter_cmd = Template("""
             java -Xmx$xmx -jar $splitter \
             --output-dir=$work_dir \
             $pbffile""")
+
         # command template for the mkgmap.jar utility
         self.mkgmap_cmd = Template("""
             java -Xmx$xmx -jar $mkgmap \
@@ -101,6 +108,9 @@ class OSMToIMG(object):
         self.imgfile = self.work_dir + '/gmapsupp.img'
 
     def run_splitter(self, ):
+        """
+        Run the splitter utility to split large pbf into smaller tiles.
+        """
         if not os.path.exists(self.work_dir):
             os.makedirs(self.work_dir, 6600)
         # get the configuration params
@@ -125,6 +135,9 @@ class OSMToIMG(object):
             print 'splitter returned: %s' % returncode
 
     def run_mkgmap(self,):
+        """
+        Generate the IMG file.
+        """
         # get the template.args file created by splitter
         # see: http://wiki.openstreetmap.org/wiki/Mkgmap/help/splitter
         templateargs = self.work_dir + '/template.args'

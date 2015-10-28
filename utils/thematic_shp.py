@@ -17,6 +17,17 @@ class ThematicSQliteToShp(object):
     """
 
     def __init__(self, sqlite=None, shapefile=None, tags=None, job_name=None, zipped=True, debug=False):
+        """
+        Initialize the ThematicSQliteToShp utility.
+
+        Args:
+            sqlite: the sqlite file to convert
+            shapefile: the path to the shapefile output
+            tags: the selected tags for this export
+            job_name: the name of the export job
+            zipped: true if output is to be zipped, false otherwise
+            debug: turn on/off debug logging output.
+        """
         self.sqlite = sqlite
         self.tags = tags
         self.job_name = job_name
@@ -36,7 +47,7 @@ class ThematicSQliteToShp(object):
         shutil.copy(self.sqlite, self.thematic_sqlite)
         assert os.path.exists(self.thematic_sqlite), 'Thematic sqlite file not found.'
 
-        # think more about how to generate this, eg. using admin / json in db?
+        # think more about how to generate this more flexibly, eg. using admin / db / settings?
         self.thematic_spec = {
             'amenities_all_points': {'type': 'point', 'key': 'amenity', 'table': 'planet_osm_point', 'select_clause': 'amenity is not null'},
             'amenities_all_polygons': {'type': 'polygon', 'key': 'amenity', 'table': 'planet_osm_polygon', 'select_clause': 'amenity is not null'},
@@ -58,6 +69,13 @@ class ThematicSQliteToShp(object):
         }
 
     def generate_thematic_schema(self,):
+        """
+        Generate the thematic schema.
+
+        Iterates through the thematic_spec, checks the 'key' entry in the spec against
+        the exports tags. Dynamically constructs sql statements to generate to
+        generate the thematic layers based on the exports categoried_tags.
+        """
         # setup sqlite connection
         conn = sqlite3.connect(self.thematic_sqlite)
         # load spatialite extension
@@ -78,6 +96,12 @@ class ThematicSQliteToShp(object):
                 continue
             if isPoly:
                 osm_way_id = 'osm_way_id,'
+
+            """
+            Construct the parameters for the thematic sql statement.
+            Pull out the tags from self.tags according to their geometry type.
+            See jobs.models.Job.categorised_tags property.
+            """
             params = {'tablename': layer, 'osm_way_id': osm_way_id,
                       'columns': ', '.join([tag.replace(':', '_') for tag in self.tags[layer_type]]),
                       'planet_table': spec['table'], 'select_clause': spec['select_clause']}
@@ -111,6 +135,9 @@ class ThematicSQliteToShp(object):
         cur.close()
 
     def convert(self, ):
+        """
+        Convert the thematic sqlite schema to shapefile.
+        """
         convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'sqlite': self.thematic_sqlite})
         if(self.debug):
             print 'Running: %s' % convert_cmd
@@ -130,6 +157,9 @@ class ThematicSQliteToShp(object):
             return self.shapefile
 
     def _zip_shape_dir(self, ):
+        """
+        Zip the shapefile directory.
+        """
         zipfile = self.shapefile + '.zip'
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': zipfile, 'shp_dir': self.shapefile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',

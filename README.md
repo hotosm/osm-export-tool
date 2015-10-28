@@ -150,13 +150,21 @@ or
 
 ### Project Settings
 
-Create a copy of <code>hot_exports/settings/dev_dodobas.py</code> and update to reflect your development environment.
+Create a copy of <code>core/settings/dev_dodobas.py</code> and update to reflect your development environment.
 
-Make sure the following configuration variables are set:
+Look at <code>core/settings/project.py</code> and make sure you update or override the following configuration variables in your development settings:
 
-Set <code>OSMAND_MAP_CREATOR_DIR</code> to the directory where you installed the OSMAnd MapCreator.
+**EXPORT_STAGING_ROOT** = 'path to a directory for staging export jobs'
 
-Set <code>GARMIN_CONFIG</code> to point to the **absolute** path to the garmin configuration file, ./utils/conf/garmin_config.xml by default.
+**EXPORT_DOWNLOAD_ROOT** = 'path to a directory for storing export downloads'
+
+**EXPORT_MEDIA_ROOT** = '/downloads/' (map this url in your webserver to EXPORT_DOWNLOAD_ROOT to serve the exported files)
+
+**OSMAND_MAP_CREATOR_DIR** = 'path to directory where OsmAndMapCreator is installed'
+
+**GARMIN_CONFIG** = 'absolute path to utils/conf/garmin_config.xml'
+
+**OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
 
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
@@ -172,13 +180,16 @@ Detailed instructions for installing Overpass are available [here](http://wiki.o
 
 Download a (latest) planet pbf file from (for example) [http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/](http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/).
 
+If you're doing development you don't need the whole planet so download a continent or country level extract from [http://download.geofabrik.de/](http://download.geofabrik.de/),
+and update the `osmconvert` command below to reflect the filename you've downloaded.
+
 To prime the database we've used `osmconvert` as follows:
 
 <code>osmconvert --out-osm planet-latest.osm.pbf | ./update_database --meta --db-dir=$DBDIR --flush-size=1</code>
 
 If the dispatcher fails to start, check for, and remove <code>osm3s_v0.7.52_osm_base</code> from <code>/dev/shm</code>.
 
-We apply minutely updates as per Overpass installation instructions.
+We apply minutely updates as per Overpass installation instructions, however this is not strictly necessary for development purposes.
 
 ## Celery Workers
 
@@ -187,34 +198,22 @@ they are pushed to a Celery Worker for processing. At least two celery workers n
 
 From a 'hotosm' virtualenv directory (use screen), run:
 
-<code>export DJANGO_SETTINGS_MODULE=hot_exports.settings.your_settings_module</code>
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
 
-<code>$ celery -A hot_exports worker --loglevel debug --logfile=celery.log</code>.
+<code>$ celery -A core worker --loglevel debug --logfile=celery.log</code>.
 
 This will start a celery worker which will process export tasks. An additional celery worker needs to be started to handle purging of expired unpublished
-export jobs. From another hotosm virtualenv terminal session, run:
+export jobs. From another hotosm virtualenv terminal session in the project top-level directory, run:
 
-<code>export DJANGO_SETTINGS_MODULE=hot_exports.settings.your_settings_module</code>
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
 
-<code>$ celery -A hot_exports beat --loglevel debug --logfile=celery-beat.log</code>
+<code>$ celery -A core beat --loglevel debug --logfile=celery-beat.log</code>
 
-See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>settings.py</code>.
+See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>core/settings/celery.py</code>.
 
 For more detailed information on Celery Workers see [here](http://celery.readthedocs.org/en/latest/userguide/workers.html)
 
 For help with daemonizing Celery workers see [here](http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html)
-
-
-## Front end tools
-
-HOT Exports uses bower to manage javascript dependencies.
-
-<pre>
-sudo apt-get install nodejs
-sudo apt-get install npm
-sudo npm -g install bower
-sudo npm -g install yuglify
-</pre>
 
 ## Using Transifex service
 

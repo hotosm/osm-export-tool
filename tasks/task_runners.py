@@ -40,10 +40,21 @@ class ExportTaskRunner(TaskRunner):
     export_task_registry = settings.EXPORT_TASKS
 
     def run_task(self, job_uid=None, user=None):
+        """
+        Run export tasks.
+
+        Args:
+            job_uid: the uid of the job to run.
+
+        Return:
+            the ExportRun instance.
+        """
         run_uid = ''
         logger.debug('Running Job with id: {0}'.format(job_uid))
+        # pull the job from the database
         job = Job.objects.get(uid=job_uid)
         job_name = self.normalize_job_name(job.name)
+        # get the formats to export
         formats = [format.slug for format in job.formats.all()]
         export_tasks = []
         # build a list of celery tasks based on the export formats..
@@ -71,14 +82,17 @@ class ExportTaskRunner(TaskRunner):
             try:
                 # enforce max runs
                 max_runs = settings.EXPORT_MAX_RUNS
+                # get the number of existing runs for this job
                 run_count = job.runs.count()
                 if run_count > 0:
                     while run_count > max_runs - 1:
+                        # delete the earliest runs
                         job.runs.earliest(field_name='started_at').delete()  # delete earliest
                         run_count -= 1
                 # add the new run
                 if not user:
                     user = job.user
+                # add the export run to the database
                 run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED')  # persist the run
                 run.save()
                 run_uid = str(run.uid)
@@ -95,7 +109,13 @@ class ExportTaskRunner(TaskRunner):
             categories = job.categorised_tags  # dict of points/lines/polygons
             bbox = job.overpass_extents  # extents of job in order required by overpass
 
-            # setup the initial tasks
+            """
+            Set up the initial tasks:
+                1. Create the ogr2ogr config file for converting pbf to sqlite.
+                2. Create the Overpass Query task which pulls raw data from overpass and filters it.
+                3. Convert raw osm to compressed pbf.
+                4. Create the default sqlite schema file using ogr2ogr config file created at step 1.
+            """
             conf = OSMConfTask()
             query = OverpassQueryTask()
             pbfconvert = OSMToPBFConvertTask()
@@ -121,11 +141,12 @@ class ExportTaskRunner(TaskRunner):
             # save the rest of the ExportFormat tasks.
             for export_task in export_tasks:
                 """
-                    Set the region name on the Garmin Export task.
-                    The region gets written to the exported '.img' file.
-                    Could set additional params here in future if required.
+                Set the region name on the Garmin Export task.
+                The region gets written to the exported '.img' file.
+                Could set additional params here in future if required.
                 """
                 if export_task.name == 'Garmin Export':
+                    # add the region name to the Garmin export
                     export_task.region = job.region.name
                 try:
                     ExportTask.objects.create(run=run,
@@ -145,10 +166,10 @@ class ExportTaskRunner(TaskRunner):
                 export_tasks.append(preset_task)
 
             """
-                Create a celery chain which runs the initial conf and query tasks (initial_tasks),
-                followed by a chain of pbfconvert and prep_schema (schema_tasks).
-                The export format tasks (format_tasks) are then run in parallel, followed
-                by the finalize_task at the end to clean up staging dirs, update run status, email user etc..
+            Create a celery chain which runs the initial conf and query tasks (initial_tasks),
+            followed by a chain of pbfconvert and prep_schema (schema_tasks).
+            The export format tasks (format_tasks) are then run in parallel, followed
+            by the finalize_task at the end to clean up staging dirs, update run status, email user etc..
             """
             initial_tasks = chain(
                     conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name) |
@@ -167,14 +188,14 @@ class ExportTaskRunner(TaskRunner):
             finalize_task = FinalizeRunTask()
 
             """
-                If header tasks fail, errors will not propagate to the finalize_task.
-                This means that the finalize_task will always be called, and will update the
-                overall run status.
+            If header tasks fail, errors will not propagate to the finalize_task.
+            This means that the finalize_task will always be called, and will update the
+            overall run status.
             """
             chain(
                     chain(initial_tasks, schema_tasks),
                     chord(header=format_tasks,
-                        body=finalize_task.si(stage_dir=stage_dir, run_uid=run_uid)).set(link_error=finalize_task.si())
+                        body=finalize_task.si(stage_dir=stage_dir, run_uid=run_uid))
             ).apply_async(expires=datetime.now() + timedelta(days=1))  # tasks expire after one day.
 
             return run

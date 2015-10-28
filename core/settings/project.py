@@ -52,3 +52,29 @@ JOB_MAX_EXTENT = 2500000  # default export max extent in sq km
 EXPORT_MAX_RUNS = 5
 
 HOSTNAME = 'hot.geoweb.io'
+
+"""
+Admin email address
+which receives task error notifications.
+"""
+TASK_ERROR_EMAIL = 'export-tool@hotosm.org'
+
+"""
+Overpass Element limit
+
+Sets the max ram allowed for overpass query
+
+http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL#Element_limit_.28maxsize.29
+"""
+
+OVERPASS_MAX_SIZE = 2147483648  # 2GB
+
+"""
+Overpass timeout setting
+
+Sets request timeout for overpass queries.
+
+http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL#timeout
+"""
+
+OVERPASS_TIMEOUT = 1600  # query timeout in seconds

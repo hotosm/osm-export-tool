@@ -130,6 +130,23 @@ class TestJobViewSet(APITestCase):
         self.assertEquals(response['Content-Length'], '0')
         self.assertEquals(response['Content-Language'], 'en')
 
+    def test_delete_no_permissions(self, ):
+        url = reverse('api:jobs-detail', args=[self.job.uid])
+        # create another user with token
+        user = User.objects.create_user(
+            username='other_user', email='other_user@demo.com', password='demo'
+        )
+        token = Token.objects.create(user=user)
+        # reset the client credentials to the new user
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+        # try to delete a job belonging to self.user
+        response = self.client.delete(url)
+        # test the response headers
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+
     @patch('api.views.ExportTaskRunner')
     def test_create_job_success(self, mock):
         task_runner = mock.return_value
@@ -683,12 +700,55 @@ class TestExportConfigViewSet(APITestCase):
         self.assertEquals('text/plain', saved_config.content_type)
         saved_config.delete()
 
+    def test_delete_no_permissions(self, ):
+        """
+        Test deletion of configuration when the user has no object permissions.
+        """
+        post_url = reverse('api:configs-list')
+        path = os.path.dirname(os.path.realpath(__file__))
+        f = File(open(path + '/files/hdm_presets.xml', 'r'))
+        name = 'Test Export Preset'
+        response = self.client.post(post_url, {'name': name, 'upload': f, 'config_type': 'PRESET', 'published': True}, format='multipart')
+        data = response.data
+        uid = data['uid']
+        saved_config = ExportConfig.objects.get(uid=uid)
+        self.assertIsNotNone(saved_config)
+        self.assertEquals(name, saved_config.name)
+        self.assertTrue(saved_config.published)
+        self.assertEquals('hdm_presets.xml', saved_config.filename)
+        self.assertEquals('application/xml', saved_config.content_type)
+
+        delete_url = reverse('api:configs-detail', args=[uid])
+        # create another user with token
+        user = User.objects.create_user(
+            username='other_user', email='other_user@demo.com', password='demo'
+        )
+        token = Token.objects.create(user=user)
+        # reset the client credentials to the new user
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+        # try to delete a configuration belonging to self.user
+        response = self.client.delete(delete_url)
+        # test the response headers
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        saved_config.delete()
+
     def test_invalid_config_type(self, ):
         url = reverse('api:configs-list')
         path = os.path.dirname(os.path.realpath(__file__))
         f = open(path + '/files/Example Transform.sql', 'r')
         self.assertIsNotNone(f)
         response = self.client.post(url, {'upload': f, 'config_type': 'TRANSFORM-WRONG'}, format='multipart')
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+    def test_invalid_preset(self, ):
+        url = reverse('api:configs-list')
+        path = os.path.dirname(os.path.realpath(__file__))
+        f = open(path + '/files/invalid_hdm_presets.xml', 'r')
+        self.assertIsNotNone(f)
+        response = self.client.post(url, {'name': 'Invalid Preset', 'upload': f, 'config_type': 'PRESET'}, format='multipart')
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_invalid_name(self, ):

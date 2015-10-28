@@ -22,11 +22,20 @@ class EqualsSpaceRemover:
 
 class OSMConfig(object):
     """
-    Creates ogr2ogr OSM conf file based on the template
+    Create ogr2ogr OSM conf file based on the template
     at utils/conf/hotosm.ini.tmpl
+
+    See: http://www.gdal.org/drv_osm.html
     """
 
     def __init__(self, categories=None, job_name=None):
+        """
+        Initialize the OSMConfig utility.
+
+        Args:
+            categories: the export tags categorized by geometry type.
+            job_name: the name of the job
+        """
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.tmpl = self.path + '/conf/hotosm.ini.tmpl'
         self.categories = categories
@@ -34,6 +43,15 @@ class OSMConfig(object):
         self.job_name = job_name
 
     def create_osm_conf(self, stage_dir=None):
+        """
+        Create the osm configuration file.
+
+        Args:
+            stage_dir: where to stage the config file.
+
+        Return:
+            the path to the export configuration file.
+        """
         self.config.read(self.tmpl)  # read in the template
         self.config.set('points', 'attributes', ','.join(self.categories['points']))
         self.config.set('lines', 'attributes', ','.join(self.categories['lines']))

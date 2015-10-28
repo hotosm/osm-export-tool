@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# AGBADONOU <samagbadonou@gmail.com>, 2015
 # Brian O'Hare <bjohare@gmail.com>, 2015
 # kasssa <hermann.kass@gmail.com>, 2015
 # Kokou Elolo AMEGAYIBO <amazanake@gmail.com>, 2015
@@ -12,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-05 21:36+0000\n"
-"PO-Revision-Date: 2015-10-05 21:28+0000\n"
+"POT-Creation-Date: 2015-10-16 11:14+0000\n"
+"PO-Revision-Date: 2015-10-16 11:06+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/hotosm/osm-export-tool2/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -22,94 +23,257 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: api/serializers.py:350
+#: api/serializers.py:388
 msgid "invalid export format."
 msgstr "Format d'export invalide"
 
-#: api/serializers.py:351
+#: api/serializers.py:389
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Il est prévu une liste d'éléments mais de type \"{input_type}\"."
 
-#: api/serializers.py:381
+#: api/serializers.py:419
 msgid "xmin is required."
 msgstr "Un xmin est requis."
 
-#: api/serializers.py:382
+#: api/serializers.py:420
 msgid "invalid xmin value."
 msgstr "Valeur xmin invalide."
 
-#: api/serializers.py:388
+#: api/serializers.py:426
 msgid "ymin is required."
 msgstr "Un ymin est requis."
 
-#: api/serializers.py:389
+#: api/serializers.py:427
 msgid "invalid ymin value."
 msgstr "Valeur ymin invalide."
 
-#: api/serializers.py:395
+#: api/serializers.py:433
 msgid "xmax is required."
 msgstr "Un xmax est requis."
 
-#: api/serializers.py:396
+#: api/serializers.py:434
 msgid "invalid xmax value."
 msgstr "Valeur xmax invalide."
 
-#: api/serializers.py:402
+#: api/serializers.py:440
 msgid "ymax is required."
 msgstr "Un ymax est requis."
 
-#: api/serializers.py:403
+#: api/serializers.py:441
 msgid "invalid ymax value."
 msgstr "Valeur ymax invalide."
 
-#: api/views.py:74
+#: api/validators.py:39
+msgid "invalid_region"
+msgstr ""
+
+#: api/validators.py:40
+msgid "Job extent is not within a valid region."
+msgstr ""
+
+#: api/validators.py:57
+msgid "Select an export format."
+msgstr ""
+
+#: api/validators.py:76 api/validators.py:110
+msgid "invalid_bounds"
+msgstr ""
+
+#: api/validators.py:77 api/validators.py:111
+msgid "Invalid bounding box."
+msgstr ""
+
+#: api/validators.py:117
+msgid "invalid_extents"
+msgstr ""
+
+#: api/validators.py:118
+#, python-format
+msgid "Job extents too large: %(area)s"
+msgstr ""
+
+#: api/validators.py:148 api/validators.py:154
+msgid "inverted_coordinates"
+msgstr ""
+
+#: api/validators.py:149
+msgid "xmin greater than xmax."
+msgstr ""
+
+#: api/validators.py:155
+msgid "ymin greater than ymax."
+msgstr ""
+
+#: api/validators.py:161
+msgid "invalid_longitude"
+msgstr ""
+
+#: api/validators.py:162
+#, python-format
+msgid "Invalid longitude coordinate: %(lon)s"
+msgstr ""
+
+#: api/validators.py:166
+msgid "invalid_latitude"
+msgstr ""
+
+#: api/validators.py:167
+#, python-format
+msgid "Invalid latitude coordinate: %(lat)s"
+msgstr ""
+
+#: api/validators.py:188
+msgid "missing_parameter"
+msgstr ""
+
+#: api/validators.py:189
+#, python-format
+msgid "Missing parameter: %(name)s"
+msgstr ""
+
+#: api/validators.py:221 api/validators.py:248 api/validators.py:255
+msgid "invalid_content"
+msgstr ""
+
+#: api/validators.py:222
+#, python-format
+msgid "Uploaded config file has invalid content: %(content_type)s"
+msgstr ""
+
+#: api/validators.py:249
+#, python-format
+msgid "The uploaded preset file is invalid. %(error)s"
+msgstr ""
+
+#: api/validators.py:256
+msgid "The uploaded preset file is an invalid JOSM preset."
+msgstr ""
+
+#: api/views.py:149
 msgid "missing_bbox_parameter"
 msgstr "missing_bbox_parameter"
 
-#: api/views.py:75
+#: api/views.py:150
 msgid "Missing bounding box parameter"
 msgstr "Paramètre de la boîte englobante manquant"
 
-#: api/views.py:180
+#: api/views.py:274
 msgid "server_error"
 msgstr "erreur_serveur"
 
-#: api/views.py:185
+#: api/views.py:275
+#, python-format
+msgid "Error creating export job: %(error)s"
+msgstr ""
+
+#: api/views.py:279
 msgid "Invalid format provided."
 msgstr "Le format fourni est invalide."
 
-#: api/views.py:216
+#: api/views.py:310
 msgid "Failed to run Export"
 msgstr "Echec de Export"
 
-#: api/views.py:218
+#: api/views.py:312
 msgid "Export not found"
 msgstr "Export non trouvé"
 
-#: core/settings/base.py:22
+#: core/settings/base.py:25
 msgid "English"
 msgstr "Anglais"
 
-#: core/settings/base.py:23
+#: core/settings/base.py:26
 msgid "Bahasa Indonesia"
 msgstr "Bahasa Indonesia"
 
-#: core/settings/base.py:24
+#: core/settings/base.py:27
 msgid "German"
 msgstr "Allemand"
 
-#: core/settings/base.py:25
+#: core/settings/base.py:28
 msgid "Spanish"
 msgstr "Espagnol"
 
-#: core/settings/base.py:26
+#: core/settings/base.py:29
 msgid "Japanese"
 msgstr "Japonais"
 
-#: core/settings/base.py:27
+#: core/settings/base.py:30
 msgid "French"
 msgstr "Français"
+
+#: ui/templates/email/email.html:7 ui/templates/email/email.txt:2
+#: ui/templates/email/error_email.html:7 ui/templates/email/error_email.txt:2
+#: ui/templates/osm/verify_osm_email.html:7
+#: ui/templates/osm/verify_osm_email.txt:2
+msgid "This is an automated email from HOT Exports."
+msgstr "Ceci est un mail automatique de HOT Exports"
+
+#: ui/templates/email/email.html:8 ui/templates/email/email.txt:4
+msgid "Your HOT Export is ready."
+msgstr "Votre HOT Exports est prêt"
+
+#: ui/templates/email/email.html:9
+msgid "Please follow this link "
+msgstr ""
+
+#: ui/templates/email/email.html:9
+msgid " to download your files."
+msgstr ""
+
+#: ui/templates/email/email.html:10 ui/templates/email/email.txt:8
+msgid "Thank you for using the HOT Export Service"
+msgstr "Merci d'utiliser le service HOT Export"
+
+#: ui/templates/email/email.html:11 ui/templates/email/email.txt:10
+#: ui/templates/email/error_email.html:12
+#: ui/templates/email/error_email.txt:12
+#: ui/templates/osm/verify_osm_email.html:13
+#: ui/templates/osm/verify_osm_email.txt:9
+msgid "Humanitarian OpenStreetMap Team"
+msgstr "Équipe humanitaire OpenStreetMap"
+
+#: ui/templates/email/email.txt:6
+msgid "Please copy and paste this link"
+msgstr ""
+
+#: ui/templates/email/email.txt:6
+msgid " into your browser to download your files."
+msgstr ""
+
+#: ui/templates/email/error_email.html:4
+msgid "HOT Exports"
+msgstr "HOT Exports"
+
+#: ui/templates/email/error_email.html:8 ui/templates/email/error_email.txt:4
+msgid "Unfortunately, your HOT Export has failed."
+msgstr "Malheureusement, votre Export a échoué."
+
+#: ui/templates/email/error_email.html:9
+msgid "Please follow this link"
+msgstr "S'il-vous-plaît cliquez sur ce lien"
+
+#: ui/templates/email/error_email.html:9
+msgid " to see the status of your HOT Export."
+msgstr ""
+
+#: ui/templates/email/error_email.html:10 ui/templates/email/error_email.txt:8
+msgid "Please quote this Task ID when reporting errors:"
+msgstr "S'il vous plaît citer l'identifiant de cette Tâche lors de la déclaration des erreurs:"
+
+#: ui/templates/email/error_email.html:11
+#: ui/templates/email/error_email.txt:10
+msgid "We apologise for any inconvenience this may cause."
+msgstr "Nos excuses pour les désagréments que cela pourrait causer."
+
+#: ui/templates/email/error_email.txt:6
+msgid "Please copy and paste this link "
+msgstr ""
+
+#: ui/templates/email/error_email.txt:6
+msgid " into your browser to see the status of your HOT Export."
+msgstr ""
 
 #: ui/templates/help/help.html:7
 msgid "Help Documentation"
@@ -138,18 +302,18 @@ msgid ""
 msgstr ""
 
 #: ui/templates/help/help.html:17 ui/templates/help/help_create.html:9
-#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:65
+#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:64
 msgid "Create"
 msgstr "Création"
 
 #: ui/templates/help/help.html:18 ui/templates/help/help_exports.html:9
-#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:66
+#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:65
 msgid "Exports"
 msgstr "Exports"
 
 #: ui/templates/help/help.html:19 ui/templates/help/help_presets.html:10
 #: ui/templates/help/help_presets.html:13
-#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:67
+#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:66
 msgid "Presets"
 msgstr "Presets"
 
@@ -205,12 +369,12 @@ msgstr "Arborescence des attributs"
 #: ui/templates/help/help.html:40 ui/templates/help/help_features.html:51
 #: ui/templates/ui/clone.html:22 ui/templates/ui/create.html:22
 msgid "Preset File"
-msgstr "Fichier de Preset:"
+msgstr "Fichier de Preset"
 
 #: ui/templates/help/help_create.html:8 ui/templates/help/help_exports.html:8
 #: ui/templates/help/help_features.html:8
 #: ui/templates/help/help_formats.html:8 ui/templates/help/help_presets.html:9
-#: ui/templates/ui/base.html:68
+#: ui/templates/ui/base.html:67
 msgid "Help"
 msgstr "Aide"
 
@@ -255,7 +419,7 @@ msgstr "Sélectionner un ou plusieurs format(s) de fichiers pour l'Export"
 
 #: ui/templates/help/help_create.html:25
 msgid "Tree Tag:"
-msgstr "arborescence des attributs"
+msgstr "Arborescence des attributs :"
 
 #: ui/templates/help/help_create.html:25
 #, python-format
@@ -268,7 +432,7 @@ msgstr ""
 
 #: ui/templates/help/help_create.html:26
 msgid "Preset File:"
-msgstr "Fichier de Preset:"
+msgstr "Fichier de Preset :"
 
 #: ui/templates/help/help_create.html:26
 msgid ""
@@ -280,7 +444,7 @@ msgstr ""
 
 #: ui/templates/help/help_create.html:27
 msgid "Export Summary:"
-msgstr "Résumé de l'exportation:"
+msgstr "Résumé de l'export"
 
 #: ui/templates/help/help_create.html:27
 msgid ""
@@ -305,7 +469,7 @@ msgstr "haut"
 #: ui/templates/ui/clone.html.py:197 ui/templates/ui/create.html:23
 #: ui/templates/ui/create.html.py:197 ui/templates/ui/detail.html:9
 msgid "Export Details"
-msgstr "Exporter les détails"
+msgstr "Détails de l'export"
 
 #: ui/templates/help/help_create.html:34
 msgid ""
@@ -339,7 +503,7 @@ msgid ""
 "This function will clone the export, maintaining the original area of "
 "interest but allows the user to modify the settings for feature tags and "
 "file formats."
-msgstr ""
+msgstr "Cette fonction va dupliquer l'exportation , maintenir la zone d'intérêt initialle, mais permet à l'utilisateur de modifier les paramètres des prochaines attributs et formats de fichiers."
 
 #: ui/templates/help/help_create.html:43
 #: ui/templates/help/help_exports.html:46
@@ -351,7 +515,7 @@ msgstr "Supprimer l'Export"
 msgid ""
 "Delete the saved export. Please note that this function is only available to"
 " the user who originally created the export."
-msgstr ""
+msgstr "Supprimer l'exportation sauvé . S'il vous plaît noter que cette fonction est disponible uniquement pour l'utilisateur qui a initialement créé l'exportation."
 
 #: ui/templates/help/help_exports.html:14
 #, python-format
@@ -382,7 +546,7 @@ msgstr "Entrez Nom / Description / Mots-clés de l'événement à filtrer."
 #: ui/templates/help/help_exports.html:23
 #: ui/templates/help/help_presets.html:26
 msgid "Start Date/End Date:"
-msgstr "Date de début / Date de fin:"
+msgstr "Date de début / Date de fin :"
 
 #: ui/templates/help/help_exports.html:23
 #: ui/templates/help/help_presets.html:26
@@ -419,7 +583,7 @@ msgstr "Zoom sur l'emplacement de l'Export sur la carte interactive."
 
 #: ui/templates/help/help_exports.html:27
 msgid "Eye Icon:"
-msgstr ""
+msgstr "Icône d'oeil: "
 
 #: ui/templates/help/help_exports.html:27
 msgid ""
@@ -433,7 +597,7 @@ msgstr "Mes Exports"
 
 #: ui/templates/help/help_exports.html:28
 msgid "Displays private exports if the user is logged in."
-msgstr "Afficher les exports privés si l'utilisateur est connecté"
+msgstr "Affiche les exports privés si l'utilisateur est connecté"
 
 #: ui/templates/help/help_exports.html:29
 #: ui/templates/help/help_presets.html:30
@@ -453,8 +617,8 @@ msgid ""
 "<p>There are several options available on this page to apply to the Export, which include the ability to 'Rerun Export', 'Clone Export', or 'Delete Export'. The functionality of these options are detailed below: "
 msgstr ""
 
-#: ui/templates/help/help_features.html:9 ui/templates/ui/detail.html:38
-#: ui/templates/ui/detail.html.py:59
+#: ui/templates/help/help_features.html:9 ui/templates/ui/detail.html:39
+#: ui/templates/ui/detail.html.py:60
 msgid "Features"
 msgstr "Objets"
 
@@ -480,7 +644,7 @@ msgstr ""
 
 #: ui/templates/help/help_features.html:24
 msgid "Humanitarian Data Model"
-msgstr "Modèles de données Humanitaire"
+msgstr "Modèle de Données Humanitaires"
 
 #: ui/templates/help/help_features.html:26
 msgid ""
@@ -503,7 +667,7 @@ msgid ""
 " use and efficiency during disaster situations, providing key data."
 msgstr ""
 
-#: ui/templates/help/help_features.html:35
+#: ui/templates/help/help_features.html:35 ui/templates/ui/detail.html:33
 msgid "OpenStreetMap"
 msgstr "OpenStreetMap"
 
@@ -517,7 +681,7 @@ msgstr "OSM représente les caractéristiques physiques sur le terrain en utilis
 
 #: ui/templates/help/help_features.html:38
 msgid "OpenstreetMap Wiki | OSM Tags"
-msgstr "OpenStreetMap Wiki | OSM Tags"
+msgstr "Wiki OpenStreetMap | Tags OSM "
 
 #: ui/templates/help/help_features.html:41
 msgid "Step by Step"
@@ -531,11 +695,11 @@ msgstr "Les branches de haut niveau peuvent être étendues en cliquant sur le n
 
 #: ui/templates/help/help_features.html:44
 msgid "Tick the box on the right to select a feature tag for export."
-msgstr "Cochez la case sur la droite pour sélectionner un tag pour l'exportation."
+msgstr "Cochez la case sur la droite pour sélectionner un tag pour l'export."
 
 #: ui/templates/help/help_features.html:45
 msgid "Tick a top level-branch to select all sub-level for export."
-msgstr "Cochez un niveau-branche supérieure pour sélectionner la sous-niveau pour l'exportation tout."
+msgstr "Cochez une branche de niveau supérieur pour sélectionner tous les sous-niveaux dans l'export."
 
 #: ui/templates/help/help_features.html:46
 msgid ""
@@ -561,7 +725,7 @@ msgstr ""
 
 #: ui/templates/help/help_features.html:56
 #: ui/templates/help/help_presets.html:46 ui/templates/ui/clone.html:162
-#: ui/templates/ui/configurations.html:180 ui/templates/ui/create.html:162
+#: ui/templates/ui/configurations.html:173 ui/templates/ui/create.html:162
 msgid "Upload Preset"
 msgstr "Télécharger le preset"
 
@@ -626,15 +790,15 @@ msgstr ""
 
 #: ui/templates/help/help_formats.html:22
 msgid ".shp - shape format; feature geometry"
-msgstr ".shp - format shape; caractéristiques géométriques"
+msgstr ".shp - format shape ; caractéristiques géométriques"
 
 #: ui/templates/help/help_formats.html:23
 msgid ".shx - index format; positional index"
-msgstr ".shp - format d'index; indice de position"
+msgstr ".shx - format d'index ; indice de position"
 
 #: ui/templates/help/help_formats.html:24
 msgid ".dbf - attribute format; columnar information"
-msgstr ".dbf - format attribut; informations colonnaire"
+msgstr ".dbf - format d'attributs ; informations en colonnes"
 
 #: ui/templates/help/help_formats.html:25
 msgid ".prj - coordinate format; projection information"
@@ -642,13 +806,13 @@ msgstr ".prj - format du Système de Coordonnées de Référence"
 
 #: ui/templates/help/help_formats.html:29
 msgid "Schema Options"
-msgstr "Les options de schéma "
+msgstr "Options de schéma "
 
 #: ui/templates/help/help_formats.html:31
 msgid ""
 "The data is available for download from the Export Tool in two different "
 "shapefile schema formats which are detailsed below:"
-msgstr ""
+msgstr "La donnée est disponible au téléchargement dans les deux modèles de données qui sont détaillés ci-dessous : "
 
 #: ui/templates/help/help_formats.html:33
 msgid "OSM "
@@ -663,7 +827,7 @@ msgstr ""
 
 #: ui/templates/help/help_formats.html:35
 msgid "Thematic"
-msgstr "Thematique"
+msgstr "Thématique"
 
 #: ui/templates/help/help_formats.html:36
 msgid ""
@@ -683,7 +847,7 @@ msgstr ""
 #: ui/templates/help/help_formats.html:117
 #: ui/templates/help/help_formats.html:130
 msgid "Compatible Software"
-msgstr "logiciels compatibles"
+msgstr "logiciel compatible"
 
 #: ui/templates/help/help_formats.html:42
 #: ui/templates/help/help_formats.html:86
@@ -720,7 +884,7 @@ msgstr "ArcGIS en ligne | Shapefile"
 
 #: ui/templates/help/help_formats.html:49
 msgid "OpenStreetMap Wiki | Esri SHP File"
-msgstr "OpenStreetMap Wiki |  Fichier Esri SHP"
+msgstr "Wiki OpenStreetMap |  Fichier Esri SHP"
 
 #: ui/templates/help/help_formats.html:56
 msgid ""
@@ -765,7 +929,7 @@ msgstr "QLandkarte"
 
 #: ui/templates/help/help_formats.html:69
 msgid "OSM Composer"
-msgstr "Compositeur OSM"
+msgstr "Composeur OSM"
 
 #: ui/templates/help/help_formats.html:70
 msgid "GroundTruth"
@@ -785,7 +949,7 @@ msgid ""
 "Language (KML) is an Extensible Markup Language (XML) grammar and file "
 "format for modeling and storing geographic features such as points, lines, "
 "images polygons and models."
-msgstr "Le fichier KMZ est une version compressée d'un fichier KML. Le 'Keyhole Markup Language' (KML) est un langage de balisage extensible (XML) la grammaire et le format de fichier pour la modélisation et le stockage de caractéristiques géographiques comme les points, lignes, polygones images et modèles."
+msgstr "Le fichier KMZ est une version compressée d'un fichier KML. Le 'Keyhole Markup Language' (KML) est un langage de balisage extensible (XML) et un format de fichier pour la modélisation et le stockage de caractéristiques géographiques comme les points, lignes, polygones images et modèles."
 
 #: ui/templates/help/help_formats.html:84
 msgid "Google Earth"
@@ -805,7 +969,7 @@ msgstr "Documentation Google | Tutoriel KML"
 
 #: ui/templates/help/help_formats.html:92
 msgid "OpenStreetMap Wiki | KML File"
-msgstr "OpenstreetMap Wiki | Fichier KML"
+msgstr "Wiki OpenStreetMap | Fichier KML"
 
 #: ui/templates/help/help_formats.html:97
 msgid "OSM Source PBF"
@@ -921,7 +1085,7 @@ msgstr "Filtrer les presets par nom/propriétaire."
 
 #: ui/templates/help/help_presets.html:29
 msgid "My Preset Files:"
-msgstr "Mes Fichiers de Preset:"
+msgstr "Mes fichiers de Preset"
 
 #: ui/templates/help/help_presets.html:29
 msgid "Display personal preset files if the user is logged in."
@@ -991,7 +1155,7 @@ msgstr "Outil d'Export "
 
 #: ui/templates/osm/email.html:9
 msgid "Email Required"
-msgstr "Couriel réquis"
+msgstr "Courriel requis"
 
 #: ui/templates/osm/email.html:14
 msgid ""
@@ -1064,11 +1228,24 @@ msgid ""
 "<a href=\"%(help_url)s\">Help</a> page."
 msgstr ""
 
-#: ui/templates/osm/login.html:20 ui/templates/osm/login.html.py:30
+#: ui/templates/osm/login.html:15
+msgid "Original Export Tool"
+msgstr ""
+
+#: ui/templates/osm/login.html:16
+msgid "The original HOT Export Tool is available"
+msgstr ""
+
+#: ui/templates/osm/login.html:16 ui/templates/ui/detail.html:90
+#: ui/templates/ui/detail.html.py:104
+msgid "here"
+msgstr "ici"
+
+#: ui/templates/osm/login.html:22 ui/templates/osm/login.html.py:32
 msgid "Login to OpenStreetMap"
 msgstr "Authentification à OpenStreetMap"
 
-#: ui/templates/osm/login.html:26
+#: ui/templates/osm/login.html:28
 msgid ""
 "If you don't have an OpenStreetMap account you can register for one <a "
 "href='http://www.openstreetmap.org/user/new'>here</a>."
@@ -1082,28 +1259,31 @@ msgstr "Vous avez réussi à vous déconnecter d'OpenStreetMap"
 msgid "Please click <a href=\"/login\">here</a> to login again."
 msgstr "Svp cliquez <a href=\"/login\">ici</a> pour vous connecter"
 
-#: ui/templates/osm/verify_osm_email.html:7 ui/templates/ui/email.html:7
-#: ui/templates/ui/error_email.html:7
-msgid "This is an automated email from HOT Exports."
-msgstr "Ceci est un mail automatique de HOT Exports"
-
-#: ui/templates/osm/verify_osm_email.html:8 ui/templates/ui/email.html:9
-#: ui/templates/ui/error_email.html:9
-msgid "Please follow this link"
-msgstr "S'il-vous-plaît cliquez sur ce lien"
+#: ui/templates/osm/verify_osm_email.html:8
+msgid "Please "
+msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:8
-msgid "to login to HOT Exports"
+msgid "follow this link"
+msgstr ""
+
+#: ui/templates/osm/verify_osm_email.html:8
+msgid " to login to HOT Exports."
 msgstr ""
 
 #: ui/templates/osm/verify_osm_email.html:10
 msgid "Thank you for registering with the HOT Export Service."
+msgstr "Merci pour votre inscription au Service HOT Export "
+
+#: ui/templates/osm/verify_osm_email.txt:3
+msgid ""
+"Please copy and paste the link below into your browser to login to HOT "
+"Exports."
 msgstr ""
 
-#: ui/templates/osm/verify_osm_email.html:13 ui/templates/ui/email.html:14
-#: ui/templates/ui/error_email.html:15
-msgid "Humanitarian OpenStreetMap Team"
-msgstr "Équipe humanitaire OpenStreetMap"
+#: ui/templates/osm/verify_osm_email.txt:7
+msgid "Thank you for registering with the HOT Export service."
+msgstr ""
 
 #: ui/templates/ui/404.html:8
 msgid "Page Not Found"
@@ -1120,30 +1300,42 @@ msgstr "Erreur du serveur"
 #: ui/templates/ui/500.html:10
 msgid ""
 "HOT Exports has experienced an internal error. Please <a "
-"href=\"mailto:exports@hotosm.org\">email us</a> if this problem persists."
-msgstr "HOT Eports a rencontré une erreur interne. S'il vous plaît <a href=\"mailto:exports@hotosm.org\"> nous envoyer un email </a> si ce problème persiste."
+"href=\"https://github.com/hotosm/osm-export-tool2/issues\">log an issue</a> "
+"in github if this problem persists."
+msgstr ""
 
-#: ui/templates/ui/base.html:15
+#: ui/templates/ui/about.html:14
+msgid "License Information"
+msgstr ""
+
+#: ui/templates/ui/about.html:15
+msgid ""
+"Data is copyright OpenStreetMap Contributors, <a "
+"href=\"http://opendatacommons.org/licenses/odbl/1-0/\">ODbL 1.0 "
+"licensed</a>."
+msgstr ""
+
+#: ui/templates/ui/base.html:14
 msgid "HOT Export Tool"
 msgstr "Outil HOT Export"
 
-#: ui/templates/ui/base.html:37
+#: ui/templates/ui/base.html:36
 msgid "Humanitarian <br/>OpenStreetMap <br/>Team"
 msgstr "Humanitarian <br/>OpenStreetMap <br/>Team"
 
-#: ui/templates/ui/base.html:61
+#: ui/templates/ui/base.html:60
 msgid "OSM Export Tool"
 msgstr "Outil HOT Export"
 
-#: ui/templates/ui/base.html:69
+#: ui/templates/ui/base.html:68
 msgid "About"
 msgstr "À propos"
 
-#: ui/templates/ui/base.html:74
+#: ui/templates/ui/base.html:73
 msgid "Log Out"
 msgstr "Déconnexion"
 
-#: ui/templates/ui/base.html:78 ui/templates/ui/configurations.html:196
+#: ui/templates/ui/base.html:77 ui/templates/ui/configurations.html:196
 msgid "Login"
 msgstr "Authentification"
 
@@ -1151,9 +1343,9 @@ msgstr "Authentification"
 msgid "Describe Export"
 msgstr "Décrire l'exportation"
 
-#: ui/templates/ui/clone.html:31 ui/templates/ui/clone.html.py:373
+#: ui/templates/ui/clone.html:31 ui/templates/ui/clone.html.py:376
 #: ui/templates/ui/configurations.html:61 ui/templates/ui/create.html:31
-#: ui/templates/ui/create.html.py:395 ui/templates/ui/list.html:68
+#: ui/templates/ui/create.html.py:398 ui/templates/ui/list.html:68
 msgid "Name"
 msgstr "Nom"
 
@@ -1163,6 +1355,7 @@ msgid "Description"
 msgstr "Description"
 
 #: ui/templates/ui/clone.html:45 ui/templates/ui/create.html:45
+#: ui/templates/ui/list.html:68
 msgid "Project"
 msgstr "Projet"
 
@@ -1213,7 +1406,7 @@ msgstr "Nom d'attribut"
 msgid "Publish this preset globally."
 msgstr "Publier ce Preset à l'échelle mondiale"
 
-#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:185
+#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:178
 #: ui/templates/ui/create.html:167
 msgid "Upload"
 msgstr "Transférer"
@@ -1223,9 +1416,9 @@ msgid "Select a stored preset"
 msgstr "Sélectionnez un preset enregistré"
 
 #: ui/templates/ui/clone.html:180 ui/templates/ui/clone.html.py:245
-#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/clone.html:376 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
-#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
+#: ui/templates/ui/create.html:398 ui/templates/ui/detail.html:153
 msgid "Filename"
 msgstr "Nom de fichier"
 
@@ -1267,23 +1460,23 @@ msgstr "Publier l'export à l'échelle mondial"
 msgid "Configurations:"
 msgstr "Configurations:"
 
-#: ui/templates/ui/clone.html:245 ui/templates/ui/clone.html.py:373
+#: ui/templates/ui/clone.html:245 ui/templates/ui/clone.html.py:376
 #: ui/templates/ui/configurations.html:61
-#: ui/templates/ui/configurations.html:165 ui/templates/ui/create.html:180
-#: ui/templates/ui/create.html.py:245 ui/templates/ui/create.html:395
-#: ui/templates/ui/detail.html:152
+#: ui/templates/ui/configurations.html:185 ui/templates/ui/create.html:180
+#: ui/templates/ui/create.html.py:245 ui/templates/ui/create.html:398
+#: ui/templates/ui/detail.html:153
 msgid "Type"
 msgstr "Type"
 
-#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:165
+#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
-#: ui/templates/ui/detail.html:152
+#: ui/templates/ui/detail.html:153
 msgid "Status"
 msgstr "Statut"
 
 #: ui/templates/ui/clone.html:252 ui/templates/ui/create.html:252
 msgid "Create Export"
-msgstr "Créer un export"
+msgstr "Créer l'export"
 
 #: ui/templates/ui/clone.html:257 ui/templates/ui/create.html:257
 msgid "Skip"
@@ -1300,75 +1493,77 @@ msgstr "Zoomer sur la sélection"
 #: ui/templates/ui/clone.html:277 ui/templates/ui/create.html:277
 #: ui/templates/ui/list.html:137
 msgid "Reset Map"
-msgstr "Reinitialiser la carte"
+msgstr "Réinitialiser la carte"
 
 #: ui/templates/ui/clone.html:286 ui/templates/ui/create.html:286
 msgid "Search for a place or enter xmin,ymin,xmax,ymax"
 msgstr "Recherchez un lieu ou entrez les xmin, ymin, xmax, ymax"
 
-#: ui/templates/ui/clone.html:300 ui/templates/ui/create.html:300
+#: ui/templates/ui/clone.html:300 ui/templates/ui/configurations.html:219
+#: ui/templates/ui/create.html:300
 msgid "Error Uploading Configuration File"
 msgstr "Erreur lors du téléchargement du fichier"
 
-#: ui/templates/ui/clone.html:306 ui/templates/ui/create.html:306
+#: ui/templates/ui/clone.html:309 ui/templates/ui/configurations.html:228
+#: ui/templates/ui/create.html:309
 msgid "There was a problem with your configuration upload."
 msgstr "Il y eu un soucis dans le chargement de la configuration"
 
-#: ui/templates/ui/clone.html:323 ui/templates/ui/create.html:345
+#: ui/templates/ui/clone.html:326 ui/templates/ui/create.html:348
 msgid "Select a preset file to apply to this export"
 msgstr "Sélectionner un fichier de preset à appliquer a cet Export"
 
-#: ui/templates/ui/clone.html:324 ui/templates/ui/create.html:346
+#: ui/templates/ui/clone.html:327 ui/templates/ui/create.html:349
 msgid "Only one preset file can be selected"
 msgstr "Un seul fichier de preset peu être sélectioné"
 
-#: ui/templates/ui/clone.html:333 ui/templates/ui/create.html:355
+#: ui/templates/ui/clone.html:336 ui/templates/ui/create.html:358
 msgid "Filter Configurations"
 msgstr "Filtrer les configurations"
 
-#: ui/templates/ui/clone.html:339 ui/templates/ui/configurations.html:24
-#: ui/templates/ui/create.html:361 ui/templates/ui/list.html:24
+#: ui/templates/ui/clone.html:342 ui/templates/ui/configurations.html:24
+#: ui/templates/ui/create.html:364 ui/templates/ui/list.html:24
 msgid "Search"
 msgstr "Rechercher"
 
-#: ui/templates/ui/clone.html:350 ui/templates/ui/configurations.html:35
-#: ui/templates/ui/create.html:372 ui/templates/ui/list.html:35
+#: ui/templates/ui/clone.html:353 ui/templates/ui/configurations.html:35
+#: ui/templates/ui/create.html:375 ui/templates/ui/list.html:35
 msgid "Start Date:"
 msgstr "Date de début :"
 
-#: ui/templates/ui/clone.html:360 ui/templates/ui/configurations.html:45
-#: ui/templates/ui/create.html:382 ui/templates/ui/list.html:45
+#: ui/templates/ui/clone.html:363 ui/templates/ui/configurations.html:45
+#: ui/templates/ui/create.html:385 ui/templates/ui/list.html:45
 msgid "End Date:"
 msgstr "Date de fin :"
 
-#: ui/templates/ui/clone.html:373 ui/templates/ui/configurations.html:61
-#: ui/templates/ui/create.html:395 ui/templates/ui/detail.html:152
+#: ui/templates/ui/clone.html:376 ui/templates/ui/configurations.html:61
+#: ui/templates/ui/create.html:398 ui/templates/ui/detail.html:153
 #: ui/templates/ui/list.html:68
 msgid "Created"
 msgstr "Créé"
 
-#: ui/templates/ui/clone.html:373 ui/templates/ui/create.html:395
+#: ui/templates/ui/clone.html:376 ui/templates/ui/create.html:398
 #: ui/templates/ui/list.html:68
 msgid "Owner"
 msgstr "Propriétaire "
 
-#: ui/templates/ui/clone.html:373 ui/templates/ui/clone.html.py:429
-#: ui/templates/ui/create.html:395 ui/templates/ui/create.html.py:451
+#: ui/templates/ui/clone.html:376 ui/templates/ui/clone.html.py:432
+#: ui/templates/ui/create.html:398 ui/templates/ui/create.html.py:454
 msgid "Select"
 msgstr "Sélectionner"
 
-#: ui/templates/ui/clone.html:386 ui/templates/ui/configurations.html:81
-#: ui/templates/ui/create.html:408
+#: ui/templates/ui/clone.html:389 ui/templates/ui/configurations.html:81
+#: ui/templates/ui/create.html:411
 msgid "My Presets"
 msgstr "Mon Presets"
 
-#: ui/templates/ui/clone.html:404 ui/templates/ui/configurations.html:98
-#: ui/templates/ui/create.html:426 ui/templates/ui/list.html:107
+#: ui/templates/ui/clone.html:407 ui/templates/ui/configurations.html:98
+#: ui/templates/ui/create.html:429 ui/templates/ui/list.html:107
 msgid "Display"
 msgstr "Afficher"
 
-#: ui/templates/ui/clone.html:410 ui/templates/ui/configurations.html:105
-#: ui/templates/ui/create.html:432
+#: ui/templates/ui/clone.html:413 ui/templates/ui/configurations.html:105
+#: ui/templates/ui/create.html:435
 msgid "presets per page"
 msgstr "presets par page"
 
@@ -1418,7 +1613,7 @@ msgstr "Publier les fonctions de sélection publiquement"
 msgid "Publish export publicly"
 msgstr "Publier publiquement l'export"
 
-#: ui/templates/ui/create.html:323
+#: ui/templates/ui/create.html:326
 msgid "Invalid Form"
 msgstr "Formulaire invalide"
 
@@ -1440,11 +1635,11 @@ msgstr "Surface "
 
 #: ui/templates/ui/detail.html:22
 msgid "Created:"
-msgstr "Crée"
+msgstr "Créé :"
 
 #: ui/templates/ui/detail.html:23
 msgid "Created By:"
-msgstr "Crée par"
+msgstr "Créé par :"
 
 #: ui/templates/ui/detail.html:24
 msgid "Published:"
@@ -1454,89 +1649,85 @@ msgstr "Publié :"
 msgid "Export Formats:"
 msgstr "Formats de l'export"
 
-#: ui/templates/ui/detail.html:41
+#: ui/templates/ui/detail.html:33
+msgid "Data is copyright"
+msgstr ""
+
+#: ui/templates/ui/detail.html:33
+msgid "contributors"
+msgstr ""
+
+#: ui/templates/ui/detail.html:33
+msgid "ODbL 1.0 licensed"
+msgstr ""
+
+#: ui/templates/ui/detail.html:42
 msgid "Rerun Export"
 msgstr "Relancer l'Export"
 
-#: ui/templates/ui/detail.html:44
+#: ui/templates/ui/detail.html:45
 msgid "Clone Export"
 msgstr "Dupliquer l'Export "
 
-#: ui/templates/ui/detail.html:50 ui/templates/ui/detail.html.py:128
+#: ui/templates/ui/detail.html:51 ui/templates/ui/detail.html.py:129
 msgid "Delete Export"
 msgstr "Supprimer l'Export"
 
-#: ui/templates/ui/detail.html:69
+#: ui/templates/ui/detail.html:70
 msgid "Export Runs"
 msgstr "L'export fonctione"
 
-#: ui/templates/ui/detail.html:84
+#: ui/templates/ui/detail.html:85
 msgid "Export Deleted"
 msgstr "Export supprimé"
 
-#: ui/templates/ui/detail.html:88
+#: ui/templates/ui/detail.html:89
 msgid "Your export has been deleted successfully."
 msgstr "Votre Export a été supprimé avec succès."
 
-#: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
+#: ui/templates/ui/detail.html:90 ui/templates/ui/detail.html.py:104
 msgid "Please start"
 msgstr "S'il vous plaît commencer"
 
-#: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
-msgid "here"
-msgstr "ici"
-
-#: ui/templates/ui/detail.html:89 ui/templates/ui/detail.html.py:103
+#: ui/templates/ui/detail.html:90 ui/templates/ui/detail.html.py:104
 msgid "to create a new export."
-msgstr "pour créer un nouvel Export"
+msgstr "pour créer un nouvel Export."
 
-#: ui/templates/ui/detail.html:98
+#: ui/templates/ui/detail.html:99
 msgid "Export Not Found"
 msgstr "Export non trouvé"
 
-#: ui/templates/ui/detail.html:102
+#: ui/templates/ui/detail.html:103
 msgid "The requested export was not found."
 msgstr "L'Export demandé n'a pas été trouvé."
 
-#: ui/templates/ui/detail.html:116
+#: ui/templates/ui/detail.html:117
 msgid "Really delete this export?"
 msgstr "voulez-vous supprimer cet Export?"
 
-#: ui/templates/ui/detail.html:122
+#: ui/templates/ui/detail.html:123
 msgid "This Export will be permanently deleted and cannot be recovered."
 msgstr "Cet Export sera définitivement supprimé et ne peut être récupéré."
 
-#: ui/templates/ui/detail.html:123
+#: ui/templates/ui/detail.html:124
 msgid "All associated export runs and their downloads will also be deleted."
 msgstr "Tous les essais d'exportation associés et leurs téléchargements seront également supprimés."
 
-#: ui/templates/ui/detail.html:127
+#: ui/templates/ui/detail.html:128
 msgid "Cancel"
 msgstr "annulé "
 
-#: ui/templates/ui/detail.html:140
+#: ui/templates/ui/detail.html:141
 msgid "Features selected for this export"
 msgstr "Les fonctions sélectionnées pour cet export"
 
-#: ui/templates/ui/detail.html:155
+#: ui/templates/ui/detail.html:156
 msgid "The preset associated with this export has been deleted."
 msgstr "L'attribut associé à l'export à été supprimé"
 
-#: ui/templates/ui/detail.html:159
+#: ui/templates/ui/detail.html:160
 msgid "Close"
 msgstr "Fermé"
-
-#: ui/templates/ui/email.html:8
-msgid "Your HOT Export is ready."
-msgstr "Votre HOT Exports est prêt"
-
-#: ui/templates/ui/email.html:9
-msgid "to download your files."
-msgstr "pour télécharger vos fichiers"
-
-#: ui/templates/ui/email.html:11
-msgid "Thank you for using the HOT Export Service"
-msgstr "Merci d'utiliser le service HOT Export"
 
 #: ui/templates/ui/error.html:8
 msgid "Error Creating Export"
@@ -1554,37 +1745,9 @@ msgstr "contactez nous par email"
 msgid "if this problem persists."
 msgstr "si ce problème persiste."
 
-#: ui/templates/ui/error_email.html:4
-msgid "HOT Exports"
-msgstr "HOT Exports"
-
-#: ui/templates/ui/error_email.html:8
-msgid "Unfortunately, your HOT Export has failed."
-msgstr "Malheureusement, votre Export a échoué."
-
-#: ui/templates/ui/error_email.html:9
-msgid "to see the status of your HOT Export."
-msgstr "pour voir le statut de votre Export."
-
-#: ui/templates/ui/error_email.html:10
-msgid "Please quote this Task ID when reporting errors:"
-msgstr "S'il vous plaît citer l'identifiant de cette Tâche lors de la déclaration des erreurs:"
-
-#: ui/templates/ui/error_email.html:11
-msgid "We apologise for any inconvenience this may cause."
-msgstr "Nos excuses pour les désagréments que cela pourrait causer."
-
-#: ui/templates/ui/error_email.html:13
-msgid "Yours sincerely"
-msgstr "Sincèrement votre"
-
 #: ui/templates/ui/list.html:18
 msgid "Filter Exports"
 msgstr "Filtre d'export"
-
-#: ui/templates/ui/list.html:68
-msgid "Event"
-msgstr "Evénement"
 
 #: ui/templates/ui/list.html:68
 msgid "Region"
@@ -1608,7 +1771,7 @@ msgstr "Effacez Filtre"
 
 #: ui/templates/ui/list.html:143
 msgid "double-click to view export details"
-msgstr "double cliquer pour voir les détails de l'Export"
+msgstr "Double-cliquer pour voir les détails de l'Export"
 
 #: ui/templates/ui/upgrade.html:8
 msgid "Browser Not Supported"

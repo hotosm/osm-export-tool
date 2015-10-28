@@ -9,7 +9,11 @@ admin.site.register(ExportProfile)
 
 
 class HOTRegionGeoAdmin(OSMGeoAdmin):
+    """
+    Admin model to allow Region editing in admin interface.
 
+    Uses OSM for base layer in map in admin.
+    """
     model = Region
     exclude = ['the_geom', 'the_geog']
 
@@ -21,16 +25,22 @@ class HOTRegionGeoAdmin(OSMGeoAdmin):
 
 
 class JobAdmin(OSMGeoAdmin):
+    """
+    Admin model for editing Jobs in the admin interface.
+    """
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid', 'name', 'user']
     exclude = ['the_geom', 'the_geog']
 
 
 class ExportConfigAdmin(admin.ModelAdmin):
+    """
+    Admin model for editing export configurations in the admin interface.
+    """
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid', 'name', 'user', 'config_type']
 
-
+# register the new admin models
 admin.site.register(Region, HOTRegionGeoAdmin)
 admin.site.register(Job, JobAdmin)
 admin.site.register(ExportConfig, ExportConfigAdmin)
