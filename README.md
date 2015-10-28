@@ -109,6 +109,20 @@ The HOT Export pipeline depends on a number of third-party tools.
 
 <code>$ sudo apt-get install default-jre zip unzip</code>
 
+Install Qt 5.5:
+
+<code>$ sudo add-apt-repository ppa:beineri/opt-qt55-trusty </code>
+
+<code>$ sudo apt-get update </code>
+
+<code>$ sudo apt-get install qt55base </code>
+
+<code>$ source /opt/qt55/bin/qt55-env.sh </code>
+
+To run OSRM binaries, you'll need:
+
+<code>$ sudo apt-get install libtbb2 libluabind0.9.1 liblua50 libstxxl1 </code>
+
 #### Garmin
 
 Download the latest version of the __mkgmap__ utility for making garmin IMG files from [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
@@ -186,6 +200,8 @@ and update the `osmconvert` command below to reflect the filename you've downloa
 To prime the database we've used `osmconvert` as follows:
 
 <code>osmconvert --out-osm planet-latest.osm.pbf | ./update_database --meta --db-dir=$DBDIR --flush-size=1</code>
+
+<code>export DJANGO_SETTINGS_MODULE=hot_exports.settings.your_settings_module</code> [ settings_modile is dev ]
 
 If the dispatcher fails to start, check for, and remove <code>osm3s_v0.7.52_osm_base</code> from <code>/dev/shm</code>.
 

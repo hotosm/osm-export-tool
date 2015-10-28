@@ -228,6 +228,12 @@ exports.detail = (function(){
                                         result.size + '</td></tr>');
                                 }
                                 break;
+                            case 'MWM Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Maps Me (MWM) File') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
                             case 'OSM2PBF':
                                 if (status === 'SUCCESS') {
                                     $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('OpenStreetMap (PBF) File') + '</a></td><td>' + duration + '</td><td>' +
@@ -462,6 +468,17 @@ exports.detail = (function(){
                             result.size + '</td><td>' + task.status + '</td></tr>');
                         }
                         break;
+                    case 'MWM Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>' + gettext('Maps Me (MWM)') + '</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td></tr>');            
+                        }
+                        else {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td><a href="' + result.url + '">' + gettext('Maps Me (MWM) File') + '</a></td><td>' + duration + '</td><td>' +
+                            result.size + '</td><td>' + task.status + '</td></tr>');
+                        }
+                        break;
                     case 'OSM2PBF':
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
                             cls = status.toLowerCase();
@@ -638,6 +655,19 @@ exports.detail = (function(){
                             $tr.html('<td><a href="' + result.url + '">' + gettext('Google Earth (KMZ) File') + '</a></td><td>' + duration + '</td><td>' +
                             result.size + '</td><td>' + task.status + '</td>');
                         }
+                        break;
+                    case 'MWM Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>' + gettext('Maps Me (MWM)') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
+                        }    
+                        else {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td><a href="' + result.url + '">' + gettext('Maps Me (MWM) File') + '</a></td><td>' + duration + '</td><td>' +
+                            result.size + '</td><td>' + task.status + '</td>');
+                        }    
                         break;
                     case 'OSM2PBF':
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {

@@ -59,6 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
     args = parser.parse_args()
     config = {}
+    change pbf=pbf to pbfline=pbf
     for k, v in vars(args).items():
         if (v == None):
             continue

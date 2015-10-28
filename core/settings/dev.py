@@ -133,7 +133,7 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
-        'hot_exports': {
+        'core': {
             'handlers': ['file'],
             'propagate': True,
             'level': 'DEBUG',
