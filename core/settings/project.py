@@ -37,7 +37,7 @@ EXPORT_MEDIA_ROOT = '/downloads/'
 # home dir of the OSMAnd Map Creator
 OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmand/OsmAndMapCreator'
 
-# the roor url for maps me binary files
+# the root url for maps me binary files
 EXPORT_MWM_ROOT = ''
 
 # location of the garmin config file
