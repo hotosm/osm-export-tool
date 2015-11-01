@@ -15,6 +15,7 @@
 # Cross-borders routing index is not created, since we don't assume
 # the source file to be one of the pre-defined countries.
 
+source /opt/qt55/bin/qt55-env.sh 
 set -u
 set -e
 

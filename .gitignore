@@ -68,7 +68,7 @@ media/*
 static
 !ui/static
 migrations
-!jobs/migrations
+#!jobs/migrations
 !tasks/migrations
 
 nohup.out

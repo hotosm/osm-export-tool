@@ -11,8 +11,6 @@ class Migration(migrations.Migration):
 
     def insert_export_formats(apps, schema_editor):
         ExportFormat = apps.get_model('jobs', 'ExportFormat')
-        ExportFormat.objects.create(name='MWM Format', description='Maps.me File format',
-                                    slug='MWM')
         ExportFormat.objects.create(name='OBF Format', description='OSMAnd OBF',
                                     slug='OBF')
         ExportFormat.objects.create(name='ESRI Shapefile Format', description='Esri SHP (OSM Schema)',
