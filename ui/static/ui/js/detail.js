@@ -67,7 +67,8 @@ exports.detail = (function(){
             $('#name').html(data.name);
             $('#description').html(data.description);
             $('#event').html(data.event);
-            $('#region').html(data.region.name);
+            region = data.region == undefined ? '': data.region.name;
+            $('#region').html(region);
             $('#created_by').html(data.owner);
             var published = data.published ? 'Publicly' : 'Privately';
             $('#published').html(published);
