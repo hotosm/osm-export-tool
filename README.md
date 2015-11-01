@@ -211,14 +211,14 @@ they are pushed to a Celery Worker for processing. At least two celery workers n
 
 From a 'hotosm' virtualenv directory (use screen), run:
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>  
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
 
 <code>$ celery -A core worker --loglevel debug --logfile=celery.log</code>.
 
 This will start a celery worker which will process export tasks. An additional celery worker needs to be started to handle purging of expired unpublished
 export jobs. From another hotosm virtualenv terminal session in the project top-level directory, run:
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>  
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
 
 <code>$ celery -A core beat --loglevel debug --logfile=celery-beat.log</code>
 

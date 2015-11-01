@@ -44,7 +44,7 @@ EXPORT_MWM_ROOT = ''
 GARMIN_CONFIG = '/home/ubuntu/www/hotosm/utils/conf/garmin_config.xml'
 
 # url to overpass api endpoint
-OVERPASS_API_URL = 'http://overpass-api.de/api/interpreter'
+OVERPASS_API_URL = 'http://localhost/interpreter'
 
 """
 Maximum extent of a Job

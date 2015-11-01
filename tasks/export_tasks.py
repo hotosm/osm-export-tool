@@ -206,7 +206,6 @@ class MwmExportTask(ExportTask):
         osm = stage_dir + job_name + '.osm'
         pbffile = stage_dir + job_name + '.pbf'
         mwmfile = stage_dir + job_name + '.mwm'
-        logger.debug("fsddfsdfsa")
         o2m = mwm.OSMToMWM(osm=osm, pbffile=pbffile, mwmfile=mwmfile)
         mwmfile = o2m.convert()
         return {'result': mwmfile}
