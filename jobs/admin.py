@@ -91,7 +91,7 @@ class ExportConfigAdmin(admin.ModelAdmin):
     Admin model for editing export configurations in the admin interface.
     """
     search_fields = ['uid', 'name', 'user__username']
-    list_display = ['uid', 'name', 'user', 'config_type']
+    list_display = ['uid', 'name', 'user', 'config_type', 'published', 'created_at']
 
 
 # register the new admin models

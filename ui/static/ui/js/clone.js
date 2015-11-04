@@ -2141,7 +2141,7 @@ clone.job = (function(){
                 selection['uid'] = config.uid;
                 selection['config_type'] = config.config_type;
                 selection['filename'] = config.filename;
-                selection['published'] = config.published;
+                selection['published'] = config.published ? 'Published' : 'Private';
                 // notify the config-browser
                 $('#filelist').trigger({type: 'config:added', selection: selection})
                 $('table#configurations').trigger({type: 'config:added', selection:selection});

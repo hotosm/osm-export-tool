@@ -638,17 +638,18 @@ jobs.list = (function(){
      * Initialize the start / end date pickers.
      */
     function initDatePickers(){
+        moment.utc();
         $('#start-date').datetimepicker({
             showTodayButton: true,
             // show one month of exports by default
-            defaultDate: moment().subtract(1, 'month'),
-            format: 'YYYY-MM-DD HH:MM'
+            defaultDate: moment().subtract(1, 'month').startOf('d'),
+            format: 'YYYY-MM-DD HH:mm'
         });
         $('#end-date').datetimepicker({
             showTodayButton: true,
             // default end-date to now.
-            defaultDate: moment(),
-            format: 'YYYY-MM-DD HH:MM'
+            defaultDate: moment().endOf('d'),
+            format: 'YYYY-MM-DD HH:mm'
         });
         $("#start-date").on("dp.change", function(e){
             runSearch();
@@ -791,8 +792,8 @@ jobs.list = (function(){
         $('button#reset-form').on('click', function(e){
             $('input#search').val('');
             $('input#user-check').prop('checked', false).trigger('change');
-            $('#start-date').data('DateTimePicker').date(moment().subtract(1, 'month'));
-            $('#end-date').data('DateTimePicker').date(moment());
+            $('#start-date').data('DateTimePicker').date(moment().subtract(1, 'month').startOf('d'));
+            $('#end-date').data('DateTimePicker').date(moment().endOf('d'));
         });
     }
 

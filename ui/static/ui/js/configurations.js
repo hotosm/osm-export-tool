@@ -336,7 +336,10 @@ configurations.list = (function(){
             // default search endpoint
             url = Config.CONFIGURATION_URL;
         }
-        $.ajax(url)
+        $.ajax({
+            url: url,
+            cache: false,
+        })
         .done(function(data, textStatus, jqXHR){
             // generate pagination on UI
             paginate(jqXHR);
@@ -373,10 +376,10 @@ configurations.list = (function(){
                         // handle deletion on the table..
                         var row = table.row('#' + uid);
                         $(row.node()).css('background-color', '#f2dede');
-                        row.remove();
                         $(row.node()).fadeOut(400, function(){
                             runSearch();
                         });
+                        row.remove();
                     }
                 });
             });
@@ -563,14 +566,14 @@ configurations.list = (function(){
         $('#start-date').datetimepicker({
             showTodayButton: true,
             // show one month of configurations by default
-            defaultDate: moment().subtract(1, 'month'),
-            format: 'YYYY-MM-DD HH:MM'
+            defaultDate: moment().subtract(1, 'month').startOf('d'),
+            format: 'YYYY-MM-DD HH:mm'
         });
         $('#end-date').datetimepicker({
             showTodayButton: true,
             // default end-date to now.
-            defaultDate: moment(),
-            format: 'YYYY-MM-DD HH:MM'
+            defaultDate: moment().endOf('d'),
+            format: 'YYYY-MM-DD HH:mm'
         });
         $("#start-date").on("dp.change", function(e){
             runSearch();
@@ -623,8 +626,8 @@ configurations.list = (function(){
         $('button#reset-form').on('click', function(e){
             $('input#search').val('');
             $('input#user-check').prop('checked', false).trigger('change');
-            $('#start-date').data('DateTimePicker').date(moment().subtract(1, 'month'));
-            $('#end-date').data('DateTimePicker').date(moment());
+            $('#start-date').data('DateTimePicker').date(moment().subtract(1, 'month').startOf('d'));
+            $('#end-date').data('DateTimePicker').date(moment().endOf('d'));
         });
     }
 
