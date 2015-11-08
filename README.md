@@ -135,6 +135,10 @@ For details on the OSMAnd Map Creator utility see [http://wiki.openstreetmap.org
 Download the OSMAnd MapCreator from [http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip](http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip).
 Unpack this into a directory somewhere.
 
+### MWM
+
+Follow these instructions to get MWM format in HOT Export Tool [https://github.com/mapsme/omim/blob/master/docs/INSTALL.md](https://github.com/mapsme/omim/blob/master/docs/INSTALL.md).
+
 ### Install RabbitMQ
 
 HOT Exports depends on the **rabbitmq-server**. For more detailed installation instructions see [http://www.rabbitmq.com/install-debian.html](http://www.rabbitmq.com/install-debian.html).
@@ -177,7 +181,7 @@ Look at <code>core/settings/project.py</code> and make sure you update or overri
 
 **OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
 
-**EXPORT_MWM_ROOT** = 'path to  mapsme_generator directory'
+**EXPORT_MWM_ROOT** = 'path to  omim directory'
 
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.

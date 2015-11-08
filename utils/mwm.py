@@ -31,7 +31,7 @@ class OSMToMWM(object):
         self.debug = debug
         mwm_root_path = settings.EXPORT_MWM_ROOT
         self.cmd = Template('osmconvert $osm --out-pbf >$pbf')
-        self.cmd_mwm = Template('DATA_PATH=' + mwm_root_path + 'data ' + mwm_root_path + 'generate_mwm.sh $pbf')
+        self.cmd_mwm = Template( mwm_root_path + 'tools/unix/generate_mwm.sh $pbf')
 
     def convert(self, ):
         convert_cmd = self.cmd.safe_substitute({'osm': self.osm, 'pbf': self.pbffile})
