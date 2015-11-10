@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         ('jobs', '0001_auto_20151003_1441'),
     ]
 
-    operations = [ 
+    	operations = [ 
   		migrations.RunPython(insert_mwm_formats)
-  	]
+    ]
