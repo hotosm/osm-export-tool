@@ -203,14 +203,13 @@ class MwmExportTask(ExportTask):
     abort_on_error = True
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osm = stage_dir + job_name + '.osm'
         pbffile = stage_dir + job_name + '.pbf'
         mwmfile = stage_dir + job_name + '.mwm'
-        o2m = mwm.OSMToMWM(osm=osm, pbffile=pbffile, mwmfile=mwmfile)
-        mwmfile = o2m.convert()
+        p2m = mwm.PBFToMWM( pbffile=pbffile, mwmfile=mwmfile)
+        mwmfile = p2m.convert()
         return {'result': mwmfile}
 
-
+   
 class OSMPrepSchemaTask(ExportTask):
     """
     Task to create the default sqlite schema.
