@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# adityo dwijananto <adz.only@gmail.com>, 2015
 # Mhairi O'Hara <mhairi.ohara@hotosm.org>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-16 11:14+0000\n"
-"PO-Revision-Date: 2015-10-16 11:06+0000\n"
-"Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
+"POT-Creation-Date: 2015-11-05 10:34+0000\n"
+"PO-Revision-Date: 2015-10-20 10:38+0000\n"
+"Last-Translator: adityo dwijananto <adz.only@gmail.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/hotosm/osm-export-tool2/language/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,208 +19,208 @@ msgstr ""
 "Language: id\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: api/serializers.py:388
+#: api/serializers.py:393
 msgid "invalid export format."
-msgstr ""
+msgstr "format ekspor salah"
 
-#: api/serializers.py:389
+#: api/serializers.py:394
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Mengharapkan daftar item tapi mendapatkan tipe \"{input_type}\"."
 
-#: api/serializers.py:419
+#: api/serializers.py:424
 msgid "xmin is required."
-msgstr ""
+msgstr "xmin dibutukan."
 
-#: api/serializers.py:420
+#: api/serializers.py:425
 msgid "invalid xmin value."
-msgstr ""
+msgstr "Nilai xmin salah."
 
-#: api/serializers.py:426
+#: api/serializers.py:431
 msgid "ymin is required."
-msgstr ""
+msgstr "ymin dibutuhkan."
 
-#: api/serializers.py:427
+#: api/serializers.py:432
 msgid "invalid ymin value."
-msgstr ""
+msgstr "Nilai ymin salah."
 
-#: api/serializers.py:433
+#: api/serializers.py:438
 msgid "xmax is required."
-msgstr ""
+msgstr "xmax dibutuhkan."
 
-#: api/serializers.py:434
+#: api/serializers.py:439
 msgid "invalid xmax value."
-msgstr ""
+msgstr "nilai xmax salah."
 
-#: api/serializers.py:440
+#: api/serializers.py:445
 msgid "ymax is required."
-msgstr ""
+msgstr "ymax dibutuhkan."
 
-#: api/serializers.py:441
+#: api/serializers.py:446
 msgid "invalid ymax value."
-msgstr ""
+msgstr "Nilai ymax salah."
 
 #: api/validators.py:39
 msgid "invalid_region"
-msgstr ""
+msgstr "region_salah"
 
 #: api/validators.py:40
 msgid "Job extent is not within a valid region."
-msgstr ""
+msgstr "Cakupan wilayah tidak didalam area yang diperbolehkan/valid."
 
 #: api/validators.py:57
 msgid "Select an export format."
-msgstr ""
+msgstr "Pilih format ekspor."
 
 #: api/validators.py:76 api/validators.py:110
 msgid "invalid_bounds"
-msgstr ""
+msgstr "batas_salah"
 
 #: api/validators.py:77 api/validators.py:111
 msgid "Invalid bounding box."
-msgstr ""
+msgstr "Kotak batas salah."
 
 #: api/validators.py:117
 msgid "invalid_extents"
-msgstr ""
+msgstr "Cakupan wilayah_salah"
 
 #: api/validators.py:118
 #, python-format
 msgid "Job extents too large: %(area)s"
-msgstr ""
+msgstr "Cakupan wilayah kerja terlalu luas: %(area)s"
 
 #: api/validators.py:148 api/validators.py:154
 msgid "inverted_coordinates"
-msgstr ""
+msgstr "kordinat_terbalik"
 
 #: api/validators.py:149
 msgid "xmin greater than xmax."
-msgstr ""
+msgstr "xmin lebih besar dari xmax."
 
 #: api/validators.py:155
 msgid "ymin greater than ymax."
-msgstr ""
+msgstr "ymin lebih besar dari ymax."
 
 #: api/validators.py:161
 msgid "invalid_longitude"
-msgstr ""
+msgstr "garis bujur_salah"
 
 #: api/validators.py:162
 #, python-format
 msgid "Invalid longitude coordinate: %(lon)s"
-msgstr ""
+msgstr "Koordinat  garis bujur salah: %(lon)s"
 
 #: api/validators.py:166
 msgid "invalid_latitude"
-msgstr ""
+msgstr "garis lintang_salah"
 
 #: api/validators.py:167
 #, python-format
 msgid "Invalid latitude coordinate: %(lat)s"
-msgstr ""
+msgstr "Koordinat garis lintang salah: %(lat)s"
 
 #: api/validators.py:188
 msgid "missing_parameter"
-msgstr ""
+msgstr "parameter_hilang"
 
 #: api/validators.py:189
 #, python-format
 msgid "Missing parameter: %(name)s"
-msgstr ""
+msgstr "Parameter hilang: %(name)s"
 
 #: api/validators.py:221 api/validators.py:248 api/validators.py:255
 msgid "invalid_content"
-msgstr ""
+msgstr "konten_salah"
 
 #: api/validators.py:222
 #, python-format
 msgid "Uploaded config file has invalid content: %(content_type)s"
-msgstr ""
+msgstr "File pengaturan yang diupload memiliki konten yang salah: %(content_type)s"
 
 #: api/validators.py:249
 #, python-format
 msgid "The uploaded preset file is invalid. %(error)s"
-msgstr ""
+msgstr "File preset yang diupload salah. %(error)s"
 
 #: api/validators.py:256
 msgid "The uploaded preset file is an invalid JOSM preset."
-msgstr ""
+msgstr "File preset yang diupload mempunyai preset JOSM yang salah."
 
 #: api/views.py:149
 msgid "missing_bbox_parameter"
-msgstr ""
+msgstr "parameter_bbox_hilang"
 
 #: api/views.py:150
 msgid "Missing bounding box parameter"
-msgstr ""
+msgstr "Parameter batas kotak hilang"
 
 #: api/views.py:274
 msgid "server_error"
-msgstr ""
+msgstr "server_error"
 
 #: api/views.py:275
 #, python-format
 msgid "Error creating export job: %(error)s"
-msgstr ""
+msgstr "Error ketika membuat pekerjaan ekspor: %(error)s"
 
 #: api/views.py:279
 msgid "Invalid format provided."
-msgstr ""
+msgstr "Format yang disediakan salah."
 
-#: api/views.py:310
+#: api/views.py:327
 msgid "Failed to run Export"
-msgstr ""
+msgstr "Gagal menjalankan Ekspor"
 
-#: api/views.py:312
+#: api/views.py:329
 msgid "Export not found"
-msgstr ""
+msgstr "Ekspor tidak ditemukan"
 
 #: core/settings/base.py:25
 msgid "English"
-msgstr ""
+msgstr "Inggris"
 
 #: core/settings/base.py:26
 msgid "Bahasa Indonesia"
-msgstr ""
+msgstr "Bahasa Indonesia"
 
 #: core/settings/base.py:27
 msgid "German"
-msgstr ""
+msgstr "Jerman"
 
 #: core/settings/base.py:28
 msgid "Spanish"
-msgstr ""
+msgstr "Spanyol"
 
 #: core/settings/base.py:29
 msgid "Japanese"
-msgstr ""
+msgstr "Jepang"
 
 #: core/settings/base.py:30
 msgid "French"
-msgstr ""
+msgstr "Prancis"
 
 #: ui/templates/email/email.html:7 ui/templates/email/email.txt:2
 #: ui/templates/email/error_email.html:7 ui/templates/email/error_email.txt:2
 #: ui/templates/osm/verify_osm_email.html:7
 #: ui/templates/osm/verify_osm_email.txt:2
 msgid "This is an automated email from HOT Exports."
-msgstr ""
+msgstr "Ini adalah email otomatis dari HOT Exports."
 
 #: ui/templates/email/email.html:8 ui/templates/email/email.txt:4
 msgid "Your HOT Export is ready."
-msgstr ""
+msgstr "HOT Export anda sudah siap."
 
 #: ui/templates/email/email.html:9
 msgid "Please follow this link "
-msgstr ""
+msgstr "Silahkan ikuti link berikut"
 
 #: ui/templates/email/email.html:9
 msgid " to download your files."
-msgstr ""
+msgstr "untuk mengunduh file anda."
 
 #: ui/templates/email/email.html:10 ui/templates/email/email.txt:8
 msgid "Thank you for using the HOT Export Service"
-msgstr ""
+msgstr "Terima kasih telah menggunakan Jasa HOT Export"
 
 #: ui/templates/email/email.html:11 ui/templates/email/email.txt:10
 #: ui/templates/email/error_email.html:12
@@ -227,52 +228,52 @@ msgstr ""
 #: ui/templates/osm/verify_osm_email.html:13
 #: ui/templates/osm/verify_osm_email.txt:9
 msgid "Humanitarian OpenStreetMap Team"
-msgstr ""
+msgstr "Humanitarian OpenStreetMap Team"
 
 #: ui/templates/email/email.txt:6
 msgid "Please copy and paste this link"
-msgstr ""
+msgstr "Silahkan copy dan paste link ini"
 
 #: ui/templates/email/email.txt:6
 msgid " into your browser to download your files."
-msgstr ""
+msgstr "didalam browser anda untuk mengunduh file."
 
 #: ui/templates/email/error_email.html:4
 msgid "HOT Exports"
-msgstr ""
+msgstr "HOT Exports"
 
 #: ui/templates/email/error_email.html:8 ui/templates/email/error_email.txt:4
 msgid "Unfortunately, your HOT Export has failed."
-msgstr ""
+msgstr "Sayang sekali, HOT Export anda telah gagal."
 
 #: ui/templates/email/error_email.html:9
 msgid "Please follow this link"
-msgstr ""
+msgstr "Silahkan ikuti link berikut"
 
 #: ui/templates/email/error_email.html:9
 msgid " to see the status of your HOT Export."
-msgstr ""
+msgstr "untuk melihat status dari HOT Export anda."
 
 #: ui/templates/email/error_email.html:10 ui/templates/email/error_email.txt:8
 msgid "Please quote this Task ID when reporting errors:"
-msgstr ""
+msgstr "Silahkan kuote Task ID ini ketika melaporkan error:"
 
 #: ui/templates/email/error_email.html:11
 #: ui/templates/email/error_email.txt:10
 msgid "We apologise for any inconvenience this may cause."
-msgstr ""
+msgstr "Kami mohon maaf untuk ketidaknyamanan yang mungkin muncul."
 
 #: ui/templates/email/error_email.txt:6
 msgid "Please copy and paste this link "
-msgstr ""
+msgstr "Silahkan copy dan paste link ini"
 
 #: ui/templates/email/error_email.txt:6
 msgid " into your browser to see the status of your HOT Export."
-msgstr ""
+msgstr "didalam browser anda untuk melihat status HOT Export anda."
 
 #: ui/templates/help/help.html:7
 msgid "Help Documentation"
-msgstr ""
+msgstr "Bantuan Dokumentasi"
 
 #: ui/templates/help/help.html:10
 msgid ""
@@ -281,11 +282,11 @@ msgid ""
 "available for download is updated at one minute intervals. This help "
 "documentation will assist users in navigating the site, and use the "
 "available functionality effectively to generate OSM exports."
-msgstr ""
+msgstr "Alat ekspor ini memperbolehkan pengguna untuk membuat ekspor OpenStreetMap (OSM) sendiri untuk area HOT yang ditentukan didalam berbagai macam data dan format file. Dokumentasi ini membantu pengguna ketika mengoperasikan situs, dan menggunakan fungsi yang ada secara efisien untuk membuat OSM ekspor."
 
 #: ui/templates/help/help.html:13
 msgid "Main Pages"
-msgstr ""
+msgstr "Halaman Utama"
 
 #: ui/templates/help/help.html:15
 msgid ""
@@ -294,59 +295,59 @@ msgid ""
 "(Exports), and an area where preset files are stored and can be accessed "
 "(Presets). The following links will take the user step by step through the "
 "each section, providing guidance for the available functions:"
-msgstr ""
+msgstr "OSM Export Tool mempunyai tiga bagian utama; sebuah area untuk membuat ekspor (Buat), sebuah area dimana export yang ada disimpan dan bisa digunakan kembali (Ekspor), dan sebuah area dimana preset file disimpan dan bisa diakses (Presets). Link dibawah ini akan membawa pengguna ke tahapan-tahapan yang dibutuhkan untuk setiap bagian, memberikan panduan untuk fungsi yang tersedia"
 
 #: ui/templates/help/help.html:17 ui/templates/help/help_create.html:9
 #: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:64
 msgid "Create"
-msgstr ""
+msgstr "Buat"
 
 #: ui/templates/help/help.html:18 ui/templates/help/help_exports.html:9
 #: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:65
 msgid "Exports"
-msgstr ""
+msgstr "Ekspor"
 
 #: ui/templates/help/help.html:19 ui/templates/help/help_presets.html:10
 #: ui/templates/help/help_presets.html:13
 #: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:66
 msgid "Presets"
-msgstr ""
+msgstr "Presets"
 
 #: ui/templates/help/help.html:23 ui/templates/help/help_formats.html:12
 #: ui/templates/ui/clone.html:20 ui/templates/ui/create.html:20
 msgid "File Formats"
-msgstr ""
+msgstr "Format File"
 
 #: ui/templates/help/help.html:25
 msgid ""
 "The OSM Export Tool can download data in five different file formats; Esri "
 "SHP, Garmin IMG, Google KMZ, OSM PBF and SQlite SQL. The following links "
 "will provide users with information regarding each file format:"
-msgstr ""
+msgstr "OSM Export Tool bisa mengunduh data kedalam lima format file yang berbeda; Esri SHP, Garmin IMG, Google KMZ, OSM PBF, dan SQlite SQL. Link dibawah ini akan memberikan pengguna dengan informasi terkait dengan setiap format file:"
 
 #: ui/templates/help/help.html:27 ui/templates/help/help_formats.html:18
 msgid "Esri SHP"
-msgstr ""
+msgstr "Esri SHP"
 
 #: ui/templates/help/help.html:28 ui/templates/help/help_formats.html:54
 msgid "Garmin IMG"
-msgstr ""
+msgstr "Garmin IMG"
 
 #: ui/templates/help/help.html:29 ui/templates/help/help_formats.html:79
 msgid "Google KMZ"
-msgstr ""
+msgstr "Google KMZ"
 
 #: ui/templates/help/help.html:30
 msgid "OSM PBF"
-msgstr ""
+msgstr "OSM PBF"
 
 #: ui/templates/help/help.html:31
 msgid "SQlite SQL"
-msgstr ""
+msgstr "SQlite SQL"
 
 #: ui/templates/help/help.html:35 ui/templates/help/help_features.html:12
 msgid "Feature Selection"
-msgstr ""
+msgstr "Pemilihan fitur"
 
 #: ui/templates/help/help.html:37
 msgid ""
@@ -354,24 +355,24 @@ msgid ""
 "they would like to export from a selected area; either from the built-in "
 "interactive 'Tree Tag' or load a customised 'Preset File' created outside of"
 " the tool. This section provides the user guidance on how to do both:"
-msgstr ""
+msgstr "OSM Export Tool menyediakan dua cara untuk pengguna agar pengguna bisa secara spesifik menentukan tag fitur apa yang ingin mereka ekspor dari area terpilih; melalui pemilihan interaktif dengan 'pilihan bercabang' atau dengan mengupload 'Preset File' sendiri yang dibuat diluar alat. Bagian ini menyediakan panduan dalam bagaimana cara penggunaan keduanya:"
 
 #: ui/templates/help/help.html:39 ui/templates/help/help_features.html:18
 #: ui/templates/ui/clone.html:21 ui/templates/ui/create.html:21
 msgid "Tree Tag"
-msgstr ""
+msgstr "Pilihan bercabang"
 
 #: ui/templates/help/help.html:40 ui/templates/help/help_features.html:51
 #: ui/templates/ui/clone.html:22 ui/templates/ui/create.html:22
 msgid "Preset File"
-msgstr ""
+msgstr "File Preset"
 
 #: ui/templates/help/help_create.html:8 ui/templates/help/help_exports.html:8
 #: ui/templates/help/help_features.html:8
 #: ui/templates/help/help_formats.html:8 ui/templates/help/help_presets.html:9
 #: ui/templates/ui/base.html:67
 msgid "Help"
-msgstr ""
+msgstr "Bantuan"
 
 #: ui/templates/help/help_create.html:15
 #, python-format
@@ -381,40 +382,40 @@ msgid ""
 "formats and feature tags, load a preset file and specify to either keep the "
 "export private or share it publicly. Please note that an account is needed "
 "to create an export."
-msgstr ""
+msgstr "Halaman <a href=\"%(create_url)s\" target=\"_blank\">Buat</a> adalah halaman dimana pengguna bisa memilih area yang diinginkan, menjelaskan ekspor, memilih format file dan fitur tag, mengupload file preset dan menentukan apakah pekerjaan ekspor ingin dibuat tertutup atau dibagikan secara publik. Harap diingiat bahwa sebuah akun dibutuhakn untuk membuat ekspor."
 
 #: ui/templates/help/help_create.html:17
 msgid "Export Wizard"
-msgstr ""
+msgstr "Panduan Expor"
 
 #: ui/templates/help/help_create.html:19
 msgid ""
 "The 'Create' page is set up like a wizard so that the user is guided through the required steps to create an export. The user can not move on to the next section until they have completed the neccessary parts of the current section.\n"
 "<p>Similarly, certain functionality will be locked if another method has been chosen, such as the 'Tree Tag' and 'Preset File'. These can not be both applied to the same export, and the use of one method will deactivate the other.</p>\n"
 "There are five tabs that make up the 'Export Wizard' on the 'Create' page. These include the 'Describe Export', 'File Formats', 'Tree Tag', 'Preset File' and 'Export Summary', which are detailed below: "
-msgstr ""
+msgstr "Halaman 'Buat' seperti sebuah panduan sehingga pengguna akan diarahkan kedalam beberapa tahapan untuk membuat sebuah ekspor. Pengguna tidak bisa menggeser kedalam bagian lain sampai mereka telah melengkapi bagian yang dibutuhkan untuk bagian tersebut.\n<p>Begitu juga pada halaman tertentu, fungsi tertentu akan terkunci jika salah satu metode telah dipilih, seperti menggunakan 'Pilihan Bercabang' dan 'Preset File'. Ini tidak bisa diaplikasikan kedalam ekspor yang sama, dan menggunakan salah satu dari metode ini akan menonaktifkan pilihan yang lain.</p>\nTerdapat lima tab yang ada didalam 'Panduan Ekspor' pada halaman 'Buat'. Ini termasuk 'Penjelasan Ekspor', 'Format File', 'Pilihan Bercabang', 'Preset File' dan 'Ringkasan Ekspor', yang dijelaskan lebih detil dibawah:"
 
 #: ui/templates/help/help_create.html:23
 msgid "Describe Export:"
-msgstr ""
+msgstr "Penjelasan Ekspor:"
 
 #: ui/templates/help/help_create.html:23
 msgid ""
 "Enter the name, description and project (optional) of the new export. Select"
 " the area of interest on the map (right section)."
-msgstr ""
+msgstr "Masukkan nama, deskripsi dan proyek (opsional) untuk ekspor yang baru. Pilih area yang diinginkan pada peta (bagian kanan)."
 
 #: ui/templates/help/help_create.html:24
 msgid "File Formats:"
-msgstr ""
+msgstr "Format File:"
 
 #: ui/templates/help/help_create.html:24
 msgid "Select one or more file format(s) for the export."
-msgstr ""
+msgstr "Pilih satu atau lebih format file untuk di ekspor."
 
 #: ui/templates/help/help_create.html:25
 msgid "Tree Tag:"
-msgstr ""
+msgstr "Pilihan Bercabang:"
 
 #: ui/templates/help/help_create.html:25
 #, python-format
@@ -423,11 +424,11 @@ msgid ""
 " 'Next'. Preset files on the next tab can not be used if tags are selected "
 "from either tree. Please see the <a href=\"%(help_features_url)s\" "
 "target='_blank'>Feature Selection</a> help page for further information."
-msgstr ""
+msgstr "Perluas dan pilih fitur dari pilihan tag HDM atau OSM yang digunakan untuk ekspor dan klik 'Next'. File preset pada tab berikutnya tidak bisa digunakan jika ada tag yang dipilih dari pilihan bercabang ini. Harap lihat halaman bantuan <a href=\"%(help_features_url)s\" target='_blank'>Pemilihan Fitur</a> untuk informasi lebih lanjut."
 
 #: ui/templates/help/help_create.html:26
 msgid "Preset File:"
-msgstr ""
+msgstr "Preset File:"
 
 #: ui/templates/help/help_create.html:26
 msgid ""
@@ -435,11 +436,11 @@ msgid ""
 " and loading a file from the desktop, or select a preset file from the saved"
 " presets. Tick the 'Publish this preset publicly' button to share the loaded"
 " preset publicly and save it to the 'Presets' page."
-msgstr ""
+msgstr "Pilih file preset untuk diterapkan pada area ekspor dengan menentukan nama preset dan mengunduhnya dari komputer anda, atau memilih file preset yang ada di preset yang tersimpan. Centang 'Tampilkan preset ini secara publik' untuk menyebarkan preset yang telah diunduh secara luas dan simpan kedalam halaman 'Presets'."
 
 #: ui/templates/help/help_create.html:27
 msgid "Export Summary:"
-msgstr ""
+msgstr "RIngkasan Ekspor:"
 
 #: ui/templates/help/help_create.html:27
 msgid ""
@@ -447,7 +448,7 @@ msgid ""
 " to 'Save feature selection privately', 'Publish feature selection publicly'"
 " and 'Publish export publicly'. Click 'Create Export' to complete and run "
 "the new export."
-msgstr ""
+msgstr "Tab ini menyediakan keseluruhan laporan dari pengaturan ekspor anda, bersama dengan pilihan untuk 'Menyimpan pilihan fitur secara pribadi', 'Menyebarkan pilihan fitur secara publik' dan 'Menyebarkan ekspor secara publik'. Klik 'Buat Ekspor' untuk melengkapi dan menjalankan ekspor baru."
 
 #: ui/templates/help/help_create.html:30 ui/templates/help/help_create.html:46
 #: ui/templates/help/help_exports.html:32
@@ -457,14 +458,14 @@ msgstr ""
 #: ui/templates/help/help_presets.html:50
 #: ui/templates/help/help_presets.html:72
 msgid "top"
-msgstr ""
+msgstr "atas"
 
 #: ui/templates/help/help_create.html:32
 #: ui/templates/help/help_exports.html:35 ui/templates/ui/clone.html:23
 #: ui/templates/ui/clone.html.py:197 ui/templates/ui/create.html:23
 #: ui/templates/ui/create.html.py:197 ui/templates/ui/detail.html:9
 msgid "Export Details"
-msgstr ""
+msgstr "Detil Ekspor"
 
 #: ui/templates/help/help_create.html:34
 msgid ""

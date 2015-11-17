@@ -38,7 +38,10 @@ configurations.list = (function(){
             // default search endpoint
             url = Config.CONFIGURATION_URL;
         }
-        $.ajax(url)
+        $.ajax({
+            url: url,
+            cache: false,
+        })
         .done(function(data, textStatus, jqXHR){
             // generate pagination on UI
             paginate(jqXHR);
@@ -313,14 +316,14 @@ configurations.list = (function(){
         $('#start-date').datetimepicker({
             showTodayButton: true,
             // show one month of configurations by default
-            defaultDate: moment().subtract(1, 'month'),
-            format: 'YYYY-MM-DD HH:MM'
+            defaultDate: moment().subtract(1, 'month').startOf('d'),
+            format: 'YYYY-MM-DD HH:mm'
         });
         $('#end-date').datetimepicker({
             showTodayButton: true,
             // default end-date to now.
-            defaultDate: moment(),
-            format: 'YYYY-MM-DD HH:MM'
+            defaultDate: moment().endOf('d'),
+            format: 'YYYY-MM-DD HH:mm'
         });
         $("#start-date").on("dp.change", function(e){
             runSearch();
