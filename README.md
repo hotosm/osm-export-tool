@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/hotosm/osm-export-tool2.png?label=ready&title=Ready)](https://waffle.io/hotosm/osm-export-tool2)
 OSM Export Tool
 ======
 
