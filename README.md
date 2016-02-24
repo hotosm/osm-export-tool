@@ -46,7 +46,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 Run <code>source ~/.bashrc</code>
 
-Run <code>mkvirtualenv hotosm</code> to create the hotosm virtual environment.
+Run <code>mkvirtualenv --system-site-packages hotosm</code> to create the hotosm virtual environment.
 
 Change to the <code>$HOME/dev/hotosm</code> directory and run <code>workon hotosm</code>.
 
@@ -82,14 +82,7 @@ $ sudo -u postgres psql -d hot_exports_dev -c "CREATE SCHEMA exports AUTHORIZATI
 $ sudo apt-get install software-properties-common
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 $ sudo apt-get update
-$ sudo apt-get install gdal-bin libgdal-dev
-</pre>
-
-To install the python GDAL bindings into your virtualenv you need to tell pip where to find the libgdal header files, so in your shell run:
-
-<pre>
-$ export CPLUS_INCLUDE_PATH=/usr/include/gdal
-$ export C_INCLUDE_PATH=/usr/include/gdal
+$ sudo apt-get install gdal-bin libgdal-dev python-gdal
 </pre>
 
 ### Install third-party dependencies
