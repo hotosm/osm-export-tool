@@ -124,6 +124,12 @@ In the hotosm project directory run:
 
 ### Install the project's python dependencies
 
+Install <code>libxslt1-dev</code> (it's an <code>lxml</code> dependency):
+
+```bash
+sudo apt-get install libxslt1-dev
+```
+
 From the project directory, install the dependencies into your virtualenv:
 
 <code>$ pip install -r requirements-dev.txt</code>
