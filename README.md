@@ -141,7 +141,7 @@ or
 
 ### Project Settings
 
-Create a copy of <code>core/settings/dev_dodobas.py</code> and update to reflect your development environment.
+Create a copy of <code>core/settings/dev_dodobas.py</code> and update to reflect your development environment. <code>core/settings/dev.py</code> exists for this purpose.
 
 Look at <code>core/settings/project.py</code> and make sure you update or override the following configuration variables in your development settings:
 
@@ -157,12 +157,20 @@ Look at <code>core/settings/project.py</code> and make sure you update or overri
 
 **OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
 
+Edit <code>core/settings/dev.py</code> to ensure that the database connection information is correct.
+
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
+
+Set the active configuration (<code>you_settings_module</code> can be <code>dev</code> or the basename of your copy of <code>core/settings/dev_dodobas.py</code>):
+
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
 
 Once you've got all the dependencies installed, run <code>./manage.py migrate</code> to set up the database tables etc..
 Then run <code>./manage.py runserver</code> to run the server.
 You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
+
+If you're running this in a virtual machine, use <code>./manage.py runserver 0.0.0.0:8000</code> to have Django listen on all interfaces and make it possible to connect from the VM host.
 
 ## Overpass API
 
