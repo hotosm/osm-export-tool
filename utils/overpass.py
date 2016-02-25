@@ -51,7 +51,7 @@ class Overpass(object):
 
         # extract all nodes / ways and relations within the bounding box
         # see: http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL
-        self.default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;);out body;')
+        self.default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;>>;>;);out meta;')
 
         # see http://wiki.openstreetmap.org/wiki/Osmfilter#Object_Filter
         self.filter_template = '--keep={0}'.format(' or '.join(self.filters))
