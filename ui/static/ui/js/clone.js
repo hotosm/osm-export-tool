@@ -280,7 +280,7 @@ clone.job = (function(){
         $('#xmax').val(xmax).trigger('input');
         $('#ymax').val(ymax).trigger('input');
         // update coordinate display
-        var coords = gettext('(East, South, West, North): ') + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
+        var coords = gettext('(West, South, East, North): ') + xmin + ', ' + ymin + ', ' + xmax + ', ' + ymax;
         $('span#coordinates').html(coords);
     }
 
