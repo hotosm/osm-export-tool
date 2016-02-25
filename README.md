@@ -63,8 +63,6 @@ Install PostgreSQL / PostGIS and its dependencies,
 <pre>
 $ sudo -u postgres createuser -s -P hot
 $ sudo -u postgres createdb -O hot hot_exports_dev
-$ sudo -u postgres psql -d hot_exports_dev -c "CREATE EXTENSION POSTGIS"
-$ sudo -u postgres psql -d hot_exports_dev -c "CREATE EXTENSION HSTORE"
 </pre>
 
 You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
