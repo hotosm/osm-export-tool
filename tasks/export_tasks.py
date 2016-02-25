@@ -213,6 +213,19 @@ class OSMPrepSchemaTask(ExportTask):
         return {'result': sqlite}
 
 
+class PbfExportTask(ExportTask):
+    """
+    Class defining PBF export function.
+    """
+    name = 'PBF Export'
+
+    def run(self, run_uid=None, stage_dir=None, job_name=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        pbffile = stage_dir + job_name + '.pbf'
+        # output already exists
+        return {'result': pbffile}
+
+
 class ThematicLayersExportTask(ExportTask):
     """
     Task to export thematic shapefile.
