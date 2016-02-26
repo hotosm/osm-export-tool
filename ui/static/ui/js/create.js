@@ -466,7 +466,7 @@ create.job = (function(){
                     validators: {
                         choice: {
                             min: 1,
-                            max: 6,
+                            max: 7,
                             message: gettext('At least one export format must be selected')
                         }
                     }

@@ -16,6 +16,7 @@ INSTALLED_APPS += (
 LOGIN_URL = '/login/'
 
 EXPORT_TASKS = {
+    'osm': 'tasks.export_tasks.OSMExportTask',
     'shp': 'tasks.export_tasks.ShpExportTask',
     'obf': 'tasks.export_tasks.ObfExportTask',
     'sqlite': 'tasks.export_tasks.SqliteExportTask',
