@@ -241,7 +241,7 @@ then, push the new source files to the Transifex service, it will overwrite the 
 
 `tx push -s`
 
-### Pulling latest changes from the Transfex
+### Pulling latest changes from Transifex
 
 When adding a new language, it's resource file does not exist in the project,
 but it's ok as it will be automatically created when pulling new translations from the service. To add a local mapping:
