@@ -162,7 +162,7 @@ absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> u
 
 Set the active configuration (<code>you_settings_module</code> can be <code>dev</code> or the basename of your copy of <code>core/settings/dev_dodobas.py</code>):
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code> (defaults to `core.settings.dev` in `manage.py`)
 
 Once you've got all the dependencies installed, run <code>./manage.py migrate</code> to set up the database tables etc..
 Then run <code>./manage.py runserver</code> to run the server.
