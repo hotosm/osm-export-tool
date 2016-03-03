@@ -221,10 +221,9 @@ class OSMExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osmfile = stage_dir + 'query.osm'
-        out = stage_dir + job_name + '.osm.bz2'
-        compressor = compression.Compressor(input=osmfile, output=out)
-        compressor.compress()
+        osmfile = '{0}query.osm'.format(stage_dir)
+        compressor = compression.BZ2Compressor(input=osmfile)
+        out = compressor.compress()
         return {'result': out}
 
 

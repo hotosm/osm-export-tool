@@ -9,7 +9,7 @@ from string import Template
 logger = logging.getLogger(__name__)
 
 
-class Compressor(object):
+class BZ2Compressor(object):
     """
     Compress files.
     """
