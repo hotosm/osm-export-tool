@@ -187,8 +187,8 @@ class OSMToPBFConvertTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osm = stage_dir + job_name + '.osm'
-        pbffile = stage_dir + job_name + '.pbf'
+        osm = '{0}{1}.osm'.format(stage_dir, job_name)
+        pbffile = '{0}{1}.pbf'.format(stage_dir, job_name)
         o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
         pbffile = o2p.convert()
         return {'result': pbffile}
@@ -215,14 +215,17 @@ class OSMPrepSchemaTask(ExportTask):
 
 class PbfExportTask(ExportTask):
     """
-    Class defining PBF export function.
+    Convert unfiltered Overpass output to PBF.
+    Returns the path to the PBF file.
     """
     name = 'PBF Export'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        pbffile = stage_dir + job_name + '.pbf'
-        # output already exists
+        osm = '{0}query.osm'.format(stage_dir)
+        pbffile = '{0}{1}-full.pbf'.format(stage_dir, job_name)
+        o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
+        pbffile = o2p.convert()
         return {'result': pbffile}
 
 
