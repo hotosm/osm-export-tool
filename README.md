@@ -71,7 +71,7 @@ allow trusted connections from localhost.
 Create the exports schema
 
 <pre>
-$ sudo -u postgres psql -d hot_exports_dev -c "CREATE SCHEMA exports AUTHORIZATION hot"
+$ psql -U hot -h localhost -d hot_exports_dev -c "CREATE SCHEMA exports AUTHORIZATION hot"
 </pre>
 
 ### Install GDAL
