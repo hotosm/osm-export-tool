@@ -23,7 +23,7 @@ msgid "\n"
 msgstr ""
 
 #: ui/static/ui/js/clone.js:283 ui/static/ui/js/create.js:279
-msgid "(East, South, West, North): "
+msgid "(West, South, East, North): "
 msgstr ""
 
 #: ui/static/ui/js/clone.js:317 ui/static/ui/js/create.js:314

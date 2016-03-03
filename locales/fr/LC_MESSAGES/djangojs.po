@@ -26,8 +26,8 @@ msgid "\n"
 msgstr "\n"
 
 #: ui/static/ui/js/clone.js:283 ui/static/ui/js/create.js:279
-msgid "(East, South, West, North): "
-msgstr "(Est, Sud, Ouest, Nord) :"
+msgid "(West, South, East, North): "
+msgstr "(Ouest, Sud, Est, Nord) :"
 
 #: ui/static/ui/js/clone.js:317 ui/static/ui/js/create.js:314
 msgid "Select area to export"
