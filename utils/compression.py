@@ -22,13 +22,20 @@ class Compressor(object):
             input: the file to compress
             output: the output file
         """
+        if input is None:
+            raise RuntimeError("Input filename is required.")
+
+        if not os.path.exists(input):
+            raise IOError('Cannot find input file for this task: {0}'.format(input))
+
         self.input = input
-        if not os.path.exists(self.input):
-            raise IOError('Cannot find input file for this task.')
-        self.output = output
-        if not self.output:
+
+        if output:
+            self.output = output
+        else:
             # create output path from input path.
-            self.output = self.input + '.bz2'
+            self.output = '{0}.bz2'.format(self.input)
+
         self.debug = debug
         self.cmd = Template('bzip2 -c $input > $output')
 
