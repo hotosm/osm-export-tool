@@ -18,7 +18,7 @@ from celery.utils.log import get_task_logger
 
 from jobs.presets import TagParser
 from utils import (
-    garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp
+    garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp, compression
 )
 
 # Get an instance of a logger
@@ -211,6 +211,21 @@ class OSMPrepSchemaTask(ExportTask):
         osmparser.create_default_schema()
         osmparser.update_zindexes()
         return {'result': sqlite}
+
+
+class OSMExportTask(ExportTask):
+    """
+    Class defining OSM export function.
+    """
+    name = 'OSM Export'
+
+    def run(self, run_uid=None, stage_dir=None, job_name=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        osmfile = '{0}query.osm'.format(stage_dir)
+        bz2file = '{0}{1}.osm.bz2'.format(stage_dir, job_name)
+        compressor = compression.BZ2Compressor(input=osmfile, output=bz2file)
+        out = compressor.compress()
+        return {'result': out}
 
 
 class ThematicLayersExportTask(ExportTask):

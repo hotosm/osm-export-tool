@@ -271,6 +271,12 @@ exports.detail = (function(){
                                         result.size + '</td></tr>');
                                 }
                                 break;
+                            case 'OSM Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '" target="_blank">' + gettext('OSM XML') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
                         }
                         if (errors.length > 0) {
                             $exceptions = $('tr#exceptions-' + run.uid);
@@ -549,6 +555,16 @@ exports.detail = (function(){
                             $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>' + gettext('Generate JOSM Preset') + '</td><td>' + duration + '</td><td></td><td>' + task.status + '</td></tr>');
                         }
                         break;
+                    case 'OSM Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>' + gettext('OSM Export') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td></tr>');
+                        }
+                        else {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>' + gettext('OSM Export') + '</td><td>' + duration + '</td><td></td><td>' + task.status + '</td></tr>');
+                        }
+                        break;
                 }
             });
         });
@@ -740,6 +756,18 @@ exports.detail = (function(){
                             $tr.removeClass();
                             $tr.addClass(status.toLowerCase());
                             $tr.html('<td>' + gettext('Generate JOSM Preset') + '</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td>');
+                        }
+                        break;
+                    case 'OSM Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>' + gettext('OSM Export') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
+                        }
+                        else {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>' + gettext('OSM Export') + '</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td>');
                         }
                         break;
                 }
