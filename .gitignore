@@ -65,8 +65,8 @@ media/*
 
 # Django Settings
 #settings_private.py
-static
-!ui/static
+#static
+#!ui/static
 migrations
 !jobs/migrations
 !tasks/migrations
