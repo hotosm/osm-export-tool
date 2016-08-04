@@ -6,5 +6,5 @@ djangorestframework-gis
 celery[librabbitmq]
 python-social-auth
 lxml
-GDAL
+#GDAL
 python-magic
