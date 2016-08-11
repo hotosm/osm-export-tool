@@ -112,22 +112,37 @@ class OSMParser(object):
         assert layer_count == 3, """Incorrect number of layers found. Run 'create_default_schema()' method first."""
         for layer_idx in range(layer_count):
             layer = ds.GetLayerByIndex(layer_idx).GetName()
-            # update highway z_indexes
-            for key in zindexes.keys():
-                sql = 'UPDATE {0} SET z_index = {1} WHERE highway IN {2};'.format(layer, key, zindexes[key])
+            try:
+                # update highway z_indexes
+                for key in zindexes.keys():
+                    sql = 'UPDATE {0} SET z_index = {1} WHERE highway IN {2};'.format(layer, key, zindexes[key])
+                    ds.ExecuteSQL(sql)
+            except RuntimeError:
+                pass
+            try:
+                # update railway z_indexes
+                sql = "UPDATE {0} SET z_index = z_index + 5 WHERE railway <> ''".format(layer)
                 ds.ExecuteSQL(sql)
-            # update railway z_indexes
-            sql = "UPDATE {0} SET z_index = z_index + 5 WHERE railway <> ''".format(layer)
-            ds.ExecuteSQL(sql)
-            # update layer
-            sql = "UPDATE {0} SET z_index = z_index + 10 * cast(layer as int) WHERE layer <> ''".format(layer)
-            ds.ExecuteSQL(sql)
-            # update bridge z_index
-            sql = "UPDATE {0} SET z_index = z_index + 10 WHERE bridge IN ('yes', 'true', 1)".format(layer)
-            ds.ExecuteSQL(sql)
-            # update tunnel z_index
-            sql = "UPDATE {0} SET z_index = z_index - 10 WHERE tunnel IN ('yes', 'true', 1)".format(layer)
-            ds.ExecuteSQL(sql)
+            except RuntimeError:
+                pass
+            try:
+                # update layer
+                sql = "UPDATE {0} SET z_index = z_index + 10 * cast(layer as int) WHERE layer <> ''".format(layer)
+                ds.ExecuteSQL(sql)
+            except RuntimeError:
+                pass
+            try:
+                # update bridge z_index
+                sql = "UPDATE {0} SET z_index = z_index + 10 WHERE bridge IN ('yes', 'true', 1)".format(layer)
+                ds.ExecuteSQL(sql)
+            except RuntimeError:
+                pass
+            try:
+                # update tunnel z_index
+                sql = "UPDATE {0} SET z_index = z_index - 10 WHERE tunnel IN ('yes', 'true', 1)".format(layer)
+                ds.ExecuteSQL(sql)
+            except RuntimeError:
+                pass
 
         # close connection
         ds.Destroy()

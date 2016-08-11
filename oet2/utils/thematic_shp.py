@@ -80,7 +80,7 @@ class ThematicSQliteToShp(object):
         conn = sqlite3.connect(self.thematic_sqlite)
         # load spatialite extension
         conn.enable_load_extension(True)
-        cmd = "SELECT load_extension('libspatialite')"
+        cmd = "SELECT load_extension('mod_spatialite')"
         cur = conn.cursor()
         cur.execute(cmd)
         geom_types = {'points': 'POINT', 'lines': 'LINESTRING', 'polygons': 'MULTIPOLYGON'}
@@ -102,18 +102,45 @@ class ThematicSQliteToShp(object):
             Pull out the tags from self.tags according to their geometry type.
             See jobs.models.Job.categorised_tags property.
             """
+            sql = ""
             params = {'tablename': layer, 'osm_way_id': osm_way_id,
-                      'columns': ', '.join([tag.replace(':', '_') for tag in self.tags[layer_type]]),
                       'planet_table': spec['table'], 'select_clause': spec['select_clause']}
-            sql = sql_tmpl.safe_substitute(params)
-            cur.execute(sql)
-            geom_type = geom_types[layer_type]
 
+            # Ensure columns are available to migrate
+            select_temp = Template('select * from $tablename LIMIT 1')
+            sql = select_temp.safe_substitute({'tablename':spec['table']})
+            try:
+                col_cursor = cur.execute(sql)
+            except Exception:
+                logger.error("SQL Execute for: {}, has failed.".format(sql))
+                raise
+            col_names = [description[0] for description in col_cursor.description]
+            temp_columns = []
+            for column in [tag.replace(':', '_') for tag in self.tags[layer_type]]:
+                if column in col_names:
+                    temp_columns += [column]
+            if temp_columns:
+                params['columns'] = ', '.join(temp_columns)
+            else:
+                sql_tmpl = Template('CREATE TABLE $tablename AS SELECT osm_id, $osm_way_id, Geometry '
+                                    'FROM $planet_table WHERE $select_clause')
+            sql = sql_tmpl.safe_substitute(params)
+            try:
+                cur.execute(sql)
+            except Exception:
+                logger.error("SQL Execute for: {}, has failed.".format(sql))
+                raise
+            geom_type = geom_types[layer_type]
             recover_geom_sql = recover_geom_tmpl.safe_substitute({'tablename': "'" + layer + "'", 'geom_type': "'" + geom_type + "'"})
             conn.commit()
-            cur.execute(recover_geom_sql)
-            cur.execute("SELECT CreateSpatialIndex({0}, 'GEOMETRY')".format("'" + layer + "'"))
+            try:
+                cur.execute(recover_geom_sql)
+                cur.execute("SELECT CreateSpatialIndex({0}, 'GEOMETRY')".format("'" + layer + "'"))
+            except Exception:
+                logger.error("SQL Execute for: {}, has failed.".format(sql))
+                raise
             conn.commit()
+
 
         # remove existing geometry columns
         cur.execute("SELECT DiscardGeometryColumn('planet_osm_point','Geometry')")
@@ -161,14 +188,18 @@ class ThematicSQliteToShp(object):
         Zip the shapefile directory.
         """
         zipfile = self.shapefile + '.zip'
+        if not os.listdir(self.shapefile):
+            logger.warn("Attempted to zip an empty directory.")
+            logger.warn("This is likely caused by the requested data missing the required thematic columns.")
+            raise Exception("No shapefiles available to zip.")
         zip_cmd = self.zip_cmd.safe_substitute({'zipfile': zipfile, 'shp_dir': self.shapefile})
         proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            logger.error('%s', stderr)
-            raise Exception, 'Error zipping shape directory. Exited with returncode: {0}'.format(returncode)
+            logger.error('{}:{}'.format(stdout, stderr))
+            raise Exception('Error zipping shape directory. Exited with returncode: {0}'.format(returncode))
         if returncode == 0:
             # remove the shapefile directory
             shutil.rmtree(self.shapefile)
