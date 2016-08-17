@@ -1,6 +1,6 @@
 Django>=1.8,<=1.9
 psycopg2
-djangorestframework
+djangorestframework<3.3.0
 django-filter
 djangorestframework-gis
 celery[librabbitmq]
