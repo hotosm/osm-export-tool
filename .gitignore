@@ -66,10 +66,10 @@ media/*
 # Django Settings
 #settings_private.py
 static
-!ui/static
+!oet2/ui/static
 migrations
-!jobs/migrations
-!tasks/migrations
+!oet2/jobs/migrations
+!oet2/tasks/migrations
 
 nohup.out
 api/tests/examples
