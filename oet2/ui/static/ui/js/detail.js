@@ -265,6 +265,12 @@ exports.detail = (function(){
                                         result.size + '</td></tr>');
                                 }
                                 break;
+                            case 'Geopackage Export':
+                                if (status === 'SUCCESS') {
+                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Geopackage Export') + '</a></td><td>' + duration + '</td><td>' +
+                                        result.size + '</td></tr>');
+                                }
+                                break;
                             case 'Generate Preset':
                                 if (status === 'SUCCESS') {
                                     $taskDiv.append('<tr><td><a href="' + result.url + '" target="_blank">' + gettext('Custom JOSM Preset (XML)') + '</a></td><td>' + duration + '</td><td>' +
@@ -539,6 +545,16 @@ exports.detail = (function(){
                             $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>'+ gettext('Generate OpenStreetMap Schema') + '</td><td>' + duration + '</td><td></td><td>' + task.status + '</td></tr>');
                         }
                         break;
+                    case 'Geopackage Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>' + gettext('Geopackage File') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td></tr>');
+                        }
+                        else {
+                            cls = status.toLowerCase();
+                            $taskDiv.append('<tr class="' + cls + '" id="' + task.uid +'"><td>'+ gettext('Geopackage File') + '</td><td>' + duration + '</td><td></td><td>' + task.status + '</td></tr>');
+                        }
+                        break;
                     case 'Generate Preset':
                         if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
                             cls = status.toLowerCase();
@@ -728,6 +744,18 @@ exports.detail = (function(){
                             $tr.removeClass();
                             $tr.addClass(status.toLowerCase());
                             $tr.html('<td>' + gettext('Generate OpenStreetMap Schema') + '</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td>');
+                        }
+                        break;
+                    case 'Geopackage Export':
+                        if (status === 'PENDING' || status === 'RUNNING' || status === 'FAILED') {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>' + gettext('Geopackage File') + '</td><td> -- </td><td> -- </td><td>' + task.status + '</td>');
+                        }
+                        else {
+                            $tr.removeClass();
+                            $tr.addClass(status.toLowerCase());
+                            $tr.html('<td>' + gettext('Geopackage File') + '</td><td>' + duration + '</td><td> -- </td><td>' + task.status + '</td>');
                         }
                         break;
                     case 'Generate Preset':

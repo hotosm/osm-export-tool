@@ -22,7 +22,8 @@ EXPORT_TASKS = {
     'sqlite': 'tasks.export_tasks.SqliteExportTask',
     'kml': 'tasks.export_tasks.KmlExportTask',
     'garmin': 'tasks.export_tasks.GarminExportTask',
-    'thematic': 'tasks.export_tasks.ThematicLayersExportTask'
+    'thematic': 'tasks.export_tasks.ThematicLayersExportTask',
+    'geopackage': 'tasks.export_tasks.GeopackageExportTask'
 }
 
 # where exports are staged for processing

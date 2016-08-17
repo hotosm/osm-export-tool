@@ -382,7 +382,8 @@ class JobSerializer(serializers.Serializer):
         ('kml', 'KML Format'),
         ('garmin', 'Garmin Format'),
         ('sqlite', 'SQLITE Format'),
-        ('thematic', 'Thematic Shapefile Format')
+        ('thematic', 'Thematic Shapefile Format'),
+        ('gpkg', 'Geopackage Format')
     )
 
     formats = serializers.MultipleChoiceField(

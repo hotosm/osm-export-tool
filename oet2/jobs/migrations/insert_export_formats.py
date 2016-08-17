@@ -23,6 +23,8 @@ class Migration(migrations.Migration):
                                     slug='GARMIN')
         ExportFormat.objects.create(name='ESRI Shapefile Format (Thematic)', description='Esri SHP (Thematic Schema)',
                                     slug='THEMATIC')
+        ExportFormat.objects.create(name='Geopackage', description='Geopackage',
+                                    slug='GPKG')
 
     dependencies = [
         ('jobs', '0001_initial'),
