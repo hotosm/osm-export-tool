@@ -2,6 +2,8 @@ jobs = {};
 jobs.list = (function(){
     var map;
     var job_extents;
+    var scaleLine;
+    var attribution;
     var bbox;
     var filtering = false;
     var searchForm = $('form#search');
@@ -68,47 +70,158 @@ jobs.list = (function(){
      * Initialize the job list map
      */
     function initListMap(){
-        var maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
-        var mapOptions = {
-                displayProjection: new OpenLayers.Projection("EPSG:4326"),
-                controls: [new OpenLayers.Control.Attribution(),
-                           new OpenLayers.Control.ScaleLine()],
-                maxExtent: maxExtent,
-                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
-                units: 'm',
-                sphericalMercator: true,
-                noWrap: true // don't wrap world extents
-        }
-        map = new OpenLayers.Map('list-export-map', {
-            options: mapOptions
-        });
+
+
+        //***** OPENLAYERS 2 CODE COMMENTED OUT THROUGHOUT FILE ************
+        //var maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
+        //var mapOptions = {
+                //displayProjection: new OpenLayers.Projection("EPSG:4326"),
+                //controls: [new OpenLayers.Control.Attribution(),
+                //          new OpenLayers.Control.ScaleLine()],
+
+                //maxExtent is no longer in OL3, just extent
+                //maxExtent: maxExtent,
+                //cant find scales to set in OL3
+                //scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
+                //units: 'm',
+                //sphericalMercator: true,
+                //noWrap: true // don't wrap world extents
+        //}
+        //map = new OpenLayers.Map('list-export-map', {
+        //    options: mapOptions
+        //});
 
         // restrict extent to world bounds to prevent panning..
-        map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
+        //map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
 
         // add base layers
-        var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
-        osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
-        map.addLayer(osm);
-        map.zoomToMaxExtent();
+        // var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
+        // osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
+        // map.addLayer(osm);
+        // map.zoomToMaxExtent();
 
-        job_extents = new OpenLayers.Layer.Vector('extents', {
-            displayInLayerSwitcher: false,
-            styleMap: getExtentStyles()
+        var maxExtent = new ol.extent[-180,-90,180,90];
+        var zoomLevels = [500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250];
+
+        map = new ol.Map({
+            interactions : ol.interaction.defaults,
+            target: 'map-column',
+            view: new ol.View({
+                projection: "EPSG:4326",
+                extent: maxExtent,
+                center: [44.4333, 33.3333],
+                zoom: 4,
+                minResolution: 0.000001,
+                maxResolution: 0.27,
+                maxZoom: 18,
+            })
+        })
+
+        scaleLine = new ol.control.ScaleLine();
+        map.addControl(scaleLine);
+
+        attribution = new ol.control.Attribution();
+        map.addControl(attribution);
+
+
+        //add base layers
+        var osm = new ol.layer.Tile({
+            title: "OpenStreetMap",
+            source: new ol.source.OSM()
+        })
+
+        map.addLayer(osm);
+        zoomtoextent();
+
+        var defaultStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: '#D73F3F',
+                opacity: 0.1,
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#D73F3F',
+                width: 3.5,
+            })
         });
-        // add export extents to map
+
+        var selectStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'blue',
+                opacity: 0.1,
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'blue',
+                width: 3.5,
+            })
+        });
+
+        var hiddenStyle = new ol.style.Style({
+            display: 'none',
+        });
+
+
+        job_extents = new ol.layer.Vector({
+            name: 'Job Extents',
+            source: new ol.source.Vector(),
+            style: defaultStyle,
+        });
         map.addLayer(job_extents);
 
+        // job_extents = new OpenLayers.Layer.Vector('extents', {
+        //     displayInLayerSwitcher: false,
+        //     styleMap: getExtentStyles()
+        // });
+        // add export extents to map
+
+        //map.addLayer(job_extents);
+
         /* required to fire selection events on bounding boxes */
-        var selectControl = new OpenLayers.Control.SelectFeature(job_extents,{
-            id: 'selectControl'
+        // var selectControl = new OpenLayers.Control.SelectFeature(job_extents,{
+        //     id: 'selectControl'
+        // });
+        // map.addControl(selectControl);
+        // selectControl.activate();
+
+
+
+        var selectControl = new ol.interaction.Select();
+        map.addInteraction(selectControl);
+        var features = select.getFeatures();
+        features.push(job_extents);
+
+        //openlayers 3 doesn't have onclick for vectors.
+        //Need to add an onclick to the map and check for vectors around the pixel that was clicked.
+        map.on("click", function(e) {
+            map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+                //check for feature close by, then fire off selected event to change style and list as shown below in old OL2 code
+            })
+        })
+
+        // featureover event needs to be like this.  Might take care of featureout as well.
+        $(map.getViewport()).on('mousemove', function(e) {
+            var pixel = map.getEventPixel(e.originalEvent);
+            var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+                return true;
+            });
+            if (hit) {
+                //display the featureover event!
+            } else {
+                //do nothing
+            }
         });
-        map.addControl(selectControl);
-        selectControl.activate();
+
+        //OL3 double click handler:
+        map.on('dblclick', function(evt) {
+            var feature = map.forEachFeatureAtPixel(evt.pixel,
+                function(feature, layer) {
+                    var uid = feature.attributes.uid;
+                    window.location.href = '/exports/' + uid;
+                });
+        });
 
 
         /*
-         * Feature selection and hover events
+         * OLD OL2 code...Feature selection and hover events
          */
         job_extents.events.register("featureselected", this, function(e){
             var uid = e.feature.data.uid;
@@ -131,7 +244,7 @@ jobs.list = (function(){
 
 
         /*
-         * Double-click handler.
+         * OL2 Double-click handler.
          * Does redirection to export detail page on feature double click.
          */
         var dblClickHandler = new OpenLayers.Handler.Click(selectControl,
@@ -252,6 +365,9 @@ jobs.list = (function(){
 
     }
 
+    function zoomtoextent() {
+        map.getView().fit([-180,-90,180,90]);
+    }
 
     /*
      * get the style map for the filter bounding box.
@@ -295,33 +411,62 @@ jobs.list = (function(){
      * Returns the styles for job extent display.
      */
     function getExtentStyles(){
-        // default style for export extents
-        var defaultStyle = new OpenLayers.Style({
-            strokeWidth: 3.5,
-            strokeColor: '#D73F3F',
-            fillColor: '#D73F3F',
-            fillOpacity: 0.1,
-            //graphicZIndex : 50,
+        var defaultStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: '#D73F3F',
+                opacity: 0.1,
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#D73F3F',
+                width: 3.5,
+            })
         });
+
+        var selectStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'blue',
+                opacity: 0.1,
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'blue',
+                width: 3.5,
+            })
+        });
+
+        var hiddenStyle = new ol.style.Style({
+            display: 'none',
+        });
+
+        // // default style for export extents
+        // var defaultStyle = new OpenLayers.Style({
+        //     strokeWidth: 3.5,
+        //     strokeColor: '#D73F3F',
+        //     fillColor: '#D73F3F',
+        //     fillOpacity: 0.1,
+        //     //graphicZIndex : 50,
+        // });
         // export extent selection style
-        var selectStyle = new OpenLayers.Style({
-            strokeWidth: 3.5,
-            strokeColor: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.1,
-            //graphicZIndex : 40,
-        });
+        // var selectStyle = new OpenLayers.Style({
+        //     strokeWidth: 3.5,
+        //     strokeColor: 'blue',
+        //     fillColor: 'blue',
+        //     fillOpacity: 0.1,
+        //     //graphicZIndex : 40,
+        // });
+        //
+        //
+        // var hiddenStyle = new OpenLayers.Style({
+        //     display: 'none'
+        // });
 
-        var hiddenStyle = new OpenLayers.Style({
-            display: 'none'
-        });
 
-        var styles = new OpenLayers.StyleMap(
-        {
-            "default": defaultStyle,
-            "select": selectStyle,
-            "hidden": hiddenStyle
-        });
+        //TODO: There is not a style map in OL3.  Need to figure out how to account for this...
+        // var styles = new OpenLayers.StyleMap(
+        // {
+        //     "default": defaultStyle,
+        //     "select": selectStyle,
+        //     "hidden": hiddenStyle
+        // });
 
         return styles;
 
