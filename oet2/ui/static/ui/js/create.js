@@ -2,6 +2,8 @@ create = {};
 create.job = (function(){
     var map;
     var regions;
+    var regionsSource;
+    var maskSource;
     var mask;
     var transform;
     var attribution;
@@ -40,7 +42,7 @@ create.job = (function(){
                 projection: "EPSG:4326",
                 extent: [-180,-90,180,90],
                 center: [44.4333, 33.3333],
-                zoom: 1,
+                zoom: 9,
                 minResolution: 0.000001,
                 maxResolution: 0.27,
                 maxZoom: 18,
@@ -74,9 +76,13 @@ create.job = (function(){
         this.map.addControl(attribution);
 
         // add the regions layer
-            regions = new ol.layer.Vector({
+        regionsSource = new ol.source.Vector({
+            projection: 'EPSG:4326'
+        });
+
+        regions = new ol.layer.Vector({
                 name: 'regions',
-                source: new ol.source.Vector(),
+                source: regionsSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
                         color: 'transparent',
@@ -91,9 +97,12 @@ create.job = (function(){
             })
 
         // add the region mask layer
+        maskSource = new ol.source.Vector({
+            projection: 'EPSG:4326'
+        });
             mask = new ol.layer.Vector({
                 name: 'mask',
-                source: new ol.source.Vector(),
+                source: maskSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
                         color: '#fff',
@@ -106,7 +115,30 @@ create.job = (function(){
                     }),
                 }),
             });
-            this.map.addLayers([regions, mask]);
+        this.map.addLayer(regions);
+        this.map.addLayer(mask);
+
+        //add region and mask features
+        //addRegionMask();
+        // get the regions from the regions api
+        $.getJSON(Config.REGION_MASK_URL, function(data){
+            var geojson = new ol.format.GeoJSON();
+            var features = geojson.readFeatures(data, {featureProjection: 'EPSG:3857'});
+            regionsSource.addFeatures(features);
+            var extent = regions.getSource().getExtent();
+            this.map.getView().fit(extent, map.getSize());
+        });
+
+        //addRegions();
+        $.getJSON(Config.REGIONS_URL, function(data){
+            var geojson = new ol.format.GeoJSON();
+            var features = geojson.readFeatures(data, {featureProjection: 'EPSG:3857'});
+            maskSource.addFeatures(features);
+            var extent = mask.getSource().getExtent();
+            this.map.getView().fit(extent, map.getSize());
+            //map.zoomToExtent(regions.getDataExtent());
+
+        });
 
 
 
@@ -296,34 +328,46 @@ create.job = (function(){
      * Add the regions to the map.
      * Calls into region api.
      */
-    function addRegions(){
-        // get the regions from the regions api
-        $.getJSON(Config.REGIONS_URL, function(data){
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var features = geojson.read(data);
-            regions.addFeatures(features);
-            map.zoomToExtent(regions.getDataExtent());
-        });
-    }
+
+    // function addRegions(){
+    //     // get the regions from the regions api
+    //     //OL3 Code
+    //
+    // }
+
+    // function addRegionMask(){
+    //
+    // }
+
+    //OL2 Code
+    // function addRegions(){
+    //     // get the regions from the regions api
+    //     $.getJSON(Config.REGIONS_URL, function(data){
+    //         var geojson = new OpenLayers.Format.GeoJSON({
+    //                 'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+    //                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
+    //         });
+    //         var features = geojson.read(data);
+    //         regions.addFeatures(features);
+    //         map.zoomToExtent(regions.getDataExtent());
+    //     });
+    // }
 
     /*
      * Add the region mask to the map.
      * Calls into region mask api.
      */
-    function addRegionMask(){
-        // get the regions from the regions api
-        $.getJSON(Config.REGION_MASK_URL, function(data){
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var features = geojson.read(data);
-            mask.addFeatures(features);
-        });
-    }
+    // function addRegionMask(){
+    //     // get the regions from the regions api
+    //     $.getJSON(Config.REGION_MASK_URL, function(data){
+    //         var geojson = new OpenLayers.Format.GeoJSON({
+    //                 'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+    //                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
+    //         });
+    //         var features = geojson.read(data);
+    //         mask.addFeatures(features);
+    //     });
+    // }
 
     /*
      * build the export format checkboxes.

@@ -9,7 +9,7 @@ Layers.OSM = new ol.layer.Tile({
 //Layers.OSM = new OpenLayers.Layer.OSM("OpenStreetMap");
 
 
-var layer = new ol.layer.Tile({
+Layers.HOT = new ol.layer.Tile({
     source: new ol.source.XYZ({
         url: ["//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
             "//b.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
