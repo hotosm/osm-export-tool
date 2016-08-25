@@ -187,7 +187,7 @@ span.heading {
 
 #feature-popup {
     display: none;
-    position: relative;
+    position: absolute;
     padding: 6px 12px;
     border-radius: 4px;
     background-color: #337ab7;
@@ -197,6 +197,7 @@ span.heading {
     left: 50px;
     font-size: small;
     width: 230px;
+    z-index: 2;
 }
 
 .btn-group {
@@ -213,9 +214,6 @@ span.heading {
 .olControlAttribution {
     bottom: .5em !important;
     right: 1em !important;
-}
-
-#map-column {
 }
 
 /* Create export form styles */

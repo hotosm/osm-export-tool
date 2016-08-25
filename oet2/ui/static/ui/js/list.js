@@ -2,12 +2,14 @@ jobs = {};
 jobs.list = (function(){
     var map;
     var job_extents;
+    var job_extents_source;
     var scaleLine;
     var attribution;
     var bbox;
     var filtering = false;
     var searchForm = $('form#search');
 
+    // SHOULD NOT NEED THIS IN OL3
     /*
      * Override unselect so hidden features don't get reset
      * with the 'default' style on unselect.
@@ -100,37 +102,31 @@ jobs.list = (function(){
         // map.addLayer(osm);
         // map.zoomToMaxExtent();
 
-        var zoomLevels = [500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250];
+        //var zoomLevels = [500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250];
+
+        //add base layers
+        var osm = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
 
         map = new ol.Map({
-            target: 'map-column',
+            target: 'list-export-map',
+            layers: [osm],
             view: new ol.View({
-                projection: "EPSG:4326",
-                extent: [-180,-90,180,90],
-                center: [44.4333, 33.3333],
-                zoom: 4,
-                //minResolution: 0.000001,
-                //maxResolution: 0.27,
+                projection: 'EPSG:3857',
+                extent: [-20037508.34,-20037508.34, 20037508.34, 20037508.34],
+                center: [0, 0],
+                zoom: 2,
                 maxZoom: 18,
             })
-        })
+        });
 
         scaleLine = new ol.control.ScaleLine();
         map.addControl(scaleLine);
 
         attribution = new ol.control.Attribution();
         map.addControl(attribution);
-
-
-        //add base layers
-        var osm = new ol.layer.Tile({
-            title: "OpenStreetMap",
-            source: new ol.source.OSM()
-        })
-
-        map.addLayer(osm);
-        zoomtoextent();
-
+        
         var defaultStyle = new ol.style.Style({
             fill: new ol.style.Fill({
                 color: '#D73F3F',
@@ -155,9 +151,10 @@ jobs.list = (function(){
 
         var hiddenStyle = new ol.style.Style({
             display: 'none',
+            zIndex: -1
         });
 
-        var job_extents_source = new ol.source.Vector();
+        job_extents_source = new ol.source.Vector();
 
         job_extents = new ol.layer.Vector({
             name: 'Job Extents',
@@ -183,7 +180,9 @@ jobs.list = (function(){
 
 
 
-        var selectControl = new ol.interaction.Select();
+        var selectControl = new ol.interaction.Select({
+            style: selectStyle
+        });
         map.addInteraction(selectControl);
 
         var features = selectControl.getFeatures();
@@ -213,7 +212,12 @@ jobs.list = (function(){
             }
             var pixel = map.getEventPixel(e.originalEvent);
             var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-                return true;
+                if (layer == job_extents) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             });
             if (hit) {
                 $popup = $('#feature-popup');
@@ -317,11 +321,19 @@ jobs.list = (function(){
             translate = new ol.interaction.Translate({
                 features: new ol.Collection([dragFeature])
             });
-            map.addInteraction(translate);
+
             var bounds = dragFeature.getGeometry().getExtent();
             filtering = true;
             setBounds(bounds);
             map.getView().fit(bounds, map.getSize());
+
+            map.addInteraction(translate);
+            translate.on('translateend', function(e){
+                var bounds = dragFeature.getGeometry().getExtent();
+                filtering = true;
+                setBounds(bounds);
+                map.getView().fit(bounds, map.getSize());
+            });
         });
         
 
@@ -410,14 +422,15 @@ jobs.list = (function(){
                 map.getView().fit(job_extents.getExtent(), map.getSize());
             }
             else {
-                map.getView().fit([-180,-90,180,90], map.getSize());
+                zoomtoextent()
             }
         });
 
     }
 
     function zoomtoextent() {
-        map.getView().fit([-180,-90,180,90], map.getSize());
+        var extent = [-20037508.34,-20037508.34, 20037508.34, 20037508.34];
+        map.getView().fit(extent, map.getSize());
     }
 
     /*
@@ -487,29 +500,30 @@ jobs.list = (function(){
 
         var hiddenStyle = new ol.style.Style({
             display: 'none',
+            zIndex: -1
         });
 
         // default style for export extents
-        var defaultStyle = new OpenLayers.Style({
-            strokeWidth: 3.5,
-            strokeColor: '#D73F3F',
-            fillColor: '#D73F3F',
-            fillOpacity: 0.1,
-            //graphicZIndex : 50,
-        });
-        // export extent selection style
-        var selectStyle = new OpenLayers.Style({
-            strokeWidth: 3.5,
-            strokeColor: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.1,
-            //graphicZIndex : 40,
-        });
+        // var defaultStyle = new OpenLayers.Style({
+        //     strokeWidth: 3.5,
+        //     strokeColor: '#D73F3F',
+        //     fillColor: '#D73F3F',
+        //     fillOpacity: 0.1,
+        //     //graphicZIndex : 50,
+        // });
+        // // export extent selection style
+        // var selectStyle = new OpenLayers.Style({
+        //     strokeWidth: 3.5,
+        //     strokeColor: 'blue',
+        //     fillColor: 'blue',
+        //     fillOpacity: 0.1,
+        //     //graphicZIndex : 40,
+        // });
         
         
-        var hiddenStyle = new OpenLayers.Style({
-            display: 'none'
-        });
+        // var hiddenStyle = new OpenLayers.Style({
+        //     display: 'none'
+        // });
 
 
         // TODO: There is not a style map in OL3.  Need to figure out how to account for this...
@@ -554,94 +568,119 @@ jobs.list = (function(){
 
             // toggle feature visibility
             $('span.toggle-feature').on('click', function(e){
-                var selectControl = map.getControlsBy('id','selectControl')[0];
-                var uid = $(e.target).attr('id');
-                for(var f=0; f < job_extents.features.length; f++){
-                    var feature = job_extents.features[f];
-                    if(feature.attributes.uid === uid){;
-                        var visible = feature.getVisibility();
-                        if (visible) {
-                            feature.renderIntent = 'hidden';
-                            selectControl.unselect(feature);
-                            job_extents.redraw();
-                            $('tr#' + uid).addClass('warning');
-                        }
-                        else {
-                            feature.renderIntent = 'default';
-                            $('tr#' + uid).removeClass('warning');
-                            job_extents.redraw();
-                        }
-                   }
+                // var selectControl = map.getControlsBy('id','selectControl')[0];
+                var selectControl;
+                map.getInteractions().forEach(function(interaction) {
+                    if(interaction instanceof ol.interaction.Select) {
+                        selectControl = interaction;
+                    }
+                })
+                if (selectControl) {
+                    var uid = $(e.target).attr('id');
+                    for(var f=0; f < job_extents_source.getFeatures().length; f++){
+                        var feature = job_extents_source.getFeatures()[f];
+                        if(feature.getProperties().uid === uid){;
+                            var visible = feature.getStyle().getZIndex();
+                            if (visible === -1) {
+                                // feature.renderIntent = 'hidden';
+                                // selectControl.unselect(feature);
+                                selectControl.getFeatures().remove(feature);
+                                feature.setStyle(getExtentStyles.hidden);
+                                //job_extents.redraw();
+                                $('tr#' + uid).addClass('warning');
+                            }
+                            else {
+                                //feature.renderIntent = 'default';
+                                feature.setStyle(getExtentStyles.default);
+                                $('tr#' + uid).removeClass('warning');
+                                //job_extents.redraw();
+                            }
+                       }
+                    }
                 }
                 $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
             });
-
             $('span.zoom-feature').on('click', function(e){
                 var uid = $(e.target).attr('data-zoom');
-                for(var f=0; f < job_extents.features.length; f++){
-                    var feature = job_extents.features[f];
-                    if(feature.attributes.uid === uid){;
-                        var bounds = feature.geometry.bounds;
-                        map.zoomToExtent(bounds);
+                for(var f=0; f < job_extents_source.getFeatures().length; f++){
+                    var feature = job_extents_source.getFeatures()[f];
+                    if(feature.getProperties().uid === uid){;
+                        var bounds = feature.getGeometry().getExtent();
+                        map.getView().fit(bounds, map.getSize());
 
                    }
                 }
-
             });
 
             // clear the existing export extent features and add the new ones..
             job_extents_source.clear();
             $.each(data, function(idx, job){
                  var extent = job.extent;
-                 var geojson = new ol.format.GeoJSON({
-                         'featureProjection': "EPSG:3857",
-                         'dataProjection': "EPSG:4326"
+                 var geojson = new ol.format.GeoJSON();
+                 var feature = geojson.readFeatures(extent, {
+                    'featureProjection': "EPSG:3857",
+                    'dataProjection': "EPSG:4326"
                  });
-                 var feature = geojson.readFeatures(extent);
                  job_extents_source.addFeatures(feature);
              });
-
             /*
              * Zoom to extents depending on whether
              * bbox filtering is applied or not..
              */
             if (filtering) {
-                map.getView().fit(bbox.getExtent(), map.getSize());
+                map.getView().fit(bboxSource.getExtent(), map.getSize());
             }
             else {
-                var bounds = job_extents.getDataExtent();
+                var bounds = job_extents.getExtent();
                 if (bounds) {
                     map.getView().fit(job_extents.getExtent(), map.getSize());
                 }
                 else {
                     // zoom to max if no results
-                    map.getView().fit([-180,-90,180,90], map.getSize());
+                    zoomtoextent()
                 }
             }
-
             // select bbox features based on row hovering
             $('table#jobs tbody tr').hover(
                 // mouse in
                 function(e){
-                    var selectControl = map.getControlsBy('id','selectControl')[0];
-                    var uid = $(this).attr('id');
-                    for(var f=0; f < job_extents.features.length; f++){
-                        var feature = job_extents.features[f];
-                        if(feature.attributes.uid === uid && feature.renderIntent != 'hidden'){
-                            selectControl.select(feature);
+                    // var selectControl = map.getControlsBy('id','selectControl')[0];
+                    var selectControl;
+                    map.getInteractions().forEach(function(interaction) {
+                        if(interaction instanceof ol.interaction.Select) {
+                            selectControl = interaction;
                         }
-                        else {
-                            selectControl.unselect(feature);
+                    });
+                    if (selectControl) {
+                        var uid = $(this).attr('id');
+                        for(var f=0; f < job_extents_source.getFeatures().length; f++){
+                            var feature = job_extents_source.getFeatures()[f];
+                            if(feature.getProperties().uid === uid && feature.getStyle().getZIndex != -1){
+                                //selectControl.select(feature);
+                                selectControl.getFeatures().push(feature);
+                            }
+                            else {
+                                //selectControl.unselect(feature);
+                                selectControl.getFeatures().remove(feature);
+                            }
                         }
                     }
                 },
                 // mouse out
                 function(e){
-                    var selectControl = map.getControlsBy('id','selectControl')[0];
-                    selectControl.unselectAll();
+                    // var selectControl = map.getControlsBy('id','selectControl')[0];
+                    var selectControl;
+                    map.getInteractions().forEach(function(interaction) {
+                        if(interaction instanceof ol.interaction.Select) {
+                            selectControl = interaction;
+                        }
+                    });
+                    if(selectControl) {
+                        // selectControl.unselectAll();
+                        selectControl.getFeatures().clear();
+                    }
                 }
             );
-
             // set message if no results returned from this url..
             $('td.dataTables_empty').html('No search results found.');
         });
