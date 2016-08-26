@@ -216,6 +216,11 @@ span.heading {
     right: 1em !important;
 }
 
+.ol-dragbox {
+    background-color: rgba(0, 210, 215, .05);
+    border-color: rgba(0, 210, 215, .5);
+}
+
 /* Create export form styles */
 
 div#submit-spinner{

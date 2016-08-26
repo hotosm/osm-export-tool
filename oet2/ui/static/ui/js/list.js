@@ -117,6 +117,7 @@ jobs.list = (function(){
                 extent: [-20037508.34,-20037508.34, 20037508.34, 20037508.34],
                 center: [0, 0],
                 zoom: 2,
+                minZoom: 2,
                 maxZoom: 18,
             })
         });
@@ -159,7 +160,7 @@ jobs.list = (function(){
         job_extents = new ol.layer.Vector({
             name: 'Job Extents',
             source: job_extents_source,
-            style: defaultStyle,
+            style: getExtentStyles().default,
         });
         map.addLayer(job_extents);
 
@@ -181,12 +182,10 @@ jobs.list = (function(){
 
 
         var selectControl = new ol.interaction.Select({
+            layers: [job_extents],
             style: selectStyle
         });
         map.addInteraction(selectControl);
-
-        var features = selectControl.getFeatures();
-        job_extents_source.addFeatures(features);
 
         //openlayers 3 doesn't have onclick for vectors.
         //Need to add an onclick to the map and check for vectors around the pixel that was clicked.
@@ -197,9 +196,11 @@ jobs.list = (function(){
                     var uid = feature.data.uid;
                     if ($('tr#' + uid).css('background-color') == '#FFF'){
                         $('tr#' + uid).css('background-color', '#E8E8E8');
+                        feature.setStyle(getExtentStyles().select);
                     }
                     else {
                         $('tr#' + uid).css('background-color', '#FFF');
+                        feature.setStyle(getExtentStyles().default);
                     }
                 }
             });
@@ -230,7 +231,7 @@ jobs.list = (function(){
             var feature = map.forEachFeatureAtPixel(evt.pixel,
                 function(feature, layer) {
                     if(layer == job_extents) {
-                        var uid = feature.attributes.uid;
+                        var uid = feature.getProperties().uid;
                         window.location.href = '/exports/' + uid;
                     }
                 });
@@ -288,7 +289,10 @@ jobs.list = (function(){
             source: bboxSource,
             style: new ol.style.Style({
                 stroke: new ol.style.Stroke({
-                    color: [0, 0, 255, 1]
+                    color: 'blue'
+                }),
+                fill: new ol.style.Fill({
+                    color: [0, 0, 255, 0.05]
                 })
             })
         });
@@ -419,7 +423,7 @@ jobs.list = (function(){
          */
         $('#reset-map').bind('click', function(e){
             if(job_extents_source.getFeatures().length > 0) {
-                map.getView().fit(job_extents.getExtent(), map.getSize());
+                map.getView().fit(job_extents_source.getExtent(), map.getSize());
             }
             else {
                 zoomtoextent()
@@ -433,6 +437,7 @@ jobs.list = (function(){
         map.getView().fit(extent, map.getSize());
     }
 
+    // NOT USED FOR OL3
     /*
      * get the style map for the filter bounding box.
      */
@@ -527,12 +532,11 @@ jobs.list = (function(){
 
 
         // TODO: There is not a style map in OL3.  Need to figure out how to account for this...
-        var styles = new OpenLayers.StyleMap(
-        {
+        var styles = {
             "default": defaultStyle,
             "select": selectStyle,
             "hidden": hiddenStyle
-        });
+        };
 
         return styles;
     }
@@ -574,7 +578,7 @@ jobs.list = (function(){
                     if(interaction instanceof ol.interaction.Select) {
                         selectControl = interaction;
                     }
-                })
+                });
                 if (selectControl) {
                     var uid = $(e.target).attr('id');
                     for(var f=0; f < job_extents_source.getFeatures().length; f++){
@@ -585,13 +589,13 @@ jobs.list = (function(){
                                 // feature.renderIntent = 'hidden';
                                 // selectControl.unselect(feature);
                                 selectControl.getFeatures().remove(feature);
-                                feature.setStyle(getExtentStyles.hidden);
+                                feature.setStyle(getExtentStyles().hidden);
                                 //job_extents.redraw();
                                 $('tr#' + uid).addClass('warning');
                             }
                             else {
                                 //feature.renderIntent = 'default';
-                                feature.setStyle(getExtentStyles.default);
+                                feature.setStyle(getExtentStyles().default);
                                 $('tr#' + uid).removeClass('warning');
                                 //job_extents.redraw();
                             }
@@ -621,7 +625,7 @@ jobs.list = (function(){
                     'featureProjection': "EPSG:3857",
                     'dataProjection': "EPSG:4326"
                  });
-                 job_extents_source.addFeatures(feature);
+                 job_extents_source.addFeature(feature);
              });
             /*
              * Zoom to extents depending on whether
@@ -631,9 +635,9 @@ jobs.list = (function(){
                 map.getView().fit(bboxSource.getExtent(), map.getSize());
             }
             else {
-                var bounds = job_extents.getExtent();
-                if (bounds) {
-                    map.getView().fit(job_extents.getExtent(), map.getSize());
+                if (job_extents_source.getFeatures().length) {
+                    var bounds = job_extents_source.getExtent();
+                    map.getView().fit(job_extents_source.getExtent(), map.getSize());
                 }
                 else {
                     // zoom to max if no results
@@ -657,11 +661,21 @@ jobs.list = (function(){
                             var feature = job_extents_source.getFeatures()[f];
                             if(feature.getProperties().uid === uid && feature.getStyle().getZIndex != -1){
                                 //selectControl.select(feature);
+                                /* Since programmatically selecting/unselecting 
+                                 * it is probably necessary to change the style manually
+                                 */
+                                feature.setStyle(getExtentStyles().select);
+
                                 selectControl.getFeatures().push(feature);
                             }
                             else {
                                 //selectControl.unselect(feature);
                                 selectControl.getFeatures().remove(feature);
+                                
+                                /* Since programmatically selecting/unselecting 
+                                 * it is probably necessary to change the style manually
+                                 */
+                                feature.setStyle(getExtentStyles().default);
                             }
                         }
                     }
