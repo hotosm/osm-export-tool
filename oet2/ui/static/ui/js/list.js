@@ -5,6 +5,7 @@ jobs.list = (function(){
     var job_extents_source;
     var scaleLine;
     var attribution;
+    var selectControl;
     var bbox;
     var filtering = false;
     var searchForm = $('form#search');
@@ -119,7 +120,8 @@ jobs.list = (function(){
                 zoom: 2,
                 minZoom: 2,
                 maxZoom: 18,
-            })
+            }),
+            interactions : ol.interaction.defaults({doubleClickZoom :false})
         });
 
         scaleLine = new ol.control.ScaleLine();
@@ -127,33 +129,6 @@ jobs.list = (function(){
 
         attribution = new ol.control.Attribution();
         map.addControl(attribution);
-        
-        var defaultStyle = new ol.style.Style({
-            fill: new ol.style.Fill({
-                color: '#D73F3F',
-                opacity: 0.1,
-            }),
-            stroke: new ol.style.Stroke({
-                color: '#D73F3F',
-                width: 3.5,
-            })
-        });
-
-        var selectStyle = new ol.style.Style({
-            fill: new ol.style.Fill({
-                color: 'blue',
-                opacity: 0.1,
-            }),
-            stroke: new ol.style.Stroke({
-                color: 'blue',
-                width: 3.5,
-            })
-        });
-
-        var hiddenStyle = new ol.style.Style({
-            display: 'none',
-            zIndex: -1
-        });
 
         job_extents_source = new ol.source.Vector();
 
@@ -179,41 +154,40 @@ jobs.list = (function(){
         // map.addControl(selectControl);
         // selectControl.activate();
 
-
-
-        var selectControl = new ol.interaction.Select({
+        selectControl = new ol.interaction.Select({
             layers: [job_extents],
-            style: selectStyle
+            style: getExtentStyles().select,
+            condition: ol.events.condition.click,
+            filter: function(feature, layer) {
+                if(feature.getStyle().getZIndex() != -1) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
         });
         map.addInteraction(selectControl);
 
-        //openlayers 3 doesn't have onclick for vectors.
-        //Need to add an onclick to the map and check for vectors around the pixel that was clicked.
-        map.on("click", function(e) {
-            map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
-                //check for feature close by, then fire off selected event to change style and list as shown below in old OL2 code
-                if (layer == job_extents) {
-                    var uid = feature.data.uid;
-                    if ($('tr#' + uid).css('background-color') == '#FFF'){
-                        $('tr#' + uid).css('background-color', '#E8E8E8');
-                        feature.setStyle(getExtentStyles().select);
-                    }
-                    else {
-                        $('tr#' + uid).css('background-color', '#FFF');
-                        feature.setStyle(getExtentStyles().default);
-                    }
-                }
-            });
-        })
+        selectControl.getFeatures().on('add', function(e){
+            var uid = e.element.getProperties().uid;
+            $('tr#' + uid).css('background-color', '#E8E8E8');
+            e.element.setStyle(getExtentStyles().select);
+        });
 
-        //featureover event needs to be like this.  Might take care of featureout as well.
+        selectControl.getFeatures().on('remove', function(e){
+            var uid = e.element.getProperties().uid;
+            $('tr#' + uid).css('background-color', '#FFF');
+            e.element.setStyle(getExtentStyles().default);
+        });
+
         $(map.getViewport()).on('mousemove', function(e) {
             if ($('#feature-popup').css('display') == 'block') {
                 $('#feature-popup').css('display', 'none');
             }
             var pixel = map.getEventPixel(e.originalEvent);
             var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-                if (layer == job_extents) {
+                if (layer == job_extents && feature.getStyle().getZIndex() != -1) {
                     return true;
                 }
                 else {
@@ -230,7 +204,7 @@ jobs.list = (function(){
         map.on('dblclick', function(evt) {
             var feature = map.forEachFeatureAtPixel(evt.pixel,
                 function(feature, layer) {
-                    if(layer == job_extents) {
+                    if(layer == job_extents && feature.getStyle().getZIndex() != -1) {
                         var uid = feature.getProperties().uid;
                         window.location.href = '/exports/' + uid;
                     }
@@ -483,28 +457,31 @@ jobs.list = (function(){
     function getExtentStyles(){
         var defaultStyle = new ol.style.Style({
             fill: new ol.style.Fill({
-                color: '#D73F3F',
-                opacity: 0.1,
+                color: [215, 63, 63, 0.1]
             }),
             stroke: new ol.style.Stroke({
-                color: '#D73F3F',
+                color: [215, 63, 63, 1],
                 width: 3.5,
             })
         });
 
         var selectStyle = new ol.style.Style({
             fill: new ol.style.Fill({
-                color: 'blue',
-                opacity: 0.1,
+                color: [0, 0, 255, 0.1]
             }),
             stroke: new ol.style.Stroke({
-                color: 'blue',
+                color: [0, 0, 255, 1],
                 width: 3.5,
             })
         });
 
         var hiddenStyle = new ol.style.Style({
-            display: 'none',
+            fill: new ol.style.Fill({
+                color: [0, 0, 0, 0]
+            }),
+            stroke: new ol.style.Stroke({
+                color: [0, 0, 0, 0]
+            }),
             zIndex: -1
         });
 
@@ -530,8 +507,6 @@ jobs.list = (function(){
         //     display: 'none'
         // });
 
-
-        // TODO: There is not a style map in OL3.  Need to figure out how to account for this...
         var styles = {
             "default": defaultStyle,
             "select": selectStyle,
@@ -572,30 +547,23 @@ jobs.list = (function(){
 
             // toggle feature visibility
             $('span.toggle-feature').on('click', function(e){
-                // var selectControl = map.getControlsBy('id','selectControl')[0];
-                var selectControl;
-                map.getInteractions().forEach(function(interaction) {
-                    if(interaction instanceof ol.interaction.Select) {
-                        selectControl = interaction;
-                    }
-                });
+                // // var selectControl = map.getControlsBy('id','selectControl')[0];
                 if (selectControl) {
                     var uid = $(e.target).attr('id');
                     for(var f=0; f < job_extents_source.getFeatures().length; f++){
                         var feature = job_extents_source.getFeatures()[f];
                         if(feature.getProperties().uid === uid){;
-                            var visible = feature.getStyle().getZIndex();
-                            if (visible === -1) {
+                            if (feature.getStyle().getZIndex() != -1) {
                                 // feature.renderIntent = 'hidden';
                                 // selectControl.unselect(feature);
-                                selectControl.getFeatures().remove(feature);
+                                //selectControl.getFeatures().remove(feature);
                                 feature.setStyle(getExtentStyles().hidden);
                                 //job_extents.redraw();
                                 $('tr#' + uid).addClass('warning');
                             }
                             else {
                                 //feature.renderIntent = 'default';
-                                feature.setStyle(getExtentStyles().default);
+                                feature.setStyle(getExtentStyles().select);
                                 $('tr#' + uid).removeClass('warning');
                                 //job_extents.redraw();
                             }
@@ -621,11 +589,12 @@ jobs.list = (function(){
             $.each(data, function(idx, job){
                  var extent = job.extent;
                  var geojson = new ol.format.GeoJSON();
-                 var feature = geojson.readFeatures(extent, {
+                 var feature = geojson.readFeature(extent, {
                     'featureProjection': "EPSG:3857",
                     'dataProjection': "EPSG:4326"
                  });
                  job_extents_source.addFeature(feature);
+                 feature.setStyle(getExtentStyles().default);
              });
             /*
              * Zoom to extents depending on whether
@@ -648,51 +617,36 @@ jobs.list = (function(){
             $('table#jobs tbody tr').hover(
                 // mouse in
                 function(e){
+                    selectControl.getFeatures().clear();
                     // var selectControl = map.getControlsBy('id','selectControl')[0];
-                    var selectControl;
-                    map.getInteractions().forEach(function(interaction) {
-                        if(interaction instanceof ol.interaction.Select) {
-                            selectControl = interaction;
-                        }
-                    });
                     if (selectControl) {
                         var uid = $(this).attr('id');
                         for(var f=0; f < job_extents_source.getFeatures().length; f++){
                             var feature = job_extents_source.getFeatures()[f];
-                            if(feature.getProperties().uid === uid && feature.getStyle().getZIndex != -1){
+                            if(feature.getProperties().uid === uid && feature.getStyle().getZIndex() != -1){
                                 //selectControl.select(feature);
-                                /* Since programmatically selecting/unselecting 
-                                 * it is probably necessary to change the style manually
-                                 */
-                                feature.setStyle(getExtentStyles().select);
 
-                                selectControl.getFeatures().push(feature);
-                            }
-                            else {
-                                //selectControl.unselect(feature);
-                                selectControl.getFeatures().remove(feature);
-                                
-                                /* Since programmatically selecting/unselecting 
-                                 * it is probably necessary to change the style manually
-                                 */
-                                feature.setStyle(getExtentStyles().default);
+                                //selectControl.getFeatures().push(feature);
+                                feature.setStyle(getExtentStyles().select);
+                                $('tr#' + uid).css('background-color', '#E8E8E8');
                             }
                         }
                     }
                 },
                 // mouse out
                 function(e){
-                    // var selectControl = map.getControlsBy('id','selectControl')[0];
-                    var selectControl;
-                    map.getInteractions().forEach(function(interaction) {
-                        if(interaction instanceof ol.interaction.Select) {
-                            selectControl = interaction;
+                    // selectControl.unselectAll();
+
+                    // Reset table and feature styles on mouse out
+                    job_extents_source.getFeatures().forEach(function(feature, index, array){
+                        if (feature.getStyle().getZIndex() != -1) {
+                            feature.setStyle(getExtentStyles().default);
                         }
                     });
-                    if(selectControl) {
-                        // selectControl.unselectAll();
-                        selectControl.getFeatures().clear();
-                    }
+                    $('table#jobs tbody tr').each(function() {
+                        $this = $(this);
+                        $this.css('background-color', '#FFF');
+                    });
                 }
             );
             // set message if no results returned from this url..
