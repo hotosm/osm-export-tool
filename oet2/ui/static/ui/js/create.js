@@ -8,17 +8,20 @@ create.job = (function(){
     var transform;
     var attribution;
     var scaleLine;
+    var bbox;
+    var bboxSource;
+    var filtering = false;
     var max_bounds_area = $('#user-max-extent').text();
 
     return {
         init: function(){
             initMap();
-            //initPopovers();
-            //initHDMFeatureTree();
-            //initOSMFeatureTree();
-            //initNominatim();
-            //initPresetSelectionHandler();
-            //initConfigSelectionHandler();
+            initPopovers();
+            initHDMFeatureTree();
+            initOSMFeatureTree();
+            initNominatim();
+            initPresetSelectionHandler();
+            initConfigSelectionHandler();
         }
     }
 
@@ -28,31 +31,65 @@ create.job = (function(){
      */
     function initMap() {
 
+        //     // OL2 set up the map and add the required layers
+        //     var maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
+        //     var mapOptions = {
+        //             displayProjection: new OpenLayers.Projection("EPSG:4326"),
+        //             controls: [new OpenLayers.Control.Attribution(),
+        //                        new OpenLayers.Control.ScaleLine()],
+        //             maxExtent: maxExtent,
+        //             scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
+        //             units: 'm',
+        //             sphericalMercator: true,
+        //             noWrap: true, // don't wrap world extents
+        //     }
+        //     map = new OpenLayers.Map('create-export-map', {options: mapOptions});
+        //
+        //     // restrict extent to world bounds to prevent panning..
+        //     map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
+        //
+        //     // add base layers
+        //     var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
+        //     var hotosm = Layers.HOT
+        //     osm.options = {
+        //         //layers: "basic",
+        //         isBaseLayer: true,
+        //         visibility: true,
+        //         displayInLayerSwitcher: true,
+        //     };
+        //     osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors.";
+        //     hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
+        //     map.addLayers([osm]);
+        //
 
-        //var maxExtent = new ol.extent[-180,-90,180,90];
+
+        // OL3 set up the map and add the required layers
         var zoomLevels = [500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250];
 
-        this.map = new ol.Map({
+        map = new ol.Map({
             interactions: ol.interaction.defaults({
                 keyboard: false,
                 altShiftDragRotate: false
             }),
-            target: document.getElementById('create-export-map'),
+            target: 'create-export-map',
             view: new ol.View({
                 projection: "EPSG:4326",
-                extent: [-180,-90,180,90],
+                //extent: [-180,-90,180,90],
                 center: [44.4333, 33.3333],
-                zoom: 9,
-                minResolution: 0.000001,
-                maxResolution: 0.27,
+                zoom: 4,
+                //minResolution: 0.000001,
+                //maxResolution: 0.27,
                 maxZoom: 18,
             })
         })
+
 
         //add base layers
         var osm = new ol.layer.Tile({
             title: "OpenStreetMap",
             source: new ol.source.OSM({
+                wrapX: false,
+                noWrap: true,
                 attributions: [
                     new ol.Attribution({
                         html: '&copy ' +
@@ -67,152 +104,150 @@ create.job = (function(){
         var hotosm = Layers.HOT;
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
 
-        this.map.addLayer(osm);
+        map.addLayer(osm);
+        //zoomtoextent();
+        //var otherextent = [-142.20703125, -104.4140625, 151.34765625, 113.5546875];
+        //this.map.getView().fit(otherextent, this.map.getSize());
 
         scaleLine = new ol.control.ScaleLine();
-        this.map.addControl(scaleLine);
+        map.addControl(scaleLine);
 
         attribution = new ol.control.Attribution();
-        this.map.addControl(attribution);
+        map.addControl(attribution);
 
-        // add the regions layer
+
+        //     // OL2 add the regions layer
+        //     regions = new OpenLayers.Layer.Vector('regions', {
+        //         displayInLayerSwitcher: false,
+        //         style: {
+        //             strokeWidth: 3.5,
+        //             strokeColor: '#D73F3F',
+        //             fillColor: 'transparent',
+        //             fillOpacity: 0.8,
+        //         }
+        //     });
+        //
+        //     // add the region mask layer
+        //     mask = new OpenLayers.Layer.Vector('mask', {
+        //         displayInLayerSwitcher: false,
+        //         styleMap: new OpenLayers.StyleMap({
+        //             "default": new OpenLayers.Style({
+        //             fillColor: "#fff",
+        //             fillOpacity: 0.7,
+        //             strokeColor: "#fff",
+        //             strokeWidth: .1,
+        //             strokeOpacity: 0.2,
+        //             })
+        //         }),
+        //     });
+        //     map.addLayers([regions, mask]);
+        //
+        //     // add region and mask features
+        //     addRegionMask();
+        //     addRegions();
+
+        // OL3 add the regions layer
         regionsSource = new ol.source.Vector({
-            projection: 'EPSG:4326'
+            wrapX: false,
+            noWrap: true,
         });
+
 
         regions = new ol.layer.Vector({
                 name: 'regions',
                 source: regionsSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'transparent',
-                        opacity: 0.8,
+                        color: 'rgba(0,0,0,0)',
+                        //opacity: 0.8,
                     }),
                     stroke: new ol.style.Stroke({
-                        color: '#D73F3F',
+                        color: 'rgba(215, 63, 63, 0.8)',
                         width: 3.5,
                     })
                 }),
 
             })
+        map.addLayer(regions);
 
         // add the region mask layer
         maskSource = new ol.source.Vector({
-            projection: 'EPSG:4326'
+            wrapX: false,
+            noWrap: true,
         });
             mask = new ol.layer.Vector({
                 name: 'mask',
                 source: maskSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: '#fff',
-                        opacity: 0.7,
+                        color: 'rgba(255,255,255,0.7)',
+                        //opacity: 0.7,
                     }),
                     stroke: new ol.style.Stroke({
-                        color: '#fff',
+                        color: 'rbga(255,255,255,0.2)',
                         width: .1,
-                        opacity: 0.2,
+                        //opacity: 0.2,
                     }),
                 }),
             });
-        this.map.addLayer(regions);
-        this.map.addLayer(mask);
+
+        map.addLayer(mask);
 
         //add region and mask features
         //addRegionMask();
         // get the regions from the regions api
         $.getJSON(Config.REGION_MASK_URL, function(data){
             var geojson = new ol.format.GeoJSON();
-            var features = geojson.readFeatures(data, {featureProjection: 'EPSG:3857'});
+            var features = geojson.readFeatures(data);
             regionsSource.addFeatures(features);
-            var extent = regions.getSource().getExtent();
-            this.map.getView().fit(extent, map.getSize());
+            var extent = regionsSource.getExtent();
+
+            map.getView().fit(extent, map.getSize());
+            //zoomtoextent();
         });
 
         //addRegions();
         $.getJSON(Config.REGIONS_URL, function(data){
             var geojson = new ol.format.GeoJSON();
-            var features = geojson.readFeatures(data, {featureProjection: 'EPSG:3857'});
+            var features = geojson.readFeatures(data);
             maskSource.addFeatures(features);
-            var extent = mask.getSource().getExtent();
-            this.map.getView().fit(extent, map.getSize());
-            //map.zoomToExtent(regions.getDataExtent());
+            var extent = maskSource.getExtent();
+            map.getView().fit(extent, map.getSize());
+            //zoomtoextent();
 
         });
 
+        // add export format checkboxes
+        buildExportFormats();
+
+
+        //     OL2 add bounding box selection layer
+        //     bbox = new OpenLayers.Layer.Vector("bbox", {
+        //        displayInLayerSwitcher: false,
+        //        styleMap: getTransformStyleMap(),
+        //     });
+        //     map.addLayers([bbox]);
+        //
+
+
+        // OL3 add bounding box selection layer
+        bboxSource = new ol.source.Vector()
+        bbox = new ol.layer.Vector({
+            name: 'Select',
+            source: bboxSource,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'blue'
+                }),
+                fill: new ol.style.Fill({
+                    color: [0, 0, 255, 0.05]
+                })
+            })
+        });
+        map.addLayer(bbox);
 
 
 
-    //     // set up the map and add the required layers
-    //     var maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
-    //     var mapOptions = {
-    //             displayProjection: new OpenLayers.Projection("EPSG:4326"),
-    //             controls: [new OpenLayers.Control.Attribution(),
-    //                        new OpenLayers.Control.ScaleLine()],
-    //             maxExtent: maxExtent,
-    //             scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
-    //             units: 'm',
-    //             sphericalMercator: true,
-    //             noWrap: true, // don't wrap world extents
-    //     }
-    //     map = new OpenLayers.Map('create-export-map', {options: mapOptions});
-    //
-    //     // restrict extent to world bounds to prevent panning..
-    //     map.restrictedExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
-    //
-    //     // add base layers
-    //     var osm = new OpenLayers.Layer.OSM("OpenStreetMap");
-    //     var hotosm = Layers.HOT
-    //     osm.options = {
-    //         //layers: "basic",
-    //         isBaseLayer: true,
-    //         visibility: true,
-    //         displayInLayerSwitcher: true,
-    //     };
-    //     osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors.";
-    //     hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
-    //     map.addLayers([osm]);
-    //
-    //     // add the regions layer
-    //     regions = new OpenLayers.Layer.Vector('regions', {
-    //         displayInLayerSwitcher: false,
-    //         style: {
-    //             strokeWidth: 3.5,
-    //             strokeColor: '#D73F3F',
-    //             fillColor: 'transparent',
-    //             fillOpacity: 0.8,
-    //         }
-    //     });
-    //
-    //     // add the region mask layer
-    //     mask = new OpenLayers.Layer.Vector('mask', {
-    //         displayInLayerSwitcher: false,
-    //         styleMap: new OpenLayers.StyleMap({
-    //             "default": new OpenLayers.Style({
-    //             fillColor: "#fff",
-    //             fillOpacity: 0.7,
-    //             strokeColor: "#fff",
-    //             strokeWidth: .1,
-    //             strokeOpacity: 0.2,
-    //             })
-    //         }),
-    //     });
-    //     map.addLayers([regions, mask]);
-    //
-    //     // add region and mask features
-    //     addRegionMask();
-    //     addRegions();
-    //
-    //     // add export format checkboxes
-    //     buildExportFormats();
-    //
-    //     // add bounding box selection layer
-    //     bbox = new OpenLayers.Layer.Vector("bbox", {
-    //        displayInLayerSwitcher: false,
-    //        styleMap: getTransformStyleMap(),
-    //     });
-    //     map.addLayers([bbox]);
-    //
     //     // add a draw feature control for bbox selection.
     //     box = new OpenLayers.Control.DrawFeature(bbox, OpenLayers.Handler.RegularPolygon, {
     //        handlerOptions: {
@@ -223,6 +258,56 @@ create.job = (function(){
     //        }
     //     });
     //     map.addControl(box);
+
+        var dragBox = new ol.interaction.DragBox({
+            condition: ol.events.condition.primaryAction,
+        });
+
+        var translate;
+
+        dragBox.on('boxend', function(e){
+            var dragFeature = new ol.Feature({
+                geometry: dragBox.getGeometry()
+            });
+            bboxSource.addFeature(dragFeature);
+            map.removeInteraction(dragBox);
+            translate = new ol.interaction.Translate({
+                features: new ol.Collection([dragFeature])
+            });
+
+            var bounds = dragFeature.getGeometry().getExtent();
+            filtering = true;
+
+            // validate the selected extents
+            if (validateBounds(bounds)) {
+                setBounds(bounds);
+            }
+            else {
+                unsetBounds();
+            }
+
+            map.getView().fit(bounds, map.getSize());
+
+            map.addInteraction(translate);
+            translate.on('translateend', function(e){
+                var bounds = dragFeature.getGeometry().getExtent();
+                filtering = true;
+                // validate the selected extents
+                if (validateBounds(bounds)) {
+                    setBounds(bounds);
+                }
+                else {
+                    unsetBounds();
+                }
+                map.getView().fit(bounds, map.getSize());
+            });
+        });
+
+        var draw = new ol.interaction.Draw({
+            source: new ol.source.Vector({wrapX: false}),
+            type: 'Point',
+        })
+
     //
     //
     //     // add a transform control to enable modifications to bounding box (drag, resize)
@@ -281,63 +366,63 @@ create.job = (function(){
     //     // add the transform control
     //     map.addControl(transform);
     //
-    //     // handles click on select area button
-    //     $("#select-area").bind('click', function(e){
-    //         /*
-    //          * unset bounds on form,
-    //          * clear transform control
-    //          * activate the draw bbox control
-    //          */
-    //         $('#nominatim').val('');
-    //         unsetBounds();
-    //         bbox.removeAllFeatures();
-    //         transform.unsetFeature();
-    //         box.activate();
-    //     });
-    //
-    //     $('#zoom-selection').bind('click', function(e){
-    //         // zoom to the bounding box extent
-    //         if (bbox.features.length > 0) {
-    //             map.zoomToExtent(bbox.getDataExtent(), false);
-    //         }
-    //     });
-    //
-    //     $('#reset-map').bind('click', function(e){
-    //         /*
-    //          * Unsets the bounds on the form
-    //          * remove features and transforms
-    //          * reset map to regions extent
-    //          */
-    //         $('#nominatim').val('');
-    //         unsetBounds();
-    //         bbox.removeAllFeatures();
-    //         box.deactivate();
-    //         transform.unsetFeature();
-    //         map.zoomToExtent(regions.getDataExtent());
-    //         validateBounds();
-    //     });
-    //
+        // handles click on select area button
+        $("#select-area").bind('click', function(e){
+            /*
+             * unset bounds on form,
+             * clear transform control
+             * activate the draw bbox control
+             */
+            $('#nominatim').val('');
+            unsetBounds();
+            //bbox.removeAllFeatures();
+            //transform.unsetFeature();
+            //box.activate();
+            map.removeInteraction(translate);
+            bboxSource.clear();
+            map.addInteraction(dragBox);
+        });
+
+        $('#zoom-selection').bind('click', function(e){
+            // zoom to the bounding box extent
+            if (bbox.getFeatures().length > 0) {
+                map.getView().fit(bbox.getExtent(), map.getSize());
+            }
+            else{
+                zoomtoextent();
+            }
+        });
+
+        $('#reset-map').bind('click', function(e){
+            /*
+             * Unsets the bounds on the form
+             * remove features and transforms
+             * reset map to regions extent
+             */
+            $('#nominatim').val('');
+            unsetBounds();
+            bboxSource.clear();
+
+            //bbox.removeAllFeatures();
+            //box.deactivate();
+            //transform.unsetFeature();
+            map.getView().fit(regions.getExtent(), map.getSize());
+            //map.zoomToExtent(regions.getDataExtent());
+            validateBounds();
+        });
+
     //     /* Add map controls */
     //     map.addControl(new OpenLayers.Control.ScaleLine());
     //
     //     // set inital zoom to regions extent
     //     map.zoomTo(regions.getDataExtent());
+        map.getView().fit(regions.getExtent(), map.getSize());
     }
 
     /*
      * Add the regions to the map.
      * Calls into region api.
      */
-
-    // function addRegions(){
-    //     // get the regions from the regions api
-    //     //OL3 Code
-    //
-    // }
-
-    // function addRegionMask(){
-    //
-    // }
 
     //OL2 Code
     // function addRegions(){
@@ -369,6 +454,11 @@ create.job = (function(){
     //     });
     // }
 
+    function zoomtoextent() {
+        map.getView().fit([-142.20703125, -104.4140625, 151.34765625, 113.5546875], map.getSize());
+        //this.map.getView().fit([180,-90,180,90]);
+    }
+
     /*
      * build the export format checkboxes.
      */
@@ -398,10 +488,10 @@ create.job = (function(){
      */
     function setBounds(bounds) {
         fmt = '0.000000' // format to 6 decimal places .11 metre precision
-        var xmin = numeral(bounds.left).format(fmt);
-        var ymin = numeral(bounds.bottom).format(fmt);
-        var xmax = numeral(bounds.right).format(fmt);
-        var ymax = numeral(bounds.top).format(fmt);
+        var xmin = numeral(bounds[0]).format(fmt);
+        var ymin = numeral(bounds[1]).format(fmt);
+        var xmax = numeral(bounds[2]).format(fmt);
+        var ymax = numeral(bounds[3]).format(fmt);
         // fire input event here to make sure fields validate..
         $('#xmin').val(xmin).trigger('input');
         $('#ymin').val(ymin).trigger('input');
@@ -446,29 +536,55 @@ create.job = (function(){
             $('#alert-extents').html('<span>' + gettext('Select area to export') + '&nbsp;&nbsp;</span>');
             return false;
         }
-        var extent = bounds.toGeometry();
-        var regions = map.getLayersByName('regions')[0].features;
+
+        var regions, region;
+        map.getLayers().forEach(function (l) {
+            if (l.get('name') == 'regions')
+                regions = l;
+        })
+
         var valid_region = false;
+        var collision = regions.getSource().getFeaturesAtCoordinate(bounds[0]);
+        console.log(collision)
         // check that we're within a HOT region.
-        for (i = 0; i < regions.length; i++){
-            region = regions[i].geometry;
-            if (extent.intersects(region)){
-                valid_region = true;
-            }
-        }
+       // for (i = 0; i < features.length; i++) {
+            //     region = features[i].getGeometry();
+            //     //var extent = region[0].getGeometry().getExtent();
+            //     var test = regions.getSource().getFeaturesAtCoordinate(bounds);
+            //     console.log(test)
+            //     //if (ol.geom.Geometry.intersects(bounds, region)) {
+            //         //if (ol.extent.intersects(region, extent)) {
+            //     //    valid_region = true;
+            //     }
+
+
+                //var regionsArrays = coords.getGeometry().getCoordinates();
+                //console.log(regionsArrays);
+
+                //if (ol.extent.containsExtent(region.getExtent(), bounds)) {
+                //console.log(region[0].length);
+                //region = regionsSource.getFeatures().getGeometry();
+
+       //
+       // })
+       // }
         /*
          * calculate the extent area and convert to sq kilometers
          * converts to lat long which will be proj set on form if extents are valid.
          */
-        bounds.transform('EPSG:3857', 'EPSG:4326')
+        //bounds.transform('EPSG:3857', 'EPSG:4326')
+        bounds = ol.proj.transformExtent(bounds, 'EPSG:3857', 'EPSG:4326');
         // trim bounds to 6 decimal places before calculating geodesic area
-        var left = bounds.left.toFixed(6);
-        var bottom = bounds.bottom.toFixed(6);
-        var right = bounds.right.toFixed(6);
-        var top = bounds.top.toFixed(6);
+        var left = bounds[0].toFixed(6);
+        var bottom = bounds[1].toFixed(6);
+        var right = bounds[2].toFixed(6);
+        var top = bounds[3].toFixed(6);
+
+        //var extent = ol.geom.Polygon.fromExtent(bounds);
         
-        bounds_trunc = new OpenLayers.Bounds(left, bottom, right, top);
-        var area = bounds_trunc.toGeometry().getGeodesicArea() / 1000000; // sq km
+        bounds_trunc = new ol.geom.Polygon.fromExtent([left, bottom, right, top]);
+        var area = bounds_trunc.getArea() / 1000000;
+        //var area = geodesicArea(bounds_trunc) / 1000000; // sq km
         
         // format the area and max bounds for display..
         var area_str = numeral(area).format('0 0');
@@ -498,40 +614,41 @@ create.job = (function(){
         }
     }
 
+    // NOT USED FOR OL3
     /*
      * get the style map for the selection bounding box.
      */
-    function getTransformStyleMap(){
-        return new OpenLayers.StyleMap({
-                    "default": new OpenLayers.Style({
-                        fillColor: "blue",
-                        fillOpacity: 0.05,
-                        strokeColor: "blue"
-                    }),
-                    // style for the select extents box
-                    "transform": new OpenLayers.Style({
-                        display: "${getDisplay}",
-                        cursor: "${role}",
-                        pointRadius: 4,
-                        fillColor: "blue",
-                        fillOpacity: 1,
-                        strokeColor: "blue",
-                    },
-                    {
-                        context: {
-                            getDisplay: function(feature) {
-                                // hide the resize handles except at the se & nw corners
-                                return  feature.attributes.role === "n-resize"  ||
-                                        feature.attributes.role === "ne-resize" ||
-                                        feature.attributes.role === "e-resize"  ||
-                                        feature.attributes.role === "s-resize"  ||
-                                        feature.attributes.role === "sw-resize" ||
-                                        feature.attributes.role === "w-resize"  ? "none" : ""
-                            }
-                        }
-                    })
-                });
-    }
+    // function getTransformStyleMap(){
+    //     return new OpenLayers.StyleMap({
+    //                 "default": new OpenLayers.Style({
+    //                     fillColor: "blue",
+    //                     fillOpacity: 0.05,
+    //                     strokeColor: "blue"
+    //                 }),
+    //                 // style for the select extents box
+    //                 "transform": new OpenLayers.Style({
+    //                     display: "${getDisplay}",
+    //                     cursor: "${role}",
+    //                     pointRadius: 4,
+    //                     fillColor: "blue",
+    //                     fillOpacity: 1,
+    //                     strokeColor: "blue",
+    //                 },
+    //                 {
+    //                     context: {
+    //                         getDisplay: function(feature) {
+    //                             // hide the resize handles except at the se & nw corners
+    //                             return  feature.attributes.role === "n-resize"  ||
+    //                                     feature.attributes.role === "ne-resize" ||
+    //                                     feature.attributes.role === "e-resize"  ||
+    //                                     feature.attributes.role === "s-resize"  ||
+    //                                     feature.attributes.role === "sw-resize" ||
+    //                                     feature.attributes.role === "w-resize"  ? "none" : ""
+    //                         }
+    //                     }
+    //                 })
+    //             });
+    // }
 
     /*
      * Initialize the form validation.
@@ -724,7 +841,7 @@ create.job = (function(){
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
             if (isValidBBox === false || isValidBBox === null) {
-                validateBounds(bbox.getDataExtent());
+                validateBounds(bbox.getExtent());
             }
 
             // validate the form panel contents
@@ -1034,7 +1151,7 @@ create.job = (function(){
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
             if (isValidBBox === false || isValidBBox === null) {
-                validateBounds(bbox.getDataExtent());
+                validateBounds(bbox.getExtent());
             }
 
             /*
@@ -1422,10 +1539,12 @@ create.job = (function(){
                         }
                         else {
                             // clear any existing features and reset the map extents
-                            bbox.removeAllFeatures();
-                            transform.unsetFeature();
+                            //bbox.removeAllFeatures();
+                            bboxSource.clear();
+                            //transform.unsetFeature();
                             unsetBounds();
-                            map.zoomToExtent(regions.getDataExtent());
+                            map.getView().fit(regions.getExtent(), map.getSize());
+                            //map.zoomToExtent(regions.getDataExtent());
 
                         }
                         // if in cache use cached value
@@ -1474,9 +1593,10 @@ create.job = (function(){
             },
             afterSelect: function(item){
                 var boundingbox = item.bbox;
-                var bottom = boundingbox.south, top = boundingbox.north,
-                    left = boundingbox.west, right = boundingbox.east;
-                var bounds = new OpenLayers.Bounds(left, bottom, right, top);
+                var bottom = boundingbox[0], top = boundingbox[1],
+                    left = boundingbox[2], right = boundingbox[3];
+                //var bounds = new OpenLayers.Bounds(left, bottom, right, top);
+                var bounds = [left, bottom, right, top];
                 // add the bounds to the map..
                 var feature = buildBBoxFeature(bounds);
                 // allow bbox to be modified
@@ -1501,12 +1621,26 @@ create.job = (function(){
          */
         function buildBBoxFeature(bounds){
             // convert to web mercator
-            var merc_bounds = bounds.clone().transform('EPSG:4326', 'EPSG:3857');
-            var geom = merc_bounds.toGeometry();
-            var feature = new OpenLayers.Feature.Vector(geom);
+            var merc_bounds = ol.extent.applyTransform(bounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+            //var merc_bounds = bounds.clone().transform('EPSG:4326', 'EPSG:3857');
+            var geom = merc_bounds.getGeometry();
+            var featureSource = new ol.source.Vector();
+            var featureFeature = new ol.Feature({
+                name: 'Feature',
+                geometry: geom
+            })
+            featureSource.addFeature(featureFeature);
+            var feature = new ol.layer.Vector({
+                name: 'Feature',
+                source: featureSource,
+            })
+            //var feature = new OpenLayers.Feature.Vector(geom);
+
             // add the bbox to the map
-            bbox.addFeatures([feature]);
-            map.zoomToExtent(bbox.getDataExtent());
+            bboxSource.addFeature(feature);
+            map.getView().fit(bbox.getExtent(), map.getSize());
+            //map.zoomToExtent(bbox.getDataExtent());
+
             // validate the selected extents
             if (validateBounds(merc_bounds)) {
                 setBounds(merc_bounds);
@@ -1526,10 +1660,12 @@ create.job = (function(){
             // if search field is empty, reset map
             if (val === '') {
                 unsetBounds();
-                bbox.removeAllFeatures();
-                box.deactivate();
-                transform.unsetFeature();
-                map.zoomToExtent(regions.getDataExtent());
+                //bbox.removeAllFeatures();
+                bboxSource.clear();
+                //box.deactivate();
+                //transform.unsetFeature();
+                map.getView().fit(regions.getExtent(), map.getSize());
+                //map.zoomToExtent(regions.getDataExtent());
                 validateBounds();
                 return;
             }
@@ -1537,18 +1673,21 @@ create.job = (function(){
             var isEnterBBox = checkQueryRegex(val);
             if (isEnterBBox) {
                 // remove existing features
-                bbox.removeAllFeatures();
+                //bbox.removeAllFeatures();
+                bboxSource.clear();
                 var coords = val.split(',');
                 // check for correct number of coords
                 if (coords.length != 4) {
-                     bbox.removeAllFeatures();
+                     //bbox.removeAllFeatures();
+                    bboxSource.clear();
                      validateBounds();
                      return;
                 }
                 // test for empty or invalid coords
                 for (i = 0; i < coords.length; i++){
                      if (coords[i] === '' || !checkQueryRegex(coords[i])) {
-                         bbox.removeAllFeatures();
+                         //bbox.removeAllFeatures();
+                         bboxSource.clear();
                          validateBounds();
                          return;
                      }
@@ -1560,12 +1699,13 @@ create.job = (function(){
                     (parseFloat(right) < -180 || parseFloat(right) > 180) ||
                     (parseFloat(bottom) < -90 || parseFloat(bottom) > 90) ||
                     (parseFloat(top) < -90 || parseFloat(top) > 90)){
-                    bbox.removeAllFeatures();
+                    //bbox.removeAllFeatures();
+                    bboxSource.clear();
                     validateBounds();
                     return;
                 }
                 // add feature
-                var bounds = new OpenLayers.Bounds(left, bottom, right, top);
+                var bounds = [left, bottom, right, top];
                 buildBBoxFeature(bounds);
             }
         });
