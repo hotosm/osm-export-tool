@@ -406,7 +406,7 @@ create.job = (function(){
             //bbox.removeAllFeatures();
             //box.deactivate();
             //transform.unsetFeature();
-            map.getView().fit(regions.getExtent(), map.getSize());
+            zoomtoextent();
             //map.zoomToExtent(regions.getDataExtent());
             validateBounds();
         });
@@ -416,7 +416,8 @@ create.job = (function(){
     //
     //     // set inital zoom to regions extent
     //     map.zoomTo(regions.getDataExtent());
-        map.getView().fit(regions.getExtent(), map.getSize());
+        //map.getView().fit(regions.getExtent(), map.getSize());
+        zoomtoextent();
     }
 
     /*
@@ -455,8 +456,8 @@ create.job = (function(){
     // }
 
     function zoomtoextent() {
-        map.getView().fit([-142.20703125, -104.4140625, 151.34765625, 113.5546875], map.getSize());
-        //this.map.getView().fit([180,-90,180,90]);
+        var extent = [-20037508.34,-20037508.34, 20037508.34, 20037508.34];
+        map.getView().fit(extent, map.getSize());
     }
 
     /*
@@ -544,9 +545,16 @@ create.job = (function(){
         })
 
         var valid_region = false;
-        var collision = regions.getSource().getFeaturesAtCoordinate(bounds[0]);
-        console.log(collision)
+
         // check that we're within a HOT region.
+        var feat = regions.getSource().getFeatures();
+        console.log(feat)
+        regions.getSource().forEachFeatureInExtent(bounds, function(feature){
+            console.log(feature);
+            valid_region = true;
+        });
+
+
        // for (i = 0; i < features.length; i++) {
             //     region = features[i].getGeometry();
             //     //var extent = region[0].getGeometry().getExtent();
@@ -573,7 +581,7 @@ create.job = (function(){
          * converts to lat long which will be proj set on form if extents are valid.
          */
         //bounds.transform('EPSG:3857', 'EPSG:4326')
-        bounds = ol.proj.transformExtent(bounds, 'EPSG:3857', 'EPSG:4326');
+        //bounds = ol.proj.transformExtent(bounds, 'EPSG:3857', 'EPSG:4326');
         // trim bounds to 6 decimal places before calculating geodesic area
         var left = bounds[0].toFixed(6);
         var bottom = bounds[1].toFixed(6);
