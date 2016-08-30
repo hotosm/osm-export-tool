@@ -81,3 +81,5 @@ celerybeat-schedule
 
 # project specific files
 core/settings/secret.py
+
+*.iml
