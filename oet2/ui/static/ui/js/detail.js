@@ -1,6 +1,7 @@
 exports = {}
 exports.detail = (function(){
-
+    var map;
+    var job_extents_source
 
     return {
         init: function(){
@@ -21,36 +22,68 @@ exports.detail = (function(){
      * Initialize the export overview map.
      */
     function initMap(){
-        maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
-        var mapOptions = {
-                displayProjection: new OpenLayers.Projection("EPSG:4326"),
-                controls: [new OpenLayers.Control.Attribution(),
-                           new OpenLayers.Control.ScaleLine()],
-                maxExtent: maxExtent,
-                scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
-                units: 'm',
-                sphericalMercator: true,
-                noWrap: true // don't wrap world extents
-        }
-        map = new OpenLayers.Map('extents', {options: mapOptions});
-
-        // add base layers
-        osm = Layers.OSM
-        osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
-        map.addLayer(osm);
-        map.zoomToMaxExtent();
-
-        job_extents = new OpenLayers.Layer.Vector('extents', {
-            displayInLayerSwitcher: false,
-            style: {
-                strokeWidth: 3.5,
-                strokeColor: '#D73F3F',
-                fillColor: 'transparent',
-                fillOpacity: 0.8,
-            }
+        // maxExtent = new OpenLayers.Bounds(-180,-90,180,90).transform("EPSG:4326", "EPSG:3857");
+        // var mapOptions = {
+        //         displayProjection: new OpenLayers.Projection("EPSG:4326"),
+        //         controls: [new OpenLayers.Control.Attribution(),
+        //                    new OpenLayers.Control.ScaleLine()],
+        //         maxExtent: maxExtent,
+        //         scales:[500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250],
+        //         units: 'm',
+        //         sphericalMercator: true,
+        //         noWrap: true // don't wrap world extents
+        // }
+        // map = new OpenLayers.Map('extents', {options: mapOptions});
+        
+        var osm = new ol.layer.Tile({
+            source: new ol.source.OSM()
         });
 
+        map = new ol.Map({
+            target: 'extents',
+            layers: [osm],
+            view: new ol.View({
+                projection: 'EPSG:3857',
+                extent: [-20037508.34,-20037508.34, 20037508.34, 20037508.34],
+                center: [0, 0],
+                zoom: 2,
+                minZoom: 2,
+                maxZoom: 18,
+            })
+        });
+
+        // add base layers
+        // osm = Layers.OSM
+        // osm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
+        // map.addLayer(osm);
+        // map.zoomToMaxExtent();
+
+        // job_extents = new OpenLayers.Layer.Vector('extents', {
+        //     displayInLayerSwitcher: false,
+        //     style: {
+        //         strokeWidth: 3.5,
+        //         strokeColor: '#D73F3F',
+        //         fillColor: 'transparent',
+        //         fillOpacity: 0.8,
+        //     }
+        // });
+
+        // map.addLayer(job_extents);
+
+        job_extents_source = new ol.source.Vector();
+
+        var job_extents = new ol.layer.Vector({
+            name: 'extents',
+            source: job_extents_source,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: '#D73F3F',
+                    width: 3.5
+                })
+            })
+        });
         map.addLayer(job_extents);
+        
         //map.restrictedExtent = map.getExtent();
         return map;
     }
@@ -105,17 +138,28 @@ exports.detail = (function(){
                     break;
             }
 
+            // var extent = data.extent;
+            // var geojson = new OpenLayers.Format.GeoJSON({
+            //         'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+            //         'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            // });
+            // var feature = geojson.read(extent, 'Feature');
+            // job_extents.addFeatures(feature);
+
             var extent = data.extent;
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            var geojson = new ol.format.GeoJSON();
+            var feature = geojson.readFeature(extent, {
+               'featureProjection': "EPSG:3857",
+               'dataProjection': "EPSG:4326"
             });
-            var feature = geojson.read(extent, 'Feature');
-            job_extents.addFeatures(feature);
-            map.zoomToExtent(job_extents.getDataExtent());
-            var bounds = feature.geometry.bounds.clone();
-            var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
+            job_extents_source.addFeature(feature);
+
+            //map.zoomToExtent(job_extents.getDataExtent());
+            map.getView().fit(feature.getGeometry().getExtent(), map.getSize());
+            // var bounds = feature.geometry.bounds.clone();
+            // var area = bounds.transform('EPSG:3857', 'EPSG:4326').toGeometry().getGeodesicArea() / 1000000; // sq km
             // format the area and max bounds for display..
+            var area = feature.getGeometry().getArea() / 1000000;
             var area_str = numeral(area).format('0,0');
             $('#extent').html(area_str + ' sq km');
             /*

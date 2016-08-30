@@ -140,7 +140,7 @@
             <div id="valid-extents" class="alert alert-success fade in"></div>
         </div>
         <div id="list-export-map"></div>
-        <div id="feature-popup" class="popup"><span>{% trans 'double-click to view export details' %}</span></div>
+        <div id="feature-popup" class="popup" style="z-index:2;"><span>{% trans 'double-click to view export details' %}</span></div>
     </div>
 </div>
 
@@ -160,7 +160,7 @@
 {% endblock %}
 {% block corejs %}
 {{ block.super}}
-<script src="{% static 'ui/contrib/openlayers/ol.js' %}"></script>
+<script src="{% static 'ui/contrib/openlayers/ol-debug.js' %}"></script>
 <script src="{% static 'ui/contrib/numeral/min/numeral.min.js' %}"></script>
 <script src="{% static 'ui/contrib/moment/min/moment.min.js' %}"></script>
 <script src="{% static 'ui/contrib/formvalidation/dist/js/formValidation.min.js' %}"></script>
@@ -169,8 +169,8 @@
 
 <script src="{% static 'ui/contrib/datatables/media/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'ui/contrib/datatables/media/js/dataTables.bootstrap.js' %}"></script>
-
+<script src="{% static 'ui/js/list.js' %}"></script>
 <script src="{% static 'ui/js/layers.js' %}"></script>
 <script src="{% static 'ui/js/config.js' %}"></script>
-<script src="{% static 'ui/js/list.js' %}"></script>
+
 {% endblock %}
