@@ -93,7 +93,6 @@ create.job = (function(){
 
                     ol.source.OSM.ATTRIBUTION
                 ]
-
             })
         })
         var hotosm = Layers.HOT;
