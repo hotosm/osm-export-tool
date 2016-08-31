@@ -73,13 +73,20 @@ create.job = (function(){
             }),
             target: 'create-export-map',
             view: new ol.View({
-                projection: "EPSG:4326",
+                projection: 'EPSG:3857',
+                //extent: [-20037508.34,-20037508.34, 20037508.34, 20037508.34],
+                center: [0, 0],
+                zoom: 2,
+                minZoom: 2,
+                maxZoom: 18,
+
+                //projection: "EPSG:4326",
                 //extent: [-180,-90,180,90],
-                center: [44.4333, 33.3333],
-                zoom: 4,
+                //center: [44.4333, 33.3333],
+                //zoom: 4,
                 //minResolution: 0.000001,
                 //maxResolution: 0.27,
-                maxZoom: 18,
+                //maxZoom: 18,
             })
         })
 
@@ -105,7 +112,7 @@ create.job = (function(){
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
 
         map.addLayer(osm);
-        //zoomtoextent();
+        zoomtoextent();
         //var otherextent = [-142.20703125, -104.4140625, 151.34765625, 113.5546875];
         //this.map.getView().fit(otherextent, this.map.getSize());
 
@@ -195,15 +202,16 @@ create.job = (function(){
 
         //add region and mask features
         //addRegionMask();
-        // get the regions from the regions api
+        //get the regions from the regions api
         $.getJSON(Config.REGION_MASK_URL, function(data){
             var geojson = new ol.format.GeoJSON();
             var features = geojson.readFeatures(data);
             regionsSource.addFeatures(features);
-            var extent = regionsSource.getExtent();
+            //var extent = regionsSource.getExtent();
+            //extent = ol.proj.transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
 
-            map.getView().fit(extent, map.getSize());
-            //zoomtoextent();
+            //map.getView().fit(extent, map.getSize());
+            zoomtoextent();
         });
 
         //addRegions();
@@ -211,9 +219,10 @@ create.job = (function(){
             var geojson = new ol.format.GeoJSON();
             var features = geojson.readFeatures(data);
             maskSource.addFeatures(features);
-            var extent = maskSource.getExtent();
-            map.getView().fit(extent, map.getSize());
-            //zoomtoextent();
+            //var extent = maskSource.getExtent();
+            //extent = ol.proj.transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
+            //map.getView().fit(extent, map.getSize());
+            zoomtoextent();
 
         });
 
@@ -457,6 +466,7 @@ create.job = (function(){
 
     function zoomtoextent() {
         var extent = [-20037508.34,-20037508.34, 20037508.34, 20037508.34];
+        //var extent = [-142.20703125, -104.4140625, 151.34765625, 113.5546875];
         map.getView().fit(extent, map.getSize());
     }
 
@@ -488,6 +498,7 @@ create.job = (function(){
      * update the bbox extents on the form.
      */
     function setBounds(bounds) {
+        bounds = ol.proj.transformExtent(bounds, 'EPSG:3857', 'EPSG:4326');
         fmt = '0.000000' // format to 6 decimal places .11 metre precision
         var xmin = numeral(bounds[0]).format(fmt);
         var ymin = numeral(bounds[1]).format(fmt);
@@ -547,14 +558,28 @@ create.job = (function(){
         var valid_region = false;
 
         // check that we're within a HOT region.
-        var feat = regions.getSource().getFeatures();
-        console.log(feat)
-        regions.getSource().forEachFeatureInExtent(bounds, function(feature){
-            console.log(feature);
+        console.log(bounds);
+        var SW = [bounds[0], bounds[1]];
+        var NW = [bounds[0], bounds[3]];
+        var NE = [bounds[2], bounds[3]];
+        var SE = [bounds[2], bounds[1]];
+        var boundary_coords = [SW, NW, NE, SE]
+
+        var checkcount = 0;
+        for(var i=0; i<regions.getSource().getFeatures().length; i++) {
+            for (var j=0; j<boundary_coords.length; j++) {
+                featuresAtCoord = regions.getSource().getFeaturesAtCoordinate(boundary_coords[j]);
+                if (featuresAtCoord.length > 0 && featuresAtCoord[0] == regions.getSource().getFeatures()[i]) {
+                    checkcount++;
+                }
+            }
+            if (checkcount !=0) {
+                break;
+            }
+        }
+        if (checkcount === 4) {
             valid_region = true;
-        });
-
-
+        }
        // for (i = 0; i < features.length; i++) {
             //     region = features[i].getGeometry();
             //     //var extent = region[0].getGeometry().getExtent();
