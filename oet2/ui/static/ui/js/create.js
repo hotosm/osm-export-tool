@@ -73,20 +73,14 @@ create.job = (function(){
             }),
             target: 'create-export-map',
             view: new ol.View({
-                projection: 'EPSG:3857',
-                //extent: [-20037508.34,-20037508.34, 20037508.34, 20037508.34],
-                center: [0, 0],
-                zoom: 2,
-                minZoom: 2,
-                maxZoom: 18,
-
-                //projection: "EPSG:4326",
+                projection: "EPSG:3857",
                 //extent: [-180,-90,180,90],
-                //center: [44.4333, 33.3333],
-                //zoom: 4,
+                center: [44.4333, 33.3333],
+                zoom: 4,
                 //minResolution: 0.000001,
                 //maxResolution: 0.27,
-                //maxZoom: 18,
+                minZoom: 2,
+                maxZoom: 18,
             })
         })
 
@@ -112,7 +106,7 @@ create.job = (function(){
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
 
         map.addLayer(osm);
-        zoomtoextent();
+        //zoomtoextent();
         //var otherextent = [-142.20703125, -104.4140625, 151.34765625, 113.5546875];
         //this.map.getView().fit(otherextent, this.map.getSize());
 
@@ -165,11 +159,11 @@ create.job = (function(){
                 source: regionsSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'rgba(0,0,0,0)',
+                        color: [0,0,0,0],
                         //opacity: 0.8,
                     }),
                     stroke: new ol.style.Stroke({
-                        color: 'rgba(215, 63, 63, 0.8)',
+                        color: [215, 63, 63, 0.8],
                         width: 3.5,
                     })
                 }),
@@ -178,20 +172,17 @@ create.job = (function(){
         map.addLayer(regions);
 
         // add the region mask layer
-        maskSource = new ol.source.Vector({
-            wrapX: false,
-            noWrap: true,
-        });
+        maskSource = new ol.source.Vector();
             mask = new ol.layer.Vector({
                 name: 'mask',
                 source: maskSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: 'rgba(255,255,255,0.7)',
+                        color: [255,255,255,0.7]
                         //opacity: 0.7,
                     }),
                     stroke: new ol.style.Stroke({
-                        color: 'rbga(255,255,255,0.2)',
+                        color: [255,255,255,0.2],
                         width: .1,
                         //opacity: 0.2,
                     }),
@@ -202,27 +193,30 @@ create.job = (function(){
 
         //add region and mask features
         //addRegionMask();
-        //get the regions from the regions api
-        $.getJSON(Config.REGION_MASK_URL, function(data){
+        // get the regions from the regions api
+        $.getJSON(Config.REGIONS_URL, function(data){
             var geojson = new ol.format.GeoJSON();
-            var features = geojson.readFeatures(data);
+            var features = geojson.readFeatures(data, {
+                'featureProjection': 'EPSG:3857',
+                'dataProjection': 'EPSG:4326'
+            });
             regionsSource.addFeatures(features);
-            //var extent = regionsSource.getExtent();
-            //extent = ol.proj.transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
-
-            //map.getView().fit(extent, map.getSize());
-            zoomtoextent();
+            var extent = regionsSource.getExtent();
+            map.getView().fit(extent, map.getSize());
+            //zoomtoextent();
         });
 
         //addRegions();
-        $.getJSON(Config.REGIONS_URL, function(data){
+        $.getJSON(Config.REGION_MASK_URL, function(data){
             var geojson = new ol.format.GeoJSON();
-            var features = geojson.readFeatures(data);
+            var features = geojson.readFeatures(data, {
+                'featureProjection': 'EPSG:3857',
+                'dataProjection': 'EPSG:4326'
+            });
             maskSource.addFeatures(features);
-            //var extent = maskSource.getExtent();
-            //extent = ol.proj.transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
-            //map.getView().fit(extent, map.getSize());
-            zoomtoextent();
+            var extent = maskSource.getExtent();
+            map.getView().fit(extent, map.getSize());
+            //zoomtoextent();
 
         });
 
@@ -466,7 +460,6 @@ create.job = (function(){
 
     function zoomtoextent() {
         var extent = [-20037508.34,-20037508.34, 20037508.34, 20037508.34];
-        //var extent = [-142.20703125, -104.4140625, 151.34765625, 113.5546875];
         map.getView().fit(extent, map.getSize());
     }
 
@@ -498,7 +491,7 @@ create.job = (function(){
      * update the bbox extents on the form.
      */
     function setBounds(bounds) {
-        bounds = ol.proj.transformExtent(bounds, 'EPSG:3857', 'EPSG:4326');
+        var bounds = ol.proj.transformExtent(bounds, 'EPSG:3857', 'EPSG:4326');
         fmt = '0.000000' // format to 6 decimal places .11 metre precision
         var xmin = numeral(bounds[0]).format(fmt);
         var ymin = numeral(bounds[1]).format(fmt);
@@ -558,7 +551,6 @@ create.job = (function(){
         var valid_region = false;
 
         // check that we're within a HOT region.
-        console.log(bounds);
         var SW = [bounds[0], bounds[1]];
         var NW = [bounds[0], bounds[3]];
         var NE = [bounds[2], bounds[3]];
@@ -580,27 +572,7 @@ create.job = (function(){
         if (checkcount === 4) {
             valid_region = true;
         }
-       // for (i = 0; i < features.length; i++) {
-            //     region = features[i].getGeometry();
-            //     //var extent = region[0].getGeometry().getExtent();
-            //     var test = regions.getSource().getFeaturesAtCoordinate(bounds);
-            //     console.log(test)
-            //     //if (ol.geom.Geometry.intersects(bounds, region)) {
-            //         //if (ol.extent.intersects(region, extent)) {
-            //     //    valid_region = true;
-            //     }
-
-
-                //var regionsArrays = coords.getGeometry().getCoordinates();
-                //console.log(regionsArrays);
-
-                //if (ol.extent.containsExtent(region.getExtent(), bounds)) {
-                //console.log(region[0].length);
-                //region = regionsSource.getFeatures().getGeometry();
-
-       //
-       // })
-       // }
+       
         /*
          * calculate the extent area and convert to sq kilometers
          * converts to lat long which will be proj set on form if extents are valid.
@@ -616,6 +588,7 @@ create.job = (function(){
         //var extent = ol.geom.Polygon.fromExtent(bounds);
         
         bounds_trunc = new ol.geom.Polygon.fromExtent([left, bottom, right, top]);
+        console.log(bounds_trunc.getArea());
         var area = bounds_trunc.getArea() / 1000000;
         //var area = geodesicArea(bounds_trunc) / 1000000; // sq km
         
