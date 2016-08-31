@@ -11,6 +11,7 @@ Layers.OSM = new ol.layer.Tile({
 
 
 Layers.HOT = new ol.layer.Tile({
+    title: 'Humanitarian OSM',
     source: new ol.source.XYZ({
         url: ["//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
             "//b.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",

@@ -10,7 +10,6 @@ create.job = (function(){
     var scaleLine;
     var bbox;
     var bboxSource;
-    var filtering = false;
     var max_bounds_area = $('#user-max-extent').text();
 
     return {
@@ -61,11 +60,9 @@ create.job = (function(){
         //     hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         //     map.addLayers([osm]);
         //
-
+        //var zoomLevels = [500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250];
 
         // OL3 set up the map and add the required layers
-        var zoomLevels = [500000,350000,250000,100000,25000,20000,15000,10000,5000,2500,1250];
-
         map = new ol.Map({
             interactions: ol.interaction.defaults({
                 keyboard: false,
@@ -74,11 +71,8 @@ create.job = (function(){
             target: 'create-export-map',
             view: new ol.View({
                 projection: "EPSG:3857",
-                //extent: [-180,-90,180,90],
                 center: [44.4333, 33.3333],
                 zoom: 4,
-                //minResolution: 0.000001,
-                //maxResolution: 0.27,
                 minZoom: 2,
                 maxZoom: 18,
             })
@@ -106,9 +100,6 @@ create.job = (function(){
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
 
         map.addLayer(osm);
-        //zoomtoextent();
-        //var otherextent = [-142.20703125, -104.4140625, 151.34765625, 113.5546875];
-        //this.map.getView().fit(otherextent, this.map.getSize());
 
         scaleLine = new ol.control.ScaleLine();
         map.addControl(scaleLine);
@@ -159,7 +150,7 @@ create.job = (function(){
                 source: regionsSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: [0,0,0,0],
+                        color: [0,0,0,-0.7],
                         //opacity: 0.8,
                     }),
                     stroke: new ol.style.Stroke({
@@ -178,7 +169,7 @@ create.job = (function(){
                 source: maskSource,
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
-                        color: [255,255,255,0.7]
+                        color: [255,255,255,0.0]
                         //opacity: 0.7,
                     }),
                     stroke: new ol.style.Stroke({
@@ -203,7 +194,6 @@ create.job = (function(){
             regionsSource.addFeatures(features);
             var extent = regionsSource.getExtent();
             map.getView().fit(extent, map.getSize());
-            //zoomtoextent();
         });
 
         //addRegions();
@@ -214,10 +204,8 @@ create.job = (function(){
                 'dataProjection': 'EPSG:4326'
             });
             maskSource.addFeatures(features);
-            var extent = maskSource.getExtent();
-            map.getView().fit(extent, map.getSize());
-            //zoomtoextent();
-
+            //var extent = maskSource.getExtent();
+            //map.getView().fit(extent, map.getSize())
         });
 
         // add export format checkboxes
@@ -279,7 +267,6 @@ create.job = (function(){
             });
 
             var bounds = dragFeature.getGeometry().getExtent();
-            filtering = true;
 
             // validate the selected extents
             if (validateBounds(bounds)) {
@@ -294,7 +281,6 @@ create.job = (function(){
             map.addInteraction(translate);
             translate.on('translateend', function(e){
                 var bounds = dragFeature.getGeometry().getExtent();
-                filtering = true;
                 // validate the selected extents
                 if (validateBounds(bounds)) {
                     setBounds(bounds);
@@ -388,8 +374,8 @@ create.job = (function(){
 
         $('#zoom-selection').bind('click', function(e){
             // zoom to the bounding box extent
-            if (bbox.getFeatures().length > 0) {
-                map.getView().fit(bbox.getExtent(), map.getSize());
+            if (bboxSource.getFeatures().length > 0) {
+                map.getView().fit(bboxSource.getExtent(), map.getSize());
             }
             else{
                 zoomtoextent();
@@ -847,7 +833,7 @@ create.job = (function(){
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
             if (isValidBBox === false || isValidBBox === null) {
-                validateBounds(bbox.getExtent());
+                validateBounds(bboxSource.getExtent());
             }
 
             // validate the form panel contents
@@ -1157,7 +1143,7 @@ create.job = (function(){
             fv.validateContainer($bbox);
             var isValidBBox = fv.isValidContainer($bbox);
             if (isValidBBox === false || isValidBBox === null) {
-                validateBounds(bbox.getExtent());
+                validateBounds(bboxSource.getExtent());
             }
 
             /*
@@ -1644,7 +1630,7 @@ create.job = (function(){
 
             // add the bbox to the map
             bboxSource.addFeature(feature);
-            map.getView().fit(bbox.getExtent(), map.getSize());
+            map.getView().fit(bboxSource.getExtent(), map.getSize());
             //map.zoomToExtent(bbox.getDataExtent());
 
             // validate the selected extents
