@@ -1534,8 +1534,9 @@ create.job = (function(){
                             bboxSource.clear();
                             //transform.unsetFeature();
                             unsetBounds();
-                            map.getView().fit(regions.getExtent(), map.getSize());
-                            //map.zoomToExtent(regions.getDataExtent());
+                            //p.getView().fit(regions.getExtent(), map.getSize());
+                            // map.zoomToExtent(regions.getDataExtent());
+                            zoomtoextent();
 
                         }
                         // if in cache use cached value
@@ -1584,16 +1585,16 @@ create.job = (function(){
             },
             afterSelect: function(item){
                 var boundingbox = item.bbox;
-                var bottom = boundingbox[0], top = boundingbox[1],
-                    left = boundingbox[2], right = boundingbox[3];
+                var bottom = boundingbox.south, top = boundingbox.north,
+                    left = boundingbox.east, right = boundingbox.west;
                 //var bounds = new OpenLayers.Bounds(left, bottom, right, top);
                 var bounds = [left, bottom, right, top];
                 // add the bounds to the map..
                 var feature = buildBBoxFeature(bounds);
                 // allow bbox to be modified
-                if (feature){
-                    transform.setFeature(feature);
-                }
+                // if (feature){
+                //     transform.setFeature(feature);
+                // }
             }
         });
 
