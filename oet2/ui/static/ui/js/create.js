@@ -1611,35 +1611,43 @@ create.job = (function(){
          * Construct the feature from the bounds.
          */
         function buildBBoxFeature(bounds){
-            // convert to web mercator
-            var merc_bounds = ol.extent.applyTransform(bounds, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
-            //var merc_bounds = bounds.clone().transform('EPSG:4326', 'EPSG:3857');
-            var geom = merc_bounds.getGeometry();
-            var featureSource = new ol.source.Vector();
-            var featureFeature = new ol.Feature({
-                name: 'Feature',
-                geometry: geom
-            })
-            featureSource.addFeature(featureFeature);
-            var feature = new ol.layer.Vector({
-                name: 'Feature',
-                source: featureSource,
-            })
-            //var feature = new OpenLayers.Feature.Vector(geom);
 
-            // add the bbox to the map
-            bboxSource.addFeature(feature);
+            var formattedCoords = [];
+            var merc_bounds = [];
+            //var unformattedCoordinates = [[175, 70], [175, 60], [-160, 60], [-160, 70]];
+            var unformatedCoords = [[bounds[0],bounds[3]],[bounds[0], bounds[1]],[bounds[2], bounds[1]],[bounds[2], bounds[3]]];
+
+            $(unformatedCoords).each(function(index, coordinate){
+                var lat = coordinate[0];
+                var lon = coordinate[1];
+
+                var circle = new ol.geom.Circle([lat, lon])
+                circle.transform('EPSG:4326', 'EPSG:3857');
+                formattedCoords.push(circle.getCenter());
+            });
+
+            merc_bounds.push(formattedCoords[0][0]);
+            merc_bounds.push(formattedCoords[1][1]);
+            merc_bounds.push(formattedCoords[2][0]);
+            merc_bounds.push(formattedCoords[3][1]);
+
+            var polygonGeometry = new ol.geom.Polygon([formattedCoords])
+            var polygonFeature = new ol.Feature({ geometry : polygonGeometry });
+
+            //var vectorSource = new ol.source.Vector();
+            bboxSource.addFeature(polygonFeature);
+
             map.getView().fit(bboxSource.getExtent(), map.getSize());
             //map.zoomToExtent(bbox.getDataExtent());
 
             // validate the selected extents
             if (validateBounds(merc_bounds)) {
                 setBounds(merc_bounds);
-                return feature;
+                return polygonFeature;
             }
             else {
                 unsetBounds();
-                return feature;
+                return polygonFeature;
             }
         }
 
@@ -1676,8 +1684,10 @@ create.job = (function(){
                 }
                 // test for empty or invalid coords
                 for (i = 0; i < coords.length; i++){
+                    coords[i] = parseFloat(coords[i]);
                      if (coords[i] === '' || !checkQueryRegex(coords[i])) {
                          //bbox.removeAllFeatures();
+
                          bboxSource.clear();
                          validateBounds();
                          return;
@@ -1695,6 +1705,7 @@ create.job = (function(){
                     validateBounds();
                     return;
                 }
+
                 // add feature
                 var bounds = [left, bottom, right, top];
                 buildBBoxFeature(bounds);
