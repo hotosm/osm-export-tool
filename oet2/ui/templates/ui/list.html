@@ -1,0 +1,176 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block css %}
+{{ block.super}}
+<link rel="stylesheet" href="{% static 'ui/contrib/datatables/media/css/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/contrib/datatables/media/css/dataTables.bootstrap.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/contrib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}"/>
+{% endblock %}
+
+{% block container %}
+<div class="row">
+    <div id="spinner" class="col-md-7">
+            <span id="spinner"><i class="fa fa-cog fa-spin fa-5x"></i></span>
+    </div>
+    <div id="search" class="col-md-7">
+        <a id="filter-toggle" class="btn btn-md btn-primary" role="button" data-toggle="collapse" href="#filterForm" aria-expanded="false" aria-controls="collapseExample">
+            <i class="indicator glyphicon glyphicon-chevron-down"></i> {% trans 'Filter Exports' %}
+        </a>
+        <form id="search" role="search">
+            {% csrf_token %}
+            <div class="collapse" id="filterForm">
+                <div class="form-group" id="form-group-search">
+                    <label class="control-label sr-only" for="name">{% trans 'Search' %}</label>
+                    <div>
+                        <div class="input-group search">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                            <input id="search" type="text" class="form-control" placeholder="Search for name, description, event or username" name="search">
+                        </div>
+                    </div>
+                </div>
+                <!-- start date picker -->
+                <div class="form-group col-md-5">
+                    <div class="input-group date" id='start-date'>
+                        <span class="input-group-addon"><strong>{% trans 'Start Date:' %}</strong></span>
+                        <input type='text' class="form-control" name="start"/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <!-- end date picker -->
+                <div class="form-group col-md-5">
+                    <div class="input-group date" id='end-date'>
+                        <span class="input-group-addon"><strong>{% trans 'End Date:' %}&nbsp;&nbsp;&nbsp;</strong></span>
+                        <input type='text' class="form-control" name="end" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-2">
+                    <button id="reset-form" type="button" class="btn btn-default">{% trans 'Reset Form' %}</button>
+                </div>
+                <!-- hidden bbox filter extents -->
+                <div class="form-group" id="form-group-bbox">
+                    <div id="bbox">
+                        <input id="bbox" name="bbox" value="-180,-90,180,90" type="hidden"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="list-jobs">
+                    <div class="table-responsive">
+                        <table id="jobs" class="table table-hover">
+                            <thead>
+                                <tr><th width="10%">{% trans 'Name' %}</th><th width="20%">{% trans 'Description' %}</th><th width="10%">{% trans 'Project' %}</th><th width="10%">{% trans 'Created' %}</th><th width="15%">{% trans 'Region' %}</th><th width="10%">{% trans 'Owner' %}</th></th><th width="25%"></th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% if user.is_authenticated %}
+                <div class="form-group" id="form-group-user">
+                    <div id="user">
+                        <span id="user">{{ user.username }}</span>
+                        <input id="user" name="user" value="" type="hidden"/>
+                        <input id="user_private" name="user_private" value="{{ user.username }}" type="hidden"/>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div id="myexports">
+                            <div class="checkbox">
+                                <label class="control-label" for="user-check">
+                                    <input id="user-check" type="checkbox"/><strong>{% trans 'My Exports' %}</strong>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="form-group" id="form-group-user">
+                    <div id="user">
+                        <input id="user" name="user" value="" type="hidden"/>
+                        <input id="published" name="published" value="True" type="hidden"/>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="page-size">
+                            <label class="control-label" for="page-size">
+                                <span class="pull-left"><strong>{% trans 'Display' %}</strong>&nbsp;</span>
+                                &nbsp;
+                                <select id="page-size" name="page_size" class="pull-left">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
+                                </select>
+                                <span class="pull-left"><strong>{% trans 'exports per page' %}</strong>&nbsp;</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div id="info" class="pull-left"></div>
+                </div>
+                <div class="col-md-3">
+                    <div id="pagination" class="pull-right">
+                        <ul class="pager"></ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="map-column" class="col-md-5">
+        <div id="list-controls-temp">
+            <div class="btn-group" role="group">
+                <button id="filter-area" class="btn btn-md btn-primary">{% trans 'Filter Area' %}</button>
+                <button id="clear-filter" class="btn btn-md btn-primary">{% trans 'Clear Filter' %}</button>
+                <button id="reset-map" class="btn btn-md btn-primary">{% trans 'Reset Map' %}</button>
+            </div>
+            <div id="alert-extents" class="alert alert-danger fade in"></div>
+            <div id="valid-extents" class="alert alert-success fade in"></div>
+        </div>
+        <div id="list-export-map"></div>
+        <div id="feature-popup" class="popup" style="z-index:2;"><span>{% trans 'double-click to view export details' %}</span></div>
+    </div>
+</div>
+
+<!--
+    <div class="row">
+        <div class="form-group" id="form-group-features">
+            <div class="input-group">
+                <span class="input-group-addon"><strong>Select Features:</strong></span>
+                <select id="features" multiple name="feature">
+                    <option value="railway">railway</option>
+                </select>
+            </div>
+        </div>
+    </div>
+-->
+
+{% endblock %}
+{% block corejs %}
+{{ block.super}}
+<script src="{% static 'ui/contrib/openlayers/ol-debug.js' %}"></script>
+<script src="{% static 'ui/contrib/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/contrib/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script src="{% static 'ui/contrib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+
+<script src="{% static 'ui/contrib/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ui/contrib/datatables/media/js/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'ui/js/list.js' %}"></script>
+<script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/config.js' %}"></script>
+
+{% endblock %}

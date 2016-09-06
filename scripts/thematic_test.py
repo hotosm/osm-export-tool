@@ -12,7 +12,7 @@ import shutil
 import sqlite3
 from string import Template
 
-from jobs.models import Job
+from oet2.jobs.models import Job
 
 logger = logging.getLogger(__name__)
 
