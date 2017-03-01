@@ -45,6 +45,7 @@ class OSMParser(object):
             ogr2ogr -f SQlite -dsco SPATIALITE=YES $sqlite $osm \
             --config OSM_CONFIG_FILE $osmconf \
             --config OGR_INTERLEAVED_READING YES \
+            --config OSM_USE_CUSTOM_INDEXING NO \
             --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
         """)
 
