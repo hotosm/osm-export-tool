@@ -548,13 +548,7 @@ jobs.list = (function(){
                         return moment(data).format('YYYY-MM-DD');
                     }
                 },
-                /*{data: 'region.name'},*/
-                {
-                    data: 'region',
-                    render: function(data, type, row){
-                        return row.region == undefined ? '' : row.region.name;
-                    }
-                },
+                {data: 'region.name'},
                 {data: 'owner'},
                 {
                     data: 'published',

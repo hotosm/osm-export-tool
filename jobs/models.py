@@ -136,9 +136,9 @@ class Job(TimeStampedModelMixin):
     name = models.CharField(max_length=100, db_index=True)
     description = models.CharField(max_length=1000, db_index=True)
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
-    region = models.ForeignKey(Region, null=True, on_delete=models.SET_NULL)
+    region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
-    configs = models.ManyToManyField(ExportConfig, related_name='configs', blank=True)
+    configs = models.ManyToManyField(ExportConfig, related_name='configs')
     published = models.BooleanField(default=False, db_index=True)  # publish export
     feature_save = models.BooleanField(default=False, db_index=True)  # save feature selections
     feature_pub = models.BooleanField(default=False, db_index=True)  # publish feature selections
