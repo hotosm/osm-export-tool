@@ -48,7 +48,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 Run <code>source ~/.bashrc</code>
 
-Run <code>mkvirtualenv hotosm</code> to create the hotosm virtual environment.
+Run <code>mkvirtualenv --system-site-packages hotosm</code> to create the hotosm virtual environment.
 
 Change to the <code>$HOME/dev/hotosm</code> directory and run <code>workon hotosm</code>.
 
@@ -63,27 +63,17 @@ Install PostgreSQL / PostGIS and its dependencies,
 
 ### Create the database and role
 <pre>
-$ sudo su - postgres
-$ createdb 'hot_exports_dev'
-$ create role hot with password '<-password->'
+$ sudo -u postgres createuser -s -P hot
+$ sudo -u postgres createdb -O hot hot_exports_dev
 </pre>
 
 You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
 allow trusted connections from localhost.
 
-Run <code>$ psql -h localhost -U hot -W hot_exports_dev</code>
-<pre>
-$ ALTER ROLE hot SUPERUSER;
-$ ALTER ROLE hot WITH LOGIN;
-$ GRANT ALL PRIVILEGES ON DATABASE hot_exports_dev TO hot;
-$ CREATE EXTENSION POSTGIS;
-$ CREATE EXTENSION HSTORE;
-</pre>
-
 Create the exports schema
 
 <pre>
-$ CREATE SCHEMA exports AUTHORIZATION hot;
+$ psql -U hot -h localhost -d hot_exports_dev -c "CREATE SCHEMA exports AUTHORIZATION hot"
 </pre>
 
 ### Install GDAL
@@ -92,14 +82,7 @@ $ CREATE SCHEMA exports AUTHORIZATION hot;
 $ sudo apt-get install software-properties-common
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 $ sudo apt-get update
-$ sudo apt-get install gdal-bin libgdal-dev
-</pre>
-
-To install the python GDAL bindings into your virtualenv you need to tell pip where to find the libgdal header files, so in your shell run:
-
-<pre>
-$ export CPLUS_INCLUDE_PATH=/usr/include/gdal
-$ export C_INCLUDE_PATH=/usr/include/gdal
+$ sudo apt-get install gdal-bin libgdal-dev python-gdal
 </pre>
 
 ### Install third-party dependencies
@@ -141,6 +124,12 @@ In the hotosm project directory run:
 
 ### Install the project's python dependencies
 
+Install <code>libxslt1-dev</code> (it's an <code>lxml</code> dependency):
+
+```bash
+sudo apt-get install libxslt1-dev
+```
+
 From the project directory, install the dependencies into your virtualenv:
 
 <code>$ pip install -r requirements-dev.txt</code>
@@ -152,7 +141,7 @@ or
 
 ### Project Settings
 
-Create a copy of <code>core/settings/dev_dodobas.py</code> and update to reflect your development environment.
+Create a copy of <code>core/settings/dev_dodobas.py</code> and update to reflect your development environment. <code>core/settings/dev.py</code> exists for this purpose.
 
 Look at <code>core/settings/project.py</code> and make sure you update or override the following configuration variables in your development settings:
 
@@ -168,12 +157,20 @@ Look at <code>core/settings/project.py</code> and make sure you update or overri
 
 **OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
 
+Edit <code>core/settings/dev.py</code> to ensure that the database connection information is correct.
+
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
+
+Set the active configuration (<code>you_settings_module</code> can be <code>dev</code> or the basename of your copy of <code>core/settings/dev_dodobas.py</code>):
+
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code> (defaults to `core.settings.dev` in `manage.py`)
 
 Once you've got all the dependencies installed, run <code>./manage.py migrate</code> to set up the database tables etc..
 Then run <code>./manage.py runserver</code> to run the server.
 You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
+
+If you're running this in a virtual machine, use <code>./manage.py runserver 0.0.0.0:8000</code> to have Django listen on all interfaces and make it possible to connect from the VM host.
 
 ## Overpass API
 
@@ -246,7 +243,7 @@ then, push the new source files to the Transifex service, it will overwrite the 
 
 `tx push -s`
 
-### Pulling latest changes from the Transfex
+### Pulling latest changes from Transifex
 
 When adding a new language, it's resource file does not exist in the project,
 but it's ok as it will be automatically created when pulling new translations from the service. To add a local mapping:
