@@ -12,24 +12,9 @@ This repo contains the newly re-written version 2 of the OSM exports tool. The l
 
 ## Installation Instructions
 Some prior experience with Django would be helpful, but not strictly necessary.
-### Update Packages
-<pre>
-$ sudo apt-get update
-$ sudo apt-get upgrade
-</pre>
 
 ### Python
 HOT Exports requires Python 2.7.x.
-
-### pip
-To install pip, run:
-
-<code>$ sudo apt-get install python-pip</code>
-
-### Git
-Git is used for version control. To check your version, and if you have it installed:
-
-<code>$ git --version</code> or run <code>$ sudo apt-get install git</code>
 
 ### Virtualenv
 Virtualenv (virtual environment) creates self-contained environments to prevent different versions of python libraries/packages from conflicting with each other.
@@ -52,15 +37,6 @@ Run <code>mkvirtualenv --system-site-packages hotosm</code> to create the hotosm
 
 Change to the <code>$HOME/dev/hotosm</code> directory and run <code>workon hotosm</code>.
 
-### Postgres
-Install PostgreSQL / PostGIS and its dependencies,
-
-<code>$ sudo apt-get install libpq-dev python-dev</code>
-
-<code>$ sudo apt-get install postgresql postgresql-contrib</code>
-
-<code>$ sudo apt-get install postgis postgresql-9.3-postgis-2.1</code>
-
 ### Create the database and role
 <pre>
 $ sudo -u postgres createuser -s -P hot
@@ -75,24 +51,6 @@ Create the exports schema
 <pre>
 $ psql -U hot -h localhost -d hot_exports_dev -c "CREATE SCHEMA exports AUTHORIZATION hot"
 </pre>
-
-### Install GDAL
-
-<pre>
-$ sudo apt-get install software-properties-common
-$ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
-$ sudo apt-get update
-$ sudo apt-get install gdal-bin libgdal-dev python-gdal
-</pre>
-
-### Install third-party dependencies
-The HOT Export pipeline depends on a number of third-party tools.
-
-<code>$ sudo apt-get install osmctools</code>
-
-<code>$ sudo apt-get install spatialite-bin libspatialite5 libspatialite-dev</code>
-
-<code>$ sudo apt-get install default-jre zip unzip</code>
 
 #### Garmin
 
@@ -109,13 +67,6 @@ For details on the OSMAnd Map Creator utility see [http://wiki.openstreetmap.org
 Download the OSMAnd MapCreator from [http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip](http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip).
 Unpack this into a directory somewhere.
 
-### Install RabbitMQ
-
-HOT Exports depends on the **rabbitmq-server**. For more detailed installation instructions see [http://www.rabbitmq.com/install-debian.html](http://www.rabbitmq.com/install-debian.html).
-The default configuration should be fine for development purposes.
-
-<code>$ sudo apt-get install rabbitmq-server</code>
-
 ### Checkout the HOT Export Tool source
 
 In the hotosm project directory run:
@@ -123,12 +74,6 @@ In the hotosm project directory run:
 <code>$ git clone git@github.com:hotosm/osm-export-tool2.git</code>
 
 ### Install the project's python dependencies
-
-Install <code>libxslt1-dev</code> (it's an <code>lxml</code> dependency):
-
-```bash
-sudo apt-get install libxslt1-dev
-```
 
 From the project directory, install the dependencies into your virtualenv:
 
