@@ -2,8 +2,10 @@
 """
 HOT Exports URL Configuration
 """
+from django.conf import settings
 from django.conf.urls import include, patterns, url
 from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
@@ -73,3 +75,6 @@ urlpatterns += patterns('',
 # handler500 = 'ui.views.internal_error_view'
 
 # handler404 = 'ui.views.not_found_error_view'
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

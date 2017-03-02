@@ -6,5 +6,11 @@ djangorestframework-gis==0.10.1
 celery[librabbitmq]==3.1.23
 python-social-auth==0.2.19
 lxml==3.3.3
-GDAL==1.11.2
+GDAL
 python-magic==0.4.11
+kombu<4
+billiard
+pytz
+requests>=2.5.1
+python-openid
+requests_oauthlib
