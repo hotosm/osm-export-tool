@@ -63,7 +63,8 @@ Install PostgreSQL / PostGIS and its dependencies,
 <pre>
 $ sudo su - postgres
 $ createdb 'hot_exports_dev'
-$ create role hot with password '<-password->'
+$ psql
+postgres=# create role hot with password '<-password->'
 </pre>
 
 You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
@@ -108,6 +109,20 @@ The HOT Export pipeline depends on a number of third-party tools.
 <code>$ sudo apt-get install spatialite-bin libspatialite5 libspatialite-dev</code>
 
 <code>$ sudo apt-get install default-jre zip unzip</code>
+
+Install Qt 5.5:
+
+<code>$ sudo add-apt-repository ppa:beineri/opt-qt55-trusty </code>
+
+<code>$ sudo apt-get update </code>
+
+<code>$ sudo apt-get install qt55base </code>
+
+<code>$ source /opt/qt55/bin/qt55-env.sh </code>
+
+To run OSRM binaries, you'll need:
+
+<code>$ sudo apt-get install libtbb2 libluabind0.9.1 liblua50 libstxxl1 </code>
 
 #### Garmin
 
@@ -164,7 +179,9 @@ Look at <code>core/settings/project.py</code> and make sure you update or overri
 
 **GARMIN_CONFIG** = 'absolute path to utils/conf/garmin_config.xml'
 
-**OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
+**OVERPASS_API_URL** = 'http://overpass-api.de/api/interpreter'
+
+**EXPORT_MWM_ROOT** = 'path to  mapsme_generator directory'
 
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
@@ -198,14 +215,14 @@ they are pushed to a Celery Worker for processing. At least two celery workers n
 
 From a 'hotosm' virtualenv directory (use screen), run:
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>  [ your_settings_module is dev ]
 
 <code>$ celery -A core worker --loglevel debug --logfile=celery.log</code>.
 
 This will start a celery worker which will process export tasks. An additional celery worker needs to be started to handle purging of expired unpublished
 export jobs. From another hotosm virtualenv terminal session in the project top-level directory, run:
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
+<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>  [ your_settings_module is dev ]
 
 <code>$ celery -A core beat --loglevel debug --logfile=celery-beat.log</code>
 

@@ -69,5 +69,5 @@ if __name__ == '__main__':
     debug = False
     if config.get('debug'):
         debug = True
-    o2p = OSMToPBF(osm=osm, pbf=pbf, debug=debug)
+    o2p = OSMToPBF(osm=osm, pbffile=pbf, debug=debug)
     o2p.convert()
