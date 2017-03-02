@@ -65,7 +65,7 @@ Install PostgreSQL / PostGIS and its dependencies,
 <pre>
 $ sudo su - postgres
 $ createdb 'hot_exports_dev'
-$ create role hot with password '<-password->'
+$ psql -c "create role hot with password '<-password->'" database_name
 </pre>
 
 You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
@@ -111,6 +111,18 @@ The HOT Export pipeline depends on a number of third-party tools.
 
 <code>$ sudo apt-get install default-jre zip unzip</code>
 
+Install Qt 5.5:
+
+<code>$ sudo add-apt-repository ppa:beineri/opt-qt55-trusty </code>
+
+<code>$ sudo apt-get update </code>
+
+<code>$ sudo apt-get install qt55base </code>
+
+To run OSRM binaries, you'll need:
+
+<code>$ sudo apt-get install libtbb2 libluabind0.9.1 liblua50 libstxxl1 </code>
+
 #### Garmin
 
 Download the latest version of the __mkgmap__ utility for making garmin IMG files from [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
@@ -125,6 +137,10 @@ For details on the OSMAnd Map Creator utility see [http://wiki.openstreetmap.org
 
 Download the OSMAnd MapCreator from [http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip](http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip).
 Unpack this into a directory somewhere.
+
+### MWM
+
+Follow these instructions to get MWM format in HOT Export Tool [https://github.com/mapsme/omim/blob/master/docs/INSTALL.md](https://github.com/mapsme/omim/blob/master/docs/INSTALL.md).
 
 ### Install RabbitMQ
 
@@ -167,6 +183,8 @@ Look at <code>core/settings/project.py</code> and make sure you update or overri
 **GARMIN_CONFIG** = 'absolute path to utils/conf/garmin_config.xml'
 
 **OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
+
+**EXPORT_MWM_ROOT** = 'path to  omim directory'
 
 Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
 absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.

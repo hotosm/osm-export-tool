@@ -18,7 +18,7 @@ from celery.utils.log import get_task_logger
 
 from jobs.presets import TagParser
 from utils import (
-    garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp
+    garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp, mwm
 )
 
 # Get an instance of a logger
@@ -194,6 +194,22 @@ class OSMToPBFConvertTask(ExportTask):
         return {'result': pbffile}
 
 
+class MwmExportTask(ExportTask):
+    """
+    Task to convert osm to mwm format.
+    Returns the path to tha mwm file.
+    """
+    name = 'MWM Export'
+    abort_on_error = True
+    def run(self, run_uid=None, stage_dir=None, job_name=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        pbffile = stage_dir + job_name + '.pbf'
+        mwmfile = stage_dir + job_name + '.mwm'
+        p2m = mwm.PBFToMWM( pbffile=pbffile, mwmfile=mwmfile)
+        mwmfile = p2m.convert()
+        return {'result': mwmfile}
+
+   
 class OSMPrepSchemaTask(ExportTask):
     """
     Task to create the default sqlite schema.

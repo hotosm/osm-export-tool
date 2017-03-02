@@ -16,6 +16,7 @@ INSTALLED_APPS += (
 LOGIN_URL = '/login/'
 
 EXPORT_TASKS = {
+    'mwm': 'tasks.export_tasks.MwmExportTask',
     'shp': 'tasks.export_tasks.ShpExportTask',
     'obf': 'tasks.export_tasks.ObfExportTask',
     'sqlite': 'tasks.export_tasks.SqliteExportTask',
@@ -35,6 +36,9 @@ EXPORT_MEDIA_ROOT = '/downloads/'
 
 # home dir of the OSMAnd Map Creator
 OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmand/OsmAndMapCreator'
+
+# the root url for maps me binary files
+EXPORT_MWM_ROOT = ''
 
 # location of the garmin config file
 GARMIN_CONFIG = '/home/ubuntu/www/hotosm/utils/conf/garmin_config.xml'
