@@ -21,6 +21,7 @@ class TestOSMParser(TestCase):
             ogr2ogr -f SQlite -dsco SPATIALITE=YES /path/to/query.sqlite /path/to/query.pbf \
             --config OSM_CONFIG_FILE {0} \
             --config OGR_INTERLEAVED_READING YES \
+            --config OSM_USE_CUSTOM_INDEXING NO \
             --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
         """.format(self.path + '/utils/conf/hotosm.ini')
         exists.return_value = True
