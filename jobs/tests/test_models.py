@@ -24,20 +24,23 @@ class TestJob(TestCase):
 
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
+        # pre-loaded by 'insert_export_formats' migration
+        self.formats = ExportFormat.objects.all()
         Group.objects.create(name='TestDefaultExportExtentGroup')
-        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        self.user = User.objects.create(
+            username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job(name='TestJob',
-                                 description='Test description', event='Nepal activation',
-                                 user=self.user, the_geom=the_geom)
+                       description='Test description', event='Nepal activation',
+                       user=self.user, the_geom=the_geom)
         self.job.save()
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
         self.job.save()
-        self.tags = [('building', 'yes'), ('place', 'city'), ('highway', 'service'), ('aeroway', 'helipad')]
+        self.tags = [('building', 'yes'), ('place', 'city'),
+                     ('highway', 'service'), ('aeroway', 'helipad')]
         for tag in self.tags:
             tag = Tag.objects.create(
                 key=tag[0],
@@ -75,7 +78,6 @@ class TestJob(TestCase):
                                              upload=f, config_type='PRESET', user=self.user)
         f.close()
         self.assertIsNotNone(config)
-        uid = config.uid
         saved_job.configs.add(config)
         saved_config = saved_job.configs.all()[0]
         self.assertEqual(config, saved_config)
@@ -131,7 +133,7 @@ class TestJob(TestCase):
         self.assertEquals(238, len(tags))
         # save all the tags from the preset
         for tag_dict in tags:
-            tag = Tag.objects.create(
+            Tag.objects.create(
                 key=tag_dict['key'],
                 value=tag_dict['value'],
                 job=self.job,
@@ -155,7 +157,7 @@ class TestJob(TestCase):
         self.assertEquals(238, len(tags))
         # save all the tags from the preset
         for tag_dict in tags:
-            tag = Tag.objects.create(
+            Tag.objects.create(
                 key=tag_dict['key'],
                 value=tag_dict['value'],
                 job=self.job,
@@ -163,9 +165,6 @@ class TestJob(TestCase):
                 geom_types=tag_dict['geom_types']
             )
         self.assertEquals(238, self.job.tags.all().count())
-
-        job = Job.objects.all()[0]
-        filters = job.filters
 
 
 class TestExportFormat(TestCase):
@@ -179,15 +178,19 @@ class TestExportFormat(TestCase):
 class TestRegion(TestCase):
 
     def test_load_region(self,):
-        ds = DataSource(os.path.dirname(os.path.realpath(__file__)) + '/../migrations/africa.geojson')
+        ds = DataSource(os.path.dirname(os.path.realpath(
+            __file__)) + '/../migrations/africa.geojson')
         layer = ds[0]
         geom = layer.get_geoms(geos=True)[0]
         the_geom = GEOSGeometry(geom.wkt, srid=4326)
         the_geog = GEOSGeometry(geom.wkt)
         the_geom_webmercator = the_geom.transform(ct=3857, clone=True)
-        region = Region.objects.create(name="Africa", description="African export region",
-                        the_geom=the_geom, the_geog=the_geog, the_geom_webmercator=the_geom_webmercator
-        )
+        region = Region.objects.create(name="Africa",
+                                       description="African export region",
+                                       the_geom=the_geom,
+                                       the_geog=the_geog,
+                                       the_geom_webmercator=the_geom_webmercator,
+                                      )
         saved_region = Region.objects.get(uid=region.uid)
         self.assertEqual(region, saved_region)
 
@@ -219,14 +222,17 @@ class TestRegion(TestCase):
 class TestJobRegionIntersection(TestCase):
 
     def setUp(self,):
-        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
+        # pre-loaded by 'insert_export_formats' migration
+        self.formats = ExportFormat.objects.all()
         Group.objects.create(name='TestDefaultExportExtentGroup')
-        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        bbox = Polygon.from_bbox((36.90, 13.54, 48.52, 20.24))  # overlaps africa / central asia
+        self.user = User.objects.create(
+            username='demo', email='demo@demo.com', password='demo')
+        # overlaps africa / central asia
+        bbox = Polygon.from_bbox((36.90, 13.54, 48.52, 20.24))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
-                                 description='Test description', user=self.user,
-                                 the_geom=the_geom, feature_save=True, feature_pub=True)
+                                      description='Test description', user=self.user,
+                                      the_geom=the_geom, feature_save=True, feature_pub=True)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
@@ -235,14 +241,14 @@ class TestJobRegionIntersection(TestCase):
     def test_job_region_intersection(self, ):
         job = Job.objects.all()[0]
         # use the_geog
-        started = timezone.now()
-        regions = Region.objects.filter(the_geog__intersects=job.the_geog).intersection(job.the_geog, field_name='the_geog').order_by('-intersection')
-        finished = timezone.now()
-        geog_time = finished - started
-        # LOG.debug('Geography lookup took: %s' % geog_time)
+        # started = timezone.now()
+        regions = Region.objects.filter(the_geog__intersects=job.the_geog).intersection(
+            job.the_geog, field_name='the_geog').order_by('-intersection')
+        # finished = timezone.now()
+        # LOG.debug('Geography lookup took: %s' % finished - started)
         self.assertEquals(2, len(regions))
-        asia = regions[0]
-        africa = regions[1]
+        africa = regions[0]
+        asia = regions[1]
         # LOG.debug('Asian Geog intersection area: %s' % asia.intersection.area)
         self.assertIsNotNone(asia)
         self.assertIsNotNone(africa)
@@ -253,11 +259,11 @@ class TestJobRegionIntersection(TestCase):
         regions = None
 
         # use the_geom
-        started = timezone.now()
-        regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(job.the_geom, field_name='the_geom').order_by('-intersection')
-        finished = timezone.now()
-        geom_time = finished - started
-        # LOG.debug('Geometry lookup took: %s' % geom_time)
+        # started = timezone.now()
+        regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(
+            job.the_geom, field_name='the_geom').order_by('-intersection')
+        # finished = timezone.now()
+        # LOG.debug('Geometry lookup took: %s' % finished - started)
         self.assertEquals(2, len(regions))
         asia = regions[0]
         africa = regions[1]
@@ -270,11 +276,13 @@ class TestJobRegionIntersection(TestCase):
 
     def test_job_outside_region(self, ):
         job = Job.objects.all()[0]
-        bbox = Polygon.from_bbox((2.74, 47.66, 21.61, 60.24))  # outside any region
+        bbox = Polygon.from_bbox(
+            (2.74, 47.66, 21.61, 60.24))  # outside any region
         the_geom = GEOSGeometry(bbox, srid=4326)
         job.the_geom = the_geom
         job.save()
-        regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(job.the_geom, field_name='the_geom').order_by('-intersection')
+        regions = Region.objects.filter(the_geom__intersects=job.the_geom).intersection(
+            job.the_geom, field_name='the_geom').order_by('-intersection')
         self.assertEquals(0, len(regions))
 
 
@@ -283,12 +291,13 @@ class TestExportConfig(TestCase):
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='TestDefaultExportExtentGroup')
-        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        self.user = User.objects.create(
+            username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
-                                 description='Test description', user=self.user,
-                                 the_geom=the_geom)
+                                      description='Test description', user=self.user,
+                                      the_geom=the_geom)
         self.uid = self.job.uid
 
     def test_create_config(self,):
@@ -296,7 +305,8 @@ class TestExportConfig(TestCase):
         test_file = File(f)
         filename = test_file.name.split('/')[-1]
         name = 'Test Configuration File'
-        config = ExportConfig.objects.create(name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
+        config = ExportConfig.objects.create(
+            name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
         test_file.close()
         self.assertIsNotNone(config)
         uid = config.uid
@@ -306,7 +316,8 @@ class TestExportConfig(TestCase):
         self.assertFalse(saved_config.published)
         self.assertIsNotNone(saved_config)
         self.assertEqual(config, saved_config)
-        sf = File(open(os.path.abspath('.') + '/media/export/config/preset/hdm_presets.xml'))
+        sf = File(open(os.path.abspath('.') +
+                       '/media/export/config/preset/hdm_presets.xml'))
         self.assertIsNotNone(sf)  # check the file gets created on disk
         saved_config.delete()  # clean up
         sf.close()
@@ -316,10 +327,10 @@ class TestExportConfig(TestCase):
         test_file = File(f)
         filename = test_file.name.split('/')[-1]
         name = 'Test Configuration File'
-        config = ExportConfig.objects.create(name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
+        config = ExportConfig.objects.create(
+            name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
         test_file.close()
         self.assertIsNotNone(config)
-        uid = config.uid
         self.job.configs.add(config)
         self.assertEquals(1, self.job.configs.all().count())
 
@@ -327,14 +338,16 @@ class TestExportConfig(TestCase):
 class TestTag(TestCase):
 
     def setUp(self, ):
-        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
+        # pre-loaded by 'insert_export_formats' migration
+        self.formats = ExportFormat.objects.all()
         Group.objects.create(name='TestDefaultExportExtentGroup')
-        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        self.user = User.objects.create(
+            username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
-                                 description='Test description', user=self.user,
-                                 the_geom=the_geom)
+                                      description='Test description', user=self.user,
+                                      the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
         self.job.formats = self.formats
@@ -348,11 +361,16 @@ class TestTag(TestCase):
                 'key': 'aeroway',
                 'value': 'aerodrome',
                 'geom_types': ['node', 'area'],
-                'groups': ['HOT Presets v2.11', 'Transportation', 'Transportation means', 'Airport']
-             },
+                'groups': [
+                    'HOT Presets v2.11',
+                    'Transportation',
+                    'Transportation means',
+                    'Airport',
+                ],
+            },
         ]
         for tag_dict in tags:
-            tag = Tag.objects.create(
+            Tag.objects.create(
                 key=tag_dict['key'],
                 value=tag_dict['value'],
                 job=self.job,
@@ -374,7 +392,7 @@ class TestTag(TestCase):
         self.assertIsNotNone(tags)
         self.assertEquals(238, len(tags))
         for tag_dict in tags:
-            tag = Tag.objects.create(
+            Tag.objects.create(
                 key=tag_dict['key'],
                 value=tag_dict['value'],
                 job=self.job,
@@ -394,7 +412,7 @@ class TestTag(TestCase):
         self.assertIsNotNone(tags)
         self.assertEquals(238, len(tags))
         for tag_dict in tags:
-            tag = Tag.objects.create(
+            Tag.objects.create(
                 key=tag_dict['key'],
                 value=tag_dict['value'],
                 job=self.job,
@@ -403,7 +421,6 @@ class TestTag(TestCase):
                 groups=tag_dict['groups']
             )
         self.assertEquals(238, self.job.tags.all().count())
-        categorised_tags = self.job.categorised_tags
 
 
 class TestExportProfile(TestCase):

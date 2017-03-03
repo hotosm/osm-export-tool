@@ -29,13 +29,14 @@ class TestExportTasks(TestCase):
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
         Group.objects.create(name='TestDefaultExportExtentGroup')
-        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        self.user = User.objects.create(
+            username='demo', email='demo@demo.com', password='demo')
         # bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
         bbox = Polygon.from_bbox((-10.85, 6.25, -10.62, 6.40))
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
-                                 description='Test description', user=self.user,
-                                 the_geom=the_geom)
+                                      description='Test description', user=self.user,
+                                      the_geom=the_geom)
         self.job.feature_save = True
         self.job.feature_pub = True
         self.job.save()
@@ -46,7 +47,7 @@ class TestExportTasks(TestCase):
         self.assertEquals(238, len(tags))
         # save all the tags from the preset
         for tag_dict in tags:
-            tag = Tag.objects.create(
+            Tag.objects.create(
                 key=tag_dict['key'],
                 value=tag_dict['value'],
                 job=self.job,
@@ -66,8 +67,10 @@ class TestExportTasks(TestCase):
         job_name = self.job.name.lower()
         expected_output_path = stage_dir + '/' + job_name + '.ini'
         osm_conf.create_osm_conf.return_value = expected_output_path
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         osm_conf.create_osm_conf.assert_called_with(stage_dir=stage_dir)
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
@@ -88,8 +91,10 @@ class TestExportTasks(TestCase):
         expected_output_path = stage_dir + '/' + job_name + '.osm'
         overpass.run_query.return_value = raw_osm_path
         overpass.filter.return_value = expected_output_path
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         overpass.run_query.assert_called_once()
         overpass.filter.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
@@ -109,8 +114,10 @@ class TestExportTasks(TestCase):
         job_name = self.job.name.lower()
         expected_output_path = stage_dir + '/' + job_name + '.pbf'
         osmtopbf.convert.return_value = expected_output_path
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         osmtopbf.convert.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test tasks update_task_state method
@@ -129,8 +136,10 @@ class TestExportTasks(TestCase):
         job_name = self.job.name.lower()
         expected_output_path = stage_dir + job_name + '.sqlite'
         prep_schema.instancemethod.return_value = expected_output_path
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         prep_schema.instancemethod.assert_called_once()
         prep_schema.create_spatialite.assert_called_once()
         prep_schema.create_default_schema.assert_called_once()
@@ -152,8 +161,10 @@ class TestExportTasks(TestCase):
         sqlite_to_shp.convert.return_value = '/path/to/' + job_name + '.shp'
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid)
 
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         sqlite_to_shp.convert.assert_called_once()
         self.assertEquals('/path/to/' + job_name + '.shp', result['result'])
         # test tasks update_task_state method
@@ -174,11 +185,14 @@ class TestExportTasks(TestCase):
         shutil_move = mock_move.return_value
         shutil_rmtree = mock_rmtree.return_value
         job_name = self.job.name.lower()
-        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '.obf'
+        expected_output_path = settings.EXPORT_STAGING_ROOT + \
+            str(self.run.uid) + '/' + job_name + '.obf'
         osm_to_obf.convert.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid) + '/'
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         osm_to_obf.convert.assert_called_once()
         shutil_move.assert_called_once()
         shutil_rmtree.assert_called_once()
@@ -201,11 +215,14 @@ class TestExportTasks(TestCase):
         shutil_move = mock_move.return_value
         shutil_rmtree = mock_rmtree.return_value
         job_name = self.job.name.lower()
-        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '_garmin.zip'
+        expected_output_path = settings.EXPORT_STAGING_ROOT + \
+            str(self.run.uid) + '/' + job_name + '_garmin.zip'
         osm_to_img.run_mkgmap.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid) + '/'
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         osm_to_img.run_mkgmap.assert_called_once()
         shutil_move.assert_called_once()
         shutil_rmtree.assert_called_once()
@@ -223,11 +240,14 @@ class TestExportTasks(TestCase):
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         sqlite_to_kml = mock_kml.return_value
         job_name = self.job.name.lower()
-        expected_output_path = '/home/ubuntu/export_staging/' + str(self.run.uid) + '/' + job_name + '.kmz'
+        expected_output_path = '/home/ubuntu/export_staging/' + \
+            str(self.run.uid) + '/' + job_name + '.kmz'
         sqlite_to_kml.convert.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid) + '/'
-        saved_export_task = ExportTask.objects.create(run=self.run, status='PENDING', name=task.name)
-        result = task.run(run_uid=str(self.run.uid), stage_dir=stage_dir, job_name=job_name)
+        ExportTask.objects.create(
+            run=self.run, status='PENDING', name=task.name)
+        result = task.run(run_uid=str(self.run.uid),
+                          stage_dir=stage_dir, job_name=job_name)
         sqlite_to_kml.convert.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test the tasks update_task_state method
@@ -246,7 +266,7 @@ class TestExportTasks(TestCase):
         shp_export_task = ShpExportTask()
         celery_uid = str(uuid.uuid4())
         # assume task is running
-        running_task = ExportTask.objects.create(
+        ExportTask.objects.create(
             run=self.run,
             celery_uid=celery_uid,
             status='RUNNING',
@@ -277,7 +297,7 @@ class TestExportTasks(TestCase):
         shp_export_task = ShpExportTask()
         celery_uid = str(uuid.uuid4())
         # assume task is running
-        running_task = ExportTask.objects.create(
+        ExportTask.objects.create(
             run=self.run,
             celery_uid=celery_uid,
             status='RUNNING',
@@ -306,9 +326,8 @@ class TestExportTasks(TestCase):
     def test_generate_preset_task(self, mock_request):
         task = GeneratePresetTask()
         run_uid = self.run.uid
-        stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid)
         celery_uid = str(uuid.uuid4())
-        running_task = ExportTask.objects.create(
+        ExportTask.objects.create(
             run=self.run,
             celery_uid=celery_uid,
             status='RUNNING',
@@ -316,7 +335,6 @@ class TestExportTasks(TestCase):
         )
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         result = task.run(run_uid=run_uid, job_name='testjob')
-        expected_result = stage_dir + 'testjob_preset.xml'
         config = self.job.configs.all()[0]
         expected_path = config.upload.path
         self.assertEquals(result['result'], expected_path)
@@ -328,7 +346,7 @@ class TestExportTasks(TestCase):
         celery_uid = str(uuid.uuid4())
         run_uid = self.run.uid
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid)
-        succeeded_task = ExportTask.objects.create(
+        ExportTask.objects.create(
             run=self.run,
             celery_uid=celery_uid,
             status='SUCCESS',
@@ -353,7 +371,7 @@ class TestExportTasks(TestCase):
         task_id = str(uuid.uuid4())
         run_uid = self.run.uid
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid)
-        succeeded_task = ExportTask.objects.create(
+        ExportTask.objects.create(
             run=self.run,
             uid=task_id,
             celery_uid=celery_uid,

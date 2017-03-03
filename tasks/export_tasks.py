@@ -42,7 +42,7 @@ class ExportTask(Task):
         Update the successfuly completed task as follows:
 
             1. update the time the task completed
-            2. caclulate the size of the output file
+            2. calculate the size of the output file
             3. calculate the download path of the export
             4. create the export download directory
             5. copy the export file to the download directory
@@ -72,10 +72,12 @@ class ExportTask(Task):
             if (task.name != 'OverpassQuery'):
                 shutil.copy(output_url, download_path)
         except IOError:
-            logger.error('Error copying output file to: {0}'.format(download_path))
+            logger.error(
+                'Error copying output file to: {0}'.format(download_path))
         # construct the download url
         download_media_root = settings.EXPORT_MEDIA_ROOT
-        download_url = '{0}{1}/{2}'.format(download_media_root, run_uid, filename)
+        download_url = '{0}{1}/{2}'.format(download_media_root,
+                                           run_uid, filename)
         # save the task and task result
         result = ExportTaskResult(
             task=task,
@@ -115,7 +117,8 @@ class ExportTask(Task):
             error_handler = ExportTaskErrorHandler()
             # run error handler
             stage_dir = kwargs['stage_dir']
-            error_handler.si(run_uid=str(run.uid), task_id=task_id, stage_dir=stage_dir).delay()
+            error_handler.si(run_uid=str(run.uid),
+                             task_id=task_id, stage_dir=stage_dir).delay()
 
     def after_return(self, *args, **kwargs):
         logger.debug('Task returned: {0}'.format(self.request))
@@ -135,9 +138,11 @@ class ExportTask(Task):
             task.status = 'RUNNING'
             task.started_at = started
             task.save()
-            logger.debug('Updated task: {0} with uid: {1}'.format(task.name, task.uid))
+            logger.debug('Updated task: {0} with uid: {1}'.format(
+                task.name, task.uid))
         except DatabaseError as e:
-            logger.error('Updating task {0} state throws: {1}'.format(task.name, e))
+            logger.error(
+                'Updating task {0} state throws: {1}'.format(task.name, e))
             raise e
 
 
@@ -242,7 +247,8 @@ class ThematicLayersExportTask(ExportTask):
         tags = run.job.categorised_tags
         sqlite = stage_dir + job_name + '.sqlite'
         try:
-            t2s = thematic_shp.ThematicSQliteToShp(sqlite=sqlite, tags=tags, job_name=job_name)
+            t2s = thematic_shp.ThematicSQliteToShp(
+                sqlite=sqlite, tags=tags, job_name=job_name)
             t2s.generate_thematic_schema()
             out = t2s.convert()
             return {'result': out}
@@ -429,7 +435,8 @@ class FinalizeRunTask(Task):
         try:
             shutil.rmtree(stage_dir)
         except IOError:
-            logger.error('Error removing {0} during export finalize'.format(stage_dir))
+            logger.error(
+                'Error removing {0} during export finalize'.format(stage_dir))
 
         # send notification email to user
         hostname = settings.HOSTNAME
@@ -444,7 +451,8 @@ class FinalizeRunTask(Task):
         }
         text = get_template('email/email.txt').render(ctx)
         html = get_template('email/email.html').render(ctx)
-        msg = EmailMultiAlternatives(subject, text, to=to, from_email=from_email)
+        msg = EmailMultiAlternatives(
+            subject, text, to=to, from_email=from_email)
         msg.attach_alternative(html, "text/html")
         msg.send()
 
@@ -469,7 +477,8 @@ class ExportTaskErrorHandler(Task):
                 # shutil.rmtree(stage_dir)
                 pass
         except IOError:
-            logger.error('Error removing {0} during export finalize'.format(stage_dir))
+            logger.error(
+                'Error removing {0} during export finalize'.format(stage_dir))
         hostname = settings.HOSTNAME
         url = 'http://{0}/exports/{1}'.format(hostname, run.job.uid)
         addr = run.user.email
@@ -483,6 +492,7 @@ class ExportTaskErrorHandler(Task):
         }
         text = get_template('email/error_email.txt').render(ctx)
         html = get_template('email/error_email.html').render(ctx)
-        msg = EmailMultiAlternatives(subject, text, to=to, from_email=from_email)
+        msg = EmailMultiAlternatives(
+            subject, text, to=to, from_email=from_email)
         msg.attach_alternative(html, "text/html")
         msg.send()
