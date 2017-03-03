@@ -92,9 +92,6 @@ OSMAND_MAP_CREATOR_DIR = '${base_dir}/osmandmapcreator'
 GARMIN_CONFIG = '${app_root}/utils/conf/garmin_config.xml'
 
 OVERPASS_API_URL = '${overpass_api_url}'
-
-STATIC_URL = '/static/'
-STATIC_ROOT = '${app_root}/static'
 EOF
 
 cat <<EOF | sudo tee /etc/postfix/main.cf
