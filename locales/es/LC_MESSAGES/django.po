@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Alberto Chung Vázquez <isc.chungvazquez@gmail.com>, 2015
 # Brian O'Hare <bjohare@gmail.com>, 2015
@@ -10,54 +10,56 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osm-export-tool2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-16 11:14+0000\n"
+"POT-Creation-Date: 2017-03-03 18:29+0000\n"
 "PO-Revision-Date: 2015-10-16 11:06+0000\n"
 "Last-Translator: Brian O'Hare <bjohare@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/hotosm/osm-export-tool2/language/es/)\n"
+"Language-Team: Spanish (http://www.transifex.com/hotosm/osm-export-tool2/"
+"language/es/)\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: api/serializers.py:388
+#: api/serializers.py:393
 msgid "invalid export format."
 msgstr "formato de exportación no válido."
 
-#: api/serializers.py:389
+#: api/serializers.py:394
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr "Se esperaba una lista de elementos pero se obtuvo tipo \"{input_type}\"."
+msgstr ""
+"Se esperaba una lista de elementos pero se obtuvo tipo \"{input_type}\"."
 
-#: api/serializers.py:419
+#: api/serializers.py:424
 msgid "xmin is required."
 msgstr "xmin es necesario."
 
-#: api/serializers.py:420
+#: api/serializers.py:425
 msgid "invalid xmin value."
 msgstr "valor xmin inválido."
 
-#: api/serializers.py:426
+#: api/serializers.py:431
 msgid "ymin is required."
 msgstr "ymin es necesario."
 
-#: api/serializers.py:427
+#: api/serializers.py:432
 msgid "invalid ymin value."
 msgstr "valor ymin inválido."
 
-#: api/serializers.py:433
+#: api/serializers.py:438
 msgid "xmax is required."
 msgstr "xmax es necesario."
 
-#: api/serializers.py:434
+#: api/serializers.py:439
 msgid "invalid xmax value."
 msgstr "valor xmax inválido."
 
-#: api/serializers.py:440
+#: api/serializers.py:445
 msgid "ymax is required."
 msgstr "ymax es necesario."
 
-#: api/serializers.py:441
+#: api/serializers.py:446
 msgid "invalid ymax value."
 msgstr "valor ymax inválido."
 
@@ -168,11 +170,11 @@ msgstr ""
 msgid "Invalid format provided."
 msgstr "Formato proporcionado inválido."
 
-#: api/views.py:310
+#: api/views.py:327
 msgid "Failed to run Export"
 msgstr "No se ha podido ejecutar la exportación"
 
-#: api/views.py:312
+#: api/views.py:329
 msgid "Export not found"
 msgstr "Exportación no encontrada"
 
@@ -200,14 +202,14 @@ msgstr ""
 msgid "French"
 msgstr ""
 
-#: ui/templates/email/email.html:7 ui/templates/email/email.txt:2
+#: ui/templates/email/email.html:7 ui/templates/email/email.txt.py:2
 #: ui/templates/email/error_email.html:7 ui/templates/email/error_email.txt:2
 #: ui/templates/osm/verify_osm_email.html:7
 #: ui/templates/osm/verify_osm_email.txt:2
 msgid "This is an automated email from HOT Exports."
 msgstr "Este es un correo electrónico automático de exportaciones HOT."
 
-#: ui/templates/email/email.html:8 ui/templates/email/email.txt:4
+#: ui/templates/email/email.html:8 ui/templates/email/email.txt.py:4
 msgid "Your HOT Export is ready."
 msgstr "Tu exportación HOT está lista."
 
@@ -219,13 +221,12 @@ msgstr ""
 msgid " to download your files."
 msgstr ""
 
-#: ui/templates/email/email.html:10 ui/templates/email/email.txt:8
+#: ui/templates/email/email.html:10 ui/templates/email/email.txt.py:8
 msgid "Thank you for using the HOT Export Service"
 msgstr "Gracias por usar el Servicio de Exportación HOT"
 
-#: ui/templates/email/email.html:11 ui/templates/email/email.txt:10
-#: ui/templates/email/error_email.html:12
-#: ui/templates/email/error_email.txt:12
+#: ui/templates/email/email.html:11 ui/templates/email/email.txt.py:10
+#: ui/templates/email/error_email.html:12 ui/templates/email/error_email.txt:12
 #: ui/templates/osm/verify_osm_email.html:13
 #: ui/templates/osm/verify_osm_email.txt:9
 msgid "Humanitarian OpenStreetMap Team"
@@ -259,8 +260,7 @@ msgstr ""
 msgid "Please quote this Task ID when reporting errors:"
 msgstr ""
 
-#: ui/templates/email/error_email.html:11
-#: ui/templates/email/error_email.txt:10
+#: ui/templates/email/error_email.html:11 ui/templates/email/error_email.txt:10
 msgid "We apologise for any inconvenience this may cause."
 msgstr ""
 
@@ -298,24 +298,24 @@ msgid ""
 "each section, providing guidance for the available functions:"
 msgstr ""
 
-#: ui/templates/help/help.html:17 ui/templates/help/help_create.html:9
-#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html:64
+#: ui/templates/help/help.html:17 ui/templates/help/help_create.html.py:9
+#: ui/templates/help/help_create.html:13 ui/templates/ui/base.html.py:64
 msgid "Create"
 msgstr "Crear"
 
-#: ui/templates/help/help.html:18 ui/templates/help/help_exports.html:9
-#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html:65
+#: ui/templates/help/help.html:18 ui/templates/help/help_exports.html.py:9
+#: ui/templates/help/help_exports.html:12 ui/templates/ui/base.html.py:65
 msgid "Exports"
 msgstr "Exportaciones"
 
-#: ui/templates/help/help.html:19 ui/templates/help/help_presets.html:10
+#: ui/templates/help/help.html:19 ui/templates/help/help_presets.html.py:10
 #: ui/templates/help/help_presets.html:13
-#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html:66
+#: ui/templates/help/help_presets.html:69 ui/templates/ui/base.html.py:66
 msgid "Presets"
 msgstr "Preestablecidos"
 
-#: ui/templates/help/help.html:23 ui/templates/help/help_formats.html:12
-#: ui/templates/ui/clone.html:20 ui/templates/ui/create.html:20
+#: ui/templates/help/help.html:23 ui/templates/help/help_formats.html.py:12
+#: ui/templates/ui/clone.html:20 ui/templates/ui/create.html.py:20
 msgid "File Formats"
 msgstr ""
 
@@ -326,15 +326,15 @@ msgid ""
 "will provide users with information regarding each file format:"
 msgstr ""
 
-#: ui/templates/help/help.html:27 ui/templates/help/help_formats.html:18
+#: ui/templates/help/help.html:27 ui/templates/help/help_formats.html.py:18
 msgid "Esri SHP"
 msgstr "Esri SHP"
 
-#: ui/templates/help/help.html:28 ui/templates/help/help_formats.html:54
+#: ui/templates/help/help.html:28 ui/templates/help/help_formats.html.py:54
 msgid "Garmin IMG"
 msgstr "Garmin IMG"
 
-#: ui/templates/help/help.html:29 ui/templates/help/help_formats.html:79
+#: ui/templates/help/help.html:29 ui/templates/help/help_formats.html.py:79
 msgid "Google KMZ"
 msgstr "Google KMZ"
 
@@ -346,7 +346,7 @@ msgstr "OSM PBF"
 msgid "SQlite SQL"
 msgstr "SQLite SQL"
 
-#: ui/templates/help/help.html:35 ui/templates/help/help_features.html:12
+#: ui/templates/help/help.html:35 ui/templates/help/help_features.html.py:12
 msgid "Feature Selection"
 msgstr ""
 
@@ -354,24 +354,23 @@ msgstr ""
 msgid ""
 "The OSM Export Tool provides two ways a user can specify which feature tags "
 "they would like to export from a selected area; either from the built-in "
-"interactive 'Tree Tag' or load a customised 'Preset File' created outside of"
-" the tool. This section provides the user guidance on how to do both:"
+"interactive 'Tree Tag' or load a customised 'Preset File' created outside of "
+"the tool. This section provides the user guidance on how to do both:"
 msgstr ""
 
-#: ui/templates/help/help.html:39 ui/templates/help/help_features.html:18
-#: ui/templates/ui/clone.html:21 ui/templates/ui/create.html:21
+#: ui/templates/help/help.html:39 ui/templates/help/help_features.html.py:18
+#: ui/templates/ui/clone.html:21 ui/templates/ui/create.html.py:21
 msgid "Tree Tag"
 msgstr ""
 
-#: ui/templates/help/help.html:40 ui/templates/help/help_features.html:51
-#: ui/templates/ui/clone.html:22 ui/templates/ui/create.html:22
+#: ui/templates/help/help.html:40 ui/templates/help/help_features.html.py:51
+#: ui/templates/ui/clone.html:22 ui/templates/ui/create.html.py:22
 msgid "Preset File"
 msgstr ""
 
 #: ui/templates/help/help_create.html:8 ui/templates/help/help_exports.html:8
-#: ui/templates/help/help_features.html:8
-#: ui/templates/help/help_formats.html:8 ui/templates/help/help_presets.html:9
-#: ui/templates/ui/base.html:67
+#: ui/templates/help/help_features.html:8 ui/templates/help/help_formats.html:8
+#: ui/templates/help/help_presets.html:9 ui/templates/ui/base.html.py:67
 msgid "Help"
 msgstr "Ayuda"
 
@@ -391,9 +390,17 @@ msgstr ""
 
 #: ui/templates/help/help_create.html:19
 msgid ""
-"The 'Create' page is set up like a wizard so that the user is guided through the required steps to create an export. The user can not move on to the next section until they have completed the neccessary parts of the current section.\n"
-"<p>Similarly, certain functionality will be locked if another method has been chosen, such as the 'Tree Tag' and 'Preset File'. These can not be both applied to the same export, and the use of one method will deactivate the other.</p>\n"
-"There are five tabs that make up the 'Export Wizard' on the 'Create' page. These include the 'Describe Export', 'File Formats', 'Tree Tag', 'Preset File' and 'Export Summary', which are detailed below: "
+"The 'Create' page is set up like a wizard so that the user is guided through "
+"the required steps to create an export. The user can not move on to the next "
+"section until they have completed the neccessary parts of the current "
+"section.\n"
+"<p>Similarly, certain functionality will be locked if another method has "
+"been chosen, such as the 'Tree Tag' and 'Preset File'. These can not be both "
+"applied to the same export, and the use of one method will deactivate the "
+"other.</p>\n"
+"There are five tabs that make up the 'Export Wizard' on the 'Create' page. "
+"These include the 'Describe Export', 'File Formats', 'Tree Tag', 'Preset "
+"File' and 'Export Summary', which are detailed below: "
 msgstr ""
 
 #: ui/templates/help/help_create.html:23
@@ -402,8 +409,8 @@ msgstr "Describe la exportación:"
 
 #: ui/templates/help/help_create.html:23
 msgid ""
-"Enter the name, description and project (optional) of the new export. Select"
-" the area of interest on the map (right section)."
+"Enter the name, description and project (optional) of the new export. Select "
+"the area of interest on the map (right section)."
 msgstr ""
 
 #: ui/templates/help/help_create.html:24
@@ -421,8 +428,8 @@ msgstr ""
 #: ui/templates/help/help_create.html:25
 #, python-format
 msgid ""
-"Expand and select features from the HDM or OSM tree tag for export and click"
-" 'Next'. Preset files on the next tab can not be used if tags are selected "
+"Expand and select features from the HDM or OSM tree tag for export and click "
+"'Next'. Preset files on the next tab can not be used if tags are selected "
 "from either tree. Please see the <a href=\"%(help_features_url)s\" "
 "target='_blank'>Feature Selection</a> help page for further information."
 msgstr ""
@@ -433,10 +440,10 @@ msgstr "Archivo preestablecido"
 
 #: ui/templates/help/help_create.html:26
 msgid ""
-"Select a preset file to apply to the export area by either specifying a name"
-" and loading a file from the desktop, or select a preset file from the saved"
-" presets. Tick the 'Publish this preset publicly' button to share the loaded"
-" preset publicly and save it to the 'Presets' page."
+"Select a preset file to apply to the export area by either specifying a name "
+"and loading a file from the desktop, or select a preset file from the saved "
+"presets. Tick the 'Publish this preset publicly' button to share the loaded "
+"preset publicly and save it to the 'Presets' page."
 msgstr ""
 
 #: ui/templates/help/help_create.html:27
@@ -445,10 +452,10 @@ msgstr "Resumen de exportación:"
 
 #: ui/templates/help/help_create.html:27
 msgid ""
-"This tab provides an overview of the export settings, along with the options"
-" to 'Save feature selection privately', 'Publish feature selection publicly'"
-" and 'Publish export publicly'. Click 'Create Export' to complete and run "
-"the new export."
+"This tab provides an overview of the export settings, along with the options "
+"to 'Save feature selection privately', 'Publish feature selection publicly' "
+"and 'Publish export publicly'. Click 'Create Export' to complete and run the "
+"new export."
 msgstr ""
 
 #: ui/templates/help/help_create.html:30 ui/templates/help/help_create.html:46
@@ -461,57 +468,59 @@ msgstr ""
 msgid "top"
 msgstr "arriba"
 
-#: ui/templates/help/help_create.html:32
-#: ui/templates/help/help_exports.html:35 ui/templates/ui/clone.html:23
-#: ui/templates/ui/clone.html.py:197 ui/templates/ui/create.html:23
-#: ui/templates/ui/create.html.py:197 ui/templates/ui/detail.html:9
+#: ui/templates/help/help_create.html:32 ui/templates/help/help_exports.html:35
+#: ui/templates/ui/clone.html.py:23 ui/templates/ui/clone.html:197
+#: ui/templates/ui/create.html.py:23 ui/templates/ui/create.html:197
+#: ui/templates/ui/detail.html.py:9
 msgid "Export Details"
 msgstr "Detalles de exportación"
 
 #: ui/templates/help/help_create.html:34
 msgid ""
-" The user will be redirected to the 'Export Details' page once they have clicked 'Create Export' and the export successfully runs. This page contains the details and status of the export, including the history of runs.\n"
+" The user will be redirected to the 'Export Details' page once they have "
+"clicked 'Create Export' and the export successfully runs. This page contains "
+"the details and status of the export, including the history of runs.\n"
 "\n"
-"<p>The OSM features applied to the export can be viewed by clicking the 'Export Features' button at the bottom of the page. If the features were selected using the 'Tree Tag', this will be replicated in a pop-up window. If a 'Preset File' was used then the features selected will be listed in the XML file.</p>\n"
+"<p>The OSM features applied to the export can be viewed by clicking the "
+"'Export Features' button at the bottom of the page. If the features were "
+"selected using the 'Tree Tag', this will be replicated in a pop-up window. "
+"If a 'Preset File' was used then the features selected will be listed in the "
+"XML file.</p>\n"
 "\n"
-"<p>There are several options available on this page to apply to the Export, which include the ability to 'Rerun Export', 'Clone Export', or 'Delete Export'. The functionality of these options are detailed below: "
+"<p>There are several options available on this page to apply to the Export, "
+"which include the ability to 'Rerun Export', 'Clone Export', or 'Delete "
+"Export'. The functionality of these options are detailed below: "
 msgstr ""
 
-#: ui/templates/help/help_create.html:41
-#: ui/templates/help/help_exports.html:44
+#: ui/templates/help/help_create.html:41 ui/templates/help/help_exports.html:44
 msgid "Re-run Export:"
 msgstr ""
 
-#: ui/templates/help/help_create.html:41
-#: ui/templates/help/help_exports.html:44
+#: ui/templates/help/help_create.html:41 ui/templates/help/help_exports.html:44
 msgid ""
 "This function will rerun the export with the original area of interest and "
 "settings for feature tags and file formats."
 msgstr ""
 
-#: ui/templates/help/help_create.html:42
-#: ui/templates/help/help_exports.html:45
+#: ui/templates/help/help_create.html:42 ui/templates/help/help_exports.html:45
 msgid "Clone Export:"
 msgstr ""
 
-#: ui/templates/help/help_create.html:42
-#: ui/templates/help/help_exports.html:45
+#: ui/templates/help/help_create.html:42 ui/templates/help/help_exports.html:45
 msgid ""
 "This function will clone the export, maintaining the original area of "
 "interest but allows the user to modify the settings for feature tags and "
 "file formats."
 msgstr ""
 
-#: ui/templates/help/help_create.html:43
-#: ui/templates/help/help_exports.html:46
+#: ui/templates/help/help_create.html:43 ui/templates/help/help_exports.html:46
 msgid "Delete Export:"
 msgstr ""
 
-#: ui/templates/help/help_create.html:43
-#: ui/templates/help/help_exports.html:46
+#: ui/templates/help/help_create.html:43 ui/templates/help/help_exports.html:46
 msgid ""
-"Delete the saved export. Please note that this function is only available to"
-" the user who originally created the export."
+"Delete the saved export. Please note that this function is only available to "
+"the user who originally created the export."
 msgstr ""
 
 #: ui/templates/help/help_exports.html:14
@@ -607,22 +616,31 @@ msgstr ""
 
 #: ui/templates/help/help_exports.html:37
 msgid ""
-"The user will be redirected to the 'Export Details' page once they have selected a saved export from the 'Exports' page. The 'Export Details' contains the information and status of the export, including the history of runs.\n"
+"The user will be redirected to the 'Export Details' page once they have "
+"selected a saved export from the 'Exports' page. The 'Export Details' "
+"contains the information and status of the export, including the history of "
+"runs.\n"
 "\n"
-"<p>The OSM features applied to the export can be viewed by clicking the 'Features' button at the bottom of the page. If the features were selected using the 'Tree Tag', this will be replicated in a pop-up window. If a 'Preset File' was used then the features selected will be listed in the XML file.</p>\n"
+"<p>The OSM features applied to the export can be viewed by clicking the "
+"'Features' button at the bottom of the page. If the features were selected "
+"using the 'Tree Tag', this will be replicated in a pop-up window. If a "
+"'Preset File' was used then the features selected will be listed in the XML "
+"file.</p>\n"
 "\n"
-"<p>There are several options available on this page to apply to the Export, which include the ability to 'Rerun Export', 'Clone Export', or 'Delete Export'. The functionality of these options are detailed below: "
+"<p>There are several options available on this page to apply to the Export, "
+"which include the ability to 'Rerun Export', 'Clone Export', or 'Delete "
+"Export'. The functionality of these options are detailed below: "
 msgstr ""
 
-#: ui/templates/help/help_features.html:9 ui/templates/ui/detail.html:39
-#: ui/templates/ui/detail.html.py:60
+#: ui/templates/help/help_features.html:9 ui/templates/ui/detail.html.py:39
+#: ui/templates/ui/detail.html:60
 msgid "Features"
 msgstr "Características"
 
 #: ui/templates/help/help_features.html:14
 msgid ""
-"The user can choose specific map features such as roads, buildings and water"
-" sources for download by selecting tags from the 'Tree Tag' tab or by "
+"The user can choose specific map features such as roads, buildings and water "
+"sources for download by selecting tags from the 'Tree Tag' tab or by "
 "uploading/selecting a preset file in the 'Preset File' tab. This help page "
 "will provide guidance to the user on how to use both of these functions "
 "available on the the 'Create' page to select their desired feature tags to "
@@ -633,8 +651,8 @@ msgstr ""
 msgid ""
 "Interactively selecting features from the 'Tree Tag' tab is part of the "
 "'Export Wizard' on the 'Create' page that takes the user through the steps "
-"to create a new export, it can only be accessed once the previous nessessary"
-" steps have been completed. The 'Tree Tag' tab provides the user with two "
+"to create a new export, it can only be accessed once the previous nessessary "
+"steps have been completed. The 'Tree Tag' tab provides the user with two "
 "trees to select features from: Humanitarian Data Model (HDM) and the "
 "OpenStreetMap (OSM)."
 msgstr ""
@@ -649,8 +667,7 @@ msgid ""
 "response agencies, as OSM was traditionally developed for mapping in "
 "nonemergency situations. Humanitarian field responders need to know how OSM "
 "tags relate to their existing data models, and how to include features that "
-"may be relevant only in disaster response, recovery, or development "
-"contexts."
+"may be relevant only in disaster response, recovery, or development contexts."
 msgstr ""
 
 #: ui/templates/help/help_features.html:29
@@ -659,12 +676,12 @@ msgstr "Wiki OpenStreetMap | Etiquetas OSM Humanitario"
 
 #: ui/templates/help/help_features.html:31
 msgid ""
-"It is recommended that the HDM tree structure be selected to export OSM data"
-" for humanitarian purposes, as the feature tags listed are aimed for ease of"
-" use and efficiency during disaster situations, providing key data."
+"It is recommended that the HDM tree structure be selected to export OSM data "
+"for humanitarian purposes, as the feature tags listed are aimed for ease of "
+"use and efficiency during disaster situations, providing key data."
 msgstr ""
 
-#: ui/templates/help/help_features.html:35 ui/templates/ui/detail.html:33
+#: ui/templates/help/help_features.html:35 ui/templates/ui/detail.html.py:33
 msgid "OpenStreetMap"
 msgstr "OpenStreetMap"
 
@@ -672,8 +689,8 @@ msgstr "OpenStreetMap"
 msgid ""
 "OSM represents physical features on the ground using tags attached to its "
 "basic data structures such as its nodes, ways, and relations. Each tag "
-"describes a geographic attribute of the feature being shown by that specific"
-" node, way or relation."
+"describes a geographic attribute of the feature being shown by that specific "
+"node, way or relation."
 msgstr ""
 
 #: ui/templates/help/help_features.html:38
@@ -692,7 +709,9 @@ msgstr ""
 
 #: ui/templates/help/help_features.html:44
 msgid "Tick the box on the right to select a feature tag for export."
-msgstr "Marca la caja de la derecha para seleccionar una etiqueta de característica para exportar."
+msgstr ""
+"Marca la caja de la derecha para seleccionar una etiqueta de característica "
+"para exportar."
 
 #: ui/templates/help/help_features.html:45
 msgid "Tick a top level-branch to select all sub-level for export."
@@ -715,13 +734,13 @@ msgid ""
 "Files can be uploaded on the 'Preset File' tab of the 'Create' page.  As it "
 "is part of the 'Export Wizard' that takes the user through creating a new "
 "export, it can also only be accessed once the previous steps have been "
-"completed. The 'Preset File' tab provides the user with two options to apply"
-" a preset to the selected area of interest in order to export specific "
+"completed. The 'Preset File' tab provides the user with two options to apply "
+"a preset to the selected area of interest in order to export specific "
 "features: Upload Preset and 'Select Stored Preset."
 msgstr ""
 
 #: ui/templates/help/help_features.html:56
-#: ui/templates/help/help_presets.html:46 ui/templates/ui/clone.html:162
+#: ui/templates/help/help_presets.html:46 ui/templates/ui/clone.html.py:162
 #: ui/templates/ui/configurations.html:173 ui/templates/ui/create.html:162
 msgid "Upload Preset"
 msgstr "Cargar preestablecido"
@@ -750,9 +769,9 @@ msgstr "Seleccionar Preestablecido Almacenado"
 #: ui/templates/help/help_features.html:65
 msgid ""
 "The 'Select Stored Preset' button opens a pop-up version of the 'Presets' "
-"page, where the preset files can be filtered, searched and selected for use."
-" Simply tick the desired box under the 'Select' column and click the "
-"'Select' button at the bottom right corner of the window."
+"page, where the preset files can be filtered, searched and selected for use. "
+"Simply tick the desired box under the 'Select' column and click the 'Select' "
+"button at the bottom right corner of the window."
 msgstr ""
 
 #: ui/templates/help/help_features.html:67
@@ -769,11 +788,11 @@ msgstr "Formatos"
 
 #: ui/templates/help/help_formats.html:14
 msgid ""
-"The OSM Export Tool allows the data selected by the user to be exported into"
-" any of the following five file formats: Esri SHP (OSM and Thematic), Garmin"
-" IMG, Google KMZ, OSM PBF, and SQLite SQL. This help page provides the user "
-"with information about these file formats. It also lists some external links"
-" where the user can find further information."
+"The OSM Export Tool allows the data selected by the user to be exported into "
+"any of the following five file formats: Esri SHP (OSM and Thematic), Garmin "
+"IMG, Google KMZ, OSM PBF, and SQLite SQL. This help page provides the user "
+"with information about these file formats. It also lists some external links "
+"where the user can find further information."
 msgstr ""
 
 #: ui/templates/help/help_formats.html:20
@@ -781,8 +800,8 @@ msgid ""
 "The shapefile format developed by Esri spatially describes geometries as "
 "either 'points', 'polylines', or 'polygons' with a set of associated "
 "attributes. Similar to OSM these can be considered as 'nodes', "
-"'ways','closed ways', and 'relations' respectively. The shapefile is made up"
-" of several files formatted to represent different aspects of geodata:"
+"'ways','closed ways', and 'relations' respectively. The shapefile is made up "
+"of several files formatted to represent different aspects of geodata:"
 msgstr ""
 
 #: ui/templates/help/help_formats.html:22
@@ -828,13 +847,12 @@ msgstr ""
 
 #: ui/templates/help/help_formats.html:36
 msgid ""
-"The HOT generated thematic schema provides the features selected for an area"
-" of interest in their individual point, polyline and polygon tables. The "
-"following <a "
-"href=\"http://wiki.openstreetmap.org/wiki/User:Bgirardot/How_To_Convert_osm_.pbf_files_to_Esri_Shapefiles\""
-" target=\"_blank\">process</a> has been applied to the selected data in "
-"order to split the features into their own tables for ease of use by the "
-"user. "
+"The HOT generated thematic schema provides the features selected for an area "
+"of interest in their individual point, polyline and polygon tables. The "
+"following <a href=\"http://wiki.openstreetmap.org/wiki/User:Bgirardot/"
+"How_To_Convert_osm_.pbf_files_to_Esri_Shapefiles\" target=\"_blank"
+"\">process</a> has been applied to the selected data in order to split the "
+"features into their own tables for ease of use by the user. "
 msgstr ""
 
 #: ui/templates/help/help_formats.html:40
@@ -890,7 +908,13 @@ msgid ""
 "partition table, that does not directly support the concept of "
 "subdirectories, but does provide a kind of sub-directory structure. The "
 "image file contains several subfiles:"
-msgstr "El archivo de imagen contiene toda la información necesaria para hacer un mapa de una unidad GPS Garmin. La imagen de disco duro es un sistema de archivos plano completo con una tabla de particiones, que no admite directamente el concepto de subdirectorios, pero sí proporciona una especie de estructura sub-directorio. El archivo de imagen contiene varios subficheros:"
+msgstr ""
+"El archivo de imagen contiene toda la información necesaria para hacer un "
+"mapa de una unidad GPS Garmin. La imagen de disco duro es un sistema de "
+"archivos plano completo con una tabla de particiones, que no admite "
+"directamente el concepto de subdirectorios, pero sí proporciona una especie "
+"de estructura sub-directorio. El archivo de imagen contiene varios "
+"subficheros:"
 
 #: ui/templates/help/help_formats.html:58
 msgid ".rgn - map elements; polylines, polygons and points"
@@ -898,7 +922,8 @@ msgstr ".rgn - elementos de mapa; polilíneas, polígonos y puntos"
 
 #: ui/templates/help/help_formats.html:59
 msgid ".lbl - labels; map elements, city names, localities, etc"
-msgstr ".lbl - etiquetas; elementos de mapa; nombres de ciudades, localidades, etc."
+msgstr ""
+".lbl - etiquetas; elementos de mapa; nombres de ciudades, localidades, etc."
 
 #: ui/templates/help/help_formats.html:60
 msgid ".tre - map structure information; data tree"
@@ -946,7 +971,11 @@ msgid ""
 "Language (KML) is an Extensible Markup Language (XML) grammar and file "
 "format for modeling and storing geographic features such as points, lines, "
 "images polygons and models."
-msgstr "El archivo KMZ es una versión comprimida de un archivo KML. El Keyhole Markup Language (KML) es un Lenguaje de Marcado Extensible (XML), gramática y formato de archivo para el modelado y el almacenamiento de funciones geográficas como puntos, líneas, imágenes polígonos y modelos."
+msgstr ""
+"El archivo KMZ es una versión comprimida de un archivo KML. El Keyhole "
+"Markup Language (KML) es un Lenguaje de Marcado Extensible (XML), gramática "
+"y formato de archivo para el modelado y el almacenamiento de funciones "
+"geográficas como puntos, líneas, imágenes polígonos y modelos."
 
 #: ui/templates/help/help_formats.html:84
 msgid "Google Earth"
@@ -975,9 +1004,9 @@ msgstr "Fuente OSM PBF"
 #: ui/templates/help/help_formats.html:99
 msgid ""
 "The Protocolbuffer Binary Format (PBF) is a highly compressed optimisted "
-"format intended as an alternative to the XML, which are the two main formats"
-" of the OSM Planet file. The Planet.osm is the OSM data in one file with all"
-" the nodes, ways and relations that make up the map."
+"format intended as an alternative to the XML, which are the two main formats "
+"of the OSM Planet file. The Planet.osm is the OSM data in one file with all "
+"the nodes, ways and relations that make up the map."
 msgstr ""
 
 #: ui/templates/help/help_formats.html:102
@@ -1002,10 +1031,13 @@ msgstr "OSMAnd OBF"
 
 #: ui/templates/help/help_formats.html:116
 msgid ""
-"OsmAnd is a GPS Navigation and map application that runs on many Android and"
-" iOS smartphones and tablets, featuring optional offline maps and turn by "
+"OsmAnd is a GPS Navigation and map application that runs on many Android and "
+"iOS smartphones and tablets, featuring optional offline maps and turn by "
 "turn directions."
-msgstr "OsmAnd es una aplicación de navegación GPS y el mapa que se ejecuta en muchos teléfonos inteligentes y tabletas Android y iOS, con mapas fuera de línea opcionales e indicaciones detalladas."
+msgstr ""
+"OsmAnd es una aplicación de navegación GPS y el mapa que se ejecuta en "
+"muchos teléfonos inteligentes y tabletas Android y iOS, con mapas fuera de "
+"línea opcionales e indicaciones detalladas."
 
 #: ui/templates/help/help_formats.html:119
 msgid "OSMAnd"
@@ -1021,12 +1053,18 @@ msgstr "SQLite SQL"
 
 #: ui/templates/help/help_formats.html:129
 msgid ""
-"The .sql file is related to the Structured Query Language (SQL) and are used"
-" to modify the contents of a relation database. These files written in ASCII"
-" may contain instructions and statements for creating or modifying database "
+"The .sql file is related to the Structured Query Language (SQL) and are used "
+"to modify the contents of a relation database. These files written in ASCII "
+"may contain instructions and statements for creating or modifying database "
 "structure, such as data insertions, updates, deletions and other SQL "
 "operations."
-msgstr "El archivo .sql está relacionado con el lenguaje de consulta estructurado (SQL) y se utilizan para modificar el contenido de una base de datos relatcional. Estos archivos escritos en ASCII pueden contener las instrucciones y declaraciones para la creación o modificación de la estructura de la base de datos, tales como inserciones de datos, actualizaciones, eliminaciones y otras operaciones de SQL."
+msgstr ""
+"El archivo .sql está relacionado con el lenguaje de consulta estructurado "
+"(SQL) y se utilizan para modificar el contenido de una base de datos "
+"relatcional. Estos archivos escritos en ASCII pueden contener las "
+"instrucciones y declaraciones para la creación o modificación de la "
+"estructura de la base de datos, tales como inserciones de datos, "
+"actualizaciones, eliminaciones y otras operaciones de SQL."
 
 #: ui/templates/help/help_formats.html:132
 msgid "PostgreSQL"
@@ -1051,11 +1089,11 @@ msgstr "Wikipedia | SQL"
 #: ui/templates/help/help_presets.html:15
 #, python-format
 msgid ""
-"The <a href=\"%(configurations_url)s\" target=\"_blank\">Presets</a> page is"
-" where the user can filter and search existing saved preset files, as well "
-"as upload one from their local desktop. Please note an account is not needed"
-" to view or search existing presets, but is required to upload one and only "
-"the user who originally uploaded the preset can delete it."
+"The <a href=\"%(configurations_url)s\" target=\"_blank\">Presets</a> page is "
+"where the user can filter and search existing saved preset files, as well as "
+"upload one from their local desktop. Please note an account is not needed to "
+"view or search existing presets, but is required to upload one and only the "
+"user who originally uploaded the preset can delete it."
 msgstr ""
 
 #: ui/templates/help/help_presets.html:17
@@ -1100,8 +1138,8 @@ msgstr ""
 msgid ""
 "To download a preset, the user must select the specific file under the "
 "'Download Configuration' column in the table, which will open the XML file "
-"in a new tab. Please note this does not download the preset automatically to"
-" your desktop. The user will have to maunally save the preset as a XML file."
+"in a new tab. Please note this does not download the preset automatically to "
+"your desktop. The user will have to maunally save the preset as a XML file."
 msgstr ""
 
 #: ui/templates/help/help_presets.html:48
@@ -1139,11 +1177,17 @@ msgstr ""
 
 #: ui/templates/help/help_presets.html:63
 msgid ""
-"<p>To customise a preset file using the 'Tree Tag' tab as part of the 'Export Wizard', you must go through the process of creating a new export. </p>\n"
+"<p>To customise a preset file using the 'Tree Tag' tab as part of the "
+"'Export Wizard', you must go through the process of creating a new export. </"
+"p>\n"
 "\n"
-"<p>To save the tag selection for your customised preset file, make sure you tick either the 'Save feature selection privately' or the 'Publish feature selection publicly' button on the 'Export Summary' tab.</p>\n"
+"<p>To save the tag selection for your customised preset file, make sure you "
+"tick either the 'Save feature selection privately' or the 'Publish feature "
+"selection publicly' button on the 'Export Summary' tab.</p>\n"
 "\n"
-"<p>Once the export has run, you can access your customised preset file from either the list of files on the right side of the 'Export Details' page or from the preset table on the 'Presets' page.</p>"
+"<p>Once the export has run, you can access your customised preset file from "
+"either the list of files on the right side of the 'Export Details' page or "
+"from the preset table on the 'Presets' page.</p>"
 msgstr ""
 
 #: ui/templates/help/help_presets.html:69
@@ -1156,8 +1200,10 @@ msgstr ""
 
 #: ui/templates/osm/email.html:14
 msgid ""
-"Please provide a valid email address. This email address will be used to notifiy you when your exports are ready.\n"
-"                    A verification link will be sent to the email address you provide."
+"Please provide a valid email address. This email address will be used to "
+"notifiy you when your exports are ready.\n"
+"                    A verification link will be sent to the email address "
+"you provide."
 msgstr ""
 
 #: ui/templates/osm/email.html:21
@@ -1174,11 +1220,15 @@ msgstr "Correo electrónico de validación enviado"
 
 #: ui/templates/osm/email_verify_sent.html:11
 msgid "An activation email has been sent to your email address."
-msgstr "Un correo electrónico de activación ha sido enviado a tu dirección de correo electrónico."
+msgstr ""
+"Un correo electrónico de activación ha sido enviado a tu dirección de correo "
+"electrónico."
 
 #: ui/templates/osm/email_verify_sent.html:12
 msgid "Please click the link in the email to activate your account."
-msgstr "Por favor haga click en el enlace en tu correo electrónico para activar tu cuenta"
+msgstr ""
+"Por favor haga click en el enlace en tu correo electrónico para activar tu "
+"cuenta"
 
 #: ui/templates/osm/error.html:8
 msgid "OpenStreetMap Login Error"
@@ -1188,17 +1238,19 @@ msgstr "Error al iniciar sesión en OpenStreetMap"
 msgid "There was a problem logging you in to OpenStreetMap"
 msgstr "Hubo un problema al iniciar sesión en OpenStreetMap"
 
-#: ui/templates/osm/login.html:10 ui/templates/ui/about.html:9
+#: ui/templates/osm/login.html:10 ui/templates/ui/about.html.py:9
 msgid "Fresh Humanitarian Maps"
 msgstr "Mapas Humanitarios recientes"
 
-#: ui/templates/osm/login.html:11 ui/templates/ui/about.html:10
+#: ui/templates/osm/login.html:11 ui/templates/ui/about.html.py:10
 msgid ""
 "Download up-to-date humanitarian maps for GIS analysis or for use in GPS "
 "devices and Smartphones."
-msgstr "Descargar mapas humanitarios actualizados para análisis SIG o para usar en dispositivos GPS y smarphones."
+msgstr ""
+"Descargar mapas humanitarios actualizados para análisis SIG o para usar en "
+"dispositivos GPS y smarphones."
 
-#: ui/templates/osm/login.html:12 ui/templates/ui/about.html:11
+#: ui/templates/osm/login.html:12 ui/templates/ui/about.html.py:11
 msgid ""
 "This platform allows you to create custom OpenStreetMap (OSM) exports for "
 "various HOT regions. You can specify an area of interest and a list of OSM "
@@ -1208,21 +1260,21 @@ msgid ""
 "updated at one minute intervals."
 msgstr ""
 
-#: ui/templates/osm/login.html:13 ui/templates/ui/about.html:12
+#: ui/templates/osm/login.html:13 ui/templates/ui/about.html.py:12
 msgid "How to Get Started"
 msgstr "Cómo empezar"
 
-#: ui/templates/osm/login.html:14 ui/templates/ui/about.html:13
+#: ui/templates/osm/login.html:14 ui/templates/ui/about.html.py:13
 #, python-format
 msgid ""
-"You can view and search through existing HOT exports at our <a "
-"href=\"%(exports_url)s\">Exports</a> page. It is not required to have an "
-"account to view or search existing exports, however if you would like to "
-"create a new export please <a href=\"/osm/login/openstreetmap\">Login</a> "
-"with your OSM account. If this is the first time you have logged into the "
-"HOT Export Tool, you will be asked to provide a valid email address. More "
-"detailed help information on how to use the Export Tool is available on our "
-"<a href=\"%(help_url)s\">Help</a> page."
+"You can view and search through existing HOT exports at our <a href="
+"\"%(exports_url)s\">Exports</a> page. It is not required to have an account "
+"to view or search existing exports, however if you would like to create a "
+"new export please <a href=\"/osm/login/openstreetmap\">Login</a> with your "
+"OSM account. If this is the first time you have logged into the HOT Export "
+"Tool, you will be asked to provide a valid email address. More detailed help "
+"information on how to use the Export Tool is available on our <a href="
+"\"%(help_url)s\">Help</a> page."
 msgstr ""
 
 #: ui/templates/osm/login.html:15
@@ -1233,8 +1285,8 @@ msgstr ""
 msgid "The original HOT Export Tool is available"
 msgstr ""
 
-#: ui/templates/osm/login.html:16 ui/templates/ui/detail.html:90
-#: ui/templates/ui/detail.html.py:104
+#: ui/templates/osm/login.html:16 ui/templates/ui/detail.html.py:90
+#: ui/templates/ui/detail.html:104
 msgid "here"
 msgstr ""
 
@@ -1246,7 +1298,9 @@ msgstr "Iniciar sesión en OpenStreetMap"
 msgid ""
 "If you don't have an OpenStreetMap account you can register for one <a "
 "href='http://www.openstreetmap.org/user/new'>here</a>."
-msgstr "Si no tiene una cuenta OpenStreetMap puede registrarse por una <a href='http://www.openstreetmap.org/user/new'>aquí</a>."
+msgstr ""
+"Si no tiene una cuenta OpenStreetMap puede registrarse por una <a "
+"href='http://www.openstreetmap.org/user/new'>aquí</a>."
 
 #: ui/templates/osm/logout.html:8
 msgid "You have successfully logged out of OpenStreetMap"
@@ -1296,9 +1350,9 @@ msgstr "Error del servidor"
 
 #: ui/templates/ui/500.html:10
 msgid ""
-"HOT Exports has experienced an internal error. Please <a "
-"href=\"https://github.com/hotosm/osm-export-tool2/issues\">log an issue</a> "
-"in github if this problem persists."
+"HOT Exports has experienced an internal error. Please <a href=\"https://"
+"github.com/hotosm/osm-export-tool2/issues\">log an issue</a> in github if "
+"this problem persists."
 msgstr ""
 
 #: ui/templates/ui/about.html:14
@@ -1307,9 +1361,8 @@ msgstr ""
 
 #: ui/templates/ui/about.html:15
 msgid ""
-"Data is copyright OpenStreetMap Contributors, <a "
-"href=\"http://opendatacommons.org/licenses/odbl/1-0/\">ODbL 1.0 "
-"licensed</a>."
+"Data is copyright OpenStreetMap Contributors, <a href=\"http://"
+"opendatacommons.org/licenses/odbl/1-0/\">ODbL 1.0 licensed</a>."
 msgstr ""
 
 #: ui/templates/ui/base.html:14
@@ -1332,31 +1385,31 @@ msgstr ""
 msgid "Log Out"
 msgstr "Cerrar sesión"
 
-#: ui/templates/ui/base.html:77 ui/templates/ui/configurations.html:196
+#: ui/templates/ui/base.html:77 ui/templates/ui/configurations.html.py:196
 msgid "Login"
 msgstr "Iniciar sesión"
 
-#: ui/templates/ui/clone.html:19 ui/templates/ui/create.html:19
+#: ui/templates/ui/clone.html:19 ui/templates/ui/create.html.py:19
 msgid "Describe Export"
 msgstr "Describir exportaciones"
 
 #: ui/templates/ui/clone.html:31 ui/templates/ui/clone.html.py:376
-#: ui/templates/ui/configurations.html:61 ui/templates/ui/create.html:31
-#: ui/templates/ui/create.html.py:398 ui/templates/ui/list.html:68
+#: ui/templates/ui/configurations.html:61 ui/templates/ui/create.html.py:31
+#: ui/templates/ui/create.html:398 ui/templates/ui/list.html.py:68
 msgid "Name"
 msgstr "Nombre"
 
-#: ui/templates/ui/clone.html:38 ui/templates/ui/create.html:38
+#: ui/templates/ui/clone.html:38 ui/templates/ui/create.html.py:38
 #: ui/templates/ui/list.html:68
 msgid "Description"
 msgstr "Descripción"
 
-#: ui/templates/ui/clone.html:45 ui/templates/ui/create.html:45
+#: ui/templates/ui/clone.html:45 ui/templates/ui/create.html.py:45
 #: ui/templates/ui/list.html:68
 msgid "Project"
 msgstr ""
 
-#: ui/templates/ui/clone.html:52 ui/templates/ui/create.html:52
+#: ui/templates/ui/clone.html:52 ui/templates/ui/create.html.py:52
 msgid "Coordinates"
 msgstr "Coordenadas"
 
@@ -1364,37 +1417,53 @@ msgstr "Coordenadas"
 msgid "Select Export Formats:"
 msgstr "Selecciona los formatos de exportación:"
 
-#: ui/templates/ui/clone.html:66 ui/templates/ui/create.html:66
+#: ui/templates/ui/clone.html:66 ui/templates/ui/create.html.py:66
 msgid ""
 "More than one export format can be selected. Please note that there are two "
-"Esri Shapefile options, as the Thematic Schema provides the data in a set of"
-" themed geometry tables (points, lines and polygons), whereas the OSM Schema"
-" provides all attributes in layers grouped by geometry type"
-msgstr "Más de un formato de exportación puede ser seleccionado. Tenga en cuenta que hay dos opciones de Esri Shapefile, ya que el Esquema Temático proporciona los datos en un conjunto de tablas de geometría temáticas (puntos, líneas y polígonos), mientras que el esquema OSM  proporciona todos los atributos de las capas agrupadas por tipo de geometría"
+"Esri Shapefile options, as the Thematic Schema provides the data in a set of "
+"themed geometry tables (points, lines and polygons), whereas the OSM Schema "
+"provides all attributes in layers grouped by geometry type"
+msgstr ""
+"Más de un formato de exportación puede ser seleccionado. Tenga en cuenta que "
+"hay dos opciones de Esri Shapefile, ya que el Esquema Temático proporciona "
+"los datos en un conjunto de tablas de geometría temáticas (puntos, líneas y "
+"polígonos), mientras que el esquema OSM  proporciona todos los atributos de "
+"las capas agrupadas por tipo de geometría"
 
 #: ui/templates/ui/clone.html:78
 msgid "Select from either the HDM or OSM data models."
 msgstr "Elija entre cualquiera de los modelos de datos OSM o HDM."
 
-#: ui/templates/ui/clone.html:79 ui/templates/ui/create.html:79
+#: ui/templates/ui/clone.html:79 ui/templates/ui/create.html.py:79
 msgid ""
-"Features can only be selected from one tree, either from the HDM or the OSM data model.\n"
-"                                    Feature tags can not be mixed between the two. Deselect the HDM Tree to enable the OSM Tree."
+"Features can only be selected from one tree, either from the HDM or the OSM "
+"data model.\n"
+"                                    Feature tags can not be mixed between "
+"the two. Deselect the HDM Tree to enable the OSM Tree."
 msgstr ""
 
-#: ui/templates/ui/clone.html:113 ui/templates/ui/configurations.html:126
+#: ui/templates/ui/clone.html:113 ui/templates/ui/configurations.html.py:126
 #: ui/templates/ui/create.html:113
 msgid "Upload a preset file"
 msgstr "Cargar un archivo preestablecido"
 
-#: ui/templates/ui/clone.html:115 ui/templates/ui/create.html:115
+#: ui/templates/ui/clone.html:115 ui/templates/ui/create.html.py:115
 msgid ""
-"Use this form to either upload a <a href=\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">JOSM Preset</a> configuration file,\n"
-"                                    or to select a previously published preset configuration. Only one preset file can be selected at a time.\n"
-"                                    Any selections of features you have made from the HDM Data Model or the OSM Data Model will be cleared."
-msgstr "Utilice este formulario para cargar un archivo de configuración <a href=\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">JOSM preestablecido </a>, o para seleccionar una configuración preestablecida previamente publicada. Sólo un archivo preestablecido se puede seleccionar a la vez. Se borrarán las selecciones de características que ha hecho desde el modelo de datos HDM o el modelo de datos de OSM."
+"Use this form to either upload a <a href=\"http://learnosm.org/en/josm/"
+"creating-presets/\" target=\"_blank\">JOSM Preset</a> configuration file,\n"
+"                                    or to select a previously published "
+"preset configuration. Only one preset file can be selected at a time.\n"
+"                                    Any selections of features you have made "
+"from the HDM Data Model or the OSM Data Model will be cleared."
+msgstr ""
+"Utilice este formulario para cargar un archivo de configuración <a href="
+"\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">JOSM "
+"preestablecido </a>, o para seleccionar una configuración preestablecida "
+"previamente publicada. Sólo un archivo preestablecido se puede seleccionar a "
+"la vez. Se borrarán las selecciones de características que ha hecho desde el "
+"modelo de datos HDM o el modelo de datos de OSM."
 
-#: ui/templates/ui/clone.html:123 ui/templates/ui/configurations.html:134
+#: ui/templates/ui/clone.html:123 ui/templates/ui/configurations.html.py:134
 #: ui/templates/ui/create.html:123
 msgid "Preset name:"
 msgstr ""
@@ -1403,7 +1472,7 @@ msgstr ""
 msgid "Publish this preset globally."
 msgstr "Publicar este preestablecido globalmente."
 
-#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html:178
+#: ui/templates/ui/clone.html:167 ui/templates/ui/configurations.html.py:178
 #: ui/templates/ui/create.html:167
 msgid "Upload"
 msgstr "Cargar"
@@ -1413,31 +1482,31 @@ msgid "Select a stored preset"
 msgstr "Seleccionar un preestablecido almacenado"
 
 #: ui/templates/ui/clone.html:180 ui/templates/ui/clone.html.py:245
-#: ui/templates/ui/clone.html:376 ui/templates/ui/configurations.html:185
+#: ui/templates/ui/clone.html:376 ui/templates/ui/configurations.html.py:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
-#: ui/templates/ui/create.html:398 ui/templates/ui/detail.html:153
+#: ui/templates/ui/create.html:398 ui/templates/ui/detail.html.py:153
 msgid "Filename"
 msgstr "Nombre de archivo"
 
-#: ui/templates/ui/clone.html:199 ui/templates/ui/create.html:199
+#: ui/templates/ui/clone.html:199 ui/templates/ui/create.html.py:199
 #: ui/templates/ui/detail.html:17
 msgid "Name:"
 msgstr "Nombre:"
 
-#: ui/templates/ui/clone.html:200 ui/templates/ui/create.html:200
+#: ui/templates/ui/clone.html:200 ui/templates/ui/create.html.py:200
 #: ui/templates/ui/detail.html:18
 msgid "Description:"
 msgstr "Descripción:"
 
-#: ui/templates/ui/clone.html:201 ui/templates/ui/create.html:201
+#: ui/templates/ui/clone.html:201 ui/templates/ui/create.html.py:201
 msgid "Activation:"
 msgstr "Activación:"
 
-#: ui/templates/ui/clone.html:202 ui/templates/ui/create.html:202
+#: ui/templates/ui/clone.html:202 ui/templates/ui/create.html.py:202
 msgid "Export formats:"
 msgstr "Formatos de exportación:"
 
-#: ui/templates/ui/clone.html:206 ui/templates/ui/create.html:206
+#: ui/templates/ui/clone.html:206 ui/templates/ui/create.html.py:206
 msgid "Export Options"
 msgstr "Opciones de exportación:"
 
@@ -1453,7 +1522,7 @@ msgstr "Publicar selección de característica globalmente"
 msgid "Publish export globally"
 msgstr "Publicar exportación globalmente"
 
-#: ui/templates/ui/clone.html:242 ui/templates/ui/create.html:242
+#: ui/templates/ui/clone.html:242 ui/templates/ui/create.html.py:242
 msgid "Configurations:"
 msgstr "Configuraciones:"
 
@@ -1461,85 +1530,85 @@ msgstr "Configuraciones:"
 #: ui/templates/ui/configurations.html:61
 #: ui/templates/ui/configurations.html:185 ui/templates/ui/create.html:180
 #: ui/templates/ui/create.html.py:245 ui/templates/ui/create.html:398
-#: ui/templates/ui/detail.html:153
+#: ui/templates/ui/detail.html.py:153
 msgid "Type"
 msgstr "Tipo"
 
-#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html:185
+#: ui/templates/ui/clone.html:245 ui/templates/ui/configurations.html.py:185
 #: ui/templates/ui/create.html:180 ui/templates/ui/create.html.py:245
 #: ui/templates/ui/detail.html:153
 msgid "Status"
 msgstr "Estado"
 
-#: ui/templates/ui/clone.html:252 ui/templates/ui/create.html:252
+#: ui/templates/ui/clone.html:252 ui/templates/ui/create.html.py:252
 msgid "Create Export"
 msgstr "Crear exportación"
 
-#: ui/templates/ui/clone.html:257 ui/templates/ui/create.html:257
+#: ui/templates/ui/clone.html:257
 msgid "Skip"
 msgstr "Saltar"
 
-#: ui/templates/ui/clone.html:275 ui/templates/ui/create.html:275
+#: ui/templates/ui/clone.html:275 ui/templates/ui/create.html.py:275
 msgid "Select Export Area"
 msgstr "Seleccionar área de exportación"
 
-#: ui/templates/ui/clone.html:276 ui/templates/ui/create.html:276
+#: ui/templates/ui/clone.html:276 ui/templates/ui/create.html.py:276
 msgid "Zoom To Selection"
 msgstr "Acercar a selección"
 
-#: ui/templates/ui/clone.html:277 ui/templates/ui/create.html:277
+#: ui/templates/ui/clone.html:277 ui/templates/ui/create.html.py:277
 #: ui/templates/ui/list.html:137
 msgid "Reset Map"
 msgstr "Reiniciar mapa"
 
-#: ui/templates/ui/clone.html:286 ui/templates/ui/create.html:286
+#: ui/templates/ui/clone.html:286 ui/templates/ui/create.html.py:286
 msgid "Search for a place or enter xmin,ymin,xmax,ymax"
 msgstr "Buscar un lugar o introducir xmin, ymin, xmax, ymax"
 
-#: ui/templates/ui/clone.html:300 ui/templates/ui/configurations.html:219
+#: ui/templates/ui/clone.html:300 ui/templates/ui/configurations.html.py:219
 #: ui/templates/ui/create.html:300
 msgid "Error Uploading Configuration File"
 msgstr "Error cargando archivo de configuración"
 
-#: ui/templates/ui/clone.html:309 ui/templates/ui/configurations.html:228
+#: ui/templates/ui/clone.html:309 ui/templates/ui/configurations.html.py:228
 #: ui/templates/ui/create.html:309
 msgid "There was a problem with your configuration upload."
 msgstr "Hubo un problema con tu configuración cargada."
 
-#: ui/templates/ui/clone.html:326 ui/templates/ui/create.html:348
+#: ui/templates/ui/clone.html:326 ui/templates/ui/create.html.py:348
 msgid "Select a preset file to apply to this export"
 msgstr ""
 
-#: ui/templates/ui/clone.html:327 ui/templates/ui/create.html:349
+#: ui/templates/ui/clone.html:327 ui/templates/ui/create.html.py:349
 msgid "Only one preset file can be selected"
 msgstr ""
 
-#: ui/templates/ui/clone.html:336 ui/templates/ui/create.html:358
+#: ui/templates/ui/clone.html:336 ui/templates/ui/create.html.py:358
 msgid "Filter Configurations"
 msgstr "Configuraciones de filtro"
 
-#: ui/templates/ui/clone.html:342 ui/templates/ui/configurations.html:24
-#: ui/templates/ui/create.html:364 ui/templates/ui/list.html:24
+#: ui/templates/ui/clone.html:342 ui/templates/ui/configurations.html.py:24
+#: ui/templates/ui/create.html:364 ui/templates/ui/list.html.py:24
 msgid "Search"
 msgstr "Buscar"
 
-#: ui/templates/ui/clone.html:353 ui/templates/ui/configurations.html:35
-#: ui/templates/ui/create.html:375 ui/templates/ui/list.html:35
+#: ui/templates/ui/clone.html:353 ui/templates/ui/configurations.html.py:35
+#: ui/templates/ui/create.html:375 ui/templates/ui/list.html.py:35
 msgid "Start Date:"
 msgstr "Fecha de inicio:"
 
-#: ui/templates/ui/clone.html:363 ui/templates/ui/configurations.html:45
-#: ui/templates/ui/create.html:385 ui/templates/ui/list.html:45
+#: ui/templates/ui/clone.html:363 ui/templates/ui/configurations.html.py:45
+#: ui/templates/ui/create.html:385 ui/templates/ui/list.html.py:45
 msgid "End Date:"
 msgstr "Fecha de fin:"
 
-#: ui/templates/ui/clone.html:376 ui/templates/ui/configurations.html:61
-#: ui/templates/ui/create.html:398 ui/templates/ui/detail.html:153
+#: ui/templates/ui/clone.html:376 ui/templates/ui/configurations.html.py:61
+#: ui/templates/ui/create.html:398 ui/templates/ui/detail.html.py:153
 #: ui/templates/ui/list.html:68
 msgid "Created"
 msgstr "Creado"
 
-#: ui/templates/ui/clone.html:376 ui/templates/ui/create.html:398
+#: ui/templates/ui/clone.html:376 ui/templates/ui/create.html.py:398
 #: ui/templates/ui/list.html:68
 msgid "Owner"
 msgstr ""
@@ -1549,17 +1618,17 @@ msgstr ""
 msgid "Select"
 msgstr "Seleccionar"
 
-#: ui/templates/ui/clone.html:389 ui/templates/ui/configurations.html:81
+#: ui/templates/ui/clone.html:389 ui/templates/ui/configurations.html.py:81
 #: ui/templates/ui/create.html:411
 msgid "My Presets"
 msgstr "Mis preestablecidos"
 
-#: ui/templates/ui/clone.html:407 ui/templates/ui/configurations.html:98
-#: ui/templates/ui/create.html:429 ui/templates/ui/list.html:107
+#: ui/templates/ui/clone.html:407 ui/templates/ui/configurations.html.py:98
+#: ui/templates/ui/create.html:429 ui/templates/ui/list.html.py:107
 msgid "Display"
 msgstr "Mostrar"
 
-#: ui/templates/ui/clone.html:413 ui/templates/ui/configurations.html:105
+#: ui/templates/ui/clone.html:413 ui/templates/ui/configurations.html.py:105
 #: ui/templates/ui/create.html:435
 msgid "presets per page"
 msgstr "preestablecidos por página"
@@ -1568,7 +1637,7 @@ msgstr "preestablecidos por página"
 msgid "Filter Presets"
 msgstr "Filtrar preestablecidos"
 
-#: ui/templates/ui/configurations.html:53 ui/templates/ui/list.html:54
+#: ui/templates/ui/configurations.html:53 ui/templates/ui/list.html.py:54
 msgid "Reset Form"
 msgstr ""
 
@@ -1580,7 +1649,10 @@ msgstr "Descargar configuración"
 msgid ""
 "Use this form to upload a <a href=\"http://learnosm.org/en/josm/creating-"
 "presets/\" target=\"_blank\">JOSM Preset</a> configuration file."
-msgstr "Use este formulario para cargar un archivo de configuración <a href=\"http://learnosm.org/en/josm/creating-presets/\" target=\"_blank\">predeterminado de JOSM</a>."
+msgstr ""
+"Use este formulario para cargar un archivo de configuración <a href=\"http://"
+"learnosm.org/en/josm/creating-presets/\" target=\"_blank\">predeterminado de "
+"JOSM</a>."
 
 #: ui/templates/ui/configurations.html:157 ui/templates/ui/create.html:146
 msgid "Publish this preset publicly"
@@ -1776,4 +1848,1184 @@ msgstr ""
 
 #: ui/templates/ui/upgrade.html:10
 msgid "Please upgrade your browser to the latest version."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/messages/apps.py:7
+msgid "Messages"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/sitemaps/apps.py:7
+#, fuzzy
+#| msgid "Google Maps"
+msgid "Site Maps"
+msgstr "Google Maps"
+
+#: venv/lib/python2.7/site-packages/django/contrib/staticfiles/apps.py:7
+msgid "Static Files"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/syndication/apps.py:7
+msgid "Syndication"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/webdesign/apps.py:7
+msgid "Web Design"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:33
+#, fuzzy
+#| msgid "invalid xmin value."
+msgid "Enter a valid value."
+msgstr "valor xmin inválido."
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:98
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:677
+msgid "Enter a valid URL."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:141
+msgid "Enter a valid integer."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:152
+msgid "Enter a valid email address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:225
+msgid ""
+"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:232
+msgid ""
+"Enter a valid 'slug' consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:237
+#: venv/lib/python2.7/site-packages/django/core/validators.py:256
+msgid "Enter a valid IPv4 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:242
+#: venv/lib/python2.7/site-packages/django/core/validators.py:257
+msgid "Enter a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:252
+#: venv/lib/python2.7/site-packages/django/core/validators.py:255
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:284
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1130
+msgid "Enter only digits separated by commas."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:292
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:318
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:325
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:334
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:345
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:359
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:364
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:369
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/base.py:1095
+#: venv/lib/python2.7/site-packages/django/forms/models.py:727
+msgid "and"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/base.py:1097
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:110
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:111
+msgid "This field cannot be null."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:112
+msgid "This field cannot be blank."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:113
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr ""
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or 'month'.
+#. Eg: "Title must be unique for pub_date year"
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:117
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:134
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:913
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1817
+msgid "Integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:917
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1815
+#, python-format
+msgid "'%(value)s' value must be an integer."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:992
+#, python-format
+msgid "'%(value)s' value must be either True or False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:994
+msgid "Boolean (Either True or False)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1069
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1125
+msgid "Comma-separated integers"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1174
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1176
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1319
+#, python-format
+msgid ""
+"'%(value)s' value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1179
+msgid "Date (without time)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1317
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[."
+"uuuuuu]][TZ] format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1321
+#, python-format
+msgid ""
+"'%(value)s' value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1325
+msgid "Date (with time)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1477
+#, python-format
+msgid "'%(value)s' value must be a decimal number."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1479
+msgid "Decimal number"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1636
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid format. It must be in [DD] [HH:[MM:]]ss[."
+"uuuuuu] format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1639
+#, fuzzy
+#| msgid "Description"
+msgid "Duration"
+msgstr "Descripción"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1690
+msgid "Email address"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1714
+msgid "File path"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1781
+#, python-format
+msgid "'%(value)s' value must be a float."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1783
+msgid "Floating point number"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1884
+msgid "Big (8 byte) integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1899
+msgid "IPv4 address"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1930
+msgid "IP address"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2014
+#, python-format
+msgid "'%(value)s' value must be either None, True or False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2016
+msgid "Boolean (Either True, False or None)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2076
+msgid "Positive integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2088
+msgid "Positive small integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2101
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2135
+msgid "Small integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2142
+msgid "Text"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2168
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2170
+#, python-format
+msgid ""
+"'%(value)s' value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2173
+msgid "Time"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2301
+msgid "URL"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2324
+msgid "Raw binary data"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2368
+#, python-format
+msgid "'%(value)s' is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/files.py:237
+#, fuzzy
+#| msgid "Filename"
+msgid "File"
+msgstr "Nombre de archivo"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/files.py:392
+msgid "Image"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:736
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r does not exist."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:738
+msgid "Foreign Key (type determined by related field)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:996
+msgid "One-to-one relationship"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:1113
+msgid "Many-to-many relationship"
+msgstr ""
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: venv/lib/python2.7/site-packages/django/forms/boundfield.py:167
+msgid ":?.!"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:65
+#, fuzzy
+#| msgid "xmin is required."
+msgid "This field is required."
+msgstr "xmin es necesario."
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:254
+msgid "Enter a whole number."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:299
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:336
+msgid "Enter a number."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:414
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1158
+msgid "Enter a valid date."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:438
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1159
+msgid "Enter a valid time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:460
+msgid "Enter a valid date/time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:489
+msgid "Enter a valid duration."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:556
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:557
+msgid "No file was submitted."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:558
+msgid "The submitted file is empty."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:560
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:563
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:625
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:792
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:886
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1232
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:887
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1002
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1231
+msgid "Enter a list of values."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1003
+msgid "Enter a complete value."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1217
+msgid "Enter a valid UUID."
+msgstr ""
+
+#. Translators: This is the default suffix added to form field labels
+#: venv/lib/python2.7/site-packages/django/forms/forms.py:84
+msgid ":"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/forms.py:191
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:97
+msgid "ManagementForm data is missing or has been tampered with"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:345
+#, python-format
+msgid "Please submit %d or fewer forms."
+msgid_plural "Please submit %d or fewer forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:352
+#, python-format
+msgid "Please submit %d or more forms."
+msgid_plural "Please submit %d or more forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:380
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:382
+msgid "Order"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:384
+msgid "Delete"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:721
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:725
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:731
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:739
+msgid "Please correct the duplicate values below."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1063
+msgid "The inline foreign key did not match the parent instance primary key."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1125
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1234
+#, python-format
+msgid "\"%(pk)s\" is not a valid value for a primary key."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/utils.py:172
+#, python-format
+msgid ""
+"%(datetime)s couldn't be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:353
+msgid "Currently"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:354
+msgid "Change"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:355
+msgid "Clear"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:570
+msgid "Unknown"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:571
+msgid "Yes"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:572
+msgid "No"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:867
+msgid "yes,no,maybe"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:896
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:908
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:910
+#, python-format
+msgid "%s KB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:912
+#, python-format
+msgid "%s MB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:914
+#, python-format
+msgid "%s GB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:916
+#, python-format
+msgid "%s TB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:918
+#, python-format
+msgid "%s PB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:61
+msgid "p.m."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:62
+msgid "a.m."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:67
+msgid "PM"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:68
+msgid "AM"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:153
+msgid "midnight"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:155
+msgid "noon"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Monday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Tuesday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Wednesday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Thursday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Friday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:7
+msgid "Saturday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:7
+msgid "Sunday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Mon"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Tue"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Wed"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Thu"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Fri"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:11
+#, fuzzy
+#| msgid "Status"
+msgid "Sat"
+msgstr "Estado"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:11
+msgid "Sun"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "January"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "February"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+#, fuzzy
+#| msgid "Search"
+msgid "March"
+msgstr "Buscar"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "April"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "May"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "June"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "July"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "August"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "September"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "October"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "November"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:20
+msgid "December"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "jan"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "feb"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "mar"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "apr"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "may"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "jun"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "jul"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "aug"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "sep"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "oct"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "nov"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "dec"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:31
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:32
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:33
+#, fuzzy
+#| msgid "Search"
+msgctxt "abbrev. month"
+msgid "March"
+msgstr "Buscar"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:34
+msgctxt "abbrev. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:35
+msgctxt "abbrev. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:36
+msgctxt "abbrev. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:37
+msgctxt "abbrev. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:38
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:39
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:40
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:41
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:42
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:45
+msgctxt "alt. month"
+msgid "January"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:46
+msgctxt "alt. month"
+msgid "February"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:47
+#, fuzzy
+#| msgid "Search"
+msgctxt "alt. month"
+msgid "March"
+msgstr "Buscar"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:48
+msgctxt "alt. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:49
+msgctxt "alt. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:50
+msgctxt "alt. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:51
+msgctxt "alt. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:52
+msgctxt "alt. month"
+msgid "August"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:53
+msgctxt "alt. month"
+msgid "September"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:54
+msgctxt "alt. month"
+msgid "October"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:55
+msgctxt "alt. month"
+msgid "November"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:56
+msgctxt "alt. month"
+msgid "December"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/ipv6.py:10
+msgid "This is not a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/text.py:77
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s..."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/text.py:246
+msgid "or"
+msgstr ""
+
+#. Translators: This string is used as a separator between list elements
+#: venv/lib/python2.7/site-packages/django/utils/text.py:265
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:63
+msgid ", "
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:11
+#, python-format
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:12
+#, python-format
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:13
+#, python-format
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:14
+#, python-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:15
+#, python-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:16
+#, python-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:52
+msgid "0 minutes"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:107
+msgid "Forbidden"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:108
+msgid "CSRF verification failed. Request aborted."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:112
+msgid ""
+"You are seeing this message because this HTTPS site requires a 'Referer "
+"header' to be sent by your Web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:117
+msgid ""
+"If you have configured your browser to disable 'Referer' headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for 'same-"
+"origin' requests."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:122
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:127
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for 'same-origin' requests."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:132
+msgid "More information is available with DEBUG=True."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:508
+msgid "Welcome to Django"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:509
+msgid "It worked!"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:510
+msgid "Congratulations on your first Django-powered page."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:511
+msgid ""
+"Of course, you haven't actually done any work yet. Next, start your first "
+"app by running <code>python manage.py startapp [app_label]</code>."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:513
+msgid ""
+"You're seeing this message because you have <code>DEBUG = True</code> in "
+"your Django settings file and you haven't configured any URLs. Get to work!"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:48
+msgid "No year specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:104
+msgid "No month specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:163
+msgid "No day specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:219
+msgid "No week specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:378
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:406
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:660
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because %(class_name)s."
+"allow_future is False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:694
+#, python-format
+msgid "Invalid date string '%(datestr)s' given format '%(format)s'"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/detail.py:55
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/list.py:76
+msgid "Page is not 'last', nor can it be converted to an int."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/list.py:81
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/list.py:172
+#, python-format
+msgid "Empty list and '%(class_name)s.allow_empty' is False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/static.py:58
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/static.py:60
+#, python-format
+msgid "\"%(path)s\" does not exist"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/static.py:100
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/httplib2/__init__.py:436
+#, python-format
+msgid "Content purported to be compressed with %s but failed to decompress."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/httplib2/__init__.py:546
+#, python-format
+msgid "Unsupported value for qop: %s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/httplib2/__init__.py:549
+#: venv/lib/python2.7/site-packages/httplib2/__init__.py:611
+#, python-format
+msgid "Unsupported value for algorithm: %s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/httplib2/__init__.py:608
+msgid "The challenge doesn't contain a server nonce, or this one is empty."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/httplib2/__init__.py:614
+#, python-format
+msgid "Unsupported value for pw-algorithm: %s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/httplib2/__init__.py:1422
+msgid "Redirected but the response is missing a Location: header."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/kombu/transport/django/models.py:12
+#, fuzzy
+#| msgid "Filename"
+msgid "name"
+msgstr "Nombre de archivo"
+
+#: venv/lib/python2.7/site-packages/kombu/transport/django/models.py:20
+msgid "queue"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/kombu/transport/django/models.py:21
+msgid "queues"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/kombu/transport/django/models.py:28
+#, fuzzy
+#| msgid "Upload"
+msgid "payload"
+msgstr "Cargar"
+
+#: venv/lib/python2.7/site-packages/kombu/transport/django/models.py:37
+msgid "message"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/kombu/transport/django/models.py:38
+msgid "messages"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/kombu/transport/qpid.py:1295
+#, python-format
+msgid "Attempting to connect to qpid with SASL mechanism %s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/kombu/transport/qpid.py:1300
+#, python-format
+msgid "Connected to qpid with SASL mechanism %s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/kombu/transport/qpid.py:1318
+#, python-format
+msgid "Unable to connect to qpid with SASL mechanism %s"
 msgstr ""
