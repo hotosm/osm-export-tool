@@ -9,7 +9,6 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMultiAlternatives
 from django.db import DatabaseError
-from django.template import Context
 from django.template.loader import get_template
 from django.utils import timezone
 
@@ -72,7 +71,7 @@ class ExportTask(Task):
             # don't copy raw overpass data
             if (task.name != 'OverpassQuery'):
                 shutil.copy(output_url, download_path)
-        except IOError as e:
+        except IOError:
             logger.error('Error copying output file to: {0}'.format(download_path))
         # construct the download url
         download_media_root = settings.EXPORT_MEDIA_ROOT
@@ -429,7 +428,7 @@ class FinalizeRunTask(Task):
         run.save()
         try:
             shutil.rmtree(stage_dir)
-        except IOError as e:
+        except IOError:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
 
         # send notification email to user
@@ -443,8 +442,8 @@ class FinalizeRunTask(Task):
             'url': url,
             'status': run.status
         }
-        text = get_template('email/email.txt').render(Context(ctx))
-        html = get_template('email/email.html').render(Context(ctx))
+        text = get_template('email/email.txt').render(ctx)
+        html = get_template('email/email.html').render(ctx)
         msg = EmailMultiAlternatives(subject, text, to=to, from_email=from_email)
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -466,10 +465,10 @@ class ExportTaskErrorHandler(Task):
         run.save()
         try:
             if os.path.isdir(stage_dir):
-                #leave the stage_dir in place for debugging
-                #shutil.rmtree(stage_dir)
+                # leave the stage_dir in place for debugging
+                # shutil.rmtree(stage_dir)
                 pass
-        except IOError as e:
+        except IOError:
             logger.error('Error removing {0} during export finalize'.format(stage_dir))
         hostname = settings.HOSTNAME
         url = 'http://{0}/exports/{1}'.format(hostname, run.job.uid)
@@ -482,8 +481,8 @@ class ExportTaskErrorHandler(Task):
             'url': url,
             'task_id': task_id
         }
-        text = get_template('email/error_email.txt').render(Context(ctx))
-        html = get_template('email/error_email.html').render(Context(ctx))
+        text = get_template('email/error_email.txt').render(ctx)
+        html = get_template('email/error_email.html').render(ctx)
         msg = EmailMultiAlternatives(subject, text, to=to, from_email=from_email)
         msg.attach_alternative(html, "text/html")
         msg.send()
