@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
                                     slug='PBF')
 
     dependencies = [
-        ('jobs', '0003_auto_20151027_1807'),
+        ('jobs', '0001_auto_20151003_1441'),
     ]
 
     operations = [
