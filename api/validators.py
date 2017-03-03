@@ -17,7 +17,7 @@ from django.utils.translation import ugettext as _
 from rest_framework import serializers
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def validate_conifg(uid):
@@ -243,7 +243,7 @@ def validate_preset(upload):
     try:
         tree = etree.parse(xml)
     except Exception as e:
-        logger.debug(e)
+        LOG.debug(e)
         detail = OrderedDict()
         detail['id'] = _('invalid_content')
         detail['message'] = _('The uploaded preset file is invalid. %(error)s') % {'error': str(e)}

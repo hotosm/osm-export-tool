@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 
 from mock import Mock, patch
@@ -13,8 +12,6 @@ import jobs.presets as presets
 from jobs.models import Job, Tag
 
 from ..thematic_shp import ThematicSQliteToShp
-
-logger = logging.getLogger(__name__)
 
 
 class TestThematicShp(TestCase):

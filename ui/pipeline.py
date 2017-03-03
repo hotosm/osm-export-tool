@@ -15,12 +15,12 @@ from django.shortcuts import redirect
 from django.template import Context
 from django.template.loader import get_template
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 @partial
 def require_email(strategy, request, details, user=None, is_new=False, *args, **kwargs):  # pragma: no cover
-    logger.debug(user)
+    LOG.debug(user)
     if kwargs.get('ajax') or user and user.email:
         return
     elif is_new and not details.get('email'):

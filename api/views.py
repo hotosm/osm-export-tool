@@ -35,7 +35,7 @@ from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 # controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
@@ -168,7 +168,7 @@ class JobViewSet(viewsets.ModelViewSet):
                     serializer = ListJobSerializer(queryset, many=True, context={'request': request})
                     return Response(serializer.data)
             except ValidationError as e:
-                logger.debug(e.detail)
+                LOG.debug(e.detail)
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
@@ -207,7 +207,7 @@ class JobViewSet(viewsets.ModelViewSet):
                     export_format = ExportFormat.objects.get(slug=slug)
                     export_formats.append(export_format)
                 except ExportFormat.DoesNotExist as e:
-                    logger.warn('Export format with uid: {0} does not exist'.format(slug))
+                    LOG.warn('Export format with uid: {0} does not exist'.format(slug))
             if len(export_formats) > 0:
                 """Save the job and make sure it's committed before running tasks."""
                 try:
@@ -216,7 +216,7 @@ class JobViewSet(viewsets.ModelViewSet):
                         job.formats = export_formats
                         if preset:
                             """Get the tags from the uploaded preset."""
-                            logger.debug('Found preset with uid: %s' % preset)
+                            LOG.debug('Found preset with uid: %s' % preset)
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = config.upload.path

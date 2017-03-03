@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from mock import patch
 
 from django.contrib.auth.models import Group, User
@@ -11,8 +9,6 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from jobs.models import ExportFormat, Job
-
-logger = logging.getLogger(__name__)
 
 
 class TestJobFilter(APITestCase):

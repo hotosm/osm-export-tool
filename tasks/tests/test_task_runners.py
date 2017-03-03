@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 import uuid
 
@@ -12,8 +11,6 @@ from django.test import TestCase
 from jobs.models import ExportFormat, Job, Region
 
 from ..task_runners import ExportTaskRunner
-
-logger = logging.getLogger(__name__)
 
 
 class TestExportTaskRunner(TestCase):

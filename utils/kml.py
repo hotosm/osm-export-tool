@@ -7,7 +7,7 @@ import os
 import subprocess
 from string import Template
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class SQliteToKml(object):
@@ -51,7 +51,7 @@ class SQliteToKml(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
@@ -71,7 +71,7 @@ class SQliteToKml(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 0:
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, 'Failed to create zipfile for {0}'.format(self.kmlfile)
         if returncode == 0:
             # remove the kml file

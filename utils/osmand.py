@@ -9,7 +9,7 @@ from StringIO import StringIO
 
 from lxml import etree
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class UpdateBatchXML(object,):
@@ -108,12 +108,12 @@ class OSMToOBF(object):
         """
         Need a way to catch exceptions here...
         if (stderr != None and not stderr.startswith('INFO')):
-                logger.debug(stderr.rstrip())
+                LOG.debug(stderr.rstrip())
                 raise Exception, "OsmAndMapCreator process failed with error: %s" % stderr.rstrip()
         """
         returncode = proc.wait()
         if (returncode != 0):
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, "{0} process failed with returncode: {1}".format(osmand_cmd, returncode)
         if self.debug:
             print 'OsmAndMapCreator returned: %s' % returncode

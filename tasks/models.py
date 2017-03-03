@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import logging
 import shutil
 import uuid
 
@@ -13,8 +12,6 @@ from django.dispatch.dispatcher import receiver
 from django.utils import timezone
 
 from jobs.models import Job
-
-logger = logging.getLogger(__name__)
 
 
 class TimeStampedModelMixin(models.Model):

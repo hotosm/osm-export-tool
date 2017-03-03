@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 import uuid
 
 from django.contrib.auth.models import Group, User
@@ -9,8 +8,6 @@ from django.test import TestCase
 from jobs.models import ExportFormat, Job
 
 from ..models import ExportRun, ExportTask, ExportTaskResult
-
-logger = logging.getLogger(__name__)
 
 
 class TestExportRun(TestCase):

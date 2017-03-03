@@ -7,7 +7,7 @@ from string import Template
 
 from osgeo import gdal, ogr, osr
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class OSMParser(object):
@@ -35,7 +35,7 @@ class OSMParser(object):
             self.osmconf = osmconf
         else:
             self.osmconf = self.path + '/conf/hotosm.ini'
-            logger.debug('Found osmconf ini file at: {0}'.format(self.osmconf))
+            LOG.debug('Found osmconf ini file at: {0}'.format(self.osmconf))
         """
         OGR Command to run.
         OSM_CONFIG_FILE determines which OSM keys should be translated into OGR layer fields.
@@ -67,7 +67,7 @@ class OSMParser(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 0:
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
         if(self.debug):
             print 'ogr2ogr returned: %s' % returncode
@@ -90,7 +90,7 @@ class OSMParser(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 0:
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, "{0} process failed with returncode: {1}".format(sql_cmd, returncode)
         if self.debug:
             print 'spatialite returned: %s' % returncode

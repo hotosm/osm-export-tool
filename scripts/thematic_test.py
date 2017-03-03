@@ -6,7 +6,6 @@
     Depends on django-extensions.
 """
 
-import logging
 import os
 import shutil
 import sqlite3
@@ -14,7 +13,6 @@ from string import Template
 
 from jobs.models import Job
 
-logger = logging.getLogger(__name__)
 
 thematic_spec = {
     'amenities_all_points': {'type': 'point', 'key': 'amenity', 'table': 'planet_osm_point', 'select_clause': 'amenity is not null'},

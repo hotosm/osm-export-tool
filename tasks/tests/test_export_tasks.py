@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # test cases for HOT Export Tasks
 import cPickle
-import logging
 import os
 import sys
 import uuid
@@ -23,8 +22,6 @@ from tasks.export_tasks import (
     OSMPrepSchemaTask, OSMToPBFConvertTask, OverpassQueryTask, ShpExportTask
 )
 from tasks.models import ExportRun, ExportTask, ExportTaskResult
-
-logger = logging.getLogger(__name__)
 
 
 class TestExportTasks(TestCase):

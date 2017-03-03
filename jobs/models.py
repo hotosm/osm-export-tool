@@ -13,7 +13,7 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 # construct the upload path for export config files..
 
@@ -25,7 +25,7 @@ def get_upload_path(instance, filename):
     configtype = instance.config_type.lower()
     # sanitize the filename here..
     path = 'export/config/{0}/{1}'.format(configtype, instance.filename)
-    logger.debug('Saving export config to /media/{0}'.format(path))
+    LOG.debug('Saving export config to /media/{0}'.format(path))
     return path
 
 

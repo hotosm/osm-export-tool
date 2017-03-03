@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 
 from mock import Mock, patch
@@ -8,8 +7,6 @@ from django.conf import settings
 from django.test import TestCase
 
 from ..osmand import OSMToOBF, UpdateBatchXML
-
-logger = logging.getLogger(__name__)
 
 
 class TestUpdateBatchXML(TestCase):

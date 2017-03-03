@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from mock import Mock, patch
 
 from django.test import SimpleTestCase
 
 from ..pbf import OSMToPBF
-
-logger = logging.getLogger(__name__)
 
 
 class TestOSMToPBF(SimpleTestCase):

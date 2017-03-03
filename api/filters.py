@@ -1,15 +1,11 @@
 """Module providing classes to filter api results."""
 # -*- coding: utf-8 -*-
-import logging
-
 import django_filters
 
 from django.db.models import Q
 
 from jobs.models import ExportConfig, Job
 from tasks.models import ExportRun
-
-logger = logging.getLogger(__name__)
 
 
 class JobFilter(django_filters.FilterSet):

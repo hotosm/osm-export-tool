@@ -7,7 +7,7 @@ from string import Template
 
 from osgeo import gdal, ogr, osr
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class TransformSQlite(object):
@@ -50,7 +50,7 @@ class TransformSQlite(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 1:
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, "{0} process failed with returncode: {1}".format(sql_cmd, returncode)
         if self.debug:
             print 'spatialite returned: %s' % returncode

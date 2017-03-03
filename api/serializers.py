@@ -33,7 +33,7 @@ except ImportError:
     from ordereddict import OrderedDict
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -98,7 +98,7 @@ class ExportConfigSerializer(serializers.Serializer):
 
     def validate(self, data):
         """Validate the form data."""
-        logger.debug(data)
+        LOG.debug(data)
         upload = data['upload']
         config_type = data['config_type']
         content_type = validators.validate_content_type(upload, config_type)

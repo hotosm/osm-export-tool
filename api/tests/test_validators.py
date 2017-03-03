@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from mock import patch
 
 from django.contrib.auth.models import Group, User
@@ -12,8 +10,6 @@ from rest_framework.reverse import reverse
 
 from api.validators import get_geodesic_area, validate_bbox
 from jobs.models import ExportProfile
-
-logger = logging.getLogger(__name__)
 
 
 class TestValidators(TestCase):

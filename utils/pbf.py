@@ -7,7 +7,7 @@ import os
 import subprocess
 from string import Template
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class OSMToPBF(object):
@@ -45,7 +45,7 @@ class OSMToPBF(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, "osmconvert failed with return code: {0}".format(returncode)
         if(self.debug):
             print 'Osmconvert returned: %s' % returncode

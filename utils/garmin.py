@@ -8,7 +8,7 @@ from StringIO import StringIO
 
 from lxml import etree
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class GarminConfigParser(object):
@@ -129,7 +129,7 @@ class OSMToIMG(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, " {0} process failed with returncode: {1}".format(splitter, returncode)
         if self.debug:
             print 'splitter returned: %s' % returncode
@@ -163,7 +163,7 @@ class OSMToIMG(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, " {0} process failed with returncode: {1}".format(mkgmap, returncode)
         if self.debug:
             print 'mkgmap returned: %s' % returncode
@@ -183,7 +183,7 @@ class OSMToIMG(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if returncode != 0:
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, 'Failed to create zipfile for {0}'.format(self.kmlfile)
         if returncode == 0:
             # remove the img file

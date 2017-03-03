@@ -1,12 +1,8 @@
 """Provides pagination for api results."""
 # -*- coding: utf-8 -*-
-import logging
-
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-
-logger = logging.getLogger(__name__)
 
 
 class LinkHeaderPagination(PageNumberPagination):

@@ -19,7 +19,7 @@ from .export_tasks import (
 )
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class TaskRunner(object):
@@ -50,7 +50,7 @@ class ExportTaskRunner(TaskRunner):
             the ExportRun instance.
         """
         run_uid = ''
-        logger.debug('Running Job with id: {0}'.format(job_uid))
+        LOG.debug('Running Job with id: {0}'.format(job_uid))
         # pull the job from the database
         job = Job.objects.get(uid=job_uid)
         job_name = self.normalize_job_name(job.name)
@@ -70,10 +70,10 @@ class ExportTaskRunner(TaskRunner):
                 export_task = CeleryExportTask()
                 export_tasks.append(export_task)
             except KeyError as e:
-                logger.debug(e)
+                LOG.debug(e)
             except ImportError as e:
                 msg = 'Error importing export task: {0}'.format(e)
-                logger.debug(msg)
+                LOG.debug(msg)
 
         # run the tasks
         if len(export_tasks) > 0:
@@ -96,9 +96,9 @@ class ExportTaskRunner(TaskRunner):
                 run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED')  # persist the run
                 run.save()
                 run_uid = str(run.uid)
-                logger.debug('Saved run with id: {0}'.format(run_uid))
+                LOG.debug('Saved run with id: {0}'.format(run_uid))
             except DatabaseError as e:
-                logger.error('Error saving export run: {0}'.format(e))
+                LOG.error('Error saving export run: {0}'.format(e))
                 raise e
 
             # setup the staging directory
@@ -134,9 +134,9 @@ class ExportTaskRunner(TaskRunner):
                 try:
                     ExportTask.objects.create(run=run,
                                               status='PENDING', name=initial_task.name)
-                    logger.debug('Saved task: {0}'.format(initial_task.name))
+                    LOG.debug('Saved task: {0}'.format(initial_task.name))
                 except DatabaseError as e:
-                    logger.error('Saving task {0} threw: {1}'.format(initial_task.name, e))
+                    LOG.error('Saving task {0} threw: {1}'.format(initial_task.name, e))
                     raise e
             # save the rest of the ExportFormat tasks.
             for export_task in export_tasks:
@@ -151,9 +151,9 @@ class ExportTaskRunner(TaskRunner):
                 try:
                     ExportTask.objects.create(run=run,
                                               status='PENDING', name=export_task.name)
-                    logger.debug('Saved task: {0}'.format(export_task.name))
+                    LOG.debug('Saved task: {0}'.format(export_task.name))
                 except DatabaseError as e:
-                    logger.error('Saving task {0} threw: {1}'.format(export_task.name, e))
+                    LOG.error('Saving task {0} threw: {1}'.format(export_task.name, e))
                     raise e
             # check if we need to generate a preset file from Job feature selections
             if job.feature_save or job.feature_pub:
@@ -161,7 +161,7 @@ class ExportTaskRunner(TaskRunner):
                 preset_task = GeneratePresetTask()
                 ExportTask.objects.create(run=run,
                                               status='PENDING', name=preset_task.name)
-                logger.debug('Saved task: {0}'.format(preset_task.name))
+                LOG.debug('Saved task: {0}'.format(preset_task.name))
                 # add to export tasks
                 export_tasks.append(preset_task)
 
@@ -212,4 +212,4 @@ class ExportTaskRunner(TaskRunner):
 
 
 def error_handler(task_id=None):
-    logger.debug('In error handler %s' % task_id)
+    LOG.debug('In error handler %s' % task_id)

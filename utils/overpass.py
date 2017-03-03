@@ -11,7 +11,7 @@ from requests import exceptions
 
 from django.conf import settings
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class Overpass(object):
@@ -78,7 +78,7 @@ class Overpass(object):
             the path to the overpass extract
         """
         q = self.get_query()
-        logger.debug(q)
+        LOG.debug(q)
         if self.debug:
             print 'Query started at: %s' % datetime.now()
         try:
@@ -88,7 +88,7 @@ class Overpass(object):
                 for chunk in req.iter_content(CHUNK):
                     fd.write(chunk)
         except exceptions.RequestException as e:
-            logger.error('Overpass query threw: {0}'.format(e))
+            LOG.error('Overpass query threw: {0}'.format(e))
             raise exceptions.RequestException(e)
         if self.debug:
             print 'Query finished at %s' % datetime.now()
@@ -107,7 +107,7 @@ class Overpass(object):
                 with open(self.filter_params, 'w') as f:
                     f.write(self.filter_template)
             except IOError as e:
-                logger.error('Error saving filter params file', e)
+                LOG.error('Error saving filter params file', e)
                 # can't filter so return the raw data
                 shutil.copy(self.raw_osm, self.filtered_osm)
                 return self.filtered_osm
@@ -127,12 +127,12 @@ class Overpass(object):
             (stdout, stderr) = proc.communicate()
             returncode = proc.wait()
             if (returncode != 0):
-                logger.error('%s', stderr)
+                LOG.error('%s', stderr)
                 raise Exception, "osmfilter process failed with returncode {0}".format(returncode)
             return self.filtered_osm
 
         else:
-            logger.error('No filters found. Returning raw osm data.')
+            LOG.error('No filters found. Returning raw osm data.')
             shutil.copy(self.raw_osm, self.filtered_osm)
             return self.filtered_osm
 
@@ -148,7 +148,7 @@ class Overpass(object):
         (stdout, stderr) = proc.communicate()
         returncode = proc.wait()
         if (returncode != 0):
-            logger.error('%s', stderr)
+            LOG.error('%s', stderr)
             raise Exception, "osmconvert process failed with returncode {0}: {1}".format(returncode, stderr)
         return om5
 

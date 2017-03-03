@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-import logging
 import pdb
 from collections import OrderedDict
 from StringIO import StringIO
 
 from lxml import etree
-
-logger = logging.getLogger(__name__)
 
 
 class PresetParser():

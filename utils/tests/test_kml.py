@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 
 from mock import Mock, patch
@@ -7,8 +6,6 @@ from mock import Mock, patch
 from django.test import SimpleTestCase
 
 from ..kml import SQliteToKml
-
-logger = logging.getLogger(__name__)
 
 
 class TestSQliteToKml(SimpleTestCase):

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
@@ -8,8 +6,6 @@ from django.utils import timezone
 
 from jobs.models import Job
 from tasks.scheduled_tasks import PurgeUnpublishedExportsTask
-
-logger = logging.getLogger(__name__)
 
 
 class TestPurgeUnpublishedExportsTask(TestCase):

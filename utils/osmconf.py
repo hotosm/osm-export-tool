@@ -3,7 +3,7 @@ import ConfigParser
 import logging
 import os
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class EqualsSpaceRemover:
@@ -62,6 +62,6 @@ class OSMConfig(object):
             with open(config_file, 'wb') as configfile:
                 self.config.write(EqualsSpaceRemover(configfile))
         except IOError as e:
-            logger.error(e)
+            LOG.error(e)
             raise IOError('Failed to create osmconf ini file.')
         return config_file

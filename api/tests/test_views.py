@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import logging
 import os
 import uuid
 from unittest import skip
@@ -19,8 +18,6 @@ from rest_framework.test import APITestCase
 from api.pagination import LinkHeaderPagination
 from jobs.models import ExportConfig, ExportFormat, ExportProfile, Job
 from tasks.models import ExportRun, ExportTask
-
-logger = logging.getLogger(__name__)
 
 
 class TestJobViewSet(APITestCase):
