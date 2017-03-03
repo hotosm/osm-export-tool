@@ -12,10 +12,10 @@ INSTALLED_APPS += (
     'utils',
 )
 
-
 LOGIN_URL = '/login/'
 
 EXPORT_TASKS = {
+    'pbf': 'tasks.export_tasks.PbfExportTask',
     'shp': 'tasks.export_tasks.ShpExportTask',
     'obf': 'tasks.export_tasks.ObfExportTask',
     'sqlite': 'tasks.export_tasks.SqliteExportTask',
