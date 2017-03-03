@@ -2,32 +2,52 @@
 
 set -eo pipefail
 
-sudo apt install -y python-pip
-sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main"
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt update
-sudo apt install -y postgresql-9.6-postgis-2.3
-sudo apt install libpq-dev python-dev
+export DEBIAN_FRONTEND=noninteractive
 
-sudo -u postgres createuser -s -P hot
-sudo -u postgres createdb -O hot hot_exports_dev
+>&2 echo "Adding PostgreSQL apt repository..."
 
-sudo apt-get install gdal-bin libgdal-dev python-gdal
-sudo apt-get install osmctools
-sudo apt-get install spatialite-bin libspatialite5 libspatialite-dev
-sudo apt-get install default-jre zip unzip
-sudo apt-get install rabbitmq-server
-sudo apt install git
-git clone git@github.com:hotosm/osm-export-tool2.git
-cd osm-export-tool2/
+# not using add-apt-repository in order to avoid conflicts w/ rewrites to
+# /etc/apt/sources.list on boot
+echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/postgresql.list
+curl -sf https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+apt update
 
-sudo apt-get install libxslt1-dev
+>&2 echo "Installing apt packages..."
 
-sudo pip install -r requirements-dev.txt
+apt install -y --no-install-recommends \
+  postgresql-9.6-postgis-2.3 libpq-dev python-dev python-pip gdal-bin \
+  libgdal-dev python-gdal osmctools spatialite-bin libspatialite5 \
+  libspatialite-dev default-jre zip unzip rabbitmq-server git libxslt1-dev \
+  postfix build-essential postgresql-9.6-postgis-2.3-scripts nginx \
+  postgresql-contrib-9.6
 
-sudo apt install postfix
+>&2 echo "Cloning git repository..."
 
-mkdir ~/exports
+git clone https://github.com/hotosm/osm-export-tool2.git ${app_root}
+cd ${app_root}
+
+>&2 echo "Installing Python packages..."
+
+pip install -r requirements-dev.txt
+pip install gunicorn
+
+>&2 echo "Fetching and installing 3rd-party utilities..."
+
+curl -sfL http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip -o /tmp/osmandmapcreator.zip
+unzip /tmp/osmandmapcreator.zip -d ${base_dir}/osmandmapcreator
+rm /tmp/osmandmapcreator.zip
+
+curl -sfL http://www.mkgmap.org.uk/download/mkgmap-r3672.zip -o /tmp/mkgmap.zip
+unzip /tmp/mkgmap.zip -d ${base_dir}/mkgmap
+rm /tmp/mkgmap.zip
+
+curl -sfL http://www.mkgmap.org.uk/download/splitter-r435.zip -o /tmp/splitter.zip
+unzip /tmp/splitter.zip -d ${base_dir}/splitter
+rm /tmp/splitter.zip
+
+mkdir -p ${exports_dir}
+
+>&2 echo "Placing configuration files..."
 
 cat <<EOF > core/settings/site.py
 # -*- coding: utf-8 -*-
@@ -35,46 +55,46 @@ from __future__ import absolute_import
 
 from .prod import *  # NOQA
 
-ALLOWED_HOSTS = ['10.0.1.56']
-SESSION_COOKIE_DOMAIN = '10.0.1.56'
-HOSTNAME = '10.0.1.56'
-TASK_ERROR_EMAIL = 'seth@mojodna.net'
-DEBUG=True
+ALLOWED_HOSTS = ['${fqdn}']
+SESSION_COOKIE_DOMAIN = '${fqdn}'
+HOSTNAME = '${fqdn}'
+TASK_ERROR_EMAIL = '${task_error_email}'
+DEBUG=${debug}
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'hot_exports_dev',
+        'NAME': '${db_name}',
         'OPTIONS': {
             'sslmode': 'require',
         },
         'CONN_MAX_AGE': None,
-        'USER': 'hot',
-        'PASSWORD': 'hot',
-        'HOST': 'localhost'
+        'USER': '${db_username}',
+        'PASSWORD': '${db_password}',
+        'HOST': '${db_host}'
     }
 }
 
 
-EXPORT_STAGING_ROOT = '/home/ubuntu/exports/staging/'
+EXPORT_STAGING_ROOT = '${exports_dir}/staging/'
 
 # where exports are stored for public download
-EXPORT_DOWNLOAD_ROOT = '/home/ubuntu/exports/download/'
+EXPORT_DOWNLOAD_ROOT = '${exports_dir}/download/'
 
 # the root url for export downloads
 EXPORT_MEDIA_ROOT = '/downloads/'
 
 # home dir of the OSMAnd Map Creator
-OSMAND_MAP_CREATOR_DIR = '/home/ubuntu/osmandmapcreator'
+OSMAND_MAP_CREATOR_DIR = '${base_dir}/osmandmapcreator'
 
 # location of the garmin config file
-GARMIN_CONFIG = '/home/ubuntu/osm-export-tool2/utils/conf/garmin_config.xml'
+GARMIN_CONFIG = '${app_root}/utils/conf/garmin_config.xml'
 
-OVERPASS_API_URL = 'http://overpass-api.de/api/interpreter'
+OVERPASS_API_URL = '${overpass_api_url}'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join('/home/ubuntu/osm-export-tool2', 'static')
+STATIC_ROOT = '${app_root}/static'
 EOF
 
 cat <<EOF | sudo tee /etc/postfix/main.cf
@@ -108,10 +128,10 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 # information on enabling SSL in the smtp client.
 
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
-myhostname = osm-export-tool2
+myhostname = ${hostname}
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-mydestination = osm-export-tool2, localhost.localdomain, , localhost
+mydestination = ${hostname}, localhost.localdomain, localhost
 relayhost =
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0
@@ -120,12 +140,153 @@ inet_interfaces = all
 inet_protocols = ipv4
 EOF
 
+cat <<EOF > ${app_root}/utils/conf/garmin_config.xml
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Garmin IMG file creation config.
+    @see utils/garmin.py
+-->
+<garmin obj="prog" src="export.hotosm.org">
+    <mkgmap>${base_dir}/mkgmap/mkgmap.jar</mkgmap>
+    <splitter>${base_dir}/splitter/splitter.jar</splitter>
+    <xmx>1024m</xmx>
+    <description>HOT Export Garmin Map</description>
+    <family-name>HOT Exports</family-name>
+    <family-id>2</family-id>
+    <series-name>HOT Exports</series-name>
+</garmin>
+EOF
+
+cat <<EOF > /etc/nginx/sites-available/osm-export-tool2
+server {
+  server_name ${fqdn};
+  listen 0.0.0.0:80;
+
+  location /static/ {
+    alias ${app_root}/static/;
+  }
+
+  location /downloads/ {
+    alias ${exports_dir};
+  }
+
+  location / {
+    proxy_pass http://127.0.0.1:8001;
+    proxy_set_header X-Forwarded-Host \$server_name;
+    proxy_set_header X-Real-IP \$remote_addr;
+  }
+}
+EOF
+
+ln -sf /etc/nginx/sites-available/osm-export-tool2 /etc/nginx/sites-enabled/00-osm-export-tool2
+rm -f /etc/nginx/sites-enabled/default
+
+>&2 echo "Generating Upstart scripts..."
+
+cat <<EOF > /etc/init/celery.conf
+description     "celery"
+
+start on (local-filesystems and net-device-up and runlevel [2345])
+stop on shutdown
+
+env DJANGO_SETTINGS_MODULE=core.settings.site
+
+respawn
+#respawn limit 5 60
+
+pre-start script
+    echo "[`date '+%c'`] Starting: celery" >> /var/log/celery.log
+end script
+
+pre-stop script
+    echo "[`date '+%c'`] Stopping: celery" >> /var/log/celery.log
+end script
+
+exec start-stop-daemon \
+        --start \
+        --chdir ${app_root} \
+        --chuid ubuntu \
+        --make-pidfile \
+        --pidfile /var/run/celery.pid \
+                --exec /usr/local/bin/celery -- -A core worker >> /var/log/celery.log 2>&1
+EOF
+
+cat <<EOF > /etc/init/celery-beat.conf
+description     "celery-beat"
+
+start on (local-filesystems and net-device-up and runlevel [2345])
+stop on shutdown
+
+env DJANGO_SETTINGS_MODULE=core.settings.site
+
+respawn
+#respawn limit 5 60
+
+pre-start script
+    echo "[`date '+%c'`] Starting: celery-beat-beat" >> /var/log/celery-beat.log
+end script
+
+pre-stop script
+    echo "[`date '+%c'`] Stopping: celery-beat-beat" >> /var/log/celery-beat.log
+end script
+
+exec start-stop-daemon \
+        --start \
+        --chdir ${app_root} \
+        --chuid ubuntu \
+        --make-pidfile \
+        --pidfile /var/run/celery-beat.pid \
+                --exec /usr/local/bin/celery -- -A core beat >> /var/log/celery-beat.log 2>&1
+EOF
+
+cat <<EOF > /etc/init/gunicorn.conf
+description     "osm-export-tool2 (gunicorn)"
+
+start on (local-filesystems and net-device-up and runlevel [2345])
+stop on shutdown
+
+env DJANGO_SETTINGS_MODULE=core.settings.site
+env STATIC_ROOT=${app_root}/static
+
+respawn
+#respawn limit 5 60
+
+pre-start script
+    echo "[`date '+%c'`] Starting: osm-export-tool2" >> /var/log/osm-export-tool2.log
+end script
+
+pre-stop script
+    echo "[`date '+%c'`] Stopping: osm-export-tool2" >> /var/log/osm-export-tool2.log
+end script
+
+exec start-stop-daemon \
+        --start \
+        --chdir ${app_root} \
+        --chuid ubuntu \
+        --make-pidfile \
+        --pidfile /var/run/osm-export-tool2.pid \
+        --exec /usr/local/bin/gunicorn -- core.wsgi:application --workers=3 --bind :8001 >> /var/log/osm-export-tool2.log 2>&1
+EOF
+
+>&2 echo "Configuring PostgreSQL..."
+
+echo "CREATE ROLE ${db_username} WITH LOGIN PASSWORD '${db_password}' SUPERUSER INHERIT" | sudo -u postgres psql
+sudo -u postgres createdb -O ${db_username} ${db_name}
+
+>&2 echo "Initializing database..."
+
 export DJANGO_SETTINGS_MODULE=core.settings.site
 
 python manage.py migrate
-python manage.py collectstatic
 
-# Commands to run in separate sessions:
+>&2 echo "Generating static assets..."
 
-# ./manage.py runserver 0.0.0.0:8000
-# celery -A core worker
+python manage.py collectstatic --no-input
+
+chown -R ubuntu ${app_root}
+chown -R ubuntu ${exports_dir}
+
+# # Commands to run in separate sessions:
+#
+# # ./manage.py runserver 0.0.0.0:8000
+# # celery -A core worker

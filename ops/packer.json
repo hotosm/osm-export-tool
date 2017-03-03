@@ -1,1 +1,42 @@
-
+{
+  "variables": {
+    "app_root": "/opt/osm-export-tool2",
+    "base_dir": "/opt",
+    "db_username": "hot",
+    "db_password": "hot",
+    "db_host": "localhost",
+    "db_name": "hot_exports",
+    "debug": "True",
+    "exports_dir": "/opt/exports",
+    "fqdn": "osm-export-tool2.local",
+    "hostname": "osm-export-tool2",
+    "overpass_api_url": "http://overpass-api.de/api/interpreter",
+    "task_error_email": "seth@mojodna.net"
+  },
+  "builders": [{
+    "type": "lxd",
+    "name": "packer-osm-export-tool2",
+    "image": "ubuntu:14.04",
+    "output_image": "osm-export-tool2"
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "provision.sh",
+      "environment_vars": [
+        "app_root={{user `app_root`}}",
+        "base_dir={{user `base_dir`}}",
+        "db_username={{user `db_username`}}",
+        "db_password={{user `db_password`}}",
+        "db_host={{user `db_host`}}",
+        "db_name={{user `db_name`}}",
+        "debug={{user `debug`}}",
+        "exports_dir={{user `exports_dir`}}",
+        "fqdn={{user `fqdn`}}",
+        "hostname={{user `hostname`}}",
+        "overpass_api_url={{user `overpass_api_url`}}",
+        "task_error_email={{user `task_error_email`}}"
+      ]
+    }
+  ]
+}
