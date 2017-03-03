@@ -420,15 +420,20 @@ create.job = (function(){
                     $('#create-job-wizard').bootstrapWizard('enable', 3);
                     $('#create-job-wizard').bootstrapWizard('enable', 4);
                 }
-                if (index == 2 || index == 3) {
-                    $('li.next').css('display', 'block');
-                }
-                else {
+                if (index == 4) {
                     $('li.next').css('display', 'none');
                 }
+                else {
+                    $('li.next').css('display', 'block');
+                    if (index == 2 || index == 3) {
+                      $('li.next a').text(gettext("Skip"));
+                    } else {
+                      $('li.next a').text(gettext("Next"));
+                    }
+                }
             },
-            onNext: function(tab, navigation, index){
-                return validateTab(index);
+            onNext: function(tab, navigation, nextIndex){
+                return validateTab(nextIndex-1);
             }
         });
 
