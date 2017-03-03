@@ -59,7 +59,7 @@ ALLOWED_HOSTS = ['${fqdn}']
 SESSION_COOKIE_DOMAIN = '${fqdn}'
 HOSTNAME = '${fqdn}'
 TASK_ERROR_EMAIL = '${task_error_email}'
-DEBUG=${debug}
+DEBUG = ${debug}
 
 
 DATABASES = {
