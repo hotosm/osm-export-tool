@@ -105,6 +105,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.postgres',
     'django.contrib.sites',
+    'raven.contrib.django.raven_compat',
 )
 
 

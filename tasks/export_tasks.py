@@ -20,6 +20,9 @@ from utils import (
     garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp
 )
 
+from raven import Client
+client = Client(settings.RAVEN_CONFIG['dsn'])
+
 # Get an instance of a logger
 logger = get_task_logger(__name__)
 
@@ -100,6 +103,14 @@ class ExportTask(Task):
             5. run ExportTaskErrorHandler if the run should be aborted
                - this is only for initial tasks on which subsequent export tasks depend
         """
+        client.captureException(
+            extra={
+                'task_id': task_id,
+                'task': exc,
+                'args': args,
+                'kwargs': kwargs
+            }
+        )
         from tasks.models import ExportTask, ExportTaskException, ExportRun
         logger.debug('Task name: {0} failed, {1}'.format(self.name, einfo))
         task = ExportTask.objects.get(celery_uid=task_id)

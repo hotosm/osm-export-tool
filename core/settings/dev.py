@@ -140,3 +140,7 @@ LOGGING = {
         },
     }
 }
+
+RAVEN_CONFIG = {
+    'dsn': None,
+}
