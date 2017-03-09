@@ -1,0 +1,1 @@
+git+git://github.com/ocha-dap/hdx-python-api.git@v0.82#egg=hdx-python-api

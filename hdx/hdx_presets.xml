@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<presets xmlns="http://josm.openstreetmap.de/tagging-preset-1.0">
+  <group name="HDX Buildings Preset">
+    <item type="node,way,closedway,relation">
+      <key key="highway" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="surface" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="smoothness" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="width" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="lanes" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="oneway" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="bridge" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="layer" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="addr:city" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="addr:street" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="addr:housenumber" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="office" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="building:materials" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="building:levels" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="building" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="name" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="waterway" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="covered" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="width" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="depth" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="layer" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="blockage" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="tunnel" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="natural" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="water" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="amenity" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="man_made" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="shop" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="tourism" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="opening_hours" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="beds" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="rooms" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="boundary" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="admin_level" value=""/>
+    </item>
+    <item type="node,way,closedway,relation">
+      <key key="place" value=""/>
+    </item>
+  </group>
+</presets>
+
