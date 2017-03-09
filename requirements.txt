@@ -15,3 +15,4 @@ requests>=2.5.1
 python-openid
 requests_oauthlib
 raven==6.0.0
+shapely==1.5.17
