@@ -65,6 +65,21 @@ def logout(request):
         RequestContext(request)
     )
 
+def scheduled_exports(request):
+    user = request.user
+    context = {'user': user}
+    return render_to_response('ui/scheduled_exports.html', context)
+
+def scheduled_exports_edit(request):
+    user = request.user
+    context = {'user': user}
+    return render_to_response('ui/scheduled_exports_edit.html', context)
+
+def scheduled_exports_create(request):
+    user = request.user
+    context = {'user': user}
+    return render_to_response('ui/scheduled_exports_create.html', context)
+
 
 def require_email(request):
     """

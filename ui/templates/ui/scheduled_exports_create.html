@@ -1,0 +1,111 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block css %}
+{{ block.super}}
+<link rel="stylesheet" href="{% static 'ui/contrib/datatables/media/css/jquery.dataTables.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/contrib/datatables/media/css/dataTables.bootstrap.css' %}"/>
+<link rel="stylesheet" href="{% static 'ui/contrib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}"/>
+{% endblock %}
+
+{% block container %}
+
+
+<div class="row" style="padding:15px">
+    <div id="search" class="col-md-7">
+        <h2>Scheduled Exports</h2>
+
+
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Modify Scheduled Export
+      </div>
+      <div class="panel-body">
+        <label>
+          Run this export on an automated schedule:
+          <select class="form-control">
+            <option>Disabled</option>
+            <option>Every day at 12AM GMT</option>
+            <option>Every week - Sunday at 12AM GMT</option>
+          </select> 
+        </label>
+
+
+
+
+
+        <div class="form-group">
+          <label for="comment">Feature Selection:</label>
+          <textarea class="form-control" rows="6" id="comment">
+table: buildings
+  - building
+  - building:levels
+  - building:materials
+  - addr:housenumber
+  - addr:street
+  - addr:city
+  office
+table: roads
+  - highway
+  - name
+  - surface
+  - smoothness
+  - width
+  - lanes
+  - oneway
+  - bridge
+  - layer
+          </textarea>
+        </div>
+
+        Formats:
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> ESRI Shapefiles
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> .KMZ
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> OpenStreetMap PBF
+          </label>
+        </div>
+      </div>
+    </div>
+
+        <a type="button" href="/scheduled_exports/create" class="btn btn-lg btn-primary">Run New Export</a>
+    </div>
+    <button type="button" class="btn btn-info">Upload GeoJSON Area</button>
+    <div id="map-column" class="col-md-5">
+        <div id="list-export-map"></div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block corejs %}
+{{ block.super }}
+<script src="{% static 'ui/contrib/bootstrap3-typeahead/bootstrap3-typeahead.js' %}"></script>
+<script src="{% static 'ui/contrib/openlayers/OpenLayers.js' %}"></script>
+<script src="{% static 'ui/contrib/numeral/min/numeral.min.js' %}"></script>
+<script src="{% static 'ui/contrib/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'ui/contrib/twitter-bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/formValidation.min.js' %}"></script>
+<script src="{% static 'ui/contrib/formvalidation/dist/js/framework/bootstrap.min.js' %}"></script>
+<script src="{% static 'ui/contrib/datatables/media/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ui/contrib/datatables/media/js/dataTables.bootstrap.js' %}"></script>
+<script src="{% static 'ui/contrib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
+
+<script src="{% static 'ui/js/layers.js' %}"></script>
+<script src="{% static 'ui/js/config.js' %}"></script>
+<script src="{% static 'ui/js/scheduled_exports.js' %}"></script>
+{% endblock %}
+
+
