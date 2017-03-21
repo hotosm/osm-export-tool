@@ -12,7 +12,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.signing import BadSignature
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
-from django.template import Context
 from django.template.loader import get_template
 
 LOG = logging.getLogger(__name__)
@@ -47,8 +46,8 @@ def email_validation(strategy, backend, code):  # pragma: no cover
             'verifyUrl': verifyURL,
     }
     subject = "Please verify your email address"
-    text = get_template('osm/verify_osm_email.txt').render(Context(ctx))
-    html = get_template('osm/verify_osm_email.html').render(Context(ctx))
+    text = get_template('osm/verify_osm_email.txt').render(ctx)
+    html = get_template('osm/verify_osm_email.html').render(ctx)
     msg = EmailMultiAlternatives(subject, text, to=[code.email], from_email="HOT Exports <exports@hotosm.org>")
     msg.attach_alternative(html, "text/html")
     msg.send()
