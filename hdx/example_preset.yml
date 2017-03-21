@@ -1,0 +1,90 @@
+# results in buildings_polygons shapefile
+- buildings:
+  types: polygons
+  select:
+    - Geometry
+    - osm_id
+    - name
+    - building
+    - building_levels
+    - building_materials
+    - addr_housenumber
+    - addr_street
+    - addr_city
+    - office
+  where:
+    building IS NOT NULL
+
+# results in roads_lines shapefile
+- roads:
+  types: lines 
+  select:
+    - Geometry
+    - osm_id
+    - name
+    - highway
+    - surface
+    - smoothness
+    - width
+    - lanes
+    - oneway
+    - bridge
+    - layer
+  where:
+    highway IS NOT NULL
+ 
+# results in waterways_lines, waterways_polygons shapefiles
+- waterways:
+  types: lines, polygons
+  select:
+    - Geometry
+    - osm_id
+    - name
+    - waterway
+    - covered
+    - width
+    - depth
+    - layer
+    - blockage
+    - tunnel
+    - natural
+    - water
+  where:
+    waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','coastline','bay')
+
+# results in points_of_interest_points, points_of_interest_polygons shapefiles
+- points_of_interest:
+  types: points, polygons
+  select:
+    - Geometry
+    - osm_id
+    - name
+    - amenity
+    - man_made
+    - shop
+    - tourism
+    - opening_hours
+    - beds
+    - rooms
+    - addr_housenumber
+    - addr_street
+    - addr_city
+  where:
+    amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
+
+- admin_boundaries:
+  types: lines, polygons
+  select:
+    - Geometry
+    - osm_id
+    - name
+    - boundary
+    - admin_level
+    - place
+   where:
+     boundary = 'administrative' OR admin_level IS NOT NULL
+
+          
+
+
+    
