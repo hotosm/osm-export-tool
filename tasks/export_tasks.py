@@ -21,7 +21,7 @@ from utils import (
 )
 
 from raven import Client
-client = Client(settings.RAVEN_CONFIG['dsn'])
+client = Client()
 
 # Get an instance of a logger
 logger = get_task_logger(__name__)
