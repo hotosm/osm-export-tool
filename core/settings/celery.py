@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import os
+
 from celery.schedules import crontab
 
 from .contrib import *  # NOQA
@@ -23,3 +25,5 @@ CELERY_CHORD_PROPAGATES = False
 # configure periodic task
 CELERYBEAT_SCHEDULE = {
 }
+
+BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672//')
