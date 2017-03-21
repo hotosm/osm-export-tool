@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import os
+
 from .project import *  # NOQA
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -69,26 +71,20 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-            'formatter': 'verbose'
-        },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
-            'level': 'DEBUG',
+            'level': os.environ.get('LOG_LEVEL', 'DEBUG'),
         }
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
-            'level': 'ERROR',
+            'level': os.environ.get('DJANGO_LOG_LEVEL', 'ERROR'),
         },
         'api': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
@@ -103,37 +99,37 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'tasks': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'celery.task': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'jobs': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'jobs.tests': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'utils': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'utils.tests': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'hot_exports': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',
         },
