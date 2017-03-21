@@ -23,6 +23,8 @@ RUN \
     unzip \
     libxslt1-dev \
     build-essential \
+    git \
+    libffi-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
