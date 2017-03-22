@@ -86,8 +86,7 @@ EXPORT_MAX_RUNS = 5
 HOSTNAME = os.environ.get('HOSTNAME', 'export.hotosm.org')
 
 # Comment if you are not running behind proxy
-# TODO expose via environment
-USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', False)
+USE_X_FORWARDED_HOST = bool(os.environ.get('USE_X_FORWARDED_HOST', False))
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts

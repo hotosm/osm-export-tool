@@ -19,7 +19,7 @@ TIME_ZONE = 'UTC'
 
 # default DEBUG setting
 # Set debug to false for production
-DEBUG = os.environ.get('DEBUG', True)
+DEBUG = bool(os.environ.get('DEBUG', True))
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
