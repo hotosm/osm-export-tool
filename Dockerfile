@@ -64,6 +64,6 @@ USER exports
 RUN \
   python manage.py collectstatic --no-input
 
-VOLUME ["/opt/export_staging", "/opt/export_downloads"]
+VOLUME ["/opt/export_staging", "/opt/export_downloads", "/opt/osm-export-tool2/static"]
 
 CMD ["echo", "Override this command"]
