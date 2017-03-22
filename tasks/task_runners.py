@@ -102,7 +102,7 @@ class ExportTaskRunner(TaskRunner):
                 raise e
 
             # setup the staging directory
-            stage_dir = settings.EXPORT_STAGING_ROOT + str(run_uid) + '/'
+            stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid))
             os.makedirs(stage_dir, 6600)
 
             # pull out the tags to create the conf file
