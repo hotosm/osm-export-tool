@@ -57,10 +57,10 @@ EXPORT_TASKS = {
 }
 
 # where exports are staged for processing
-EXPORT_STAGING_ROOT = ABS_PATH('../export_staging')
+EXPORT_STAGING_ROOT = ABS_PATH('../export_staging/')
 
 # where exports are stored for public download
-EXPORT_DOWNLOAD_ROOT = ABS_PATH('../export_downloads')
+EXPORT_DOWNLOAD_ROOT = ABS_PATH('../export_downloads/')
 
 # the root url for export downloads
 EXPORT_MEDIA_ROOT = '/downloads/'
