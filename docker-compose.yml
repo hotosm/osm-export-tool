@@ -20,8 +20,6 @@ services:
     links:
       - postgresql
       - rabbitmq
-    expose:
-      - "6080"
     command: celery -A core beat
   celery:
     extends:
