@@ -67,7 +67,7 @@ class ExportTask(Task):
         filename = parts[-1]
         run_uid = parts[-2]
         run_dir = os.path.join(download_root, run_uid)
-        download_path = os.path.join(download_path, run_uid, filename)
+        download_path = os.path.join(download_root, run_uid, filename)
         try:
             if not os.path.exists(run_dir):
                 os.makedirs(run_dir)
