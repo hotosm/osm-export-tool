@@ -222,6 +222,11 @@ Finally, compile language files
 * `DATABASE_URL` - Database URL. Defaults to `postgres:///exports`
 * `DEBUG` - Whether to enable debug mode. Defaults to `False` (production).
 * `DJANGO_ENV` - Django environment. Set to `development` to enable development tools.
+* `EMAIL_HOST` - SMTP host. Optional.
+* `EMAIL_HOST_USER` - SMTP username. Optional.
+* `EMAIL_HOST_PASSWORD` = SMTP password. Optional.
+* `EMAIL_PORT` = SMTP port. Optional.
+* `EMAIL_USE_TLS` = Whether to use TLS when sending mail. Optional.
 * `HOSTNAME` - Publicly-addressable hostname. Defaults to `export.hotosm.org`
 * `OSM_API_KEY` - OSM API key. Optional (a default will be used).
 * `OSM_API_SECRET` - OSM API secret. Optional (a default will be used).
