@@ -2,7 +2,7 @@ version: '2'
 services:
   base:
     image: quay.io/hotosm/osm-export-tool2
-    .env_file:
+    env_file:
       - .env
     environment:
       - DATABASE_URL=postgres://exports:exports@postgresql/exports
