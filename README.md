@@ -218,6 +218,7 @@ Finally, compile language files
 
 ## Environment Variables
 
+* `BROKER_URL` - Celery broker URL. Defaults to `amqp://guest:guest@localhost:5672/`
 * `DATABASE_URL` - Database URL. Defaults to `postgres:///exports`
 * `DEBUG` - Whether to enable debug mode. Defaults to `False` (production).
 * `DJANGO_ENV` - Django environment. Set to `development` to enable development tools.
