@@ -17,6 +17,8 @@ services:
     links:
       - postgresql
       - rabbitmq
+    volumes_from:
+      - site
     command: celery -A core beat
   celery:
     extends:
@@ -30,6 +32,8 @@ services:
       - rabbitmq
     environment:
       - CONCURRENCY=2
+    volumes_from:
+      - site
     command: celery -A core worker
   migration:
     extends:
