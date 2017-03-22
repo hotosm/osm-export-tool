@@ -1,20 +1,16 @@
 from __future__ import absolute_import
 
-from django.conf import settings
+import os
 
 from celery import Celery
 
-# celery is going to be executed on the command line or via system scripts
-# it's assumed that DJANGO_SETTINGS_MODULE environment variable is set
+# provide a default so that appropriate settings can be loaded
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.project')
 
-app = Celery(
-    'exports',
-    broker='amqp://',
-    backend='amqp://'
-)
+from django.conf import settings
 
 
-# Using a string here means the worker will not have to
-# pickle the object when using Windows.
+app = Celery('exports')
+
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)

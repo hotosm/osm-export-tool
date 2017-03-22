@@ -5,12 +5,11 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgres://exports:exports@postgresql:5432/exports
+      - DATABASE_URL=postgres://exports:exports@postgresql/exports
       - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
-      - DEBUG=True
       - DJANGO_LOG_LEVEL=INFO
-      - DJANGO_SETTINGS_MODULE=core.settings.site
       - LOG_LEVEL=DEBUG
+      - DJANGO_ENV=development
   celery-beat:
     extends:
       service: base

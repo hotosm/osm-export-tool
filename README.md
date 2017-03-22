@@ -86,6 +86,8 @@ or
 
 ### Project Settings
 
+TODO this should be updated to reflect environment variables laid out below.
+
 Create a copy of <code>core/settings/dev_dodobas.py</code> and update to reflect your development environment. <code>core/settings/dev.py</code> exists for this purpose.
 
 Look at <code>core/settings/project.py</code> and make sure you update or override the following configuration variables in your development settings:
@@ -213,3 +215,24 @@ For all languages:
 Finally, compile language files
 
 `python manage.py compilemessages`
+
+## Environment Variables
+
+* `DATABASE_URL` - Database URL. Defaults to `postgres:///exports`
+* `DEBUG` - Whether to enable debug mode. Defaults to `False` (production).
+* `DJANGO_ENV` - Django environment. Set to `development` to enable development tools.
+* `HOSTNAME` - Publicly-addressable hostname. Defaults to `export.hotosm.org`
+* `OSM_API_KEY` - OSM API key. Optional (a default will be used).
+* `OSM_API_SECRET` - OSM API secret. Optional (a default will be used).
+* `OVERPASS_API_URL` - Overpass API URL. Defaults to `http://overpass-api.de/api/interpreter`
+* `TASK_ERROR_EMAIL` - Email address to send task errors to. Defaults to `export-tool@hotosm.org`
+* `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`
+
+## Paths
+
+The following paths are siblings:
+
+* `osm-export-tool2` - This app
+* `export_staging` - Where exports are staged
+* `export_downloads` - Where exports are stored for downloading. Should be mapped to `/downloads/` in the proxying web server
+* `osmandmapcreator` - OsmAnd map creator

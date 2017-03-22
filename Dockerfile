@@ -55,16 +55,13 @@ RUN \
 COPY . /opt/osm-export-tool2/
 
 RUN \
-  mkdir -p /opt/exports \
+  mkdir -p /opt/export_staging /opt/export_downloads \
   && useradd exports \
-  && chown -R exports:exports /opt/exports \
-  && chown -R exports:exports /opt/osm-export-tool2
+  && chown -R exports:exports /opt/export* /opt/osm-export-tool2
 
 USER exports
 
 RUN \
   python manage.py collectstatic --no-input
-
-COPY ops/site.py /opt/osm-export-tool2/core/settings/site.py
 
 CMD ["echo", "Override this command"]

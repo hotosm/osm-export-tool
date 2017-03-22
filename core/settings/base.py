@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import os
+
 from django.utils.translation import ugettext_lazy as _
 
 # import SECRET_KEY into current namespace
 from .utils import ABS_PATH
 
 from .secret import SECRET_KEY  # NOQA  # isort:skip
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -15,7 +18,8 @@ from .secret import SECRET_KEY  # NOQA  # isort:skip
 TIME_ZONE = 'UTC'
 
 # default DEBUG setting
-DEBUG = False
+# Set debug to false for production
+DEBUG = os.environ.get('DEBUG', True)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -33,7 +37,6 @@ LANGUAGES = (
 LOCALE_PATHS = (
     ABS_PATH('locales'),
 )
-
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.

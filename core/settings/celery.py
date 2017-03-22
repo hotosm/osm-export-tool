@@ -22,6 +22,11 @@ CELERY_TRACK_STARTED = True
 """
 CELERY_CHORD_PROPAGATES = False
 
+# Pickle used to be the default, and accepting pickled content is a security concern.  Using the new default json,
+# causes a circular reference error, that will need to be resolved.
+CELERY_TASK_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+
 # configure periodic task
 CELERYBEAT_SCHEDULE = {
 }

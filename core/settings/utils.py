@@ -11,7 +11,7 @@ DJANGO_ROOT = os.path.dirname(
 
 
 def ABS_PATH(*args):
-    return os.path.join(DJANGO_ROOT, *args)
+    return os.path.normpath(os.path.join(DJANGO_ROOT, *args))
 
 
 def ensure_secret_key_file():
