@@ -7,6 +7,7 @@ services:
     environment:
       - DATABASE_URL=postgres://exports:exports@postgresql/exports
       - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - USE_X_FORWARDED_HOST=True
   celery-beat:
     extends:
       service: base
@@ -55,10 +56,19 @@ services:
     links:
       - postgresql
       - rabbitmq
-    ports:
-      - "80:6080"
     command: gunicorn core.wsgi:application --workers=3 --bind :6080
-  # nginx:
+  nginx:
+    image: nginx
+    env_file:
+      - .env
+    links:
+      - site
+    ports:
+      - "80:80"
+    volumes:
+      - ./ops/exports.conf:/etc/nginx/conf.d/exports.conf:ro
+    volumes_from:
+      - site
   postgresql:
     image: mdillon/postgis:9.6
     environment:

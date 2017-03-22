@@ -12,6 +12,7 @@ services:
       - DJANGO_LOG_LEVEL=INFO
       - LOG_LEVEL=DEBUG
       - DJANGO_ENV=development
+      - USE_X_FORWARDED_HOST=True
   celery-beat:
     extends:
       service: base
@@ -60,10 +61,19 @@ services:
     links:
       - postgresql
       - rabbitmq
-    ports:
-      - "6080:6080"
     command: gunicorn core.wsgi:application --workers=3 --bind :6080
-  # nginx:
+  nginx:
+    image: nginx
+    env_file:
+      - .env
+    links:
+      - site
+    ports:
+      - "80:80"
+    volumes:
+      - ./ops/exports.conf:/etc/nginx/conf.d/exports.conf:ro
+    volumes_from:
+      - site
   postgresql:
     image: mdillon/postgis:9.6
     environment:
