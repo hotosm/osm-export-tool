@@ -66,8 +66,8 @@ class ExportTask(Task):
         parts = output_url.split('/')
         filename = parts[-1]
         run_uid = parts[-2]
-        run_dir = '{0}{1}'.format(download_root, run_uid)
-        download_path = '{0}{1}/{2}'.format(download_root, run_uid, filename)
+        run_dir = os.path.join(download_root, run_uid)
+        download_path = os.path.join(download_path, run_uid, filename)
         try:
             if not os.path.exists(run_dir):
                 os.makedirs(run_dir)
@@ -79,8 +79,7 @@ class ExportTask(Task):
                 'Error copying output file to: {0}'.format(download_path))
         # construct the download url
         download_media_root = settings.EXPORT_MEDIA_ROOT
-        download_url = '{0}{1}/{2}'.format(download_media_root,
-                                           run_uid, filename)
+        download_url = os.path.join(download_media_root, run_uid, filename)
         # save the task and task result
         result = ExportTaskResult(
             task=task,
@@ -202,8 +201,8 @@ class OSMToPBFConvertTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osm = '{0}{1}.osm'.format(stage_dir, job_name)
-        pbffile = '{0}{1}.pbf'.format(stage_dir, job_name)
+        osm = '{0}.osm'.format(os.path.join(stage_dir, job_name))
+        pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
         o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
         pbffile = o2p.convert()
         return {'result': pbffile}
@@ -218,9 +217,9 @@ class OSMPrepSchemaTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osm = stage_dir + job_name + '.pbf'
-        sqlite = stage_dir + job_name + '.sqlite'
-        osmconf = stage_dir + job_name + '.ini'
+        osm = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
+        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
+        osmconf = '{0}.ini'.format(os.path.join(stage_dir, job_name))
         osmparser = osmparse.OSMParser(osm=osm, sqlite=sqlite, osmconf=osmconf)
         osmparser.create_spatialite()
         osmparser.create_default_schema()
@@ -237,8 +236,8 @@ class PbfExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        osm = '{0}query.osm'.format(stage_dir)
-        pbffile = '{0}{1}-full.pbf'.format(stage_dir, job_name)
+        osm = os.path.join(stage_dir, 'query.osm')
+        pbffile = '{0}-full.pbf'.format(os.path.join(stage_dir, job_name))
         o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
         pbffile = o2p.convert()
         return {'result': pbffile}
@@ -256,7 +255,7 @@ class ThematicLayersExportTask(ExportTask):
         self.update_task_state(run_uid=run_uid, name=self.name)
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
-        sqlite = stage_dir + job_name + '.sqlite'
+        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
         try:
             t2s = thematic_shp.ThematicSQliteToShp(
                 sqlite=sqlite, tags=tags, job_name=job_name)
@@ -276,8 +275,8 @@ class ShpExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        sqlite = stage_dir + job_name + '.sqlite'
-        shapefile = stage_dir + job_name + '_shp'
+        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
+        shapefile = '{0}_shp'.format(os.path.join(stage_dir, job_name))
         try:
             s2s = shp.SQliteToShp(sqlite=sqlite, shapefile=shapefile)
             out = s2s.convert()
@@ -295,8 +294,8 @@ class KmlExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        sqlite = stage_dir + job_name + '.sqlite'
-        kmlfile = stage_dir + job_name + '.kml'
+        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
+        kmlfile = '{0}.kml'.format(os.path.join(stage_dir, job_name))
         try:
             s2k = kml.SQliteToKml(sqlite=sqlite, kmlfile=kmlfile)
             out = s2k.convert()
@@ -314,15 +313,15 @@ class ObfExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        pbffile = stage_dir + job_name + '.pbf'
+        pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
         map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
-        work_dir = stage_dir + 'osmand'
+        work_dir = os.path.join(stage_dir, 'osmand')
         try:
             o2o = osmand.OSMToOBF(
                 pbffile=pbffile, work_dir=work_dir, map_creator_dir=map_creator_dir
             )
             out = o2o.convert()
-            obffile = stage_dir + job_name + '.obf'
+            obffile = '{0}.obf'.format(os.path.join(stage_dir, job_name))
             shutil.move(out, obffile)
             shutil.rmtree(work_dir)
             return {'result': obffile}
@@ -341,7 +340,7 @@ class SqliteExportTask(ExportTask):
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         # sqlite already generated by OSMPrepSchema so just return path.
-        sqlite = stage_dir + job_name + '.sqlite'
+        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
         return {'result': sqlite}
 
 
@@ -363,9 +362,9 @@ class GarminExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        work_dir = stage_dir + 'garmin'
+        work_dir = os.path.join(stage_dir, 'garmin')
         config = settings.GARMIN_CONFIG  # get path to garmin config
-        pbffile = stage_dir + job_name + '.pbf'
+        pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
         try:
             o2i = garmin.OSMToIMG(
                 pbffile=pbffile, work_dir=work_dir,
@@ -373,7 +372,7 @@ class GarminExportTask(ExportTask):
             )
             o2i.run_splitter()
             out = o2i.run_mkgmap()
-            imgfile = stage_dir + job_name + '_garmin.zip'
+            imgfile = '{0}_garmin.zip'.format(os.path.join(stage_dir, job_name))
             shutil.move(out, imgfile)
             shutil.rmtree(work_dir)
             return {'result': imgfile}
