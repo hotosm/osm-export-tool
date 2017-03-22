@@ -78,4 +78,4 @@ admin_boundaries:
     - boundary
     - admin_level
     - place
-   where: boundary = 'administrative' OR admin_level IS NOT NULL
+  where: boundary = 'administrative' OR admin_level IS NOT NULL
