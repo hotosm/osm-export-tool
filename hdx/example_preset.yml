@@ -1,8 +1,9 @@
-# results in buildings_polygons shapefile
-- buildings:
-  types: polygons
+buildings:
+  types:
+    - points
+    - lines
+    - polygons
   select:
-    - Geometry
     - osm_id
     - name
     - building
@@ -12,14 +13,12 @@
     - addr_street
     - addr_city
     - office
-  where:
-    building IS NOT NULL
+  where: building IS NOT NULL
 
-# results in roads_lines shapefile
-- roads:
-  types: lines 
+roads:
+  types:
+    - lines
   select:
-    - Geometry
     - osm_id
     - name
     - highway
@@ -30,14 +29,13 @@
     - oneway
     - bridge
     - layer
-  where:
-    highway IS NOT NULL
+  where: highway IS NOT NULL
  
-# results in waterways_lines, waterways_polygons shapefiles
-- waterways:
-  types: lines, polygons
+waterways:
+  types: 
+    - lines
+    - polygons
   select:
-    - Geometry
     - osm_id
     - name
     - waterway
@@ -49,14 +47,13 @@
     - tunnel
     - natural
     - water
-  where:
-    waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','coastline','bay')
+  where: waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','coastline','bay')
 
-# results in points_of_interest_points, points_of_interest_polygons shapefiles
-- points_of_interest:
-  types: points, polygons
+points_of_interest:
+  types: 
+    - points
+    - polygons
   select:
-    - Geometry
     - osm_id
     - name
     - amenity
@@ -69,22 +66,16 @@
     - addr_housenumber
     - addr_street
     - addr_city
-  where:
-    amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
+  where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 
-- admin_boundaries:
-  types: lines, polygons
+admin_boundaries:
+  types: 
+    - lines
+    - polygons
   select:
-    - Geometry
     - osm_id
     - name
     - boundary
     - admin_level
     - place
-   where:
-     boundary = 'administrative' OR admin_level IS NOT NULL
-
-          
-
-
-    
+   where: boundary = 'administrative' OR admin_level IS NOT NULL
