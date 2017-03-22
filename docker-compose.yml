@@ -72,7 +72,11 @@ services:
       - POSTGRES_DB=exports
     expose:
       - "5432"
+    logging:
+      driver: none
   rabbitmq:
     image: rabbitmq:3.6.8-management
     expose:
       - "5672"
+    logging:
+      driver: none
