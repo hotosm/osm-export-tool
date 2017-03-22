@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER Seth Fitzsimmons <seth@mojodna.net>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -11,20 +11,24 @@ RUN \
     libpq-dev \
     python-dev \
     python-pip \
+    python-setuptools \
+    python-wheel \
     gdal-bin \
     libgdal-dev \
     python-gdal \
     osmctools \
     spatialite-bin \
-    libspatialite5 \
+    libspatialite7 \
     libspatialite-dev \
-    default-jre \
+    default-jre-headless \
     zip \
     unzip \
     libxslt1-dev \
     build-essential \
     git \
     libffi-dev \
+    libmagic1 \
+    libsqlite3-mod-spatialite \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

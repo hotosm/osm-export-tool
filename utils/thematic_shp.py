@@ -80,7 +80,7 @@ class ThematicSQliteToShp(object):
         conn = sqlite3.connect(self.thematic_sqlite)
         # load spatialite extension
         conn.enable_load_extension(True)
-        cmd = "SELECT load_extension('libspatialite')"
+        cmd = "SELECT load_extension('mod_spatialite')"
         cur = conn.cursor()
         cur.execute(cmd)
         geom_types = {'points': 'POINT', 'lines': 'LINESTRING', 'polygons': 'MULTIPOLYGON'}
