@@ -13,6 +13,8 @@ services:
       - LOG_LEVEL=DEBUG
       - DJANGO_ENV=development
       - USE_X_FORWARDED_HOST=True
+    volumes:
+      - .:/opt/osm-export-tool2
   celery-beat:
     extends:
       service: base

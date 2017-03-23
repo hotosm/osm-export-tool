@@ -59,15 +59,15 @@ RUN \
 COPY . /opt/osm-export-tool2/
 
 RUN \
-  mkdir -p /opt/export_staging /opt/export_downloads \
+  mkdir -p /opt/export_staging /opt/export_downloads /opt/static \
   && useradd exports \
-  && chown -R exports:exports /opt/export* /opt/osm-export-tool2
+  && chown -R exports:exports /opt/export_staging /opt/export_downloads /opt/static /opt/osm-export-tool2
 
 USER exports
 
 RUN \
   python manage.py collectstatic --no-input
 
-VOLUME ["/opt/export_staging", "/opt/export_downloads", "/opt/osm-export-tool2/static"]
+VOLUME ["/opt/export_staging", "/opt/export_downloads", "/opt/static"]
 
 CMD ["echo", "Override this command"]
