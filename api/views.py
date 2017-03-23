@@ -42,11 +42,11 @@ renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 class ScheduledExportViewSet(viewsets.ViewSet):
     def list(self, request):
-        data = [{'hdx_dataset_name':'hot-openstreetmap-sen','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hot-openstreetmap-lbr','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hot-openstreetmap-gin','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hot-openstreetmap-mli','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hot-openstreetmap-sle','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'}
+        data = [{'hdx_dataset_name':'hotosm-sen-buildings,hotosm-sen-roads','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
+                {'hdx_dataset_name':'hotosm-lbr-buildings,hotosm-lbr-roads','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
+                {'hdx_dataset_name':'hotosm-gin-buildings','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
+                {'hdx_dataset_name':'hotosm-mli-buildings,hotosm-mli-waterways','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
+                {'hdx_dataset_name':'hotosm-sle-roads','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'}
                 ]
         response = JsonResponse(data, status=status.HTTP_200_OK,safe=False)
         response['Content-Range'] = "results 1-10/42"

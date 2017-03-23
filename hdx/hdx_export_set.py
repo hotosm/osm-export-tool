@@ -58,6 +58,32 @@ class HDXExportSet(object):
             for e in exts:
                 os.remove(stage_dir + table + e)
 
+    def hdx_note(self,theme):
+        MARKDOWN = '''
+Shapefiles of [OpenStreetMap](http://www.openstreetmap.org) features in {region}.
+
+The shapefiles include all OpenStreetMap features matching:
+
+{criteria}
+
+The shapefiles include these attributes:
+
+{columns}
+
+This dataset is one of many [OpenStreetMap exports on HDX](https://data.humdata.org/dataset?tags=openstreetmap).
+See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more information.
+'''
+
+        columns = []
+        for key in self._feature_selection.key_selections(theme):
+            columns.append("- [{0}](http://wiki.openstreetmap.org/wiki/Key:{0})".format(key))
+        columns = "\n".join(columns)
+        return MARKDOWN.format(
+            region = self._description,
+            criteria = self._feature_selection.filter_clause(theme),
+            columns = columns
+        )
+
     def sync_datasets(self):
         for theme in self._feature_selection.themes:
             dataset = Dataset()
@@ -65,7 +91,7 @@ class HDXExportSet(object):
             dataset['name'] = name
             dataset['title'] = self._description + ' ' + theme + ' (OpenStreetMap Export)'
             dataset['private'] = True
-            dataset['notes'] = "Test note."
+            dataset['notes'] = self.hdx_note(theme)
             dataset['dataset_source'] = 'OpenStreetMap'
             dataset['dataset_date'] = '03/01/2017'
             dataset['owner_org'] = '225b9f7d-e7cb-4156-96a6-44c9c58d31e3'
@@ -83,7 +109,7 @@ class HDXExportSet(object):
                     'name': resource_name,
                     'format': 'zipped shapefile',  
                     'url': '{0}/{1}.zip'.format(os.environ['HDX_TEST_BUCKET'],self._base_slug + '_' + resource_name),
-                    'description': "Sample description."
+                    'description': "ESRI Shapefile of " + geom_type
                 })
             dataset.add_update_resources(resources)
             d = Dataset.read_from_hdx(name)
@@ -95,8 +121,8 @@ class HDXExportSet(object):
 
 if __name__ == "__main__":
     f_s = FeatureSelection(open('hdx/example_preset.yml').read())
-    #h = HDXExportSet('hdx/adm0/GIN_adm0.geojson',f_s,'hotosm_guinea','Guinea','GIN')
     h = HDXExportSet('hdx/adm0/GIN_adm0.geojson',f_s,'hotosm_guinea','Guinea','GIN')
+    #h = HDXExportSet('hdx/adm0/SEN_adm0.geojson',f_s,'hotosm_senegal','Senegal','SEN')
     #h.zip_resources("../stage/")
     Configuration.create(hdx_site='prod',hdx_key=os.environ['HDXKEY'])
     h.sync_datasets()
