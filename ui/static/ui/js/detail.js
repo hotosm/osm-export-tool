@@ -67,7 +67,6 @@ exports.detail = (function(){
             $('#name').html(data.name);
             $('#description').html(data.description);
             $('#event').html(data.event);
-            $('#region').html(data.region.name);
             $('#created_by').html(data.owner);
             var published = data.published ? 'Publicly' : 'Privately';
             $('#published').html(published);
@@ -332,7 +331,7 @@ exports.detail = (function(){
         var template = Handlebars.compile(html);
         return template;
     }
-    
+
     /**
      * Gets a template for displaying completed run details.
      */
@@ -1056,4 +1055,3 @@ $(document).ready(function() {
     // initialize the app..
     exports.detail.init();
 });
-

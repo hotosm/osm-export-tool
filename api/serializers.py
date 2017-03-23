@@ -20,7 +20,7 @@ from rest_framework import serializers
 
 import validators
 from jobs.models import (
-    ExportConfig, ExportFormat, Job, Region, RegionMask, Tag
+    ExportConfig, ExportFormat, Job, Tag
 )
 from tasks.models import (
     ExportRun, ExportTask, ExportTaskException, ExportTaskResult
@@ -272,43 +272,6 @@ class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class RegionMaskSerializer(geo_serializers.GeoFeatureModelSerializer):
-    """Return a GeoJSON representation of the region mask."""
-    class Meta:
-        model = RegionMask
-        geo_field = 'the_geom'
-        fields = ('the_geom',)
-
-
-class RegionSerializer(geo_serializers.GeoFeatureModelSerializer):
-    """Serializer returning GeoJSON representation of Regions."""
-    url = serializers.HyperlinkedIdentityField(
-       view_name='api:regions-detail',
-       lookup_field='uid'
-    )
-    id = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Region
-        geo_field = 'the_geom'
-        fields = ('id', 'uid', 'name', 'description', 'url', 'the_geom')
-
-    def get_id(self, obj):
-        return obj.uid
-
-
-class SimpleRegionSerializer(serializers.ModelSerializer):
-    """Serializer for returning Region model data without geometry."""
-    url = serializers.HyperlinkedIdentityField(
-       view_name='api:regions-detail',
-       lookup_field='uid'
-    )
-
-    class Meta:
-        model = Region
-        fields = ('uid', 'name', 'description', 'url')
-
-
 class ExportFormatSerializer(serializers.ModelSerializer):
     """Return a representation of the ExportFormat model."""
     url = serializers.HyperlinkedIdentityField(
@@ -341,7 +304,6 @@ class ListJobSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(read_only=True)
     owner = serializers.SerializerMethodField(read_only=True)
     extent = serializers.SerializerMethodField()
-    region = SimpleRegionSerializer(read_only=True)
     published = serializers.BooleanField()
 
     def get_uid(self, obj):
@@ -372,7 +334,7 @@ class JobSerializer(serializers.Serializer):
 
     """
     List of the available Export Formats.
-    
+
     This list should be updated to add support for
     additional export formats.
     """
@@ -447,7 +409,6 @@ class JobSerializer(serializers.Serializer):
             'invalid': _('invalid ymax value.'),
         }
     )
-    region = SimpleRegionSerializer(read_only=True)
     extent = serializers.SerializerMethodField(read_only=True)
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
@@ -473,10 +434,6 @@ class JobSerializer(serializers.Serializer):
         extents = validators.validate_bbox_params(data)
         the_geom = validators.validate_bbox(extents, user=user)
         data['the_geom'] = the_geom
-        regions = Region.objects.filter(the_geom__intersects=the_geom).intersection(the_geom, field_name='the_geom')
-        # sort the returned regions by area of intersection, largest first.
-        sorted_regions = sorted(regions.all(), key=lambda a: a.intersection.area, reverse=True) 
-        data['region'] = validators.validate_region(sorted_regions)
         # remove unwanted fields, these are pulled from the request in the view if the serializer is valid
         data.pop('xmin'), data.pop('ymin'), data.pop('xmax'), data.pop('ymax'), data.pop('formats')
         return data

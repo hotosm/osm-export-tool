@@ -8,7 +8,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('jobs', 'insert_export_formats'),
-        ('jobs', 'load_regions'),
     ]
 
     operations = [

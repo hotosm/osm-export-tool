@@ -17,13 +17,12 @@ from rest_framework.serializers import ValidationError
 
 from jobs import presets
 from jobs.models import (
-    ExportConfig, ExportFormat, Job, Region, RegionMask, Tag
+    ExportConfig, ExportFormat, Job, Tag
 )
 from jobs.presets import PresetParser, UnfilteredPresetParser
 from serializers import (
     ExportConfigSerializer, ExportFormatSerializer, ExportRunSerializer,
-    ExportTaskSerializer, JobSerializer, RegionMaskSerializer,
-    RegionSerializer, ListJobSerializer
+    ExportTaskSerializer, JobSerializer, ListJobSerializer
 )
 from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
@@ -51,7 +50,7 @@ class ScheduledExportViewSet(viewsets.ViewSet):
         response = JsonResponse(data, status=status.HTTP_200_OK,safe=False)
         response['Content-Range'] = "results 1-10/42"
         return response
-        
+
 
 
 class JobViewSet(viewsets.ModelViewSet):
@@ -121,7 +120,7 @@ class JobViewSet(viewsets.ModelViewSet):
     pagination_class = LinkHeaderPagination
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = JobFilter
-    search_fields = ('name', 'description', 'event', 'user__username', 'region__name')
+    search_fields = ('name', 'description', 'event', 'user__username')
 
     def get_queryset(self,):
         """Return all objects by default."""
@@ -353,30 +352,6 @@ class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ExportFormat.objects.all()
     lookup_field = 'slug'
     ordering = ['description']
-
-
-class RegionViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ###Region API endpoint.
-
-    Endpoint exposing the supported regions.
-    """
-    serializer_class = RegionSerializer
-    permission_classes = (permissions.AllowAny,)
-    queryset = Region.objects.all()
-    lookup_field = 'uid'
-
-
-class RegionMaskViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ###Region Mask API Endpoint.
-
-    Return a MULTIPOLYGON representing the mask of the
-    HOT Regions as a GeoJSON Feature Collection.
-    """
-    serializer_class = RegionMaskSerializer
-    permission_classes = (permissions.AllowAny,)
-    queryset = RegionMask.objects.all()
 
 
 class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):

@@ -68,14 +68,13 @@ class OSMToIMG(object):
     """
 
     def __init__(self, pbffile=None, work_dir=None, config=None,
-                 region=None, zipped=True, debug=False):
+                 zipped=True, debug=False):
         # the pbf file to convert to garmin
         self.pbffile = pbffile
         if not os.path.exists(self.pbffile):
             raise IOError('Cannot find PBF file for this task.')
         self.work_dir = work_dir
         self.config = config
-        self.region = region
         self.zipped = zipped
         self.debug = debug
         config_parser = GarminConfigParser(self.config)
@@ -97,7 +96,6 @@ class OSMToIMG(object):
             --family-name="$family_name" \
             --family-id="$family_id" \
             --series-name="$series_name" \
-            --region-name="$region" \
             --index \
             --route \
             --generate-sea=extend-sea-sectors \
@@ -154,9 +152,9 @@ class OSMToIMG(object):
             {'xmx': xmx, 'mkgmap': mkgmap, 'work_dir': self.work_dir,
              'description': description, 'family_name': family_name,
              'family_id': family_id, 'series_name': series_name,
-             'region': self.region, 'templateargs': templateargs}
+             'templateargs': templateargs}
         )
-        if(self.debug):
+        if self.debug:
             print 'Running: %s' % mkgmap_cmd
         proc = subprocess.Popen(mkgmap_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)

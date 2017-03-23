@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
 
-from jobs.models import ExportFormat, Job, Region
+from jobs.models import ExportFormat, Job
 
 from ..task_runners import ExportTaskRunner
 
@@ -25,8 +25,6 @@ class TestExportTaskRunner(TestCase):
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
                                  the_geom=the_geom)
-        self.region = Region.objects.get(name='Africa')
-        self.job.region = self.region
         self.uid = str(self.job.uid)
         self.job.save()
 
@@ -44,7 +42,6 @@ class TestExportTaskRunner(TestCase):
         garmin_export_task = mock_garmin.return_value
         garmin_export_task.run.return_value = Mock(state='PENDING', id=celery_uid)
         type(garmin_export_task).name = PropertyMock(return_value='Garmin Export')
-        type(garmin_export_task).region = PropertyMock(return_value='Africa')
         # celery chain mock
         celery_chain = mock_chain.return_value
         celery_chain.apply_async.return_value = Mock()

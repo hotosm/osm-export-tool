@@ -140,14 +140,6 @@ class ExportTaskRunner(TaskRunner):
                     raise e
             # save the rest of the ExportFormat tasks.
             for export_task in export_tasks:
-                """
-                Set the region name on the Garmin Export task.
-                The region gets written to the exported '.img' file.
-                Could set additional params here in future if required.
-                """
-                if export_task.name == 'Garmin Export':
-                    # add the region name to the Garmin export
-                    export_task.region = job.region.name
                 try:
                     ExportTask.objects.create(run=run,
                                               status='PENDING', name=export_task.name)

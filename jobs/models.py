@@ -105,27 +105,6 @@ class ExportFormat(TimeStampedModelMixin):
         return '{0}'.format(self.slug)
 
 
-class Region(TimeStampedModelMixin):
-    """
-    Model for a HOT Export Region.
-    """
-    id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, db_index=True)
-    description = models.CharField(max_length=1000, blank=True)
-    the_geom = models.PolygonField(verbose_name='HOT Export Region', srid=4326, default='')
-    the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export region', srid=3857, default='')
-    the_geog = models.PolygonField(verbose_name='Geographic extent for export region', geography=True, default='')
-    objects = models.GeoManager()
-
-    class Meta:  # pragma: no cover
-        managed = True
-        db_table = 'regions'
-
-    def __str__(self):
-        return '{0}'.format(self.name)
-
-
 class Job(TimeStampedModelMixin):
     """
     Model for a Job.
@@ -136,7 +115,6 @@ class Job(TimeStampedModelMixin):
     name = models.CharField(max_length=100, db_index=True)
     description = models.CharField(max_length=1000, db_index=True)
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
-    region = models.ForeignKey(Region, null=True)
     formats = models.ManyToManyField(ExportFormat, related_name='formats')
     configs = models.ManyToManyField(ExportConfig, related_name='configs')
     published = models.BooleanField(default=False, db_index=True)  # publish export
@@ -247,18 +225,6 @@ class Tag(models.Model):
 
     def __str__(self):  # pragma: no cover
         return '{0}:{1}'.format(self.key, self.value)
-
-
-class RegionMask(models.Model):
-    """
-    Model to hold region mask.
-    """
-    id = models.IntegerField(primary_key=True)
-    the_geom = models.MultiPolygonField(verbose_name='Mask for export regions', srid=4326)
-
-    class Meta:  # pragma: no cover
-        managed = False
-        db_table = 'region_mask'
 
 
 class ExportProfile(models.Model):

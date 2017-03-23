@@ -24,24 +24,6 @@ def validate_conifg(uid):
     pass
 
 
-def validate_region(regions):
-    """
-    Return the first region found.
-
-    Args:
-        regions: a list of Regions.
-
-    Raises:
-        ValidationError: if no regions are found.
-    """
-    if len(regions) == 0:
-        detail = OrderedDict()
-        detail['id'] = _('invalid_region')
-        detail['message'] = _('Job extent is not within a valid region.')
-        raise serializers.ValidationError(detail)
-    return regions[0]
-
-
 def validate_formats(data):
     """
     Validate the selected export formats.

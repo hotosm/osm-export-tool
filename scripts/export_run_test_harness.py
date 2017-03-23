@@ -9,7 +9,7 @@ import os
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 
-from jobs.models import ExportFormat, Job, Region, Tag
+from jobs.models import ExportFormat, Job, Tag
 from jobs.presets import PresetParser
 from tasks.task_runners import ExportTaskRunner
 
@@ -25,8 +25,6 @@ def run(*script_args):
     job = Job.objects.create(name='TestJob',
                              description='Test description', user=user,
                              the_geom=the_geom)
-    region = Region.objects.get(name='Africa')
-    job.region = region
     job.save()
     # add the format(s)
     formats = [

@@ -1,7 +1,6 @@
 create = {};
 create.job = (function(){
     var map;
-    var regions;
     var mask;
     var transform;
     var max_bounds_area = $('#user-max-extent').text();
@@ -52,36 +51,6 @@ create.job = (function(){
         osm.attribution = "&copy; <a href='//www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors.";
         hotosm.options = {layers: "basic", isBaseLayer: true, visibility: true, displayInLayerSwitcher: true};
         map.addLayers([osm]);
-
-        // add the regions layer
-        regions = new OpenLayers.Layer.Vector('regions', {
-            displayInLayerSwitcher: false,
-            style: {
-                strokeWidth: 3.5,
-                strokeColor: '#D73F3F',
-                fillColor: 'transparent',
-                fillOpacity: 0.8,
-            }
-        });
-
-        // add the region mask layer
-        mask = new OpenLayers.Layer.Vector('mask', {
-            displayInLayerSwitcher: false,
-            styleMap: new OpenLayers.StyleMap({
-                "default": new OpenLayers.Style({
-                fillColor: "#fff",
-                fillOpacity: 0.7,
-                strokeColor: "#fff",
-                strokeWidth: .1,
-                strokeOpacity: 0.2,
-                })
-            }),
-        });
-        map.addLayers([regions, mask]);
-
-        // add region and mask features
-        addRegionMask();
-        addRegions();
 
         // add export format checkboxes
         buildExportFormats();
@@ -186,55 +155,22 @@ create.job = (function(){
             /*
              * Unsets the bounds on the form
              * remove features and transforms
-             * reset map to regions extent
+             * reset map to max extent
              */
             $('#nominatim').val('');
             unsetBounds();
             bbox.removeAllFeatures();
             box.deactivate();
             transform.unsetFeature();
-            map.zoomToExtent(regions.getDataExtent());
+            map.zoomToMaxExtent();
             validateBounds();
         });
 
         /* Add map controls */
         map.addControl(new OpenLayers.Control.ScaleLine());
 
-        // set inital zoom to regions extent
-        map.zoomTo(regions.getDataExtent());
-    }
-
-    /*
-     * Add the regions to the map.
-     * Calls into region api.
-     */
-    function addRegions(){
-        // get the regions from the regions api
-        $.getJSON(Config.REGIONS_URL, function(data){
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var features = geojson.read(data);
-            regions.addFeatures(features);
-            map.zoomToExtent(regions.getDataExtent());
-        });
-    }
-
-    /*
-     * Add the region mask to the map.
-     * Calls into region mask api.
-     */
-    function addRegionMask(){
-        // get the regions from the regions api
-        $.getJSON(Config.REGION_MASK_URL, function(data){
-            var geojson = new OpenLayers.Format.GeoJSON({
-                    'internalProjection': new OpenLayers.Projection("EPSG:3857"),
-                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            });
-            var features = geojson.read(data);
-            mask.addFeatures(features);
-        });
+        // set inital zoom to max extent
+        map.zoomToMaxExtent();
     }
 
     /*
@@ -314,16 +250,6 @@ create.job = (function(){
             $('#alert-extents').html('<span>' + gettext('Select area to export') + '&nbsp;&nbsp;</span>');
             return false;
         }
-        var extent = bounds.toGeometry();
-        var regions = map.getLayersByName('regions')[0].features;
-        var valid_region = false;
-        // check that we're within a HOT region.
-        for (i = 0; i < regions.length; i++){
-            region = regions[i].geometry;
-            if (extent.intersects(region)){
-                valid_region = true;
-            }
-        }
         /*
          * calculate the extent area and convert to sq kilometers
          * converts to lat long which will be proj set on form if extents are valid.
@@ -334,22 +260,15 @@ create.job = (function(){
         var bottom = bounds.bottom.toFixed(6);
         var right = bounds.right.toFixed(6);
         var top = bounds.top.toFixed(6);
-        
+
         bounds_trunc = new OpenLayers.Bounds(left, bottom, right, top);
         var area = bounds_trunc.toGeometry().getGeodesicArea() / 1000000; // sq km
-        
+
         // format the area and max bounds for display..
         var area_str = numeral(area).format('0 0');
         var max_bounds_str = numeral(max_bounds_area).format('0 0');
 
-        if (!valid_region) {
-           // invalid region
-           validateBBox(); // trigger validation on extents
-           $('#valid-extents').css('visibility','hidden');
-           $('#alert-extents').css('visibility','visible');
-           $('#alert-extents').html('<strong>' + gettext('Invalid Extent') + '</strong><br/>' + gettext('Selected area is outside') + '<br/>' + gettext('a valid HOT Export Region'))
-           return false;
-        } else if (area > max_bounds_area) {
+        if (area > max_bounds_area) {
            // area too large
            validateBBox(); // trigger validation on extents
            $('#valid-extents').css('visibility','hidden');
@@ -1298,7 +1217,7 @@ create.job = (function(){
                             bbox.removeAllFeatures();
                             transform.unsetFeature();
                             unsetBounds();
-                            map.zoomToExtent(regions.getDataExtent());
+                            map.zoomToMAxExtent();
 
                         }
                         // if in cache use cached value
@@ -1402,7 +1321,7 @@ create.job = (function(){
                 bbox.removeAllFeatures();
                 box.deactivate();
                 transform.unsetFeature();
-                map.zoomToExtent(regions.getDataExtent());
+                map.zoomToMaxExtent();
                 validateBounds();
                 return;
             }

@@ -25,7 +25,6 @@ class TestOSMToIMG(TestCase):
         #self.config = '/files/garmin_config.xml'
         #self.work_dir = '/files/garmin'
         #self.pbffile = '/files/query.pbf'
-        self.region = "Indonesia, Sri Lanka, and Bangladesh"
 
     def test_config_parser(self,):
         parser = GarminConfigParser(self.config)
@@ -53,7 +52,7 @@ class TestOSMToIMG(TestCase):
         exists.return_value = True
         o2i = OSMToIMG(
             pbffile=self.pbffile, work_dir=self.work_dir,
-            config=self.config, region=self.region, debug=False
+            config=self.config, debug=False
         )
         exists.assert_called_once_with(self.pbffile)
         o2i.run_splitter()
@@ -74,7 +73,6 @@ class TestOSMToIMG(TestCase):
             --family-name="HOT Exports" \
             --family-id="2" \
             --series-name="HOT Exports" \
-            --region-name="Indonesia, Sri Lanka, and Bangladesh" \
             --index \
             --route \
             --generate-sea=extend-sea-sectors \
@@ -89,7 +87,7 @@ class TestOSMToIMG(TestCase):
         # set zipped to False for testing
         o2i = OSMToIMG(
             pbffile=self.pbffile, work_dir=self.work_dir,
-            config=self.config, zipped=False, region=self.region, debug=False
+            config=self.config, zipped=False, debug=False
         )
         exists.assert_called_once_with(self.pbffile)
         imgfile = o2i.run_mkgmap()
@@ -117,7 +115,7 @@ class TestOSMToIMG(TestCase):
         proc.wait.return_value = 0
         o2i = OSMToIMG(
             pbffile=self.pbffile, work_dir=self.work_dir,
-            config=self.config, region=self.region, debug=False
+            config=self.config, debug=False
         )
         exists.assert_called_once_with(self.pbffile)
         result = o2i._zip_img_file()

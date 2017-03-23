@@ -57,7 +57,6 @@ jobs.list = (function(){
             initPopovers();
             initDataTable();
             initDatePickers();
-            loadRegions();
             initSearch();
             runSearch();
         },
@@ -548,7 +547,6 @@ jobs.list = (function(){
                         return moment(data).format('YYYY-MM-DD');
                     }
                 },
-                {data: 'region.name'},
                 {data: 'owner'},
                 {
                     data: 'published',
@@ -652,20 +650,6 @@ jobs.list = (function(){
             runSearch();
         });
 
-    }
-
-    /**
-     * Populates the search form's region selection input.
-     */
-    function loadRegions(){
-        $.ajax(Config.REGIONS_URL)
-        .done(function(data, textStatus, jqXHR){
-            var regionSelect = $('select#region-select');
-            $.each(data.features, function(idx, feature){
-                var name = feature.properties.name;
-                regionSelect.append('<option name="' + name + '">' + name + '</option>');
-            })
-        });
     }
 
     /**
@@ -828,4 +812,3 @@ $(document).ready(function() {
     // initialize the app..
     jobs.list.main();
 });
-

@@ -350,15 +350,6 @@ class GarminExportTask(ExportTask):
     """
 
     name = 'Garmin Export'
-    _region = ''  # set by the task_runner
-
-    @property
-    def region(self,):
-        return self._region
-
-    @region.setter
-    def region(self, value):
-        self._region = value
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
@@ -368,7 +359,7 @@ class GarminExportTask(ExportTask):
         try:
             o2i = garmin.OSMToIMG(
                 pbffile=pbffile, work_dir=work_dir,
-                config=config, region=None, debug=False
+                config=config, debug=False
             )
             o2i.run_splitter()
             out = o2i.run_mkgmap()

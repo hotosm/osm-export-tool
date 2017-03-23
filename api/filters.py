@@ -9,13 +9,12 @@ from tasks.models import ExportRun
 
 
 class JobFilter(django_filters.FilterSet):
-    """Filter export results according to a range of critera."""
+    """Filter export results according to a range of criteria."""
     name = django_filters.CharFilter(name="name", lookup_type="icontains")
     description = django_filters.CharFilter(name="description", lookup_type="icontains")
     event = django_filters.CharFilter(name="event", lookup_type="icontains")
     start = django_filters.DateTimeFilter(name="created_at", lookup_type="gte")
     end = django_filters.DateTimeFilter(name="created_at", lookup_type="lte")
-    region = django_filters.CharFilter(name="region__name")
     user = django_filters.CharFilter(name="user__username", lookup_type="exact")
     feature = django_filters.CharFilter(name="tags__name", lookup_type="icontains")
     published = django_filters.BooleanFilter(name="published", lookup_type="exact")
@@ -23,7 +22,7 @@ class JobFilter(django_filters.FilterSet):
 
     class Meta:
         model = Job
-        fields = ('name', 'description', 'event', 'start', 'end', 'region',
+        fields = ('name', 'description', 'event', 'start', 'end',
                   'user', 'user_private', 'feature', 'published')
         order_by = ('-created_at',)
 

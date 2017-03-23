@@ -452,63 +452,6 @@ class TestJobViewSet(APITestCase):
         self.assertEquals(response['Content-Language'], 'en')
         self.assertEquals(response.data['formats'], ['invalid export format.'])
 
-    @patch('api.views.ExportTaskRunner')
-    def test_get_correct_region(self, mock):
-        task_runner = mock.return_value
-        url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
-        # job extent spans africa / asia but greater intersection with asia
-        request_data = {
-            'name': 'TestJob',
-            'description': 'Test description',
-            'event': 'Test Activation',
-            'xmin': 36.90,
-            'ymin': 13.54,
-            'xmax': 48.52,
-            'ymax': 20.24,
-            'formats': formats
-        }
-        response = self.client.post(url, request_data, format='json')
-        job_uid = response.data['uid']
-        # test the ExportTaskRunner.run_task(job_id) method gets called.
-        task_runner.run_task.assert_called_once_with(job_uid=job_uid)
-
-        # test the response headers
-        self.assertEquals(response.status_code, status.HTTP_202_ACCEPTED)
-        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
-        self.assertEquals(response['Content-Language'], 'en')
-
-        # test significant response content
-        self.assertEqual(response.data['exports'][0]['slug'], request_data['formats'][0])
-        self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
-        self.assertEqual(response.data['name'], request_data['name'])
-        self.assertEqual(response.data['description'], request_data['description'])
-
-        # test the region
-        region = response.data['region']
-        self.assertIsNotNone(region)
-        self.assertEquals(region['name'], 'Central Asia/Middle East')
-
-    def test_invalid_region(self, ):
-        url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
-        # job outside any region
-        request_data = {
-            'name': 'TestJob',
-            'description': 'Test description',
-            'event': 'Test Activation',
-            'xmin': 2.74,
-            'ymin': 47.66,
-            'xmax': 11.61,
-            'ymax': 54.24,
-            'formats': formats
-        }
-        response = self.client.post(url, request_data)
-        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
-        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
-        self.assertEquals(response['Content-Language'], 'en')
-        self.assertEquals(['invalid_region'], response.data['id'])
-
     def test_extents_too_large(self, ):
         url = reverse('api:jobs-list')
         formats = [format.slug for format in ExportFormat.objects.all()]
