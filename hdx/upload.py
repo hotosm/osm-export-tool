@@ -1,12 +1,5 @@
 import os
-import pprint
-import logging
-from hdx.configuration import Configuration
-from hdx.data.dataset import Dataset
-import random
 
-pp = pprint.PrettyPrinter(indent=4)
-Configuration.create(hdx_site='prod',hdx_key=os.environ['HDXKEY'])
 
 countries = ['GIN', 'LBR', 'MLI', 'SEN', 'SLE']
 themes = ['buildings','roads','waterways','points_of_interest','admin_boundaries']
