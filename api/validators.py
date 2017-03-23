@@ -20,10 +20,6 @@ from rest_framework import serializers
 LOG = logging.getLogger(__name__)
 
 
-def validate_conifg(uid):
-    pass
-
-
 def validate_formats(data):
     """
     Validate the selected export formats.
@@ -59,11 +55,11 @@ def validate_search_bbox(extents):
     detail['message'] = _('Invalid bounding box.')
     try:
         bbox = Polygon.from_bbox(extents)
-        if (bbox.valid):
+        if bbox.valid:
             return bbox
         else:
             raise serializers.ValidationError(detail)
-    except GEOSException as e:
+    except GEOSException:
         raise serializers.ValidationError(detail)
 
 
@@ -102,7 +98,7 @@ def validate_bbox(extents, user=None):
             return bbox
         else:
             raise serializers.ValidationError(detail)
-    except GEOSException as e:
+    except GEOSException:
         raise serializers.ValidationError(detail)
 
 
