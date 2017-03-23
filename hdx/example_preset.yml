@@ -1,7 +1,5 @@
 buildings:
   types:
-    - points
-    - lines
     - polygons
   select:
     - osm_id
@@ -18,6 +16,7 @@ buildings:
 roads:
   types:
     - lines
+    - polygons
   select:
     - osm_id
     - name
@@ -70,6 +69,7 @@ points_of_interest:
 
 admin_boundaries:
   types: 
+    - points
     - lines
     - polygons
   select:
