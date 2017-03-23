@@ -1,27 +1,22 @@
-import json
 import sqlite3
 
 from utils import overpass, osmconf, pbf, osmparse, thematic_shp
-from shapely.geometry import asShape
 
 import os
-import json
 import subprocess
 import glob
 import zipfile
 
 from feature_selection import FeatureSelection
+from hdx_export_set import HDXExportSet
 
 f_s = FeatureSelection(open('hdx/example_preset.yml').read())
+extent_path = 'hdx/adm0/SLE_adm0.geojson'
+h = HDXExportSet(extent_path,f_s,'hotosm-sierra-leone')
 
 job_name = 'SLE'
-extent_path = 'hdx/adm0/SLE_adm0.geojson'
-f = open(extent_path)
 
-features = json.loads(f.read())['features']
-assert len(features) == 1
-shape = asShape(features[0]['geometry'])
-bounds = shape.bounds
+bounds = h.bounds
 bbox = "{0},{1},{2},{3}".format(bounds[1],bounds[0],bounds[3],bounds[2])
 url = "http://overpass-api.de/api/interpreter"
 
@@ -47,15 +42,12 @@ cur = conn.cursor()
 cur.execute("select load_extension('mod_spatialite')")
 create_sqls, index_sqls = f_s.sqls
 for query in create_sqls:
-    cur.execute(query,(shape.wkt,))
+    cur.execute(query,(theshape.wkt,))
 
 for query in index_sqls:
     cur.execute(query)
 conn.commit()
 conn.close()
-
-print "TABLES"
-print f_s.tables
 
 for table in f_s.tables:
     subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {1}{0}.shp {2} -lco ENCODING=UTF-8 -sql "select * from {0};"'.format(table,stage_dir,s),shell=True,executable='/bin/bash')

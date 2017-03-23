@@ -2,7 +2,6 @@ buildings:
   types:
     - polygons
   select:
-    - osm_id
     - name
     - building
     - building_levels
@@ -18,7 +17,6 @@ roads:
     - lines
     - polygons
   select:
-    - osm_id
     - name
     - highway
     - surface
@@ -35,7 +33,6 @@ waterways:
     - lines
     - polygons
   select:
-    - osm_id
     - name
     - waterway
     - covered
@@ -53,7 +50,6 @@ points_of_interest:
     - points
     - polygons
   select:
-    - osm_id
     - name
     - amenity
     - man_made
@@ -73,7 +69,6 @@ admin_boundaries:
     - lines
     - polygons
   select:
-    - osm_id
     - name
     - boundary
     - admin_level

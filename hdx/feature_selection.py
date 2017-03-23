@@ -1,6 +1,6 @@
 import yaml
 
-CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT Geometry,{1} FROM {2} WHERE {3} AND ST_Intersects(GeomFromText(?),Geometry);'
+CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT Geometry,osm_id,{1} FROM {2} WHERE ({3}) AND ST_Contains(GeomFromText(?),Geometry);'
 INDEX_TEMPLATE = "SELECT RecoverGeometryColumn('{0}', 'GEOMETRY', 4326, '{1}', 'XY')"
 
 WKT_TYPE_MAP = {
