@@ -275,7 +275,7 @@ class TestExportTasks(TestCase):
         shp_export_task = ShpExportTask()
         download_url = '/downloads/' + str(self.run.uid) + '/file.shp'
         download_root = settings.EXPORT_DOWNLOAD_ROOT
-        run_dir = '{0}{1}'.format(download_root, str(self.run.uid))
+        run_dir = os.path.join(download_root, str(self.run.uid))
         shp_export_task.on_success(retval={'result': download_url}, task_id=celery_uid,
                                    args={}, kwargs={'run_uid': str(self.run.uid)})
         os_stat.assert_called_once_with(download_url)
