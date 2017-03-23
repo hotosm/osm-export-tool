@@ -54,7 +54,7 @@ class TestFeatureSelection(unittest.TestCase):
                 - name
         '''
         f = FeatureSelection(y)
-        self.assertEquals(f.filter('waterways'),'1') # SELECT WHERE 1
+        self.assertEquals(f.filter_clause('waterways'),'1') # SELECT WHERE 1
         y = '''
         waterways:
             types: 
@@ -66,7 +66,7 @@ class TestFeatureSelection(unittest.TestCase):
             where: waterway IS NOT NULL
         '''
         f = FeatureSelection(y)
-        self.assertEquals(f.filter('waterways'),'waterway IS NOT NULL')
+        self.assertEquals(f.filter_clause('waterways'),'waterway IS NOT NULL')
 
     def test_key_union(self):
         y = '''
@@ -89,3 +89,26 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         self.assertEquals(f.key_union, ['building','name','osm_id','waterway'])
+
+    def test_sqls(self):
+        y = '''
+        waterways:
+            types: 
+                - lines
+                - polygons
+            select:
+                - osm_id
+                - name
+                - waterway
+        buildings:
+            types:
+                - lines
+                - polygons
+            select:
+                - osm_id
+                - name
+                - building
+        '''
+        f = FeatureSelection(y)
+        print f.sqls
+
