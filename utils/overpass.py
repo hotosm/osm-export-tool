@@ -5,6 +5,7 @@ import shutil
 import subprocess
 from datetime import datetime
 from string import Template
+import os
 
 import requests
 from requests import exceptions
@@ -57,8 +58,8 @@ class Overpass(object):
             {'maxsize': overpass_max_size, 'timeout': timeout, 'bbox': self.bbox}
         )
         # set up required paths
-        self.raw_osm = self.stage_dir + 'query.osm'
-        self.filtered_osm = self.stage_dir + job_name + '.osm'
+        self.raw_osm = os.path.join(self.stage_dir, 'query.osm')
+        self.filtered_osm = os.path.join(self.stage_dir, '{0}.osm'.format(job_name))
 
     def get_query(self,):
         """Get the overpass query used for this extract."""
@@ -95,8 +96,8 @@ class Overpass(object):
 
         See jobs.models.Job.filters
         """
-        if (self.filters and len(self.filters) > 0):
-            self.filter_params = self.stage_dir + 'filters.txt'
+        if self.filters and len(self.filters) > 0:
+            self.filter_params = os.path.join(self.stage_dir, 'filters.txt')
             try:
                 with open(self.filter_params, 'w') as f:
                     f.write(self.filter_template)
@@ -106,14 +107,14 @@ class Overpass(object):
                 shutil.copy(self.raw_osm, self.filtered_osm)
                 return self.filtered_osm
 
-            # convert to om5 for faster processing
-            om5 = self._convert_om5()
+            # convert to o5m for faster processing
+            o5m = self._convert_o5m()
 
-            # filter om5 data
+            # filter o5m data
             filter_tmpl = Template(
-                'osmfilter $om5 --parameter-file=$params --out-osm >$filtered_osm'
+                'osmfilter $o5m --parameter-file=$params --out-osm >$filtered_osm'
             )
-            filter_cmd = filter_tmpl.safe_substitute({'om5': om5,
+            filter_cmd = filter_tmpl.safe_substitute({'o5m': o5m,
                                                       'params': self.filter_params,
                                                       'filtered_osm': self.filtered_osm})
             proc = subprocess.Popen(filter_cmd, shell=True, executable='/bin/bash',
@@ -130,13 +131,13 @@ class Overpass(object):
             shutil.copy(self.raw_osm, self.filtered_osm)
             return self.filtered_osm
 
-    def _convert_om5(self,):
+    def _convert_o5m(self,):
         """
-        Convert to om5 for faster filter processing.
+        Convert to o5m for faster filter processing.
         """
-        om5 = self.stage_dir + 'query.om5'
-        convert_tmpl = Template('osmconvert $raw_osm -o=$om5')
-        convert_cmd = convert_tmpl.safe_substitute({'raw_osm': self.raw_osm, 'om5': om5})
+        o5m = os.path.join(self.stage_dir, 'query.o5m')
+        convert_tmpl = Template('osmconvert $raw_osm -o=$o5m')
+        convert_cmd = convert_tmpl.safe_substitute({'raw_osm': self.raw_osm, 'o5m': o5m})
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate()
@@ -144,7 +145,7 @@ class Overpass(object):
         if (returncode != 0):
             LOG.error('%s', stderr)
             raise Exception, "osmconvert process failed with returncode {0}: {1}".format(returncode, stderr)
-        return om5
+        return o5m
 
     def _build_overpass_query(self, ):  # pragma: no cover
         """

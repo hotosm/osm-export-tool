@@ -29,7 +29,7 @@ def run(*script_args):
 
     # load spatialite extension
     conn.enable_load_extension(True)
-    cmd = "SELECT load_extension('libspatialite')"
+    cmd = "SELECT load_extension('mod_spatialite')"
     cur = conn.cursor()
     cur.execute(cmd)
 

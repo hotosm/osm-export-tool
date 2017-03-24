@@ -14,8 +14,13 @@ from jobs.models import Job
 from tasks.models import ExportRun, ExportTask
 
 from .export_tasks import (
-    FinalizeRunTask, GeneratePresetTask, OSMConfTask, OSMPrepSchemaTask,
-    OSMToPBFConvertTask, OverpassQueryTask
+    FinalizeRunTask,
+    GeneratePresetTask,
+    OSMConfTask,
+    OSMPrepSchemaTask,
+    OSMToPBFConvertTask,
+    OverpassQueryTask,
+    osm_create_styles_task,
 )
 
 # Get an instance of a logger

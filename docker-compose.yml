@@ -73,6 +73,8 @@ services:
       - .env
     links:
       - site
+    logging:
+      driver: none
     ports:
       - "80:80"
     volumes:

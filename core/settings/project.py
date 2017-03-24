@@ -53,6 +53,8 @@ EXPORT_TASKS = {
     'sqlite': 'tasks.export_tasks.SqliteExportTask',
     'kml': 'tasks.export_tasks.KmlExportTask',
     'garmin': 'tasks.export_tasks.GarminExportTask',
+    'gpkg': 'tasks.export_tasks.GeoPackageExportTask',
+    'theme_gpkg': 'tasks.export_tasks.ThematicGeoPackageExportTask',
     'thematic': 'tasks.export_tasks.ThematicLayersExportTask'
 }
 

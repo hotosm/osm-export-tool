@@ -5,22 +5,31 @@ import cPickle
 import os
 import shutil
 
+from celery import Task
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMultiAlternatives
 from django.db import DatabaseError
 from django.template.loader import get_template
 from django.utils import timezone
+from raven import Client
 
-from celery import Task
-from celery.utils.log import get_task_logger
-
+from core.celery import app
 from jobs.presets import TagParser
 from utils import (
-    garmin, kml, osmand, osmconf, osmparse, overpass, pbf, shp, thematic_shp
+    garmin,
+    kml,
+    osmand,
+    osmconf,
+    osmparse,
+    overpass,
+    pbf,
+    shp,
+    thematic_gpkg,
+    thematic_shp,
 )
 
-from raven import Client
 client = Client()
 
 # Get an instance of a logger
@@ -212,7 +221,7 @@ class OSMToPBFConvertTask(ExportTask):
 
 class OSMPrepSchemaTask(ExportTask):
     """
-    Task to create the default sqlite schema.
+    Task to create the default GeoPackage schema.
     """
     name = 'OSMSchema'
     abort_on_error = True
@@ -220,13 +229,43 @@ class OSMPrepSchemaTask(ExportTask):
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         osm = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
-        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
+        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         osmconf = '{0}.ini'.format(os.path.join(stage_dir, job_name))
-        osmparser = osmparse.OSMParser(osm=osm, sqlite=sqlite, osmconf=osmconf)
-        osmparser.create_spatialite()
-        osmparser.create_default_schema()
+        osmparser = osmparse.OSMParser(osm=osm, gpkg=gpkg, osmconf=osmconf)
+        osmparser.create_geopackage()
+        osmparser.create_default_schema_gpkg()
         osmparser.update_zindexes()
-        return {'result': sqlite}
+        return {'result': gpkg}
+
+
+@app.task(name="Create Styles", bind=True, base=ExportTask, abort_on_error=False)
+def osm_create_styles_task(self, result={}, run_uid=None, stage_dir=None, job_name=None, provider_slug=None, bbox=None):
+    """
+    Task to create styles for osm.
+    """
+    self.update_task_state(result=result, run_uid=run_uid)
+    input_gpkg = parse_result(result, 'geopackage')
+
+    gpkg_file = '{0}-{1}-{2}.gpkg'.format(job_name,
+                                          provider_slug,
+                                          timezone.now().strftime('%Y%m%d'))
+    style_file = os.path.join(stage_dir, '{0}-osm-{1}.qgs'.format(job_name,
+                                                                  timezone.now().strftime("%Y%m%d")))
+
+    with open(style_file, 'w') as open_file:
+        open_file.write(render_to_string('styles/Style.qgs', context={
+            'gpkg_filename': os.path.basename(gpkg_file),
+            'layer_id_prefix': '{0}-osm-{1}'.format(job_name,
+                                                    timezone.now().strftime("%Y%m%d")),
+            'layer_id_date_time': '{0}'.format(
+                timezone.now().strftime("%Y%m%d%H%M%S%f")[
+                    :-3]),
+            'bbox': bbox}))
+
+    return {
+        'result': style_file,
+        'geopackage': input_gpkg,
+    }
 
 
 class PbfExportTask(ExportTask):
@@ -245,6 +284,30 @@ class PbfExportTask(ExportTask):
         return {'result': pbffile}
 
 
+class ThematicGeoPackageExportTask(ExportTask):
+    """
+    Task to export thematic GeoPackage.
+    """
+
+    name = "Thematic GPKG Export"
+
+    def run(self, run_uid=None, stage_dir=None, job_name=None):
+        from tasks.models import ExportRun
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        run = ExportRun.objects.get(uid=run_uid)
+        tags = run.job.categorised_tags
+        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
+        try:
+            t2s = thematic_gpkg.GPKGToThematicGPKG(
+                gpkg=gpkg, tags=tags, job_name=job_name)
+            t2s.generate_thematic_schema()
+            out = t2s.convert()
+            return {'result': out}
+        except Exception as e:
+            logger.error('Raised exception in thematic task, %s', str(e))
+            raise Exception(e)  # hand off to celery..
+
+
 class ThematicLayersExportTask(ExportTask):
     """
     Task to export thematic shapefile.
@@ -257,10 +320,10 @@ class ThematicLayersExportTask(ExportTask):
         self.update_task_state(run_uid=run_uid, name=self.name)
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
-        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
+        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         try:
-            t2s = thematic_shp.ThematicSQliteToShp(
-                sqlite=sqlite, tags=tags, job_name=job_name)
+            t2s = thematic_shp.ThematicGPKGToShp(
+                gpkg=gpkg, tags=tags, job_name=job_name)
             t2s.generate_thematic_schema()
             out = t2s.convert()
             return {'result': out}
@@ -277,11 +340,9 @@ class ShpExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
-        shapefile = '{0}_shp'.format(os.path.join(stage_dir, job_name))
+        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         try:
-            s2s = shp.SQliteToShp(sqlite=sqlite, shapefile=shapefile)
-            out = s2s.convert()
+            out = shp.GPKGToShp(gpkg=gpkg).convert()
             return {'result': out}
         except Exception as e:
             logger.error('Raised exception in shapefile export, %s', str(e))
@@ -296,10 +357,10 @@ class KmlExportTask(ExportTask):
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
-        sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
+        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         kmlfile = '{0}.kml'.format(os.path.join(stage_dir, job_name))
         try:
-            s2k = kml.SQliteToKml(sqlite=sqlite, kmlfile=kmlfile)
+            s2k = kml.GPKGToKml(gpkg=gpkg, kmlfile=kmlfile)
             out = s2k.convert()
             return {'result': out}
         except Exception as e:
@@ -344,6 +405,20 @@ class SqliteExportTask(ExportTask):
         # sqlite already generated by OSMPrepSchema so just return path.
         sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
         return {'result': sqlite}
+
+
+class GeoPackageExportTask(ExportTask):
+    """
+    Class defining GeoPackage export function.
+    """
+
+    name = 'GPKG Export'
+
+    def run(self, run_uid=None, stage_dir=None, job_name=None):
+        self.update_task_state(run_uid=run_uid, name=self.name)
+        # gpkg already generated by OSMPrepSchema so just return path.
+        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
+        return {'result': gpkg}
 
 
 class GarminExportTask(ExportTask):

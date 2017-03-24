@@ -134,7 +134,7 @@ class TestExportTasks(TestCase):
         prep_schema = mock_parser.return_value
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid) + '/'
         job_name = self.job.name.lower()
-        expected_output_path = stage_dir + job_name + '.sqlite'
+        expected_output_path = stage_dir + job_name + '.gpkg'
         prep_schema.instancemethod.return_value = expected_output_path
         ExportTask.objects.create(
             run=self.run, status='PENDING', name=task.name)
@@ -151,21 +151,21 @@ class TestExportTasks(TestCase):
         self.assertEquals('RUNNING', run_task.status)
 
     @patch('celery.app.task.Task.request')
-    @patch('utils.shp.SQliteToShp')
+    @patch('utils.shp.GPKGToShp')
     def test_run_shp_export_task(self, mock, mock_request):
         task = ShpExportTask()
         celery_uid = str(uuid.uuid4())
         type(mock_request).id = PropertyMock(return_value=celery_uid)
-        sqlite_to_shp = mock.return_value
+        gpkg_to_shp = mock.return_value
         job_name = self.job.name.lower()
-        sqlite_to_shp.convert.return_value = '/path/to/' + job_name + '.shp'
-        stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid)
+        gpkg_to_shp.convert.return_value = '/path/to/' + job_name + '.shp'
+        stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(self.run.uid))
 
         ExportTask.objects.create(
             run=self.run, status='PENDING', name=task.name)
         result = task.run(run_uid=str(self.run.uid),
                           stage_dir=stage_dir, job_name=job_name)
-        sqlite_to_shp.convert.assert_called_once()
+        gpkg_to_shp.convert.assert_called_once()
         self.assertEquals('/path/to/' + job_name + '.shp', result['result'])
         # test tasks update_task_state method
         run_task = ExportTask.objects.get(celery_uid=celery_uid)
@@ -233,22 +233,22 @@ class TestExportTasks(TestCase):
         self.assertEquals('RUNNING', run_task.status)
 
     @patch('celery.app.task.Task.request')
-    @patch('utils.kml.SQliteToKml')
+    @patch('utils.kml.GPKGToKml')
     def test_run_kml_export_task(self, mock_kml, mock_request):
         task = KmlExportTask()
         celery_uid = str(uuid.uuid4())
         type(mock_request).id = PropertyMock(return_value=celery_uid)
-        sqlite_to_kml = mock_kml.return_value
+        gpkg_to_kml = mock_kml.return_value
         job_name = self.job.name.lower()
         expected_output_path = '/home/ubuntu/export_staging/' + \
             str(self.run.uid) + '/' + job_name + '.kmz'
-        sqlite_to_kml.convert.return_value = expected_output_path
+        gpkg_to_kml.convert.return_value = expected_output_path
         stage_dir = settings.EXPORT_STAGING_ROOT + str(self.run.uid) + '/'
         ExportTask.objects.create(
             run=self.run, status='PENDING', name=task.name)
         result = task.run(run_uid=str(self.run.uid),
                           stage_dir=stage_dir, job_name=job_name)
-        sqlite_to_kml.convert.assert_called_once()
+        gpkg_to_kml.convert.assert_called_once()
         self.assertEquals(expected_output_path, result['result'])
         # test the tasks update_task_state method
         run_task = ExportTask.objects.get(celery_uid=celery_uid)

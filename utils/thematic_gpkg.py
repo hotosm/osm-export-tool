@@ -11,21 +11,20 @@ from string import Template
 logger = logging.getLogger(__name__)
 
 
-class ThematicGPKGToShp(object):
+class GPKGToThematicGPKG(object):
     """
-    Thin wrapper around ogr2ogr to convert a GeoPackage to shp using thematic layers.
+    Thin wrapper around ogr2ogr to apply thematic layers to a GeoPackage.
+    TODO this largely duplicates thematic_shp.py
     """
 
-    def __init__(self, gpkg=None, shapefile=None, tags=None, job_name=None, zipped=True, debug=False):
+    def __init__(self, gpkg=None, tags=None, job_name=None, debug=False):
         """
         Initialize the ThematicGPKGToShp utility.
 
         Args:
             gpkg: the GeoPackage to convert
-            shapefile: the path to the shapefile output
             tags: the selected tags for this export
             job_name: the name of the export job
-            zipped: true if output is to be zipped, false otherwise
             debug: turn on/off debug logging output.
         """
         self.gpkg = gpkg
@@ -33,15 +32,8 @@ class ThematicGPKGToShp(object):
         self.job_name = job_name
         if not os.path.exists(self.gpkg):
             raise IOError('Cannot find GeoPackage for this task.')
-        self.shapefile = shapefile
-        self.zipped = zipped
         self.stage_dir = os.path.dirname(self.gpkg)
-        if not self.shapefile:
-            # create shp path from sqlite path.
-            self.shapefile = os.path.join(self.stage_dir, '{}_thematic_shp'.format(self.job_name))
         self.debug = debug
-        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $gpkg -lco ENCODING=UTF-8 -overwrite")
-        self.zip_cmd = Template("zip -j -r $zipfile $shp_dir")
         # create thematic sqlite file
         self.thematic_gpkg = os.path.join(self.stage_dir, '{0}_thematic.gpkg'.format(self.job_name))
         shutil.copy(self.gpkg, self.thematic_gpkg)
@@ -225,43 +217,4 @@ class ThematicGPKGToShp(object):
         os.remove(thematic_spatial_index_file)
 
     def convert(self, ):
-        """
-        Convert the thematic sqlite schema to shapefile.
-        """
-        convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'gpkg': self.thematic_gpkg})
-        if self.debug:
-            print 'Running: %s' % convert_cmd
-        proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate()
-        returncode = proc.wait()
-        if returncode != 0:
-            logger.error('%s', stderr)
-            raise Exception, "ogr2ogr process failed with returncode {0}".format(returncode)
-        if self.debug:
-            print 'ogr2ogr returned: %s' % returncode
-        if self.zipped and returncode == 0:
-            zipfile = self._zip_shape_dir()
-            return zipfile
-        else:
-            return self.shapefile
-
-    def _zip_shape_dir(self, ):
-        """
-        Zip the shapefile directory.
-        """
-        zipfile = self.shapefile + '.zip'
-        zip_cmd = self.zip_cmd.safe_substitute({'zipfile': zipfile, 'shp_dir': self.shapefile})
-        proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate()
-        returncode = proc.wait()
-        if returncode != 0:
-            logger.error('%s', stderr)
-            raise Exception, 'Error zipping shape directory. Exited with returncode: {0}'.format(returncode)
-        if returncode == 0:
-            # remove the shapefile directory
-            shutil.rmtree(self.shapefile)
-        if self.debug:
-            print 'Zipped shapefiles: {0}'.format(self.shapefile)
-        return zipfile
+        return self.thematic_gpkg

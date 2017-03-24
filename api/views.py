@@ -349,7 +349,7 @@ class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = ExportFormatSerializer
     permission_classes = (permissions.AllowAny,)
-    queryset = ExportFormat.objects.all()
+    queryset = ExportFormat.objects.exclude(slug='sqlite')
     lookup_field = 'slug'
     ordering = ['description']
 

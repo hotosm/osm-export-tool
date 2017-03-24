@@ -81,6 +81,6 @@ if __name__ == '__main__':
     if config.get('debug'):
         debug = True
     parser = OSMParser(osm=osm, sqlite=sqlite, debug=debug)
-    parser.create_spatialite()
-    parser.create_default_schema()
+    parser.create_geopackage()
+    parser.create_default_schema_gpkg()
     parser.update_zindexes()

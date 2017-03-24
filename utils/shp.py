@@ -11,39 +11,39 @@ from string import Template
 logger = logging.getLogger(__name__)
 
 
-class SQliteToShp(object):
+class GPKGToShp(object):
     """
-    Convert sqlite to shapefile.
+    Convert a GeoPackage to shapefile.
     """
 
-    def __init__(self, sqlite=None, shapefile=None, zipped=True, debug=False):
+    def __init__(self, gpkg=None, shapefile=None, zipped=True, debug=False):
         """
-        Initialize the SQliteToShp utility.
+        Initialize the GPKGToShp utility.
 
         Args:
-            sqlite: the sqlite file to convert.
+            gpg: the GeoPackage to convert.
             shapefile: the path to the shapefile output
             zipped: whether to zip the output
         """
-        self.sqlite = sqlite
-        if not os.path.exists(self.sqlite):
-            raise IOError('Cannot find sqlite file for this task.')
+        self.gpkg = gpkg
+        if not os.path.exists(self.gpkg):
+            raise IOError('Cannot find GeoPackage for this task.')
         self.shapefile = shapefile
         self.zipped = zipped
         if not self.shapefile:
-            # create shp path from sqlite path.
-            root = self.sqlite.split('.')[0]
-            self.shapefile = root + 'shp'
+            # create shp path from the gpkg path.
+            root = self.gpkg.split('.')[0]
+            self.shapefile = root + '_shp'
         self.debug = debug
-        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $sqlite -lco ENCODING=UTF-8")
+        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $gpkg -lco ENCODING=UTF-8 -overwrite")
         self.zip_cmd = Template("zip -j -r $zipfile $shp_dir")
 
     def convert(self, ):
         """
-        Convert the sqlite to shape.
+        Convert the GeoPackage to a Shapefile.
         """
-        convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'sqlite': self.sqlite})
-        if(self.debug):
+        convert_cmd = self.cmd.safe_substitute({'shp': self.shapefile, 'gpkg': self.gpkg})
+        if self.debug:
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -84,7 +84,7 @@ class SQliteToShp(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Converts a SQlite database to ESRI Shapefile.')
-    parser.add_argument('-i', '--sqlite-file', required=True, dest="sqlite", help='The SQlite file to convert.')
+    parser.add_argument('-i', '--geopackage-file', required=True, dest="gpkg", help='The GeoPackage to convert.')
     parser.add_argument('-o', '--shp-dir', required=True, dest="shp", help='The directory to write the Shapefile(s) to.')
     parser.add_argument('-z', '--zipped', action="store_true", help="Whether to zip the shapefile directory. Default true.")
     parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
@@ -95,7 +95,7 @@ if __name__ == '__main__':
             continue
         else:
             config[k] = v
-    sqlite = config['sqlite']
+    gpkg = config['gpkg']
     shapefile = config['shp']
     debug = False
     zipped = False
@@ -103,5 +103,4 @@ if __name__ == '__main__':
         debug = True
     if config.get('zipped'):
         zipped = True
-    s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile, debug=debug)
-    s2s.convert()
+    GPKGToShp(gpkg=gpk, shapefile=shapefile, debug=debug).convert()

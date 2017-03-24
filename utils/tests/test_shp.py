@@ -5,14 +5,14 @@ import os
 from mock import Mock, patch
 
 from django.conf import settings
-from django.test import SimpleTestCase
+from django.test import TransactionTestCase
 
-from ..shp import SQliteToShp
+from ..shp import GPKGToShp
 
 logger = logging.getLogger(__name__)
 
 
-class TestSQliteToShp(SimpleTestCase):
+class TestGPKGToShp(TransactionTestCase):
 
     def setUp(self, ):
         self.path = settings.ABS_PATH()
@@ -21,19 +21,20 @@ class TestSQliteToShp(SimpleTestCase):
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_convert(self, popen, pipe, exists):
-        sqlite = self.path + '/utils/tests/files/test.sqlite'
-        shapefile = self.path + '/utils/tests/files/shp'
-        cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
+        gpkg = os.path.join(self.path, '/utils/tests/files/test.gpkg')
+        shapefile = os.path.join(self.path, '/utils/tests/files/shp')
+        layer_name = os.path.splitext(os.path.basename(gpkg))[0]
+        cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8 -overwrite".format(shapefile, gpkg, layer_name)
         proc = Mock()
         exists.return_value = True
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())
         proc.wait.return_value = 0
         # set zipped to False for testing
-        s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile,
+        s2s = GPKGToShp(gpkg=gpkg, shapefile=shapefile,
                           zipped=False, debug=False)
         out = s2s.convert()
-        exists.assert_called_once_with(sqlite)
+        exists.assert_called_once_with(gpkg)
         popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)
         self.assertEquals(out, shapefile)
@@ -43,19 +44,19 @@ class TestSQliteToShp(SimpleTestCase):
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_zip_img_file(self, popen, pipe, rmtree, exists):
-        sqlite = self.path + '/utils/tests/files/test.sqlite'
-        shapefile = self.path + '/utils/tests/files/shp'
-        zipfile = self.path + '/utils/tests/files/shp.zip'
+        gpkg = os.path.join(self.path, '/utils/tests/files/test.gpkg')
+        shapefile = os.path.join(self.path, '/utils/tests/files/shp')
+        zipfile = os.path.join(self.path, '/utils/tests/files/shp.zip')
         zip_cmd = "zip -j -r {0} {1}".format(zipfile, shapefile)
         exists.return_value = True
         proc = Mock()
         popen.return_value = proc
         proc.communicate.return_value = (Mock(), Mock())
         proc.wait.return_value = 0
-        s2s = SQliteToShp(sqlite=sqlite, shapefile=shapefile,
+        s2s = GPKGToShp(gpkg=gpkg, shapefile=shapefile,
                           zipped=False, debug=False)
         result = s2s._zip_shape_dir()
-        exists.assert_called_once_with(sqlite)
+        exists.assert_called_once_with(gpkg)
         # test subprocess getting called with correct command
         popen.assert_called_once_with(zip_cmd, shell=True, executable='/bin/bash',
                                 stdout=pipe, stderr=pipe)

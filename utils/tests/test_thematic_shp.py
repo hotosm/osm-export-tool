@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from mock import Mock, patch
+from mock import Mock, patch, MagicMock
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -11,7 +11,7 @@ from django.test import TestCase
 import jobs.presets as presets
 from jobs.models import Job, Tag
 
-from ..thematic_shp import ThematicSQliteToShp
+from ..thematic_shp import ThematicGPKGToShp
 
 
 class TestThematicShp(TestCase):
@@ -41,38 +41,48 @@ class TestThematicShp(TestCase):
     @patch('shutil.copy')
     @patch('os.path.exists')
     def testInit(self, exists, copy):
-        sqlite = self.path + '/utils/tests/files/test.sqlite'
-        shapefile = self.path + '/utils/tests/files/thematic_shp'
-        cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
+        gpkg = os.path.join(self.path, '/utils/tests/files/test.gpkg')
+        shapefile = (self.path, '/utils/tests/files/thematic_shp')
+        cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, gpkg)
         proc = Mock()
         exists.return_value = True
         # set zipped to False for testing
-        t2s = ThematicSQliteToShp(
-            sqlite=sqlite, shapefile=shapefile,
+        t2s = ThematicGPKGToShp(
+            gpkg=gpkg, shapefile=shapefile,
             tags=None, job_name='test_thematic_shp',
             zipped=False, debug=False
         )
         exists.assert_called_twice()
         copy.assert_called_once()
 
+    @patch('os.remove')
+    @patch('__builtin__.open')
     @patch('shutil.copy')
     @patch('os.path.exists')
+    @patch('subprocess.PIPE')
+    @patch('subprocess.Popen')
     @patch('sqlite3.connect')
-    def test_generate_thematic_schema(self, connect, exists, copy):
-        sqlite = self.path + '/utils/tests/files/test.sqlite'
-        shapefile = self.path + '/utils/tests/files/thematic_shp'
-        thematic_sqlite = self.path + '/utils/tests/files/test_thematic_shp_thematic.sqlite'
+    def test_generate_thematic_schema(self, connect, popen, pipe, exists, copy, mock_open, remove):
+        gpkg = os.path.join(self.path, '/utils/tests/files/test.gpkg')
+        stage_dir = '/utils/tests/files'
+        shapefile = os.path.join(self.path, '/utils/tests/files/thematic_shp')
+        thematic_gpkg = os.path.join(self.path, '/utils/tests/files/test_thematic_shp_thematic.gpkg')
+        sql_file_name = 'thematic_spatial_index.sql'
+        cmd = "spatialite {0} < {1}".format(thematic_gpkg, os.path.join(stage_dir, sql_file_name))
         exists.return_value = True
         conn = Mock()
         conn.enable_load_extention = Mock()
         connect.return_value = conn
-        cur = Mock()
+        cur = MagicMock()
         conn.cursor = cur
         cur.execute = Mock()
-        cmd = "SELECT load_extension('libspatialite')"
+        proc = Mock()
+        popen.return_value = proc
+        proc.communicate.return_value = (Mock(), Mock())
+        proc.wait.return_value = 0
         tags = self.job.categorised_tags
-        t2s = ThematicSQliteToShp(
-            sqlite=sqlite, shapefile=shapefile,
+        t2s = ThematicGPKGToShp(
+            gpkg=gpkg, shapefile=shapefile,
             tags=tags, job_name='test_thematic_shp',
             zipped=False, debug=False
         )
@@ -81,8 +91,11 @@ class TestThematicShp(TestCase):
         t2s.generate_thematic_schema()
         connect.assert_called_once()
         conn.load_extention.assert_called_once()
+        mock_open.assert_called_once_with(os.path.join(stage_dir, sql_file_name), 'w+')
         conn.cursor.assert_called_once()
-        # cur.execute.assert_called_with(cmd)
+        popen.assert_called_once_with(cmd, shell=True, executable='/bin/bash',
+                                stdout=pipe, stderr=pipe)
+        remove.assert_called_once_with(os.path.join(stage_dir, sql_file_name))
 
     @patch('shutil.copy')
     @patch('os.path.exists')
@@ -90,15 +103,15 @@ class TestThematicShp(TestCase):
     @patch('subprocess.Popen')
     @patch('sqlite3.connect')
     def test_convert(self, connect, popen, pipe, exists, copy):
-        sqlite = self.path + '/utils/tests/files/test_thematic_shp_thematic.sqlite'
-        shapefile = self.path + '/utils/tests/files/shp'
-        cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8".format(shapefile, sqlite)
+        gpkg = os.path.join(self.path, '/utils/tests/files/test_thematic_shp_thematic.gpkg')
+        shapefile = os.path.join(self.path, '/utils/tests/files/shp')
+        cmd = "ogr2ogr -f 'ESRI Shapefile' {0} {1} -lco ENCODING=UTF-8 -overwrite".format(shapefile, gpkg)
         proc = Mock()
         exists.return_value = True
         conn = Mock()
         conn.enable_load_extention = Mock()
         connect.return_value = conn
-        cur = Mock()
+        cur = MagicMock()
         conn.cursor = cur
         cur.execute = Mock()
         popen.return_value = proc
@@ -106,8 +119,8 @@ class TestThematicShp(TestCase):
         proc.wait.return_value = 0
         # set zipped to False for testing
         tags = self.job.categorised_tags
-        t2s = ThematicSQliteToShp(
-            sqlite=sqlite, shapefile=shapefile,
+        t2s = ThematicGPKGToShp(
+            gpkg=gpkg, shapefile=shapefile,
             tags=tags, job_name='test_thematic_shp',
             zipped=False, debug=False
         )
@@ -124,9 +137,9 @@ class TestThematicShp(TestCase):
     @patch('subprocess.PIPE')
     @patch('subprocess.Popen')
     def test_zip_shp_file(self, popen, pipe, rmtree, exists, copy):
-        sqlite = self.path + '/utils/tests/files/test_thematic_shp_thematic.sqlite'
-        shapefile = self.path + '/utils/tests/files/thematic_shp'
-        zipfile = self.path + '/utils/tests/files/thematic_shp.zip'
+        gpkg = os.path.join(self.path, '/utils/tests/files/test_thematic_shp_thematic.gpkg')
+        shapefile = os.path.join(self.path, '/utils/tests/files/thematic_shp')
+        zipfile = os.path.join(self.path, '/utils/tests/files/thematic_shp.zip')
         zip_cmd = "zip -j -r {0} {1}".format(zipfile, shapefile)
         exists.return_value = True
         proc = Mock()
@@ -134,8 +147,8 @@ class TestThematicShp(TestCase):
         proc.communicate.return_value = (Mock(), Mock())
         proc.wait.return_value = 0
         tags = self.job.categorised_tags
-        t2s = ThematicSQliteToShp(
-            sqlite=sqlite, shapefile=shapefile,
+        t2s = ThematicGPKGToShp(
+            gpkg=gpkg, shapefile=shapefile,
             tags=tags, job_name='test_thematic_shp',
             zipped=False, debug=False
         )

@@ -39,7 +39,7 @@ class OSMToPBF(object):
         Convert the raw osm to pbf.
         """
         convert_cmd = self.cmd.safe_substitute({'osm': self.osm, 'pbf': self.pbffile})
-        if(self.debug):
+        if self.debug:
             print 'Running: %s' % convert_cmd
         proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate()

@@ -6,6 +6,8 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN \
   apt update \
   && apt upgrade -y \
+  && apt install -y --no-install-recommends software-properties-common \
+  && add-apt-repository -y -u ppa:ubuntugis/ubuntugis-unstable \
   && apt install -y --no-install-recommends \
     curl \
     libpq-dev \
