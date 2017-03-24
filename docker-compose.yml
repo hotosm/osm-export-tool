@@ -51,7 +51,7 @@ services:
       - postgresql
     links:
       - postgresql
-    command: python manage.py migrate
+    command: python manage.py migrate --no-input
   site:
     extends:
       service: base
