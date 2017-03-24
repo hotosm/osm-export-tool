@@ -13,6 +13,7 @@ services:
       - LOG_LEVEL=DEBUG
       - DJANGO_ENV=development
       - USE_X_FORWARDED_HOST=True
+      - HOSTNAME=localhost
     volumes:
       - .:/opt/osm-export-tool2
   celery-beat:
@@ -60,6 +61,8 @@ services:
       - rabbitmq
     expose:
       - "6080"
+    ports:
+      - "6080:6080"
     links:
       - postgresql
       - rabbitmq
