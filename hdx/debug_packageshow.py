@@ -17,7 +17,7 @@ headers = {
         }
 
 data = {
-            'id':'bdon-hot-openstreetmap-gin'
+            'id':'hotosm_guinea_admin_boundaries'
         }
 data = json.dumps(data)
 resp = requests.post('https://data.humdata.org/api/action/package_show',headers=headers,data=data)

@@ -13,9 +13,6 @@
 
 <div class="row" style="padding:15px">
     <div id="search" class="col-md-7">
-        <h2>Scheduled Exports</h2>
-
-
 
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -29,10 +26,20 @@
         <label>
           Run this export on an automated schedule:
           <select class="form-control">
+            <option>Every day</option>
+            <option>Every 6 hours</option>
             <option>Disabled</option>
-            <option>Every day at 12AM GMT</option>
-            <option>Every week - Sunday at 12AM GMT</option>
+            <option>Every Sunday</option>
+            <option>The first day of the month</option>
           </select> 
+          at
+          <select class="form-control">
+            <option>0:00</option>
+            <option>1:00</option>
+            <option>2:00</option>
+            <option>3:00</option>
+          </select> 
+          GMT
         </label>
 
 
@@ -42,24 +49,19 @@
         <div class="form-group">
           <label for="comment">Feature Selection:</label>
           <textarea class="form-control" rows="6" id="comment">
-table: buildings
-  - building
-  - building:levels
-  - building:materials
-  - addr:housenumber
-  - addr:street
-  - addr:city
-  office
-table: roads
-  - highway
-  - name
-  - surface
-  - smoothness
-  - width
-  - lanes
-  - oneway
-  - bridge
-  - layer
+buildings:
+  types:
+    - polygons
+  select:
+    - name
+    - building
+    - building_levels
+    - building_materials
+    - addr_housenumber
+    - addr_street
+    - addr_city
+    - office
+  where: building IS NOT NULL
           </textarea>
         </div>
 
@@ -77,6 +79,16 @@ table: roads
         <div class="checkbox">
           <label>
             <input type="checkbox"> OpenStreetMap PBF
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> Geopackage
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> Garmin .IMG
           </label>
         </div>
       </div>
