@@ -9,10 +9,7 @@ from string import Template
 import requests
 from requests import exceptions
 
-from django.conf import settings
-
 LOG = logging.getLogger(__name__)
-
 
 class Overpass(object):
     """
@@ -22,7 +19,11 @@ class Overpass(object):
     and filtered by the provided tags.
     """
 
-    def __init__(self, url=None, bbox=None, stage_dir=None, job_name=None, filters=None, debug=False):
+    def __init__(self, bbox, stage_dir, 
+                job_name, filters=None, debug=False,
+                url='http://overpass-api.de/api/interpreter',
+                overpass_max_size=2147483648,
+                timeout=1600):
         """
         Initialize the Overpass utility.
 
@@ -33,17 +34,12 @@ class Overpass(object):
             filters: a list of key=value filters to use to filter the overpass extract.
             debug: turn on/off debug logging
         """
-        if settings.OVERPASS_API_URL:
-            self.url = settings.OVERPASS_API_URL
-        else:
-            self.url = 'http://localhost/interpreter'
+        self.url = url
         self.query = None
         self.stage_dir = stage_dir
         self.job_name = job_name
         self.filters = filters
         self.debug = debug
-        if url:
-            self.url = url
         if bbox:
             self.bbox = bbox
         else:
@@ -57,10 +53,8 @@ class Overpass(object):
         self.filter_template = '--keep={0}'.format(' or '.join(self.filters))
 
         # dump out all osm data for the specified bounding box
-        max_size = settings.OVERPASS_MAX_SIZE
-        timeout = settings.OVERPASS_TIMEOUT
         self.query = self.default_template.safe_substitute(
-            {'maxsize': max_size, 'timeout': timeout, 'bbox': self.bbox}
+            {'maxsize': overpass_max_size, 'timeout': timeout, 'bbox': self.bbox}
         )
         # set up required paths
         self.raw_osm = self.stage_dir + 'query.osm'

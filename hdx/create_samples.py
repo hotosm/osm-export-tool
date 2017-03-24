@@ -14,7 +14,7 @@ url = "http://overpass-api.de/api/interpreter"
 
 stage_dir = '../stage/' + h.base_slug + "/"
 categories = {'points':f_s.key_union,'lines':f_s.key_union,'polygons':f_s.key_union}
-o = overpass.Overpass(url,bbox,stage_dir,h.base_slug,[],debug=True)
+o = overpass.Overpass(bbox,stage_dir,h.base_slug,filters=[],debug=True)
 #o.run_query()
 o.filter()
 

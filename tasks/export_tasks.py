@@ -183,8 +183,10 @@ class OverpassQueryTask(ExportTask):
         """
         self.update_task_state(run_uid=run_uid, name=self.name)
         op = overpass.Overpass(
-            bbox=bbox, stage_dir=stage_dir,
-            job_name=job_name, filters=filters
+            bbox, stage_dir,job_name, filters=filters,
+            url=settings.OVERPASS_API_URL,
+            overpass_max_size=settings.OVERPASS_MAX_SIZE,
+            timeout=settings.OVERPASS_TIMEOUT
         )
         op.run_query()  # run the query
         filtered_osm = op.filter()  # filter the results

@@ -33,8 +33,8 @@ def run(*script_args):
     print "Querying Monrovia with OSM filters."
     print timezone.now()
     op = Overpass(
-        bbox=bbox, stage_dir=path + '/files/',
-        job_name='test', filters=filters
+        bbox, path + '/files/',
+        'test', filters=filters
     )
     osm = op.run_query()
     print timezone.now()
