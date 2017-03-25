@@ -1217,7 +1217,7 @@ create.job = (function(){
                             bbox.removeAllFeatures();
                             transform.unsetFeature();
                             unsetBounds();
-                            map.zoomToMAxExtent();
+                            map.zoomToMaxExtent();
 
                         }
                         // if in cache use cached value
