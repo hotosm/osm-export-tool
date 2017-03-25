@@ -1,0 +1,113 @@
+@media only screen and (max-width: 799px) {
+    .olZoom {
+        top: 135px;
+    }
+    .olZoomToExtent {
+        top: 100px;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    .olZoom {
+        top: 50px;
+    }
+    .olZoomToExtent {
+        top: 15px;
+    }
+}
+
+@media only screen and (max-width: 605px) {
+    div.map {
+        height: calc(100% - 222px);
+    }
+}
+
+@media only screen and (min-width: 606px) {
+    div.map {
+        height: calc(100% - 180px);
+    }
+}
+
+div.map {
+    position: absolute;
+    margin-top: 0px;
+    margin-left: 0px;
+    bottom: 0px;
+}
+
+.draw {
+    top: 125px;
+    left: 40px;
+}
+.olScaleLine {
+    position: absolute;
+    padding: 2px;
+    background: rgba(0,0,0,0);
+    border-radius: 4px;
+    bottom: 10px;
+    right: 10px;
+}
+
+.olScaleLine > div {
+    color: #707274;
+    border: 1px solid #707274;
+    border-top: none;
+    font-size: 10px;
+    text-align: center;
+    margin: 1px;
+    will-change: contents,width;
+}
+
+.olZoom {
+    z-index: 3;
+    left: 10px;
+    color: #66a3ff;
+    background-color: white;
+}
+
+.olZoomToExtent {
+    z-index: 3;
+    left: 10px;
+    color: #66a3ff;
+    background-color: white;   
+}
+
+.olZoomToExtent button {
+    color: #4498c0;
+    background-color: white;
+    outline: none;
+    height: 22px;
+    width: 22px;
+}
+
+.olZoom button {
+    color: #4498c0;
+    background-color: white;
+    outline: none;
+    height: 22px;
+    width: 22px;
+}
+
+.olZoomToExtent button i {
+    font-size: 16px;
+}
+
+.olZoom button i {
+    font-size: 16px;
+}
+
+.olZoomToExtent button:hover {
+    background-color: white;
+}
+
+.olZoom button:hover {
+    background-color: white;
+}
+
+.olZoomToExtent button:focus {
+    background-color: white;
+}
+
+.olZoom button:focus {
+    background-color: white;
+}

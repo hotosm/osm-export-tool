@@ -1,0 +1,110 @@
+@media screen and (min-width: 601px) {
+    .drawButtonsContainer {
+        width: 60px;
+        height: 270px;
+    }
+    .drawButtonsTitle {
+        height: 30px;
+        width: 60px;
+        font-size: .8em;
+        line-height: 30px;
+    }
+    .drawButtonGeneral {
+        height: 60px;
+        width: 60px;
+    }
+    .buttonDiv {
+        height: 33px;
+    }
+    .buttonName {
+        font-size: .6em;
+        width: 60px;
+        height: 12px;
+    }
+    .inactiveButton {
+        opacity: 0.4;
+        font-size: 1.5em;
+    }
+    .selectedButton {
+        font-size: 1.5em;
+    }
+    .defaultButton {
+        font-size: 1.5em;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .drawButtonsContainer {
+        width: 50px;
+        height: 230px;
+    }
+    .drawButtonsTitle {
+        height: 30px;
+        width: 50px;
+        font-size: .7em;
+        line-height: 30px;
+    }
+    .drawButtonGeneral {
+        height: 50px;
+        width: 50px;
+    }
+    .buttonDiv {
+        height: 33px;
+    }
+    .buttonName {
+        font-size: .5em;
+        width: 50px;
+        height: 12px;
+    }
+    .inactiveButton {
+        opacity: 0.4;
+        font-size: 1.3em;
+    }
+    .selectedButton {
+        font-size: 1.3em;
+    }
+    .defaultButton {
+        font-size: 1.3em;
+    }
+}
+
+
+.drawButtonsContainer {
+    z-index: 1;
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    background-color: #fff;
+}
+
+.drawButtonsTitle {
+    text-align: center;
+}
+
+.drawButtonGeneral {
+    border-top: 1px solid #e6e6e6;
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+.drawButtonGeneral i {
+    color: #4498c0;
+    padding: 0;
+}
+
+.drawButtonGeneral:focus {
+    outline: none;
+}
+
+.buttonName {
+    color: #4498c0;
+    bottom: 0;
+}
+
+.buttonNameInactive {
+    opacity: 0.4;
+}

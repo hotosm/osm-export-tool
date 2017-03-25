@@ -1,0 +1,113 @@
+@media screen and (min-width: 601px) {
+    .aoiInfoWrapper {
+        font-size: 12px;
+        height: 70px;
+    }
+
+    .geometryIcon {
+        font-size: 38px;
+    }
+
+    .aoiInfobar {
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .aoiInfoWrapper {
+        font-size: 10px;
+        height: 50px;
+    }
+
+    .geometryIcon {
+        font-size: 25px;
+    }
+
+    .aoiInfobar {
+        width: 60%;
+    }
+
+    .activeButton {
+        font-size: 8px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .activeButton {
+        font-size: 7px;
+    }
+}
+
+.aoiInfoWrapper {
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+    bottom: 40px;
+}
+
+.aoiInfobar {
+    max-width: 600px;
+    margin: 0 auto;
+    height: 100%;
+    background-color: #fff;
+}
+
+.topBar {
+    width: 100%;
+    float: left;
+    padding-top: 5px;
+    /*padding-left: 10px;*/
+    
+}
+
+.aoiInfoTitle {
+    font-size: 1em;
+    padding-left: 10px;
+}
+
+.detailBar {
+    width: 100%;
+    float: left;
+}
+
+.activeButton {
+    background: none;
+    border: none;
+    float: right;
+    padding-right: 10px;
+    color: #4498c0;
+}
+
+.activeButton:focus {
+    outline: none;
+}
+
+.geometryIcon {
+    color: grey;
+    padding-left: 8px;
+    float: left;
+}
+
+.detailText {
+    float: left;
+    height: 100%;
+}
+
+.aoiDescription {
+    padding-left: 6px;
+    width: 100%;
+    color: grey;
+}
+
+.aoiTitle {
+    padding-left: 6px;
+    width: 100%;
+}
+
+.aoiInfo {
+    padding: 0px 5px 0px 5px;
+    border: none;
+    background-color: #fff;
+    height: 100%;
+    line-height: 100%;
+}

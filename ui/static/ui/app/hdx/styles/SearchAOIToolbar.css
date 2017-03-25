@@ -1,0 +1,93 @@
+@media only screen and (min-width: 850px) {
+    .searchbarDiv {
+        max-width: 765px !important;
+    }
+}
+
+@media only screen and (max-width: 750px) {
+    .formControl {
+        font-size: .8em !important;
+    }
+}
+
+@media only screen and (max-width: 340px) {
+    .formControl {
+        font-size: .6em !important;
+    }
+}
+
+@media screen and (min-width: 601px) {
+    .searchAOIButtonContainer {
+        width: 60px;
+        height: 50px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .searchAOIButtonContainer {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+.searchbarDiv {
+    z-index: 2;
+    position: absolute;
+    width: 90%;
+    min-width: 320px;
+    height: 50px;
+    top: 1em;
+    right: 10px;
+    background-color: white;
+}
+
+.searchAOIButtonContainer {
+    position: absolute;
+    right: 0px;
+}
+
+.typeahead {
+    left: 0px;
+    top: 0px;
+    height: 50px;
+    width: calc(100% - 70px);
+    position: absolute;
+}
+
+.typeahead > div {
+    height: 50px;
+    position: absolute !important;
+    width: 100%;
+}
+
+.typeahead > div > div {
+    position: absolute !important;
+    width: 100%;
+}
+
+.typeahead > div > div > input {
+    height: 50px;
+    border: none;
+    --webkit-box-shadow: none;
+    box-shadow: none;
+    color: #707274;
+    background-color: #fff !important;
+    padding-left: 25px;
+}
+
+.typeahead > div > div > input:focus {
+    border: none;
+}
+
+.typeahead ul {
+    width: 100%;
+    border-radius: 0px;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+.formControl {
+    padding-left: 25px;
+}
+

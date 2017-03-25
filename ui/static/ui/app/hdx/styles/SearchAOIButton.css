@@ -1,0 +1,77 @@
+@media screen and (min-width: 601px) {
+    .buttonGeneral {
+        height: 50px;
+        width: 60px;
+    }
+    .defaultButton {
+        font-size: 1.5em;
+    }
+
+    .inactiveButton {
+        opacity: 0.4;
+        font-size: 1.5em;
+    }
+
+    .selectedButton {
+        font-size: 1.5em;
+    }
+
+    .buttonName {
+        font-size: .6em;
+        width: 60px;
+        height: 12px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .buttonGeneral {
+        height: 50px;
+        width: 50px;
+    }
+    .defaultButton {
+        font-size: 1.3em;
+    }
+
+    .inactiveButton {
+        opacity: 0.4;
+        font-size: 1.3em;
+    }
+
+    .selectedButton {
+        font-size: 1.3em;
+    }
+
+    .buttonName {
+        font-size: .5em;
+        width: 50px;
+        height: 12px;
+    }
+}
+
+.buttonGeneral {
+    border-left: 1px solid #e6e6e6;
+    border-right: none;
+    border-bottom: none;
+    border-top: none;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+.buttonGeneral:focus {
+    outline: none;
+}
+
+.buttonGeneral i {
+    color: #4498c0;
+    padding: 0;
+}
+
+.buttonName {
+    color: #4498c0;
+    bottom: 0;
+}
+
+.buttonNameInactive {
+    opacity: 0.4;
+}

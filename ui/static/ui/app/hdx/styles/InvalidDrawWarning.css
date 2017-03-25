@@ -1,0 +1,22 @@
+.invalidWarning {
+    position: absolute;
+    top: 70px;
+    right: 80px;
+    width: 200px;
+    border: 1px solid transparent;
+    padding: 5px 5px 5px 10px;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+    color: #fff;
+    z-index: 2;
+    opacity: .7;
+    font-size: 12px;
+}
+
+.visible {
+    visibility: visible;
+}
+
+.hidden {
+    visibility: hidden;
+}

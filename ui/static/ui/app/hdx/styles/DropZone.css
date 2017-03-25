@@ -1,0 +1,44 @@
+.dropZone {
+    margin: auto;
+    width: 90%;
+    height: 200px;
+    text-align: center;
+    border: 1px dashed;
+    font-size: 1em;
+    color: #4498c0;
+}
+
+.dropZoneText {
+    vertical-align: center;
+    color: grey;
+    height: 100px;
+    margin-top: 50px;
+}
+
+.dropZoneImportButton {
+    border: none;
+    background-color: #4498c0;
+    color: #fff;
+    margin: 15px 5px 10px 5px;
+    height: 30px;
+    padding: 5px 10px 5px 10px;
+    
+}
+
+.dropZoneImportButton i {
+    vertical-align: middle;
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+.fileError {
+    margin: auto;
+    width: 90%;
+    height: auto;
+    text-align: center;
+    border: 1px dashed;
+    font-size: 1em;
+    color: #707274;
+    padding: 20px;
+}
+

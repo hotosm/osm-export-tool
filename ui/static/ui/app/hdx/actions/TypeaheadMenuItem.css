@@ -1,0 +1,25 @@
+.menuItem {
+    border-top: 1px solid rgba(112, 114, 116, .4);
+}
+
+.menuItem > a {
+    padding: 7px 10px !important;
+}
+
+.menuItemIcon {
+    font-size: 45px;
+    padding: 0px;
+    vertical-align: middle;
+    color: #707274;
+}
+
+.menuItemIconDiv {
+    width: 45px;
+    float: left;
+}
+
+.menuItemText {
+    left: 30px;
+    color: #707274;
+    min-height: 20px;
+}
