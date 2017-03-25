@@ -65,20 +65,20 @@ def logout(request):
         RequestContext(request)
     )
 
-def scheduled_exports(request):
+def hdx_list(request):
     user = request.user
     context = {'user': user}
-    return render_to_response('ui/scheduled_exports.html', context)
+    return render_to_response('ui/hdx/list.html', context)
 
-def scheduled_exports_edit(request):
+def hdx_edit(request):
     user = request.user
     context = {'user': user}
-    return render_to_response('ui/scheduled_exports_edit.html', context)
+    return render_to_response('ui/hdx/edit.html', context)
 
-def scheduled_exports_create(request):
+def hdx_create(request):
     user = request.user
     context = {'user': user}
-    return render_to_response('ui/scheduled_exports_create.html', context)
+    return render_to_response('ui/hdx/create.html', context)
 
 
 def require_email(request):
