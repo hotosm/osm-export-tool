@@ -255,16 +255,7 @@ export class ExportAOI extends Component {
 
     render() {
 
-        const mapStyle = {
-                right: '0px',
-        }
-
-        if(this.props.drawerOpen && window.innerWidth > 700) {
-            mapStyle.left = '200px';
-        }
-        else {
-            mapStyle.left = '0px';
-        }
+        const mapStyle = {};
 
         let buttonClass = `${styles.draw || ''} ol-unselectable ol-control`
 
