@@ -50,8 +50,6 @@ export class ExportAOI extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-      console.log("ExportAOI will receive props");
-      console.log(nextProps);
         // Check if the map mode has changed (DRAW or NORMAL)
         if(this.props.mode != nextProps.mode) {
             this._updateInteractions(nextProps.mode);
@@ -145,7 +143,6 @@ export class ExportAOI extends Component {
 
 
     _activateDrawInteraction(mode) {
-      console.log("Activate draw interaction");
         if(mode == MODE_DRAW_BBOX) {
             this._drawFreeInteraction.setActive(false);
             this._drawBoxInteraction.setActive(true);

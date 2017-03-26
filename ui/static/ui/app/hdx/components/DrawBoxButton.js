@@ -33,12 +33,10 @@ export class DrawBoxButton extends Component {
 
     handleOnClick() {
         if(this.state.icon == SELECTED_ICON) {
-            console.log("A");
             this.props.setAllButtonsDefault();
             this.props.handleCancel();
         }
         else if(this.state.icon == DEFAULT_ICON) {
-            console.log("B");
             this.props.setBoxButtonSelected();
             this.props.updateMode('MODE_DRAW_BBOX')
 
@@ -70,8 +68,6 @@ const SELECTED_ICON = <div>
                     </div>
 
 function mapStateToProps(state) {
-    console.log("State");
-    console.log(state);
     return {
         toolbarIcons: state.toolbarIcons,
         mode: state.mode,
