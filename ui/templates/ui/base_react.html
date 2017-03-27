@@ -1,8 +1,8 @@
+{% load staticfiles %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    {% load staticfiles %}
-    {% load i18n %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,6 +21,11 @@
     {% endblock %}
     <link rel="stylesheet" href="{% static 'ui/css/materialIcons.css'%}">
     <link rel="stylesheet" href="{% static 'ui/css/ol.css'%}">
+<style>
+  html, body {
+    height:100%;
+  }
+</style>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -84,10 +89,10 @@
       </div>
     </nav>
     {% endblock %}
-    <div class="container-fluid" id="root">
+    <div id="root" class="{{ reactRootClass }} container-fluid" style="height:calc(100% - 125px)">
     </div>
     {% block corejs %}
-
+    <script src="{% static 'ui/build/bundle.js' %}"></script>
     {% endblock %}
   </body>
 </html>
