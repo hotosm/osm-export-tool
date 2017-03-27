@@ -49,6 +49,20 @@ export function clearExportInfo() {
     }
 }
 
+export function stepperNextDisabled() {
+    return {
+        type: types.MAKE_STEPPER_INACTIVE,
+        stepperNextEnabled: false
+    }
+}
+
+export function stepperNextEnabled() {
+    return {
+        type: types.MAKE_STEPPER_ACTIVE,
+        stepperNextEnabled: true
+    }
+}
+
 export function clearAoiInfo() {
     return {
         type: types.CLEAR_AOI_INFO,
