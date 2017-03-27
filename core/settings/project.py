@@ -131,12 +131,6 @@ if os.environ.get('DJANGO_ENV', None) == 'development':
     LOGGING_OUTPUT_ENABLED = DEBUG
     LOGGING_LOG_SQL = DEBUG
 
-# session settings
-SESSION_COOKIE_DOMAIN = HOSTNAME
-SESSION_COOKIE_PATH = '/'
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
