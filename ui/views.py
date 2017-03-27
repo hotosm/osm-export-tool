@@ -67,18 +67,18 @@ def logout(request):
 
 def hdx_list(request):
     user = request.user
-    context = {'user': user}
-    return render_to_response('ui/hdx/list.html', context)
+    context = {'user': user,'reactRootClass':'rootHdxList'}
+    return render_to_response('ui/base_react.html', context)
 
 def hdx_edit(request):
     user = request.user
-    context = {'user': user}
-    return render_to_response('ui/hdx/edit.html', context)
+    context = {'user': user,'reactRootClass':'rootHdxEdit'}
+    return render_to_response('ui/base_react.html', context)
 
 def hdx_create(request):
     user = request.user
-    context = {'user': user}
-    return render_to_response('ui/hdx/create.html', context)
+    context = {'user': user,'reactRootClass':'rootHdxCreate'}
+    return render_to_response('ui/base_react.html', context)
 
 
 def require_email(request):
