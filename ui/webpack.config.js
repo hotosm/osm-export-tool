@@ -1,12 +1,14 @@
 const path = require('path');
 
-module.exports = {
+const webpack = require('webpack')
+
+const config = {
   entry: './app/hdx/base.js',
   output: {
     path: path.resolve(__dirname, 'static','ui','js'),
     filename: 'bundle.js'
   },
-  //devtool: 'inline-source-map',
+  devtool: 'eval',
   module: {
     loaders: [
       {
@@ -31,3 +33,19 @@ module.exports = {
     ]
   }
 };
+
+if (process.NODE_ENV === 'production') {
+  config.devtool = 'source-map';
+  config.plugins = [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin()
+  ]
+}
+
+module.exports = config;

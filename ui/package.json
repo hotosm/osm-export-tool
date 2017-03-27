@@ -81,8 +81,9 @@
     ]
   },
   "scripts": {
-    "dist": "NODE_ENV=production npm run pack && cp -r public/ dist/",
+    "dist": "NODE_ENV=production npm run pack",
     "pack": "webpack --progress --config webpack.config.js",
+    "watch": "webpack --watch --progress --config webpack.config.js",
     "test": "jest --verbose"
   }
 }

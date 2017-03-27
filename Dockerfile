@@ -89,7 +89,7 @@ USER exports
 WORKDIR /opt/osm-export-tool2/
 
 RUN \
-  python manage.py collectstatic --no-input
+  python manage.py collectstatic --no-input --link
 
 VOLUME ["/opt/export_staging", "/opt/export_downloads", "/opt/static"]
 
