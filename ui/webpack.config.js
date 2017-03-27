@@ -1,16 +1,16 @@
 const path = require('path');
 
 module.exports = {
-  entry: './static/ui/app/hdx/base.js',
+  entry: './app/hdx/base.js',
   output: {
-    path: path.resolve(__dirname, 'static','ui','build'),
+    path: path.resolve(__dirname, 'static','ui','js'),
     filename: 'bundle.js'
   },
   //devtool: 'inline-source-map',
   module: {
     loaders: [
       {
-        test: /static\/ui\/app\/.*\.jsx?$/,
+        test: /app\/.*\.jsx?$/,
         exclude: [/node_modules/],
         loader: 'babel-loader',
         query: {
@@ -18,10 +18,10 @@ module.exports = {
         }
       },
       {
-        test: /static\/ui\/app.*\.css$/,
+        test: /app.*\.css$/,
         loader: 'style-loader'
       }, {
-        test: /static\/ui\/app.*\.css$/,
+        test: /app.*\.css$/,
         loader: 'css-loader',
         query: {
           modules: true,
