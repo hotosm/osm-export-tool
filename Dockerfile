@@ -49,7 +49,7 @@ RUN \
     && rm /tmp/osmandmapcreator.zip
 
 RUN \
-  curl -sfL http://www.mkgmap.org.uk/download/mkgmap-r3847.zip -o /tmp/mkgmap.zip \
+  curl -sfL http://www.mkgmap.org.uk/download/mkgmap-r3870.zip -o /tmp/mkgmap.zip \
     && unzip /tmp/mkgmap.zip -d /opt/mkgmap \
     && rm /tmp/mkgmap.zip
 

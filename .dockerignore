@@ -1,3 +1,4 @@
 .git
 venv
 .env
+ui/node_modules
