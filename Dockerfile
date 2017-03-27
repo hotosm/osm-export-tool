@@ -39,6 +39,10 @@ RUN \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+RUN \
+  npm install -g yarn \
+  && rm -rf /root/.npm
+
 COPY requirements.txt /opt/osm-export-tool2/
 COPY requirements-dev.txt /opt/osm-export-tool2/
 
@@ -68,9 +72,9 @@ COPY ui/ /opt/osm-export-tool2/ui/
 WORKDIR /opt/osm-export-tool2/ui/
 
 RUN \
-  npm install \
-  && rm -rf /root/.npm \
-  && npm run pack \
+  yarn \
+  && rm -rf /root/.cache/yarn \
+  && yarn run pack \
   && rm -rf node_modules/
 
 COPY . /opt/osm-export-tool2/
