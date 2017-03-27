@@ -1,7 +1,6 @@
 {
   "name": "osm-export-tool2",
   "version": "0.0.1",
-  "main": "webpack.config.js",
   "dependencies": {
     "axios": "~0.15.3",
     "babel-core": "~6.18.2",
@@ -72,7 +71,8 @@
     "modulePathIgnorePatterns": ["staticfiles/"]
   },
   "scripts": {
+    "dist": "NODE_ENV=production npm run pack && cp -r public/ dist/",
+    "pack": "webpack --progress --config webpack.config.js",
     "test": "jest --verbose"
   }
 }
-

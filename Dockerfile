@@ -6,10 +6,14 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN \
   apt update \
   && apt upgrade -y \
-  && apt install -y --no-install-recommends software-properties-common \
+  && apt install -y --no-install-recommends \
+    apt-transport-https \
+    curl \
+    software-properties-common \
+  && curl -sf https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
+  && add-apt-repository -y -u -s "deb https://deb.nodesource.com/node_6.x $(lsb_release -c -s) main" \
   && add-apt-repository -y -u ppa:ubuntugis/ubuntugis-unstable \
   && apt install -y --no-install-recommends \
-    curl \
     libpq-dev \
     python-dev \
     python-pip \
@@ -31,6 +35,7 @@ RUN \
     libffi-dev \
     libmagic1 \
     libsqlite3-mod-spatialite \
+    nodejs \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -58,6 +63,16 @@ RUN \
     && unzip /tmp/splitter.zip -d /opt/splitter \
     && rm /tmp/splitter.zip
 
+COPY ui/ /opt/osm-export-tool2/ui/
+
+WORKDIR /opt/osm-export-tool2/ui/
+
+RUN \
+  npm install \
+  && rm -rf /root/.npm \
+  && npm run pack \
+  && rm -rf node_modules/
+
 COPY . /opt/osm-export-tool2/
 
 RUN \
@@ -66,6 +81,8 @@ RUN \
   && chown -R exports:exports /opt/export_staging /opt/export_downloads /opt/static /opt/osm-export-tool2
 
 USER exports
+
+WORKDIR /opt/osm-export-tool2/
 
 RUN \
   python manage.py collectstatic --no-input
