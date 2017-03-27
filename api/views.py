@@ -39,20 +39,6 @@ LOG = logging.getLogger(__name__)
 # controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
-class ScheduledExportViewSet(viewsets.ViewSet):
-    def list(self, request):
-        data = [{'hdx_dataset_name':'hotosm-sen-buildings,hotosm-sen-roads','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hotosm-lbr-buildings,hotosm-lbr-roads','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hotosm-gin-buildings','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hotosm-mli-buildings,hotosm-mli-waterways','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'},
-                {'hdx_dataset_name':'hotosm-sle-roads','last_run_at':'2017-03-01T04:00:00Z','next_run_at':'2017-03-20T04:00:00Z'}
-                ]
-        response = JsonResponse(data, status=status.HTTP_200_OK,safe=False)
-        response['Content-Range'] = "results 1-10/42"
-        return response
-
-
-
 class JobViewSet(viewsets.ModelViewSet):
     """
     ##Export API Endpoint.
