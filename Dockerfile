@@ -74,7 +74,7 @@ WORKDIR /opt/osm-export-tool2/ui/
 RUN \
   yarn \
   && rm -rf /root/.cache/yarn \
-  && yarn run pack \
+  && yarn run dist \
   && rm -rf node_modules/
 
 COPY . /opt/osm-export-tool2/
