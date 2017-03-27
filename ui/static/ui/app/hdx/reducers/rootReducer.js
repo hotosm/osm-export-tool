@@ -1,6 +1,6 @@
 import {combineReducers} from 'redux'
 import { reducer as reduxFormReducer } from 'redux-form'
-import {exportJobsReducer, exportModeReducer, exportBboxReducer, exportAoiInfoReducer, exportInfoReducer, getProvidersReducer, drawerMenuReducer, stepperReducer, startExportPackageReducer, submitJobReducer} from './exportsReducer';
+import {exportJobsReducer, exportModeReducer, exportBboxReducer, exportAoiInfoReducer, exportInfoReducer} from './exportsReducer';
 import {invalidDrawWarningReducer} from './drawToolBarReducer';
 import {zoomToSelectionReducer, resetMapReducer} from './AoiInfobarReducer.js';
 import {getGeonamesReducer} from './searchToolbarReducer.js';
@@ -19,12 +19,7 @@ const rootReducer = combineReducers({
     toolbarIcons: toolbarIconsReducer,
     showImportModal: showImportModalReducer,
     importGeom: importGeomReducer,
-    form: reduxFormReducer,
-    drawerOpen: drawerMenuReducer,
-    providers: getProvidersReducer,
-    stepperNextEnabled: stepperReducer,
-    submitJob: submitJobReducer,
-    setExportPackageFlag: startExportPackageReducer
+    form: reduxFormReducer
 });
 
 export default rootReducer;

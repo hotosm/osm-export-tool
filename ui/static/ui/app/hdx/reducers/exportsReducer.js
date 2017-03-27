@@ -1,4 +1,3 @@
-
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
@@ -13,27 +12,6 @@ export function drawerMenuReducer(state = initialState.drawerOpen, action) {
     }
 }
 
-export function stepperReducer(state = initialState.stepperNextEnabled, action) {
-    switch(action.type) {
-        case types.MAKE_STEPPER_ACTIVE:
-            return true;
-        case types.MAKE_STEPPER_INACTIVE:
-            return false;
-        default:
-            return state;
-    }
-}
-
-export function startExportPackageReducer(state = initialState.setExportPackageFlag, action) {
-    switch(action.type) {
-        case types.EXPORT_INFO_DONE:
-            return true;
-        case types.EXPORT_INFO_NOTDONE:
-            return false;
-        default:
-            return state;
-    }
-}
 
 export function exportModeReducer(state = initialState.mode, action) {
     switch(action.type) {
@@ -100,18 +78,5 @@ export function getProvidersReducer(state = initialState.providers, action ) {
             return action.providers
         default:
             return state
-    }
-}
-
-export function submitJobReducer(state = initialState.jobSubmit, action) {
-    switch(action.type) {
-        case types.SUBMITTING_JOB:
-            return {fetching: true, fetched: false, jobuid: '', error: null}
-        case types.JOB_SUBMITTED_SUCCESS:
-            return {fetching: false, fetched: true, jobuid: action.jobuid, error: null}
-        case types.JOB_SUBMITTED_ERROR:
-            return {fetching: false, fetched: false, jobuid: '', error: action.error};
-        default:
-            return state;
     }
 }
