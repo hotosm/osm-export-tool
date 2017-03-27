@@ -1,38 +1,17 @@
-@media only screen and (max-width: 799px) {
-    .olZoom {
-        top: 135px;
-    }
-    .olZoomToExtent {
-        top: 100px;
-    }
+.olZoom {
+    top: 50px;
+}
+.olZoomToExtent {
+    top: 15px;
 }
 
-@media only screen and (min-width: 800px) {
-    .olZoom {
-        top: 50px;
-    }
-    .olZoomToExtent {
-        top: 15px;
-    }
-}
-
-@media only screen and (max-width: 605px) {
-    div.map {
-        height: calc(100% - 222px);
-    }
-}
-
-@media only screen and (min-width: 606px) {
-    div.map {
-        height: calc(100% - 180px);
-    }
-}
 
 div.map {
     position: absolute;
     margin-top: 0px;
     margin-left: 0px;
-    bottom: 0px;
+    width:100%;
+    height:100%;
 }
 
 .draw {
