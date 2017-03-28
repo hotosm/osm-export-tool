@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { Col,Row } from 'react-bootstrap';
 
 import ExportAOI from './components/ExportAOI'
+import MapListView from './components/MapListView'
 import HDXCreateForm from './components/HDXCreateForm'
 import HDXListForm from './components/HDXListForm'
 import HDXEditForm from './components/HDXEditForm'
@@ -34,6 +35,7 @@ if(rootElem.classList.contains('rootHdxCreate')) {
           <HDXListForm/>
         </Col>
         <Col xs={6} style={{'height':'100%'}}>
+          <MapListView/>
         </Col>
       </Row>,
     rootElem
