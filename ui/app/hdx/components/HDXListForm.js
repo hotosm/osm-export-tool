@@ -17,23 +17,20 @@ function ExportRegionList(props) {
   const listItems = regions.map((region) => 
     <Row key={region.name}>
       <Panel>
-        <Col xs={2}>
-          <h3>{region.name}</h3>
-        </Col>
-        <Col xs={4}>
+        <Col lg={5}>
           <DatasetList datasets={region.datasets}/>
         </Col>
-        <Col xs={4}>
+        <Col lg={5}>
           Last Run: 2017/03/27 00:00:00PM<br/>
           Next Run: none<br/>
           Schedule: Every Sunday at 1:00 UTC
         </Col>
-        <Col xs={1}>
+        <Col lg={1} md={2}>
           <Button block>
-            View
+            Map
           </Button>
         </Col>
-        <Col xs={1}>
+        <Col lg={1} md={2}>
           <Button block href="edit">
             Settings
           </Button>
