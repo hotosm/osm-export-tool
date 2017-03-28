@@ -93,6 +93,12 @@ ul.nav {
     margin-right: 2em !important;
 }
 
+.last-update {
+  color: #ccc;
+  margin-top: 17px;
+  float: right;
+}
+
 /* main container / bootstrap styles */
 
 .container-fluid {

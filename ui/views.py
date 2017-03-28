@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
 """UI view definitions."""
 
+from cachetools.func import ttl_cache
+
+import dateutil.parser
+
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.core.urlresolvers import reverse
 from django.shortcuts import RequestContext, redirect, render_to_response
 from django.template.context_processors import csrf
 from django.views.decorators.http import require_http_methods
+
+import requests
+
+
+@ttl_cache(ttl=60)
+def get_overpass_last_updated_at():
+    r = requests.get('{}?data=[out:json];out;'.format(settings.OVERPASS_API_URL)).json()
+
+    return dateutil.parser.parse(r['osm3s']['timestamp_osm_base'])
 
 
 @require_http_methods(['GET'])
@@ -20,7 +33,11 @@ def create_export(request):
         if hasattr(group, 'export_profile'):
             max_extent['extent'] = group.export_profile.max_extent
     extent = max_extent.get('extent')
-    context = {'user': user, 'max_extent': extent}
+    context = {
+        'user': user,
+        'max_extent': extent,
+        'overpass_last_updated_at': get_overpass_last_updated_at(),
+    }
     context.update(csrf(request))
     return render_to_response('ui/create.html', context)
 
@@ -36,7 +53,11 @@ def clone_export(request, uuid=None):
         if hasattr(group, 'export_profile'):
             max_extent['extent'] = group.export_profile.max_extent
     extent = max_extent.get('extent')
-    context = {'user': user, 'max_extent': extent}
+    context = {
+        'user': user,
+        'max_extent': extent,
+        'overpass_last_updated_at': get_overpass_last_updated_at(),
+    }
     context.update(csrf(request))
     return render_to_response('ui/clone.html', context)
 

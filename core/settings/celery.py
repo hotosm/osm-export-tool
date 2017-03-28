@@ -29,10 +29,6 @@ CELERY_ACCEPT_CONTENT = ["json"]
 
 # configure periodic task
 CELERYBEAT_SCHEDULE = {
-    'check-overpass': {
-        'task': 'Check Overpass',
-        'schedule': crontab(minute='*', hour='*', day_of_week='*')
-    }
 }
 
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672/')

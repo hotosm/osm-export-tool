@@ -26,15 +26,3 @@ class PurgeUnpublishedExportsTask(Task):
         count = expired_jobs.count()
         LOG.debug('Purging {0} unpublished exports.'.format(count))
         expired_jobs.delete()
-
-
-@app.task(name='Check Overpass')
-def check_overpass():
-    """
-    Get the timestamp of Overpass's most recent update
-    """
-    r = requests.get('{}?data=[out:json];out;'.format(settings.OVERPASS_API_URL)).json()
-
-    last_updated = dateutil.parser.parse(r['osm3s']['timestamp_osm_base'])
-
-    LOG.warn('Overpass last updated @ {}'.format(last_updated))

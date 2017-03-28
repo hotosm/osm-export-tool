@@ -57,7 +57,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'create' %}"><strong>{% trans 'OSM Export Tool' %}</strong></a>
+          <a class="navbar-brand" href="{% url 'create' %}"><strong>{% trans 'OSM Export Tool' %}</strong></a>{% if overpass_last_updated_at %} <div class="last-update"><small>{% trans 'Last updated:' %} {{ overpass_last_updated_at|date:"Y-m-d H:i" }} UTC</small></div>{% endif %}
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
