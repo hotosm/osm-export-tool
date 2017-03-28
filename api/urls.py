@@ -6,7 +6,6 @@ from rest_framework.routers import DefaultRouter
 from api.views import (
     ExportConfigViewSet, ExportFormatViewSet, ExportRunViewSet,
     ExportTaskViewSet, JobViewSet, PresetViewSet,
-    TransformViewSet, TranslationViewSet,
     HDXExportRegionViewSet
 )
 
@@ -17,6 +16,4 @@ router.register(r'runs', ExportRunViewSet, base_name='runs')
 router.register(r'tasks', ExportTaskViewSet, base_name='tasks')
 router.register(r'configurations', ExportConfigViewSet, base_name='configs')
 router.register(r'configuration/presets', PresetViewSet, base_name='presets')
-router.register(r'configuration/translations', TranslationViewSet, base_name='translations')
-router.register(r'configuration/transforms', TransformViewSet, base_name='transforms')
 router.register(r'hdx_export_regions', HDXExportRegionViewSet, base_name='hdx_export_regions')

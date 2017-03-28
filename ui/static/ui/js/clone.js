@@ -606,22 +606,6 @@ clone.job = (function(){
             var filename = $('input#filename').val();
             var config_type = $('input#config_type').val();
 
-            /*
-             * Put this back later if we implement translation or transforms
-             *
-            var config_type = $('select#config_type').val();
-            switch (config_type) {
-                case 'PRESET':
-                    $('option#select-preset').prop('disabled', true);
-                    break;
-                case 'TRANSFORM':
-                    $('option#select-transform').prop('disabled', true);
-                    break;
-                case 'TRANSLATION':
-                    $('option#select-translate').prop('disabled', true);
-                    break;
-            }
-            */
             var published = $('input[name="publish_config"]').is(':checked');
             var data = new FormData();
             data.append('name', filename);
@@ -1810,14 +1794,6 @@ clone.job = (function(){
             case "PRESET":
                 $('option#select-preset').prop('disabled', true);
                 $('input#preset').val(uid);
-                break;
-            case "TRANSLATION":
-                $('option#select-translate').prop('disabled', true);
-                $('input#translation').val(uid);
-                break;
-            case "TRANSFORM":
-                $('option#select-transform').prop('disabled', true);
-                $('input#transform').val(uid);
                 break;
         }
     }

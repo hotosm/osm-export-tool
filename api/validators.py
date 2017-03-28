@@ -190,9 +190,7 @@ def validate_content_type(upload, config_type):
     Raises:
         ValidationError: if the uploaded file has invalid content for the provided config_type.
     """
-    ACCEPT_MIME_TYPES = {'PRESET': ('application/xml','text/xml'),
-                        'TRANSFORM': ('application/x-sql', 'text/plain'),
-                        'TRANSLATION': ('text/plain',)}
+    ACCEPT_MIME_TYPES = {'PRESET': ('application/xml','text/xml')}
     content_type = magic.from_buffer(upload.read(1024), mime=True)
     if (content_type not in ACCEPT_MIME_TYPES[config_type]):
         detail = OrderedDict()

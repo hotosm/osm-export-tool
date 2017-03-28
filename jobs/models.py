@@ -60,12 +60,8 @@ class ExportConfig(TimeStampedModelMixin):
     Model for export configuration.
     """
     PRESET = 'PRESET'
-    TRANSLATION = 'TRANSLATION'
-    TRANSFORM = 'TRANSFORM'
     CONFIG_TYPES = (
-        (PRESET, 'Preset'),
-        (TRANSLATION, 'Translation'),
-        (TRANSFORM, 'Transform')
+        (PRESET, 'Preset')
     )
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)

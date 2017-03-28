@@ -68,7 +68,7 @@ class ExportConfigSerializer(serializers.Serializer):
        lookup_field='uid'
     )
     name = serializers.CharField(max_length=255)
-    config_type = serializers.ChoiceField(['PRESET', 'TRANSLATION', 'TRANSFORM'])
+    config_type = serializers.ChoiceField(['PRESET'])
     filename = serializers.CharField(max_length=255, read_only=True, default='')
     size = serializers.SerializerMethodField()
     content_type = serializers.CharField(max_length=50, read_only=True)

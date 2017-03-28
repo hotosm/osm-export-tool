@@ -126,14 +126,6 @@ class ExportTaskRunner(TaskRunner):
             pbfconvert = OSMToPBFConvertTask()
             prep_schema = OSMPrepSchemaTask()
 
-            # check for transform and/or translate configurations
-            """
-            Not implemented for now.
-
-            transform = job.configs.filter(config_type='TRANSFORM')
-            translate = job.configs.filter(config_type='TRANSLATION')
-            """
-
             # save initial tasks to the db with 'PENDING' state..
             for initial_task in [conf, query, pbfconvert, prep_schema]:
                 try:

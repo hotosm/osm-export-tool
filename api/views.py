@@ -193,8 +193,6 @@ class JobViewSet(viewsets.ModelViewSet):
             formats = request.data.get('formats')
             tags = request.data.get('tags')
             preset = request.data.get('preset')
-            translation = request.data.get('translation')
-            transform = request.data.get('transform')
             featuresave = request.data.get('featuresave')
             featurepub = request.data.get('featurepub')
             export_formats = []
@@ -259,14 +257,6 @@ class JobViewSet(viewsets.ModelViewSet):
                                     data_model='HDM',
                                     job=job
                                 )
-                        # check for translation file
-                        if translation:
-                            config = ExportConfig.objects.get(uid=translation)
-                            job.configs.add(config)
-                        # check for transform file
-                        if transform:
-                            config = ExportConfig.objects.get(uid=transform)
-                            job.configs.add(config)
                 except Exception as e:
                     error_data = OrderedDict()
                     error_data['id'] = _('server_error')
@@ -444,28 +434,6 @@ class PresetViewSet(viewsets.ReadOnlyModelViewSet):
     Returns the list of PRESET configuration files.
     """
     CONFIG_TYPE = 'PRESET'
-    serializer_class = ExportConfigSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
-    lookup_field = 'uid'
-
-
-class TranslationViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Return the list of TRANSLATION configuration files.
-    """
-    CONFIG_TYPE = 'TRANSLATION'
-    serializer_class = ExportConfigSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
-    lookup_field = 'uid'
-
-
-class TransformViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Return the list of TRANSFORM configuration files.
-    """
-    CONFIG_TYPE = 'TRANSFORM'
     serializer_class = ExportConfigSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
