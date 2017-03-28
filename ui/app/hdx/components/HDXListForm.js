@@ -35,7 +35,7 @@ function ExportRegionList(props) {
         </Col>
         <Col xs={1}>
           <Button block href="edit">
-            Gear
+            Settings
           </Button>
         </Col>
       </Panel>

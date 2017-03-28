@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { createStore } from 'redux'
+import configureStore from './store/configureStore';
 import { Provider } from 'react-redux';
 import { Col,Row } from 'react-bootstrap';
 
@@ -13,8 +13,9 @@ import rootReducer from './reducers/rootReducer'
 
 var rootElem = document.getElementById('root');
 
+const store = configureStore();
+
 if(rootElem.classList.contains('rootHdxCreate')) {
-  var store = createStore(rootReducer);
   render(
     <Provider store={store}>
       <Row style={{height:'100%'}}>
@@ -41,7 +42,6 @@ if(rootElem.classList.contains('rootHdxCreate')) {
     rootElem
   )
 } else if (rootElem.classList.contains('rootHdxEdit')) {
-  var store = createStore(rootReducer);
   render(
     <Provider store={store}>
       <Row style={{height:'100%'}}>
