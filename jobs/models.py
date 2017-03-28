@@ -61,7 +61,7 @@ class ExportConfig(TimeStampedModelMixin):
     """
     PRESET = 'PRESET'
     CONFIG_TYPES = (
-        (PRESET, 'Preset')
+        (PRESET, 'Preset'),
     )
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
