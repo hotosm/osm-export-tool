@@ -88,5 +88,6 @@
     "pack": "webpack --progress --config webpack.config.js",
     "watch": "webpack --watch --progress --config webpack.config.js",
     "test": "jest --verbose"
-  }
+  },
+  "license": "BSD-3-Clause"
 }
