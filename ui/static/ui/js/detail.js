@@ -216,7 +216,6 @@ exports.detail = (function(){
                     $taskDiv = $runPanel.find('div#' + run.uid).find('#tasks').find('table');
                     var tasks = run.tasks;
                     $.each(tasks, function(i, task){
-                        var errors = task.errors;
                         var result = task.result;
                         var status = task.status;
                         var duration = numeral(task.duration).format("HH:mm:ss.SSS");
@@ -281,12 +280,6 @@ exports.detail = (function(){
                                         result.size + '</td></tr>');
                                 }
                                 break;
-                        }
-                        if (errors.length > 0) {
-                            $exceptions = $('tr#exceptions-' + run.uid);
-                            $exceptions.css('display', 'table-row');
-                            $errorsDiv = $runPanel.find('div#' + run.uid).find('#errors').find('table');
-                            $errorsDiv.append('<tr><td>' + task.name + '</td><td>' + task.errors[0].exception + '</td></tr>');
                         }
                     });
                 });
