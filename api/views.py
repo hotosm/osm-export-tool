@@ -4,6 +4,7 @@ import logging
 import os
 from collections import OrderedDict
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import Error, transaction
 from django.http import JsonResponse
@@ -13,15 +14,16 @@ from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
 
 from jobs import presets
 from jobs.models import (
-    ExportConfig, ExportFormat, Job, Tag
+    ExportConfig, Job, Tag
 )
 from jobs.presets import PresetParser, UnfilteredPresetParser
 from serializers import (
-    ExportConfigSerializer, ExportFormatSerializer, ExportRunSerializer,
+    ExportConfigSerializer, ExportRunSerializer,
     ExportTaskSerializer, JobSerializer, ListJobSerializer
 )
 from tasks.models import ExportRun, ExportTask
@@ -174,7 +176,7 @@ class JobViewSet(viewsets.ModelViewSet):
         Create a Job from the supplied request data.
 
         The request data is validated by *api.serializers.JobSerializer*.
-        Associates the *Job* with required *ExportFormats*, *ExportConfig* and *Tags*
+        Associates the *Job* with required export formats, *ExportConfig* and *Tags*
 
         Args:
             request: the HTTP request.
@@ -190,29 +192,20 @@ class JobViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if (serializer.is_valid()):
             """Get the required data from the validated request."""
-            formats = request.data.get('formats')
+            export_formats = request.data.get('formats')
             tags = request.data.get('tags')
             preset = request.data.get('preset')
             featuresave = request.data.get('featuresave')
             featurepub = request.data.get('featurepub')
-            export_formats = []
             job = None
-            for slug in formats:
-                # would be good to accept either format slug or uuid here..
-                try:
-                    export_format = ExportFormat.objects.get(slug=slug)
-                    export_formats.append(export_format)
-                except ExportFormat.DoesNotExist as e:
-                    LOG.warn('Export format with uid: {0} does not exist'.format(slug))
             if len(export_formats) > 0:
                 """Save the job and make sure it's committed before running tasks."""
                 try:
                     with transaction.atomic():
                         job = serializer.save()
-                        job.formats = export_formats
+                        job.export_formats = export_formats
                         if preset:
                             """Get the tags from the uploaded preset."""
-                            LOG.debug('Found preset with uid: %s' % preset)
                             config = ExportConfig.objects.get(uid=preset)
                             job.configs.add(config)
                             preset_path = config.upload.path
@@ -317,17 +310,29 @@ class RunJob(views.APIView):
             return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
 
 
-class ExportFormatViewSet(viewsets.ReadOnlyModelViewSet):
+class ExportFormatViewSet(viewsets.ViewSet):
     """
     ###ExportFormat API endpoint.
 
     Endpoint exposing the supported export formats.
     """
-    serializer_class = ExportFormatSerializer
     permission_classes = (permissions.AllowAny,)
-    queryset = ExportFormat.objects.exclude(slug='sqlite')
-    lookup_field = 'slug'
-    ordering = ['description']
+
+    def list(self, request, format=None):
+        return Response([{
+            'slug': slug,
+            'name': settings.EXPORT_FORMATS[slug]['name'],
+            'description': settings.EXPORT_FORMATS[slug]['description'],
+            'url': reverse('api:formats-detail', args=[slug], request=request),
+        } for slug in settings.EXPORT_FORMATS.keys() if not settings.EXPORT_FORMATS[slug].get('disabled', False)])
+
+    def retrieve(self, request, pk=None, format=None):
+        return Response({
+            'slug': pk,
+            'name': settings.EXPORT_FORMATS[pk]['name'],
+            'description': settings.EXPORT_FORMATS[pk]['description'],
+            'url': reverse('api:formats-detail', args=[pk], request=request),
+        })
 
 
 class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):

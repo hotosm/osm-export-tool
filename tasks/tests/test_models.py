@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
 
-from jobs.models import ExportFormat, Job
+from jobs.models import Job
 
 from ..models import ExportRun, ExportTask, ExportTaskResult
 
@@ -16,7 +17,7 @@ class TestExportRun(TestCase):
     """
 
     def setUp(self,):
-        formats = ExportFormat.objects.all()
+        formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -26,7 +27,7 @@ class TestExportRun(TestCase):
                                  the_geom=the_geom)
         job = Job.objects.all()[0]
         # add the formats to the job
-        job.formats = formats
+        job.export_formats = formats
 
     def test_export_run(self, ):
         job = Job.objects.all()[0]
@@ -76,7 +77,7 @@ class TestExportTask(TestCase):
     """
 
     def setUp(self,):
-        formats = ExportFormat.objects.all()
+        formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -86,7 +87,7 @@ class TestExportTask(TestCase):
                                  the_geom=the_geom)
         self.job = Job.objects.all()[0]
         # add the formats to the job
-        self.job.formats = formats
+        self.job.export_formats = formats
         self.job.save()
         self.run = ExportRun.objects.create(job=self.job)
         saved_run = ExportRun.objects.get(uid=str(self.run.uid))

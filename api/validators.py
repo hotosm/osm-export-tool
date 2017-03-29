@@ -1,4 +1,4 @@
-"""Provides validation for API operatios."""
+"""Provides validation for API operations."""
 
 # -*- coding: utf-8 -*-
 import logging

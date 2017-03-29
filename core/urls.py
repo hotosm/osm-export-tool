@@ -16,7 +16,7 @@ from ui import urls as ui_urls
 from ui.views import (
     about, create_error_view, help_create, help_exports, help_features,
     help_formats, help_main, help_presets, login, logout, require_email,
-    hdx_list, hdx_edit, hdx_create 
+    hdx_list, hdx_edit, hdx_create
 )
 
 admin.autodiscover()

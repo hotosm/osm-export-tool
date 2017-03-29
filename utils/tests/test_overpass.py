@@ -11,7 +11,7 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
 
 from jobs import presets
-from jobs.models import ExportFormat, Job, Tag
+from jobs.models import Job, Tag
 
 from ..overpass import Overpass
 
@@ -24,8 +24,7 @@ class TestOverpass(TestCase):
         self.url = settings.OVERPASS_API_URL
         self.bbox = '6.25,-10.85,6.40,-10.62'  # monrovia
         self.path = settings.ABS_PATH()
-        # pre-loaded by 'insert_export_formats' migration
-        self.formats = ExportFormat.objects.all()
+        self.formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(
             username='demo', email='demo@demo.com', password='demo')
@@ -36,7 +35,7 @@ class TestOverpass(TestCase):
                                       user=self.user, the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
-        self.job.formats = self.formats
+        self.job.export_formats = self.formats
         self.job.save()
         self.osm = self.path + '/files/query.osm'
         self.query = '[maxsize:2147483648][timeout:1600];(node(6.25,-10.85,6.40,-10.62);<;>>;>;);out body;'

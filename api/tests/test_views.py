@@ -6,6 +6,7 @@ from unittest import skip
 
 from mock import patch
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.core.files import File
@@ -16,7 +17,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from api.pagination import LinkHeaderPagination
-from jobs.models import ExportConfig, ExportFormat, ExportProfile, Job
+from jobs.models import ExportConfig, ExportProfile, Job
 from tasks.models import ExportRun, ExportTask
 
 
@@ -38,9 +39,7 @@ class TestJobViewSet(APITestCase):
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob', event='Test Activation',
                                  description='Test description', user=self.user,
-                                 the_geom=the_geom)
-        format = ExportFormat.objects.get(slug='obf')
-        self.job.formats.add(format)
+                                 the_geom=the_geom, export_formats=['obf'])
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
                                 HTTP_ACCEPT='application/json; version=1.0',
@@ -148,7 +147,7 @@ class TestJobViewSet(APITestCase):
     def test_create_job_success(self, mock):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         config_uid = self.config.uid
         request_data = {
             'name': 'TestJob',
@@ -191,7 +190,7 @@ class TestJobViewSet(APITestCase):
         task_runner = mock.return_value
         config_uid = self.config.uid
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -229,7 +228,7 @@ class TestJobViewSet(APITestCase):
         task_runner = mock.return_value
         config_uid = self.config.uid
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -262,7 +261,7 @@ class TestJobViewSet(APITestCase):
 
     def test_missing_bbox_param(self, ):
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -281,7 +280,7 @@ class TestJobViewSet(APITestCase):
 
     def test_invalid_bbox_param(self, ):
         url = reverse('api:jobs-list')
-        formats = [str(format.uid) for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -300,7 +299,7 @@ class TestJobViewSet(APITestCase):
 
     def test_invalid_bbox(self, ):
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -319,7 +318,7 @@ class TestJobViewSet(APITestCase):
 
     def test_lat_lon_bbox(self, ):
         url = reverse('api:jobs-list')
-        formats = [str(format.uid) for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -338,7 +337,7 @@ class TestJobViewSet(APITestCase):
 
     def test_coord_nan(self, ):
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -357,7 +356,7 @@ class TestJobViewSet(APITestCase):
 
     def test_inverted_coords(self, ):
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': 'Test description',
@@ -376,7 +375,7 @@ class TestJobViewSet(APITestCase):
 
     def test_empty_string_param(self, ):
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         request_data = {
             'name': 'TestJob',
             'description': '',  # empty
@@ -449,7 +448,7 @@ class TestJobViewSet(APITestCase):
 
     def test_extents_too_large(self, ):
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         # job outside any region
         request_data = {
             'name': 'TestJob',
@@ -488,7 +487,7 @@ class TestBBoxSearch(APITestCase):
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
         # pull out the formats
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         # create test jobs
         extents = [(-3.9, 16.1, 7.0, 27.6), (36.90, 13.54, 48.52, 20.24),
             (-71.79, -49.57, -67.14, -46.16), (-61.27, -6.49, -56.20, -2.25),
@@ -631,7 +630,7 @@ class TestExportConfigViewSet(APITestCase):
         self.assertIsNotNone(saved_config)
         self.assertEquals(name, saved_config.name)
         self.assertTrue(saved_config.published)
-        self.assertEquals('text/xml', saved_config.content_type)
+        self.assertEquals('application/xml', saved_config.content_type)
         saved_config.delete()
 
     def test_delete_no_permissions(self, ):

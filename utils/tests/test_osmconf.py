@@ -7,7 +7,7 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
 
 from jobs import presets
-from jobs.models import ExportFormat, Job, Tag
+from jobs.models import Job, Tag
 
 from ..osmconf import OSMConfig
 
@@ -20,7 +20,7 @@ class TestOSMConf(TestCase):
         self.tags = parser.parse()
         self.assertIsNotNone(self.tags)
         self.assertEquals(256, len(self.tags))
-        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
+        self.formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -30,7 +30,7 @@ class TestOSMConf(TestCase):
                                  user=self.user, the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
-        self.job.formats = self.formats
+        self.job.export_formats = self.formats
         self.job.save()
         for tag in self.tags:
             Tag.objects.create(

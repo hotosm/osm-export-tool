@@ -2,9 +2,8 @@ from django.contrib import admin
 from django.contrib.gis.admin import OSMGeoAdmin
 from django.contrib.gis.geos import GEOSGeometry
 
-from .models import ExportConfig, ExportFormat, ExportProfile, Job
+from .models import ExportConfig, ExportProfile, Job
 
-admin.site.register(ExportFormat)
 admin.site.register(ExportProfile)
 
 

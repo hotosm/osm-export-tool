@@ -4,8 +4,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-from ..models import ExportFormat
-
 
 class Migration(migrations.Migration):
     def add_gpkg_export_format(apps, schema_editor):

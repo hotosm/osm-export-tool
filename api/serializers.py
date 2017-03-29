@@ -10,8 +10,10 @@ import cPickle
 import json
 import logging
 
+from rest_framework.reverse import reverse
 from rest_framework_gis import serializers as geo_serializers
 
+from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -20,7 +22,7 @@ from rest_framework import serializers
 
 import validators
 from jobs.models import (
-    ExportConfig, ExportFormat, Job, Tag
+    ExportConfig, Job, Tag
 )
 from tasks.models import (
     ExportRun, ExportTask, ExportTaskResult
@@ -98,7 +100,6 @@ class ExportConfigSerializer(serializers.Serializer):
 
     def validate(self, data):
         """Validate the form data."""
-        LOG.debug(data)
         upload = data['upload']
         config_type = data['config_type']
         content_type = validators.validate_content_type(upload, config_type)
@@ -253,18 +254,6 @@ class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class ExportFormatSerializer(serializers.ModelSerializer):
-    """Return a representation of the ExportFormat model."""
-    url = serializers.HyperlinkedIdentityField(
-       view_name='api:formats-detail',
-       lookup_field='slug'
-    )
-
-    class Meta:
-        model = ExportFormat
-        fields = ('uid', 'url', 'slug', 'name', 'description')
-
-
 class ListJobSerializer(serializers.Serializer):
     """
     Return a sub-set of Job model attributes.
@@ -312,27 +301,8 @@ class JobSerializer(serializers.Serializer):
 
     This is the core representation of the API.
     """
-
-    """
-    List of the available Export Formats.
-
-    This list should be updated to add support for
-    additional export formats.
-    """
-    EXPORT_FORMAT_CHOICES = (
-        ('pbf', 'OSM PBF'),
-        ('shp', 'Shapefile Format'),
-        ('obf', 'OBF Format'),
-        ('kml', 'KML Format'),
-        ('garmin', 'Garmin Format'),
-        ('sqlite', 'SQLITE Format'),
-        ('thematic', 'Thematic Shapefile Format'),
-        ('theme_gpkg', 'Thematic GeoPackage Format'),
-        ('gpkg', 'GeoPackage Format'),
-    )
-
     formats = serializers.MultipleChoiceField(
-        choices=EXPORT_FORMAT_CHOICES,
+        choices=settings.EXPORT_FORMATS.keys(),
         allow_blank=False,
         write_only=True,
         error_messages={
@@ -417,6 +387,7 @@ class JobSerializer(serializers.Serializer):
         extents = validators.validate_bbox_params(data)
         the_geom = validators.validate_bbox(extents, user=user)
         data['the_geom'] = the_geom
+        data['export_formats'] = list(data['formats'])
         # remove unwanted fields, these are pulled from the request in the view if the serializer is valid
         data.pop('xmin'), data.pop('ymin'), data.pop('xmax'), data.pop('ymax'), data.pop('formats')
         return data
@@ -435,9 +406,12 @@ class JobSerializer(serializers.Serializer):
 
     def get_exports(self, obj):
         """Return the export formats selected for this export."""
-        formats = [format for format in obj.formats.all()]
-        serializer = ExportFormatSerializer(formats, many=True, context={'request': self.context['request']})
-        return serializer.data
+        return [{
+            'slug': slug,
+            'name': settings.EXPORT_FORMATS[slug]['name'],
+            'description': settings.EXPORT_FORMATS[slug]['description'],
+            'url': reverse('api:formats-detail', args=[slug], request=self.context['request']),
+        } for slug in obj.export_formats]
 
     def get_configurations(self, obj):
         """Return the configurations selected for this export."""

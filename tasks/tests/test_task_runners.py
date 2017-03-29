@@ -4,11 +4,12 @@ import uuid
 
 from mock import Mock, PropertyMock, patch
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.test import TestCase
 
-from jobs.models import ExportFormat, Job
+from jobs.models import Job
 
 from ..task_runners import ExportTaskRunner
 
@@ -24,7 +25,7 @@ class TestExportTaskRunner(TestCase):
         the_geom = GEOSGeometry(bbox, srid=4326)
         self.job = Job.objects.create(name='TestJob',
                                  description='Test description', user=self.user,
-                                 the_geom=the_geom)
+                                 the_geom=the_geom, export_formats=['shp', 'garmin'])
         self.uid = str(self.job.uid)
         self.job.save()
 
@@ -32,8 +33,6 @@ class TestExportTaskRunner(TestCase):
     @patch('tasks.export_tasks.GarminExportTask')
     @patch('tasks.export_tasks.ShpExportTask')
     def test_run_task(self, mock_shp, mock_garmin, mock_chain):
-        shp_task = ExportFormat.objects.get(slug='shp')
-        garmin_task = ExportFormat.objects.get(slug='garmin')
         celery_uid = str(uuid.uuid4())
         # shp export task mock
         shp_export_task = mock_shp.return_value
@@ -45,7 +44,6 @@ class TestExportTaskRunner(TestCase):
         # celery chain mock
         celery_chain = mock_chain.return_value
         celery_chain.apply_async.return_value = Mock()
-        self.job.formats = [shp_task, garmin_task]
         runner = ExportTaskRunner()
         runner.run_task(job_uid=self.uid)
         run = self.job.runs.all()[0]

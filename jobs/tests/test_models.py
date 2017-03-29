@@ -2,6 +2,7 @@
 import logging
 import os
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry, Polygon
@@ -11,7 +12,7 @@ from django.utils import timezone
 
 import jobs.presets as presets
 from jobs.models import (
-    ExportConfig, ExportFormat, ExportProfile, Job, Tag
+    ExportConfig, ExportProfile, Job, Tag
 )
 
 LOG = logging.getLogger(__name__)
@@ -24,8 +25,7 @@ class TestJob(TestCase):
 
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        # pre-loaded by 'insert_export_formats' migration
-        self.formats = ExportFormat.objects.all()
+        self.formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(
             username='demo', email='demo@demo.com', password='demo')
@@ -37,7 +37,7 @@ class TestJob(TestCase):
         self.job.save()
         self.uid = self.job.uid
         # add the formats to the job
-        self.job.formats = self.formats
+        self.job.export_formats = self.formats
         self.job.save()
         self.tags = [('building', 'yes'), ('place', 'city'),
                      ('highway', 'service'), ('aeroway', 'helipad')]
@@ -54,7 +54,7 @@ class TestJob(TestCase):
         self.assertEquals(self.uid, saved_job.uid)
         self.assertIsNotNone(saved_job.created_at)
         self.assertIsNotNone(saved_job.updated_at)
-        saved_formats = saved_job.formats.all()
+        saved_formats = saved_job.export_formats
         self.assertIsNotNone(saved_formats)
         self.assertItemsEqual(saved_formats, self.formats)
         tags = saved_job.tags.all()
@@ -68,7 +68,7 @@ class TestJob(TestCase):
         self.assertEquals(self.uid, saved_job.uid)
         self.assertIsNotNone(saved_job.created_at)
         self.assertIsNotNone(saved_job.updated_at)
-        saved_formats = saved_job.formats.all()
+        saved_formats = saved_job.export_formats
         self.assertIsNotNone(saved_formats)
         self.assertItemsEqual(saved_formats, self.formats)
         # attach a configuration to a job
@@ -157,14 +157,6 @@ class TestJob(TestCase):
         self.assertEquals(238, self.job.tags.all().count())
 
 
-class TestExportFormat(TestCase):
-
-    def test_str(self,):
-        kml = ExportFormat.objects.get(slug='kml')
-        self.assertEquals(unicode(kml), 'kml')
-        self.assertEquals(str(kml), 'KML Format')
-
-
 class TestExportConfig(TestCase):
 
     def setUp(self,):
@@ -217,8 +209,7 @@ class TestExportConfig(TestCase):
 class TestTag(TestCase):
 
     def setUp(self, ):
-        # pre-loaded by 'insert_export_formats' migration
-        self.formats = ExportFormat.objects.all()
+        self.formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(
             username='demo', email='demo@demo.com', password='demo')
@@ -228,8 +219,7 @@ class TestTag(TestCase):
                                       description='Test description', user=self.user,
                                       the_geom=the_geom)
         self.uid = self.job.uid
-        # add the formats to the job
-        self.job.formats = self.formats
+        self.job.export_formats = self.formats
         self.job.save()
         self.path = os.path.dirname(os.path.realpath(__file__))
 

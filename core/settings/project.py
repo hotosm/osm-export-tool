@@ -7,6 +7,7 @@ import dj_database_url
 
 from .base import *
 from .celery import *  # NOQA
+import tasks.export_tasks
 from .utils import ABS_PATH
 
 # Project apps
@@ -46,16 +47,53 @@ TEMPLATES = [
 
 LOGIN_URL = '/login/'
 
-EXPORT_TASKS = {
-    'pbf': 'tasks.export_tasks.PbfExportTask',
-    'shp': 'tasks.export_tasks.ShpExportTask',
-    'obf': 'tasks.export_tasks.ObfExportTask',
-    'sqlite': 'tasks.export_tasks.SqliteExportTask',
-    'kml': 'tasks.export_tasks.KmlExportTask',
-    'garmin': 'tasks.export_tasks.GarminExportTask',
-    'gpkg': 'tasks.export_tasks.GeoPackageExportTask',
-    'theme_gpkg': 'tasks.export_tasks.ThematicGeoPackageExportTask',
-    'thematic': 'tasks.export_tasks.ThematicLayersExportTask'
+EXPORT_FORMATS = {
+    'garmin': {
+        'name': 'Garmin Map Format',
+        'description': 'Garmin Map',
+        'task': tasks.export_tasks.GarminExportTask,
+    },
+    'geopackage': {
+        'name': 'GeoPackage Format (OSM)',
+        'description': 'GeoPackage (OSM Schema)',
+        'task': tasks.export_tasks.GeoPackageExportTask,
+    },
+    'kml': {
+        'name': 'KML Format',
+        'description': 'Google Earth KMZ',
+        'task': tasks.export_tasks.KmlExportTask,
+    },
+    'obf': {
+        'name': 'OBF Format',
+        'description': 'OSMAnd OBF',
+        'task': tasks.export_tasks.ObfExportTask,
+    },
+    'pbf': {
+        'name': 'PBF Format',
+        'description': 'OSM PBF',
+        'task': tasks.export_tasks.PbfExportTask,
+    },
+    'shp': {
+        'name': 'ESRI Shapefile Format',
+        'description': 'Esri SHP (OSM Schema)',
+        'task': tasks.export_tasks.ShpExportTask,
+    },
+    'thematic': {
+        'name': 'ESRI Shapefile Format (Thematic)',
+        'description': 'Esri SHP (Thematic Schema)',
+        'task': tasks.export_tasks.ThematicLayersExportTask,
+    },
+    'theme_gpkg': {
+        'name': 'GeoPackage Format (Thematic)',
+        'description': 'GeoPackage (Thematic Schema)',
+        'task': tasks.export_tasks.ThematicLayersExportTask,
+    },
+    'sqlite': {
+        'name': 'SQLite Format',
+        'description': 'SQLite Database',
+        'task': tasks.export_tasks.SqliteExportTask,
+        'disabled': True,
+    },
 }
 
 # where exports are staged for processing

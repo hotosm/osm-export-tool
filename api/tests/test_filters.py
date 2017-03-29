@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from mock import patch
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 
@@ -8,7 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from jobs.models import ExportFormat, Job
+from jobs.models import Job
 
 
 class TestJobFilter(APITestCase):
@@ -30,9 +31,9 @@ class TestJobFilter(APITestCase):
         self.job2 = Job.objects.create(name='TestJob2',
                                  description='Test description', user=self.user2,
                                  the_geom=the_geom)
-        format = ExportFormat.objects.get(slug='obf')
-        self.job1.formats.add(format)
-        self.job2.formats.add(format)
+        format = 'obf'
+        self.job1.export_formats.append(format)
+        self.job2.export_formats.append(format)
         token = Token.objects.create(user=self.user1)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
                                 HTTP_ACCEPT='application/json; version=1.0',
@@ -43,7 +44,7 @@ class TestJobFilter(APITestCase):
     def test_filterset_no_user(self, mock):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         url += '?start=2015-01-01&end=2030-08-01'
         response = self.client.get(url)
         self.assertEquals(2, len(response.data))
@@ -52,7 +53,7 @@ class TestJobFilter(APITestCase):
     def test_filterset_with_user(self, mock):
         task_runner = mock.return_value
         url = reverse('api:jobs-list')
-        formats = [format.slug for format in ExportFormat.objects.all()]
+        formats = settings.EXPORT_FORMATS.keys()
         url += '?start=2015-01-01&end=2030-08-01&user=demo1'
         response = self.client.get(url)
         self.assertEquals(1, len(response.data))

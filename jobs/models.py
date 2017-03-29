@@ -25,7 +25,6 @@ def get_upload_path(instance, filename):
     configtype = instance.config_type.lower()
     # sanitize the filename here..
     path = 'export/config/{0}/{1}'.format(configtype, instance.filename)
-    LOG.debug('Saving export config to /media/{0}'.format(path))
     return path
 
 
@@ -78,29 +77,6 @@ class ExportConfig(TimeStampedModelMixin):
         db_table = 'export_configurations'
 
 
-class ExportFormat(TimeStampedModelMixin):
-    """
-    Model for a ExportFormat.
-    """
-    id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
-    name = models.CharField(max_length=100)
-    slug = LowerCaseCharField(max_length=10, unique=True, default='')
-    description = models.CharField(max_length=255)
-    cmd = models.TextField(max_length=1000)
-    objects = models.Manager()
-
-    class Meta:  # pragma: no cover
-        managed = True
-        db_table = 'export_formats'
-
-    def __str__(self):
-        return '{0}'.format(self.name)
-
-    def __unicode__(self, ):
-        return '{0}'.format(self.slug)
-
-
 class Job(TimeStampedModelMixin):
     """
     Model for a Job.
@@ -111,7 +87,7 @@ class Job(TimeStampedModelMixin):
     name = models.CharField(max_length=100, db_index=True)
     description = models.CharField(max_length=1000, db_index=True)
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
-    formats = models.ManyToManyField(ExportFormat, related_name='formats')
+    export_formats = ArrayField(models.CharField(max_length=10), default=list)
     configs = models.ManyToManyField(ExportConfig, related_name='configs')
     published = models.BooleanField(default=False, db_index=True)  # publish export
     feature_save = models.BooleanField(default=False, db_index=True)  # save feature selections

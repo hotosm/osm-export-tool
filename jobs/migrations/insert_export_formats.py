@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from ..models import ExportFormat
 
 
 class Migration(migrations.Migration):

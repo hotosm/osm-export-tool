@@ -9,13 +9,14 @@ from unittest import skip
 
 from lxml import etree
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.test import TestCase
 
-from ..models import ExportConfig, ExportFormat, Job, Tag
+from ..models import ExportConfig, Job, Tag
 from ..presets import PresetParser, TagParser, UnfilteredPresetParser
 
 LOG = logging.getLogger(__name__)
@@ -76,7 +77,7 @@ class TestUnfilteredPresetParser(TestCase):
 
     def setUp(self,):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
+        self.formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -86,7 +87,7 @@ class TestUnfilteredPresetParser(TestCase):
                                  user=self.user, the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
-        self.job.formats = self.formats
+        self.job.export_formats = self.formats
         self.job.save()
 
     def test_parse_preset(self,):
@@ -148,7 +149,7 @@ class TestTagParser(TestCase):
 
     def setUp(self, ):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.formats = ExportFormat.objects.all()  # pre-loaded by 'insert_export_formats' migration
+        self.formats = settings.EXPORT_FORMATS.keys()
         Group.objects.create(name='TestDefaultExportExtentGroup')
         self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
         bbox = Polygon.from_bbox((-7.96, 22.6, -8.14, 27.12))
@@ -158,7 +159,7 @@ class TestTagParser(TestCase):
                                  user=self.user, the_geom=the_geom)
         self.uid = self.job.uid
         # add the formats to the job
-        self.job.formats = self.formats
+        self.job.export_formats = self.formats
         self.job.save()
 
         # add tags
