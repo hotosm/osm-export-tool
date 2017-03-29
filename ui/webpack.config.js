@@ -31,7 +31,10 @@ const config = {
         }
       }
     ],
-    noParse: /dist\/ol.js/,
+    noParse: /dist\/ol.js/
+  },
+  resolve: {
+    extensions: ['', '.js', '.jsx', '.json', '.css']
   }
 };
 
@@ -46,7 +49,7 @@ if (process.NODE_ENV === 'production') {
       }
     }),
     new webpack.optimize.UglifyJsPlugin()
-  ]
+  ];
 }
 
 module.exports = config;
