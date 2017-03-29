@@ -17,9 +17,9 @@
                 {% csrf_token %}
                 <ul id="tabs" class="nav nav-pills">
                     <li id="create-tab" role="presentation" class="active"><a data-toggle="tab" href="#create">{% trans 'Describe Export' %}</a></li>
-                    <li id="formats-tab" role="presentation"><a data-toggle="tab" href="#formats">{% trans 'File Formats' %}</a></li>
-                    <li id="features-tab" role="presentation" class="disabled"><a data-toggle="tab" href="#features">{% trans 'Tree Tag' %}</a></li>
+                    <li id="features-tab" role="presentation"><a data-toggle="tab" href="#features">{% trans 'Tree Tag' %}</a></li>
                     <li id="upload-tab" role="presentation" class="disabled"><a data-toggle="tab" href="#upload">{% trans 'Preset File' %}</a></li>
+                    <li id="formats-tab" role="presentation" class="disabled"><a data-toggle="tab" href="#formats">{% trans 'File Formats' %}</a></li>
                     <li id="summary-tab" role="presentation" class="disabled"><a data-toggle="tab" href="#summary">{% trans 'Export Details' %}</a></li>
                 </ul>
                 <div class="tab-content">
@@ -56,19 +56,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="formats" class="tab-pane fade in">
-                        <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="form-group row" id="form-group-formats">
-                                <div class="col-md-12">
-                                    <label class="control-label" for="formats">{% trans 'Select Export Formats' %}:</label>
-                                    <p>{% trans 'More than one export format can be selected. Please note that there are two Esri Shapefile options, as the Thematic Schema provides the data in a set of themed geometry tables (points, lines and polygons), whereas the OSM Schema provides all attributes in layers grouped by geometry type' %}</p>
-                                    <div id="supported-formats"></div>
-                                </div>
-                            </div>
-                        </div>
-                      </div>
                     </div>
                     <div id="features" class="tab-pane fade in">
                         <div class="panel panel-default">
@@ -173,6 +160,19 @@
                                 <input id="preset" type="hidden" name="preset" value="" />
                                 <input id="translation" type="hidden" name="translation" value="" />
                                 <input id="transform" type="hidden" name="transform" value="" />
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="formats" class="tab-pane fade in">
+                        <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group row" id="form-group-formats">
+                                <div class="col-md-12">
+                                    <label class="control-label" for="formats">{% trans 'Select Export Formats' %}:</label>
+                                    <p>{% trans 'More than one export format can be selected. Please note that there are two Esri Shapefile options, as the Thematic Schema provides the data in a set of themed geometry tables (points, lines and polygons), whereas the OSM Schema provides all attributes in layers grouped by geometry type' %}</p>
+                                    <div id="supported-formats"></div>
+                                </div>
                             </div>
                         </div>
                       </div>
