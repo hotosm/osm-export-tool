@@ -119,15 +119,13 @@ class ExportTask(Task):
                 'kwargs': kwargs
             }
         )
-        from tasks.models import ExportTask, ExportTaskException, ExportRun
+        from tasks.models import ExportTask, ExportRun
         logger.debug('Task name: {0} failed, {1}'.format(self.name, einfo))
         task = ExportTask.objects.get(celery_uid=task_id)
         task.status = 'FAILED'
         task.finished_at = timezone.now()
         task.save()
         exception = cPickle.dumps(einfo)
-        ete = ExportTaskException(task=task, exception=exception)
-        ete.save()
         if self.abort_on_error:
             run = ExportRun.objects.get(tasks__celery_uid=task_id)
             run.status = 'FAILED'

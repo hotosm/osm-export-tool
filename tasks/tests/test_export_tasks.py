@@ -293,35 +293,6 @@ class TestExportTasks(TestCase):
         self.assertIsNotNone(result)
         self.assertEquals(download_url, result.download_url)
 
-    def test_task_on_failure(self,):
-        shp_export_task = ShpExportTask()
-        celery_uid = str(uuid.uuid4())
-        # assume task is running
-        ExportTask.objects.create(
-            run=self.run,
-            celery_uid=celery_uid,
-            status='RUNNING',
-            name=shp_export_task.name
-        )
-        exc = None
-        exc_info = None
-        try:
-            raise ValueError('some unexpected error')
-        except ValueError as e:
-            exc = e
-            exc_info = sys.exc_info()
-        einfo = ExceptionInfo(exc_info=exc_info)
-        shp_export_task.on_failure(exc, task_id=celery_uid, einfo=einfo,
-                                   args={}, kwargs={'run_uid': str(self.run.uid)})
-        task = ExportTask.objects.get(celery_uid=celery_uid)
-        self.assertIsNotNone(task)
-        exception = task.exceptions.all()[0]
-        exc_info = cPickle.loads(str(exception.exception)).exc_info
-        error_type, msg, tb = exc_info[0], exc_info[1], exc_info[2]
-        self.assertEquals(error_type, ValueError)
-        self.assertEquals('some unexpected error', str(msg))
-        # traceback.print_exception(error_type, msg, tb)
-
     @patch('celery.app.task.Task.request')
     def test_generate_preset_task(self, mock_request):
         task = GeneratePresetTask()

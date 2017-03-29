@@ -23,7 +23,7 @@ from jobs.models import (
     ExportConfig, ExportFormat, Job, Tag
 )
 from tasks.models import (
-    ExportRun, ExportTask, ExportTaskException, ExportTaskResult
+    ExportRun, ExportTask, ExportTaskResult
 )
 
 try:
@@ -137,19 +137,6 @@ class ExportTaskResultSerializer(serializers.ModelSerializer):
         return "{0:.3f} MB".format(obj.size)
 
 
-class ExportTaskExceptionSerializer(serializers.ModelSerializer):
-    """Serialize ExportTaskExceptions."""
-    exception = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ExportTaskException
-        fields = ('exception',)
-
-    def get_exception(self, obj):
-        exc_info = cPickle.loads(str(obj.exception)).exc_info
-        return str(exc_info[1])
-
-
 class ExportTaskSerializer(serializers.ModelSerializer):
     """Serialize ExportTasks models."""
     result = serializers.SerializerMethodField()
@@ -176,13 +163,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
             return None  # no result yet
 
     def get_errors(self, obj):
-        """Serialize the ExportTaskExceptions for this ExportTask."""
-        try:
-            errors = obj.exceptions
-            serializer = ExportTaskExceptionSerializer(errors, many=True, context=self.context)
-            return serializer.data
-        except ExportTaskException.DoesNotExist as e:
-            return None
+        return None
 
     def get_started_at(self, obj):
         if (not obj.started_at):
