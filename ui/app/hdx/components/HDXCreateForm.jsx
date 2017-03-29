@@ -41,7 +41,7 @@ const getTimeOptions = () => {
   const options = [];
 
   for (let i = 0; i < 24; i++) {
-    options.push(<option value={i}>{i}:00 UTC</option>);
+    options.push(<option key={i} value={i}>{i}:00 UTC</option>);
   }
 
   return options;
