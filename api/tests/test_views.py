@@ -52,7 +52,8 @@ class TestJobViewSet(APITestCase):
         self.config = ExportConfig.objects.create(name='Test Preset Config', filename=filename, upload=f, config_type='PRESET', user=self.user)
         f.close()
         self.assertIsNotNone(self.config)
-        self.job.configs.add(self.config)
+        self.job.config = self.config
+        self.job.save()
         self.tags = [
                 {
                     "name": "Telecommunication office",
@@ -218,8 +219,8 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
         self.assertFalse(response.data['published'])
-        configs = self.job.configs.all()
-        self.assertIsNotNone(configs[0])
+        config = self.job.config
+        self.assertIsNotNone(config)
 
     @patch('api.views.ExportTaskRunner')
     def test_create_job_with_tags(self, mock):
@@ -256,7 +257,7 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['exports'][1]['slug'], request_data['formats'][1])
         self.assertEqual(response.data['name'], request_data['name'])
         self.assertEqual(response.data['description'], request_data['description'])
-        configs = self.job.configs.all()
+        config = self.job.config
         # self.assertIsNotNone(configs[0])
 
     def test_missing_bbox_param(self, ):

@@ -60,7 +60,7 @@ class TestJob(TestCase):
         tags = saved_job.tags.all()
         self.assertEquals(4, len(tags))
         self.assertEquals('Test description', saved_job.description)
-        self.assertEquals(0, saved_job.configs.all().count())
+        self.assertIsNone(saved_job.config)
 
     def test_job_creation_with_config(self,):
         saved_job = Job.objects.all()[0]
@@ -78,8 +78,9 @@ class TestJob(TestCase):
                                              upload=f, config_type='PRESET', user=self.user)
         f.close()
         self.assertIsNotNone(config)
-        saved_job.configs.add(config)
-        saved_config = saved_job.configs.all()[0]
+        saved_job.config = config
+        saved_job.save()
+        saved_config = saved_job.config
         self.assertEqual(config, saved_config)
         saved_config.delete()  # cleanup
 
@@ -202,8 +203,8 @@ class TestExportConfig(TestCase):
             name=name, filename=filename, upload=test_file, config_type='PRESET', user=self.user)
         test_file.close()
         self.assertIsNotNone(config)
-        self.job.configs.add(config)
-        self.assertEquals(1, self.job.configs.all().count())
+        self.job.config = config
+        self.assertIsNotNone(self.job.config)
 
 
 class TestTag(TestCase):

@@ -306,7 +306,8 @@ class TestExportTasks(TestCase):
         )
         type(mock_request).id = PropertyMock(return_value=celery_uid)
         result = task.run(run_uid=run_uid, job_name='testjob')
-        config = self.job.configs.all()[0]
+        self.job.refresh_from_db()
+        config = self.job.config
         expected_path = config.upload.path
         self.assertEquals(result['result'], expected_path)
         os.remove(expected_path)

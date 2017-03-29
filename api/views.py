@@ -207,7 +207,8 @@ class JobViewSet(viewsets.ModelViewSet):
                         if preset:
                             """Get the tags from the uploaded preset."""
                             config = ExportConfig.objects.get(uid=preset)
-                            job.configs.add(config)
+                            job.config = config
+                            job.save()
                             preset_path = config.upload.path
                             """Use the UnfilteredPresetParser."""
                             parser = presets.UnfilteredPresetParser(preset=preset_path)

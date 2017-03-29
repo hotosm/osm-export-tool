@@ -480,8 +480,8 @@ class GeneratePresetTask(ExportTask):
             config.upload.save(filename, preset_file)
 
             output_path = config.upload.path
-            job.configs.clear()
-            job.configs.add(config)
+            job.config = config
+            job.save()
             return {'result': output_path}
 
 

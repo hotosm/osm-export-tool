@@ -415,7 +415,7 @@ class JobSerializer(serializers.Serializer):
 
     def get_configurations(self, obj):
         """Return the configurations selected for this export."""
-        configs = obj.configs.all()
+        configs = [obj.config]
         serializer = SimpleExportConfigSerializer(configs, many=True,
                                                   context={'request': self.context['request']})
         return serializer.data

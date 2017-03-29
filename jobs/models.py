@@ -88,7 +88,7 @@ class Job(TimeStampedModelMixin):
     description = models.CharField(max_length=1000, db_index=True)
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
     export_formats = ArrayField(models.CharField(max_length=10), default=list)
-    configs = models.ManyToManyField(ExportConfig, related_name='configs')
+    config = models.ForeignKey(ExportConfig, related_name = 'config',null=True)
     published = models.BooleanField(default=False, db_index=True)  # publish export
     feature_save = models.BooleanField(default=False, db_index=True)  # save feature selections
     feature_pub = models.BooleanField(default=False, db_index=True)  # publish feature selections
@@ -222,9 +222,10 @@ def exportconfig_delete_upload(sender, instance, **kwargs):
     """
     instance.upload.delete(False)
     # remove config from related jobs
-    exports = Job.objects.filter(configs__uid=instance.uid)
+    exports = Job.objects.filter(config__uid=instance.uid)
     for export in exports.all():
-        export.configs.remove(instance)
+        export.config = None
+        export.save()
 
 
 @receiver(post_save, sender=User)
