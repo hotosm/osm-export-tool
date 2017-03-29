@@ -56,6 +56,10 @@ const renderCheckbox = ({input, data, meta, description, ...props}) =>
   <Checkbox {...input} {...props}>{description}</Checkbox>;
 
 export class HDXCreateForm extends Component {
+  componentWillReceiveProps(props) {
+    props.change('aoiInfo', props.aoiInfo);
+  }
+
   render() {
     const { handleSubmit, pristine, submitting } = this.props;
 
@@ -158,9 +162,12 @@ export class HDXCreateForm extends Component {
 
 const mapStateToProps = state => {
   return {
-    // datasetPrefix: "thing"
+    initialValues: {
+      aoiInfo: state.aoiInfo
+    },
+    aoiInfo: state.aoiInfo
   };
-}
+};
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -168,7 +175,7 @@ const mapDispatchToProps = dispatch => {
     //   dispatch(actions.setDatasetPrefix(prefix));
     // }
   }
-}
+};
 
 export default connect(
   mapStateToProps,
