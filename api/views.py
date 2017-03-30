@@ -19,7 +19,7 @@ from rest_framework.serializers import ValidationError
 
 from jobs import presets
 from jobs.models import (
-    ExportConfig, Job, Tag
+    ExportConfig, HDXExportRegion, Job, Tag
 )
 from jobs.presets import PresetParser, UnfilteredPresetParser
 from serializers import (
@@ -471,6 +471,7 @@ class OSMDataModelView(views.APIView):
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     serializer_class = HDXExportRegionSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = HDXExportRegion.objects.filter(deleted=False)
 
     def create(self, request, *args, **kwargs):
         serializer = HDXExportRegionSerializer(data=request.data)
