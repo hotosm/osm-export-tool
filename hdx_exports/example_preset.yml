@@ -64,6 +64,7 @@ points_of_interest:
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 
 admin_boundaries:
+  description: Administrative Boundaries
   types: 
     - points
     - lines
