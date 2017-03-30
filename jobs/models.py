@@ -218,7 +218,7 @@ class HDXExportRegion(models.Model):
     """
     """
     PERIOD_CHOICES = (
-        ('6hrs', 'Every 7 hours'),
+        ('6hrs', 'Every 6 hours'),
         ('daily', 'Every day'),
         ('weekly', 'Every Sunday'),
         ('monthly', 'The 1st of every month'),
@@ -240,9 +240,20 @@ class HDXExportRegion(models.Model):
     dataset_prefix = models.CharField(blank=False,max_length=100)
     feature_selection = models.TextField(blank=False)
     schedule_period = models.CharField(blank=False,max_length=10,default="disabled",choices=PERIOD_CHOICES)
-    schedule_hour = models.IntegerField(blank=False,choices=HOUR_CHOICES)
+    schedule_hour = models.IntegerField(blank=False,choices=HOUR_CHOICES,default=0)
     export_formats = ArrayField(models.CharField(blank=False,choices=EXPORT_FORMAT_CHOICES,max_length=10),blank=False)
     the_geom = models.PolygonField(blank=False,verbose_name='Extent for export',srid=4326)
+
+    name = models.CharField(blank=True,max_length=100) # todo: change this to blank = False
+    country_codes = ArrayField(models.CharField(blank=False,max_length=3),null=True)
+    deleted = models.BooleanField(default=False)
+
+    @property
+    def hdx_dataset(self):
+    """
+    Initialize an HDXExportSet corresponding to this Model.
+    """
+        pass
 
 @receiver(post_delete, sender=ExportConfig)
 def exportconfig_delete_upload(sender, instance, **kwargs):
