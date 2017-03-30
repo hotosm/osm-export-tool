@@ -3,7 +3,7 @@ const path = require('path');
 const webpack = require('webpack')
 
 const config = {
-  entry: './app/hdx/base.js',
+  entry: './app/hdx/base.jsx',
   output: {
     path: path.resolve(__dirname, 'static','ui','js'),
     filename: 'bundle.js'
