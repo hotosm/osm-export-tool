@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button } from 'react-bootstrap';
+import axios from 'axios';
+import cookie from 'react-cookie';
 
 import styles from '../styles/HDXCreateForm.css';
 
@@ -9,6 +11,31 @@ const form = reduxForm({
   form: 'HDXCreateForm',
   onSubmit: values => {
     console.log("Submitting form. Values:", values);
+    const csrfmiddlewaretoken = cookie.load('csrftoken');
+
+    const export_formats = [];
+    ['shp','geopackage','garmin','kml','pbf'].forEach(function(f) {
+      if (values[f]) {
+        export_formats.push(f);
+      }
+    });
+
+    const formData = {};
+    Object.assign(formData,values,{'the_geom':values.aoiInfo.geojson.features[0].geometry,'export_formats':export_formats});
+
+    axios({
+        url: '/api/hdx_export_regions',
+        method: 'POST',
+        contentType: 'application/json; version=1.0',
+        data: formData,
+        headers: {"X-CSRFToken": csrfmiddlewaretoken}
+    }).then((response) => {
+        console.log("Success");
+    }).catch((error) => {
+        if (error.response) {
+          console.log(error.response.data);
+        }
+    });
   },
 });
 
@@ -69,7 +96,7 @@ export class HDXCreateForm extends Component {
           <h2>Create Export Region</h2>
           <Field
             id="formControlsText"
-            name="datasetPrefix"
+            name="dataset_prefix"
             type="text"
             label="Dataset Prefix"
             placeholder="hotosm_senegal"
@@ -81,7 +108,7 @@ export class HDXCreateForm extends Component {
             <ControlLabel>Feature Selection</ControlLabel>
             <Field
               rows="10"
-              name="featureSelection"
+              name="feature_selection"
               component={renderTextArea}
             />
           </FormGroup>
@@ -91,7 +118,7 @@ export class HDXCreateForm extends Component {
               <FormGroup controlId="formControlsSelect">
                 <ControlLabel>Run this export on an automated schedule:</ControlLabel>
                 <Field
-                  name="schedule"
+                  name="schedule_period"
                   component={renderScheduleSelect}
                 />
               </FormGroup>
@@ -100,7 +127,7 @@ export class HDXCreateForm extends Component {
               <FormGroup controlId="formControlsSelect">
                 <ControlLabel>At time:</ControlLabel>
                 <Field
-                  name="time"
+                  name="schedule_hour"
                   component={renderTimeSelect}
                 />
               </FormGroup>
@@ -116,7 +143,7 @@ export class HDXCreateForm extends Component {
                   component={renderCheckbox}
                 />
                 <Field
-                  name="gpkg"
+                  name="geopackage"
                   description="GeoPackage"
                   component={renderCheckbox}
                 />

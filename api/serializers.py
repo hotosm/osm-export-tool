@@ -22,7 +22,7 @@ from rest_framework import serializers
 
 import validators
 from jobs.models import (
-    ExportConfig, Job, Tag
+    ExportConfig, Job, Tag, HDXExportRegion
 )
 from tasks.models import (
     ExportRun, ExportTask, ExportTaskResult
@@ -429,3 +429,10 @@ class JobSerializer(serializers.Serializer):
     def get_owner(self, obj):
         """Return the username for the owner of this export."""
         return obj.user.username
+
+class HDXExportRegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HDXExportRegion 
+        fields = ('dataset_prefix','feature_selection',
+                  'schedule_period','schedule_hour',
+                  'export_formats','the_geom')

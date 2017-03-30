@@ -24,7 +24,8 @@ from jobs.models import (
 from jobs.presets import PresetParser, UnfilteredPresetParser
 from serializers import (
     ExportConfigSerializer, ExportRunSerializer,
-    ExportTaskSerializer, JobSerializer, ListJobSerializer
+    ExportTaskSerializer, JobSerializer, ListJobSerializer,
+    HDXExportRegionSerializer
 )
 from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
@@ -468,4 +469,13 @@ class OSMDataModelView(views.APIView):
         return JsonResponse(data, status=status.HTTP_200_OK)
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
-    pass
+    serializer_class = HDXExportRegionSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = HDXExportRegionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

@@ -214,6 +214,35 @@ class ExportProfile(models.Model):
     def __str__(self):
         return '{0}'.format(self.name)
 
+class HDXExportRegion(models.Model):
+    """
+    """
+    PERIOD_CHOICES = (
+        ('6hrs', 'Every 7 hours'),
+        ('daily', 'Every day'),
+        ('weekly', 'Every Sunday'),
+        ('monthly', 'The 1st of every month'),
+        ('disabled', 'Disabled'),
+    )
+    HOUR_CHOICES = zip( xrange(0,24), xrange(0,24) )
+    # TODO DRY me up from settings
+    EXPORT_FORMAT_CHOICES = {
+        ('garmin','Garmin Map'),
+        ('geopackage','GeoPackage Format (OSM)'),
+        ('kml','Google Earth KMZ'),
+        ('obf','OSMAnd OBF'),
+        ('pbf','OSM PBF'),
+        ('shp','ESRI Shapefile format (OSM)'),
+        ('thematic','ESRI Shapefile format (Thematic)'),
+        ('theme_gpkg','GeoPackage (Thematic'),
+        ('sqlite','SQLite Database')
+    }
+    dataset_prefix = models.CharField(blank=False,max_length=100)
+    feature_selection = models.TextField(blank=False)
+    schedule_period = models.CharField(blank=False,max_length=10,default="disabled",choices=PERIOD_CHOICES)
+    schedule_hour = models.IntegerField(blank=False,choices=HOUR_CHOICES)
+    export_formats = ArrayField(models.CharField(blank=False,choices=EXPORT_FORMAT_CHOICES,max_length=10),blank=False)
+    the_geom = models.PolygonField(blank=False,verbose_name='Extent for export',srid=4326)
 
 @receiver(post_delete, sender=ExportConfig)
 def exportconfig_delete_upload(sender, instance, **kwargs):
