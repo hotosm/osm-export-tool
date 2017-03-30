@@ -9,6 +9,11 @@ from hdx.data.dataset import Dataset
 from hdx.configuration import Configuration
 
 class HDXExportSet(object):
+    """
+    An HDXExportSet is a set of remote resources (HDX datasets)
+    corresponding to a feature selection and area of interest.
+    This is a plain old python object that can be used independent of the web application.
+    """
 
     def __init__(self,extent_path,feature_selection,base_slug,description,country_code):
         self._extent_path = extent_path
