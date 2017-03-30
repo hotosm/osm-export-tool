@@ -446,9 +446,7 @@ div#spinner-modal {
 
 
 i.fa {
-    float: left !important;
     font-size: medium;
-    margin-top: .3em;
 }
 
 .tree-checkbox {
