@@ -17,6 +17,6 @@ python-openid
 requests_oauthlib
 raven==6.0.0
 shapely==1.5.17
-git+git://github.com/bdon/hdx-python-api.git@44d69c7b8f8b0239d889c89c472cbad1affae820#egg=hdx-python-api
+hdx-python-api==1.0.0
 pyyaml==3.12
 cachetools
