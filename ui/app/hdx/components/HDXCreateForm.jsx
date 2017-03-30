@@ -7,47 +7,46 @@ import cookie from 'react-cookie';
 
 import styles from '../styles/HDXCreateForm.css';
 
+const AVAILABLE_EXPORT_FORMATS = ['shp', 'geopackage', 'garmin', 'kml', 'pbf'];
+
 const form = reduxForm({
   form: 'HDXCreateForm',
   onSubmit: values => {
-    console.log("Submitting form. Values:", values);
+    console.log('Submitting form. Values:', values);
     const csrfmiddlewaretoken = cookie.load('csrftoken');
 
-    const export_formats = [];
-    ['shp','geopackage','garmin','kml','pbf'].forEach(function(f) {
-      if (values[f]) {
-        export_formats.push(f);
-      }
-    });
+    const exportFormats = AVAILABLE_EXPORT_FORMATS.filter(x => values[x]);
 
     const formData = {};
-    Object.assign(formData,values,{'the_geom':values.aoiInfo.geojson.features[0].geometry,'export_formats':export_formats});
+    Object.assign(formData, values, {
+      the_geom: values.aoiInfo.geojson.features[0].geometry,
+      export_formats: exportFormats
+    });
 
     axios({
-        url: '/api/hdx_export_regions',
-        method: 'POST',
-        contentType: 'application/json; version=1.0',
-        data: formData,
-        headers: {"X-CSRFToken": csrfmiddlewaretoken}
+      url: '/api/hdx_export_regions',
+      method: 'POST',
+      contentType: 'application/json; version=1.0',
+      data: formData,
+      headers: {
+        'X-CSRFToken': csrfmiddlewaretoken
+      }
     }).then((response) => {
-        console.log("Success");
+      console.log('Success');
     }).catch((error) => {
-        if (error.response) {
-          console.log(error.response.data);
-        }
+      if (error.response) {
+        console.log(error.response.data);
+      }
     });
-  },
+  }
 });
 
-function FieldGroup({ id, label, help, ...props }) {
-  return (
-    <FormGroup controlId={id}>
-      <ControlLabel>{label}</ControlLabel>
-      <FormControl {...props} />
-      {help && <HelpBlock>{help}</HelpBlock>}
-    </FormGroup>
-  );
-}
+const FieldGroup = ({ id, label, help, ...props }) =>
+  <FormGroup controlId={id}>
+    <ControlLabel>{label}</ControlLabel>
+    <FormControl {...props} />
+    {help && <HelpBlock>{help}</HelpBlock>}
+  </FormGroup>;
 
 const renderFieldGroup = ({input, data, meta, ...props}) =>
   <FieldGroup {...input} {...props} />;
@@ -83,11 +82,11 @@ const renderCheckbox = ({input, data, meta, description, ...props}) =>
   <Checkbox {...input} {...props}>{description}</Checkbox>;
 
 export class HDXCreateForm extends Component {
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps (props) {
     props.change('aoiInfo', props.aoiInfo);
   }
 
-  render() {
+  render () {
     const { handleSubmit, pristine, submitting } = this.props;
 
     return (
@@ -95,39 +94,39 @@ export class HDXCreateForm extends Component {
         <form onSubmit={handleSubmit}>
           <h2>Create Export Region</h2>
           <Field
-            id="formControlsText"
-            name="dataset_prefix"
-            type="text"
-            label="Dataset Prefix"
-            placeholder="hotosm_senegal"
+            id='formControlsText'
+            name='dataset_prefix'
+            type='text'
+            label='Dataset Prefix'
+            placeholder='hotosm_senegal'
             component={renderFieldGroup}
           />
           <div>Example: prefix <code>hotosm_senegal</code> results in datasets <code>hotosm_senegal_roads</code>, <code>hotosm_senegal_buildings</code>, etc.</div>
-          <hr/>
-          <FormGroup controlId="formControlsTextarea">
+          <hr />
+          <FormGroup controlId='formControlsTextarea'>
             <ControlLabel>Feature Selection</ControlLabel>
             <Field
-              rows="10"
-              name="feature_selection"
+              rows='10'
+              name='feature_selection'
               component={renderTextArea}
             />
           </FormGroup>
-          <hr/>
+          <hr />
           <Row>
             <Col xs={6}>
-              <FormGroup controlId="formControlsSelect">
+              <FormGroup controlId='formControlsSelect'>
                 <ControlLabel>Run this export on an automated schedule:</ControlLabel>
                 <Field
-                  name="schedule_period"
+                  name='schedule_period'
                   component={renderScheduleSelect}
                 />
               </FormGroup>
             </Col>
             <Col xs={5} xsOffset={1}>
-              <FormGroup controlId="formControlsSelect">
+              <FormGroup controlId='formControlsSelect'>
                 <ControlLabel>At time:</ControlLabel>
                 <Field
-                  name="schedule_hour"
+                  name='schedule_hour'
                   component={renderTimeSelect}
                 />
               </FormGroup>
@@ -135,31 +134,32 @@ export class HDXCreateForm extends Component {
           </Row>
           <Row>
             <Col xs={5}>
-              <FormGroup controlId="formControlsFormats">
+              <FormGroup controlId='formControlsFormats'>
+                {/* TODO use AVAILABLE_EXPORT_FORMATS */}
                 <ControlLabel>File Formats</ControlLabel>
                 <Field
-                  name="shp"
-                  description="ESRI Shapefiles"
+                  name='shp'
+                  description='ESRI Shapefiles'
                   component={renderCheckbox}
                 />
                 <Field
-                  name="geopackage"
-                  description="GeoPackage"
+                  name='geopackage'
+                  description='GeoPackage'
                   component={renderCheckbox}
                 />
                 <Field
-                  name="garmin"
-                  description="Garmin .IMG"
+                  name='garmin'
+                  description='Garmin .IMG'
                   component={renderCheckbox}
                 />
                 <Field
-                  name="kml"
-                  description=".KMZ"
+                  name='kml'
+                  description='.KMZ'
                   component={renderCheckbox}
                 />
                 <Field
-                  name="pbf"
-                  description="OpenStreetMap .PBF"
+                  name='pbf'
+                  description='OpenStreetMap .PBF'
                   component={renderCheckbox}
                 />
               </FormGroup>
@@ -174,7 +174,7 @@ export class HDXCreateForm extends Component {
                   <li><code>hotosm_senegal_roads</code></li>
                   <li><code>hotosm_senegal_waterways</code></li>
                 </ul>
-                <Button bsStyle="primary" bsSize="large" type="submit" disabled={pristine || submitting} onClick={handleSubmit} block>
+                <Button bsStyle='primary' bsSize='large' type='submit' disabled={pristine || submitting} onClick={handleSubmit} block>
                   Create Datasets + Run Export
                 </Button>
               </Panel>
@@ -182,10 +182,9 @@ export class HDXCreateForm extends Component {
           </Row>
         </form>
       </div>
-    )
+    );
   }
 }
-
 
 const mapStateToProps = state => {
   return {
@@ -198,10 +197,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    // setDatasetPrefix: prefix => {
-    //   dispatch(actions.setDatasetPrefix(prefix));
-    // }
-  }
+  };
 };
 
 export default connect(
