@@ -1,3 +1,7 @@
 .hdxCreateForm {
-  padding:20px;
+  padding: 20px;
+}
+
+.error {
+  color: #d73f3f;
 }
