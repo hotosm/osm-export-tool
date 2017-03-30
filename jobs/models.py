@@ -250,9 +250,9 @@ class HDXExportRegion(models.Model):
 
     @property
     def hdx_dataset(self):
-    """
-    Initialize an HDXExportSet corresponding to this Model.
-    """
+        """
+        Initialize an HDXExportSet corresponding to this Model.
+        """
         pass
 
 @receiver(post_delete, sender=ExportConfig)
