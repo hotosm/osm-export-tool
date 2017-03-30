@@ -72,7 +72,7 @@ export class AoiInfobar extends Component {
                     <div className={styles.aoiInfobar}>
                         <div className={styles.topBar}>
                             <span className={styles.aoiInfoTitle}><strong>Area Of Interest (AOI)</strong></span>
-                            <button className={styles.simpleButton + ' ' + styles.activeButton} onClick={this.dispatchZoomToSelection}>
+                            <button className={styles.activeButton} onClick={this.dispatchZoomToSelection}>
                                 <i className={"fa fa-search-plus"}></i> ZOOM TO SELECTION
                             </button>
                         </div>
