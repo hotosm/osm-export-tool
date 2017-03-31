@@ -20,6 +20,12 @@ export default {
         geonames: [],
         error: null,
     },
+    hdx: {
+      fetching: false,
+      fetched: false,
+      exportRegions: [],
+      error: null,
+    },
     importGeom: {
         processing: false,
         processed: false,
@@ -64,4 +70,3 @@ export default {
     stepperNextEnabled: false,
     setExportPackageFlag: false,
 }
-

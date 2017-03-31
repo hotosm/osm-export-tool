@@ -30,14 +30,16 @@ if (rootElem.classList.contains('rootHdxCreate')) {
   );
 } else if (rootElem.classList.contains('rootHdxList')) {
   render(
-    <Row style={{height: '100%'}}>
-      <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-        <HDXListForm />
-      </Col>
-      <Col xs={6} style={{height: '100%'}}>
-        <MapListView />
-      </Col>
-    </Row>,
+    <Provider store={store}>
+      <Row style={{height: '100%'}}>
+        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+          <HDXListForm />
+        </Col>
+        <Col xs={6} style={{height: '100%'}}>
+          <MapListView />
+        </Col>
+      </Row>
+    </Provider>,
     rootElem
   );
 } else if (rootElem.classList.contains('rootHdxEdit')) {

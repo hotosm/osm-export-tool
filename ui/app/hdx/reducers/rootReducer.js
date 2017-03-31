@@ -5,6 +5,7 @@ import {invalidDrawWarningReducer} from './drawToolBarReducer';
 import {zoomToSelectionReducer, resetMapReducer} from './AoiInfobarReducer.js';
 import {getGeonamesReducer} from './searchToolbarReducer.js';
 import {toolbarIconsReducer, showImportModalReducer, importGeomReducer} from './mapToolReducer';
+import {getHdxReducer} from './hdxReducer';
 
 
 const rootReducer = combineReducers({
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
     showImportModal: showImportModalReducer,
     importGeom: importGeomReducer,
     stepperNextEnabled: stepperReducer,
-    form: reduxFormReducer
+    form: reduxFormReducer,
+    hdx: getHdxReducer
 });
 
 export default rootReducer;
