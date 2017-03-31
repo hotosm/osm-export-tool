@@ -217,11 +217,11 @@ export class HDXExportRegionForm extends Component {
                 label='Run this export on an automated schedule:'
                 component={renderSelect}
               >
-                <option value='day'>Daily</option>
-                <option value='week'>Weekly (Sunday)</option>
-                <option value='month'>Monthly (1st of month)</option>
-                <option value='6hours'>Every 6 hours</option>
-                <option value='never'>Don't automatically schedule</option>
+                <option value='daily'>Daily</option>
+                <option value='weekly'>Weekly (Sunday)</option>
+                <option value='monthly'>Monthly (1st of month)</option>
+                <option value='6hrs'>Every 6 hours</option>
+                <option value='disabled'>Don't automatically schedule</option>
               </Field>
             </Col>
             <Col xs={5} xsOffset={1}>
