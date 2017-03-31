@@ -49,7 +49,7 @@ const ExportRegionList = (props) => {
             </Button>
           </Col>
           <Col lg={1} md={2}>
-            <Link className='btn btn-default btn-block' to={`/edit/${region.id}`} title='Settings'>
+            <Link className='btn btn-default btn-block' to={`/edit/${region.dataset_prefix}`} title='Settings'>
               <i className='fa fa-cog' />
             </Link>
           </Col>

@@ -47,13 +47,16 @@ const form = reduxForm({
 
     let url = '/api/hdx_export_regions';
 
+    var method = 'POST';
+
     if (values.id != null) {
-      url += `/${values.id}`;
+      url += `/${values.dataset_prefix}`;
+      method = 'PUT';
     }
 
     return axios({
       url,
-      method: 'POST',
+      method: method,
       contentType: 'application/json; version=1.0',
       data: formData,
       headers: {
@@ -62,10 +65,10 @@ const form = reduxForm({
     }).then(rsp => {
       console.log('Success');
 
-      console.log('id:', rsp.data.id);
+      console.log('key:', rsp.data.dataset_prefix);
 
       if (props.hdx.exportRegion == null) {
-        dispatch(push(`/edit/${rsp.data.id}`));
+        dispatch(push(`/edit/${rsp.data.dataset_prefix}`));
       }
     }).catch(err => {
       console.warn(err);
