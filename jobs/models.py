@@ -241,6 +241,7 @@ class HDXExportRegion(models.Model):
     feature_selection = models.TextField(blank=False)
     schedule_period = models.CharField(blank=False,max_length=10,default="disabled",choices=PERIOD_CHOICES)
     schedule_hour = models.IntegerField(blank=False,choices=HOUR_CHOICES,default=0)
+    # TODO there should be at least one item here
     export_formats = ArrayField(models.CharField(blank=False,choices=EXPORT_FORMAT_CHOICES,max_length=10),blank=False)
     the_geom = models.PolygonField(blank=False,verbose_name='Extent for export',srid=4326)
 
