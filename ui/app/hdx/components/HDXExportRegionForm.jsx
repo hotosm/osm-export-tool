@@ -49,7 +49,7 @@ const form = reduxForm({
     let method = 'POST';
 
     if (values.id != null) {
-      url += `/${values.dataset_prefix}`;
+      url += `/${values.id}`;
       method = 'PUT';
     }
 
@@ -64,10 +64,10 @@ const form = reduxForm({
     }).then(rsp => {
       console.log('Success');
 
-      console.log('key:', rsp.data.dataset_prefix);
+      console.log('id:', rsp.data.id);
 
       if (props.hdx.exportRegion == null) {
-        dispatch(push(`/edit/${rsp.data.dataset_prefix}`));
+        dispatch(push(`/edit/${rsp.data.id}`));
       }
     }).catch(err => {
       console.warn(err);
