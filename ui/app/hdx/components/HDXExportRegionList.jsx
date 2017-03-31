@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 import { getExportRegions } from '../actions/hdxActions';
 
 function DatasetList (props) {
-  const listItems = props.datasets.map((dataset) =>
-    <li key={dataset}><a target='_blank' href={`https://data.humdata.org/dataset/${dataset}`}>{dataset}</a></li>
+  const listItems = props.datasets.map((dataset, i) =>
+    <li key={i}><a target='_blank' href={`https://data.humdata.org/dataset/${dataset}`}>{dataset}</a></li>
   );
 
   return (
@@ -21,7 +21,7 @@ function DatasetList (props) {
 const ExportRegionList = (props) => {
   const { regions } = props;
 
-  const listItems = regions.map(region => {
+  const listItems = regions.map((region, i) => {
     region.datasets = [
       `${region.dataset_prefix}_admin_boundaries`,
       `${region.dataset_prefix}_buildings`,
@@ -31,7 +31,7 @@ const ExportRegionList = (props) => {
     ];
 
     return (
-      <Row key={region.name}>
+      <Row key={i}>
         <Panel>
           <Col lg={5}>
             <h4><Link to={`/edit/${region.id}`}>{region.name || 'Untitled'}</Link></h4>
