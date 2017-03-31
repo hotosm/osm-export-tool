@@ -473,3 +473,12 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = HDXExportRegion.objects.filter(deleted=False).order_by('dataset_prefix')
     lookup_field = 'dataset_prefix'
+
+    def perform_create(self,serializer):
+        serializer.save()
+        # persist the model first.
+        serializer.instance.sync_to_hdx()
+
+    def perform_update(self,serializer):
+        serializer.instance.sync_to_hdx()
+        serializer.save()

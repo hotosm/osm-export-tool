@@ -256,6 +256,9 @@ class HDXExportRegion(models.Model):
         """
         pass
 
+    def sync_to_hdx(self):
+        print "HDXExportRegion.sync_to_hdx called."
+
 @receiver(post_delete, sender=ExportConfig)
 def exportconfig_delete_upload(sender, instance, **kwargs):
     """
