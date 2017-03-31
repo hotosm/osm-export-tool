@@ -66,6 +66,9 @@ services:
     links:
       - postgresql
       - rabbitmq
+    volumes:
+      - stage:/opt/export_staging
+      - downloads:/opt/export_downloads
     command: gunicorn core.wsgi:application --workers=3 --bind :6080
   nginx:
     image: nginx
@@ -92,9 +95,15 @@ services:
       - "5432"
     logging:
       driver: none
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   rabbitmq:
     image: rabbitmq:3.6.8-management
     expose:
       - "5672"
     logging:
       driver: none
+volumes:
+  pgdata:
+  stage:
+  downloads:
