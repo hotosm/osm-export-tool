@@ -98,7 +98,7 @@ def hdx_edit(request):
 
 def hdx_create(request):
     user = request.user
-    context = {'user': user,'reactRootClass':'rootHdxCreate'}
+    context = {'user': user}
     return render_to_response('ui/base_react.html', context)
 
 

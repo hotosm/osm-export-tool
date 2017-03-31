@@ -433,6 +433,6 @@ class JobSerializer(serializers.Serializer):
 class HDXExportRegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = HDXExportRegion
-        fields = ('dataset_prefix', 'feature_selection',
+        fields = ('id', 'dataset_prefix', 'feature_selection',
                   'schedule_period', 'schedule_hour',
                   'export_formats', 'the_geom', 'country_codes', 'name',)

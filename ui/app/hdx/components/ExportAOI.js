@@ -49,6 +49,23 @@ export class ExportAOI extends Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (!isEqual(prevProps.aoiInfo.geojson, this.props.aoiInfo.geojson)) {
+            // remove existing features
+            this._clearDraw();
+
+            const bbox = this.props.aoiInfo.geojson.features[0].bbox;
+            const reader = new ol.format.GeoJSON();
+            const feature = reader.readFeatures(this.props.aoiInfo.geojson, {
+                dataProjection: WGS84,
+                featureProjection: WEB_MERCATOR
+            });
+            this._drawLayer.getSource().addFeature(feature[0]);
+            this.handleZoomToSelection(bbox);
+            this.props.setNextEnabled();
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         // Check if the map mode has changed (DRAW or NORMAL)
         if(this.props.mode != nextProps.mode) {

@@ -1,59 +1,48 @@
 import React from 'react';
-import { render } from 'react-dom';
-import configureStore from './store/configureStore';
-import { Provider } from 'react-redux';
+
+import createHistory from 'history/createHashHistory';
 import { Col, Row } from 'react-bootstrap';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { Route } from 'react-router';
+import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import createLogger from 'redux-logger';
+import thunk from 'redux-thunk';
 
 import ExportAOI from './components/ExportAOI';
 import MapListView from './components/MapListView';
-import HDXCreateForm from './components/HDXCreateForm';
-import HDXListForm from './components/HDXListForm';
-import HDXEditForm from './components/HDXEditForm';
+import HDXExportRegionForm from './components/HDXExportRegionForm';
+import HDXExportRegionList from './components/HDXExportRegionList';
+import reducers from './reducers/';
 
-var rootElem = document.getElementById('root');
+const history = createHistory();
 
-const store = configureStore();
+const store = createStore(
+  combineReducers({
+    ...reducers,
+    router: routerReducer
+  }),
+  applyMiddleware(routerMiddleware(history), thunk, createLogger())
+);
 
-if (rootElem.classList.contains('rootHdxCreate')) {
-  render(
-    <Provider store={store}>
+ReactDOM.render(
+  <Provider store={store}>
+    {/* ConnectedRouter will use the store from Provider automatically */}
+    <ConnectedRouter history={history}>
       <Row style={{height: '100%'}}>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-          <HDXCreateForm />
+          <Route exact path='/' component={HDXExportRegionList} />
+          <Route path='/new' component={HDXExportRegionForm} />
+          <Route path='/edit/:id' component={HDXExportRegionForm} />
         </Col>
         <Col xs={6} style={{height: '100%'}}>
-          <ExportAOI />
+          <Route exact path='/' component={MapListView} />
+          <Route path='/new' component={ExportAOI} />
+          <Route path='/edit/:id' component={ExportAOI} />
         </Col>
       </Row>
-    </Provider>,
-    rootElem
-  );
-} else if (rootElem.classList.contains('rootHdxList')) {
-  render(
-    <Provider store={store}>
-      <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-          <HDXListForm />
-        </Col>
-        <Col xs={6} style={{height: '100%'}}>
-          <MapListView />
-        </Col>
-      </Row>
-    </Provider>,
-    rootElem
-  );
-} else if (rootElem.classList.contains('rootHdxEdit')) {
-  render(
-    <Provider store={store}>
-      <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-          <HDXEditForm />
-        </Col>
-        <Col xs={6} style={{height: '100%'}}>
-          <ExportAOI />
-        </Col>
-      </Row>
-    </Provider>,
-    rootElem
-  );
-}
+    </ConnectedRouter>
+  </Provider>,
+  document.getElementById('root')
+);

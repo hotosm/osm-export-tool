@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 
 import { Row, Col, Panel, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import {getExportRegions} from '../actions/hdxActions';
+import { getExportRegions } from '../actions/hdxActions';
 
 function DatasetList (props) {
   const listItems = props.datasets.map((dataset) =>
@@ -33,7 +34,7 @@ const ExportRegionList = (props) => {
       <Row key={region.name}>
         <Panel>
           <Col lg={5}>
-            <h4>{region.name || 'Untitled'}</h4>
+            <h4><Link to={`/edit/${region.id}`}>{region.name || 'Untitled'}</Link></h4>
             <DatasetList datasets={region.datasets} />
           </Col>
           <Col lg={5}>
@@ -48,10 +49,9 @@ const ExportRegionList = (props) => {
             </Button>
           </Col>
           <Col lg={1} md={2}>
-            {/* TODO link directly to the export region */}
-            <Button block href='edit' title='Settings'>
+            <Link className='btn btn-default btn-block' to={`/edit/${region.id}`} title='Settings'>
               <i className='fa fa-cog' />
-            </Button>
+            </Link>
           </Col>
         </Panel>
       </Row>
@@ -65,7 +65,7 @@ const ExportRegionList = (props) => {
   );
 };
 
-export class HDXListForm extends Component {
+export class HDXExportRegionList extends Component {
   componentDidMount () {
     const { getExportRegions } = this.props;
 
@@ -105,4 +105,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(HDXListForm);
+)(HDXExportRegionList);

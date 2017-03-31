@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 
 import axios from 'axios';
-import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button } from 'react-bootstrap';
+const jsts = require('jsts');
+import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
 import cookie from 'react-cookie';
 import { connect } from 'react-redux';
 import { Field, SubmissionError, formValueSelector, reduxForm } from 'redux-form';
 
-import styles from '../styles/HDXCreateForm.css';
+import { updateAoiInfo } from '../actions/exportsActions';
+import { getExportRegion } from '../actions/hdxActions';
+import styles from '../styles/HDXExportRegionForm.css';
 
 const AVAILABLE_EXPORT_FORMATS = {
   shp: 'ESRI Shapefiles',
@@ -17,9 +20,10 @@ const AVAILABLE_EXPORT_FORMATS = {
 };
 
 const form = reduxForm({
-  form: 'HDXCreateForm',
+  form: 'HDXExportRegionForm',
   onSubmit: values => {
     console.log('Submitting form. Values:', values);
+
     if (values.aoiInfo.geomType == null) {
       throw new SubmissionError({
         _error: 'Please select an area of interest →'
@@ -40,8 +44,14 @@ const form = reduxForm({
       export_formats: exportFormats
     };
 
+    let url = '/api/hdx_export_regions';
+
+    if (values.id != null) {
+      url += `/${values.id}`;
+    }
+
     return axios({
-      url: '/api/hdx_export_regions',
+      url,
       method: 'POST',
       contentType: 'application/json; version=1.0',
       data: formData,
@@ -50,6 +60,8 @@ const form = reduxForm({
       }
     }).then(rsp => {
       console.log('Success');
+
+      console.log('New (?) id:', rsp.data.id);
 
       // TODO do something
     }).catch(err => {
@@ -118,11 +130,39 @@ const getFormatCheckboxes = () =>
       name={k}
       description={AVAILABLE_EXPORT_FORMATS[k]}
       component={renderCheckbox}
+      type='checkbox'
     />);
 
-export class HDXCreateForm extends Component {
+export class HDXExportRegionForm extends Component {
+  componentDidMount () {
+    const { getExportRegion, match: { params: { id } } } = this.props;
+
+    if (id != null) {
+      // we're editing
+      getExportRegion(id);
+    }
+  }
+
   componentWillReceiveProps (props) {
     props.change('aoiInfo', props.aoiInfo);
+
+    if (this.props.hdx.exportRegion == null &&
+        props.hdx.exportRegion != null) {
+      // we're receiving an export region
+
+      const { hdx: { exportRegion }, updateAOI } = props;
+
+      // NOTE: this also sets some form properties that we don't care about (but that show up in the onSubmit handler)
+      Object.keys(exportRegion).forEach(k =>
+        props.change(k, exportRegion[k]));
+
+      exportRegion.export_formats.forEach(x =>
+        props.change(x, true));
+
+      updateAOI(exportRegion.the_geom);
+
+      console.log(exportRegion);
+    }
   }
 
   render () {
@@ -130,9 +170,10 @@ export class HDXCreateForm extends Component {
     let datasetPrefix = this.props.datasetPrefix || '<prefix>';
 
     return (
-      <div className={styles.hdxCreateForm}>
+      <div className={styles.hdxForm}>
+        {/* TODO breadcrumbs back to Export Region List */}
         <form onSubmit={handleSubmit}>
-          <h2>Create Export Region</h2>
+          <h2>Create || Edit Export Region</h2>
           {error && <strong className={styles.error}>{error}</strong>}
           <Field
             name='name'
@@ -204,12 +245,47 @@ export class HDXCreateForm extends Component {
                   <li><code>{datasetPrefix}_waterways</code></li>
                 </ul>
                 <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
-                  Create Datasets + Run Export
+                  Create Datasets + Run Export || Save + Sync to HDX
                 </Button>
               </Panel>
             </Col>
           </Row>
         </form>
+        <Panel>
+          <strong>Next scheduled run:</strong> 2017/03/30 0:00 UTC
+          <Button bsStyle='primary' style={{float: 'right'}}>
+            Run Now
+          </Button>
+        </Panel>
+        <h3>Run History</h3>
+        <Table>
+          <thead>
+            <tr>
+              <th>
+                Run Started
+              </th>
+              <th>
+                Elapsed Time
+              </th>
+              <th>
+                Total Size
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                2017/03/26
+              </td>
+              <td>
+                10 minutes
+              </td>
+              <td>
+                256 MB
+              </td>
+            </tr>
+          </tbody>
+        </Table>
       </div>
     );
   }
@@ -221,16 +297,47 @@ const mapStateToProps = state => {
       aoiInfo: state.aoiInfo
     },
     aoiInfo: state.aoiInfo,
-    datasetPrefix: formValueSelector('HDXCreateForm')(state, 'dataset_prefix')
+    datasetPrefix: formValueSelector('HDXExportRegionForm')(state, 'dataset_prefix'),
+    hdx: state.hdx
   };
 };
 
+const flatten = arr => arr.reduce(
+  (acc, val) => acc.concat(
+    Array.isArray(val) ? flatten(val) : val
+  ),
+  []
+);
+
 const mapDispatchToProps = dispatch => {
   return {
+    getExportRegion: id => dispatch(getExportRegion(id)),
+    updateAOI: geometry => {
+      const envelope = new jsts.io.GeoJSONReader().read(geometry).getEnvelope().getCoordinates();
+
+      const bbox = [envelope[0], envelope[2]]
+        .map(c => [c.x, c.y])
+        .reduce((acc, val) => acc.concat(val), []);
+
+      dispatch(updateAoiInfo({
+        features: [
+          {
+            // TODO wouldn't it be nice if ExportAOI didn't require a feature collection with a bbox?
+            type: 'Feature',
+            bbox,
+            geometry,
+            properties: {}
+          }
+        ],
+        type: 'FeatureCollection',
+        geomType: 'Polygon',
+        title: 'Custom Polygon'
+      }, 'Polygon', 'Custom Polygon', 'Saved'));
+    }
   };
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(form(HDXCreateForm));
+)(form(HDXExportRegionForm));

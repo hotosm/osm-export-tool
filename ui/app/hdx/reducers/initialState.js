@@ -23,6 +23,7 @@ export default {
     hdx: {
       fetching: false,
       fetched: false,
+      exportRegion: null,
       exportRegions: [],
       error: null,
     },

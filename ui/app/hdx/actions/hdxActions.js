@@ -24,3 +24,29 @@ export function getExportRegions () {
     });
   };
 }
+
+export function getExportRegion (id) {
+  return dispatch => {
+    dispatch({
+      type: types.FETCHING_EXPORT_REGION,
+      id
+    });
+
+    return axios.get(`/api/hdx_export_regions/${id}`)
+    .then(rsp => {
+      return rsp.data;
+    }).then(exportRegion => {
+      dispatch({
+        type: types.RECEIVED_EXPORT_REGION,
+        id,
+        exportRegion
+      });
+    }).catch(error => {
+      dispatch({
+        type: types.FETCH_EXPORT_REGIONS_ERROR,
+        id,
+        error
+      });
+    });
+  };
+}
