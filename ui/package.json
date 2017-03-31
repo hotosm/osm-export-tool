@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "axios-mock-adapter": "~1.7.1",
+    "babel-eslint": "^7.2.1",
     "babel-jest": "17.0.2",
     "chai": "~3.5.0",
     "enzyme": "~2.7.1",
@@ -91,5 +92,8 @@
     "watch": "webpack --watch --progress --config webpack.config.js",
     "test": "jest --verbose"
   },
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "standard": {
+    "parser": "babel-eslint"
+  }
 }
