@@ -471,12 +471,5 @@ class OSMDataModelView(views.APIView):
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     serializer_class = HDXExportRegionSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = HDXExportRegion.objects.filter(deleted=False)
-
-    def create(self, request, *args, **kwargs):
-        serializer = HDXExportRegionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    queryset = HDXExportRegion.objects.filter(deleted=False).order_by('dataset_prefix')
+    lookup_field = 'dataset_prefix'
