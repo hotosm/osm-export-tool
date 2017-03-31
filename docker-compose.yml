@@ -78,6 +78,7 @@ services:
     ports:
       - "80:80"
     volumes:
+      # TODO bake this into the site image so that it doesn't rely on anything from the local filesystem
       - ./ops/exports.conf:/etc/nginx/conf.d/exports.conf:ro
     volumes_from:
       - site
