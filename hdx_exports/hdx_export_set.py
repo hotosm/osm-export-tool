@@ -55,7 +55,7 @@ class HDXExportSet(object):
         features = json.loads(f.read())['features']
         assert len(features) == 1
         theshape = shape(features[0]['geometry'])
-        theshape = theshape.buffer(0.01)
+        theshape = theshape.buffer(0.02)
         theshape = theshape.simplify(0.01)
         return theshape
 
