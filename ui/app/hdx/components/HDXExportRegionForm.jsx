@@ -5,6 +5,7 @@ const jsts = require('jsts');
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
 import cookie from 'react-cookie';
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 import { Field, SubmissionError, formValueSelector, reduxForm } from 'redux-form';
 
 import { updateAoiInfo } from '../actions/exportsActions';
@@ -21,10 +22,10 @@ const AVAILABLE_EXPORT_FORMATS = {
 
 const form = reduxForm({
   form: 'HDXExportRegionForm',
-  onSubmit: values => {
+  onSubmit: (values, dispatch, props) => {
     console.log('Submitting form. Values:', values);
 
-    if (values.aoiInfo.geomType == null) {
+    if (props.aoiInfo.geomType == null) {
       throw new SubmissionError({
         _error: 'Please select an area of interest →'
       });
@@ -40,7 +41,7 @@ const form = reduxForm({
 
     const formData = {
       ...values,
-      the_geom: values.aoiInfo.geojson.features[0].geometry,
+      the_geom: props.aoiInfo.geojson.features[0].geometry,
       export_formats: exportFormats
     };
 
@@ -144,8 +145,6 @@ export class HDXExportRegionForm extends Component {
   }
 
   componentWillReceiveProps (props) {
-    props.change('aoiInfo', props.aoiInfo);
-
     if (this.props.hdx.exportRegion == null &&
         props.hdx.exportRegion != null) {
       // we're receiving an export region
@@ -293,9 +292,6 @@ export class HDXExportRegionForm extends Component {
 
 const mapStateToProps = state => {
   return {
-    initialValues: {
-      aoiInfo: state.aoiInfo
-    },
     aoiInfo: state.aoiInfo,
     datasetPrefix: formValueSelector('HDXExportRegionForm')(state, 'dataset_prefix'),
     hdx: state.hdx
