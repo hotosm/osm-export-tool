@@ -78,9 +78,9 @@ export class HDXExportRegionList extends Component {
     return (
       <div style={{padding: '20px'}}>
         <h2 style={{display: 'inline'}}>HDX Export Regions</h2>
-        <Button style={{float: 'right'}} bsStyle='primary' bsSize='large' href='create'>
+        <Link to='/new' style={{float: 'right'}} className='btn btn-primary btn-lg'>
           Create New Export Region
-        </Button>
+        </Link>
         <hr />
         <ExportRegionList regions={exportRegions} />
       </div>
