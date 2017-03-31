@@ -62,15 +62,17 @@ const form = reduxForm({
     }).then(rsp => {
       console.log('Success');
 
-      console.log('New (?) id:', rsp.data.id);
+      console.log('id:', rsp.data.id);
 
-      // TODO do something
+      if (props.hdx.exportRegion == null) {
+        dispatch(push(`/edit/${rsp.data.id}`));
+      }
     }).catch(err => {
+      console.warn(err);
+
       if (err.response) {
         throw new SubmissionError(err.response.data);
       }
-
-      console.warn(err);
 
       throw new SubmissionError({
         _error: 'Export region creation failed.'
@@ -135,12 +137,20 @@ const getFormatCheckboxes = () =>
     />);
 
 export class HDXExportRegionForm extends Component {
+  state = {
+    editing: false
+  };
+
   componentDidMount () {
     const { getExportRegion, match: { params: { id } } } = this.props;
 
     if (id != null) {
       // we're editing
       getExportRegion(id);
+
+      this.setState({
+        editing: true
+      });
     }
   }
 
@@ -165,6 +175,7 @@ export class HDXExportRegionForm extends Component {
   }
 
   render () {
+    const { editing } = this.state;
     const { error, handleSubmit, submitting } = this.props;
     let datasetPrefix = this.props.datasetPrefix || '<prefix>';
 
@@ -172,7 +183,7 @@ export class HDXExportRegionForm extends Component {
       <div className={styles.hdxForm}>
         {/* TODO breadcrumbs back to Export Region List */}
         <form onSubmit={handleSubmit}>
-          <h2>Create || Edit Export Region</h2>
+          <h2>{editing ? 'Edit' : 'Create'} Export Region</h2>
           {error && <strong className={styles.error}>{error}</strong>}
           <Field
             name='name'
@@ -244,47 +255,51 @@ export class HDXExportRegionForm extends Component {
                   <li><code>{datasetPrefix}_waterways</code></li>
                 </ul>
                 <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
-                  Create Datasets + Run Export || Save + Sync to HDX
+                  {editing ? 'Save + Sync to HDX' : 'Create Datasets + Run Export'}
                 </Button>
               </Panel>
             </Col>
           </Row>
         </form>
-        <Panel>
-          <strong>Next scheduled run:</strong> 2017/03/30 0:00 UTC
-          <Button bsStyle='primary' style={{float: 'right'}}>
-            Run Now
-          </Button>
-        </Panel>
-        <h3>Run History</h3>
-        <Table>
-          <thead>
-            <tr>
-              <th>
-                Run Started
-              </th>
-              <th>
-                Elapsed Time
-              </th>
-              <th>
-                Total Size
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                2017/03/26
-              </td>
-              <td>
-                10 minutes
-              </td>
-              <td>
-                256 MB
-              </td>
-            </tr>
-          </tbody>
-        </Table>
+        {editing &&
+          <div>
+            <Panel>
+              <strong>Next scheduled run:</strong> 2017/03/30 0:00 UTC
+              <Button bsStyle='primary' style={{float: 'right'}}>
+                Run Now
+              </Button>
+            </Panel>
+            <h3>Run History</h3>
+            <Table>
+              <thead>
+                <tr>
+                  <th>
+                    Run Started
+                  </th>
+                  <th>
+                    Elapsed Time
+                  </th>
+                  <th>
+                    Total Size
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    2017/03/26
+                  </td>
+                  <td>
+                    10 minutes
+                  </td>
+                  <td>
+                    256 MB
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
+        }
       </div>
     );
   }
