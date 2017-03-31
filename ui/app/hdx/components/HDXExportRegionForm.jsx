@@ -303,6 +303,19 @@ export class HDXExportRegionForm extends Component {
             </Table>
           </div>
         }
+      {editing &&
+        <div>
+          <Panel>
+            <p>
+              This will unschedule the export region. 
+              Any existing datasets created by this region will remain on HDX.
+            </p>
+            <Button bsStyle="danger" block>
+              Remove Export Region
+            </Button>
+          </Panel>
+        </div>
+      }
       </div>
     );
   }
