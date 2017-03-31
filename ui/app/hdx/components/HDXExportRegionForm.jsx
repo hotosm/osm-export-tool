@@ -46,8 +46,7 @@ const form = reduxForm({
     };
 
     let url = '/api/hdx_export_regions';
-
-    var method = 'POST';
+    let method = 'POST';
 
     if (values.id != null) {
       url += `/${values.dataset_prefix}`;
@@ -301,21 +300,17 @@ export class HDXExportRegionForm extends Component {
                 </tr>
               </tbody>
             </Table>
+            <Panel>
+              <p>
+                This will unschedule the export region.
+                Any existing datasets created by this region will remain on HDX.
+              </p>
+              <Button bsStyle='danger' block>
+                Remove Export Region
+              </Button>
+            </Panel>
           </div>
         }
-      {editing &&
-        <div>
-          <Panel>
-            <p>
-              This will unschedule the export region. 
-              Any existing datasets created by this region will remain on HDX.
-            </p>
-            <Button bsStyle="danger" block>
-              Remove Export Region
-            </Button>
-          </Panel>
-        </div>
-      }
       </div>
     );
   }
