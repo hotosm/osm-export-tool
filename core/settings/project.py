@@ -254,3 +254,5 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT', None)
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', None)
 
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
+
+HDX_API_KEY = os.environ.get('HDX_API_KEY',None)
