@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from hdx.feature_selection import FeatureSelection
+from feature_selection.feature_selection import FeatureSelection
 
 class TestFeatureSelection(unittest.TestCase):
 
