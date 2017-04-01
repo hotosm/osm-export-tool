@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import json
 import unittest
 from hdx_exports.hdx_export_set import HDXExportSet
-from hdx_exports.feature_selection import FeatureSelection
+from feature_selection.feature_selection import FeatureSelection
+from django.contrib.gis.geos import GEOSGeometry
 
 from hdx.data.hdxobject import HDXError
 
-DAKAR_GEOJSON_POLYGON = {
+DAKAR_GEOJSON_POLYGON = json.dumps({
         "type": "Polygon",
         "coordinates": [
           [
@@ -17,9 +19,9 @@ DAKAR_GEOJSON_POLYGON = {
             [-17.465,14.719]
           ]
         ]
-      }
+      })
 
-DAKAR_GEOJSON_MULTIPOLYGON = {
+DAKAR_GEOJSON_MULTIPOLYGON = json.dumps({
         "type": "MultiPolygon",
         "coordinates": [[
           [
@@ -30,7 +32,7 @@ DAKAR_GEOJSON_MULTIPOLYGON = {
             [-17.465,14.719]
           ]]
         ]
-      }
+      })
 
 yaml = '''
 buildings:
@@ -70,7 +72,7 @@ class TestHDXExportSet(unittest.TestCase):
             h = HDXExportSet(
                 "hot_dakar",
                 "Dakar Urban Area",
-                {'type':'FeatureCollection'},
+                GEOSGeometry("{'type':'LineString','coordinates':[]}"),
                 BASIC_FEATURE_SELECTION 
             )
 

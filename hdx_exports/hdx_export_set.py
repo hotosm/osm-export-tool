@@ -2,11 +2,12 @@ import os
 import json
 import subprocess
 import zipfile
-from shapely.geometry import shape, mapping
-from feature_selection import FeatureSelection
+from feature_selection.feature_selection import FeatureSelection
 
 from hdx.data.dataset import Dataset
 from hdx.configuration import Configuration
+
+from django.contrib.gis.geos import GEOSGeometry
 
 MARKDOWN = '''
 Shapefiles of [OpenStreetMap](http://www.openstreetmap.org) features in {region}.
@@ -33,7 +34,11 @@ class HDXExportSet(object):
     def __init__(self,dataset_prefix,name,extent,feature_selection,country_codes=[]):
         # raise exceptions on invalid feature selections, extents.
         # it's not the job of this class to validate those!
-        assert extent['type'] in ['Polygon','MultiPolygon']
+        try:
+            assert extent.geom_type in ['Polygon','MultiPolygon']
+        except:
+            extent= GEOSGeometry(extent)
+        assert extent.geom_type in ['Polygon','MultiPolygon']
         self._extent = extent
         self._feature_selection = feature_selection
         self._dataset_prefix = dataset_prefix
@@ -47,17 +52,14 @@ class HDXExportSet(object):
 
     @property
     def bounds(self):
-        return self.clipping_polygon.bounds
+        return self.selection_polygon.bounds
 
     @property
-    def clipping_polygon(self):
-        f = open(self._extent_path)
-        features = json.loads(f.read())['features']
-        assert len(features) == 1
-        theshape = shape(features[0]['geometry'])
-        theshape = theshape.buffer(0.02)
-        theshape = theshape.simplify(0.01)
-        return theshape
+    def selection_polygon(self):
+        sp = self._extent
+        sp = sp.buffer(0.02)
+        sp = sp.simplify(0.01)
+        return sp
 
     @property
     def datasets(self): 
@@ -134,8 +136,8 @@ class HDXExportSet(object):
 
 if __name__ == "__main__":
     f_s = FeatureSelection(open('hdx_exports/example_preset.yml').read())
-    extent = json.loads(open('hdx_exports/adm0/GIN_adm0.geojson').read())
+    extent = open('hdx_exports/adm0/GIN_adm0.geojson').read()
     h = HDXExportSet('hotosm_guinea','Guinea',extent,f_s,country_codes=['GIN'])
     #h.zip_resources("../stage/")
-    Configuration.create(hdx_site='prod',hdx_key=os.environ['HDX_API_KEY'])
-    h.sync_datasets()
+    #Configuration.create(hdx_site='prod',hdx_key=os.environ['HDX_API_KEY'])
+    #h.sync_datasets()

@@ -16,7 +16,6 @@ requests>=2.5.1
 python-openid
 requests_oauthlib
 raven==6.0.0
-shapely==1.5.17
 hdx-python-api==1.0.0
 pyyaml==3.12
 cachetools
