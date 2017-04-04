@@ -19,3 +19,4 @@ raven==6.0.0
 hdx-python-api==1.0.0
 pyyaml==3.12
 cachetools
+sqlparse==0.2.3
