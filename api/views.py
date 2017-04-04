@@ -474,9 +474,15 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
     queryset = HDXExportRegion.objects.filter(deleted=False).order_by('dataset_prefix')
 
     def perform_create(self,serializer):
-        serializer.save()
-        serializer.instance.sync_to_hdx()
+        self.save_and_sync(serializer)
 
     def perform_update(self,serializer):
+        self.save_and_sync(serializer)
+
+    def save_and_sync(self,serializer):
         serializer.save()
-        serializer.instance.sync_to_hdx()
+        if settings.SYNC_TO_HDX:
+            serializer.instance.sync_to_hdx()
+        else:
+            print "Stubbing interaction with HDX API."
+

@@ -441,7 +441,6 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):
                   'export_formats', 'the_geom', 'country_codes', 'name',)
 
     def validate_feature_selection(self,value):
-        print "Validating feature selection."
         f = FeatureSelection(value)
         if not f.valid:
             raise serializers.ValidationError("Feature selection invalid: {0}".format(f.errors))
