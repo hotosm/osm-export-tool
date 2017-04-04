@@ -9,6 +9,8 @@ from hdx.configuration import Configuration
 
 from django.contrib.gis.geos import GEOSGeometry
 
+Configuration.create(hdx_site='prod',hdx_key=os.environ.get('HDX_API_KEY',None))
+
 MARKDOWN = '''
 Shapefiles of [OpenStreetMap](http://www.openstreetmap.org) features in {region}.
 
@@ -82,6 +84,7 @@ class HDXExportSet(object):
             dataset['methodology_other'] = 'OpenStreetMap extract'
             dataset['data_update_frequency'] = '7'
             dataset['subnational'] = '1'
+            dataset['groups'] = []
             for country_code in self._country_codes:
                 dataset.add_country_location(country_code)
             self._datasets[theme] = dataset
@@ -142,7 +145,7 @@ class HDXExportSet(object):
 if __name__ == "__main__":
     import logging
     logging.basicConfig()
-    Configuration.create(hdx_site='prod',hdx_key=os.environ['HDX_API_KEY'])
+    Configuration.create(hdx_site='prod',hdx_key=os.environ.get('HDX_API_KEY',None))
     f_s = FeatureSelection(open('hdx_exports/example_preset.yml').read())
     extent = open('hdx_exports/adm0/GIN_adm0.geojson').read()
     h = HDXExportSet('hotosm_guinea','Guinea',extent,f_s,country_codes=['GIN'])

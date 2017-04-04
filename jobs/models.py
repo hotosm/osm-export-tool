@@ -12,7 +12,9 @@ from django.db.models.fields import CharField
 from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
+
 from hdx_exports.hdx_export_set import HDXExportSet
+from feature_selection.feature_selection import FeatureSelection
 
 LOG = logging.getLogger(__name__)
 
@@ -255,16 +257,25 @@ class HDXExportRegion(models.Model):
         """
         Initialize an HDXExportSet corresponding to this Model.
         """
-        h = HDXExportSet(
+        return HDXExportSet(
             self.dataset_prefix,
             self.name,
             self.the_geom,
-            self.feature_selection
+            self.feature_selection_object
         )
+
+    @property
+    def feature_selection_object(self):
+        """
+        a valid FeatureSelection object based off the feature_selection column.
+        """
+        fs = FeatureSelection(self.feature_selection)
+        assert fs.valid
+        return fs
 
     def sync_to_hdx(self):
         print "HDXExportRegion.sync_to_hdx called."
-        #self.hdx_dataset.sync_datasets()
+        self.hdx_dataset.sync_datasets()
 
 @receiver(post_delete, sender=ExportConfig)
 def exportconfig_delete_upload(sender, instance, **kwargs):

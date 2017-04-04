@@ -34,6 +34,9 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+
+from feature_selection.feature_selection import FeatureSelection
+
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
@@ -436,3 +439,10 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):
         fields = ('id', 'dataset_prefix', 'feature_selection',
                   'schedule_period', 'schedule_hour',
                   'export_formats', 'the_geom', 'country_codes', 'name',)
+
+    def validate_feature_selection(self,value):
+        print "Validating feature selection."
+        f = FeatureSelection(value)
+        if not f.valid:
+            raise serializers.ValidationError("Feature selection invalid: {0}".format(f.errors))
+        return value
