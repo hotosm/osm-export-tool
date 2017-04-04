@@ -65,7 +65,8 @@ class TestHDXExportSet(unittest.TestCase):
         self.assertEquals([],h.country_codes)
         datasets = h.datasets
         self.assertEquals(len(datasets),2)
-        self.assertEquals(datasets[0]['name'],'hot_dakar_buildings')
+        self.assertEquals(datasets['buildings']['name'],'hot_dakar_buildings')
+        self.assertEquals(datasets['waterways']['name'],'hot_dakar_waterways')
 
     def test_extent_not_polygon_or_multipolygon(self):
         with self.assertRaises(AssertionError):

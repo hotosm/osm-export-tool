@@ -66,7 +66,7 @@ class HDXExportSet(object):
         if self._datasets:
             return self._datasets
 
-        self._datasets = []
+        self._datasets = {}
         for theme in self._feature_selection.themes:
             dataset = Dataset()
             name = self._dataset_prefix + "_" + theme
@@ -84,7 +84,7 @@ class HDXExportSet(object):
             dataset['subnational'] = '1'
             for country_code in self._country_codes:
                 dataset.add_country_location(country_code)
-            self._datasets.append(dataset)
+            self._datasets[theme] = dataset
         return self._datasets
 
 
@@ -100,7 +100,7 @@ class HDXExportSet(object):
         )
 
     def sync_datasets(self):
-        for dataset in self.datasets:
+        for dataset in self.datasets.values():
             exists = Dataset.read_from_hdx(dataset['name'])
             if exists:
                 dataset.update_in_hdx()
@@ -109,35 +109,43 @@ class HDXExportSet(object):
 
     # will get to these later...
 
-    def zip_resources(self,stage_root):
-        stage_dir = stage_root + h.base_slug + '/'
-        sqlite = stage_dir + h.base_slug + ".sqlite"
+    def zip_resources(self,stage_root,job_name):
+        stage_dir = stage_root + job_name + '/'
+        sqlite = stage_dir + job_name + ".sqlite"
         for table in self._feature_selection.tables:
-            subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}{1}/{2}.shp {3} -lco ENCODING=UTF-8 -sql "select * from {2};"'.format(stage_root,self.base_slug,table,sqlite),shell=True,executable='/bin/bash')
+            subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}{1}/{2}.shp {3} -lco ENCODING=UTF-8 -sql "select * from {2};"'.format(stage_root,job_name,table,sqlite),shell=True,executable='/bin/bash')
             exts = ['.shp','.dbf','.prj','.shx','.cpg']
-            with zipfile.ZipFile(stage_dir + h.base_slug + "_" + table + ".zip",'w',zipfile.ZIP_DEFLATED) as z:
+            with zipfile.ZipFile(stage_dir + job_name + "_" + table + ".zip",'w',zipfile.ZIP_DEFLATED) as z:
                 for e in exts:
                     z.write(stage_dir + table + e,table + e)
             for e in exts:
                 os.remove(stage_dir + table + e)
 
-    def sync_resources(self):
-            resources = []
+    def sync_resources(self,stage_root,job_name):
+        resources = []
+        for theme, dataset in self.datasets.iteritems():
             for geom_type in self._feature_selection.geom_types(theme):
                 resource_name = theme + '_' + geom_type # DRY me up
                 resources.append({
                     'name': resource_name,
                     'format': 'zipped shapefile',  
-                    'url': '{0}/{1}.zip'.format(os.environ['HDX_TEST_BUCKET'],self._base_slug + '_' + resource_name),
-                    'description': "ESRI Shapefile of " + geom_type
+                    'description': "ESRI Shapefile of " + geom_type,
+                    'url': '{0}/{1}.zip'.format(os.environ['HDX_TEST_BUCKET'],job_name + '_' + resource_name)
                 })
-            dataset.add_update_resources(resources)
+                resources.append(resource)
+        dataset.add_update_resources(resources)
+
+    def run():
+        pass
 
 
 if __name__ == "__main__":
+    import logging
+    logging.basicConfig()
+    Configuration.create(hdx_site='prod',hdx_key=os.environ['HDX_API_KEY'])
     f_s = FeatureSelection(open('hdx_exports/example_preset.yml').read())
     extent = open('hdx_exports/adm0/GIN_adm0.geojson').read()
     h = HDXExportSet('hotosm_guinea','Guinea',extent,f_s,country_codes=['GIN'])
-    #h.zip_resources("../stage/")
-    #Configuration.create(hdx_site='prod',hdx_key=os.environ['HDX_API_KEY'])
+    #h.zip_resources("../stage/","hotosm_guinea")
+    #h.sync_resources("../stage/","hotosm_guinea")
     #h.sync_datasets()
