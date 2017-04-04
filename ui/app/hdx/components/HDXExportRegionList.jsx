@@ -73,7 +73,6 @@ class ExportRegionPanel extends Component {
 
     return (
       <Panel>
-        <pre>{JSON.stringify(region)}</pre>
         <Col lg={5}>
           <h4><Link to={`/edit/${region.id}`}>{region.name || 'Untitled'}</Link></h4>
           <DatasetList datasets={region.datasets} />
