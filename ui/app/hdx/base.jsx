@@ -3,10 +3,10 @@ import React from 'react';
 import createHistory from 'history/createHashHistory';
 import { Col, Row } from 'react-bootstrap';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
 import { Route } from 'react-router';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { Provider, intlReducer } from 'react-intl-redux';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
 
@@ -21,6 +21,7 @@ const history = createHistory();
 const store = createStore(
   combineReducers({
     ...reducers,
+    intl: intlReducer,
     router: routerReducer
   }),
   applyMiddleware(routerMiddleware(history), thunk, createLogger())

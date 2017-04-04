@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import calendar
+from datetime import timedelta
 import logging
 import uuid
 
@@ -251,6 +253,45 @@ class HDXExportRegion(models.Model):
     name = models.CharField(blank=True,max_length=100) # todo: change this to blank = False
     country_codes = ArrayField(models.CharField(blank=False,max_length=3),null=True)
     deleted = models.BooleanField(default=False)
+    last_run = models.DateTimeField(default=None, null=True)
+
+    @property
+    def next_run(self): # noqa
+        now = timezone.now().replace(minute=0, second=0, microsecond=0)
+
+        if self.schedule_period == '6hrs':
+            delta = 6 - (now.hour % 6)
+
+            return now + timedelta(hours=delta)
+
+        now = now.replace(hour=self.schedule_hour)
+
+        if self.schedule_period == 'daily':
+            anchor = now
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=1)
+
+        if self.schedule_period == 'weekly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=7)
+
+        if self.schedule_period == 'monthly':
+            (_, num_days) = calendar.monthrange(now.year, now.month)
+            anchor = now.replace(day=1)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=num_days)
+
 
     @property
     def hdx_dataset(self):

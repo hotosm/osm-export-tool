@@ -12,6 +12,13 @@ export function getExportRegions () {
     .then(rsp => {
       return rsp.data;
     }).then(exportRegions => {
+      return exportRegions.map(exportRegion => {
+        exportRegion.last_run = exportRegion.last_run != null ? Date.parse(exportRegion.last_run) : null;
+        exportRegion.next_run = exportRegion.next_run != null ? Date.parse(exportRegion.next_run) : null;
+
+        return exportRegion;
+      });
+    }).then(exportRegions => {
       dispatch({
         type: types.RECEIVED_EXPORT_REGIONS,
         exportRegions
@@ -35,6 +42,11 @@ export function getExportRegion (id) {
     return axios.get(`/api/hdx_export_regions/${id}`)
     .then(rsp => {
       return rsp.data;
+    }).then(exportRegion => {
+      exportRegion.last_run = exportRegion.last_run != null ? Date.parse(exportRegion.last_run) : null;
+      exportRegion.next_run = exportRegion.next_run != null ? Date.parse(exportRegion.next_run) : null;
+
+      return exportRegion;
     }).then(exportRegion => {
       dispatch({
         type: types.RECEIVED_EXPORT_REGION,

@@ -433,12 +433,13 @@ class JobSerializer(serializers.Serializer):
         """Return the username for the owner of this export."""
         return obj.user.username
 
-class HDXExportRegionSerializer(serializers.ModelSerializer):
-    class Meta:
+
+class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
+    class Meta: # noqa
         model = HDXExportRegion
         fields = ('id', 'dataset_prefix', 'feature_selection',
-                  'schedule_period', 'schedule_hour',
-                  'export_formats', 'the_geom', 'country_codes', 'name',)
+                  'schedule_period', 'schedule_hour', 'export_formats',
+                  'the_geom', 'country_codes', 'name', 'last_run', 'next_run',)
 
     def validate_feature_selection(self,value):
         f = FeatureSelection(value)
