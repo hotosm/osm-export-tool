@@ -437,7 +437,7 @@ class JobSerializer(serializers.Serializer):
 class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     class Meta: # noqa
         model = HDXExportRegion
-        fields = ('id', 'dataset_prefix', 'feature_selection',
+        fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats',
                   'the_geom', 'country_codes', 'name', 'last_run', 'next_run',)
 

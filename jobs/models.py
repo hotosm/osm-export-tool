@@ -292,6 +292,16 @@ class HDXExportRegion(models.Model):
 
             return anchor + timedelta(days=num_days)
 
+    @property
+    def datasets(self): # noqa
+        # TODO generate this from the feature selection
+        return (
+            '{}_admin_boundaries'.format(self.dataset_prefix),
+            '{}_buildings'.format(self.dataset_prefix),
+            '{}_points_of_interest'.format(self.dataset_prefix),
+            '{}_roads'.format(self.dataset_prefix),
+            '{}_waterways'.format(self.dataset_prefix)
+        )
 
     @property
     def hdx_dataset(self):

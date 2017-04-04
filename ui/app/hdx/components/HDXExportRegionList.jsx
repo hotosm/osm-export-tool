@@ -9,7 +9,7 @@ import { getExportRegions } from '../actions/hdxActions';
 
 function DatasetList (props) {
   const listItems = props.datasets.map((dataset, i) =>
-    <li key={i}><a target='_blank' href={`https://data.humdata.org/dataset/${dataset}`}>{dataset}</a></li>
+    <li key={i}><a target='_blank' href={`https://data.humdata.org/dataset/${dataset}`}><code>{dataset}</code></a></li>
   );
 
   return (
@@ -73,28 +73,19 @@ class ExportRegionPanel extends Component {
 
     return (
       <Panel>
+        <h4>
+          <Link to={`/edit/${region.id}`}>{region.name || 'Untitled'}</Link>
+        </h4>
         <Col lg={5}>
-          <h4><Link to={`/edit/${region.id}`}>{region.name || 'Untitled'}</Link></h4>
+          Last Run: <strong>{this.getLastRun(region)}</strong><br />
+          Next Run: <strong>{this.getNextRun(region)}</strong><br />
+          Schedule: <strong>{this.getSchedule(region)}</strong>
+        </Col>
+        <Col lg={7}>
           <DatasetList datasets={region.datasets} />
         </Col>
-        <Col lg={5}>
-          Last Run: {this.getLastRun(region)}<br />
-          Next Run: {this.getNextRun(region)}<br />
-          Schedule: {this.getSchedule(region)}
-        </Col>
-        <Col lg={1} md={2}>
-          <Button block title='Map'>
-            {/* TODO where does this go? */}
-            <i className='fa fa-globe' />
-          </Button>
-        </Col>
-        <Col lg={1} md={2}>
-          <Link className='btn btn-default btn-block' to={`/edit/${region.id}`} title='Settings'>
-            <i className='fa fa-cog' />
-          </Link>
-        </Col>
       </Panel>
-    )
+    );
   }
 }
 
@@ -102,25 +93,20 @@ class ExportRegionList extends Component {
   render () {
     const { regions } = this.props;
 
-    const listItems = regions.map((region, i) => {
-      region.datasets = [
-        `${region.dataset_prefix}_admin_boundaries`,
-        `${region.dataset_prefix}_buildings`,
-        `${region.dataset_prefix}_points_of_interest`,
-        `${region.dataset_prefix}_roads`,
-        `${region.dataset_prefix}_waterways`
-      ];
-
-      return (
-        <Row key={i}>
-          <ExportRegionPanel region={region} />
-        </Row>
-      );
-    });
+    if (regions == null || regions.length === 0) {
+      return null;
+    }
 
     return (
       <div>
-        {listItems}
+        <hr />
+        {regions.map((region, i) => {
+          return (
+            <Row key={i}>
+              <ExportRegionPanel region={region} />
+            </Row>
+          );
+        })}
       </div>
     );
   }
@@ -142,7 +128,6 @@ export class HDXExportRegionList extends Component {
         <Link to='/new' style={{float: 'right'}} className='btn btn-primary btn-lg'>
           Create New Export Region
         </Link>
-        <hr />
         <ExportRegionList regions={exportRegions} />
       </div>
     );
