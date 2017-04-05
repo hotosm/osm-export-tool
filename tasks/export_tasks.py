@@ -547,28 +547,3 @@ class ExportTaskErrorHandler(Task):
         run.finished_at = finished
         run.status = 'FAILED'
         run.save()
-        try:
-            if os.path.isdir(stage_dir):
-                # leave the stage_dir in place for debugging
-                # shutil.rmtree(stage_dir)
-                pass
-        except IOError:
-            logger.error(
-                'Error removing {0} during export finalize'.format(stage_dir))
-        hostname = settings.HOSTNAME
-        url = 'http://{0}/exports/{1}'.format(hostname, run.job.uid)
-        addr = run.user.email
-        subject = "Your HOT Export Failed"
-        # email user and administrator
-        to = [addr, settings.TASK_ERROR_EMAIL]
-        from_email = 'HOT Exports <exports@hotosm.org>'
-        ctx = {
-            'url': url,
-            'task_id': task_id
-        }
-        text = get_template('email/error_email.txt').render(ctx)
-        html = get_template('email/error_email.html').render(ctx)
-        msg = EmailMultiAlternatives(
-            subject, text, to=to, from_email=from_email)
-        msg.attach_alternative(html, "text/html")
-        msg.send()
