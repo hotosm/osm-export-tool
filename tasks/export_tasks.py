@@ -5,7 +5,6 @@ import cPickle
 import os
 import shutil
 
-from celery import Task
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -38,7 +37,7 @@ logger = get_task_logger(__name__)
 
 # ExportTask abstract base class and subclasses.
 
-class ExportTask(Task):
+class ExportTask(object):
     """
     Abstract base class for export tasks.
     """
@@ -49,7 +48,7 @@ class ExportTask(Task):
     class Meta:
         abstract = True
 
-    def on_success(self, retval, task_id, args, kwargs):
+    def on_success(self, retval, run_uid, name):
         """
         Update the successfuly completed task as follows:
 
@@ -64,10 +63,10 @@ class ExportTask(Task):
         from tasks.models import ExportTask, ExportTaskResult
         # update the task
         finished = timezone.now()
-        task = ExportTask.objects.get(celery_uid=task_id)
+        task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.finished_at = finished
         # get the output
-        output_url = retval['result']
+        output_url = retval
         stat = os.stat(output_url)
         size = stat.st_size / 1024 / 1024.00
         # construct the download_path
@@ -96,6 +95,7 @@ class ExportTask(Task):
         task.status = 'SUCCESS'
         task.save()
 
+    #TODO this is not used; should be changed to a global Celery exption handler
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """
         Update the failed task as follows:
@@ -134,19 +134,17 @@ class ExportTask(Task):
                              task_id=task_id, stage_dir=stage_dir).delay()
 
     def after_return(self, *args, **kwargs):
-        logger.debug('Task returned: {0}'.format(self.request))
+        #logger.debug('Task returned: {0}'.format(self.request))
+        pass
 
-    def update_task_state(self, run_uid=None, name=None):
+    def update_task_state(self, run_uid, name):
         """
         Update the task state and celery task uid.
         Can use the celery uid for diagnostics.
         """
         started = timezone.now()
         from tasks.models import ExportTask
-        celery_uid = self.request.id
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
-        celery_uid = self.request.id
-        task.celery_uid = celery_uid
         task.status = 'RUNNING'
         task.started_at = started
         task.save()
@@ -161,10 +159,10 @@ class OSMConfTask(ExportTask):
     abort_on_error = True
 
     def run(self, run_uid=None, categories=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         conf = osmconf.OSMConfig(categories, job_name=job_name)
         configfile = conf.create_osm_conf(stage_dir=stage_dir)
-        return {'result': configfile}
+        self.on_success(configfile,run_uid,self.name)
 
 
 class OverpassQueryTask(ExportTask):
@@ -178,7 +176,7 @@ class OverpassQueryTask(ExportTask):
         """
         Runs the query and returns the path to the filtered osm file.
         """
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         op = overpass.Overpass(
             bbox, stage_dir,job_name, filters=filters,
             url=settings.OVERPASS_API_URL,
@@ -187,7 +185,7 @@ class OverpassQueryTask(ExportTask):
         )
         op.run_query()  # run the query
         filtered_osm = op.filter()  # filter the results
-        return {'result': filtered_osm}
+        self.on_success(filtered_osm,run_uid,self.name)
 
 
 class OSMToPBFConvertTask(ExportTask):
@@ -199,12 +197,12 @@ class OSMToPBFConvertTask(ExportTask):
     abort_on_error = True
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         osm = '{0}.osm'.format(os.path.join(stage_dir, job_name))
         pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
         o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
         pbffile = o2p.convert()
-        return {'result': pbffile}
+        self.on_success(pbffile,run_uid,self.name)
 
 
 class OSMPrepSchemaTask(ExportTask):
@@ -215,23 +213,22 @@ class OSMPrepSchemaTask(ExportTask):
     abort_on_error = True
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         osm = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         osmconf = '{0}.ini'.format(os.path.join(stage_dir, job_name))
         osmparser = osmparse.OSMParser(osm=osm, gpkg=gpkg, osmconf=osmconf)
         osmparser.create_geopackage()
         osmparser.create_default_schema_gpkg()
-        osmparser.update_zindexes()
-        return {'result': gpkg}
+        #osmparser.update_zindexes()
+        self.on_success(gpkg,run_uid,self.name)
 
 
-@app.task(name="Create Styles", bind=True, base=ExportTask, abort_on_error=False)
 def osm_create_styles_task(self, result={}, run_uid=None, stage_dir=None, job_name=None, provider_slug=None, bbox=None):
     """
     Task to create styles for osm.
     """
-    self.update_task_state(result=result, run_uid=run_uid)
+    self.update_task_state(run_uid,self.name)
     input_gpkg = parse_result(result, 'geopackage')
 
     gpkg_file = '{0}-{1}-{2}.gpkg'.format(job_name,
@@ -250,10 +247,7 @@ def osm_create_styles_task(self, result={}, run_uid=None, stage_dir=None, job_na
                     :-3]),
             'bbox': bbox}))
 
-    return {
-        'result': style_file,
-        'geopackage': input_gpkg,
-    }
+    self.on_success(style_file,run_uid,self.name)
 
 
 class PbfExportTask(ExportTask):
@@ -261,15 +255,15 @@ class PbfExportTask(ExportTask):
     Convert unfiltered Overpass output to PBF.
     Returns the path to the PBF file.
     """
-    name = 'PBF Export'
+    name = 'PBF Format'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         osm = os.path.join(stage_dir, 'query.osm')
         pbffile = '{0}-full.pbf'.format(os.path.join(stage_dir, job_name))
         o2p = pbf.OSMToPBF(osm=osm, pbffile=pbffile)
         pbffile = o2p.convert()
-        return {'result': pbffile}
+        self.on_success(pbffile,run_uid,self.name)
 
 
 class ThematicGeoPackageExportTask(ExportTask):
@@ -277,11 +271,11 @@ class ThematicGeoPackageExportTask(ExportTask):
     Task to export thematic GeoPackage.
     """
 
-    name = "Thematic GPKG Export"
+    name = "GeoPackage Format (Thematic)"
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
@@ -289,7 +283,7 @@ class ThematicGeoPackageExportTask(ExportTask):
             gpkg=gpkg, tags=tags, job_name=job_name)
         t2s.generate_thematic_schema()
         out = t2s.convert()
-        return {'result': out}
+        self.on_success(out,run_uid,self.name)
 
 
 class ThematicLayersExportTask(ExportTask):
@@ -297,11 +291,11 @@ class ThematicLayersExportTask(ExportTask):
     Task to export thematic shapefile.
     """
 
-    name = "Thematic Shapefile Export"
+    name = "ESRI Shapefile Format (Thematic)"
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
@@ -309,20 +303,20 @@ class ThematicLayersExportTask(ExportTask):
             gpkg=gpkg, tags=tags, job_name=job_name)
         t2s.generate_thematic_schema()
         out = t2s.convert()
-        return {'result': out}
+        self.on_success(out,run_uid,self.name)
 
 
 class ShpExportTask(ExportTask):
     """
     Class defining SHP export function.
     """
-    name = 'Default Shapefile Export'
+    name = 'ESRI Shapefile Format'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         out = shp.GPKGToShp(gpkg=gpkg).convert()
-        return {'result': out}
+        self.on_success(out,run_uid,self.name)
 
 
 class KmlExportTask(ExportTask):
@@ -332,22 +326,22 @@ class KmlExportTask(ExportTask):
     name = 'KML Export'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         kmlfile = '{0}.kml'.format(os.path.join(stage_dir, job_name))
         s2k = kml.GPKGToKml(gpkg=gpkg, kmlfile=kmlfile)
         out = s2k.convert()
-        return {'result': out}
+        self.on_success(out,run_uid,self.name)
 
 
 class ObfExportTask(ExportTask):
     """
     Class defining OBF export function.
     """
-    name = 'OBF Export'
+    name = 'OBF Format'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
         map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
         work_dir = os.path.join(stage_dir, 'osmand')
@@ -358,7 +352,7 @@ class ObfExportTask(ExportTask):
         obffile = '{0}.obf'.format(os.path.join(stage_dir, job_name))
         shutil.move(out, obffile)
         shutil.rmtree(work_dir)
-        return {'result': obffile}
+        self.on_success(obffile,run_uid,self.name)
 
 
 class SqliteExportTask(ExportTask):
@@ -366,13 +360,13 @@ class SqliteExportTask(ExportTask):
     Class defining SQLITE export function.
     """
 
-    name = 'SQLITE Export'
+    name = 'SQLite Format'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         # sqlite already generated by OSMPrepSchema so just return path.
         sqlite = '{0}.sqlite'.format(os.path.join(stage_dir, job_name))
-        return {'result': sqlite}
+        self.on_success(sqlite,run_uid,self.name)
 
 
 class GeoPackageExportTask(ExportTask):
@@ -380,13 +374,13 @@ class GeoPackageExportTask(ExportTask):
     Class defining GeoPackage export function.
     """
 
-    name = 'GPKG Export'
+    name = 'GeoPackage Format (OSM)'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         # gpkg already generated by OSMPrepSchema so just return path.
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
-        return {'result': gpkg}
+        self.on_success(gpkg,run_uid,self.name)
 
 
 class GarminExportTask(ExportTask):
@@ -394,10 +388,10 @@ class GarminExportTask(ExportTask):
     Class defining GARMIN export function.
     """
 
-    name = 'Garmin Export'
+    name = 'Garmin Map Format'
 
     def run(self, run_uid=None, stage_dir=None, job_name=None):
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         work_dir = os.path.join(stage_dir, 'garmin')
         config = settings.GARMIN_CONFIG  # get path to garmin config
         pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
@@ -410,7 +404,7 @@ class GarminExportTask(ExportTask):
         imgfile = '{0}_garmin.zip'.format(os.path.join(stage_dir, job_name))
         shutil.move(out, imgfile)
         shutil.rmtree(work_dir)
-        return {'result': imgfile}
+        self.on_success(imgfile,run_uid,self.name)
 
 
 class GeneratePresetTask(ExportTask):
@@ -423,7 +417,7 @@ class GeneratePresetTask(ExportTask):
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         from tasks.models import ExportRun
         from jobs.models import ExportConfig
-        self.update_task_state(run_uid=run_uid, name=self.name)
+        self.update_task_state(run_uid,self.name)
         run = ExportRun.objects.get(uid=run_uid)
         job = run.job
         user = job.user
@@ -448,10 +442,10 @@ class GeneratePresetTask(ExportTask):
             output_path = config.upload.path
             job.config = config
             job.save()
-            return {'result': output_path}
+            self.on_success(output_path,run_uid,self.name)
 
 
-class FinalizeRunTask(Task):
+class FinalizeRunTask(object):
     """
     Finalizes export run.
 
@@ -463,6 +457,7 @@ class FinalizeRunTask(Task):
     name = 'Finalize Export Run'
 
     def run(self, run_uid=None, stage_dir=None):
+        logger.debug('Finalizing {0}'.format(run_uid))
         from tasks.models import ExportRun
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'COMPLETED'
@@ -497,19 +492,3 @@ class FinalizeRunTask(Task):
             subject, text, to=to, from_email=from_email)
         msg.attach_alternative(html, "text/html")
         msg.send()
-
-
-class ExportTaskErrorHandler(Task):
-    """
-    Handles un-recoverable errors in export tasks.
-    """
-
-    name = "Export Task Error Handler"
-
-    def run(self, run_uid, task_id=None, stage_dir=None):
-        from tasks.models import ExportRun
-        finished = timezone.now()
-        run = ExportRun.objects.get(uid=run_uid)
-        run.finished_at = finished
-        run.status = 'FAILED'
-        run.save()

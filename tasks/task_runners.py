@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.db import DatabaseError
 
-from celery import chain, chord, group
+from celery import shared_task
 
 from jobs.models import Job
 from tasks.models import ExportRun, ExportTask
@@ -44,7 +44,7 @@ class ExportTaskRunner(object):
         LOG.debug('Running Job with id: {0}'.format(job_uid))
         # pull the job from the database
         job = Job.objects.get(uid=job_uid)
-        job_name = self.normalize_job_name(job.name)
+        job_name = normalize_job_name(job.name)
 
         # build a list of celery tasks based on the export formats..
         export_tasks = [settings.EXPORT_FORMATS[format] for format in job.export_formats]
@@ -58,14 +58,6 @@ class ExportTaskRunner(object):
         run.save()
         run_uid = str(run.uid)
         LOG.debug('Saved run with id: {0}'.format(run_uid))
-
-        # setup the staging directory
-        stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
-        os.makedirs(stage_dir, 6600)
-
-        # pull out the tags to create the conf file
-        categories = job.categorised_tags  # dict of points/lines/polygons
-        bbox = job.overpass_extents  # extents of job in order required by overpass
 
         """
         Set up the initial tasks:
@@ -91,7 +83,6 @@ class ExportTaskRunner(object):
             LOG.debug('Saved task: {0}'.format(export_task['name']))
         # check if we need to generate a preset file from Job feature selections
         if job.feature_save or job.feature_pub:
-            # run GeneratePresetTask
             preset_task = GeneratePresetTask()
             ExportTask.objects.create(run=run,
                                           status='PENDING', name=preset_task.name)
@@ -99,44 +90,49 @@ class ExportTaskRunner(object):
             # add to export tasks
             export_tasks.append(preset_task)
 
-        """
-        Create a celery chain which runs the initial conf and query tasks (initial_tasks),
-        followed by a chain of pbfconvert and prep_schema (schema_tasks).
-        The export format tasks (format_tasks) are then run in parallel, followed
-        by the finalize_task at the end to clean up staging dirs, update run status, email user etc..
-        """
-        initial_tasks = chain(
-                conf.si(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name) |
-                query.si(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid, filters=job.filters)
-        )
+        run_task_remote.delay(run_uid)
 
-        schema_tasks = chain(
-                pbfconvert.si(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid) |
-                prep_schema.si(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid)
-        )
 
-        format_tasks = group(
-            task['task'].si(run_uid=run_uid, stage_dir=stage_dir, job_name=job_name) for task in export_tasks
-        )
 
-        finalize_task = FinalizeRunTask()
+def normalize_job_name(name):
+    # Remove all non-word characters
+    s = re.sub(r"[^\w\s]", '', name)
+    # Replace all whitespace with a single underscore
+    s = re.sub(r"\s+", '_', s)
+    return s.lower()
 
-        """
-        If header tasks fail, errors will not propagate to the finalize_task.
-        This means that the finalize_task will always be called, and will update the
-        overall run status.
-        """
-        chain(
-                chain(initial_tasks, schema_tasks),
-                chord(header=format_tasks,
-                    body=finalize_task.si(stage_dir=stage_dir, run_uid=run_uid))
-        ).apply_async()
 
-        return run
+@shared_task
+def run_task_remote(run_uid):
+    run = ExportRun.objects.get(uid=run_uid)
+    LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
+    job = run.job
+    job_name = normalize_job_name(job.name)
+    export_tasks = [settings.EXPORT_FORMATS[format] for format in job.export_formats]
 
-    def normalize_job_name(self, name):
-        # Remove all non-word characters
-        s = re.sub(r"[^\w\s]", '', name)
-        # Replace all whitespace with a single underscore
-        s = re.sub(r"\s+", '_', s)
-        return s.lower()
+    conf = OSMConfTask()
+    query = OverpassQueryTask()
+    pbfconvert = OSMToPBFConvertTask()
+    prep_schema = OSMPrepSchemaTask()
+
+    # setup the staging directory
+    stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
+    os.makedirs(stage_dir, 6600)
+
+    # pull out the tags to create the conf file
+    categories = job.categorised_tags  # dict of points/lines/polygons
+    bbox = job.overpass_extents  # extents of job in order required by overpass
+
+    conf.run(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name)
+    query.run(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid, filters=job.filters)
+
+    pbfconvert.run(stage_dir=stage_dir,job_name=job_name,run_uid=run_uid)
+    prep_schema.run(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid)
+
+    for task in export_tasks:
+        task['task']().run(run_uid=run_uid, stage_dir=stage_dir, job_name=job_name)
+
+    # TODO this should run in the case of an exception
+    finalize_task = FinalizeRunTask().run(run_uid=run_uid,stage_dir=stage_dir)
+
+    return run
