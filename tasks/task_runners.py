@@ -26,19 +26,7 @@ from .export_tasks import (
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
-
-class TaskRunner(object):
-    """
-    Abstract base class for running tasks
-    """
-    class Meta:
-        abstract = True
-
-    def run_task(self, *args, **kwargs):
-        raise NotImplementedError('Override in subclass.')
-
-
-class ExportTaskRunner(TaskRunner):
+class ExportTaskRunner(object):
     """
     Runs HOT Export Tasks
     """

@@ -77,15 +77,11 @@ class ExportTask(Task):
         run_uid = parts[-2]
         run_dir = os.path.join(download_root, run_uid)
         download_path = os.path.join(download_root, run_uid, filename)
-        try:
-            if not os.path.exists(run_dir):
-                os.makedirs(run_dir)
-            # don't copy raw overpass data
-            if (task.name != 'OverpassQuery'):
-                shutil.copy(output_url, download_path)
-        except IOError:
-            logger.error(
-                'Error copying output file to: {0}'.format(download_path))
+        if not os.path.exists(run_dir):
+            os.makedirs(run_dir)
+        # don't copy raw overpass data
+        if (task.name != 'OverpassQuery'):
+            shutil.copy(output_url, download_path)
         # construct the download url
         download_media_root = settings.EXPORT_MEDIA_ROOT
         download_url = os.path.join(download_media_root, run_uid, filename)
@@ -148,19 +144,13 @@ class ExportTask(Task):
         started = timezone.now()
         from tasks.models import ExportTask
         celery_uid = self.request.id
-        try:
-            task = ExportTask.objects.get(run__uid=run_uid, name=name)
-            celery_uid = self.request.id
-            task.celery_uid = celery_uid
-            task.status = 'RUNNING'
-            task.started_at = started
-            task.save()
-            logger.debug('Updated task: {0} with uid: {1}'.format(
-                task.name, task.uid))
-        except DatabaseError as e:
-            logger.error(
-                'Updating task {0} state throws: {1}'.format(task.name, e))
-            raise e
+        task = ExportTask.objects.get(run__uid=run_uid, name=name)
+        celery_uid = self.request.id
+        task.celery_uid = celery_uid
+        task.status = 'RUNNING'
+        task.started_at = started
+        task.save()
+        logger.debug('Updated task: {0} with uid: {1}'.format(task.name, task.uid))
 
 
 class OSMConfTask(ExportTask):
@@ -295,15 +285,11 @@ class ThematicGeoPackageExportTask(ExportTask):
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
-        try:
-            t2s = thematic_gpkg.GPKGToThematicGPKG(
-                gpkg=gpkg, tags=tags, job_name=job_name)
-            t2s.generate_thematic_schema()
-            out = t2s.convert()
-            return {'result': out}
-        except Exception as e:
-            logger.error('Raised exception in thematic task, %s', str(e))
-            raise Exception(e)  # hand off to celery..
+        t2s = thematic_gpkg.GPKGToThematicGPKG(
+            gpkg=gpkg, tags=tags, job_name=job_name)
+        t2s.generate_thematic_schema()
+        out = t2s.convert()
+        return {'result': out}
 
 
 class ThematicLayersExportTask(ExportTask):
@@ -319,15 +305,11 @@ class ThematicLayersExportTask(ExportTask):
         run = ExportRun.objects.get(uid=run_uid)
         tags = run.job.categorised_tags
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
-        try:
-            t2s = thematic_shp.ThematicGPKGToShp(
-                gpkg=gpkg, tags=tags, job_name=job_name)
-            t2s.generate_thematic_schema()
-            out = t2s.convert()
-            return {'result': out}
-        except Exception as e:
-            logger.error('Raised exception in thematic task, %s', str(e))
-            raise Exception(e)  # hand off to celery..
+        t2s = thematic_shp.ThematicGPKGToShp(
+            gpkg=gpkg, tags=tags, job_name=job_name)
+        t2s.generate_thematic_schema()
+        out = t2s.convert()
+        return {'result': out}
 
 
 class ShpExportTask(ExportTask):
@@ -339,12 +321,8 @@ class ShpExportTask(ExportTask):
     def run(self, run_uid=None, stage_dir=None, job_name=None):
         self.update_task_state(run_uid=run_uid, name=self.name)
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
-        try:
-            out = shp.GPKGToShp(gpkg=gpkg).convert()
-            return {'result': out}
-        except Exception as e:
-            logger.error('Raised exception in shapefile export, %s', str(e))
-            raise Exception(e)
+        out = shp.GPKGToShp(gpkg=gpkg).convert()
+        return {'result': out}
 
 
 class KmlExportTask(ExportTask):
@@ -357,13 +335,9 @@ class KmlExportTask(ExportTask):
         self.update_task_state(run_uid=run_uid, name=self.name)
         gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
         kmlfile = '{0}.kml'.format(os.path.join(stage_dir, job_name))
-        try:
-            s2k = kml.GPKGToKml(gpkg=gpkg, kmlfile=kmlfile)
-            out = s2k.convert()
-            return {'result': out}
-        except Exception as e:
-            logger.error('Raised exception in kml export, %s', str(e))
-            raise Exception(e)
+        s2k = kml.GPKGToKml(gpkg=gpkg, kmlfile=kmlfile)
+        out = s2k.convert()
+        return {'result': out}
 
 
 class ObfExportTask(ExportTask):
@@ -377,18 +351,14 @@ class ObfExportTask(ExportTask):
         pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
         map_creator_dir = settings.OSMAND_MAP_CREATOR_DIR
         work_dir = os.path.join(stage_dir, 'osmand')
-        try:
-            o2o = osmand.OSMToOBF(
-                pbffile=pbffile, work_dir=work_dir, map_creator_dir=map_creator_dir
-            )
-            out = o2o.convert()
-            obffile = '{0}.obf'.format(os.path.join(stage_dir, job_name))
-            shutil.move(out, obffile)
-            shutil.rmtree(work_dir)
-            return {'result': obffile}
-        except Exception as e:
-            logger.error('Raised exception in obf export, %s', str(e))
-            raise Exception(e)
+        o2o = osmand.OSMToOBF(
+            pbffile=pbffile, work_dir=work_dir, map_creator_dir=map_creator_dir
+        )
+        out = o2o.convert()
+        obffile = '{0}.obf'.format(os.path.join(stage_dir, job_name))
+        shutil.move(out, obffile)
+        shutil.rmtree(work_dir)
+        return {'result': obffile}
 
 
 class SqliteExportTask(ExportTask):
@@ -431,20 +401,16 @@ class GarminExportTask(ExportTask):
         work_dir = os.path.join(stage_dir, 'garmin')
         config = settings.GARMIN_CONFIG  # get path to garmin config
         pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
-        try:
-            o2i = garmin.OSMToIMG(
-                pbffile=pbffile, work_dir=work_dir,
-                config=config, debug=False
-            )
-            o2i.run_splitter()
-            out = o2i.run_mkgmap()
-            imgfile = '{0}_garmin.zip'.format(os.path.join(stage_dir, job_name))
-            shutil.move(out, imgfile)
-            shutil.rmtree(work_dir)
-            return {'result': imgfile}
-        except Exception as e:
-            logger.error('Raised exception in garmin export, %s', str(e))
-            raise Exception(e)
+        o2i = garmin.OSMToIMG(
+            pbffile=pbffile, work_dir=work_dir,
+            config=config, debug=False
+        )
+        o2i.run_splitter()
+        out = o2i.run_mkgmap()
+        imgfile = '{0}_garmin.zip'.format(os.path.join(stage_dir, job_name))
+        shutil.move(out, imgfile)
+        shutil.rmtree(work_dir)
+        return {'result': imgfile}
 
 
 class GeneratePresetTask(ExportTask):
