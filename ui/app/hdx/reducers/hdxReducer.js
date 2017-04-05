@@ -49,6 +49,12 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         error
       };
 
+    case types.ZOOM_TO_EXPORT_REGION:
+      return {
+        ...state,
+        selectedExportRegion: id
+      };
+
     default:
       return state;
   }

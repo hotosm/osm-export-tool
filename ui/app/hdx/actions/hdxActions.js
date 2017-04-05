@@ -16,6 +16,8 @@ export function getExportRegions () {
         exportRegion.last_run = exportRegion.last_run != null ? Date.parse(exportRegion.last_run) : null;
         exportRegion.next_run = exportRegion.next_run != null ? Date.parse(exportRegion.next_run) : null;
 
+        exportRegion.the_geom.id = exportRegion.id;
+
         return exportRegion;
       });
     }).then(exportRegions => {
@@ -46,6 +48,8 @@ export function getExportRegion (id) {
       exportRegion.last_run = exportRegion.last_run != null ? Date.parse(exportRegion.last_run) : null;
       exportRegion.next_run = exportRegion.next_run != null ? Date.parse(exportRegion.next_run) : null;
 
+      exportRegion.the_geom.id = exportRegion.id;
+
       return exportRegion;
     }).then(exportRegion => {
       dispatch({
@@ -59,6 +63,15 @@ export function getExportRegion (id) {
         id,
         error
       });
+    });
+  };
+}
+
+export function zoomToExportRegion (id) {
+  return dispatch => {
+    dispatch({
+      type: types.ZOOM_TO_EXPORT_REGION,
+      id
     });
   };
 }
