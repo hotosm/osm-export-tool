@@ -82,14 +82,19 @@ export function runExport (id) {
   };
 }
 
-export function deleteExportRegion (id) {
+export function deleteExportRegion (id, csrfToken) {
   return dispatch => {
     dispatch({
       type: types.STARTING_EXPORT_REGION_DELETE,
       id
     });
-
-    return axios.delete(`/api/hdx_export_regions/${id}`)
+    return axios({
+      url:`/api/hdx_export_regions/${id}`,
+      method: 'DELETE',
+      headers: {
+        'X-CSRFToken': csrfToken
+      }
+    })
     .then(rsp => dispatch({
       type: types.EXPORT_REGION_DELETED,
       id

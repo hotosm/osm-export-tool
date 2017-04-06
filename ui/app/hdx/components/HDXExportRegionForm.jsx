@@ -384,7 +384,7 @@ const flatten = arr => arr.reduce(
 const mapDispatchToProps = dispatch => {
   return {
     getExportRegion: id => dispatch(getExportRegion(id)),
-    handleDelete: id => dispatch(deleteExportRegion(id)),
+    handleDelete: id => dispatch(deleteExportRegion(id,cookie.load('csrftoken'))),
     handleRun: id => dispatch(runExport(id)),
     showAllExportRegions: () => dispatch(push('/')),
     updateAOI: geometry => {
