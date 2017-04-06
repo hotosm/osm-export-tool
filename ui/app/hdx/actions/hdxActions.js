@@ -9,7 +9,7 @@ const launderExportRegion = (exportRegion) => {
   exportRegion.the_geom.id = exportRegion.id;
 
   return exportRegion;
-}
+};
 
 export function getExportRegions () {
   return dispatch => {
@@ -44,9 +44,8 @@ export function getExportRegion (id) {
     });
 
     return axios.get(`/api/hdx_export_regions/${id}`)
-    .then(rsp => {
-      return rsp.data;
-    }).then(launderExportRegion)
+    .then(rsp => rsp.data)
+    .then(launderExportRegion)
     .then(exportRegion => {
       dispatch({
         type: types.RECEIVED_EXPORT_REGION,
@@ -63,11 +62,49 @@ export function getExportRegion (id) {
   };
 }
 
-export function zoomToExportRegion (id) {
+export function runExport (id) {
   return dispatch => {
     dispatch({
-      type: types.ZOOM_TO_EXPORT_REGION,
+      type: types.STARTING_EXPORT_REGION_RUN,
       id
     });
+
+    return axios.post(`/api/hdx_export_regions/${id}/run`)
+    .then(rsp => dispatch({
+      types: types.EXPORT_REGION_RUN_STARTED,
+      id
+    }))
+    .catch(error => dispatch({
+      type: types.EXPORT_REGION_RUN_ERROR,
+      id,
+      error
+    }));
   };
+}
+
+export function deleteExportRegion (id) {
+  return dispatch => {
+    dispatch({
+      type: types.STARTING_EXPORT_REGION_DELETE,
+      id
+    });
+
+    return axios.delete(`/api/hdx_export_regions/${id}`)
+    .then(rsp => dispatch({
+      type: types.EXPORT_REGION_DELETED,
+      id
+    }))
+    .catch(error => dispatch({
+      type: types.DELETE_EXPORT_REGION_ERROR,
+      id,
+      error
+    }));
+  };
+}
+
+export function zoomToExportRegion (id) {
+  return dispatch => dispatch({
+    type: types.ZOOM_TO_EXPORT_REGION,
+    id
+  });
 }

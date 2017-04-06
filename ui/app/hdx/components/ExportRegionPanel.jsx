@@ -68,10 +68,10 @@ class ExportRegionPanel extends Component {
     }
   }
 
-  render () {
-    const { region, selectRegion } = this.props;
+  selectRegion = () => this.props.selectRegion(this.props.region.id);
 
-    const _selectRegion = selectRegion.bind(null, region.id);
+  render () {
+    const { region } = this.props;
 
     return (
       <Panel>
@@ -80,7 +80,7 @@ class ExportRegionPanel extends Component {
           <Link className='btn btn-default pull-right' to={`/edit/${region.id}`} title='Settings'>
             <i className='fa fa-cog' />
           </Link>
-          <Button title='Show on map' className='pull-right' onClick={_selectRegion}>
+          <Button title='Show on map' className='pull-right' onClick={this.selectRegion}>
             <i className='fa fa-globe' />
           </Button>
         </h4>

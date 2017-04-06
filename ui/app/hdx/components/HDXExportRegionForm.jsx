@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
 
 import { updateAoiInfo } from '../actions/exportsActions';
-import { getExportRegion } from '../actions/hdxActions';
+import { deleteExportRegion, getExportRegion, runExport } from '../actions/hdxActions';
 import styles from '../styles/HDXExportRegionForm.css';
 
 const AVAILABLE_EXPORT_FORMATS = {
@@ -199,6 +199,10 @@ export class HDXExportRegionForm extends Component {
 
       console.log(exportRegion);
     }
+
+    if (props.hdx.deleted) {
+      this.props.showAllExportRegions();
+    }
   }
 
   getRunRows () {
@@ -219,6 +223,10 @@ export class HDXExportRegionForm extends Component {
     ));
   }
 
+  handleDelete = () => this.props.handleDelete(this.props.hdx.exportRegion.id);
+
+  handleRun = () => this.props.handleRun(this.props.hdx.exportRegion.id);
+
   render () {
     const { editing } = this.state;
     const { error, handleSubmit, hdx: { exportRegion }, submitting } = this.props;
@@ -233,7 +241,8 @@ export class HDXExportRegionForm extends Component {
         </ol>
         <form onSubmit={handleSubmit}>
           <h2>{editing ? 'Edit' : 'Create'} Export Region</h2>
-          {error && <strong className={styles.error}>{error}</strong>}
+          {error && <p><strong className={styles.error}>{error}</strong></p>}
+          {this.props.hdx.error && <p><strong className={styles.error}>{this.props.hdx.status}</strong></p>}
           <Field
             name='name'
             type='text'
@@ -314,7 +323,7 @@ export class HDXExportRegionForm extends Component {
         {editing && exportRegion &&
           <div>
             <Panel>
-              <Button bsStyle='primary' style={{float: 'right'}}>
+              <Button bsStyle='primary' style={{float: 'right'}} onClick={this.handleRun}>
                 Run Now
               </Button>
               <strong>Last run:</strong> {this.getLastRun()}<br />
@@ -345,7 +354,7 @@ export class HDXExportRegionForm extends Component {
                 This will unschedule the export region.
                 Any existing datasets created by this region will remain on HDX.
               </p>
-              <Button bsStyle='danger' block>
+              <Button bsStyle='danger' block onClick={this.handleDelete}>
                 Remove Export Region
               </Button>
             </Panel>
@@ -375,6 +384,9 @@ const flatten = arr => arr.reduce(
 const mapDispatchToProps = dispatch => {
   return {
     getExportRegion: id => dispatch(getExportRegion(id)),
+    handleDelete: id => dispatch(deleteExportRegion(id)),
+    handleRun: id => dispatch(runExport(id)),
+    showAllExportRegions: () => dispatch(push('/')),
     updateAOI: geometry => {
       const envelope = new jsts.io.GeoJSONReader().read(geometry).getEnvelope().getCoordinates();
 

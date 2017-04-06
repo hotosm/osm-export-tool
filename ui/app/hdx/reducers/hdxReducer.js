@@ -9,7 +9,8 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: true,
         fetched: false,
         exportRegion: null,
-        error: null
+        error: null,
+        status: `Fetching export region ${id}...`
       };
 
     case types.FETCHING_EXPORT_REGIONS:
@@ -18,7 +19,8 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: true,
         fetched: false,
         exportRegions: [],
-        error: null
+        error: null,
+        status: 'Fetching export regions...'
       };
 
     case types.RECEIVED_EXPORT_REGION:
@@ -27,7 +29,8 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: false,
         fetched: true,
         exportRegion,
-        error: null
+        error: null,
+        status: `Export region ${id} loaded.`
       };
 
     case types.RECEIVED_EXPORT_REGIONS:
@@ -36,7 +39,8 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: false,
         fetched: true,
         exportRegions,
-        error: null
+        error: null,
+        status: `Export regions loaded.`
       };
 
     case types.FETCH_EXPORT_REGIONS_ERROR:
@@ -45,6 +49,51 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: false,
         fetched: false,
         exportRegions: [],
+        status: `Fetching export regions failed: ${error.message}`,
+        id,
+        error
+      };
+
+    case types.STARTING_EXPORT_REGION_RUN:
+      return {
+        ...state,
+        status: 'Starting export region run...',
+        id
+      };
+
+    case types.EXPORT_REGION_RUN_STARTED:
+      return {
+        ...state,
+        status: 'Export region run started.',
+        id
+      };
+
+    case types.EXPORT_REGION_RUN_ERROR:
+      return {
+        ...state,
+        status: `Export region run failed: ${error.message}`,
+        id,
+        error
+      };
+
+    case types.STARTING_EXPORT_REGION_DELETE:
+      return {
+        ...state,
+        status: 'Starting to delete export region...',
+        id
+      };
+
+    case types.EXPORT_REGION_DELETED:
+      return {
+        ...state,
+        status: 'Export region deleted.',
+        id
+      };
+
+    case types.DELETE_EXPORT_REGION_ERROR:
+      return {
+        ...state,
+        status: `Export region deletion failed: ${error.message}`,
         id,
         error
       };
