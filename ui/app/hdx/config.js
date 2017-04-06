@@ -10,6 +10,7 @@ export const Config = {
     JOBS_URL : '/api/jobs',
     RUNS_URL : '/api/runs',
     RERUN_URL : '/api/rerun?job_uid=',
+    EXPORT_FORMATS_URL : '/api/formats.json',
     PROVIDERS_URL : '/api/providers.json',
     CONFIGURATION_URL : '/api/configurations',
     HDM_TAGS_URL : '/api/hdm-data-model?format=json',

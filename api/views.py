@@ -324,16 +324,16 @@ class ExportFormatViewSet(viewsets.ViewSet):
     def list(self, request, format=None):
         return Response([{
             'slug': slug,
-            'name': settings.EXPORT_FORMATS[slug]['name'],
-            'description': settings.EXPORT_FORMATS[slug]['description'],
+            'name': slug,
+            'description': FORMAT_NAMES[slug].description,
             'url': reverse('api:formats-detail', args=[slug], request=request),
-        } for slug in settings.EXPORT_FORMATS.keys() if not settings.EXPORT_FORMATS[slug].get('disabled', False)])
+        } for slug in FORMAT_NAMES.keys() if not FORMAT_NAMES[slug].disabled])
 
     def retrieve(self, request, pk=None, format=None):
         return Response({
             'slug': pk,
-            'name': settings.EXPORT_FORMATS[pk]['name'],
-            'description': settings.EXPORT_FORMATS[pk]['description'],
+            'name': FORMAT_NAMES[pk].name,
+            'description': FORMAT_NAMES[pk].description,
             'url': reverse('api:formats-detail', args=[pk], request=request),
         })
 
