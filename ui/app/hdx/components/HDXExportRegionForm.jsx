@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 const jsts = require('jsts');
+import prettyBytes from 'pretty-bytes';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
 import cookie from 'react-cookie';
-import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import { Field, SubmissionError, formValueSelector, reduxForm } from 'redux-form';
+import { FormattedDate, FormattedNumber, FormattedRelative, IntlMixin } from 'react-intl';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { push } from 'react-router-redux';
 
 import { updateAoiInfo } from '../actions/exportsActions';
 import { getExportRegion } from '../actions/hdxActions';
@@ -139,9 +142,31 @@ const getFormatCheckboxes = () =>
     />);
 
 export class HDXExportRegionForm extends Component {
+  mixins = [IntlMixin];
+
   state = {
     editing: false
   };
+
+  getLastRun () {
+    const { hdx: { exportRegion } } = this.props;
+
+    if (exportRegion.last_run == null) {
+      return 'Never';
+    }
+
+    return <FormattedRelative value={exportRegion.last_run} />;
+  }
+
+  getNextRun () {
+    const { hdx: { exportRegion } } = this.props;
+
+    if (exportRegion.next_run == null) {
+      return 'Never';
+    }
+
+    return <FormattedRelative value={exportRegion.next_run} />;
+  }
 
   componentDidMount () {
     const { getExportRegion, match: { params: { id } } } = this.props;
@@ -176,14 +201,36 @@ export class HDXExportRegionForm extends Component {
     }
   }
 
+  getRunRows () {
+    const { hdx: { exportRegion } } = this.props;
+
+    return exportRegion.runs.map((run, i) => (
+      <tr key={i}>
+        <td>
+          <FormattedDate value={run.run_at} />
+        </td>
+        <td>
+          <FormattedNumber value={run.elapsed_time / 60} /> minutes
+        </td>
+        <td>
+          {prettyBytes(run.size)}
+        </td>
+      </tr>
+    ));
+  }
+
   render () {
     const { editing } = this.state;
-    const { error, handleSubmit, submitting } = this.props;
-    let datasetPrefix = this.props.datasetPrefix || '<prefix>';
+    const { error, handleSubmit, hdx: { exportRegion }, submitting } = this.props;
+    const datasetPrefix = this.props.datasetPrefix || '<prefix>';
+    const name = this.props.name || 'Untitled';
 
     return (
       <div className={styles.hdxForm}>
-        {/* TODO breadcrumbs back to Export Region List */}
+        <ol className='breadcrumb'>
+          <li><Link to='/'>Export Regions</Link></li>
+          <li className='active'>{name}</li>
+        </ol>
         <form onSubmit={handleSubmit}>
           <h2>{editing ? 'Edit' : 'Create'} Export Region</h2>
           {error && <strong className={styles.error}>{error}</strong>}
@@ -250,6 +297,7 @@ export class HDXExportRegionForm extends Component {
               <Panel>
                 This will immediately create 5 datasets on HDX:
                 <ul>
+                  {/* TODO these need to be generated from the feature selection */}
                   <li><code>{datasetPrefix}_admin_boundaries</code></li>
                   <li><code>{datasetPrefix}_buildings</code></li>
                   <li><code>{datasetPrefix}_points_of_interest</code></li>
@@ -263,43 +311,35 @@ export class HDXExportRegionForm extends Component {
             </Col>
           </Row>
         </form>
-        {editing &&
+        {editing && exportRegion &&
           <div>
             <Panel>
-              <strong>Next scheduled run:</strong> 2017/03/30 0:00 UTC
               <Button bsStyle='primary' style={{float: 'right'}}>
                 Run Now
               </Button>
+              <strong>Last run:</strong> {this.getLastRun()}<br />
+              <strong>Next scheduled run:</strong> {this.getNextRun()}
             </Panel>
             <h3>Run History</h3>
-            <Table>
-              <thead>
-                <tr>
-                  <th>
-                    Run Started
-                  </th>
-                  <th>
-                    Elapsed Time
-                  </th>
-                  <th>
-                    Total Size
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    2017/03/26
-                  </td>
-                  <td>
-                    10 minutes
-                  </td>
-                  <td>
-                    256 MB
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
+            {exportRegion.runs.length > 0
+              ? <Table>
+                <thead>
+                  <tr>
+                    <th>
+                      Run Started
+                    </th>
+                    <th>
+                      Elapsed Time
+                    </th>
+                    <th>
+                      Total Size
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>{this.getRunRows()}</tbody>
+              </Table>
+              : <p>This export region has never been run.</p>
+            }
             <Panel>
               <p>
                 This will unschedule the export region.
@@ -320,7 +360,8 @@ const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
     datasetPrefix: formValueSelector('HDXExportRegionForm')(state, 'dataset_prefix'),
-    hdx: state.hdx
+    hdx: state.hdx,
+    name: formValueSelector('HDXExportRegionForm')(state, 'name')
   };
 };
 

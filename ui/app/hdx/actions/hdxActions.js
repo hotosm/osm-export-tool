@@ -2,6 +2,15 @@ import axios from 'axios';
 
 import types from '../actions/actionTypes';
 
+const launderExportRegion = (exportRegion) => {
+  exportRegion.last_run = exportRegion.last_run != null ? new Date(exportRegion.last_run) : null;
+  exportRegion.next_run = exportRegion.next_run != null ? new Date(exportRegion.next_run) : null;
+
+  exportRegion.the_geom.id = exportRegion.id;
+
+  return exportRegion;
+}
+
 export function getExportRegions () {
   return dispatch => {
     dispatch({
@@ -12,14 +21,7 @@ export function getExportRegions () {
     .then(rsp => {
       return rsp.data;
     }).then(exportRegions => {
-      return exportRegions.map(exportRegion => {
-        exportRegion.last_run = exportRegion.last_run != null ? Date.parse(exportRegion.last_run) : null;
-        exportRegion.next_run = exportRegion.next_run != null ? Date.parse(exportRegion.next_run) : null;
-
-        exportRegion.the_geom.id = exportRegion.id;
-
-        return exportRegion;
-      });
+      return exportRegions.map(launderExportRegion);
     }).then(exportRegions => {
       dispatch({
         type: types.RECEIVED_EXPORT_REGIONS,
@@ -44,14 +46,8 @@ export function getExportRegion (id) {
     return axios.get(`/api/hdx_export_regions/${id}`)
     .then(rsp => {
       return rsp.data;
-    }).then(exportRegion => {
-      exportRegion.last_run = exportRegion.last_run != null ? Date.parse(exportRegion.last_run) : null;
-      exportRegion.next_run = exportRegion.next_run != null ? Date.parse(exportRegion.next_run) : null;
-
-      exportRegion.the_geom.id = exportRegion.id;
-
-      return exportRegion;
-    }).then(exportRegion => {
+    }).then(launderExportRegion)
+    .then(exportRegion => {
       dispatch({
         type: types.RECEIVED_EXPORT_REGION,
         id,

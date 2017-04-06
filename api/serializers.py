@@ -438,7 +438,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     class Meta: # noqa
         model = HDXExportRegion
         fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
-                  'schedule_period', 'schedule_hour', 'export_formats',
+                  'schedule_period', 'schedule_hour', 'export_formats', 'runs',
                   'the_geom', 'country_codes', 'name', 'last_run', 'next_run',)
 
     def validate_feature_selection(self,value):

@@ -302,6 +302,26 @@ class HDXExportRegion(models.Model):
             '{}_roads'.format(self.dataset_prefix),
             '{}_waterways'.format(self.dataset_prefix)
         )
+    @property
+    def runs(self): # noqa
+        # TODO populate this
+        return (
+            {
+                'run_at': timezone.now() - timedelta(days=1),
+                'elapsed_time': 10.2 * 60,
+                'size': 256 * 1024 * 1024,
+            },
+            {
+                'run_at': timezone.now() - timedelta(days=2),
+                'elapsed_time': 9.7 * 60,
+                'size': 312 * 1024 * 1024,
+            },
+            {
+                'run_at': timezone.now() - timedelta(days=4),
+                'elapsed_time': 11.2 * 60,
+                'size': 157 * 1024 * 1024,
+            },
+        )
 
     @property
     def hdx_dataset(self):
