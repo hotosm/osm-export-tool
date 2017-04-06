@@ -138,10 +138,13 @@ exports.detail = (function(){
 
         // handle re-run click events..
         $('button#rerun').bind('click', function(e){
+            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
             $(this).popover('hide');
             $.ajax({
+                method: 'POST',
+                headers: { 'X-CSRFToken':csrftoken},
                 cache: false,
-                url: Config.RERUN_URL + exports.detail.job_uid,
+                url: Config.RUNS_URL +'?job_uid=' + exports.detail.job_uid,
                 success: function(data){
                     // initialize the submitted run panel immediately
                     initSumtittedRunPanel([data]);

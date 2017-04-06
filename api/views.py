@@ -276,16 +276,47 @@ class JobViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class RunJob(views.APIView):
+class ExportFormatViewSet(viewsets.ViewSet):
     """
-    ##Re-run Export
+    ###ExportFormat API endpoint.
 
-    Re-runs an export job for the given `job_uid`: `/api/rerun?job_uid=<job_uid>`
+    Endpoint exposing the supported export formats.
     """
+    permission_classes = (permissions.AllowAny,)
 
-    permission_classes = (permissions.IsAuthenticated,)
+    def list(self, request, format=None):
+        return Response([{
+            'slug': slug,
+            'name': slug,
+            'description': FORMAT_NAMES[slug].description,
+            'url': reverse('api:formats-detail', args=[slug], request=request),
+        } for slug in FORMAT_NAMES.keys() if not FORMAT_NAMES[slug].disabled])
 
-    def get(self, request, uid=None, format=None):
+    def retrieve(self, request, pk=None, format=None):
+        return Response({
+            'slug': pk,
+            'name': FORMAT_NAMES[pk].name,
+            'description': FORMAT_NAMES[pk].description,
+            'url': reverse('api:formats-detail', args=[pk], request=request),
+        })
+
+
+class ExportRunViewSet(viewsets.ModelViewSet):
+    """
+    ###Export Run API Endpoint.
+
+    Provides an endpoint for querying export runs.
+    Export runs for a particular job can be filtered by status by appending one of
+    `COMPLETED`, `SUBMITTED`, `INCOMPLETE` or `FAILED` as the value of the `STATUS` parameter:
+    `/api/runs?job_uid=a_job_uid&status=STATUS`
+    """
+    serializer_class = ExportRunSerializer
+    permission_classes = (permissions.AllowAny,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ExportRunFilter
+    lookup_field = 'uid'
+
+    def create(self,request,format='json'):
         """
         Re-runs the job.
 
@@ -313,47 +344,6 @@ class RunJob(views.APIView):
                 return Response([{'detail': _('Failed to run Export')}], status.HTTP_400_BAD_REQUEST)
         else:
             return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
-
-
-class ExportFormatViewSet(viewsets.ViewSet):
-    """
-    ###ExportFormat API endpoint.
-
-    Endpoint exposing the supported export formats.
-    """
-    permission_classes = (permissions.AllowAny,)
-
-    def list(self, request, format=None):
-        return Response([{
-            'slug': slug,
-            'name': slug,
-            'description': FORMAT_NAMES[slug].description,
-            'url': reverse('api:formats-detail', args=[slug], request=request),
-        } for slug in FORMAT_NAMES.keys() if not FORMAT_NAMES[slug].disabled])
-
-    def retrieve(self, request, pk=None, format=None):
-        return Response({
-            'slug': pk,
-            'name': FORMAT_NAMES[pk].name,
-            'description': FORMAT_NAMES[pk].description,
-            'url': reverse('api:formats-detail', args=[pk], request=request),
-        })
-
-
-class ExportRunViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ###Export Run API Endpoint.
-
-    Provides an endpoint for querying export runs.
-    Export runs for a particular job can be filtered by status by appending one of
-    `COMPLETED`, `SUBMITTED`, `INCOMPLETE` or `FAILED` as the value of the `STATUS` parameter:
-    `/api/runs?job_uid=a_job_uid&status=STATUS`
-    """
-    serializer_class = ExportRunSerializer
-    permission_classes = (permissions.AllowAny,)
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = ExportRunFilter
-    lookup_field = 'uid'
 
     def get_queryset(self):
         return ExportRun.objects.all().order_by('-started_at')

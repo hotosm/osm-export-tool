@@ -8,12 +8,9 @@ Config = {}
 // job / run / format / configurations endpoints
 Config.JOBS_URL = '/api/jobs'
 Config.RUNS_URL = '/api/runs'
-Config.RERUN_URL = '/api/rerun?job_uid='
 Config.EXPORT_FORMATS_URL = '/api/formats.json'
 Config.CONFIGURATION_URL = '/api/configurations'
 Config.SCHEDULED_EXPORTS_URL = '/api/scheduled_exports'
-
-
 
 // datamodel endpoints
 Config.HDM_TAGS_URL = '/api/hdm-data-model?format=json'
