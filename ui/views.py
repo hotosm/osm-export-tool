@@ -29,9 +29,6 @@ def create_export(request):
     """
     user = request.user
     max_extent = {'extent': settings.JOB_MAX_EXTENT}
-    for group in user.groups.all():
-        if hasattr(group, 'export_profile'):
-            max_extent['extent'] = group.export_profile.max_extent
     extent = max_extent.get('extent')
     context = {
         'user': user,
@@ -49,9 +46,6 @@ def clone_export(request, uuid=None):
     """
     user = request.user
     max_extent = {'extent': settings.JOB_MAX_EXTENT}  # default
-    for group in user.groups.all():
-        if hasattr(group, 'export_profile'):
-            max_extent['extent'] = group.export_profile.max_extent
     extent = max_extent.get('extent')
     context = {
         'user': user,

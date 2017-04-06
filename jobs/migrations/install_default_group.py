@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import os
 from django.db import models, migrations
 from django.contrib.auth.models import Group
-from jobs.models import ExportProfile
 
 
 class Migration(migrations.Migration):

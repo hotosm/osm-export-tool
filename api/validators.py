@@ -81,9 +81,6 @@ def validate_bbox(extents, user=None):
             are invalid.
     """
     max_extent = settings.JOB_MAX_EXTENT
-    for group in user.groups.all():
-        if hasattr(group, 'export_profile'):
-            max_extent = group.export_profile.max_extent
     detail = OrderedDict()
     detail['id'] = _('invalid_bounds')
     detail['message'] = _('Invalid bounding box.')

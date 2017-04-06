@@ -291,19 +291,3 @@ class TestTag(TestCase):
                 groups=tag_dict['groups']
             )
         self.assertEquals(238, self.job.tags.all().count())
-
-
-class TestExportProfile(TestCase):
-
-    def setUp(self,):
-        self.group = Group.objects.create(name='TestDefaultExportExtentGroup')
-
-    def test_export_profile(self,):
-        profile = ExportProfile.objects.create(
-            name='DefaultExportProfile',
-            max_extent=2500000,
-            group=self.group
-        )
-        self.assertEqual(self.group.export_profile, profile)
-        self.assertEquals('DefaultExportProfile', profile.name)
-        self.assertEquals(2500000, profile.max_extent)

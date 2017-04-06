@@ -204,21 +204,6 @@ class Tag(models.Model):
         return '{0}:{1}'.format(self.key, self.value)
 
 
-class ExportProfile(models.Model):
-    """
-    Model to hold Group export profile.
-    """
-    name = models.CharField(max_length=100, blank=False, default='')
-    group = models.OneToOneField(Group, related_name='export_profile')
-    max_extent = models.IntegerField()
-
-    class Meta:  # pragma: no cover
-        managed = True
-        db_table = 'export_profiles'
-
-    def __str__(self):
-        return '{0}'.format(self.name)
-
 class HDXExportRegion(models.Model):
     """
     """
@@ -361,12 +346,3 @@ def exportconfig_delete_upload(sender, instance, **kwargs):
         export.save()
 
 
-@receiver(post_save, sender=User)
-def user_post_save(sender, instance, created, **kwargs):
-    """
-    This method is executed whenever a User object is created.
-
-    Adds the new user to DefaultExportExtentGroup.
-    """
-    if created:
-        instance.groups.add(Group.objects.get(name='DefaultExportExtentGroup'))
