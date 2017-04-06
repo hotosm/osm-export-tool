@@ -14,6 +14,7 @@ import os
 from rest_framework.reverse import reverse
 from rest_framework_gis import serializers as geo_serializers
 
+from django.db import transaction
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
@@ -427,10 +428,51 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
         model = HDXExportRegion
         fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats', 'runs',
-                  'the_geom', 'country_codes', 'name', 'last_run', 'next_run',)
+                  'country_codes', 'name', 'last_run', 'next_run', 'the_geom','dataset_prefix')
 
     def validate_feature_selection(self,value):
         f = FeatureSelection(value)
         if not f.valid:
             raise serializers.ValidationError("Feature selection invalid: {0}".format(f.errors))
         return value
+
+    def create(self,validated_data):
+        with transaction.atomic():
+            request = self.context['request']
+            data = request.data
+            name = data.get('name')
+            dataset_prefix = data.get('dataset_prefix')
+            the_geom = GEOSGeometry(json.dumps(data.get('the_geom')))
+            export_formats = request.data.get('export_formats')
+            feature_selection = request.data.get('feature_selection')
+            job = Job.objects.create(
+                            the_geom=the_geom,
+                            name=dataset_prefix,
+                            export_formats = export_formats,
+                            description = name,
+                            feature_selection = feature_selection,
+                            user=request.user)
+            region = HDXExportRegion.objects.create(
+                dataset_prefix = data.get('dataset_prefix'),
+                schedule_period = data.get('schedule_period') or 'disabled',
+                schedule_hour = data.get('schedule_hour') or 0,
+                job=job
+            )
+        return region
+
+    def update(self,instance,validated_data):
+        with transaction.atomic():
+            data = self.context['request'].data
+            job = instance.job
+            job.name = data.get('name')
+            job.the_geom = GEOSGeometry(json.dumps(data.get('the_geom')))
+            job.export_formats = data.get('export_formats')
+            job.feature_selection = data.get('feature_selection')
+            job.name = data.get('dataset_prefix')
+            job.description = data.get('name')
+            job.save()
+
+            instance.schedule_period = validated_data.get('schedule_period')
+            instance.schedule_hour = validated_data.get('schedule_hour')
+            instance.save()
+        return instance

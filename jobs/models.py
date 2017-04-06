@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import calendar
 from datetime import timedelta
 import logging
+import json
 import uuid
 
 from django.contrib.auth.models import Group, User
@@ -101,6 +102,7 @@ class Job(TimeStampedModelMixin):
     the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
     the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
     objects = models.GeoManager()
+    feature_selection = models.TextField(blank=True)
 
     class Meta:  # pragma: no cover
         managed = True
@@ -124,6 +126,15 @@ class Job(TimeStampedModelMixin):
         overpass_extents = '{0},{1},{2},{3}'.format(str(extents[1]), str(extents[0]),
                                                     str(extents[3]), str(extents[2]))
         return overpass_extents
+
+    @property
+    def feature_selection_object(self):
+        """
+        a valid FeatureSelection object based off the feature_selection column.
+        """
+        fs = FeatureSelection(self.feature_selection)
+        assert fs.valid
+        return fs
 
     @property
     def tag_dict(self,):
@@ -227,18 +238,11 @@ class HDXExportRegion(models.Model):
         ('theme_gpkg','GeoPackage (Thematic'),
         ('sqlite','SQLite Database')
     }
-    dataset_prefix = models.CharField(blank=False,max_length=100)
-    feature_selection = models.TextField(blank=False)
     schedule_period = models.CharField(blank=False,max_length=10,default="disabled",choices=PERIOD_CHOICES)
     schedule_hour = models.IntegerField(blank=False,choices=HOUR_CHOICES,default=0)
-    # TODO there should be at least one item here
-    export_formats = ArrayField(models.CharField(blank=False,choices=EXPORT_FORMAT_CHOICES,max_length=10),blank=False)
-    the_geom = models.PolygonField(blank=False,verbose_name='Extent for export',srid=4326)
-
-    name = models.CharField(blank=True,max_length=100) # todo: change this to blank = False
     country_codes = ArrayField(models.CharField(blank=False,max_length=3),null=True)
     deleted = models.BooleanField(default=False)
-    last_run = models.DateTimeField(default=None, null=True)
+    job = models.ForeignKey(Job,null=True)
 
     @property
     def next_run(self): # noqa
@@ -276,6 +280,30 @@ class HDXExportRegion(models.Model):
                 return anchor
 
             return anchor + timedelta(days=num_days)
+
+    @property
+    def last_run(self):
+        return None
+
+    @property
+    def name(self):
+        return self.job.description
+
+    @property
+    def dataset_prefix(self):
+        return self.job.name
+
+    @property
+    def the_geom(self):
+        return json.loads(GEOSGeometry(self.job.the_geom).geojson)
+
+    @property
+    def feature_selection(self):
+        return self.job.feature_selection
+
+    @property
+    def export_formats(self):
+        return self.job.export_formats
 
     @property
     def datasets(self): # noqa
@@ -319,15 +347,6 @@ class HDXExportRegion(models.Model):
             self.the_geom,
             self.feature_selection_object
         )
-
-    @property
-    def feature_selection_object(self):
-        """
-        a valid FeatureSelection object based off the feature_selection column.
-        """
-        fs = FeatureSelection(self.feature_selection)
-        assert fs.valid
-        return fs
 
     def sync_to_hdx(self):
         print "HDXExportRegion.sync_to_hdx called."

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import json
 from collections import OrderedDict
 
 from django.conf import settings
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 from django.db import Error, transaction
 from django.http import JsonResponse
 from django.utils.translation import ugettext as _
+from django.contrib.gis.geos import GEOSGeometry
 
 from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -472,18 +474,20 @@ class OSMDataModelView(views.APIView):
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     serializer_class = HDXExportRegionSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = HDXExportRegion.objects.filter(deleted=False).order_by('dataset_prefix')
+    queryset = HDXExportRegion.objects.filter(deleted=False)
 
     def perform_create(self,serializer):
-        self.save_and_sync(serializer)
-
-    def perform_update(self,serializer):
-        self.save_and_sync(serializer)
-
-    def save_and_sync(self,serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             serializer.instance.sync_to_hdx()
         else:
             print "Stubbing interaction with HDX API."
+
+    def perform_update(self,serializer):
+        serializer.save()
+        if settings.SYNC_TO_HDX:
+            serializer.instance.sync_to_hdx()
+        else:
+            print "Stubbing interaction with HDX API."
+
 
