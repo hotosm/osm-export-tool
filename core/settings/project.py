@@ -47,55 +47,6 @@ TEMPLATES = [
 
 LOGIN_URL = '/login/'
 
-EXPORT_FORMATS = {
-    'garmin': {
-        'name': 'Garmin Map Format',
-        'description': 'Garmin Map',
-        'task': tasks.export_tasks.GarminExportTask,
-    },
-    'geopackage': {
-        'name': 'GeoPackage Format (OSM)',
-        'description': 'GeoPackage (OSM Schema)',
-        'task': tasks.export_tasks.GeoPackageExportTask,
-    },
-    'kml': {
-        'name': 'KML Format',
-        'description': 'Google Earth KMZ',
-        'task': tasks.export_tasks.KmlExportTask,
-    },
-    'obf': {
-        'name': 'OBF Format',
-        'description': 'OSMAnd OBF',
-        'task': tasks.export_tasks.ObfExportTask,
-    },
-    'pbf': {
-        'name': 'PBF Format',
-        'description': 'OSM PBF',
-        'task': tasks.export_tasks.PbfExportTask,
-    },
-    'shp': {
-        'name': 'ESRI Shapefile Format',
-        'description': 'Esri SHP (OSM Schema)',
-        'task': tasks.export_tasks.ShpExportTask,
-    },
-    'thematic': {
-        'name': 'ESRI Shapefile Format (Thematic)',
-        'description': 'Esri SHP (Thematic Schema)',
-        'task': tasks.export_tasks.ThematicLayersExportTask,
-    },
-    'theme_gpkg': {
-        'name': 'GeoPackage Format (Thematic)',
-        'description': 'GeoPackage (Thematic Schema)',
-        'task': tasks.export_tasks.ThematicLayersExportTask,
-    },
-    'sqlite': {
-        'name': 'SQLite Format',
-        'description': 'SQLite Database',
-        'task': tasks.export_tasks.SqliteExportTask,
-        'disabled': True,
-    },
-}
-
 # where exports are staged for processing
 EXPORT_STAGING_ROOT = ABS_PATH('../export_staging/')
 
@@ -119,9 +70,6 @@ Maximum extent of a Job
 max of (latmax-latmin) * (lonmax-lonmin)
 """
 JOB_MAX_EXTENT = 2500000  # default export max extent in sq km
-
-# maximum number of runs to hold for each export
-EXPORT_MAX_RUNS = 5
 
 HOSTNAME = os.environ.get('HOSTNAME', 'export.hotosm.org')
 

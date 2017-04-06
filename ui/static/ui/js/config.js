@@ -9,7 +9,6 @@ Config = {}
 Config.JOBS_URL = '/api/jobs'
 Config.RUNS_URL = '/api/runs'
 Config.RERUN_URL = '/api/rerun?job_uid='
-Config.EXPORT_FORMATS_URL = '/api/formats.json'
 Config.CONFIGURATION_URL = '/api/configurations'
 Config.SCHEDULED_EXPORTS_URL = '/api/scheduled_exports'
 

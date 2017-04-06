@@ -21,7 +21,10 @@ from .export_tasks import (
     OSMToPBFConvertTask,
     OverpassQueryTask,
     osm_create_styles_task,
+    FORMAT_NAMES
 )
+
+
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
@@ -47,7 +50,7 @@ class ExportTaskRunner(object):
         job_name = normalize_job_name(job.name)
 
         # build a list of celery tasks based on the export formats..
-        export_tasks = [settings.EXPORT_FORMATS[format] for format in job.export_formats]
+        export_tasks = job.export_formats
 
         assert len(export_tasks) > 0
         # add the new run
@@ -79,18 +82,17 @@ class ExportTaskRunner(object):
         # save the rest of the ExportFormat tasks.
         for export_task in export_tasks:
             ExportTask.objects.create(run=run,
-                                      status='PENDING', name=export_task['name'])
-            LOG.debug('Saved task: {0}'.format(export_task['name']))
+                                      status='PENDING', name=export_task)
+            LOG.debug('Saved task: {0}'.format(export_task))
         # check if we need to generate a preset file from Job feature selections
         if job.feature_save or job.feature_pub:
             preset_task = GeneratePresetTask()
             ExportTask.objects.create(run=run,
                                           status='PENDING', name=preset_task.name)
             LOG.debug('Saved task: {0}'.format(preset_task.name))
-            # add to export tasks
-            export_tasks.append(preset_task)
 
         run_task_remote.delay(run_uid)
+        return run
 
 
 
@@ -108,7 +110,7 @@ def run_task_remote(run_uid):
     LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
     job = run.job
     job_name = normalize_job_name(job.name)
-    export_tasks = [settings.EXPORT_FORMATS[format] for format in job.export_formats]
+    export_tasks = job.export_formats
 
     conf = OSMConfTask()
     query = OverpassQueryTask()
@@ -130,7 +132,7 @@ def run_task_remote(run_uid):
     prep_schema.run(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid)
 
     for task in export_tasks:
-        task['task']().run(run_uid=run_uid, stage_dir=stage_dir, job_name=job_name)
+        FORMAT_NAMES[task]().run(run_uid=run_uid, stage_dir=stage_dir, job_name=job_name)
 
     # TODO this should run in the case of an exception
     finalize_task = FinalizeRunTask().run(run_uid=run_uid,stage_dir=stage_dir)

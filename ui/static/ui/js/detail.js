@@ -216,71 +216,13 @@ exports.detail = (function(){
                     $taskDiv = $runPanel.find('div#' + run.uid).find('#tasks').find('table');
                     var tasks = run.tasks;
                     $.each(tasks, function(i, task){
-                      console.log(task);
-                        var result = task.result;
+                        var description = task.description;
                         var status = task.status;
                         var duration = numeral(task.duration).format("HH:mm:ss.SSS");
-                        switch (task.name) {
-                            case 'KML Format':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Google Earth (KMZ) File') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'PBF Format':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('OpenStreetMap (PBF) File') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'ESRI Shapefile Format':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('ESRI Shapefile (SHP)') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'OBF Format':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('OSMAnd (OBF) File') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'Garmin Map Format':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Garmin Map (IMG) File') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'GeoPackage Format (OSM)':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('GeoPackage') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'SQTLite Format':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('SQlite Database File') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'GeoPackage Format (Thematic)':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Thematic GeoPackage') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'ESRI Shapefile Format (Thematic)':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '">' + gettext('Thematic ESRI Shapefile (SHP)') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
-                            case 'Generate Preset':
-                                if (status === 'SUCCESS') {
-                                    $taskDiv.append('<tr><td><a href="' + result.url + '" target="_blank">' + gettext('Custom JOSM Preset (XML)') + '</a></td><td>' + duration + '</td><td>' +
-                                        result.size + '</td></tr>');
-                                }
-                                break;
+                      
+                        if (status === 'SUCCESS') {
+                            $taskDiv.append('<tr><td><a href="' + task.download_url + '">' + gettext(description) + '</a></td><td>' + duration + '</td><td>' +
+                                task.filesize_bytes + '</td></tr>');
                         }
                     });
                 });

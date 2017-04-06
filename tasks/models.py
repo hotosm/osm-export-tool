@@ -48,8 +48,11 @@ class ExportTask(models.Model):
     run = models.ForeignKey(ExportRun, related_name='tasks')
     status = models.CharField(blank=True, max_length=20, db_index=True)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
+
     started_at = models.DateTimeField(editable=False, null=True)
     finished_at = models.DateTimeField(editable=False, null=True)
+    filesize_bytes = models.IntegerField(null=True)
+    filename = models.CharField(max_length=50,null=True)
 
     class Meta:
         ordering = ['created_at']
@@ -58,23 +61,6 @@ class ExportTask(models.Model):
 
     def __str__(self):
         return 'ExportTask uid: {0}'.format(self.uid)
-
-
-class ExportTaskResult(models.Model):
-    task = models.OneToOneField(ExportTask, primary_key=True, related_name='result')
-    filename = models.CharField(max_length=100, blank=True, editable=False)
-    size = models.FloatField(null=True, editable=False)
-    download_url = models.URLField(
-        verbose_name='Url to export task result output.',
-        max_length=254
-    )
-
-    class Meta:
-        managed = True
-        db_table = 'export_task_results'
-
-    def __str__(self):
-        return 'ExportTaskResult uid: {0}'.format(self.task.uid)
 
 
 @receiver(post_delete, sender=ExportRun)

@@ -9,6 +9,7 @@ See DEFAULT_RENDERER_CLASSES setting in core.settings.contrib for the enabled re
 import cPickle
 import json
 import logging
+import os
 
 from rest_framework.reverse import reverse
 from rest_framework_gis import serializers as geo_serializers
@@ -25,8 +26,9 @@ from jobs.models import (
     ExportConfig, Job, Tag, HDXExportRegion
 )
 from tasks.models import (
-    ExportRun, ExportTask, ExportTaskResult
+    ExportRun, ExportTask
 )
+from tasks.export_tasks import FORMAT_NAMES
 
 try:
     from collections import OrderedDict
@@ -124,47 +126,28 @@ class ExportConfigSerializer(serializers.Serializer):
         return obj.user.username
 
 
-class ExportTaskResultSerializer(serializers.ModelSerializer):
-    """Serialize ExportTaskResult models."""
-    url = serializers.SerializerMethodField()
-    size = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ExportTaskResult
-        fields = ('filename', 'size', 'url',)
-
-    def get_url(self, obj):
-        request = self.context['request']
-        return request.build_absolute_uri(obj.download_url)
-
-    def get_size(self, obj):
-        return "{0:.3f} MB".format(obj.size)
-
-
 class ExportTaskSerializer(serializers.ModelSerializer):
     """Serialize ExportTasks models."""
-    result = serializers.SerializerMethodField()
     errors = serializers.SerializerMethodField()
     started_at = serializers.SerializerMethodField()
     finished_at = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
     url = serializers.HyperlinkedIdentityField(
        view_name='api:tasks-detail',
        lookup_field='uid'
     )
+    download_url = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = ExportTask
-        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'result', 'errors',)
+        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'errors','description','filesize_bytes','filename','download_url')
 
-    def get_result(self, obj):
-        """Serialize the ExportTaskResult for this ExportTask."""
-        try:
-            result = obj.result
-            serializer = ExportTaskResultSerializer(result, many=False, context=self.context)
-            return serializer.data
-        except ExportTaskResult.DoesNotExist as e:
-            return None  # no result yet
+    def get_description(self,obj):
+        if obj.name in FORMAT_NAMES:
+            return FORMAT_NAMES[obj.name].description
+        return ""
 
     def get_errors(self, obj):
         return None
@@ -180,6 +163,12 @@ class ExportTaskSerializer(serializers.ModelSerializer):
             return None  # not finished yet
         else:
             return obj.finished_at
+
+    def get_download_url(self, obj):
+        download_media_root = settings.EXPORT_MEDIA_ROOT
+        if obj.filename:
+            return os.path.join(download_media_root,str(obj.run.uid), obj.filename)
+        return None
 
     def get_duration(self, obj):
         """Get the duration for this ExportTask."""
@@ -305,7 +294,7 @@ class JobSerializer(serializers.Serializer):
     This is the core representation of the API.
     """
     formats = serializers.MultipleChoiceField(
-        choices=settings.EXPORT_FORMATS.keys(),
+        choices=FORMAT_NAMES.keys(),
         allow_blank=False,
         write_only=True,
         error_messages={
@@ -411,8 +400,7 @@ class JobSerializer(serializers.Serializer):
         """Return the export formats selected for this export."""
         return [{
             'slug': slug,
-            'name': settings.EXPORT_FORMATS[slug]['name'],
-            'description': settings.EXPORT_FORMATS[slug]['description'],
+            'description': FORMAT_NAMES[slug].description,
             'url': reverse('api:formats-detail', args=[slug], request=self.context['request']),
         } for slug in obj.export_formats]
 
