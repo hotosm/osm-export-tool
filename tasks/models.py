@@ -13,40 +13,22 @@ from django.utils import timezone
 
 from jobs.models import Job
 
-
-class TimeStampedModelMixin(models.Model):
-    """
-    Mixin for timestamped models.
-    """
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
-    started_at = models.DateTimeField(default=timezone.now, editable=False)
-    finished_at = models.DateTimeField(editable=False, null=True)
-
-    class Meta:
-        abstract = True
-
-
-class RunModelMixin(TimeStampedModelMixin):
-    """
-    Mixin for task runs.
-    """
-    id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-
-    class Meta:
-        abstract = True
-
-
-class ExportRun(RunModelMixin):
+class ExportRun(models.Model):
     """
     Model for export task runs.
     """
+    id = models.AutoField(primary_key=True, editable=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
     job = models.ForeignKey(Job, related_name='runs')
     user = models.ForeignKey(User, related_name="runs", default=0)
+
     status = models.CharField(
         blank=True, max_length=20,
         db_index=True, default=''
     )
+    started_at = models.DateTimeField(default=timezone.now, editable=False)
+    finished_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
         managed = True
@@ -62,7 +44,6 @@ class ExportTask(models.Model):
     """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    celery_uid = models.UUIDField(null=True)  # celery task uid
     name = models.CharField(max_length=50)
     run = models.ForeignKey(ExportRun, related_name='tasks')
     status = models.CharField(blank=True, max_length=20, db_index=True)
