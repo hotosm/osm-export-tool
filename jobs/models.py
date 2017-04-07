@@ -347,7 +347,8 @@ class HDXExportRegion(models.Model):
             self.dataset_prefix,
             self.name,
             self.job.the_geom,
-            self.job.feature_selection_object
+            self.job.feature_selection_object,
+            country_codes=['SEN']
         )
 
     def sync_to_hdx(self):
