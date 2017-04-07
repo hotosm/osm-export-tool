@@ -190,12 +190,12 @@ export class HDXExportRegionForm extends Component {
       switch (statusCode) {
         case 403:
           // TODO display a modal instead with a link to log in via OSM
-          window.location = '/';
+          // window.location = '/';
           break;
 
         case 404:
           // TODO consider displaying a 404 page instead
-          showAllExportRegions();
+          // showAllExportRegions();
           break;
       }
     }
@@ -215,7 +215,7 @@ export class HDXExportRegionForm extends Component {
 
       updateAOI(exportRegion.the_geom);
 
-      console.log(exportRegion);
+      console.log('Export region:', exportRegion);
     }
 
     if (props.hdx.deleted) {
