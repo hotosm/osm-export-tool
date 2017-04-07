@@ -267,6 +267,33 @@ export class HDXExportRegionForm extends Component {
             name='feature_selection'
             component={renderTextArea}
           />
+          <Field
+            id='formControlExtraNotes'
+            name='extraNotes'
+            rows='4'
+            label='Extra Notes (appended to notes section)'
+            component={renderTextArea}
+          />
+          <Row>
+            <Col xs={6}>
+              <Field
+                name='countryCodes'
+                type='text'
+                label='Country Codes'
+                placeholder='SEN'
+                component={renderInput}
+              />
+            </Col>
+            <Col xs={6}>
+              <Field
+                name='metadataTags'
+                type='text'
+                label='Tags'
+                placeholder='openstreetmap'
+                component={renderInput}
+              />
+            </Col>
+          </Row>
           <hr />
           <Row>
             <Col xs={6}>
