@@ -293,7 +293,7 @@ class ExportFormatViewSet(viewsets.ViewSet):
             'name': slug,
             'description': FORMAT_NAMES[slug].description,
             'url': reverse('api:formats-detail', args=[slug], request=request),
-        } for slug in FORMAT_NAMES.keys() if not FORMAT_NAMES[slug].disabled])
+        } for slug in FORMAT_NAMES.keys()])
 
     def retrieve(self, request, pk=None, format=None):
         return Response({
