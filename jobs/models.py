@@ -18,6 +18,7 @@ from django.utils import timezone
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
+from tasks.export_tasks import FORMAT_NAMES
 
 LOG = logging.getLogger(__name__)
 
@@ -226,18 +227,7 @@ class HDXExportRegion(models.Model):
         ('disabled', 'Disabled'),
     )
     HOUR_CHOICES = zip( xrange(0,24), xrange(0,24) )
-    # TODO DRY me up from settings
-    EXPORT_FORMAT_CHOICES = {
-        ('garmin','Garmin Map'),
-        ('geopackage','GeoPackage Format (OSM)'),
-        ('kml','Google Earth KMZ'),
-        ('obf','OSMAnd OBF'),
-        ('pbf','OSM PBF'),
-        ('shp','ESRI Shapefile format (OSM)'),
-        ('thematic','ESRI Shapefile format (Thematic)'),
-        ('theme_gpkg','GeoPackage (Thematic'),
-        ('sqlite','SQLite Database')
-    }
+    EXPORT_FORMAT_CHOICES = map(lambda name: (name, FORMAT_NAMES[name].description), FORMAT_NAMES)
     schedule_period = models.CharField(blank=False,max_length=10,default="disabled",choices=PERIOD_CHOICES)
     schedule_hour = models.IntegerField(blank=False,choices=HOUR_CHOICES,default=0)
     country_codes = ArrayField(models.CharField(blank=False,max_length=3),null=True)
