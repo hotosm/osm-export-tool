@@ -139,7 +139,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
        lookup_field='uid'
     )
     download_url = serializers.SerializerMethodField()
-    
+
 
     class Meta:
         model = ExportTask
@@ -424,13 +424,14 @@ class JobSerializer(serializers.Serializer):
 
 
 class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
-    job = serializers.PrimaryKeyRelatedField(read_only=True)
+    job = JobSerializer(read_only=True)
 
     class Meta: # noqa
         model = HDXExportRegion
         fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats', 'runs',
-                  'country_codes', 'name', 'last_run', 'next_run', 'the_geom','dataset_prefix','job')
+                  'country_codes', 'name', 'last_run', 'next_run', 'the_geom',
+                  'dataset_prefix', 'job')
 
     def validate_feature_selection(self,value):
         f = FeatureSelection(value)
