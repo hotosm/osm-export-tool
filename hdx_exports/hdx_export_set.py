@@ -9,7 +9,7 @@ from hdx.configuration import Configuration
 
 from django.contrib.gis.geos import GEOSGeometry
 
-Configuration.create(hdx_site='prod',hdx_key=os.environ.get('HDX_API_KEY',None))
+Configuration.create(hdx_site='demo',hdx_key=os.environ.get('HDX_API_KEY',None))
 
 MARKDOWN = '''
 Shapefiles of [OpenStreetMap](http://www.openstreetmap.org) features in {region}.
@@ -33,7 +33,7 @@ class HDXExportSet(object):
     This is a plain old python object that can be used independent of the web application.
     """
 
-    def __init__(self,dataset_prefix,name,extent,feature_selection,country_codes=[]):
+    def __init__(self,dataset_prefix,name,extent,feature_selection,country_codes=[],is_private=False):
         # raise exceptions on invalid feature selections, extents.
         # it's not the job of this class to validate those!
         try:
@@ -47,6 +47,7 @@ class HDXExportSet(object):
         self._name = name
         self._country_codes = country_codes
         self._datasets = None
+        self.is_private = is_private
 
     @property
     def country_codes(self):
@@ -74,7 +75,7 @@ class HDXExportSet(object):
             name = self._dataset_prefix + "_" + theme
             dataset['name'] = name
             dataset['title'] = self._name + ' ' + theme + ' (OpenStreetMap Export)'
-            dataset['private'] = True
+            dataset['private'] = self.is_private
             dataset['notes'] = self.hdx_note(theme)
             dataset['dataset_source'] = 'OpenStreetMap'
             dataset['dataset_date'] = '03/01/2017'

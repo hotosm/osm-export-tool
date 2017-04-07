@@ -243,6 +243,7 @@ class HDXExportRegion(models.Model):
     country_codes = ArrayField(models.CharField(blank=False,max_length=3),null=True)
     deleted = models.BooleanField(default=False)
     job = models.ForeignKey(Job,null=True)
+    is_private = models.BooleanField(default=False)
 
     @property
     def next_run(self): # noqa
