@@ -27,6 +27,8 @@ const store = createStore(
   applyMiddleware(routerMiddleware(history), thunk, createLogger())
 );
 
+// TODO 403 API responses should redirect to the login page
+// TODO 404 API responses should either display a 404 page or redirect to the list
 ReactDOM.render(
   <Provider store={store}>
     {/* ConnectedRouter will use the store from Provider automatically */}

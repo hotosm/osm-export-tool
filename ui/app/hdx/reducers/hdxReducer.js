@@ -1,7 +1,7 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-export function getHdxReducer (state = initialState.hdx, { error, exportRegion, exportRegions, id, type }) {
+export function getHdxReducer (state = initialState.hdx, { error, exportRegion, exportRegions, id, statusCode, type }) {
   switch (type) {
     case types.FETCHING_EXPORT_REGION:
       return {
@@ -51,7 +51,8 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         exportRegions: [],
         status: `Fetching export regions failed: ${error.message}`,
         id,
-        error
+        error,
+        statusCode
       };
 
     case types.STARTING_EXPORT_REGION_RUN:
@@ -73,7 +74,8 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         ...state,
         status: `Export region run failed: ${error.message}`,
         id,
-        error
+        error,
+        statusCode
       };
 
     case types.STARTING_EXPORT_REGION_DELETE:
@@ -95,7 +97,8 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         ...state,
         status: `Export region deletion failed: ${error.message}`,
         id,
-        error
+        error,
+        statusCode
       };
 
     case types.ZOOM_TO_EXPORT_REGION:

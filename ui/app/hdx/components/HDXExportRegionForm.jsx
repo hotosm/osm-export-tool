@@ -182,6 +182,22 @@ export class HDXExportRegionForm extends Component {
   }
 
   componentWillReceiveProps (props) {
+    const { hdx: { statusCode }, showAllExportRegions } = props;
+
+    if (this.props.hdx.statusCode !== statusCode) {
+      switch (statusCode) {
+        case 403:
+          // TODO display a modal instead with a link to log in via OSM
+          window.location = '/';
+          break;
+
+        case 404:
+          // TODO consider displaying a 404 page instead
+          showAllExportRegions();
+          break;
+      }
+    }
+
     if (this.props.hdx.exportRegion == null &&
         props.hdx.exportRegion != null) {
       // we're receiving an export region

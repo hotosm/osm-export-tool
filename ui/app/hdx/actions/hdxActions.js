@@ -35,7 +35,8 @@ export function getExportRegions () {
     }).catch(error => {
       dispatch({
         type: types.FETCH_EXPORT_REGIONS_ERROR,
-        error
+        error,
+        statusCode: error.response.status
       });
     });
   };
@@ -61,7 +62,8 @@ export function getExportRegion (id) {
       dispatch({
         type: types.FETCH_EXPORT_REGIONS_ERROR,
         id,
-        error
+        error,
+        statusCode: error.response.status
       });
     });
   };
@@ -82,7 +84,8 @@ export function runExport (id) {
     .catch(error => dispatch({
       type: types.EXPORT_REGION_RUN_ERROR,
       id,
-      error
+      error,
+      statusCode: error.response.status
     }));
   };
 }
@@ -107,7 +110,8 @@ export function deleteExportRegion (id, csrfToken) {
     .catch(error => dispatch({
       type: types.DELETE_EXPORT_REGION_ERROR,
       id,
-      error
+      error,
+      statusCode: error.response.status
     }));
   };
 }
