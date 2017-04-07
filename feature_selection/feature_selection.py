@@ -106,7 +106,6 @@ class FeatureSelection(object):
         self._doc = None
         self._errors = []
 
-
     @property
     def doc(self):
         def validate_schema(loaded_doc):

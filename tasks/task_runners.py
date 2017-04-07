@@ -3,28 +3,31 @@ import importlib
 import logging
 import os
 import re
+import shutil
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db import DatabaseError
+from django.contrib.gis.geos import GEOSGeometry
+from django.utils import timezone
 
 from celery import shared_task
+from raven import Client
 
 from jobs.models import Job
 from tasks.models import ExportRun, ExportTask
 
+from feature_selection.feature_selection import FeatureSelection
+
 from .export_tasks import (
-    FinalizeRunTask,
-    GeneratePresetTask,
-    OSMConfTask,
-    OSMPrepSchemaTask,
-    OSMToPBFConvertTask,
-    OverpassQueryTask,
-    osm_create_styles_task,
     FORMAT_NAMES
 )
 
+from utils.osm_xml import OSM_XML
+from utils.osm_pbf import OSM_PBF
+from utils.geopackage import Geopackage
 
+client = Client()
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
@@ -34,15 +37,6 @@ class ExportTaskRunner(object):
     Runs HOT Export Tasks
     """
     def run_task(self, job_uid=None, user=None):
-        """
-        Run export tasks.
-
-        Args:
-            job_uid: the uid of the job to run.
-
-        Return:
-            the ExportRun instance.
-        """
         run_uid = ''
         LOG.debug('Running Job with id: {0}'.format(job_uid))
         # pull the job from the database
@@ -62,38 +56,11 @@ class ExportTaskRunner(object):
         run_uid = str(run.uid)
         LOG.debug('Saved run with id: {0}'.format(run_uid))
 
-        """
-        Set up the initial tasks:
-            1. Create the ogr2ogr config file for converting pbf to sqlite.
-            2. Create the Overpass Query task which pulls raw data from overpass and filters it.
-            3. Convert raw osm to compressed pbf.
-            4. Create the default sqlite schema file using ogr2ogr config file created at step 1.
-        """
-        conf = OSMConfTask()
-        query = OverpassQueryTask()
-        pbfconvert = OSMToPBFConvertTask()
-        prep_schema = OSMPrepSchemaTask()
-
-        # save initial tasks to the db with 'PENDING' state..
-        for initial_task in [conf, query, pbfconvert, prep_schema]:
-            ExportTask.objects.create(run=run,
-                                    status='PENDING', name=initial_task.name)
-            LOG.debug('Saved task: {0}'.format(initial_task.name))
-        # save the rest of the ExportFormat tasks.
-        for export_task in export_tasks:
-            ExportTask.objects.create(run=run,
-                                      status='PENDING', name=export_task)
-            LOG.debug('Saved task: {0}'.format(export_task))
-        # check if we need to generate a preset file from Job feature selections
-        if job.feature_save or job.feature_pub:
-            preset_task = GeneratePresetTask()
-            ExportTask.objects.create(run=run,
-                                          status='PENDING', name=preset_task.name)
-            LOG.debug('Saved task: {0}'.format(preset_task.name))
-
+        for task in [OSM_XML,OSM_PBF,Geopackage]:
+            ExportTask.objects.create(run=run,status='PENDING',name=task.name)
+            LOG.debug('Saved task: {0}'.format(task.name))
         run_task_remote.delay(run_uid)
         return run
-
 
 
 def normalize_job_name(name):
@@ -104,18 +71,52 @@ def normalize_job_name(name):
     return s.lower()
 
 
+def report_started_task(run_uid,task_name):
+    task = ExportTask.objects.get(run__uid=run_uid, name=task_name)
+    task.status = 'RUNNING'
+    task.started_at = timezone.now()
+    task.save()
+    LOG.debug('Updated task: {0} for run: {1}'.format(task_name, run_uid))
+
+def report_finished_task(run_uid,task_name,result_file):
+    # TODO what if more than one file?
+    task = ExportTask.objects.get(run__uid=run_uid, name=task_name)
+    task.filesize_bytes = os.stat(result_file).st_size
+    task.filename = result_file.split('/')[-1]
+    task.status = 'SUCCESS'
+    task.finished_at = timezone.now()
+    task.save()
+    LOG.debug('Updated task: {0} for run: {1}'.format(task_name, run_uid))
+
+
+SIMPLE = '''
+waterways:
+    types: 
+        - lines
+        - polygons
+    select:
+        - name
+        - waterway
+buildings:
+    types:
+        - lines
+        - polygons
+    select:
+        - name
+        - building
+    where: building IS NOT NULL
+'''
+
 @shared_task
 def run_task_remote(run_uid):
     run = ExportRun.objects.get(uid=run_uid)
+    run.status = 'RUNNING'
+    run.started_at = timezone.now()
+    run.save()
     LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
     job = run.job
     job_name = normalize_job_name(job.name)
     export_tasks = job.export_formats
-
-    conf = OSMConfTask()
-    query = OverpassQueryTask()
-    pbfconvert = OSMToPBFConvertTask()
-    prep_schema = OSMPrepSchemaTask()
 
     # setup the staging directory
     stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
@@ -123,18 +124,44 @@ def run_task_remote(run_uid):
 
     # pull out the tags to create the conf file
     categories = job.categorised_tags  # dict of points/lines/polygons
-    bbox = job.overpass_extents  # extents of job in order required by overpass
+    aoi = GEOSGeometry(job.the_geom)
+    try:
+        feature_selection = job.feature_selection_object
+    except:
+        feature_selection = FeatureSelection(SIMPLE)
 
-    conf.run(categories=categories, stage_dir=stage_dir, run_uid=run_uid, job_name=job_name)
-    query.run(stage_dir=stage_dir, job_name=job_name, bbox=bbox, run_uid=run_uid, filters=job.filters)
+    osm_xml = OSM_XML(aoi,stage_dir + "osm_xml.osm")
+    osm_pbf = OSM_PBF(stage_dir + "osm_xml.osm",stage_dir + "osm_pbf.pbf")
+    geopackage = Geopackage(stage_dir + "osm_pbf.pbf",stage_dir + "geopackage.gpkg",feature_selection)
 
-    pbfconvert.run(stage_dir=stage_dir,job_name=job_name,run_uid=run_uid)
-    prep_schema.run(stage_dir=stage_dir, job_name=job_name, run_uid=run_uid)
+    for task in [osm_xml,osm_pbf,geopackage]:
+        report_started_task(run_uid, task.name)
+        task.run()
+        report_finished_task(run_uid, task.name,task.results[0])
 
-    for task in export_tasks:
-        FORMAT_NAMES[task]().run(run_uid=run_uid, stage_dir=stage_dir, job_name=job_name)
+    for task in [osm_xml, osm_pbf, geopackage]:
+        parts = task.results[0].split('/')
+        filename = parts[-1]
+        run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
+        download_path = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid, filename)
+        if not os.path.exists(run_dir):
+            os.makedirs(run_dir)
+        shutil.copy(task.results[0], download_path)
 
-    # TODO this should run in the case of an exception
-    finalize_task = FinalizeRunTask().run(run_uid=run_uid,stage_dir=stage_dir)
+    run.status = 'COMPLETED'
+    run.finished_at = timezone.now()
+    run.save()
+    LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
 
-    return run
+    # finalize the task
+    #shutil.rmtree(stage_dir)
+    # send mail
+
+    #except Exception as exc:
+    #    print exc
+    #    client.captureException(
+    #        extra={
+    #            'run_uid': run_uid,
+    #            'task': exc,
+    #        }
+    #    )
