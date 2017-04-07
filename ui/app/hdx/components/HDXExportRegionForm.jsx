@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
 
-import { updateAoiInfo } from '../actions/exportsActions';
+import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
 import { deleteExportRegion, getExportRegion, runExport } from '../actions/hdxActions';
 import styles from '../styles/HDXExportRegionForm.css';
 
@@ -171,9 +171,11 @@ export class HDXExportRegionForm extends Component {
   }
 
   componentDidMount () {
-    const { getExportRegion, match: { params: { id } } } = this.props;
+    const { clearAOI, getExportRegion, match: { params: { id } } } = this.props;
 
-    if (id != null) {
+    if (id == null) {
+      clearAOI();
+    } else {
       // we're editing
       getExportRegion(id);
 
@@ -445,6 +447,7 @@ const flatten = arr => arr.reduce(
 
 const mapDispatchToProps = dispatch => {
   return {
+    clearAOI: () => dispatch(clearAoiInfo()),
     getExportRegion: id => dispatch(getExportRegion(id)),
     handleDelete: id => dispatch(deleteExportRegion(id, cookie.load('csrftoken'))),
     handleRun: id => dispatch(runExport(id, cookie.load('csrftoken'))),
