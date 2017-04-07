@@ -97,7 +97,7 @@ export function deleteExportRegion (id, csrfToken) {
       id
     });
     return axios({
-      url:`/api/hdx_export_regions/${id}`,
+      url: `/api/hdx_export_regions/${id}`,
       method: 'DELETE',
       headers: {
         'X-CSRFToken': csrfToken
