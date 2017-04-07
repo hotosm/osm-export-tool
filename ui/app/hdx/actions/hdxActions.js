@@ -78,7 +78,7 @@ export function runExport (id) {
 
     return axios.post(`/api/hdx_export_regions/${id}/run`)
     .then(rsp => dispatch({
-      types: types.EXPORT_REGION_RUN_STARTED,
+      type: types.EXPORT_REGION_RUN_STARTED,
       id
     }))
     .catch(error => dispatch({
