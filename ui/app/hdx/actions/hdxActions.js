@@ -69,14 +69,20 @@ export function getExportRegion (id) {
   };
 }
 
-export function runExport (id) {
+export function runExport (id, csrfToken) {
   return dispatch => {
     dispatch({
       type: types.STARTING_EXPORT_REGION_RUN,
       id
     });
 
-    return axios.post(`/api/hdx_export_regions/${id}/run`)
+    return axios({
+      url: `/api/runs?job_uid=${id}`,
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken
+      }
+    })
     .then(rsp => dispatch({
       type: types.EXPORT_REGION_RUN_STARTED,
       id
@@ -96,6 +102,7 @@ export function deleteExportRegion (id, csrfToken) {
       type: types.STARTING_EXPORT_REGION_DELETE,
       id
     });
+
     return axios({
       url: `/api/hdx_export_regions/${id}`,
       method: 'DELETE',

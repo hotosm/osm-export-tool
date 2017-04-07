@@ -241,7 +241,7 @@ export class HDXExportRegionForm extends Component {
 
   handleDelete = () => this.props.handleDelete(this.props.hdx.exportRegion.id);
 
-  handleRun = () => this.props.handleRun(this.props.hdx.exportRegion.id);
+  handleRun = () => this.props.handleRun(this.props.hdx.exportRegion.job.uid);
 
   render () {
     const { editing } = this.state;
@@ -366,6 +366,7 @@ export class HDXExportRegionForm extends Component {
         {editing && exportRegion &&
           <div>
             <Panel>
+              {/* TODO update this when run has begun */}
               <Button bsStyle='primary' style={{float: 'right'}} onClick={this.handleRun}>
                 Run Now
               </Button>
@@ -428,7 +429,7 @@ const mapDispatchToProps = dispatch => {
   return {
     getExportRegion: id => dispatch(getExportRegion(id)),
     handleDelete: id => dispatch(deleteExportRegion(id, cookie.load('csrftoken'))),
-    handleRun: id => dispatch(runExport(id)),
+    handleRun: id => dispatch(runExport(id, cookie.load('csrftoken'))),
     showAllExportRegions: () => dispatch(push('/')),
     updateAOI: geometry => {
       const envelope = new jsts.io.GeoJSONReader().read(geometry).getEnvelope().getCoordinates();
