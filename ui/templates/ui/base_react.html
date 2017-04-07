@@ -74,12 +74,7 @@
             <li><a href="{% url 'help' %}">{% trans 'Help' %}</a></li>
             <li><a href="{% url 'about' %}">{% trans 'About' %}</a></li>
             {% if user.is_authenticated %}
-                <li id="logout" class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> {% trans 'Log Out' %}</a></li>
-                    </ul>
-                </li>
+                <li id="logout"><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> {% trans 'Log Out' %}</a></li>
             {% else %}
                 <li><a href="{% url 'osm:begin' 'openstreetmap' %}">{% trans 'Login' %}</a></li>
             {% endif %}
