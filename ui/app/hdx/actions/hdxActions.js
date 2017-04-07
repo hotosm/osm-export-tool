@@ -3,8 +3,13 @@ import axios from 'axios';
 import types from '../actions/actionTypes';
 
 const launderExportRegion = (exportRegion) => {
-  exportRegion.last_run = exportRegion.last_run != null ? new Date(exportRegion.last_run) : null;
-  exportRegion.next_run = exportRegion.next_run != null ? new Date(exportRegion.next_run) : null;
+  if (exportRegion.last_run != null) {
+    exportRegion.last_run = new Date(exportRegion.last_run);
+  }
+
+  if (exportRegion.next_run != null) {
+    exportRegion.next_run = new Date(exportRegion.next_run);
+  }
 
   exportRegion.the_geom.id = exportRegion.id;
 

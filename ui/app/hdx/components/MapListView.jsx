@@ -63,7 +63,6 @@ export class MapListView extends Component {
       dataProjection: WGS84,
       featureProjection: WEB_MERCATOR
     }).forEach(feature => {
-      console.log('adding feature:', feature);
       this._drawLayer.getSource().addFeature(feature);
     });
   }
