@@ -342,10 +342,11 @@ class HDXExportRegion(models.Model):
         """
         Initialize an HDXExportSet corresponding to this Model.
         """
+#       # TODO make distinction between GOESGeom/GeoJSON better
         return HDXExportSet(
             self.dataset_prefix,
             self.name,
-            self.the_geom,
+            self.job.the_geom,
             self.job.feature_selection_object
         )
 
