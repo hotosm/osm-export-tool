@@ -15,7 +15,6 @@ from django.utils import timezone
 from raven import Client
 
 from jobs.presets import TagParser
-from tasks.export_tasks import ExportTaskErrorHandler
 from utils import (
     garmin,
     kml,
