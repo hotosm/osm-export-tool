@@ -427,6 +427,11 @@ const mapStateToProps = state => {
     aoiInfo: state.aoiInfo,
     datasetPrefix: formValueSelector('HDXExportRegionForm')(state, 'dataset_prefix'),
     hdx: state.hdx,
+    initialValues: {
+      feature_selection: `buildings:
+  select:
+     - building`
+    },
     name: formValueSelector('HDXExportRegionForm')(state, 'name')
   };
 };
