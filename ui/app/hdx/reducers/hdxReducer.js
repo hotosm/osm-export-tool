@@ -89,6 +89,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
       return {
         ...state,
         status: 'Export region deleted.',
+        deleted: true,
         id
       };
 
