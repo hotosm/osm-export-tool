@@ -204,3 +204,5 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', None)
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 
 SYNC_TO_HDX = os.environ.get('SYNC_TO_HDX', None)
+
+GEONAMES_API_URL = os.getenv('GEONAMES_API_URL', 'http://api.geonames.org/searchJSON')

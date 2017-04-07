@@ -11,6 +11,7 @@ from django.db import Error, transaction
 from django.http import JsonResponse
 from django.utils.translation import ugettext as _
 from django.contrib.gis.geos import GEOSGeometry
+from django.views.decorators.http import require_http_methods
 
 from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -18,6 +19,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
+
+import requests
 
 from jobs import presets
 from jobs.models import (
@@ -481,3 +484,27 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
             print "Stubbing interaction with HDX API."
 
 
+@require_http_methods(['GET'])
+def request_geonames(request):
+    """Geocode with GeoNames."""
+    payload = {
+        'maxRows': 20,
+        'username': 'osm_export_tool',
+        'style': 'full',
+        'q': request.GET.get('q')
+    }
+
+    LOG.warn('payload: {}'.format(payload))
+
+    geonames_url = getattr(settings, 'GEONAMES_API_URL')
+
+    if geonames_url:
+        response = requests.get(geonames_url, params=payload).json()
+        assert(isinstance(response, dict))
+        return JsonResponse(response)
+    else:
+        return JsonResponse({
+                'error': 'A url was not provided for geonames'
+            },
+            status=500,
+        )
