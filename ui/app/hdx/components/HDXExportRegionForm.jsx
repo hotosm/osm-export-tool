@@ -145,7 +145,9 @@ export class HDXExportRegionForm extends Component {
   mixins = [IntlMixin];
 
   state = {
-    editing: false
+    deleting: false,
+    editing: false,
+    running: false
   };
 
   getLastRun () {
@@ -239,12 +241,24 @@ export class HDXExportRegionForm extends Component {
     ));
   }
 
-  handleDelete = () => this.props.handleDelete(this.props.hdx.exportRegion.id);
+  handleDelete = () => {
+    this.setState({
+      deleting: true
+    });
 
-  handleRun = () => this.props.handleRun(this.props.hdx.exportRegion.job.uid);
+    this.props.handleDelete(this.props.hdx.exportRegion.id);
+  };
+
+  handleRun = () => {
+    this.setState({
+      running: true
+    });
+
+    this.props.handleRun(this.props.hdx.exportRegion.job.uid);
+  };
 
   render () {
-    const { editing } = this.state;
+    const { deleting, editing, running } = this.state;
     const { error, handleSubmit, hdx: { exportRegion }, submitting } = this.props;
     const datasetPrefix = this.props.datasetPrefix || '<prefix>';
     const name = this.props.name || 'Untitled';
@@ -366,9 +380,8 @@ export class HDXExportRegionForm extends Component {
         {editing && exportRegion &&
           <div>
             <Panel>
-              {/* TODO update this when run has begun */}
-              <Button bsStyle='primary' style={{float: 'right'}} onClick={this.handleRun}>
-                Run Now
+              <Button bsStyle='primary' style={{float: 'right'}} disabled={running} onClick={this.handleRun}>
+                {running ? 'Running...' : 'Run Now'}
               </Button>
               <strong>Last run:</strong> {this.getLastRun()}<br />
               <strong>Next scheduled run:</strong> {this.getNextRun()}
@@ -398,8 +411,8 @@ export class HDXExportRegionForm extends Component {
                 This will unschedule the export region.
                 Any existing datasets created by this region will remain on HDX.
               </p>
-              <Button bsStyle='danger' block onClick={this.handleDelete}>
-                Remove Export Region
+              <Button bsStyle='danger' block disabled={deleting} onClick={this.handleDelete}>
+                {deleting ? 'Removing Export Region...' : 'Remove Export Region'}
               </Button>
             </Panel>
           </div>
