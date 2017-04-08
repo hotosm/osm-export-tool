@@ -112,34 +112,6 @@ class ThematicLayersExportTask(ExportTask):
         self.on_success(out, run_uid, self.name)
 
 
-class ShpExportTask(ExportTask):
-    """Class defining SHP export function."""
-
-    name = 'shp'
-    description = 'ESRI SHP (OSM Schema)'
-
-    def run(self, run_uid=None, stage_dir=None, job_name=None): # noqa
-        self.update_task_state(run_uid, self.name)
-        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
-        out = shp.GPKGToShp(gpkg=gpkg).convert()
-        self.on_success(out, run_uid, self.name)
-
-
-class KmlExportTask(ExportTask):
-    """Class defining KML export function."""
-
-    name = 'kml'
-    description = 'Google Earth KMZ'
-
-    def run(self, run_uid=None, stage_dir=None, job_name=None): # noqa
-        self.update_task_state(run_uid, self.name)
-        gpkg = '{0}.gpkg'.format(os.path.join(stage_dir, job_name))
-        kmlfile = '{0}.kml'.format(os.path.join(stage_dir, job_name))
-        s2k = kml.GPKGToKml(gpkg=gpkg, kmlfile=kmlfile)
-        out = s2k.convert()
-        self.on_success(out, run_uid, self.name)
-
-
 class ObfExportTask(ExportTask):
     """Class defining OBF export function."""
 

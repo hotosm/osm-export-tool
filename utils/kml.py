@@ -5,105 +5,62 @@ import argparse
 import logging
 import os
 import subprocess
+import zipfile
 from string import Template
 
 LOG = logging.getLogger(__name__)
 
 
-class GPKGToKml(object):
+class KML(object):
     """
     Thin wrapper around ogr2ogr to convert GPKG to KML.
     """
+    name = 'kml'
+    description = 'Google Earth KMZ'
 
-    def __init__(self, gpkg=None, kmlfile=None, zipped=True, debug=False):
+    def __init__(self, input_gpkg, output_file):
         """
         Initialize the GPKGToKml utility.
 
         Args:
             gpkg: the GeoPackage to convert
             kmlfile: where to write the kml output
-            zipped: whether to zip the output
             debug: turn debugging on / off
         """
-        self.gpkg = gpkg
-        if not os.path.exists(self.gpkg):
-            raise IOError('Cannot find GeoPackage for this task.')
-        self.kmlfile = kmlfile
-        self.zipped = zipped
-        if not self.kmlfile:
-            # create kml path from GeoPackage path.
-            root = self.gpkg.split('.')[0]
-            self.kmlfile = root + '.kml'
-        self.debug = debug
+        self.input_gpkg = input_gpkg
+        self.output_file = output_file
         self.cmd = Template("ogr2ogr -f 'KML' $kmlfile $gpkg")
-        self.zip_cmd = Template("zip -j $zipfile $kmlfile")
 
-    def convert(self, ):
+    def run(self):
         """
         Convert GeoPackage to kml.
         """
-        convert_cmd = self.cmd.safe_substitute({'kmlfile': self.kmlfile,
-                                                'gpkg': self.gpkg})
-        if self.debug:
-            print 'Running: %s' % convert_cmd
-        proc = subprocess.Popen(convert_cmd, shell=True, executable='/bin/bash',
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate()
-        returncode = proc.wait()
-        if (returncode != 0):
-            LOG.error('%s', stderr)
-            raise Exception, "ogr2ogr process failed with returncode: {0}".format(returncode)
-        if(self.debug):
-            print 'ogr2ogr returned: %s' % returncode
-        if self.zipped and returncode == 0:
-            kmzfile = self._zip_kml_file()
-            return kmzfile
+        if self.is_complete:
+            LOG.debug("Skipping KML, file exists")
+            return
+
+        if self.output_file.endswith("kmz"):
+            kml_name = self.output_file[:-1] + 'l'
         else:
-            return self.kmlfile
+            kml_name = self.output_file
+        
+        print kml_name
 
-    def _zip_kml_file(self, ):
-        """Zip the kml output file."""
-        kmzfile = self.kmlfile.split('.')[0] + '.kmz'
-        zip_cmd = self.zip_cmd.safe_substitute({'zipfile': kmzfile,
-                                                'kmlfile': self.kmlfile})
-        proc = subprocess.Popen(zip_cmd, shell=True, executable='/bin/bash',
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = proc.communicate()
-        returncode = proc.wait()
-        if returncode != 0:
-            LOG.error('%s', stderr)
-            raise Exception, 'Failed to create zipfile for {0}'.format(self.kmlfile)
-        if returncode == 0:
-            # remove the kml file
-            os.remove(self.kmlfile)
-        if self.debug:
-            print 'Zipped KML: {0}'.format(kmzfile)
-        return kmzfile
+        convert_cmd = self.cmd.safe_substitute({'kmlfile': kml_name,
+                                                'gpkg': self.input_gpkg})
+        LOG.debug('Running: %s' % convert_cmd)
+        subprocess.check_call(convert_cmd, shell=True, executable='/bin/bash')
+        if self.output_file.endswith("kmz"):
+            with zipfile.ZipFile(self.output_file,'w',zipfile.ZIP_DEFLATED) as z:
+                z.write(kml_name,os.path.basename(kml_name))
+            LOG.debug('Zipped KML: {0}'.format(self.output_file))
 
+        return self.output_file
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Converts a GeoPackage to KML.')
-    parser.add_argument('-i', '--geopackage-file', required=True,
-                        dest="sqlite", help='The GeoPackage to convert.')
-    parser.add_argument('-k', '--kml-file', required=True,
-                        dest="kmlfile", help='The KML file to write to.')
-    parser.add_argument('-z', '--zipped', action="store_true",
-                        help="Whether to zip the KML. Default true.")
-    parser.add_argument('-d', '--debug', action="store_true",
-                        help="Turn on debug output")
-    args = parser.parse_args()
-    config = {}
-    for k, v in vars(args).items():
-        if (v == None):
-            continue
-        else:
-            config[k] = v
-    gpkg = config['gpkg']
-    kmlfile = config['kmlfile']
-    debug = False
-    zipped = False
-    if config.get('debug'):
-        debug = True
-    if config.get('zipped'):
-        zipped = True
-    GPKGToKml(sqlite=sqlite, kmlfile=kmlfile, zipped=zipped, debug=debug).convert()
+    @property
+    def is_complete(self):
+        return os.path.isfile(self.output_file)
+
+    @property
+    def results(self):
+        return [self.output_file]

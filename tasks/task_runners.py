@@ -26,6 +26,8 @@ from .export_tasks import (
 from utils.osm_xml import OSM_XML
 from utils.osm_pbf import OSM_PBF
 from utils.geopackage import Geopackage
+from utils.kml import KML
+from utils.shp import Shapefile
 
 client = Client()
 
@@ -56,7 +58,7 @@ class ExportTaskRunner(object):
         run_uid = str(run.uid)
         LOG.debug('Saved run with id: {0}'.format(run_uid))
 
-        for task in [OSM_XML,OSM_PBF,Geopackage]:
+        for task in [OSM_XML,OSM_PBF,Geopackage,KML,Shapefile]:
             ExportTask.objects.create(run=run,status='PENDING',name=task.name)
             LOG.debug('Saved task: {0}'.format(task.name))
         run_task_remote.delay(run_uid)
@@ -132,14 +134,16 @@ def run_task_remote(run_uid):
 
     osm_xml = OSM_XML(aoi,stage_dir + "osm_xml.osm")
     osm_pbf = OSM_PBF(stage_dir + "osm_xml.osm",stage_dir + "osm_pbf.pbf")
-    geopackage = Geopackage(stage_dir + "osm_pbf.pbf",stage_dir + "geopackage.gpkg",feature_selection)
+    geopackage = Geopackage(stage_dir + "osm_pbf.pbf",stage_dir + "geopackage.gpkg",stage_dir+"osmconf.ini",feature_selection)
+    kml = KML(stage_dir + "geopackage.gpkg",stage_dir + "kml.kmz")
+    shp = Shapefile(stage_dir + "geopackage.gpkg",stage_dir + "shapefile.shp.zip")
 
-    for task in [osm_xml,osm_pbf,geopackage]:
+    for task in [osm_xml,osm_pbf,geopackage,kml,shp]:
         report_started_task(run_uid, task.name)
         task.run()
         report_finished_task(run_uid, task.name,task.results[0])
 
-    for task in [osm_xml, osm_pbf, geopackage]:
+    for task in [osm_xml, osm_pbf, geopackage,kml,shp]:
         parts = task.results[0].split('/')
         filename = parts[-1]
         run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)

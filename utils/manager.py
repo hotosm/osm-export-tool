@@ -1,7 +1,9 @@
 from django.contrib.gis.geos import Polygon
 from osm_xml import OSM_XML
 from osm_pbf import OSM_PBF
+from kml import KML
 from geopackage import Geopackage
+from shp import Shapefile
 from feature_selection.feature_selection import FeatureSelection
 import logging
 import os
@@ -37,3 +39,7 @@ osm_pbf = OSM_PBF('scratch/osm_xml.osm','scratch/osm_pbf.pbf')
 osm_pbf.run()
 geopackage = Geopackage('scratch/osm_pbf.pbf','scratch/geopackage.gpkg','scratch/osmconf.ini',feature_selection)
 geopackage.run()
+kml = KML('scratch/geopackage.gpkg','scratch/kml.kmz')
+kml.run()
+shp = Shapefile('scratch/geopackage.gpkg','scratch/shapefile.shp.zip')
+shp.run()
