@@ -14,20 +14,19 @@ from django.utils import timezone
 from celery import shared_task
 from raven import Client
 
-from jobs.models import Job
+from jobs.models import Job, HDXExportRegion
 from tasks.models import ExportRun, ExportTask
 
 from feature_selection.feature_selection import FeatureSelection
 
-from .export_tasks import (
-    FORMAT_NAMES
-)
-
+from utils import FORMAT_NAMES
 from utils.osm_xml import OSM_XML
 from utils.osm_pbf import OSM_PBF
 from utils.geopackage import Geopackage
 from utils.kml import KML
 from utils.shp import Shapefile
+from utils.theme_gpkg import ThematicGPKG
+from utils.theme_shp import ThematicSHP
 
 client = Client()
 
@@ -58,7 +57,7 @@ class ExportTaskRunner(object):
         run_uid = str(run.uid)
         LOG.debug('Saved run with id: {0}'.format(run_uid))
 
-        for task in [OSM_XML,OSM_PBF,Geopackage,KML,Shapefile]:
+        for task in [OSM_XML,OSM_PBF,Geopackage,KML,Shapefile,ThematicGPKG,ThematicSHP]:
             ExportTask.objects.create(run=run,status='PENDING',name=task.name)
             LOG.debug('Saved task: {0}'.format(task.name))
         run_task_remote.delay(run_uid)
@@ -124,8 +123,6 @@ def run_task_remote(run_uid):
     stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
     os.makedirs(stage_dir, 6600)
 
-    # pull out the tags to create the conf file
-    categories = job.categorised_tags  # dict of points/lines/polygons
     aoi = GEOSGeometry(job.the_geom)
     try:
         feature_selection = job.feature_selection_object
@@ -137,13 +134,15 @@ def run_task_remote(run_uid):
     geopackage = Geopackage(stage_dir + "osm_pbf.pbf",stage_dir + "geopackage.gpkg",stage_dir+"osmconf.ini",feature_selection)
     kml = KML(stage_dir + "geopackage.gpkg",stage_dir + "kml.kmz")
     shp = Shapefile(stage_dir + "geopackage.gpkg",stage_dir + "shapefile.shp.zip")
+    thematic_gpkg = ThematicGPKG(stage_dir+"geopackage.gpkg",feature_selection)
+    thematic_shp = ThematicSHP(stage_dir+"geopackage.gpkg",stage_dir,feature_selection)
 
-    for task in [osm_xml,osm_pbf,geopackage,kml,shp]:
+    for task in [osm_xml,osm_pbf,geopackage,kml,shp,thematic_gpkg,thematic_shp]:
         report_started_task(run_uid, task.name)
         task.run()
         report_finished_task(run_uid, task.name,task.results[0])
 
-    for task in [osm_xml, osm_pbf, geopackage,kml,shp]:
+    for task in [osm_xml,osm_pbf,geopackage,kml,shp,thematic_gpkg,thematic_shp]:
         parts = task.results[0].split('/')
         filename = parts[-1]
         run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
@@ -156,6 +155,24 @@ def run_task_remote(run_uid):
     run.finished_at = timezone.now()
     run.save()
     LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
+
+    
+    if  HDXExportRegion.objects.filter(job_id=run.job_id).exists():
+        LOG.debug("Adding resources to HDX")
+        region = HDXExportRegion.objects.get(job_id=run.job_id)
+        export_set = region.hdx_dataset
+        for theme in feature_selection.themes:
+            resources = []
+            for geom_type in feature_selection.geom_types(theme):
+                resources.append({
+                    'name': theme + ' ' + geom_type,
+                    'format': 'zipped shapefile',  
+                    'description': "ESRI Shapefile of " + geom_type,
+                    'url': os.path.join(settings.HOSTNAME, settings.EXPORT_MEDIA_ROOT,run_uid,theme + '_' + geom_type + ".zip")
+                })
+            export_set.datasets[theme].add_update_resources(resources)
+        export_set.sync_datasets()
+
 
     # finalize the task
     #shutil.rmtree(stage_dir)

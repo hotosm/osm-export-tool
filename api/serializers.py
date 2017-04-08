@@ -29,7 +29,7 @@ from jobs.models import (
 from tasks.models import (
     ExportRun, ExportTask
 )
-from tasks.export_tasks import FORMAT_NAMES
+from utils import FORMAT_NAMES
 
 try:
     from collections import OrderedDict

@@ -136,8 +136,7 @@ class HDXExportSet(object):
                     'description': "ESRI Shapefile of " + geom_type,
                     'url': '{0}/{1}.zip'.format(os.environ['HDX_TEST_BUCKET'],job_name + '_' + resource_name)
                 })
-                resources.append(resource)
-        dataset.add_update_resources(resources)
+            dataset.add_update_resources(resources)
 
     def run():
         pass

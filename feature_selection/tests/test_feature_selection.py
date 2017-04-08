@@ -123,6 +123,7 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         self.assertTrue(f.valid)
+        self.assertEqual(f.geom_types('all'),['points','lines','polygons'])
 
     def test_unspecified_yaml(self):
         # top level is a list and not a dict

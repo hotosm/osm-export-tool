@@ -4,8 +4,18 @@ import yaml
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
 
-CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT Geometry,osm_id,{1} FROM {2} WHERE ({3}) AND ST_Contains(GeomFromText(?),Geometry);'
-INDEX_TEMPLATE = "SELECT RecoverGeometryColumn('{0}', 'GEOMETRY', 4326, '{1}', 'XY')"
+#CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT Geometry,osm_id,{1} FROM {2} WHERE ({3}) AND ST_Contains(GeomFromText(?),Geometry);'
+CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT geom,osm_id,{1} FROM {2} WHERE ({3})'
+#INDEX_TEMPLATE = "SELECT RecoverGeometryColumn('{0}', 'GEOMETRY', 4326, '{1}', 'XY')"
+# TODO dont hardcode date
+INDEX_TEMPLATE = """
+INSERT INTO gpkg_contents VALUES ('{0}', 'features', '{0}', '', '2017-04-08T01:35:16.576Z', null, null, null, null, '4326');
+INSERT INTO gpkg_geometry_columns VALUES ('{0}', 'geom', '{1}', '4326', '0', '0');
+UPDATE '{0}' SET geom=GeomFromGPB(geom);
+SELECT gpkgAddSpatialIndex('{0}', 'geom');
+UPDATE '{0}' SET geom=AsGPB(geom);
+"""
+
 
 WKT_TYPE_MAP = {
     'points':'POINT',
@@ -144,7 +154,9 @@ class FeatureSelection(object):
         return self.doc.keys()
 
     def geom_types(self,theme):
-        return self.doc[theme]['types']
+        if 'types' in self.doc[theme]:
+            return self.doc[theme]['types']
+        return ['points','lines','polygons']
 
     def key_selections(self,theme):
         return self.doc[theme]['select']

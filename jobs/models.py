@@ -18,7 +18,7 @@ from django.utils import timezone
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
-from tasks.export_tasks import FORMAT_NAMES
+from utils import FORMAT_NAMES
 
 LOG = logging.getLogger(__name__)
 
