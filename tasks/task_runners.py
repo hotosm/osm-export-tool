@@ -168,7 +168,7 @@ def run_task_remote(run_uid):
                     'name': theme + ' ' + geom_type,
                     'format': 'zipped shapefile',  
                     'description': "ESRI Shapefile of " + geom_type,
-                    'url': os.path.join(settings.HOSTNAME, settings.EXPORT_MEDIA_ROOT,run_uid,theme + '_' + geom_type + ".zip")
+                    'url': settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT,run_uid,theme + '_' + geom_type + ".zip")
                 })
             export_set.datasets[theme].add_update_resources(resources)
         export_set.sync_datasets()
