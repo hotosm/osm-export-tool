@@ -52,7 +52,7 @@ class OSM_XML(object):
         e = self.aoi_geom.extent  # (w,s,e,n)
         # overpass needs extents in order (s,w,n,e)
         query = OSM_XML.default_template.safe_substitute(
-            {'maxsize': self.overpass_max_size, 'timeout': self.timeout, 'bbox':'{1},{0},{3},{2}'.format(e[1],e[0],e[3],e[2])}
+            {'maxsize': self.overpass_max_size, 'timeout': self.timeout, 'bbox':'{1},{0},{3},{2}'.format(e[0],e[1],e[2],e[3])}
         )
         # set up required paths
         LOG.debug("Query started at: %s" % datetime.now())
