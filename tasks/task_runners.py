@@ -145,10 +145,10 @@ def run_task_remote(run_uid):
         run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
-            for result in task.results:
-                filename = os.path.basename(result)
-                download_path = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid, filename)
-                shutil.copy(result, download_path)
+        for result in task.results:
+            filename = os.path.basename(result)
+            download_path = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid, filename)
+            shutil.copy(result, download_path)
 
     run.status = 'COMPLETED'
     run.finished_at = timezone.now()
