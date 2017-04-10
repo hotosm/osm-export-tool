@@ -79,11 +79,10 @@ def report_started_task(run_uid,task_name):
     task.save()
     LOG.debug('Updated task: {0} for run: {1}'.format(task_name, run_uid))
 
-def report_finished_task(run_uid,task_name,result_file):
-    # TODO what if more than one file?
+def report_finished_task(run_uid,task_name,results):
     task = ExportTask.objects.get(run__uid=run_uid, name=task_name)
-    task.filesize_bytes = os.stat(result_file).st_size
-    task.filename = result_file.split('/')[-1]
+    task.filesize_bytes = sum(os.stat(result).st_size for result in results)
+    task.filenames = [os.path.basename(result) for result in results]
     task.status = 'SUCCESS'
     task.finished_at = timezone.now()
     task.save()
@@ -140,16 +139,16 @@ def run_task_remote(run_uid):
     for task in [osm_xml,osm_pbf,geopackage,kml,shp,thematic_gpkg,thematic_shp]:
         report_started_task(run_uid, task.name)
         task.run()
-        report_finished_task(run_uid, task.name,task.results[0])
+        report_finished_task(run_uid, task.name,task.results)
 
     for task in [osm_xml,osm_pbf,geopackage,kml,shp,thematic_gpkg,thematic_shp]:
-        parts = task.results[0].split('/')
-        filename = parts[-1]
         run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
-        download_path = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid, filename)
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
-        shutil.copy(task.results[0], download_path)
+            for result in task.results:
+                filename = os.path.basename(result)
+                download_path = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid, filename)
+                shutil.copy(result, download_path)
 
     run.status = 'COMPLETED'
     run.finished_at = timezone.now()

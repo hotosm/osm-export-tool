@@ -143,7 +143,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExportTask
-        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'errors','description','filesize_bytes','filename','download_url')
+        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 'duration', 'errors','description','filesize_bytes','filenames','download_url')
 
     def get_description(self,obj):
         if obj.name in FORMAT_NAMES:
@@ -167,8 +167,9 @@ class ExportTaskSerializer(serializers.ModelSerializer):
 
     def get_download_url(self, obj):
         download_media_root = settings.EXPORT_MEDIA_ROOT
-        if obj.filename:
-            return os.path.join(download_media_root,str(obj.run.uid), obj.filename)
+        if obj.filenames:
+            filename = obj.filenames[0] #TODO make me work with multiple URLs
+            return os.path.join(download_media_root,str(obj.run.uid), filename)
         return None
 
     def get_duration(self, obj):
