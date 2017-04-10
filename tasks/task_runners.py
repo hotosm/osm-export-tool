@@ -134,7 +134,7 @@ def run_task_remote(run_uid):
     kml = KML(stage_dir + "geopackage.gpkg",stage_dir + "kml.kmz")
     shp = Shapefile(stage_dir + "geopackage.gpkg",stage_dir + "shapefile.shp.zip")
     thematic_gpkg = ThematicGPKG(stage_dir+"geopackage.gpkg",feature_selection)
-    thematic_shp = ThematicSHP(stage_dir+"geopackage.gpkg",stage_dir,feature_selection)
+    thematic_shp = ThematicSHP(stage_dir+"geopackage.gpkg",stage_dir,feature_selection,aoi)
 
     for task in [osm_xml,osm_pbf,geopackage,kml,shp,thematic_gpkg,thematic_shp]:
         report_started_task(run_uid, task.name)

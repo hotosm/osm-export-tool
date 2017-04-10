@@ -20,11 +20,12 @@ class ThematicSHP(object):
     name = 'theme_shp'
     description = 'Esri SHP (Thematic Schema)'
 
-    def __init__(self, input_gpkg, output_dir, feature_selection,per_theme=True):
+    def __init__(self, input_gpkg, output_dir, feature_selection,aoi_geom,per_theme=True):
         self.gpkg = input_gpkg
         self.feature_selection = feature_selection
         self.output_dir = output_dir + "/"
         self.per_theme = per_theme
+        self.aoi_geom = aoi_geom
 
     def run(self):
         for table in self.feature_selection.tables:
@@ -36,11 +37,13 @@ class ThematicSHP(object):
         if self.per_theme:
             for table in self.feature_selection.tables:
                 with zipfile.ZipFile(self.output_dir + table + ".zip",'w',zipfile.ZIP_DEFLATED) as z:
+                    z.writestr("boundary.geojson",self.aoi_geom.json)
                     for e in exts:
                         if os.path.isfile(self.output_dir+table+e):
                             z.write(self.output_dir + table + e,table + e)
         else:
             with zipfile.ZipFile(self.output_dir + "thematic_shps.zip",'w',zipfile.ZIP_DEFLATED) as z:
+                z.writestr("boundary.geojson",self.aoi_geom.json)
                 for table in self.feature_selection.tables:
                     for e in exts:
                         if os.path.isfile(self.output_dir+table+e):
