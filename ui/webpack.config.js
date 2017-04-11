@@ -1,11 +1,11 @@
 const path = require('path');
 
-const webpack = require('webpack')
+const webpack = require('webpack');
 
 const config = {
   entry: './app/hdx/base.jsx',
   output: {
-    path: path.resolve(__dirname, 'static','ui','js'),
+    path: path.resolve(__dirname, 'static', 'ui', 'js'),
     filename: 'bundle.js'
   },
   devtool: 'eval',
@@ -16,13 +16,14 @@ const config = {
         exclude: [/node_modules/],
         loader: 'babel-loader',
         query: {
-          presets: ["es2015","react","stage-0"]
+          presets: ['es2015', 'react', 'stage-0']
         }
       },
       {
         test: /app.*\.css$/,
         loader: 'style-loader'
-      }, {
+      },
+      {
         test: /app.*\.css$/,
         loader: 'css-loader',
         query: {
