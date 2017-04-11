@@ -5,6 +5,7 @@ import zipfile
 from feature_selection.feature_selection import FeatureSelection
 
 from hdx.data.dataset import Dataset
+from hdx.data.galleryitem import GalleryItem
 from hdx.configuration import Configuration
 
 from django.contrib.gis.geos import GEOSGeometry
@@ -33,7 +34,7 @@ class HDXExportSet(object):
     This is a plain old python object that can be used independent of the web application.
     """
 
-    def __init__(self,dataset_prefix,name,extent,feature_selection,country_codes=[],is_private=False):
+    def __init__(self,dataset_prefix,name,extent,feature_selection,country_codes=[],is_private=False,hostname="exports-staging.hotosm.org"):
         # raise exceptions on invalid feature selections, extents.
         # it's not the job of this class to validate those!
         try:
@@ -48,6 +49,7 @@ class HDXExportSet(object):
         self._country_codes = country_codes
         self._datasets = None
         self.is_private = is_private
+        self.hostname = hostname
 
     @property
     def country_codes(self):
@@ -63,6 +65,11 @@ class HDXExportSet(object):
         sp = sp.buffer(0.02)
         sp = sp.simplify(0.01)
         return sp
+
+    @property
+    def osm_analytics_url(self):
+        bounds = self._extent.extent
+        return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/highways/recency".format(*bounds)
 
     @property
     def datasets(self): 
@@ -88,6 +95,18 @@ class HDXExportSet(object):
             dataset['groups'] = []
             for country_code in self._country_codes:
                 dataset.add_country_location(country_code)
+
+            ga = GalleryItem({
+                'title':'osm_analytics_link',
+                'description':'View detailed information about data recency for this area on OSM Analytics.',
+                'url':self.osm_analytics_url,
+                'image_url':'http://' + self.hostname + '/static/ui/images/osm_analytics.png',
+                'type':'Visualization'
+            })
+            dataset.add_update_galleryitem(ga)
+
+
+
             self._datasets[theme] = dataset
         return self._datasets
 
@@ -125,30 +144,14 @@ class HDXExportSet(object):
             for e in exts:
                 os.remove(stage_dir + table + e)
 
-    def sync_resources(self,stage_root,job_name):
-        resources = []
-        for theme, dataset in self.datasets.iteritems():
-            for geom_type in self._feature_selection.geom_types(theme):
-                resource_name = theme + '_' + geom_type # DRY me up
-                resources.append({
-                    'name': resource_name,
-                    'format': 'zipped shapefile',  
-                    'description': "ESRI Shapefile of " + geom_type,
-                    'url': '{0}/{1}.zip'.format(os.environ['HDX_TEST_BUCKET'],job_name + '_' + resource_name)
-                })
-            dataset.add_update_resources(resources)
-
-    def run():
-        pass
-
 
 if __name__ == "__main__":
     import logging
     logging.basicConfig()
-    Configuration.create(hdx_site='prod',hdx_key=os.environ.get('HDX_API_KEY',None))
+    Configuration.create(hdx_site='demo',hdx_key=os.environ.get('HDX_API_KEY',None))
     f_s = FeatureSelection(open('hdx_exports/example_preset.yml').read())
     extent = open('hdx_exports/adm0/GIN_adm0.geojson').read()
     h = HDXExportSet('hotosm_guinea','Guinea',extent,f_s,country_codes=['GIN'])
     #h.zip_resources("../stage/","hotosm_guinea")
     #h.sync_resources("../stage/","hotosm_guinea")
-    #h.sync_datasets()
+    h.sync_datasets()
