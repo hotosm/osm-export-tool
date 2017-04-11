@@ -20,7 +20,7 @@ const AVAILABLE_EXPORT_FORMATS = {
   geopackage: 'GeoPackage',
   garmin: 'Garmin .IMG',
   kml: '.KMZ',
-  pbf: 'OpenStreetMap .PBF'
+  osm_pbf: 'OpenStreetMap .PBF'
 };
 
 const form = reduxForm({
