@@ -494,8 +494,6 @@ def request_geonames(request):
         'q': request.GET.get('q')
     }
 
-    LOG.warn('payload: {}'.format(payload))
-
     geonames_url = getattr(settings, 'GEONAMES_API_URL')
 
     if geonames_url:

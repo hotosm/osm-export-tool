@@ -21,7 +21,8 @@ const config = {
       },
       {
         test: /app.*\.css$/,
-        loader: 'style-loader'
+        loader: 'style-loader',
+        exclude: [/node_modules/]
       },
       {
         test: /app.*\.css$/,
@@ -29,7 +30,13 @@ const config = {
         query: {
           modules: true,
           localIdentName: '[name]__[local]___[hash:base64:5]'
-        }
+        },
+        exclude: [/node_modules/]
+      },
+      {
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader'],
+        include: [/node_modules/]
       }
     ],
     noParse: /dist\/ol.js/

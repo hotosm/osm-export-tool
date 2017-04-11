@@ -206,9 +206,7 @@ class Tag(models.Model):
         return '{0}:{1}'.format(self.key, self.value)
 
 
-class HDXExportRegion(models.Model):
-    """
-    """
+class HDXExportRegion(models.Model): # noqa
     PERIOD_CHOICES = (
         ('6hrs', 'Every 6 hours'),
         ('daily', 'Every day'),
@@ -216,14 +214,21 @@ class HDXExportRegion(models.Model):
         ('monthly', 'The 1st of every month'),
         ('disabled', 'Disabled'),
     )
-    HOUR_CHOICES = zip( xrange(0,24), xrange(0,24) )
-    EXPORT_FORMAT_CHOICES = map(lambda name: (name, FORMAT_NAMES[name].description), FORMAT_NAMES)
-    schedule_period = models.CharField(blank=False,max_length=10,default="disabled",choices=PERIOD_CHOICES)
-    schedule_hour = models.IntegerField(blank=False,choices=HOUR_CHOICES,default=0)
-    country_codes = ArrayField(models.CharField(blank=False,max_length=3),null=True)
+    HOUR_CHOICES = zip(xrange(0, 24), xrange(0, 24))
+    EXPORT_FORMAT_CHOICES = map(
+        lambda name: (name, FORMAT_NAMES[name].description), FORMAT_NAMES)
+    schedule_period = models.CharField(
+        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
+    schedule_hour = models.IntegerField(
+        blank=False, choices=HOUR_CHOICES, default=0)
     deleted = models.BooleanField(default=False)
-    job = models.ForeignKey(Job,null=True)
+    job = models.ForeignKey(Job, null=True)
     is_private = models.BooleanField(default=False)
+    locations = ArrayField(
+        models.CharField(blank=False, max_length=32), null=True)
+    license = models.CharField(max_length=32, null=True)
+    subnational = models.BooleanField(default=True)
+    extra_notes = models.TextField(null=True)
 
     @property
     def next_run(self): # noqa
@@ -263,7 +268,7 @@ class HDXExportRegion(models.Model):
             return anchor + timedelta(days=num_days)
 
     @property
-    def last_run(self):
+    def last_run(self): # noqa
         last = self.job.runs.last()
         if last is not None:
             return last.finished_at
@@ -338,5 +343,3 @@ def exportconfig_delete_upload(sender, instance, **kwargs):
     for export in exports.all():
         export.config = None
         export.save()
-
-

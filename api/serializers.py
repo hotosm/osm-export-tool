@@ -431,8 +431,9 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
         model = HDXExportRegion
         fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats', 'runs',
-                  'country_codes', 'name', 'last_run', 'next_run', 'the_geom',
-                  'dataset_prefix', 'job')
+                  'locations', 'name', 'last_run', 'next_run', 'the_geom',
+                  'dataset_prefix', 'job', 'license', 'subnational',
+                  'extra_notes', 'is_private', )
 
     def validate_feature_selection(self,value):
         f = FeatureSelection(value)
@@ -440,43 +441,53 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
             raise serializers.ValidationError("Feature selection invalid: {0}".format(f.errors))
         return value
 
-    def create(self,validated_data):
+    def create(self, validated_data): # noqa
+        LOG.info('validated_data: {}'.format(validated_data))
         with transaction.atomic():
             request = self.context['request']
+            # for properties that don't map directly onto an HDXExportRegion
             data = request.data
-            name = data.get('name')
-            dataset_prefix = data.get('dataset_prefix')
-            the_geom = GEOSGeometry(json.dumps(data.get('the_geom')))
-            export_formats = request.data.get('export_formats')
-            feature_selection = request.data.get('feature_selection')
+
             job = Job.objects.create(
-                            the_geom=the_geom,
-                            name=dataset_prefix,
-                            export_formats = export_formats,
-                            description = name,
-                            feature_selection = feature_selection,
-                            user=request.user)
+                the_geom=GEOSGeometry(
+                    json.dumps(data.get('the_geom'))),
+                name=data.get('dataset_prefix'),
+                export_formats=data.get('export_formats'),
+                description=data.get('name'),
+                feature_selection=data.get('feature_selection'),
+                user=request.user,
+            )
+
             region = HDXExportRegion.objects.create(
-                dataset_prefix = data.get('dataset_prefix'),
-                schedule_period = data.get('schedule_period') or 'disabled',
-                schedule_hour = data.get('schedule_hour') or 0,
-                job=job
+                extra_notes=validated_data.get('extra_notes'),
+                is_private=validated_data.get('is_private') or False,
+                locations=validated_data.get('locations'),
+                license=validated_data.get('license'),
+                schedule_period=validated_data.get('schedule_period') or 'disabled',
+                schedule_hour=validated_data.get('schedule_hour') or 0,
+                subnational=validated_data.get('subnational') or False,
+                job=job,
             )
         return region
 
-    def update(self,instance,validated_data):
+    def update(self, instance, validated_data): # noqa
         with transaction.atomic():
             data = self.context['request'].data
+
             job = instance.job
-            job.name = data.get('name')
+            job.name = data.get('dataset_prefix')
             job.the_geom = GEOSGeometry(json.dumps(data.get('the_geom')))
             job.export_formats = data.get('export_formats')
             job.feature_selection = data.get('feature_selection')
-            job.name = data.get('dataset_prefix')
             job.description = data.get('name')
             job.save()
 
+            instance.extra_notes = validated_data.get('extra_notes')
+            instance.is_private = validated_data.get('is_private') or False
+            instance.locations = validated_data.get('locations')
+            instance.license = validated_data.get('license')
             instance.schedule_period = validated_data.get('schedule_period')
             instance.schedule_hour = validated_data.get('schedule_hour')
+            instance.subnational = validated_data.get('subnational') or False
             instance.save()
         return instance

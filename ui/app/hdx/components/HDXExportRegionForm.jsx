@@ -10,6 +10,8 @@ import { FormattedDate, FormattedNumber, FormattedRelative, FormattedTime, IntlM
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
 
 import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
 import { deleteExportRegion, getExportRegion, runExport } from '../actions/hdxActions';
@@ -18,7 +20,8 @@ import styles from '../styles/HDXExportRegionForm.css';
 const AVAILABLE_EXPORT_FORMATS = {
   shp: 'ESRI Shapefiles',
   geopackage: 'GeoPackage',
-  garmin: 'Garmin .IMG',
+  // TODO disabled until we get this working again
+  // garmin: 'Garmin .IMG',
   kml: '.KMZ',
   osm_pbf: 'OpenStreetMap .PBF'
 };
@@ -44,8 +47,9 @@ const form = reduxForm({
 
     const formData = {
       ...values,
-      the_geom: props.aoiInfo.geojson.features[0].geometry,
-      export_formats: exportFormats
+      export_formats: exportFormats,
+      locations: values.locations.map(x => x.value),
+      the_geom: props.aoiInfo.geojson.features[0].geometry
     };
 
     let url = '/api/hdx_export_regions';
@@ -90,6 +94,18 @@ const renderInput = ({ id, input, label, help, meta: { touched, error }, ...prop
   <FormGroup controlId={id || props.name} validationState={error && 'error'}>
     <ControlLabel>{label}</ControlLabel>
     <FormControl {...input} {...props} />
+    <FormControl.Feedback />
+    <HelpBlock>{touched && error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
+  </FormGroup>;
+
+const renderMultiSelect = ({ id, input, label, help, meta: { touched, error }, ...props }) =>
+  <FormGroup controlId={id || props.name} validationState={error && 'error'}>
+    <ControlLabel>{label}</ControlLabel>
+    <Select
+      {...input}
+      {...props}
+      onBlur={() => input.onBlur(input.value)}
+    />
     <FormControl.Feedback />
     <HelpBlock>{touched && error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
   </FormGroup>;
@@ -170,6 +186,18 @@ export class HDXExportRegionForm extends Component {
     return <FormattedRelative value={exportRegion.next_run} />;
   }
 
+  loadLocationOptions () {
+    return axios('https://data.humdata.org/api/3/action/group_list?all_fields=true')
+      .then(rsp => this.setState({
+        locationOptions: rsp.data.result
+          .filter(x => x.state === 'active')
+          .map(x => ({
+            value: x.name,
+            label: x.title
+          }))
+      }));
+  }
+
   componentDidMount () {
     const { clearAOI, getExportRegion, match: { params: { id } } } = this.props;
 
@@ -183,6 +211,8 @@ export class HDXExportRegionForm extends Component {
         editing: true
       });
     }
+
+    this.loadLocationOptions();
   }
 
   componentWillReceiveProps (props) {
@@ -263,7 +293,7 @@ export class HDXExportRegionForm extends Component {
   };
 
   render () {
-    const { deleting, editing, running } = this.state;
+    const { deleting, editing, locationOptions, running } = this.state;
     const { error, handleSubmit, hdx: { exportRegion }, submitting } = this.props;
     const datasetPrefix = this.props.datasetPrefix || '<prefix>';
     const name = this.props.name || 'Untitled';
@@ -304,61 +334,50 @@ export class HDXExportRegionForm extends Component {
           />
           <Field
             id='formControlExtraNotes'
-            name='extraNotes'
+            name='extra_notes'
             rows='4'
             label='Extra Notes (appended to notes section)'
             component={renderTextArea}
           />
+          <Row>
+            <Col xs={6}>
+              <Field
+                name='is_private'
+                description='Private'
+                component={renderCheckbox}
+                type='checkbox'
+              />
+            </Col>
+            <Col xs={6}>
+              <Field
+                name='subnational'
+                description='Dataset contains sub-national data'
+                component={renderCheckbox}
+                type='checkbox'
+              />
+            </Col>
+          </Row>
           <Field
-            name='private'
-            description='Private'
-            component={renderCheckbox}
-            type='checkbox'
-          />
-          <Field
-            name='subnational'
-            description='Dataset contains sub-national data'
-            component={renderCheckbox}
-            checked={true}
-            type='checkbox'
-          />
-          {/* TODO populate this list */}
-          <Field
-            name='location'
-            type='text'
+            name='locations'
+            multi
             label='Location'
-            placeholder='Senegal'
+            component={renderMultiSelect}
+            options={locationOptions}
+          />
+          <Field
+            name='license_human_readable'
+            type='text'
+            label='License'
+            disabled
             component={renderInput}
           />
           <Field
             name='license'
-            type='text'
             label='License'
-            placeholder='hdx-odc-by'
-            disabled={true}
-            component={renderInput}
+            disabled
+            component='input'
+            type='hidden'
           />
-          <Row>
-            <Col xs={6}>
-              <Field
-                name='countryCodes'
-                type='text'
-                label='Country Codes'
-                placeholder='SEN'
-                component={renderInput}
-              />
-            </Col>
-            {/* TODO complete via https://demo-data.humdata.org/api/2/util/tag/autocomplete?incomplete=econ */}
-            <Col xs={6}>
-              <Field
-                name='metadataTags'
-                type='text'
-                label='Tags'
-                placeholder='openstreetmap'
-                component={renderInput}
-              />
-            </Col>
-          </Row>
           <hr />
           <Row>
             <Col xs={6}>
@@ -442,7 +461,7 @@ export class HDXExportRegionForm extends Component {
                 </thead>
                 <tbody>{this.getRunRows()}</tbody>
               </Table>
-              : <p>This export region has never been run.</p>
+              : <p>This regional export has never been run.</p>
             }
             <Panel>
               <p>
@@ -468,7 +487,10 @@ const mapStateToProps = state => {
     initialValues: {
       feature_selection: `buildings:
   select:
-     - building`
+     - building`,
+      license: 'hdx-odc-by',
+      license_human_readable: 'Open Database License (ODC-ODbL)',
+      subnational: true
     },
     name: formValueSelector('HDXExportRegionForm')(state, 'name')
   };
