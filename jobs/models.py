@@ -264,7 +264,9 @@ class HDXExportRegion(models.Model):
 
     @property
     def last_run(self):
-        return None
+        last = self.job.runs.last()
+        if last is not None:
+            return last.finished_at
 
     @property
     def name(self):
@@ -296,26 +298,16 @@ class HDXExportRegion(models.Model):
             '{}_roads'.format(self.dataset_prefix),
             '{}_waterways'.format(self.dataset_prefix)
         )
+
     @property
     def runs(self): # noqa
-        # TODO populate this
-        return (
-            {
-                'run_at': timezone.now() - timedelta(days=1),
-                'elapsed_time': 10.2 * 60,
-                'size': 256 * 1024 * 1024,
-            },
-            {
-                'run_at': timezone.now() - timedelta(days=2),
-                'elapsed_time': 9.7 * 60,
-                'size': 312 * 1024 * 1024,
-            },
-            {
-                'run_at': timezone.now() - timedelta(days=4),
-                'elapsed_time': 11.2 * 60,
-                'size': 157 * 1024 * 1024,
-            },
-        )
+        return map(lambda run: {
+            'elapsed_time': (run.finished_at or timezone.now()) - run.started_at,
+            'run_at': run.started_at,
+            'size': sum(map(
+                lambda task: task.filesize_bytes or 0, run.tasks.all())),
+            'status': run.status,
+        }, self.job.runs.all())
 
     @property
     def hdx_dataset(self):
