@@ -9,12 +9,10 @@ class TestSQLValidator(unittest.TestCase):
         s = SQLValidator("")
         self.assertFalse(s.valid)
 
-    @unittest.skip("temporarily disabled")
     def test_minimal(self):
         s = SQLValidator("name IS NOT NULL")
         self.assertTrue(s.valid)
 
-    @unittest.skip("temporarily disabled")
     def test_malicious_sql(self):
         s = SQLValidator("name IS NOT NULL; drop table planet_osm_polygon;")
         self.assertFalse(s.valid)
@@ -135,3 +133,24 @@ class TestFeatureSelection(unittest.TestCase):
         f = FeatureSelection(y)
         self.assertFalse(f.valid)
         self.assertEqual(f.errors[0],"YAML must be dict, not list")
+
+    def test_dash_spacing_yaml(self):
+        # top level is a list and not a dict
+        y = '''
+        all: 
+          select:
+            -name
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+
+    def test_no_select_yaml(self):
+        # top level is a list and not a dict
+        y = '''
+        all: 
+          -select:
+            - name
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Each theme must have a 'select' key")

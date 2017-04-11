@@ -46,13 +46,10 @@ class SQLValidator(object):
         parsed = sqlparse.parse(self._raw_sql)
 
         def is_valid_identifier(value):
-            print value
             return True
 
         
         def is_whitelisted(token):
-            print token
-            print token.ttype
             if isinstance(token,sqlparse.sql.Identifier):
                 return is_valid_identifier(token.value)
             if isinstance(token,sqlparse.sql.IdentifierList):
@@ -122,6 +119,13 @@ class FeatureSelection(object):
             if not isinstance(loaded_doc,dict):
                 self._errors.append("YAML must be dict, not list")
                 return False
+            for theme, theme_dict in loaded_doc.iteritems():
+                if 'select' not in theme_dict:
+                    self._errors.append("Each theme must have a 'select' key")
+                    return False
+                if not isinstance(theme_dict['select'],list):
+                    self._errors.append("'select' children must be list elements (e.g. '- amenity')")
+                    return False
             return True
 
         if self._doc:
@@ -166,6 +170,9 @@ class FeatureSelection(object):
         if 'where' in theme:
             return theme['where']
         return '1'
+
+    def __str__(self):
+        return str(self.doc)
 
     @property
     def key_union(self):
