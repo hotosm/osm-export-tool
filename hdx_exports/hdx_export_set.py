@@ -97,8 +97,8 @@ class HDXExportSet(object):
                 dataset.add_country_location(country_code)
 
             ga = GalleryItem({
-                'title':'osm_analytics_link',
-                'description':'View detailed information about data recency for this area on OSM Analytics.',
+                'title':'OSM Analytics',
+                'description':'View detailed information about OpenStreetMap edit history in this area.',
                 'url':self.osm_analytics_url,
                 'image_url':'http://' + self.hostname + '/static/ui/images/osm_analytics.png',
                 'type':'Visualization'
