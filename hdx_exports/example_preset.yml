@@ -64,7 +64,8 @@ points_of_interest:
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 
 admin_boundaries:
-  hdx_dataset_name: Guinea Administrative Boundaries (OpenStreetMap Export)
+  hdx_name: Guinea Administrative Boundaries (OpenStreetMap Export)
+  hdx_tags: facilities, poi, osm
   types: 
     - points
     - lines
