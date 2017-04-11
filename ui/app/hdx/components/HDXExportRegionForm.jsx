@@ -6,7 +6,7 @@ import prettyBytes from 'pretty-bytes';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
 import cookie from 'react-cookie';
 import { Field, SubmissionError, formValueSelector, reduxForm } from 'redux-form';
-import { FormattedDate, FormattedNumber, FormattedRelative, IntlMixin } from 'react-intl';
+import { FormattedDate, FormattedNumber, FormattedRelative, FormattedTime, IntlMixin } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
@@ -231,7 +231,10 @@ export class HDXExportRegionForm extends Component {
     return exportRegion.runs.map((run, i) => (
       <tr key={i}>
         <td>
-          <FormattedDate value={run.run_at} />
+          <FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} />
+        </td>
+        <td>
+          {run.status}
         </td>
         <td>
           <FormattedNumber value={run.elapsed_time / 60} /> minutes
@@ -395,6 +398,9 @@ export class HDXExportRegionForm extends Component {
                   <tr>
                     <th>
                       Run Started
+                    </th>
+                    <th>
+                      Status
                     </th>
                     <th>
                       Elapsed Time
