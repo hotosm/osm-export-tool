@@ -18,8 +18,8 @@ from .secret import SECRET_KEY  # NOQA  # isort:skip
 TIME_ZONE = 'UTC'
 
 # default DEBUG setting
-# Set debug to false for production
-DEBUG = bool(os.environ.get('DEBUG', True))
+# Set debug to true for development
+DEBUG = bool(os.environ.get('DEBUG', False))
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
