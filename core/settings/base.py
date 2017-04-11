@@ -5,12 +5,6 @@ import os
 
 from django.utils.translation import ugettext_lazy as _
 
-# import SECRET_KEY into current namespace
-from .utils import ABS_PATH
-
-from .secret import SECRET_KEY  # NOQA  # isort:skip
-
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -20,6 +14,13 @@ TIME_ZONE = 'UTC'
 # default DEBUG setting
 # Set debug to true for development
 DEBUG = bool(os.environ.get('DEBUG', False))
+
+# from django.utils.crypto import get_random_string
+# secret_key = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+if 'SECRET_KEY' not in os.environ:
+    print "WARNING: secret key not set - setting a default for development."
+SECRET_KEY = os.environ.get('SECRET_KEY','default_secret_key')
+
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -33,6 +34,14 @@ LANGUAGES = (
     ('ja', _('Japanese')),
     ('fr', _('French')),
 )
+
+DJANGO_ROOT = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    ))
+
+def ABS_PATH(*args):
+    return os.path.normpath(os.path.join(DJANGO_ROOT, *args))
 
 LOCALE_PATHS = (
     ABS_PATH('locales'),
@@ -121,14 +130,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
-
-PUSH_NOTIFICATIONS_SETTINGS = {
-    # google key
-    "GCM_API_KEY": "AIzaSyD2Jl24UkiquEV16cAhLuNUW-oVsKuIVx0",
-    # apple certificate
-    "APNS_CERTIFICATE": "/path/to/your/certificate.pem",
-}
-
 
 AUTHENTICATION_BACKENDS = (
     'social.backends.openstreetmap.OpenStreetMapOAuth',
