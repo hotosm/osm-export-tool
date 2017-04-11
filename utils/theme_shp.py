@@ -37,13 +37,13 @@ class ThematicSHP(object):
         if self.per_theme:
             for table in self.feature_selection.tables:
                 with zipfile.ZipFile(self.output_dir + table + ".zip",'w',zipfile.ZIP_DEFLATED) as z:
-                    z.writestr("boundary.geojson",self.aoi_geom.json)
+                    z.writestr("~boundary.geojson",self.aoi_geom.json)
                     for e in exts:
                         if os.path.isfile(self.output_dir+table+e):
                             z.write(self.output_dir + table + e,table + e)
         else:
             with zipfile.ZipFile(self.output_dir + "thematic_shps.zip",'w',zipfile.ZIP_DEFLATED) as z:
-                z.writestr("boundary.geojson",self.aoi_geom.json)
+                z.writestr("~boundary.geojson",self.aoi_geom.json)
                 for table in self.feature_selection.tables:
                     for e in exts:
                         if os.path.isfile(self.output_dir+table+e):
