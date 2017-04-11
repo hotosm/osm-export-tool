@@ -2,8 +2,8 @@
 from __future__ import absolute_import
 
 import os
-
 from django.utils.translation import ugettext_lazy as _
+from .utils import ABS_PATH
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -34,14 +34,6 @@ LANGUAGES = (
     ('ja', _('Japanese')),
     ('fr', _('French')),
 )
-
-DJANGO_ROOT = os.path.dirname(
-    os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))
-    ))
-
-def ABS_PATH(*args):
-    return os.path.normpath(os.path.join(DJANGO_ROOT, *args))
 
 LOCALE_PATHS = (
     ABS_PATH('locales'),

@@ -7,7 +7,6 @@ import dj_database_url
 
 from .base import *
 from .celery import *  # NOQA
-import tasks.export_tasks
 from .utils import ABS_PATH
 
 # Project apps
