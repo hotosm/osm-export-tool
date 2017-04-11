@@ -309,6 +309,35 @@ export class HDXExportRegionForm extends Component {
             label='Extra Notes (appended to notes section)'
             component={renderTextArea}
           />
+          <Field
+            name='private'
+            description='Private'
+            component={renderCheckbox}
+            type='checkbox'
+          />
+          <Field
+            name='subnational'
+            description='Dataset contains sub-national data'
+            component={renderCheckbox}
+            checked={true}
+            type='checkbox'
+          />
+          {/* TODO populate this list */}
+          <Field
+            name='location'
+            type='text'
+            label='Location'
+            placeholder='Senegal'
+            component={renderInput}
+          />
+          <Field
+            name='license'
+            type='text'
+            label='License'
+            placeholder='hdx-odc-by'
+            disabled={true}
+            component={renderInput}
+          />
           <Row>
             <Col xs={6}>
               <Field
@@ -319,6 +348,7 @@ export class HDXExportRegionForm extends Component {
                 component={renderInput}
               />
             </Col>
+            {/* TODO complete via https://demo-data.humdata.org/api/2/util/tag/autocomplete?incomplete=econ */}
             <Col xs={6}>
               <Field
                 name='metadataTags'
