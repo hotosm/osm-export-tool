@@ -4,8 +4,6 @@ import logging
 import os
 import subprocess
 from string import Template
-import ConfigParser
-import StringIO
 
 from osgeo import gdal, ogr, osr
 import sqlite3
@@ -64,7 +62,6 @@ DROP TABLE rtree_points_geom;
 INI_TEMPLATE = '''
 # Configuration file for OSM import
 
-[defaults]
 # put here the name of keys for ways that are assumed to be polygons if they are closed
 # see http://wiki.openstreetmap.org/wiki/Map_Features
 closed_ways_are_polygons=aeroway,amenity,boundary,building,craft,geological,harbour,historic,landuse,leisure,man_made,military,natural,office,place,power,shop,sport,tourism,water,waterway,wetland
@@ -88,7 +85,7 @@ osm_user=no
 osm_changeset=no
 
 # keys to report as OGR fields
-attributes=
+attributes={points_attributes}
 
 # keys that, alone, are not significant enough to report a node as a OGR point
 unsignificant=created_by,converted_by,source,time,attribution
@@ -109,7 +106,7 @@ osm_user=no
 osm_changeset=no
 
 # keys to report as OGR fields
-attributes=
+attributes={lines_attributes}
 # keys that should NOT be reported in the "other_tags" field
 ignore=created_by,converted_by,source,time,ele,note,openGeoDB:,fixme,FIXME
 # uncomment to avoid creation of "other_tags" field
@@ -129,7 +126,7 @@ osm_user=no
 osm_changeset=no
 
 # keys to report as OGR fields
-attributes=
+attributes={multipolygons_attributes}
 # keys that should NOT be reported in the "other_tags" field
 ignore=area,created_by,converted_by,source,time,ele,note,openGeoDB:,fixme,FIXME
 # uncomment to avoid creation of "other_tags" field
@@ -207,16 +204,13 @@ class OSMConfig(object):
         Return:
             the path to the export configuration file.
         """
-        config = ConfigParser.SafeConfigParser()
-        config.readfp(StringIO.StringIO(INI_TEMPLATE))  # read in the template
-        config.set('points', 'attributes', ','.join(self.points))
-        config.set('lines', 'attributes', ','.join(self.lines))
-        config.set('multipolygons', 'attributes', ','.join(self.polygons))
+        result = INI_TEMPLATE.format(
+            points_attributes=','.join(self.points),
+            lines_attributes=','.join(self.lines),
+            multipolygons_attributes=','.join(self.polygons)
+        )
         with open(self.output_ini, 'wb') as f:
-            config.write(f)
-        output = open(self.output_ini).read().replace(' = ','=')
-        with open(self.output_ini, 'wb') as f:
-            f.write(output)
+            f.write(result)
         return self.output_ini
 
 
