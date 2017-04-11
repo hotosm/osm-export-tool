@@ -19,7 +19,7 @@ UPDATE '{0}' SET geom=AsGPB(geom);
 
 WKT_TYPE_MAP = {
     'points':'POINT',
-    'lines':'LINESTRING',
+    'lines':'MULTILINESTRING',
     'polygons':'MULTIPOLYGON'
 }
 

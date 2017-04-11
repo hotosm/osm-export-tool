@@ -10,28 +10,59 @@ import sqlite3
 
 LOG = logging.getLogger(__name__)
 
-SCHEMA_SQL = '''
--- add spatial metadata
+
+SPATIAL_SQL = '''
+UPDATE 'points' SET geom=GeomFromGPB(geom);
+UPDATE 'lines' SET geom=GeomFromGPB(geom);
+UPDATE 'multipolygons' SET geom=GeomFromGPB(geom);
+
+UPDATE points SET geom = (SELECT ST_Intersection(boundary.geom,p.geom) FROM boundary,points p WHERE points.fid = p.fid);
+UPDATE lines SET geom = (SELECT ST_Intersection(boundary.geom,l.geom) FROM boundary,lines l WHERE lines.fid = l.fid);
+UPDATE multipolygons SET geom = (SELECT ST_Intersection(boundary.geom,m.geom) FROM boundary,multipolygons m WHERE multipolygons.fid = m.fid);
+
+DELETE FROM points where geom IS NULL;
+DELETE FROM lines where geom IS NULL;
+DELETE FROM multipolygons where geom IS NULL;
+
 ALTER TABLE points RENAME TO planet_osm_point;
-UPDATE gpkg_contents SET table_name = "planet_osm_point",identifier = "planet_osm_point" WHERE table_name = "points";
-UPDATE gpkg_geometry_columns SET table_name = "planet_osm_point" WHERE table_name = "points";
--- add spatial metadata
 ALTER TABLE lines RENAME TO planet_osm_line;
-UPDATE gpkg_contents SET table_name = "planet_osm_line",identifier = "planet_osm_line" WHERE table_name = "lines";
-UPDATE gpkg_geometry_columns SET table_name = "planet_osm_line" WHERE table_name = "lines";
--- add spatial metadata
 ALTER TABLE multipolygons RENAME TO planet_osm_polygon;
-UPDATE gpkg_contents SET table_name = "planet_osm_polygon", identifier = "planet_osm_polygon" WHERE table_name = "multipolygons";
-UPDATE gpkg_geometry_columns SET table_name = "planet_osm_polygon" WHERE table_name = "multipolygons";
--- drop other tables created by ogr -- for now!
--- should see if these features can be recovered
+
+
+SELECT gpkgAddSpatialIndex('boundary', 'geom');
+SELECT gpkgAddSpatialIndex('planet_osm_point', 'geom');
+SELECT gpkgAddSpatialIndex('planet_osm_line', 'geom');
+SELECT gpkgAddSpatialIndex('planet_osm_polygon', 'geom');
+
+UPDATE 'boundary' SET geom=AsGPB(geom);
+UPDATE 'planet_osm_point' SET geom=AsGPB(geom);
+UPDATE 'planet_osm_line' SET geom=AsGPB(geom);
+UPDATE 'planet_osm_polygon' SET geom=AsGPB(geom);
+
 DROP TABLE multilinestrings;
 DROP TABLE other_relations;
+DROP TABLE rtree_lines_geom;
+DROP TABLE rtree_multilinestrings_geom;
+DROP TABLE rtree_multipolygons_geom;
+DROP TABLE rtree_other_relations_geom;
+DROP TABLE rtree_points_geom;
+
+INSERT INTO gpkg_contents VALUES ('boundary', 'features', 'boundary', '', '2017-04-08T01:35:16.576Z', null, null, null, null, '4326');
+INSERT INTO gpkg_geometry_columns VALUES ('boundary', 'geom', 'MULTIPOLYGON', '4326', '0', '0');
+UPDATE gpkg_contents SET table_name = "planet_osm_point",identifier = "planet_osm_point" WHERE table_name = "points";
+UPDATE gpkg_geometry_columns SET table_name = "planet_osm_point" WHERE table_name = "points";
+UPDATE gpkg_contents SET table_name = "planet_osm_line",identifier = "planet_osm_line" WHERE table_name = "lines";
+UPDATE gpkg_geometry_columns SET table_name = "planet_osm_line" WHERE table_name = "lines";
+UPDATE gpkg_contents SET table_name = "planet_osm_polygon", identifier = "planet_osm_polygon" WHERE table_name = "multipolygons";
+UPDATE gpkg_geometry_columns SET table_name = "planet_osm_polygon" WHERE table_name = "multipolygons";
 DELETE FROM gpkg_contents WHERE table_name="multilinestrings";
 DELETE FROM gpkg_geometry_columns WHERE table_name="multilinestrings";
 DELETE FROM gpkg_contents WHERE table_name="other_relations";
 DELETE FROM gpkg_geometry_columns WHERE table_name="other_relations";
-DELETE FROM gpkg_extensions WHERE table_name is not NULL;
+DELETE FROM gpkg_extensions WHERE table_name="multilinestrings";
+DELETE FROM gpkg_extensions WHERE table_name="other_relations";
+DELETE FROM gpkg_geometry_columns WHERE table_name="multilinestrings";
+DELETE FROM gpkg_geometry_columns WHERE table_name="other_relations";
 
 -- add z_index columns
 ALTER TABLE planet_osm_point ADD COLUMN z_index INTEGER(4) DEFAULT 0;
@@ -39,25 +70,6 @@ ALTER TABLE planet_osm_line ADD COLUMN z_index INTEGER(4) DEFAULT 0;
 ALTER TABLE planet_osm_polygon ADD COLUMN z_index INTEGER(4) DEFAULT 0;
 '''
 
-SPATIAL_INDEX_SQL = '''
-UPDATE 'planet_osm_point' SET geom=GeomFromGPB(geom);
-UPDATE 'planet_osm_line' SET geom=GeomFromGPB(geom);
-UPDATE 'planet_osm_polygon' SET geom=GeomFromGPB(geom);
-
-SELECT gpkgAddSpatialIndex('planet_osm_point', 'geom');
-SELECT gpkgAddSpatialIndex('planet_osm_line', 'geom');
-SELECT gpkgAddSpatialIndex('planet_osm_polygon', 'geom');
-
-UPDATE 'planet_osm_point' SET geom=AsGPB(geom);
-UPDATE 'planet_osm_line' SET geom=AsGPB(geom);
-UPDATE 'planet_osm_polygon' SET geom=AsGPB(geom);
-
-DROP TABLE rtree_lines_geom;
-DROP TABLE rtree_multilinestrings_geom;
-DROP TABLE rtree_multipolygons_geom;
-DROP TABLE rtree_other_relations_geom;
-DROP TABLE rtree_points_geom;
-'''
 
 INI_TEMPLATE = '''
 # Configuration file for OSM import
@@ -226,7 +238,7 @@ class Geopackage(object):
     def results(self):
         return [self.output_gpkg]
 
-    def __init__(self, input_pbf, output_gpkg, temp_ini, feature_selection,tempdir=None,aoi_geom=None):
+    def __init__(self, input_pbf, output_gpkg, temp_ini, feature_selection,aoi_geom,tempdir=None):
         """
         Initialize the OSMParser.
 
@@ -239,6 +251,7 @@ class Geopackage(object):
         self.output_gpkg = output_gpkg
         self.temp_ini = temp_ini
         self.feature_selection = feature_selection
+        self.aoi_geom = aoi_geom
         
         """
         OGR Command to run.
@@ -280,8 +293,9 @@ class Geopackage(object):
         conn.enable_load_extension(True)
         cur = conn.cursor()
         cur.execute("select load_extension('mod_spatialite')")
-        cur.executescript(SCHEMA_SQL)
-        cur.executescript(SPATIAL_INDEX_SQL)
+        cur.execute("CREATE TABLE boundary (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, geom GEOMETRY)");
+        cur.execute("INSERT INTO boundary (geom) VALUES (GeomFromWKB(?,4326));",(self.aoi_geom.wkb,))
+        cur.executescript(SPATIAL_SQL)
         conn.commit()
 
     @property
@@ -345,33 +359,3 @@ class Geopackage(object):
 
         # close connection
         ds.Destroy()
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description=(
-            'Converts OSM (xml|pbf) to GeoPackage. \n'
-            'Updates schema to create planet_osm_* tables.\n'
-            'Updates z_indexes on all layers.'
-        )
-    )
-    parser.add_argument('-o', '--osm-file', required=True, dest="osm", help='The OSM file to convert (xml or pbf)')
-    parser.add_argument('-s', '--geopackage-file', required=True, dest="gpkg", help='The output GeoPackage')
-    parser.add_argument('-q', '--schema-sql', required=False, dest="schema", help='A sql file to refactor the output schema')
-    parser.add_argument('-d', '--debug', action="store_true", help="Turn on debug output")
-    args = parser.parse_args()
-    config = {}
-    for k, v in vars(args).items():
-        if (v == None):
-            continue
-        else:
-            config[k] = v
-    osm = config.get('osm')
-    gpkg = config.get('gpkg')
-    debug = False
-    if config.get('debug'):
-        debug = True
-    parser = OSMParser(osm=osm, gpkg=gpkg, debug=debug)
-    parser.create_geopackage()
-    parser.create_default_schema_gpkg()
-    parser.update_zindexes()
