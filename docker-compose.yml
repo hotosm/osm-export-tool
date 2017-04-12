@@ -9,11 +9,11 @@ services:
     environment:
       - DATABASE_URL=postgres://exports:exports@postgresql/exports
       - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - DEBUG=True
       - DJANGO_LOG_LEVEL=INFO
       - LOG_LEVEL=DEBUG
       - DJANGO_ENV=development
       - USE_X_FORWARDED_HOST=True
-      - HOSTNAME=localhost
     volumes:
       - .:/opt/osm-export-tool2
   celery-beat:
