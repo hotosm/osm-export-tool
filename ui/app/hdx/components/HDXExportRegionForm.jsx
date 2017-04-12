@@ -48,7 +48,7 @@ const form = reduxForm({
     const formData = {
       ...values,
       export_formats: exportFormats,
-      locations: values.locations.map(x => x.value || x),
+      locations: (values.locations || []).map(x => x.value || x),
       the_geom: props.aoiInfo.geojson.features[0].geometry
     };
 
