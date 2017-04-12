@@ -74,7 +74,7 @@ class HDXExportSet(object):
         self._dataset_date = dataset_date
         self._dataset_prefix = dataset_prefix
         self._extent = extent
-        self._extra_notes = extra_notes
+        self._extra_notes = extra_notes or ''
         self._feature_selection = feature_selection
         self.hostname = hostname
         self.is_private = is_private
