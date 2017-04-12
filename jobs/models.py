@@ -274,23 +274,23 @@ class HDXExportRegion(models.Model): # noqa
             return last.finished_at
 
     @property
-    def name(self):
+    def name(self): # noqa
         return self.job.description
 
     @property
-    def dataset_prefix(self):
+    def dataset_prefix(self): # noqa
         return self.job.name
 
     @property
-    def the_geom(self):
+    def the_geom(self): # noqa
         return json.loads(GEOSGeometry(self.job.the_geom).geojson)
 
     @property
-    def feature_selection(self):
+    def feature_selection(self): # noqa
         return self.job.feature_selection
 
     @property
-    def export_formats(self):
+    def export_formats(self): # noqa
         return self.job.export_formats
 
     @property
@@ -315,20 +315,43 @@ class HDXExportRegion(models.Model): # noqa
         }, self.job.runs.all())
 
     @property
-    def hdx_dataset(self):
+    def hdx_dataset(self): # noqa
         """
         Initialize an HDXExportSet corresponding to this Model.
         """
 #       # TODO make distinction between GOESGeom/GeoJSON better
         return HDXExportSet(
-            self.dataset_prefix,
-            self.name,
-            self.job.the_geom,
-            self.job.feature_selection_object,
-            country_codes=['SEN']
+            data_update_frequency=self.update_frequency,
+            dataset_date=timezone.now(),
+            dataset_prefix=self.dataset_prefix,
+            extent=self.job.the_geom,
+            extra_notes=self.extra_notes,
+            feature_selection=self.job.feature_selection_object,
+            is_private=self.is_private,
+            license=self.license,
+            locations=self.locations,
+            name=self.name,
+            subnational=self.subnational,
         )
 
-    def sync_to_hdx(self):
+    @property
+    def update_frequency(self):
+        """Update frequencies in HDX form."""
+        if self.schedule_period == '6hrs':
+            return 1
+
+        if self.schedule_period == 'daily':
+            return 1
+
+        if self.schedule_period == 'weekly':
+            return 7
+
+        if self.schedule_period == 'monthly':
+            return 30
+
+        return 0
+
+    def sync_to_hdx(self): # noqa
         LOG.info("HDXExportRegion.sync_to_hdx called.")
         self.hdx_dataset.sync_datasets()
 

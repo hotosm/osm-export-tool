@@ -1,10 +1,11 @@
 # noqa
 
+from datetime import datetime
 import os
 import subprocess
 import zipfile
-from feature_selection.feature_selection import FeatureSelection
 
+from feature_selection.feature_selection import FeatureSelection
 from hdx.data.dataset import Dataset
 from hdx.data.galleryitem import GalleryItem
 from hdx.configuration import Configuration
@@ -46,13 +47,18 @@ class HDXExportSet(object):
 
     def __init__(
         self,
-        dataset_prefix,
-        name,
-        extent,
-        feature_selection,
-        country_codes=[],
+        data_update_frequency=None,
+        dataset_date=datetime.now(),
+        dataset_prefix='',
+        extent=None,
+        extra_notes='',
+        feature_selection=None,
+        hostname='exports-staging.hotosm.org',
         is_private=False,
-        hostname='exports-staging.hotosm.org'
+        license='hdx-odc-odbl',
+        locations=[],
+        name=None,
+        subnational=True,
     ): # noqa
         # raise exceptions on invalid feature selections, extents.
         # it's not the job of this class to validate those!
@@ -63,18 +69,19 @@ class HDXExportSet(object):
 
         assert extent.geom_type in ['Polygon', 'MultiPolygon']
 
-        self._extent = extent
-        self._feature_selection = feature_selection
-        self._dataset_prefix = dataset_prefix
-        self._name = name
-        self._country_codes = country_codes
+        self._data_update_frequency = data_update_frequency
         self._datasets = None
-        self.is_private = is_private
+        self._dataset_date = dataset_date
+        self._dataset_prefix = dataset_prefix
+        self._extent = extent
+        self._extra_notes = extra_notes
+        self._feature_selection = feature_selection
         self.hostname = hostname
-
-    @property
-    def country_codes(self): # noqa
-        return self._country_codes
+        self.is_private = is_private
+        self._license = license
+        self._locations = locations
+        self._name = name
+        self.subnational = subnational
 
     @property
     def bounds(self): # noqa
@@ -106,17 +113,17 @@ class HDXExportSet(object):
                 self._name, theme)
             dataset['private'] = self.is_private
             dataset['notes'] = self.hdx_note(theme)
-            dataset['dataset_source'] = 'OpenStreetMap'
-            dataset['dataset_date'] = '03/01/2017'
+            dataset['dataset_source'] = 'OpenStreetMap contributors'
+            dataset.set_dataset_date_from_datetime(self._dataset_date)
             dataset['owner_org'] = '225b9f7d-e7cb-4156-96a6-44c9c58d31e3'
-            dataset['license_id'] = 'hdx-odc-odbl'
+            dataset['license_id'] = self._license
             dataset['methodology'] = 'Other'
-            dataset['methodology_other'] = 'OpenStreetMap extract'
-            dataset['data_update_frequency'] = '7'
-            dataset['subnational'] = '1'
+            dataset['methodology_other'] = 'Compiled from a variety of sources.'
+            dataset['data_update_frequency'] = str(self._data_update_frequency)
+            dataset['subnational'] = str(int(self.subnational))
+            # TODO this appends locations rather than resetting them
             dataset['groups'] = []
-            for country_code in self._country_codes:
-                dataset.add_country_location(country_code)
+            dataset.add_country_locations(self._locations)
 
             ga = GalleryItem({
                 'title': 'OSM Analytics',
@@ -137,11 +144,14 @@ class HDXExportSet(object):
             columns.append('- [{0}](http://wiki.openstreetmap.org/wiki/Key:{0})'.format(key))
         columns = '\n'.join(columns)
 
-        return MARKDOWN.format(
-            region=self._name,
-            criteria=self._feature_selection.filter_clause(theme),
-            columns=columns,
-        )
+        return '\n'.join((
+            self._extra_notes,
+            MARKDOWN.format(
+                region=self._name,
+                criteria=self._feature_selection.filter_clause(theme),
+                columns=columns,
+            ),
+        ))
 
     def sync_datasets(self): # noqa
         for dataset in self.datasets.values():

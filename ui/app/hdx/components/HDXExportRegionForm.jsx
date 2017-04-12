@@ -336,7 +336,7 @@ export class HDXExportRegionForm extends Component {
             id='formControlExtraNotes'
             name='extra_notes'
             rows='4'
-            label='Extra Notes (appended to notes section)'
+            label='Extra Notes (prepended to notes section)'
             component={renderTextArea}
           />
           <Row>
