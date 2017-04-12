@@ -133,7 +133,7 @@ def run_task_remote(run_uid):
     geopackage = Geopackage(stage_dir + "osm_pbf.pbf",stage_dir + "geopackage.gpkg",stage_dir+"osmconf.ini",feature_selection,aoi)
     kml = KML(stage_dir + "geopackage.gpkg",stage_dir + "kml.kmz")
     #shp = Shapefile(stage_dir + "geopackage.gpkg",stage_dir + "shapefile.shp.zip")
-    thematic_gpkg = ThematicGPKG(stage_dir+"geopackage.gpkg",feature_selection)
+    thematic_gpkg = ThematicGPKG(stage_dir+"geopackage.gpkg",feature_selection,stage_dir)
     thematic_shp = ThematicSHP(stage_dir+"geopackage.gpkg",stage_dir,feature_selection,aoi)
 
     for task in [osm_xml,osm_pbf,geopackage,kml,thematic_gpkg,thematic_shp]:
@@ -169,6 +169,12 @@ def run_task_remote(run_uid):
                     'description': "ESRI Shapefile of " + geom_type,
                     'url': settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT,run_uid,theme + '_' + geom_type + ".zip")
                 })
+            resources.append({
+                'name': theme + ' geopackage',
+                'format': 'zipped geopackage',  
+                'description': "Geopackage of " + theme,
+                'url': settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT,run_uid,theme + ".gpkg")
+            })
             export_set.datasets[theme].add_update_resources(resources)
         export_set.sync_datasets()
 
