@@ -57,7 +57,7 @@ class ExportTaskRunner(object):
         run_uid = str(run.uid)
         LOG.debug('Saved run with id: {0}'.format(run_uid))
 
-        for task in [OSM_XML,OSM_PBF,Geopackage,KML,Shapefile,ThematicGPKG,ThematicSHP]:
+        for task in [OSM_XML,OSM_PBF,Geopackage,KML,ThematicGPKG,ThematicSHP]:
             ExportTask.objects.create(run=run,status='PENDING',name=task.name)
             LOG.debug('Saved task: {0}'.format(task.name))
         run_task_remote.delay(run_uid)
@@ -130,18 +130,18 @@ def run_task_remote(run_uid):
 
     osm_xml = OSM_XML(aoi,stage_dir + "osm_xml.osm")
     osm_pbf = OSM_PBF(stage_dir + "osm_xml.osm",stage_dir + "osm_pbf.pbf")
-    geopackage = Geopackage(stage_dir + "osm_pbf.pbf",stage_dir + "geopackage.gpkg",stage_dir+"osmconf.ini",feature_selection)
+    geopackage = Geopackage(stage_dir + "osm_pbf.pbf",stage_dir + "geopackage.gpkg",stage_dir+"osmconf.ini",feature_selection,aoi)
     kml = KML(stage_dir + "geopackage.gpkg",stage_dir + "kml.kmz")
-    shp = Shapefile(stage_dir + "geopackage.gpkg",stage_dir + "shapefile.shp.zip")
+    #shp = Shapefile(stage_dir + "geopackage.gpkg",stage_dir + "shapefile.shp.zip")
     thematic_gpkg = ThematicGPKG(stage_dir+"geopackage.gpkg",feature_selection)
     thematic_shp = ThematicSHP(stage_dir+"geopackage.gpkg",stage_dir,feature_selection,aoi)
 
-    for task in [osm_xml,osm_pbf,geopackage,kml,shp,thematic_gpkg,thematic_shp]:
+    for task in [osm_xml,osm_pbf,geopackage,kml,thematic_gpkg,thematic_shp]:
         report_started_task(run_uid, task.name)
         task.run()
         report_finished_task(run_uid, task.name,task.results)
 
-    for task in [osm_xml,osm_pbf,geopackage,kml,shp,thematic_gpkg,thematic_shp]:
+    for task in [osm_xml,osm_pbf,geopackage,kml,thematic_gpkg,thematic_shp]:
         run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)

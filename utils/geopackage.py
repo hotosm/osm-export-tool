@@ -24,10 +24,30 @@ DELETE FROM points where geom IS NULL;
 DELETE FROM lines where geom IS NULL;
 DELETE FROM multipolygons where geom IS NULL;
 
+
 ALTER TABLE points RENAME TO planet_osm_point;
 ALTER TABLE lines RENAME TO planet_osm_line;
 ALTER TABLE multipolygons RENAME TO planet_osm_polygon;
 
+DROP TRIGGER rtree_multipolygons_geom_delete;
+DROP TRIGGER rtree_multipolygons_geom_insert;
+DROP TRIGGER rtree_multipolygons_geom_update1;
+DROP TRIGGER rtree_multipolygons_geom_update2;
+DROP TRIGGER rtree_multipolygons_geom_update3;
+DROP TRIGGER rtree_multipolygons_geom_update4;
+DROP TRIGGER rtree_points_geom_delete;
+DROP TRIGGER rtree_points_geom_insert;
+DROP TRIGGER rtree_points_geom_update1;
+DROP TRIGGER rtree_points_geom_update2;
+DROP TRIGGER rtree_points_geom_update3;
+DROP TRIGGER rtree_points_geom_update4;
+DROP TRIGGER rtree_lines_geom_delete;
+DROP TRIGGER rtree_lines_geom_insert;
+DROP TRIGGER rtree_lines_geom_update1;
+DROP TRIGGER rtree_lines_geom_update2;
+DROP TRIGGER rtree_lines_geom_update3;
+DROP TRIGGER rtree_lines_geom_update4;
+-- DELETE FROM planet_osm_polygon where GeometryType(geom) == 'GEOMCOLLECTION';
 
 SELECT gpkgAddSpatialIndex('boundary', 'geom');
 SELECT gpkgAddSpatialIndex('planet_osm_point', 'geom');

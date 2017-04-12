@@ -29,7 +29,7 @@ class Shapefile(object):
         """
         self.gpkg = input_gpkg
         self.output_zip = output_zip
-        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $gpkg -lco ENCODING=UTF-8 -overwrite")
+        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $gpkg -lco ENCODING=UTF-8 -overwrite -skipfailures")
 
     def run(self):
         """
