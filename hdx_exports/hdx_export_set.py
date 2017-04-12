@@ -79,6 +79,8 @@ class HDXExportSet(object):
         self.hostname = hostname
         self.is_private = is_private
         self._license = license
+        # NOTE: overrides whatever license is provided
+        self._license = 'hdx-odc-odbl'
         self._locations = locations
         self._name = name
         self.subnational = subnational
