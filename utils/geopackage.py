@@ -47,7 +47,7 @@ DROP TRIGGER rtree_lines_geom_update1;
 DROP TRIGGER rtree_lines_geom_update2;
 DROP TRIGGER rtree_lines_geom_update3;
 DROP TRIGGER rtree_lines_geom_update4;
--- DELETE FROM planet_osm_polygon where GeometryType(geom) == 'GEOMCOLLECTION';
+DELETE FROM planet_osm_polygon where GeometryType(geom) == 'GEOMCOLLECTION';
 
 SELECT gpkgAddSpatialIndex('boundary', 'geom');
 SELECT gpkgAddSpatialIndex('planet_osm_point', 'geom');

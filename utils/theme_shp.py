@@ -28,8 +28,12 @@ class ThematicSHP(object):
         self.aoi_geom = aoi_geom
 
     def run(self):
+        try:
+            os.makedirs(self.output_dir, 6600)
+        except:
+            pass
         for table in self.feature_selection.tables:
-            subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}/{1}.shp {2} -lco ENCODING=UTF-8 -sql "select * from {1};"'.format(
+            subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}/{1}.shp {2} -lco ENCODING=UTF-8 -skipfailures -sql "select * from {1};"'.format(
                 self.output_dir,
                 table,
                 self.gpkg),shell=True,executable='/bin/bash')
