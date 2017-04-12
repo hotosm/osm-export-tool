@@ -329,7 +329,7 @@ class HDXExportRegion(models.Model): # noqa
         )
 
     def sync_to_hdx(self):
-        print "HDXExportRegion.sync_to_hdx called."
+        LOG.info("HDXExportRegion.sync_to_hdx called.")
         self.hdx_dataset.sync_datasets()
 
 @receiver(post_delete, sender=ExportConfig)
