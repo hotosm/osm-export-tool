@@ -38,7 +38,7 @@ from tasks.task_runners import ExportTaskRunner
 
 from .filters import ExportConfigFilter, ExportRunFilter, JobFilter
 from .pagination import LinkHeaderPagination
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsHDXAdmin, IsOwnerOrReadOnly
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
 
@@ -466,7 +466,7 @@ class OSMDataModelView(views.APIView):
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     serializer_class = HDXExportRegionSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsHDXAdmin,)
     queryset = HDXExportRegion.objects.filter(deleted=False)
 
     def perform_create(self,serializer):

@@ -7,6 +7,7 @@ import dateutil.parser
 
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import RequestContext, redirect, render_to_response
 from django.template.context_processors import csrf
@@ -80,19 +81,15 @@ def logout(request):
         RequestContext(request)
     )
 
+
+@permission_required((
+    'jobs.add_hdxexportregion',
+    'jobs.change_hdxexportregion',
+    'jobs.delete_hdxexportregion',
+))
 def hdx_list(request):
     user = request.user
     context = {'user': user,'reactRootClass':'rootHdxList'}
-    return render_to_response('ui/base_react.html', context)
-
-def hdx_edit(request):
-    user = request.user
-    context = {'user': user,'reactRootClass':'rootHdxEdit'}
-    return render_to_response('ui/base_react.html', context)
-
-def hdx_create(request):
-    user = request.user
-    context = {'user': user}
     return render_to_response('ui/base_react.html', context)
 
 

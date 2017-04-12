@@ -17,3 +17,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Write permissions are only allowed to the owner of the object.
         return obj.user == request.user
+
+
+class IsHDXAdmin(permissions.BasePermission):
+    """Custom permission which restricts operations to HDX admins."""
+
+    def has_permission(self, request, view): # noqa
+        return request.user.has_perms((
+            'jobs.add_hdxexportregion',
+            'jobs.change_hdxexportregion',
+            'jobs.delete_hdxexportregion',
+        ))
