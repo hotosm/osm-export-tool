@@ -59,13 +59,13 @@ RUN \
     && rm /tmp/osmandmapcreator.zip
 
 RUN \
-  curl -sfL http://www.mkgmap.org.uk/download/mkgmap-r3878.zip -o /tmp/mkgmap.zip \
+  curl -sfL http://www.mkgmap.org.uk/download/mkgmap-r3890.zip -o /tmp/mkgmap.zip \
     && unzip /tmp/mkgmap.zip -d /opt \
     && mv /opt/mkgmap-* /opt/mkgmap \
     && rm /tmp/mkgmap.zip
 
 RUN \
-  curl -sfL http://www.mkgmap.org.uk/download/splitter-r580.zip -o /tmp/splitter.zip \
+  curl -sfL http://www.mkgmap.org.uk/download/splitter-r583.zip -o /tmp/splitter.zip \
     && unzip /tmp/splitter.zip -d /opt \
     && mv /opt/splitter-* /opt/splitter \
     && rm /tmp/splitter.zip
