@@ -48,7 +48,7 @@ const form = reduxForm({
     const formData = {
       ...values,
       export_formats: exportFormats,
-      locations: values.locations.map(x => x.value),
+      locations: values.locations.map(x => x.value || x),
       the_geom: props.aoiInfo.geojson.features[0].geometry
     };
 
@@ -363,6 +363,7 @@ export class HDXExportRegionForm extends Component {
             label='Location'
             component={renderMultiSelect}
             options={locationOptions}
+            isLoading={locationOptions == null}
           />
           <Field
             name='license_human_readable'
