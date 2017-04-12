@@ -54,7 +54,7 @@ class HDXExportSet(object):
         extra_notes='',
         feature_selection=None,
         hostname='exports-staging.hotosm.org',
-        is_private=False,
+        is_private=True,
         license='hdx-odc-odbl',
         locations=[],
         name=None,
@@ -120,7 +120,7 @@ class HDXExportSet(object):
             dataset['owner_org'] = '225b9f7d-e7cb-4156-96a6-44c9c58d31e3'
             dataset['license_id'] = self._license
             dataset['methodology'] = 'Other'
-            dataset['methodology_other'] = 'Compiled from a variety of sources.'
+            dataset['methodology_other'] = 'Volunteered geographic information'
             dataset['data_update_frequency'] = str(self._data_update_frequency)
             dataset['subnational'] = str(int(self.subnational))
             # TODO this appends locations rather than resetting them

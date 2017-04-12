@@ -489,6 +489,7 @@ const mapStateToProps = state => {
       feature_selection: `buildings:
   select:
      - building`,
+      is_private: true,
       license: 'hdx-odc-by',
       license_human_readable: 'Open Database License (ODC-ODbL)',
       subnational: true
