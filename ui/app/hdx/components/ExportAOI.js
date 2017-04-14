@@ -64,8 +64,6 @@ export class ExportAOI extends Component {
               this._drawLayer.getSource().addFeature(feature[0]);
               this.handleZoomToSelection(bbox);
               this.props.setNextEnabled();
-            } else {
-              this.handleResetMap();
             }
         }
     }

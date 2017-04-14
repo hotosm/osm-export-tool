@@ -14,6 +14,7 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 import yaml from 'js-yaml';
 
+import { clickResetMap } from '../actions/AoiInfobarActions';
 import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
 import { deleteExportRegion, getExportRegion, runExport } from '../actions/hdxActions';
 import styles from '../styles/HDXExportRegionForm.css';
@@ -523,7 +524,10 @@ const flatten = arr => arr.reduce(
 
 const mapDispatchToProps = dispatch => {
   return {
-    clearAOI: () => dispatch(clearAoiInfo()),
+    clearAOI: () => {
+      dispatch(clearAoiInfo());
+      dispatch(clickResetMap());
+    },
     getExportRegion: id => dispatch(getExportRegion(id)),
     handleDelete: id => dispatch(deleteExportRegion(id, cookie.load('csrftoken'))),
     handleRun: id => dispatch(runExport(id, cookie.load('csrftoken'))),
