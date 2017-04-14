@@ -191,6 +191,11 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
+        'hdx_exports': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
     }
 }
 
