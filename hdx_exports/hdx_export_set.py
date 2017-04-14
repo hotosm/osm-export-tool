@@ -110,9 +110,18 @@ class HDXExportSet(object):
         for theme in self._feature_selection.themes:
             dataset = Dataset()
             name = '{}_{}'.format(self._dataset_prefix, theme)
+            tags = map(lambda tag: tag.strip(),
+                       self._feature_selection.doc[theme].get(
+                        'hdx_tags', '').split(','))
+            title = self._feature_selection.doc[theme].get(
+                'hdx_name',
+                '{} {} (OpenStreetMap Export)'.format(self._name, theme)
+            )
+            caveats = self._feature_selection.doc[theme].get('hdx_caveats', '')
+
             dataset['name'] = name
-            dataset['title'] = '{} {} (OpenStreetMap Export)'.format(
-                self._name, theme)
+            dataset['title'] = title
+            dataset['caveats'] = caveats
             dataset['private'] = self.is_private
             dataset['notes'] = self.hdx_note(theme)
             dataset['dataset_source'] = 'OpenStreetMap contributors'
@@ -126,6 +135,8 @@ class HDXExportSet(object):
             # TODO this appends locations rather than resetting them
             dataset['groups'] = []
             dataset.add_country_locations(self._locations)
+            # TODO probably appends tags rather than replacing them
+            dataset.add_tags(tags)
 
             ga = GalleryItem({
                 'title': 'OSM Analytics',
