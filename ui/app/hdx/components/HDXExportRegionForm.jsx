@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
+import yaml from 'js-yaml';
 
 import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
 import { deleteExportRegion, getExportRegion, runExport } from '../actions/hdxActions';
@@ -163,6 +164,7 @@ export class HDXExportRegionForm extends Component {
   state = {
     deleting: false,
     editing: false,
+    featureSelection: {},
     running: false
   };
 
@@ -253,6 +255,18 @@ export class HDXExportRegionForm extends Component {
     if (props.hdx.deleted) {
       this.props.showAllExportRegions();
     }
+
+    // TODO this would be cleaner if using reselect
+    if (props.featureSelection !== this.props.featureSelection) {
+      try {
+        this.setState({
+          featureSelection: yaml.safeLoad(props.featureSelection)
+        });
+      } catch (err) {
+        // noop; feature selection may be in the process of being edited
+        console.warn(err);
+      }
+    }
   }
 
   getRunRows () {
@@ -293,7 +307,7 @@ export class HDXExportRegionForm extends Component {
   };
 
   render () {
-    const { deleting, editing, locationOptions, running } = this.state;
+    const { deleting, editing, featureSelection, locationOptions, running } = this.state;
     const { error, handleSubmit, hdx: { exportRegion }, submitting } = this.props;
     const datasetPrefix = this.props.datasetPrefix || '<prefix>';
     const name = this.props.name || 'Untitled';
@@ -416,14 +430,15 @@ export class HDXExportRegionForm extends Component {
             </Col>
             <Col xs={7}>
               <Panel>
-                This will immediately create 5 datasets on HDX:
+                This will immediately create {Object.keys(featureSelection).length} dataset{Object.keys(featureSelection).length === 1 ? '' : 's'} on HDX:
                 <ul>
-                  {/* TODO these need to be generated from the feature selection */}
-                  <li><code>{datasetPrefix}_admin_boundaries</code></li>
-                  <li><code>{datasetPrefix}_buildings</code></li>
-                  <li><code>{datasetPrefix}_points_of_interest</code></li>
-                  <li><code>{datasetPrefix}_roads</code></li>
-                  <li><code>{datasetPrefix}_waterways</code></li>
+                  {
+                    Object.keys(featureSelection).map((x, i) => (
+                      <li key={i}>
+                        <code>{datasetPrefix}_{x}</code>
+                      </li>
+                    ))
+                  }
                 </ul>
                 <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
                   {editing ? 'Save + Sync to HDX' : 'Create Datasets + Run Export'}
@@ -484,6 +499,7 @@ const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
     datasetPrefix: formValueSelector('HDXExportRegionForm')(state, 'dataset_prefix'),
+    featureSelection: formValueSelector('HDXExportRegionForm')(state, 'feature_selection'),
     hdx: state.hdx,
     initialValues: {
       feature_selection: `buildings:
