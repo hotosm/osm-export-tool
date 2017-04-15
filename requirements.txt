@@ -16,7 +16,7 @@ requests>=2.5.1
 python-openid
 requests_oauthlib
 raven==6.0.0
-hdx-python-api==1.0.0
+git+git://github.com/bdon/hdx-python-api.git@f8c9fe2ce3cae6872e21860f1bc3e07fef35840b#egg=hdx-python-api
 pyyaml==3.12
 cachetools
 sqlparse==0.2.3
