@@ -20,9 +20,9 @@ buildings:
     - building
     - building_levels
     - building_materials
-    - addr_housenumber
-    - addr_street
-    - addr_city
+    - addr:housenumber
+    - addr:street
+    - addr:city
     - office
   where: building IS NOT NULL
 
@@ -72,9 +72,9 @@ points_of_interest:
     - opening_hours
     - beds
     - rooms
-    - addr_housenumber
-    - addr_street
-    - addr_city
+    - addr:housenumber
+    - addr:street
+    - addr:city
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 
 admin_boundaries:

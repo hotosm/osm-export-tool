@@ -1,26 +1,29 @@
+import re
 import sqlparse
 from sqlparse.tokens import Token
 import yaml
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
 
-#CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT Geometry,osm_id,{1} FROM {2} WHERE ({3}) AND ST_Contains(GeomFromText(?),Geometry);'
-CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT geom,osm_id,{1} FROM {2} WHERE ({3})'
-#INDEX_TEMPLATE = "SELECT RecoverGeometryColumn('{0}', 'GEOMETRY', 4326, '{1}', 'XY')"
-# TODO dont hardcode date
+CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT geom,{1} FROM {2} WHERE ({3})'
 INDEX_TEMPLATE = """
-INSERT INTO gpkg_contents VALUES ('{0}', 'features', '{0}', '', '2017-04-08T01:35:16.576Z', null, null, null, null, '4326');
+INSERT INTO gpkg_contents (table_name, data_type,identifier,srs_id) VALUES ('{0}','features','{0}','4326');
 INSERT INTO gpkg_geometry_columns VALUES ('{0}', 'geom', '{1}', '4326', '0', '0');
 UPDATE '{0}' SET geom=GeomFromGPB(geom);
 SELECT gpkgAddSpatialIndex('{0}', 'geom');
 UPDATE '{0}' SET geom=AsGPB(geom);
 """
 
-
 WKT_TYPE_MAP = {
     'points':'POINT',
     'lines':'MULTILINESTRING',
     'polygons':'MULTIPOLYGON'
+}
+
+OSM_ID_TAGS = {
+    'points':['osm_id'],
+    'lines':['osm_id'],
+    'polygons':['osm_id','osm_way_id']
 }
 
 OGR2OGR_TABLENAMES = {
@@ -46,6 +49,7 @@ class SQLValidator(object):
         parsed = sqlparse.parse(self._raw_sql)
 
         def is_valid_identifier(value):
+            # it's a literal
             return True
 
         
@@ -115,6 +119,7 @@ class FeatureSelection(object):
 
     @property
     def doc(self):
+
         def validate_schema(loaded_doc):
             if not isinstance(loaded_doc,dict):
                 self._errors.append("YAML must be dict, not list")
@@ -123,6 +128,13 @@ class FeatureSelection(object):
                 if 'select' not in theme_dict:
                     self._errors.append("Each theme must have a 'select' key")
                     return False
+                for key in theme_dict['select']:
+                    if not key:
+                        self._errors.append("Missing OSM key")
+                        return False
+                    if not re.match("[a-zA-Z0-9 _\:]+$",key):
+                        self._errors.append("Invalid OSM key: {0}".format(key))
+                        return False
                 if not isinstance(theme_dict['select'],list):
                     self._errors.append("'select' children must be list elements (e.g. '- amenity')")
                     return False
@@ -190,20 +202,19 @@ class FeatureSelection(object):
                 retval.append(theme + '_' + geom_type)
         return retval
 
-    # TODO make me secure against injection
     @property
     def sqls(self):
         create_sqls = []
         index_sqls = []
         for theme in self.themes:
+            key_selections = ['"{0}"'.format(key) for key in self.key_selections(theme)]
+            filter_clause = self.filter_clause(theme)
             for geom_type in self.geom_types(theme):
                 dst_tablename = theme + '_' + geom_type
-                key_selections = ','.join(self.key_selections(theme))
                 src_tablename = OGR2OGR_TABLENAMES[geom_type]
-                filter_clause = self.filter_clause(theme)
                 create_sqls.append(CREATE_TEMPLATE.format(
                     dst_tablename, 
-                    key_selections, 
+                    ','.join(OSM_ID_TAGS[geom_type] + key_selections), 
                     src_tablename, 
                     filter_clause
                 ))

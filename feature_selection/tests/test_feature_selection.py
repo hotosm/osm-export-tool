@@ -22,16 +22,17 @@ class TestSQLValidator(unittest.TestCase):
         self.assertFalse(s.valid)
 
     def test_conditions(self):
-        s = SQLValidator("natural = 'water'")
+        s = SQLValidator("name = 'water'")
         self.assertTrue(s.valid)
-        s = SQLValidator("admin IS NOT NULL AND admin:level = '4'")
+        s = SQLValidator("name IS NOT NULL AND admin:level = '4'")
         self.assertTrue(s.valid)
-        s = SQLValidator("(admin IS NOT NULL AND admin:level = '4')")
+        s = SQLValidator("(name IS NOT NULL AND admin:level = '4')")
         self.assertTrue(s.valid)
-        s = SQLValidator("natural in ('water','park')")
+        s = SQLValidator("name in ('water','park')")
         self.assertTrue(s.valid)
         s = SQLValidator("height > 0")
         self.assertTrue(s.valid)
+
 
 class TestFeatureSelection(unittest.TestCase):
 
@@ -48,7 +49,6 @@ class TestFeatureSelection(unittest.TestCase):
                 - lines
                 - polygons
             select:
-                - osm_id
                 - name
                 - waterway
         buildings:
@@ -56,7 +56,6 @@ class TestFeatureSelection(unittest.TestCase):
                 - lines
                 - polygons
             select:
-                - osm_id
                 - name
                 - building
             where: building IS NOT NULL
@@ -64,33 +63,26 @@ class TestFeatureSelection(unittest.TestCase):
         f = FeatureSelection(y)
         self.assertEquals(f.themes,['buildings','waterways'])
         self.assertEquals(f.geom_types('waterways'),['lines','polygons'])
-        self.assertEquals(f.key_selections('waterways'),['osm_id','name','waterway'])
+        self.assertEquals(f.key_selections('waterways'),['name','waterway'])
         self.assertEquals(f.filter_clause('waterways'),'1') # SELECT WHERE 1
-        self.assertEquals(f.key_union, ['building','name','osm_id','waterway'])
+        self.assertEquals(f.key_union, ['building','name','waterway'])
         self.assertEquals(f.filter_clause('buildings'),'building IS NOT NULL')
 
-    @unittest.skip("temporarily disabled")
     def test_sqls(self):
         y = '''
-        waterways:
-            types: 
-                - lines
-                - polygons
-            select:
-                - osm_id
-                - name
-                - waterway
         buildings:
             types:
-                - lines
+                - points
                 - polygons
             select:
-                - osm_id
                 - name
-                - building
+                - addr:housenumber
         '''
         f = FeatureSelection(y)
-        print f.sqls
+        create_sqls, index_sqls = f.sqls
+        self.assertEquals(create_sqls[0],"CREATE TABLE buildings_points AS SELECT geom,osm_id,'name','addr:housenumber' FROM planet_osm_point WHERE (1)")
+        self.assertEquals(create_sqls[1],"CREATE TABLE buildings_polygons AS SELECT geom,osm_id,osm_way_id,'name','addr:housenumber' FROM planet_osm_polygon WHERE (1)")
+
 
     def test_unsafe_yaml(self):
         y = '''
@@ -154,3 +146,34 @@ class TestFeatureSelection(unittest.TestCase):
         f = FeatureSelection(y)
         self.assertFalse(f.valid)
         self.assertEqual(f.errors[0],"Each theme must have a 'select' key")
+
+    # refer to https://taginfo.openstreetmap.org/keys
+    def test_valid_invalid_key_yaml(self):
+        y = '''
+        all: 
+          select:
+            - has space
+            - has_underscore
+            - has:colon
+            - UPPERCASE
+        '''
+        f = FeatureSelection(y)
+        self.assertTrue(f.valid)
+        y = '''
+        all: 
+          select:
+            - na?me
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Invalid OSM key: na?me")
+        y = '''
+        all: 
+          select:
+            -
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Missing OSM key")
+
+

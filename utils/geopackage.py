@@ -98,8 +98,8 @@ INI_TEMPLATE = '''
 # see http://wiki.openstreetmap.org/wiki/Map_Features
 closed_ways_are_polygons=aeroway,amenity,boundary,building,craft,geological,harbour,historic,landuse,leisure,man_made,military,natural,office,place,power,shop,sport,tourism,water,waterway,wetland
 
-# comment to avoid laundering of keys ( ':' turned into '_' )
-attribute_name_laundering=yes
+# laundering of keys ( ':' turned into '_' )
+attribute_name_laundering=no
 
 # uncomment to report all nodes, including the ones without any (significant) tag
 #report_all_nodes=yes
