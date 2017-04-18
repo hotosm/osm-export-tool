@@ -231,6 +231,20 @@ class HDXExportRegion(models.Model): # noqa
     extra_notes = models.TextField(null=True)
 
     @property
+    def delta(self): # noqa
+        if self.schedule_period == '6hrs':
+            return timedelta(hours=6)
+
+        if self.schedule_period == 'daily':
+            return timedelta(days=1)
+
+        if self.schedule_period == 'weekly':
+            return timedelta(days=7)
+
+        if self.schedule_period == 'monthly':
+            return timedelta(days=31)
+
+    @property
     def next_run(self): # noqa
         now = timezone.now().replace(minute=0, second=0, microsecond=0)
 

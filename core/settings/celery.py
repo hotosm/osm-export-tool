@@ -17,6 +17,10 @@ CELERY_ACCEPT_CONTENT = ["json"]
 
 # configure periodic task
 CELERYBEAT_SCHEDULE = {
+    'periodic-runs': {
+        'task': 'Queue Periodic Runs',
+        'schedule': crontab(minute='*/15'),
+    }
 }
 
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672/')
