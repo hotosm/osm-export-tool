@@ -215,12 +215,3 @@ def run_task_remote(run_uid): # noqa
     # finalize the task
     # shutil.rmtree(stage_dir)
     # send mail
-
-    # except Exception as exc:
-    #    print exc
-    #    client.captureException(
-    #        extra={
-    #            'run_uid': run_uid,
-    #            'task': exc,
-    #        }
-    #    )
