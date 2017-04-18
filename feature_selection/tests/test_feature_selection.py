@@ -1,38 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-import yaml
-from feature_selection.feature_selection import FeatureSelection, SQLValidator
-
-class TestSQLValidator(unittest.TestCase):
-    def test_empty_sql(self):
-        s = SQLValidator("")
-        self.assertFalse(s.valid)
-
-    def test_minimal(self):
-        s = SQLValidator("name IS NOT NULL")
-        self.assertTrue(s.valid)
-
-    def test_malicious_sql(self):
-        s = SQLValidator("name IS NOT NULL; drop table planet_osm_polygon;")
-        self.assertFalse(s.valid)
-        s = SQLValidator("(drop table planet_osm_polygon)")
-        self.assertFalse(s.valid)
-        s = SQLValidator("(drop table planet_osm_polygon) > 0") # integer?
-        self.assertFalse(s.valid)
-
-    def test_conditions(self):
-        s = SQLValidator("name = 'water'")
-        self.assertTrue(s.valid)
-        s = SQLValidator("name IS NOT NULL AND admin:level = '4'")
-        self.assertTrue(s.valid)
-        s = SQLValidator("(name IS NOT NULL AND admin:level = '4')")
-        self.assertTrue(s.valid)
-        s = SQLValidator("name in ('water','park')")
-        self.assertTrue(s.valid)
-        s = SQLValidator("height > 0")
-        self.assertTrue(s.valid)
-
+from feature_selection.feature_selection import FeatureSelection
 
 class TestFeatureSelection(unittest.TestCase):
 
@@ -80,8 +49,8 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         create_sqls, index_sqls = f.sqls
-        self.assertEquals(create_sqls[0],"CREATE TABLE buildings_points AS SELECT geom,osm_id,'name','addr:housenumber' FROM planet_osm_point WHERE (1)")
-        self.assertEquals(create_sqls[1],"CREATE TABLE buildings_polygons AS SELECT geom,osm_id,osm_way_id,'name','addr:housenumber' FROM planet_osm_polygon WHERE (1)")
+        self.assertEquals(create_sqls[0],'CREATE TABLE buildings_points AS SELECT geom,osm_id,"name","addr:housenumber" FROM planet_osm_point WHERE (1)')
+        self.assertEquals(create_sqls[1],'CREATE TABLE buildings_polygons AS SELECT geom,osm_id,osm_way_id,"name","addr:housenumber" FROM planet_osm_polygon WHERE (1)')
 
 
     def test_unsafe_yaml(self):
@@ -175,5 +144,28 @@ class TestFeatureSelection(unittest.TestCase):
         f = FeatureSelection(y)
         self.assertFalse(f.valid)
         self.assertEqual(f.errors[0],"Missing OSM key")
+
+    def test_passes_sqlvalidator_errors(self):
+        y = '''
+        buildings:
+            select:
+                - name
+                - addr:housenumber
+            where: addr:housenumber IS NOT NULL
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEquals(f.errors[0], "SQL WHERE Invalid: identifier with colon : must be in double quotes.")
+
+    def test_enforces_subset_columns(self):
+        y = '''
+        buildings:
+            select:
+                - column1 
+            where: column2 IS NOT NULL
+        '''
+        f = FeatureSelection(y)
+        self.assertTrue(f.valid)
+        self.assertEquals(f.key_union, ['column1','column2'])
 
 

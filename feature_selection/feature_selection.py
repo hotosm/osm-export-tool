@@ -4,6 +4,7 @@ from sqlparse.tokens import Token
 import yaml
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
+from sql import SQLValidator
 
 CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT geom,{1} FROM {2} WHERE ({3})'
 INDEX_TEMPLATE = """
@@ -32,81 +33,6 @@ OGR2OGR_TABLENAMES = {
     'polygons':'planet_osm_polygon'
 }
 
-class SQLValidator(object):
-    def __init__(self,raw_sql):
-        self._raw_sql = raw_sql
-        self._sql = None
-        self._errors = []
-
-    @property
-    def sql(self):
-        if self._sql:
-            return self._sql
-        if not self._raw_sql:
-            self._errors.append(["SQL clause is empty"])
-            return None
-
-        parsed = sqlparse.parse(self._raw_sql)
-
-        def is_valid_identifier(value):
-            # it's a literal
-            return True
-
-        
-        def is_whitelisted(token):
-            if isinstance(token,sqlparse.sql.Identifier):
-                return is_valid_identifier(token.value)
-            if isinstance(token,sqlparse.sql.IdentifierList):
-                x = True
-                for v in token.tokens:
-                    x = (x and is_valid_identifier(v))
-                    return x
-            if isinstance(token,sqlparse.sql.Comparison):
-                left = is_whitelisted(token.left)
-                right = is_whitelisted(token.right)
-                return (left and right)
-            if isinstance(token,sqlparse.sql.Parenthesis):
-                x = True
-                for t in token.tokens:
-                    x = (x and is_whitelisted(t))
-                return x
-            if token.ttype in [
-                Token.Keyword,
-                Token.Text.Whitespace,
-                Token.Operator.Comparison,
-                Token.Literal.String.Single,
-                Token.Literal.Number.Integer,
-                Token.Punctuation
-                ]:
-                return True
-            return False
-
-        for statement in parsed:
-            for token in statement.tokens:
-                if not is_whitelisted(token):
-                    self._errors.append("SQL Invalid")
-                    return None
-        self._sql = self._raw_sql
-        return self._sql
-
-
-    @property
-    def valid(self):
-        return not (self.sql == None)
-
-    @property
-    def errors(self):
-        return ""
-
-class InvalidFeatureSelectionException(Exception):
-    pass
-
-class ValidationErrorRepr(object):
-    def __init__(self,error):
-        self._error = error
-
-    def to_dict(self):
-        pass
 
 # FeatureSelection seralizes as YAML.
 # It describes a set of tables (themes)
@@ -116,6 +42,7 @@ class FeatureSelection(object):
         self._raw_doc = raw_doc
         self._doc = None
         self._errors = []
+        self.keys_from_sql = set()
 
     @property
     def doc(self):
@@ -138,6 +65,16 @@ class FeatureSelection(object):
                 if not isinstance(theme_dict['select'],list):
                     self._errors.append("'select' children must be list elements (e.g. '- amenity')")
                     return False
+                if 'where' in theme_dict:
+                    s = SQLValidator(theme_dict['where'])
+                    if not s.valid:
+                        self._errors.append("SQL WHERE Invalid: " + ';'.join(s.errors))
+                        return False
+
+                    # also add the keys to keys_from_sql
+                    for k in s.column_names:
+                        self.keys_from_sql.add(k)
+
             return True
 
         if self._doc:
@@ -192,6 +129,8 @@ class FeatureSelection(object):
         for t in self.themes:
             for key in self.key_selections(t):
                 s.add(key)
+        for key in self.keys_from_sql:
+            s.add(key)
         return sorted(list(s))
 
     @property
