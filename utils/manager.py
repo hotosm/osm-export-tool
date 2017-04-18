@@ -7,6 +7,7 @@ from shp import Shapefile
 from theme_gpkg import ThematicGPKG
 from theme_shp import ThematicSHP
 from garmin_img import GarminIMG
+from osmand_obf import OsmAndOBF
 from feature_selection.feature_selection import FeatureSelection
 import logging
 import os
@@ -109,8 +110,10 @@ osm_xml = OSM_XML(aoi_geom, stage_dir + 'osm_xml.osm')
 osm_xml.run()
 osm_pbf = OSM_PBF(stage_dir+'osm_xml.osm',stage_dir+'osm_pbf.pbf')
 osm_pbf.run()
-img = GarminIMG(stage_dir+'osm_pbf.pbf',stage_dir+'garmin_img.zip',stage_dir,'../../splitter-r583/splitter.jar','../../mkgmap-r3890/mkgmap.jar')
-img.run()
+#img = GarminIMG(stage_dir+'osm_pbf.pbf',stage_dir+'garmin_img.zip',stage_dir,'../../splitter-r583/splitter.jar','../../mkgmap-r3890/mkgmap.jar')
+#img.run()
+obf = OsmAndOBF(stage_dir+'osm_pbf.pbf',stage_dir,'../../OsmAndMapCreator-main')
+obf.run()
 #geopackage = Geopackage(stage_dir+'osm_pbf.pbf',stage_dir+'geopackage.gpkg',stage_dir+'osmconf.ini',feature_selection,aoi_geom)
 #geopackage.run()
 #kml = KML(stage_dir + 'geopackage.gpkg',stage_dir + 'kml.kmz')

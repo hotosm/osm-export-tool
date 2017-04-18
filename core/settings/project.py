@@ -58,8 +58,9 @@ EXPORT_MEDIA_ROOT = '/downloads/'
 # home dir of the OSMAnd Map Creator
 OSMAND_MAP_CREATOR_DIR = ABS_PATH('../osmandmapcreator')
 
-GARMIN_SPLITTER = os.environ.get('GARMIN_SPLITTER_DIR','/opt/splitter/splitter.jar')
-GARMIN_MKGMAP = os.environ.get('GARMIN_MKGMAP_DIR','/opt/mkgmap/mkgmap.jar')
+OSMAND_MAP_CREATOR_DIR = os.environ.get('OSMAND_MAP_CREATOR_DIR','/opt/osmandmapcreator/')
+GARMIN_SPLITTER = os.environ.get('GARMIN_SPLITTER','/opt/splitter/splitter.jar')
+GARMIN_MKGMAP = os.environ.get('GARMIN_MKGMAP','/opt/mkgmap/mkgmap.jar')
 
 # url to overpass api endpoint
 OVERPASS_API_URL = os.environ.get('OVERPASS_API_URL', 'http://overpass-api.de/api/interpreter')
