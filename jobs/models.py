@@ -235,7 +235,7 @@ class HDXExportRegion(models.Model): # noqa
         now = timezone.now().replace(minute=0, second=0, microsecond=0)
 
         if self.schedule_period == '6hrs':
-            delta = 6 - (now.hour % 6)
+            delta = 6 - (self.schedule_hour + now.hour % 6)
 
             return now + timedelta(hours=delta)
 
