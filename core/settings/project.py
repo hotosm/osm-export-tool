@@ -81,12 +81,6 @@ if not DEBUG:
     ALLOWED_HOSTS = [HOSTNAME]
 
 """
-Admin email address
-which receives task error notifications.
-"""
-TASK_ERROR_EMAIL = os.environ.get('TASK_ERROR_EMAIL', 'export-tool@hotosm.org')
-
-"""
 Overpass Element limit
 
 Sets the max ram allowed for overpass query
