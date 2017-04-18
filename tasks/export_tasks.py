@@ -82,26 +82,3 @@ class ObfExportTask(ExportTask):
         shutil.move(out, obffile)
         shutil.rmtree(work_dir)
         self.on_success(obffile, run_uid, self.name)
-
-
-class GarminExportTask(ExportTask):
-    """Class defining GARMIN export function."""
-
-    name = 'garmin'
-    description = 'Garmin Map'
-
-    def run(self, run_uid=None, stage_dir=None, job_name=None): # noqa
-        self.update_task_state(run_uid, self.name)
-        work_dir = os.path.join(stage_dir, 'garmin')
-        config = settings.GARMIN_CONFIG  # get path to garmin config
-        pbffile = '{0}.pbf'.format(os.path.join(stage_dir, job_name))
-        o2i = garmin.OSMToIMG(
-            pbffile=pbffile, work_dir=work_dir,
-            config=config, debug=False
-        )
-        o2i.run_splitter()
-        out = o2i.run_mkgmap()
-        imgfile = '{0}_garmin.zip'.format(os.path.join(stage_dir, job_name))
-        shutil.move(out, imgfile)
-        shutil.rmtree(work_dir)
-        self.on_success(imgfile, run_uid, self.name)
