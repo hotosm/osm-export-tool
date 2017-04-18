@@ -327,6 +327,7 @@ class Geopackage(object):
         return [self.output_gpkg]
 
 
+    #TODO this needs to be used
     def update_zindexes(self):
         # rewrite this to use SQLite instead of OGR driver.
         """
