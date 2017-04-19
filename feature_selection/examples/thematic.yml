@@ -12,7 +12,7 @@ health_schools:
     - polygons
   select:
     - amenity
-  wher: amenity IN ("clinic","hospital","school","pharmacy")
+  where: amenity IN ("clinic","hospital","school","pharmacy")
 
 airports_all:
   types:
