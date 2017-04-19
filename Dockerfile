@@ -12,8 +12,10 @@ RUN \
     curl \
     software-properties-common \
   && curl -sf https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
-  && add-apt-repository -y -u -s "deb https://deb.nodesource.com/node_6.x $(lsb_release -c -s) main" \
+  && add-apt-repository -y -u "deb https://deb.nodesource.com/node_6.x $(lsb_release -c -s) main" \
   && add-apt-repository -y -u ppa:ubuntugis/ubuntugis-unstable \
+  && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+  && add-apt-repository -y -u "deb https://dl.yarnpkg.com/debian/ stable main" \
   && apt install -y --no-install-recommends \
     libpq-dev \
     python-dev \
@@ -37,12 +39,9 @@ RUN \
     libmagic1 \
     libsqlite3-mod-spatialite \
     nodejs \
+    yarn \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-
-RUN \
-  npm install -g yarn \
-  && rm -rf /root/.npm
 
 COPY requirements.txt /opt/osm-export-tool2/
 COPY requirements-dev.txt /opt/osm-export-tool2/
