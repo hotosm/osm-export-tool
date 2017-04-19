@@ -183,5 +183,7 @@ def run_task_remote(run_uid): # noqa
         run.finished_at = timezone.now()
         run.save()
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+
+        raise
     finally:
         shutil.rmtree(stage_dir)
