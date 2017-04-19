@@ -29,14 +29,13 @@ class Shapefile(object):
         """
         self.gpkg = input_gpkg
         self.output_zip = output_zip
-        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $gpkg -lco ENCODING=UTF-8 -overwrite -skipfailures")
+        self.cmd = Template("ogr2ogr -f 'ESRI Shapefile' $shp $gpkg -lco ENCODING=UTF-8 -overwrite")
 
     def run(self):
         """
         Convert the GeoPackage to a Shapefile.
         """
         shapefile_dir = self.output_zip[:-4]
-        print shapefile_dir
         convert_cmd = self.cmd.safe_substitute({'shp': shapefile_dir, 'gpkg': self.gpkg})
         LOG.debug('Running: %s' % convert_cmd)
         proc = subprocess.check_call(convert_cmd, shell=True, executable='/bin/bash')
