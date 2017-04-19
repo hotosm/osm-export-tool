@@ -445,7 +445,7 @@ export class HDXExportRegionForm extends Component {
                   }
                 </ul>
                 <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
-                  {editing ? 'Save + Sync to HDX' : 'Create Datasets + Run Export'}
+                  {editing ? 'Save + Sync to HDX' : 'Create Datasets + Schedule Export'}
                 </Button>
               </Panel>
             </Col>
