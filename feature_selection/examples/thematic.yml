@@ -1,0 +1,95 @@
+amenities_all:
+  types:
+    - points
+    - polygons
+  select:
+    - amenity
+  where: amenity IS NOT NULL
+
+health_schools:
+  types:
+    - points
+    - polygons
+  select:
+    - amenity
+  wher: amenity IN ("clinic","hospital","school","pharmacy")
+
+airports_all:
+  types:
+    - points
+    - polygons
+  select:
+    - aeroway
+  where: aeroway IS NOT NULL
+
+villages:
+  types:
+    - points
+    - polygons
+  select:
+    - place
+  where: place IS NOT NULL
+
+buildings:
+  types:
+    - polygons
+  select:
+    - building
+  where: building IS NOT NULL
+
+natural:
+  types:
+    - lines
+    - polygons
+  select:
+    - natural
+  where: natural IS NOT NULL
+
+landuse_other:
+  types:
+    - polygons
+  select:
+    - landuse
+  where: landuse IS NOT NULL AND landuse != "residential"
+
+landuse_residential:
+  types:
+    - polygons
+  select:
+    - landuse
+  where: landuse IS NOT NULL AND landuse = "residential"
+
+roads_paths:
+  types:
+    - lines
+  select:
+    - highway
+  where: highway IS NOT NULL
+
+waterways:
+  types:
+    - lines
+  select:
+    - waterway
+  where: waterway IS NOT NULL
+
+towers_antennas:
+  types:
+    - points
+  select:
+    - man_made
+  where: man_made IN ("antenna","mast","tower")
+
+harbours:
+  types:
+    - points
+  select:
+    - harbour
+  where: harbour IS NOT NULL
+
+grassy_fields:
+  types:
+    - polygons
+  select:
+    - leisure
+  where:  leisure IN ("pitch","common","golf_course")
