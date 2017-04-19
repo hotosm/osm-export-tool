@@ -1,6 +1,4 @@
 import re
-import sqlparse
-from sqlparse.tokens import Token
 import yaml
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
