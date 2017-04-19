@@ -512,6 +512,8 @@ const mapStateToProps = state => {
       is_private: true,
       license: 'hdx-odc-by',
       license_human_readable: 'Open Database License (ODC-ODbL)',
+      schedule_period: 'daily',
+      schedule_hour: 0,
       subnational: true
     },
     name: formValueSelector('HDXExportRegionForm')(state, 'name')
