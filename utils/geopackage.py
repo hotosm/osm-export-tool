@@ -213,7 +213,7 @@ class OSMConfig(object):
     See: http://www.gdal.org/drv_osm.html
     """
 
-    def __init__(self, output_ini, points=[],lines=[],polygons=[]):
+    def __init__(self, stage_dir, points=[],lines=[],polygons=[]):
         """
         Initialize the OSMConfig utility.
 
@@ -224,7 +224,7 @@ class OSMConfig(object):
         self.points = points
         self.lines = lines
         self.polygons = polygons
-        self.output_ini = output_ini
+        self.output_ini = stage_dir + "/osmconf.ini"
 
     def create_osm_conf(self, stage_dir=None):
         """
@@ -258,7 +258,7 @@ class Geopackage(object):
     def results(self):
         return [self.output_gpkg]
 
-    def __init__(self, input_pbf, output_gpkg, temp_ini, feature_selection,aoi_geom,tempdir=None):
+    def __init__(self, input_pbf, output_gpkg, stage_dir, feature_selection,aoi_geom,tempdir=None):
         """
         Initialize the OSMParser.
 
@@ -269,7 +269,7 @@ class Geopackage(object):
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.input_pbf = input_pbf
         self.output_gpkg = output_gpkg
-        self.temp_ini = temp_ini
+        self.stage_dir = stage_dir
         self.feature_selection = feature_selection
         self.aoi_geom = aoi_geom
         
@@ -298,7 +298,7 @@ class Geopackage(object):
             LOG.debug("Skipping Geopackage, file exists")
             return
         key_union = self.feature_selection.key_union
-        osmconf = OSMConfig(self.temp_ini,polygons=key_union,points=key_union,lines=key_union)
+        osmconf = OSMConfig(self.stage_dir,polygons=key_union,points=key_union,lines=key_union)
         conf = osmconf.create_osm_conf()
         ogr_cmd = self.ogr_cmd.safe_substitute({'gpkg': self.output_gpkg,
                                                 'osm': self.input_pbf, 'osmconf': conf})

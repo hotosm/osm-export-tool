@@ -38,6 +38,8 @@ class OsmAndOBF(object):
     """
     Convert osm input to obf output.
     """
+    name = "osmand_obf"
+    description = 'OsmAnd OBF'
 
     def __init__(self,input_pbf,work_dir,map_creator_dir):
         """
@@ -68,3 +70,7 @@ class OsmAndOBF(object):
         cmd = OBF_CMD.format(map_creator_dir=self.map_creator_dir,batch_xml=self.work_dir + "/batch.xml")
         LOG.debug('Running: %s' % cmd)
         proc = subprocess.check_call(cmd, shell=True, executable='/bin/bash')
+
+    @property
+    def results(self):
+        return [self.work_dir + "/Osmand_2.obf"]

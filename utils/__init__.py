@@ -5,8 +5,13 @@ from shp import Shapefile
 from theme_gpkg import ThematicGPKG
 from theme_shp import ThematicSHP
 from kml import KML
+from garmin_img import GarminIMG
+from osmand_obf import OsmAndOBF
 
 FORMAT_NAMES = {}
 for cls in [OSM_XML, OSM_PBF, Geopackage,Shapefile,
-            ThematicGPKG,ThematicSHP, KML]:
+            ThematicGPKG,ThematicSHP, KML,GarminIMG,OsmAndOBF]:
     FORMAT_NAMES[cls.name] = cls
+
+def map_names_to_formats(names_list):
+    return [FORMAT_NAMES[name] for name in names_list]
