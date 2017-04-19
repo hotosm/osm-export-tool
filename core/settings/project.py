@@ -55,9 +55,6 @@ EXPORT_DOWNLOAD_ROOT = ABS_PATH('../export_downloads/')
 # the root url for export downloads
 EXPORT_MEDIA_ROOT = '/downloads/'
 
-# home dir of the OSMAnd Map Creator
-OSMAND_MAP_CREATOR_DIR = ABS_PATH('../osmandmapcreator')
-
 OSMAND_MAP_CREATOR_DIR = os.environ.get('OSMAND_MAP_CREATOR_DIR','/opt/osmandmapcreator/')
 GARMIN_SPLITTER = os.environ.get('GARMIN_SPLITTER','/opt/splitter/splitter.jar')
 GARMIN_MKGMAP = os.environ.get('GARMIN_MKGMAP','/opt/mkgmap/mkgmap.jar')
