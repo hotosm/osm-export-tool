@@ -230,6 +230,9 @@ class HDXExportRegion(models.Model): # noqa
     subnational = models.BooleanField(default=True)
     extra_notes = models.TextField(null=True)
 
+    class Meta: # noqa
+        db_table = 'hdx_export_regions'
+
     @property
     def delta(self): # noqa
         if self.schedule_period == '6hrs':
