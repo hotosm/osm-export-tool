@@ -24,6 +24,8 @@ from feature_selection.feature_selection import FeatureSelection
 
 from utils import map_names_to_formats
 from utils.manager import RunManager
+from utils.theme_shp import ThematicSHP
+from utils.theme_gpkg import ThematicGPKG
 
 client = Client()
 
@@ -147,30 +149,36 @@ def run_task_remote(run_uid): # noqa
     run.save()
     LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
 
+    if not settings.SYNC_TO_HDX:
+        return
+
     if HDXExportRegion.objects.filter(job_id=run.job_id).exists():
         LOG.debug("Adding resources to HDX")
         region = HDXExportRegion.objects.get(job_id=run.job_id)
         export_set = region.hdx_dataset
         for theme in feature_selection.themes:
             resources = []
-            for geom_type in feature_selection.geom_types(theme):
+            if ThematicSHP in export_formats:
+                for geom_type in feature_selection.geom_types(theme):
+                    resources.append({
+                        'name': theme + ' ' + geom_type,
+                        'format': 'zipped shapefile',
+                        'description': "ESRI Shapefile of " + geom_type,
+                        'url': settings.HOSTNAME + os.path.join(
+                            settings.EXPORT_MEDIA_ROOT,
+                            run_uid,
+                            theme + '_' + geom_type + ".zip"
+                        )
+                    })
+
+            if ThematicGPKG in export_formats:
                 resources.append({
-                    'name': theme + ' ' + geom_type,
-                    'format': 'zipped shapefile',
-                    'description': "ESRI Shapefile of " + geom_type,
+                    'name': theme + ' geopackage',
+                    'format': 'zipped geopackage',
+                    'description': "Geopackage of " + theme,
                     'url': settings.HOSTNAME + os.path.join(
-                        settings.EXPORT_MEDIA_ROOT,
-                        run_uid,
-                        theme + '_' + geom_type + ".zip"
-                    )
+                        settings.EXPORT_MEDIA_ROOT, run_uid, theme + ".gpkg")
                 })
-            resources.append({
-                'name': theme + ' geopackage',
-                'format': 'zipped geopackage',
-                'description': "Geopackage of " + theme,
-                'url': settings.HOSTNAME + os.path.join(
-                    settings.EXPORT_MEDIA_ROOT, run_uid, theme + ".gpkg")
-            })
             export_set.datasets[theme].add_update_resources(resources)
         export_set.sync_datasets()
 
