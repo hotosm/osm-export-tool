@@ -64,9 +64,10 @@ points_of_interest:
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 
 admin_boundaries:
-  hdx_name: Administrative Boundaries (OpenStreetMap Export)
-  hdx_tags: admin, osm
-  hdx_caveats: Boundaries are crowd-sourced and may not align with other datasets
+  hdx:
+    name: Administrative Boundaries (OpenStreetMap Export)
+    tags: admin, osm
+    caveats: Boundaries are crowd-sourced and may not align with other datasets
   types:
     - points
     - lines

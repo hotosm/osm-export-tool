@@ -110,15 +110,16 @@ class HDXExportSet(object):
         for theme in self._feature_selection.themes:
             dataset = Dataset()
             name = '{}_{}'.format(self._dataset_prefix, theme)
+            title = '{} {} (OpenStreetMap Export)'
             tags = []
-            if 'hdx_tags' in self._feature_selection.doc[theme]:
-                tags = map(lambda tag: tag.strip(),
-                           self._feature_selection.doc[theme]['hdx_tags'].split(','))
-            title = self._feature_selection.doc[theme].get(
-                'hdx_name',
-                '{} {} (OpenStreetMap Export)'.format(self._name, theme)
-            )
-            caveats = self._feature_selection.doc[theme].get('hdx_caveats', '')
+            caveats = ''
+            if 'hdx' in self._feature_selection.doc[theme]:
+                hdx = self._feature_selection.doc[theme]['hdx']
+                title = hdx.get('name', title)
+                caveats = hdx.get('caveats', caveats)
+
+                if 'tags' in hdx:
+                    tags = map(lambda tag: tag.strip(), hdx['tags'].split(','))
 
             dataset['name'] = name
             dataset['title'] = title
