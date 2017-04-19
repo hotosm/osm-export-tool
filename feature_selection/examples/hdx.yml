@@ -43,7 +43,7 @@ waterways:
     - tunnel
     - natural
     - water
-  where: waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','coastline','bay')
+  where: waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','bay')
 
 points_of_interest:
   types: 
