@@ -94,93 +94,13 @@ class RunManager(object):
         for formatcls in self.formats:
             self.run_format(formatcls)
 
-            
-YAML = '''
-buildings:
-    types:
-        - polygons
-    select:
-        - name
-        - building
-        - building_levels
-        - building_materials
-        - addr:housenumber
-        - addr:street
-        - addr:city
-        - office
-    where: building IS NOT NULL
-
-roads:
-    types:
-        - lines
-        - polygons
-    select:
-        - name
-        - highway
-        - surface
-        - smoothness
-        - width
-        - lanes
-        - oneway
-        - bridge
-        - layer
-    where: highway IS NOT NULL
-
-waterways:
-    types: 
-        - lines
-        - polygons
-    select:
-        - name
-        - waterway
-        - covered
-        - width
-        - depth
-        - layer
-        - blockage
-        - tunnel
-        - natural
-        - water
-    where: waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','coastline','bay')
-
-points_of_interest:
-    types: 
-        - points
-        - polygons
-    select:
-        - name
-        - amenity
-        - man_made
-        - shop
-        - tourism
-        - opening_hours
-        - beds
-        - rooms
-        - addr:housenumber
-        - addr:street
-        - addr:city
-    where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
-
-admin_boundaries:
-    types: 
-        - points
-        - lines
-        - polygons
-    select:
-        - name
-        - boundary
-        - admin_level
-        - place
-    where: boundary = 'administrative' OR admin_level IS NOT NULL
-'''
-
 if __name__ == '__main__':
     from feature_selection.feature_selection import FeatureSelection
     import os
     import logging
     from django.contrib.gis.geos import GEOSGeometry, Polygon
     logging.basicConfig(level=logging.DEBUG)
-    feature_selection = FeatureSelection(YAML)
+    feature_selection = FeatureSelection.example('hdx')
     stage_dir = 'scratch/'
     try:
         os.makedirs('scratch', 6600)

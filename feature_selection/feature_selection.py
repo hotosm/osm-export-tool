@@ -1,3 +1,4 @@
+import os
 import re
 import yaml
 from yaml.constructor import ConstructorError
@@ -36,6 +37,13 @@ OGR2OGR_TABLENAMES = {
 # It describes a set of tables (themes)
 # to create in a Spatialite database.
 class FeatureSelection(object):
+    @staticmethod
+    def example(filename):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        f = FeatureSelection(open(os.path.join(dir_path,'examples',filename+".yml")).read())
+        assert f.valid
+        return f
+
     def __init__(self,raw_doc):
         self._raw_doc = raw_doc
         self._doc = None
