@@ -65,7 +65,9 @@ points_of_interest:
 
 admin_boundaries:
   hdx_name: Administrative Boundaries (OpenStreetMap Export)
-  types: 
+  hdx_tags: admin, osm
+  hdx_caveats: Boundaries are crowd-sourced and may not align with other datasets
+  types:
     - points
     - lines
     - polygons
