@@ -23,6 +23,11 @@ DATABASES = {}
 DATABASES['default'] = dj_database_url.config(default='postgres:///exports')
 DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
+CELERY_IMPORTS = (
+    'tasks.scheduled_tasks',
+    'tasks.task_runners',
+)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

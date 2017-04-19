@@ -1,7 +1,6 @@
 # noqa
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 import logging
 import os
 import re
@@ -12,10 +11,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 
 from celery import shared_task
-import pytz
 from raven import Client
-
-from core.celery import app
 
 from jobs.models import Job, HDXExportRegion
 from tasks.models import ExportRun, ExportTask
