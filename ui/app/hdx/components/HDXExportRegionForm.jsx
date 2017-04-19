@@ -217,6 +217,10 @@ export class HDXExportRegionForm extends Component {
     this.loadLocationOptions();
   }
 
+  componentWillUnmount () {
+    // TODO reset property-related state, e.g. props.hdx.deleted
+  }
+
   componentWillReceiveProps (props) {
     const { hdx: { statusCode }, showAllExportRegions } = props;
 
