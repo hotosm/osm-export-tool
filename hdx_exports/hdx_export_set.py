@@ -110,7 +110,7 @@ class HDXExportSet(object):
         for theme in self._feature_selection.themes:
             dataset = Dataset()
             name = '{}_{}'.format(self._dataset_prefix, theme)
-            title = '{} {} (OpenStreetMap Export)'
+            title = '{} {} (OpenStreetMap Export)'.format(self._name, theme)
             tags = []
             caveats = ''
             if 'hdx' in self._feature_selection.doc[theme]:
