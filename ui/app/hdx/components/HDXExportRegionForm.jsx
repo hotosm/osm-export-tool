@@ -20,10 +20,9 @@ import { deleteExportRegion, getExportRegion, runExport } from '../actions/hdxAc
 import styles from '../styles/HDXExportRegionForm.css';
 
 const AVAILABLE_EXPORT_FORMATS = {
-  shp: 'ESRI Shapefiles',
-  geopackage: 'GeoPackage',
-  // TODO disabled until we get this working again
-  // garmin: 'Garmin .IMG',
+  theme_shp: 'ESRI Shapefiles',
+  theme_gpkg: 'GeoPackage',
+  garmin_img: 'Garmin .IMG',
   kml: '.KMZ',
   osm_pbf: 'OpenStreetMap .PBF'
 };
