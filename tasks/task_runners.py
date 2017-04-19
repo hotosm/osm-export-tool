@@ -141,11 +141,6 @@ def run_task_remote(run_uid): # noqa
                 download_path = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid, filename)
                 shutil.copy(result, download_path)
 
-        run.status = 'COMPLETED'
-        run.finished_at = timezone.now()
-        run.save()
-        LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
-
         if settings.SYNC_TO_HDX:
             if HDXExportRegion.objects.filter(job_id=run.job_id).exists():
                 LOG.debug("Adding resources to HDX")
@@ -177,13 +172,15 @@ def run_task_remote(run_uid): # noqa
                     export_set.datasets[theme].add_update_resources(resources)
                 export_set.sync_datasets()
 
-        # TODO send mail
+        run.status = 'COMPLETED'
+        LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
     except Exception as e:
         run.status = 'FAILED'
-        run.finished_at = timezone.now()
-        run.save()
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
 
-        raise
+        client.captureException()
     finally:
         shutil.rmtree(stage_dir)
+
+        run.finished_at = timezone.now()
+        run.save()
