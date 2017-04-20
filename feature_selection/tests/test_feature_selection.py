@@ -22,6 +22,7 @@ class TestFeatureSelection(unittest.TestCase):
                 - waterway
         buildings:
             types:
+                - points
                 - lines
                 - polygons
             select:
@@ -34,7 +35,8 @@ class TestFeatureSelection(unittest.TestCase):
         self.assertEquals(f.geom_types('waterways'),['lines','polygons'])
         self.assertEquals(f.key_selections('waterways'),['name','waterway'])
         self.assertEquals(f.filter_clause('waterways'),'1') # SELECT WHERE 1
-        self.assertEquals(f.key_union, ['building','name','waterway'])
+        self.assertEquals(f.key_union(), ['building','name','waterway'])
+        self.assertEquals(f.key_union('points'), ['building','name'])
         self.assertEquals(f.filter_clause('buildings'),'building IS NOT NULL')
 
     def test_sqls(self):
@@ -160,12 +162,19 @@ class TestFeatureSelection(unittest.TestCase):
     def test_enforces_subset_columns(self):
         y = '''
         buildings:
+            types:
+                - polygons
             select:
                 - column1 
             where: column2 IS NOT NULL
+        other:
+            types:
+                - points
+            select:
+                - column3
         '''
         f = FeatureSelection(y)
         self.assertTrue(f.valid)
-        self.assertEquals(f.key_union, ['column1','column2'])
-
+        self.assertEquals(f.key_union(), ['column1','column2','column3'])
+        self.assertEquals(f.key_union('points'), ['column3'])
 

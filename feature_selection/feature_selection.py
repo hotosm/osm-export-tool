@@ -48,7 +48,7 @@ class FeatureSelection(object):
         self._raw_doc = raw_doc
         self._doc = None
         self._errors = []
-        self.keys_from_sql = set()
+        self.keys_from_sql = {}
 
     @property
     def doc(self):
@@ -71,6 +71,8 @@ class FeatureSelection(object):
                 if not isinstance(theme_dict['select'],list):
                     self._errors.append("'select' children must be list elements (e.g. '- amenity')")
                     return False
+
+                self.keys_from_sql[theme] = set()
                 if 'where' in theme_dict:
                     s = SQLValidator(theme_dict['where'])
                     if not s.valid:
@@ -79,7 +81,7 @@ class FeatureSelection(object):
 
                     # also add the keys to keys_from_sql
                     for k in s.column_names:
-                        self.keys_from_sql.add(k)
+                        self.keys_from_sql[theme].add(k)
 
             return True
 
@@ -129,14 +131,14 @@ class FeatureSelection(object):
     def __str__(self):
         return str(self.doc)
 
-    @property
-    def key_union(self):
+    def key_union(self,geom_type=None):
         s = set()
         for t in self.themes:
-            for key in self.key_selections(t):
-                s.add(key)
-        for key in self.keys_from_sql:
-            s.add(key)
+            if geom_type == None or (geom_type in self.geom_types(t)):
+                for key in self.key_selections(t):
+                    s.add(key)
+                for key in self.keys_from_sql[t]:
+                    s.add(key)
         return sorted(list(s))
 
     @property

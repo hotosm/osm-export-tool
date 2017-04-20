@@ -87,11 +87,6 @@ DELETE FROM gpkg_extensions WHERE table_name="multilinestrings";
 DELETE FROM gpkg_extensions WHERE table_name="other_relations";
 DELETE FROM gpkg_geometry_columns WHERE table_name="multilinestrings";
 DELETE FROM gpkg_geometry_columns WHERE table_name="other_relations";
-
--- add z_index columns
-ALTER TABLE planet_osm_point ADD COLUMN z_index INTEGER(4) DEFAULT 0;
-ALTER TABLE planet_osm_line ADD COLUMN z_index INTEGER(4) DEFAULT 0;
-ALTER TABLE planet_osm_polygon ADD COLUMN z_index INTEGER(4) DEFAULT 0;
 '''
 
 
@@ -301,8 +296,10 @@ class Geopackage(object):
         if self.is_complete:
             LOG.debug("Skipping Geopackage, file exists")
             return
-        key_union = self.feature_selection.key_union
-        osmconf = OSMConfig(self.stage_dir,polygons=key_union,points=key_union,lines=key_union)
+        keys_points = self.feature_selection.key_union('points')
+        keys_lines = self.feature_selection.key_union('lines')
+        keys_polygons = self.feature_selection.key_union('polygons')
+        osmconf = OSMConfig(self.stage_dir,points=keys_points,lines=keys_lines,polygons=keys_polygons)
         conf = osmconf.create_osm_conf()
         ogr_cmd = self.ogr_cmd.safe_substitute({'gpkg': self.output_gpkg,
                                                 'osm': self.input_pbf, 'osmconf': conf})
@@ -320,6 +317,7 @@ class Geopackage(object):
         cur.execute("CREATE TABLE boundary (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, geom GEOMETRY)");
         cur.execute("INSERT INTO boundary (geom) VALUES (GeomFromWKB(?,4326));",(self.aoi_geom.wkb,))
         cur.executescript(SPATIAL_SQL)
+        self.update_zindexes(cur,self.feature_selection)
         conn.commit()
 
     @property
@@ -331,56 +329,28 @@ class Geopackage(object):
         return [self.output_gpkg]
 
 
-    #TODO this needs to be used
-    def update_zindexes(self):
-        # rewrite this to use SQLite instead of OGR driver.
-        """
-        Update the zindexes on sqlite layers.
-        """
-        ds = ogr.Open(self.output_gpkg, update=True)
-        zindexes = {
-            3: ('path', 'track', 'footway', 'minor', 'road', 'service', 'unclassified', 'residential'),
-            4: ('tertiary_link', 'tertiary'),
-            6: ('secondary_link', 'secondary'),
-            7: ('primary_link', 'primary'),
-            8: ('trunk_link', 'trunk'),
-            9: ('motorway_link', 'motorway')
-        }
-        layer_count = ds.GetLayerCount()
-        assert layer_count == 3, """Incorrect number of layers found. Run 'create_default_schema()' method first."""
-        for layer_idx in range(layer_count):
-            layer = ds.GetLayerByIndex(layer_idx).GetName()
-            try:
-                # update highway z_indexes
-                for key in zindexes.keys():
-                    sql = 'UPDATE {0} SET z_index = {1} WHERE highway IN {2};'.format(layer, key, zindexes[key])
-                    ds.ExecuteSQL(sql)
-            except RuntimeError:
-                pass
-            try:
-                # update railway z_indexes
-                sql = "UPDATE {0} SET z_index = z_index + 5 WHERE railway IS NOT NULL".format(layer)
-                ds.ExecuteSQL(sql)
-            except RuntimeError:
-                pass
-            try:
-                # update layer
-                sql = "UPDATE {0} SET z_index = z_index + 10 * cast(layer as int) WHERE layer IS NOT NULL".format(layer)
-                ds.ExecuteSQL(sql)
-            except RuntimeError:
-                pass
-            try:
-                # update bridge z_index
-                sql = "UPDATE {0} SET z_index = z_index + 10 WHERE bridge IN ('yes', 'true', 1)".format(layer)
-                ds.ExecuteSQL(sql)
-            except RuntimeError:
-                pass
-            try:
-                # update tunnel z_index
-                sql = "UPDATE {0} SET z_index = z_index - 10 WHERE tunnel IN ('yes', 'true', 1)".format(layer)
-                ds.ExecuteSQL(sql)
-            except RuntimeError:
-                pass
-
-        # close connection
-        ds.Destroy()
+    def update_zindexes(self,cur,feature_selection):
+        # arguably, determing Z-index should require all 5 of these OSM keys
+        # to construct a consistent z-index.
+        for geom_type in ['point','line','polygon']:
+            key_union = feature_selection.key_union(geom_type + 's') # boo
+            table_name = "planet_osm_" + geom_type
+            if any([x in key_union for x in ['highway','railway','layer','bridge','tunnel']]):
+                cur.execute("ALTER TABLE {table} ADD COLUMN z_index INTEGER(4) DEFAULT 0;".format(table=table_name))
+                if "highway" in key_union:
+                    cur.executescript("""
+                        UPDATE {table} SET z_index = 3 WHERE highway IN ('path', 'track', 'footway', 'minor', 'road', 'service', 'unclassified', 'residential');
+                        UPDATE {table} SET z_index = 4 WHERE highway IN ('tertiary_link', 'tertiary');
+                        UPDATE {table} SET z_index = 6 WHERE highway IN ('secondary_link', 'secondary');
+                        UPDATE {table} SET z_index = 7 WHERE highway IN ('primary_link', 'primary');
+                        UPDATE {table} SET z_index = 8 WHERE highway IN  ('trunk_link', 'trunk');
+                        UPDATE {table} SET z_index = 9 WHERE highway IN  ('motorway_link', 'motorway');
+                    """.format(table=table_name))
+                if "railway" in key_union:
+                    cur.execute("UPDATE {table} SET z_index = z_index + 5 WHERE railway IS NOT NULL".format(table=table_name))
+                if "layer" in key_union:
+                    cur.execute("UPDATE {table} SET z_index = z_index + 10 * cast(layer as int) WHERE layer IS NOT NULL".format(table=table_name))
+                if "bridge" in key_union:
+                    cur.execute("UPDATE {table} SET z_index = z_index + 10 WHERE bridge IN ('yes', 'true', 1)".format(table=table_name))
+                if "tunnel" in key_union:
+                    cur.execute("UPDATE {table} SET z_index = z_index - 10 WHERE tunnel IN ('yes', 'true', 1)".format(table=table_name))
