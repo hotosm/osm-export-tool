@@ -21,7 +21,7 @@ from feature_selection.feature_selection import FeatureSelection
 from utils import map_names_to_formats
 from utils.manager import RunManager
 from utils.theme_shp import ThematicSHP
-from utils.theme_gpkg import ThematicGPKG
+from utils.geopackage import Geopackage
 
 from .email import (
     send_completion_notification,
@@ -168,7 +168,7 @@ def run_task_remote(run_uid): # noqa
                                 )
                             })
 
-                    if ThematicGPKG in export_formats:
+                    if Geopackage in export_formats:
                         resources.append({
                             'name': theme + ' geopackage',
                             'format': 'zipped geopackage',

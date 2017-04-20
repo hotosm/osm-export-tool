@@ -3,8 +3,6 @@ from osm_pbf import OSM_PBF
 from kml import KML
 from geopackage import Geopackage
 from shp import Shapefile
-from theme_gpkg import ThematicGPKG
-from theme_shp import ThematicSHP
 from garmin_img import GarminIMG
 from osmand_obf import OsmAndOBF
 
@@ -15,8 +13,6 @@ class RunManager(object):
         Geopackage: OSM_PBF,
         Shapefile: Geopackage,
         KML: Geopackage,
-        ThematicGPKG: Geopackage,
-        ThematicSHP: ThematicGPKG,
         OsmAndOBF: OSM_PBF,
         GarminIMG: OSM_PBF
     }
@@ -63,7 +59,8 @@ class RunManager(object):
                 self.dir+'geopackage.gpkg',
                 self.dir,
                 self.feature_selection,
-                self.aoi_geom
+                self.aoi_geom,
+                per_theme=self.per_theme
             )
         if formatcls == GarminIMG:
             assert self.garmin_splitter and self.garmin_mkgmap
@@ -80,10 +77,6 @@ class RunManager(object):
             task = KML(self.dir + 'geopackage.gpkg',self.dir + 'kml.kmz')
         if formatcls == Shapefile:
             task = Shapefile(self.dir + 'geopackage.gpkg',self.dir+'shapefile.shp.zip')
-        if formatcls == ThematicGPKG:
-            task = ThematicGPKG(self.dir+'geopackage.gpkg',self.feature_selection,self.dir,per_theme=self.per_theme)
-        if formatcls == ThematicSHP:
-            task = ThematicSHP(self.dir+'geopackage.gpkg',self.dir+'thematic_shps',self.feature_selection,self.aoi_geom,per_theme=self.per_theme)
 
         self.on_task_start(formatcls)
         task.run()
@@ -113,7 +106,7 @@ if __name__ == '__main__':
     # TODO Shapefiles (non-thematic) broken
     aoi_geom = GEOSGeometry('POLYGON((-17.4682611807514 14.7168486569183,-17.4682611807514 14.6916060414416,-17.4359733230442 14.6916060414416,-17.4359733230442 14.7168486569183,-17.4682611807514 14.7168486569183))')
     r = RunManager(
-        [OSM_XML,OSM_PBF,Geopackage,KML,ThematicGPKG,ThematicSHP,GarminIMG,OsmAndOBF],
+        [Geopackage],
         aoi_geom,
         feature_selection,
         stage_dir,

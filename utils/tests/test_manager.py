@@ -7,7 +7,6 @@ from utils.osm_pbf import OSM_PBF
 from utils.kml import KML
 from utils.geopackage import Geopackage
 from utils.shp import Shapefile
-from utils.theme_gpkg import ThematicGPKG
 from utils.theme_shp import ThematicSHP
 from utils.garmin_img import GarminIMG
 from utils.osmand_obf import OsmAndOBF
@@ -31,7 +30,6 @@ class TestManager(unittest.TestCase):
             OSM_PBF,
             Geopackage,
             Shapefile,
-            ThematicGPKG,
             ThematicSHP,
             KML,
             GarminIMG,

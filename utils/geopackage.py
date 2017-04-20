@@ -257,7 +257,7 @@ class Geopackage(object):
     def results(self):
         return [self.output_gpkg]
 
-    def __init__(self, input_pbf, output_gpkg, stage_dir, feature_selection,aoi_geom,tempdir=None):
+    def __init__(self, input_pbf, output_gpkg, stage_dir, feature_selection,aoi_geom,tempdir=None,per_theme=False):
         """
         Initialize the OSMParser.
 
@@ -271,6 +271,7 @@ class Geopackage(object):
         self.stage_dir = stage_dir
         self.feature_selection = feature_selection
         self.aoi_geom = aoi_geom
+        self.per_theme = per_theme
         
         """
         OGR Command to run.
@@ -318,7 +319,40 @@ class Geopackage(object):
         cur.execute("INSERT INTO boundary (geom) VALUES (GeomFromWKB(?,4326));",(self.aoi_geom.wkb,))
         cur.executescript(SPATIAL_SQL)
         self.update_zindexes(cur,self.feature_selection)
+
+        # add themes
+        create_sqls, index_sqls = self.feature_selection.sqls
+        for query in create_sqls:
+            LOG.debug(query)
+            cur.execute(query)
+        for query in index_sqls:
+            LOG.debug(query)
+            cur.executescript(query)
         conn.commit()
+        conn.close()
+
+        if self.per_theme:
+            # this creates per-theme GPKGs
+            WKT_TYPE_MAP = {
+                'points':'POINT',
+                'lines':'MULTILINESTRING',
+                'polygons':'MULTIPOLYGON'
+            }
+            for theme in self.feature_selection.themes:
+                conn = sqlite3.connect(self.stage_dir + theme + ".gpkg")
+                conn.enable_load_extension(True)
+                cur = conn.cursor()
+                cur.execute("attach database ? as 'geopackage'",(self.output_gpkg,))
+                cur.execute("create table gpkg_spatial_ref_sys as select * from geopackage.gpkg_spatial_ref_sys")
+                cur.execute("create table gpkg_contents as select * from geopackage.gpkg_contents where 0")
+                cur.execute("create table gpkg_geometry_columns as select * from geopackage.gpkg_geometry_columns where 0")
+                for geom_type in self.feature_selection.geom_types(theme):
+                    table_name = theme + "_" + geom_type
+                    cur.execute("create table {0} as select * from geopackage.{0}".format(table_name))
+                    cur.execute("INSERT INTO gpkg_contents VALUES ('{0}', 'features', '{0}', '', '2017-04-08T01:35:16.576Z', null, null, null, null, '4326')".format(table_name))
+                    cur.execute("INSERT INTO gpkg_geometry_columns VALUES ('{0}', 'geom', '{1}', '4326', '0', '0')".format(table_name,WKT_TYPE_MAP[geom_type]))
+                conn.commit()
+                conn.close()
 
     @property
     def is_complete(self):
@@ -326,7 +360,10 @@ class Geopackage(object):
 
     @property
     def results(self):
-        return [self.output_gpkg]
+        if self.per_theme:
+            return [self.stage_dir + theme + ".gpkg" for theme in self.feature_selection.themes]
+        else:
+            return [self.output_gpkg]
 
 
     def update_zindexes(self,cur,feature_selection):
