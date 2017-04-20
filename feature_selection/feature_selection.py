@@ -155,6 +155,11 @@ class FeatureSelection(object):
         index_sqls = []
         for theme in self.themes:
             key_selections = ['"{0}"'.format(key) for key in self.key_selections(theme)]
+
+            # if any of these 5 keys in selection, add z_index
+            if any([x in self.key_selections(theme) for x in ['highway','railway','bridge','tunnel','layer']]):
+                    key_selections.append('"z_index"')
+
             filter_clause = self.filter_clause(theme)
             for geom_type in self.geom_types(theme):
                 dst_tablename = theme + '_' + geom_type

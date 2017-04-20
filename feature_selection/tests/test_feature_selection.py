@@ -54,6 +54,18 @@ class TestFeatureSelection(unittest.TestCase):
         self.assertEquals(create_sqls[0],'CREATE TABLE buildings_points AS SELECT geom,osm_id,"name","addr:housenumber" FROM planet_osm_point WHERE (1)')
         self.assertEquals(create_sqls[1],'CREATE TABLE buildings_polygons AS SELECT geom,osm_id,osm_way_id,"name","addr:housenumber" FROM planet_osm_polygon WHERE (1)')
 
+    def test_zindex(self):
+        y = '''
+        roads:
+            types:
+                - lines 
+            select:
+                - highway
+        '''
+        f = FeatureSelection(y)
+        create_sqls, index_sqls = f.sqls
+        self.assertEquals(create_sqls[0],'CREATE TABLE roads_lines AS SELECT geom,osm_id,"highway","z_index" FROM planet_osm_line WHERE (1)')
+
 
     def test_unsafe_yaml(self):
         y = '''
