@@ -312,14 +312,8 @@ class HDXExportRegion(models.Model): # noqa
 
     @property
     def datasets(self): # noqa
-        # TODO generate this from the feature selection
-        return (
-            '{}_admin_boundaries'.format(self.dataset_prefix),
-            '{}_buildings'.format(self.dataset_prefix),
-            '{}_points_of_interest'.format(self.dataset_prefix),
-            '{}_roads'.format(self.dataset_prefix),
-            '{}_waterways'.format(self.dataset_prefix)
-        )
+        return map(lambda x: '{}_{}'.format(self.dataset_prefix, x),
+                   self.job.feature_selection_object.themes)
 
     @property
     def runs(self): # noqa
