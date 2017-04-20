@@ -20,7 +20,7 @@ from feature_selection.feature_selection import FeatureSelection
 
 from utils import map_names_to_formats
 from utils.manager import RunManager
-from utils.theme_shp import ThematicSHP
+from utils.shp import Shapefile
 from utils.geopackage import Geopackage
 
 from .email import (
@@ -155,7 +155,7 @@ def run_task_remote(run_uid): # noqa
                 export_set = region.hdx_dataset
                 for theme in feature_selection.themes:
                     resources = []
-                    if ThematicSHP in export_formats:
+                    if Shapefile in export_formats:
                         for geom_type in feature_selection.geom_types(theme):
                             resources.append({
                                 'name': theme + ' ' + geom_type,
