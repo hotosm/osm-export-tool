@@ -74,7 +74,7 @@ class RunManager(object):
             assert self.map_creator_dir
             task = OsmAndOBF(self.dir+'osm_pbf.pbf',self.dir,self.map_creator_dir)
         if formatcls == KML:
-            task = KML(self.dir + 'geopackage.gpkg',self.dir + 'kml.kmz')
+            task = KML(self.dir + 'geopackage.gpkg',self.dir,self.feature_selection,per_theme=self.per_theme)
         if formatcls == Shapefile:
             task = Shapefile(self.dir + 'geopackage.gpkg',self.dir,self.feature_selection)
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     # TODO Shapefiles (non-thematic) broken
     aoi_geom = GEOSGeometry('POLYGON((-17.4682611807514 14.7168486569183,-17.4682611807514 14.6916060414416,-17.4359733230442 14.6916060414416,-17.4359733230442 14.7168486569183,-17.4682611807514 14.7168486569183))')
     r = RunManager(
-        [Geopackage,Shapefile],
+        [Geopackage,KML],
         aoi_geom,
         feature_selection,
         stage_dir,

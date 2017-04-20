@@ -28,9 +28,12 @@ class Shapefile(object):
         """
         self.gpkg = input_gpkg
         self.feature_selection = feature_selection
-        self.output_dir = output_dir + "/"
 
     def run(self):
+        if self.is_complete:
+            LOG.debug("Skipping SHP, files exist")
+            return
+
         for table in self.feature_selection.tables:
             subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}/{1}.shp {2} -lco ENCODING=UTF-8 -sql "select * from {1};"'.format(
                 self.output_dir,
@@ -39,7 +42,7 @@ class Shapefile(object):
 
     @property
     def is_complete(self):
-        return os.path.isfile(self.output_zip)
+        return all(os.path.isfile(result) for result in results)
     
     @property
     def results(self):
