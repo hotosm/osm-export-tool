@@ -19,7 +19,7 @@ from tasks.models import ExportRun, ExportTask
 from feature_selection.feature_selection import FeatureSelection
 
 from utils import map_names_to_formats
-from utils.manager import RunManager, Zipper
+from utils.manager import RunManager, Zipper, simplify_max_points
 from utils.shp import Shapefile
 from utils.geopackage import Geopackage
 
@@ -101,6 +101,7 @@ def run_task_remote(run_uid): # noqa
             os.makedirs(run_dir)
 
         aoi = GEOSGeometry(job.the_geom)
+        aoi = simplify_max_points(aoi)
         try:
             feature_selection = job.feature_selection_object
         except Exception:
