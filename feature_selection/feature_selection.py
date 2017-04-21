@@ -59,6 +59,9 @@ class FeatureSelection(object):
                 self._errors.append("YAML must be dict, not list")
                 return False
             for theme, theme_dict in loaded_doc.iteritems():
+                if not re.match('^[a-z0-9_]+$', theme):
+                    self._errors.append("Each theme must be named using lowercase characters and underscores")
+                    return False
                 if 'select' not in theme_dict:
                     self._errors.append("Each theme must have a 'select' key")
                     return False
