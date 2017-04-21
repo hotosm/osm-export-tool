@@ -36,7 +36,6 @@ class OSM_PBF(object):
     def results(self):
         return [self.output_pbf]
 
-
     @property
     def is_complete(self):
         return os.path.isfile(self.output_pbf)

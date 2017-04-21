@@ -108,6 +108,9 @@ def run_task_remote(run_uid): # noqa
 
         export_formats = map_names_to_formats(job.export_formats)
 
+        download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
+        zipper = Zipper(job.name,stage_dir,download_dir,aoi)
+
         def on_task_start(formatcls):
             LOG.debug('Task Start: {0} for run: {1}'.format(formatcls.name, run_uid))
             if formatcls in export_formats:
@@ -121,11 +124,9 @@ def run_task_remote(run_uid): # noqa
             LOG.debug('Task Success: {0} for run: {1}'.format(formatcls.name, run_uid))
             if formatcls in export_formats:
                 task = ExportTask.objects.get(run__uid=run_uid, name=formatcls.name)
-                #TODO fix me to work with new results dict
-                #task.filesize_bytes = sum(os.stat(result).st_size for result in results)
-                #task.filenames = [os.path.basename(result) for result in results]
-                task.filesize_bytes = 0
-                task.filenames = []
+                zipfiles = zipper.run(results,formatcls.name)
+                task.filesize_bytes = sum(os.stat(zipfile).st_size for zipfile in zipfiles)
+                task.filenames = [os.path.basename(zipfile) for zipfile in zipfiles]
                 task.status = 'SUCCESS'
                 task.finished_at = timezone.now()
                 task.save()
@@ -144,13 +145,6 @@ def run_task_remote(run_uid): # noqa
             )
         r.run()
 
-
-        download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
-        
-        zipper = Zipper(job.name,stage_dir,download_dir,aoi)
-        for format_cls in export_formats:
-            zipper.run(r.results[format_cls].results,format_cls.name)
-            
         public_dir = settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT, run_uid)
 
         if settings.SYNC_TO_HDX and HDXExportRegion.objects.filter(job_id=run.job_id).exists():

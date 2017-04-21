@@ -25,6 +25,16 @@ class Zipper(object):
         self._resources_by_theme = {}
 
     def run(self,results_dict,resource_type):
+        # hack, for themeless export types (XML, PBF, IMG, OBF)
+        if isinstance(results_dict,list):
+            retval = []
+            for item in results_dict:
+                basename = os.path.basename(item)
+                target_path = os.path.join(self.target_dir,basename)
+                shutil.copy(item,target_path)
+                retval.append(target_path)
+            return retval
+
         zips = []
         for theme, groups in results_dict.iteritems():
             for group in groups:
@@ -144,9 +154,8 @@ if __name__ == '__main__':
     #aoi_geom = Polygon.from_bbox((-10.80029,6.3254236,-10.79809,6.32752))
     #aoi_geom = aoi_geom.buffer(0.02)
     #aoi_geom = aoi_geom.simplify(0.01)
-    # TODO Shapefiles (non-thematic) broken
     aoi_geom = GEOSGeometry('POLYGON((-17.4682611807514 14.7168486569183,-17.4682611807514 14.6916060414416,-17.4359733230442 14.6916060414416,-17.4359733230442 14.7168486569183,-17.4682611807514 14.7168486569183))')
-    fmts = [Geopackage,Shapefile,KML]
+    fmts = [Geopackage,Shapefile,KML,OsmAndOBF,GarminIMG,OSM_XML,OSM_PBF]
     r = RunManager(
         fmts,
         aoi_geom,
