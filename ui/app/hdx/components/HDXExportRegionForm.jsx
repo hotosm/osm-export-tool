@@ -355,6 +355,7 @@ export class HDXExportRegionForm extends Component {
             rows='10'
             name='feature_selection'
             component={renderTextArea}
+            className={styles.featureSelection}
           />
           <Field
             id='formControlExtraNotes'

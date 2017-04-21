@@ -9,3 +9,7 @@ p.error {
 .error {
   color: #d73f3f;
 }
+
+.featureSelection {
+  font-family: monospace;
+}
