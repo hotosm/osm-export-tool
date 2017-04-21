@@ -82,11 +82,7 @@ const form = reduxForm({
       console.warn(err);
 
       if (err.response) {
-        err.response.data._error = ['Your export region is invalid. Please check the fields above.'];
-
-        if (err.response.data.non_field_errors) {
-          err.response.data._error.push(err.response.data.non_field_errors);
-        }
+        err.response.data._error = 'Your export region is invalid. Please check the fields above.';
 
         throw new SubmissionError(err.response.data);
       }
