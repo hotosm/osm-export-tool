@@ -16,11 +16,10 @@ class GarminIMG(object):
     name = "garmin_img"
     description = "Garmin IMG"
 
-    def __init__(self, input_pbf, output_zip, work_dir, splitter, mkgmap):
+    def __init__(self, input_pbf, work_dir, splitter, mkgmap):
         # the pbf file to convert to garmin
         self.input_pbf = input_pbf
         self.work_dir = work_dir
-        self.output_zip = output_zip
         self.splitter = splitter
         self.mkgmap = mkgmap
 
@@ -53,9 +52,7 @@ class GarminIMG(object):
         cmd = mkgmap_cmd.format(mkgmap=self.mkgmap,work_dir=self.work_dir)
         LOG.debug('Running: %s' % cmd)
         subprocess.check_call(cmd, shell=True, executable='/bin/bash')
-        with zipfile.ZipFile(self.output_zip,'w',zipfile.ZIP_DEFLATED) as z:
-            z.write(self.work_dir+"/gmapsupp.img","gmapsupp.img")
 
     @property
     def results(self):
-        return [self.output_zip]
+        return [self.work_dir+"/gmapsupp.img"]

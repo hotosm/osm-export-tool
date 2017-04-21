@@ -176,21 +176,20 @@ class HDXExportSet(object):
             else:
                 dataset.create_in_hdx()
 
-    # will get to these later...
-
-    def zip_resources(self, stage_root, job_name): # noqa
-        stage_dir = stage_root + job_name + '/'
-        sqlite = stage_dir + job_name + '.sqlite'
-        for table in self._feature_selection.tables:
-            subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}{1}/{2}.shp {3} -lco ENCODING=UTF-8 -sql "select * from {2};"'.format(stage_root, job_name, table, sqlite), shell=True, executable='/bin/bash')
-            exts = ['.shp', '.dbf', '.prj', '.shx', '.cpg']
-            with zipfile.ZipFile(stage_dir + job_name + '_' + table + '.zip', 'w', zipfile.ZIP_DEFLATED) as z:
-                for e in exts:
-                    z.write(stage_dir + table + e, table + e)
-
-            for e in exts:
-                os.remove(stage_dir + table + e)
-
+    def sync_resources(self,resources_by_theme,public_dir):
+        for theme, zipfiles in resources_by_theme.iteritems():
+            resources = []
+            for zipfile in zipfiles:
+                basename = zipfile[0]
+                format_name = zipfile[1]
+                resources.append({
+                    'name': format_name,
+                    'format': 'zipped shapefile',
+                    'description': format_name,
+                    'url': os.path.join(public_dir,basename)
+                })
+            self.datasets[theme].add_update_resources(resources)
+        self.sync_datasets()
 
 if __name__ == '__main__':
     import logging
@@ -200,15 +199,15 @@ if __name__ == '__main__':
         hdx_site='demo',
         hdx_key=os.environ.get('HDX_API_KEY', None),
     )
-    f_s = FeatureSelection(open('hdx_exports/example_preset.yml').read())
-    extent = open('hdx_exports/adm0/GIN_adm0.geojson').read()
+    f_s = FeatureSelection(open('../feature_selection/examples/hdx.yml').read())
+    extent = open('adm0/GIN_adm0.geojson').read()
     h = HDXExportSet(
-        'hotosm_guinea',
-        'Guinea',
-        extent,
-        f_s,
-        country_codes=['GIN'],
+        dataset_prefix='hotosm_guinea',
+        name='Guinea',
+        extent=extent,
+        feature_selection=f_s,
+        locations=['GIN']
     )
-    # h.zip_resources("../stage/","hotosm_guinea")
-    # h.sync_resources("../stage/","hotosm_guinea")
-    h.sync_datasets()
+
+    #h.sync_datasets()
+    h.sync_resources({'admin_boundaries':[('foo.zip','gpkg')]},'example.com')

@@ -28,6 +28,7 @@ class Shapefile(object):
         """
         self.gpkg = input_gpkg
         self.feature_selection = feature_selection
+        self.output_dir = output_dir
 
     def run(self):
         if self.is_complete:
@@ -40,10 +41,31 @@ class Shapefile(object):
                 table,
                 self.gpkg),shell=True,executable='/bin/bash')
 
+    # NOTE: if a theme was empty, it won't have a .shp, just a .cpg and .dbf
+    # so can't rely on all tables existing to know if this job was done
+
     @property
     def is_complete(self):
-        return all(os.path.isfile(result) for result in results)
+        return all(os.path.isfile(result) for result in self.results)
     
+    # return a dict of themes -> lists, with each list entry being a file path of created artifact
+    # or a list of resources that should be together
     @property
     def results(self):
-        return [os.path.join(self.output_dir,table,".shp") for table in self.feature_selection.tables]
+        results_hsh = {}
+        for theme in self.feature_selection.themes:
+            theme_results = []
+            for geom_type in self.feature_selection.geom_types(theme):
+                basename = os.path.join(self.output_dir,theme+"_"+geom_type)
+                if os.path.isfile(basename+".shp"):
+                    shpset = [
+                        basename+".shp",
+                        basename+".cpg",
+                        basename+".dbf",
+                        basename+".prj",
+                        basename+".shx",
+                    ]
+                    theme_results.append(shpset)
+            results_hsh[theme] = theme_results
+                    
+        return results_hsh

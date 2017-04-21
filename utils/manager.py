@@ -6,6 +6,48 @@ from shp import Shapefile
 from garmin_img import GarminIMG
 from osmand_obf import OsmAndOBF
 
+import os
+import json
+import shutil
+import zipfile
+
+# ugly class to handle renaming, zipping and moving
+class Zipper(object):
+    def __init__(self,job_name,stage_dir,target_dir,boundary_geom):
+        self.job_name = job_name
+        self.stage_dir = stage_dir
+        self.target_dir = target_dir
+        self.boundary_geom = boundary_geom
+        self.boundary_path = os.path.join(self.stage_dir,'boundary.geojson')
+        with open(self.boundary_path,'w') as b:
+            b.write(json.dumps(self.boundary_geom.json))
+
+        self._resources_by_theme = {}
+
+    def run(self,results_dict,resource_type):
+        zips = []
+        for theme, groups in results_dict.iteritems():
+            for group in groups:
+                zipfile_name = self.job_name + "_" + os.path.basename(group[0]) + ".zip"
+                zipfile_path = os.path.join(self.stage_dir,zipfile_name)
+                with zipfile.ZipFile(zipfile_path,'w',zipfile.ZIP_DEFLATED) as z:
+                    for filename in group:
+                        z.write(filename,self.job_name + "_" + os.path.basename(filename))
+                    z.write(self.boundary_path,"boundary.geojson")
+                target_path = os.path.join(self.target_dir,zipfile_name)
+                shutil.move(zipfile_path,target_path)
+                zips.append(target_path)
+
+            # side effect
+            if theme not in self._resources_by_theme:
+                self._resources_by_theme[theme] = []
+            self._resources_by_theme[theme].append((zipfile_name,resource_type))
+        return zips
+
+    def resources_by_theme(self):
+        return self._resources_by_theme
+
+
 class RunManager(object):
     prereqs = {
         OSM_XML: None,
@@ -50,13 +92,13 @@ class RunManager(object):
             self.run_format(prereq)
 
         if formatcls == OSM_XML:
-            task = OSM_XML(self.aoi_geom, self.dir + 'osm_xml.osm')
+            task = OSM_XML(self.aoi_geom, self.dir + 'export.osm')
         if formatcls == OSM_PBF:
-            task = OSM_PBF(self.dir + 'osm_xml.osm',self.dir+'osm_pbf.pbf')
+            task = OSM_PBF(self.dir + 'export.osm',self.dir+'export.pbf')
         if formatcls == Geopackage:
             task = Geopackage(
-                self.dir+'osm_pbf.pbf',
-                self.dir+'geopackage.gpkg',
+                self.dir+'export.pbf',
+                self.dir+'export.gpkg',
                 self.dir,
                 self.feature_selection,
                 self.aoi_geom,
@@ -65,18 +107,17 @@ class RunManager(object):
         if formatcls == GarminIMG:
             assert self.garmin_splitter and self.garmin_mkgmap
             task = GarminIMG(
-                    self.dir+'osm_pbf.pbf',
-                    self.dir+'garmin_img.zip',
+                    self.dir+'export.pbf',
                     self.dir,
                     self.garmin_splitter,
                     self.garmin_mkgmap)
         if formatcls == OsmAndOBF:
             assert self.map_creator_dir
-            task = OsmAndOBF(self.dir+'osm_pbf.pbf',self.dir,self.map_creator_dir)
+            task = OsmAndOBF(self.dir+'export.pbf',self.dir,self.map_creator_dir)
         if formatcls == KML:
-            task = KML(self.dir + 'geopackage.gpkg',self.dir,self.feature_selection,per_theme=self.per_theme)
+            task = KML(self.dir + 'export.gpkg',self.dir,self.feature_selection)
         if formatcls == Shapefile:
-            task = Shapefile(self.dir + 'geopackage.gpkg',self.dir,self.feature_selection)
+            task = Shapefile(self.dir + 'export.gpkg',self.dir,self.feature_selection)
 
         self.on_task_start(formatcls)
         task.run()
@@ -105,8 +146,9 @@ if __name__ == '__main__':
     #aoi_geom = aoi_geom.simplify(0.01)
     # TODO Shapefiles (non-thematic) broken
     aoi_geom = GEOSGeometry('POLYGON((-17.4682611807514 14.7168486569183,-17.4682611807514 14.6916060414416,-17.4359733230442 14.6916060414416,-17.4359733230442 14.7168486569183,-17.4682611807514 14.7168486569183))')
+    fmts = [Geopackage,Shapefile,KML]
     r = RunManager(
-        [Geopackage,KML],
+        fmts,
         aoi_geom,
         feature_selection,
         stage_dir,
@@ -116,3 +158,9 @@ if __name__ == '__main__':
         per_theme=True
     )
     r.run()
+
+    zipper = Zipper("test",stage_dir,"target",aoi_geom)
+    for f in fmts:
+        zipper.run(r.results[f].results,f.name)
+
+    print zipper.resources_by_theme()

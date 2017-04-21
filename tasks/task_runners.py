@@ -19,7 +19,7 @@ from tasks.models import ExportRun, ExportTask
 from feature_selection.feature_selection import FeatureSelection
 
 from utils import map_names_to_formats
-from utils.manager import RunManager
+from utils.manager import RunManager, Zipper
 from utils.shp import Shapefile
 from utils.geopackage import Geopackage
 
@@ -33,7 +33,6 @@ from .email import (
 client = Client()
 
 LOG = logging.getLogger(__name__)
-
 
 class ExportTaskRunner(object):
     def run_task(self, job_uid=None, user=None): # noqa
@@ -117,16 +116,19 @@ def run_task_remote(run_uid): # noqa
                 task.started_at = timezone.now()
                 task.save()
 
+
         def on_task_success(formatcls,results):
             LOG.debug('Task Success: {0} for run: {1}'.format(formatcls.name, run_uid))
             if formatcls in export_formats:
                 task = ExportTask.objects.get(run__uid=run_uid, name=formatcls.name)
-                task.filesize_bytes = sum(os.stat(result).st_size for result in results)
-                task.filenames = [os.path.basename(result) for result in results]
+                #TODO fix me to work with new results dict
+                #task.filesize_bytes = sum(os.stat(result).st_size for result in results)
+                #task.filenames = [os.path.basename(result) for result in results]
+                task.filesize_bytes = 0
+                task.filenames = []
                 task.status = 'SUCCESS'
                 task.finished_at = timezone.now()
                 task.save()
-
 
         r = RunManager(
                 export_formats,
@@ -142,42 +144,20 @@ def run_task_remote(run_uid): # noqa
             )
         r.run()
 
+
+        download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
+        
+        zipper = Zipper(job.name,stage_dir,download_dir,aoi)
         for format_cls in export_formats:
-            for result in r.results[format_cls].results:
-                filename = os.path.basename(result)
-                download_path = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid, filename)
-                shutil.copy(result, download_path)
+            zipper.run(r.results[format_cls].results,format_cls.name)
+            
+        public_dir = settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT, run_uid)
 
-        if settings.SYNC_TO_HDX:
-            if HDXExportRegion.objects.filter(job_id=run.job_id).exists():
-                LOG.debug("Adding resources to HDX")
-                region = HDXExportRegion.objects.get(job_id=run.job_id)
-                export_set = region.hdx_dataset
-                for theme in feature_selection.themes:
-                    resources = []
-                    if Shapefile in export_formats:
-                        for geom_type in feature_selection.geom_types(theme):
-                            resources.append({
-                                'name': theme + ' ' + geom_type,
-                                'format': 'zipped shapefile',
-                                'description': "ESRI Shapefile of " + geom_type,
-                                'url': settings.HOSTNAME + os.path.join(
-                                    settings.EXPORT_MEDIA_ROOT,
-                                    run_uid,
-                                    theme + '_' + geom_type + ".zip"
-                                )
-                            })
-
-                    if Geopackage in export_formats:
-                        resources.append({
-                            'name': theme + ' geopackage',
-                            'format': 'zipped geopackage',
-                            'description': "Geopackage of " + theme,
-                            'url': settings.HOSTNAME + os.path.join(
-                                settings.EXPORT_MEDIA_ROOT, run_uid, theme + ".gpkg")
-                        })
-                    export_set.datasets[theme].add_update_resources(resources)
-                export_set.sync_datasets()
+        if settings.SYNC_TO_HDX and HDXExportRegion.objects.filter(job_id=run.job_id).exists():
+            LOG.debug("Adding resources to HDX")
+            region = HDXExportRegion.objects.get(job_id=run.job_id)
+            export_set = region.hdx_dataset
+            export_set.sync_resources(zipper.resources_by_theme(),public_dir)
 
         if run.job.hdx_export_region_set.count() == 0:
             # not associated with an HDX Export Regon; send mail

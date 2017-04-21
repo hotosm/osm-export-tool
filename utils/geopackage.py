@@ -360,10 +360,13 @@ class Geopackage(object):
 
     @property
     def results(self):
-        if self.per_theme:
-            return [self.stage_dir + theme + ".gpkg" for theme in self.feature_selection.themes]
-        else:
-            return [self.output_gpkg]
+        # assume is per theme
+        results_hsh = {}
+        for theme in self.feature_selection.themes:
+            results_hsh[theme] = [[os.path.join(self.stage_dir,theme) + ".gpkg"]]
+        return results_hsh
+                    
+        #return [self.output_gpkg]
 
 
     def update_zindexes(self,cur,feature_selection):

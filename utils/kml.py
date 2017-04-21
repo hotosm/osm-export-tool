@@ -18,7 +18,7 @@ class KML(object):
     name = 'kml'
     description = 'Google Earth KML'
 
-    def __init__(self, input_gpkg, output_dir,feature_selection,per_theme=False):
+    def __init__(self, input_gpkg, output_dir,feature_selection):
         """
         Initialize the GPKGToKml utility.
 
@@ -30,7 +30,6 @@ class KML(object):
         self.input_gpkg = input_gpkg
         self.output_dir = output_dir
         self.feature_selection = feature_selection
-        self.per_theme = per_theme
 
     def run(self):
         """
@@ -52,3 +51,16 @@ class KML(object):
     @property
     def results(self):
         return [os.path.join(self.output_dir,table,".kml") for table in self.feature_selection.tables]
+
+    # return a dict of themes -> lists, with each list entry being a file path of created artifact
+    # or a list of resources that should be together
+    @property
+    def results(self):
+        results_hsh = {}
+        for theme in self.feature_selection.themes:
+            theme_results = []
+            for geom_type in self.feature_selection.geom_types(theme):
+                basename = os.path.join(self.output_dir,theme+"_"+geom_type) + ".kml"
+                theme_results.append([basename])
+            results_hsh[theme] = theme_results
+        return results_hsh
