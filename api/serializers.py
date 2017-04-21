@@ -425,7 +425,13 @@ class JobSerializer(serializers.Serializer):
 
 
 class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
+    dataset_prefix = serializers.RegexField('^[a-z0-9_]+$')
+    export_formats = serializers.MultipleChoiceField(
+        choices=HDXExportRegion.EXPORT_FORMAT_CHOICES)
+    feature_selection = serializers.CharField()
     job = JobSerializer(read_only=True)
+    name = serializers.CharField()
+    the_geom = geo_serializers.GeometryField()
 
     class Meta: # noqa
         model = HDXExportRegion
@@ -435,28 +441,25 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
                   'dataset_prefix', 'job', 'license', 'subnational',
                   'extra_notes', 'is_private', )
 
-    def validate(self,data):
-        request = self.context['request']
-        data = request.data
+    def validate(self, data): # noqa
         f = FeatureSelection(data.get('feature_selection'))
         if not f.valid:
-            raise serializers.ValidationError("Feature selection invalid: {0}".format(f.errors))
+            raise serializers.ValidationError(
+                "Feature selection invalid: {0}".format(f.errors))
         return data
 
     def create(self, validated_data): # noqa
         LOG.info('validated_data: {}'.format(validated_data))
         with transaction.atomic():
             request = self.context['request']
-            # for properties that don't map directly onto an HDXExportRegion
-            data = request.data
 
             job = Job.objects.create(
                 the_geom=GEOSGeometry(
-                    json.dumps(data.get('the_geom'))),
-                name=data.get('dataset_prefix'),
-                export_formats=data.get('export_formats'),
-                description=data.get('name'),
-                feature_selection=data.get('feature_selection'),
+                    json.dumps(validated_data.get('the_geom'))),
+                name=validated_data.get('dataset_prefix'),
+                export_formats=validated_data.get('export_formats'),
+                description=validated_data.get('name'),
+                feature_selection=validated_data.get('feature_selection'),
                 user=request.user,
             )
 
@@ -465,9 +468,9 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
                 is_private=validated_data.get('is_private') or False,
                 locations=validated_data.get('locations'),
                 license=validated_data.get('license'),
-                schedule_period=validated_data.get('schedule_period') or 'disabled',
-                schedule_hour=validated_data.get('schedule_hour') or 0,
-                subnational=validated_data.get('subnational') or False,
+                schedule_period=validated_data.get('schedule_period'),
+                schedule_hour=validated_data.get('schedule_hour'),
+                subnational=validated_data.get('subnational'),
                 job=job,
             )
         return region
