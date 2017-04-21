@@ -2,6 +2,10 @@
   padding: 20px;
 }
 
+p.error {
+  margin: 10px 0;
+}
+
 .error {
   color: #d73f3f;
 }

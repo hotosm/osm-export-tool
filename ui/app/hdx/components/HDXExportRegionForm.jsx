@@ -331,7 +331,6 @@ export class HDXExportRegionForm extends Component {
         </ol>
         <form onSubmit={handleSubmit}>
           <h2>{editing ? 'Edit' : 'Create'} Export Region</h2>
-          {error && <p><strong className={styles.error}>{error}</strong></p>}
           {this.props.hdx.error && <p><strong className={styles.error}>{this.props.hdx.status}</strong></p>}
           <Field
             name='name'
@@ -454,6 +453,7 @@ export class HDXExportRegionForm extends Component {
                 <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
                   {editing ? 'Save + Sync to HDX' : 'Create Datasets + Schedule Export'}
                 </Button>
+                {error && <p className={styles.error}><strong>{error}</strong></p>}
               </Panel>
             </Col>
           </Row>
