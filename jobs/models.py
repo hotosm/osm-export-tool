@@ -124,7 +124,7 @@ class Job(TimeStampedModelMixin):
         a valid FeatureSelection object based off the feature_selection column.
         """
         fs = FeatureSelection(self.feature_selection)
-        assert fs.valid
+        assert fs.valid, 'Feature selection is invalid'
         return fs
 
     @property
