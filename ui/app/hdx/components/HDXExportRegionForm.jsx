@@ -82,6 +82,8 @@ const form = reduxForm({
       console.warn(err);
 
       if (err.response) {
+        err.response.data._error = err.response.data.non_field_errors;
+
         throw new SubmissionError(err.response.data);
       }
 
