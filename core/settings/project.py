@@ -205,5 +205,6 @@ EMAIL_USE_TLS = bool(os.environ.get('EMAIL_USE_TLS', None))
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 
 SYNC_TO_HDX = bool(os.environ.get('SYNC_TO_HDX', False))
+HDX_NOTIFICATION_EMAIL = os.getenv('HDX_NOTIFICATION_EMAIL')
 
 GEONAMES_API_URL = os.getenv('GEONAMES_API_URL', 'http://api.geonames.org/searchJSON')

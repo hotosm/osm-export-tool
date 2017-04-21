@@ -222,7 +222,8 @@ class HDXExportRegion(models.Model): # noqa
     schedule_hour = models.IntegerField(
         blank=False, choices=HOUR_CHOICES, default=0)
     deleted = models.BooleanField(default=False)
-    job = models.ForeignKey(Job, null=True, related_name='hdx_export_region')
+    job = models.ForeignKey(Job, null=True,
+        related_name='hdx_export_region_set')
     is_private = models.BooleanField(default=False)
     locations = ArrayField(
         models.CharField(blank=False, max_length=32), null=True)

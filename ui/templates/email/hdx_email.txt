@@ -1,0 +1,6 @@
+The HDX Export titled "{{ job.name }}" has completed.
+
+The following datasets have been updated:
+
+{% for dataset in region.datasets %}
+* {{ dataset }}{% endfor %}

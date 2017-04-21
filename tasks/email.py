@@ -30,6 +30,58 @@ def send_completion_notification(run):
     msg.send()
 
 
+def send_hdx_completion_notification(run, region):
+    """Send a notification email when an HDX task has completed."""
+    if settings.HDX_NOTIFICATION_EMAIL:
+        subject = "HDX Task updated: {}".format(run.job.name)
+        from_email = 'OSM Export Tool <exports@hotosm.org>'
+
+        ctx = {
+            'job': run.job,
+            'region': region,
+            'status': run.status,
+            'url': 'http://{0}/exports/{1}'.format(
+                settings.HOSTNAME, run.job.uid),
+        }
+
+        text = get_template('email/hdx_email.txt').render(ctx)
+
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            to=[settings.HDX_NOTIFICATION_EMAIL],
+            from_email=from_email
+        )
+
+        msg.send()
+
+
+def send_hdx_error_notification(run, region):
+    """Send a notification email when an HDX task has failed."""
+    if settings.HDX_NOTIFICATION_EMAIL:
+        subject = "HDX Task has failed: {}".format(run.job.name)
+        from_email = 'OSM Export Tool <exports@hotosm.org>'
+
+        ctx = {
+            'job': run.job,
+            'region': region,
+            'status': run.status,
+            'url': 'http://{0}/exports/{1}'.format(
+                settings.HOSTNAME, run.job.uid),
+        }
+
+        text = get_template('email/hdx_error_email.txt').render(ctx)
+
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            to=[settings.HDX_NOTIFICATION_EMAIL],
+            from_email=from_email
+        )
+
+        msg.send()
+
+
 def send_error_notification(run):
     """Send a notification email to a user when their task fails."""
     subject = "Your OSM Export has failed: {}".format(run.job.name)

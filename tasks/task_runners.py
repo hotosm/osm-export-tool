@@ -23,7 +23,12 @@ from utils.manager import RunManager
 from utils.theme_shp import ThematicSHP
 from utils.theme_gpkg import ThematicGPKG
 
-from .email import send_completion_notification, send_error_notification
+from .email import (
+    send_completion_notification,
+    send_error_notification,
+    send_hdx_completion_notification,
+    send_hdx_error_notification,
+)
 
 client = Client()
 
@@ -177,6 +182,9 @@ def run_task_remote(run_uid): # noqa
         if run.job.hdx_export_region_set.count() == 0:
             # not associated with an HDX Export Regon; send mail
             send_completion_notification(run)
+        else:
+            send_hdx_completion_notification(
+                run, run.job.hdx_export_region_set.first())
 
         run.status = 'COMPLETED'
         LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
@@ -187,6 +195,9 @@ def run_task_remote(run_uid): # noqa
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
 
         send_error_notification(run)
+        if run.job.hdx_export_region_set.count() >= 0:
+            send_hdx_error_notification(
+                run, run.job.hdx_export_region_set.first())
     finally:
         shutil.rmtree(stage_dir)
 
