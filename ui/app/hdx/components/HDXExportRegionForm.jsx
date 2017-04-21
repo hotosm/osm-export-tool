@@ -285,7 +285,7 @@ export class HDXExportRegionForm extends Component {
     if (props.featureSelection !== this.props.featureSelection) {
       try {
         this.setState({
-          featureSelection: yaml.safeLoad(props.featureSelection)
+          featureSelection: yaml.safeLoad(props.featureSelection) || {}
         });
       } catch (err) {
         // noop; feature selection may be in the process of being edited
