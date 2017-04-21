@@ -3,6 +3,7 @@ import re
 import yaml
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
+from yaml.parser import ParserError
 from sql import SQLValidator
 
 CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT geom,{1} FROM {2} WHERE ({3})'
@@ -92,7 +93,7 @@ class FeatureSelection(object):
             if validate_schema(loaded_doc):
                 self._doc = loaded_doc
                 return self._doc
-        except (ConstructorError,ScannerError) as e:
+        except (ConstructorError,ScannerError,ParserError) as e:
             line = e.problem_mark.line
             column = e.problem_mark.column
             #print e.problem_mark.buffer

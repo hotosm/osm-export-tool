@@ -435,11 +435,13 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
                   'dataset_prefix', 'job', 'license', 'subnational',
                   'extra_notes', 'is_private', )
 
-    def validate_feature_selection(self,value):
-        f = FeatureSelection(value)
+    def validate(self,data):
+        request = self.context['request']
+        data = request.data
+        f = FeatureSelection(data.get('feature_selection'))
         if not f.valid:
             raise serializers.ValidationError("Feature selection invalid: {0}".format(f.errors))
-        return value
+        return data
 
     def create(self, validated_data): # noqa
         LOG.info('validated_data: {}'.format(validated_data))
