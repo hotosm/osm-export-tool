@@ -162,7 +162,7 @@ export class MapListView extends Component {
 const mapStateToProps = state => {
   return {
     features: {
-      features: state.hdx.exportRegions.map(x => x.the_geom),
+      features: Object.entries(state.hdx.exportRegions).map(([id, x]) => x.the_geom),
       geomType: 'Polygon',
       type: 'FeatureCollection'
     },

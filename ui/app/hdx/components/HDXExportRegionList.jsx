@@ -11,14 +11,14 @@ class ExportRegionList extends Component {
   render () {
     const { regions } = this.props;
 
-    if (regions == null || regions.length === 0) {
+    if (regions == null || Object.keys(regions).length === 0) {
       return null;
     }
 
     return (
       <div>
         <hr />
-        {regions.map((region, i) => {
+        {Object.entries(regions).map(([id, region], i) => {
           return (
             <Row key={i}>
               <ExportRegionPanel region={region} />

@@ -8,7 +8,6 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         ...state,
         fetching: true,
         fetched: false,
-        exportRegion: null,
         error: null,
         status: `Fetching export region ${id}...`
       };
@@ -18,7 +17,6 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         ...state,
         fetching: true,
         fetched: false,
-        exportRegions: [],
         error: null,
         status: 'Fetching export regions...'
       };
@@ -28,7 +26,10 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         ...state,
         fetching: false,
         fetched: true,
-        exportRegion,
+        exportRegions: {
+          ...state.exportRegions,
+          [id]: exportRegion
+        },
         error: null,
         status: `Export region ${id} loaded.`
       };
@@ -48,7 +49,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         ...state,
         fetching: false,
         fetched: false,
-        exportRegions: [],
+        exportRegions: {},
         status: `Fetching export regions failed: ${error.message}`,
         id,
         error,
@@ -89,7 +90,10 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
       return {
         ...state,
         status: 'Export region deleted.',
-        deleted: true,
+        exportRegions: {
+          ...state.exportRegions,
+          [id]: null
+        },
         id
       };
 

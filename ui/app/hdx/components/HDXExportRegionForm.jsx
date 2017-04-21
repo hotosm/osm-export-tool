@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import axios from 'axios';
+import isEqual from 'lodash/isEqual';
 const jsts = require('jsts');
 import prettyBytes from 'pretty-bytes';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
@@ -74,7 +75,7 @@ const form = reduxForm({
 
       console.log('id:', rsp.data.id);
 
-      if (props.hdx.exportRegion == null) {
+      if (props.hdx.exportRegions[rsp.data.id] == null) {
         dispatch(push(`/edit/${rsp.data.id}`));
       }
     }).catch(err => {
@@ -169,7 +170,7 @@ export class HDXExportRegionForm extends Component {
   };
 
   getLastRun () {
-    const { hdx: { exportRegion } } = this.props;
+    const exportRegion = this.exportRegion;
 
     if (exportRegion.last_run == null) {
       return 'Never';
@@ -179,7 +180,7 @@ export class HDXExportRegionForm extends Component {
   }
 
   getNextRun () {
-    const { hdx: { exportRegion } } = this.props;
+    const exportRegion = this.exportRegion;
 
     if (exportRegion.next_run == null) {
       return 'Never';
@@ -200,8 +201,25 @@ export class HDXExportRegionForm extends Component {
       }));
   }
 
+  didReceiveRegion (exportRegion) {
+    if (exportRegion == null) {
+      return;
+    }
+
+    const { change, updateAOI } = this.props;
+
+    // NOTE: this also sets some form properties that we don't care about (but that show up in the onSubmit handler)
+    Object.entries(exportRegion).forEach(([k, v]) => change(k, v));
+
+    exportRegion.export_formats.forEach(x => change(x, true));
+
+    updateAOI(exportRegion.the_geom);
+
+    console.log('Export region:', exportRegion);
+  }
+
   componentDidMount () {
-    const { clearAOI, getExportRegion, match: { params: { id } } } = this.props;
+    const { clearAOI, getExportRegion, hdx: { exportRegions }, match: { params: { id } } } = this.props;
 
     if (id == null) {
       clearAOI();
@@ -215,14 +233,12 @@ export class HDXExportRegionForm extends Component {
     }
 
     this.loadLocationOptions();
-  }
 
-  componentWillUnmount () {
-    // TODO reset property-related state, e.g. props.hdx.deleted
+    this.didReceiveRegion(exportRegions[id]);
   }
 
   componentWillReceiveProps (props) {
-    const { hdx: { statusCode }, showAllExportRegions } = props;
+    const { hdx: { exportRegions, statusCode }, match: { params: { id } }, showAllExportRegions } = props;
 
     if (this.props.hdx.statusCode !== statusCode) {
       switch (statusCode) {
@@ -238,29 +254,16 @@ export class HDXExportRegionForm extends Component {
       }
     }
 
-    if (this.props.hdx.exportRegion == null &&
-        props.hdx.exportRegion != null) {
-      // we're receiving an export region
-
-      const { hdx: { exportRegion }, updateAOI } = props;
-
-      // NOTE: this also sets some form properties that we don't care about (but that show up in the onSubmit handler)
-      Object.keys(exportRegion).forEach(k =>
-        props.change(k, exportRegion[k]));
-
-      exportRegion.export_formats.forEach(x =>
-        props.change(x, true));
-
-      updateAOI(exportRegion.the_geom);
-
-      console.log('Export region:', exportRegion);
+    if (!isEqual(this.props.hdx.exportRegions[id], exportRegions[id])) {
+      this.didReceiveRegion(exportRegions[id]);
     }
 
-    if (props.hdx.deleted) {
+    if (this.props.hdx.exportRegions[id] != null && exportRegions[id] == null) {
       this.props.showAllExportRegions();
     }
 
     // TODO this would be cleaner if using reselect
+    // TODO this should also be in the exportRegions object to prevent conflicts when editing multiple regions
     if (props.featureSelection !== this.props.featureSelection) {
       try {
         this.setState({
@@ -273,10 +276,13 @@ export class HDXExportRegionForm extends Component {
     }
   }
 
-  getRunRows () {
-    const { hdx: { exportRegion } } = this.props;
+  get exportRegion () {
+    const { hdx: { exportRegions }, match: { params: { id } } } = this.props;
+    return exportRegions[id];
+  }
 
-    return exportRegion.runs.map((run, i) => (
+  getRunRows () {
+    return this.exportRegion.runs.map((run, i) => (
       <tr key={i}>
         <td>
           <FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} />
@@ -299,7 +305,7 @@ export class HDXExportRegionForm extends Component {
       deleting: true
     });
 
-    this.props.handleDelete(this.props.hdx.exportRegion.id);
+    this.props.handleDelete(this.exportRegion.id);
   };
 
   handleRun = () => {
@@ -307,12 +313,13 @@ export class HDXExportRegionForm extends Component {
       running: true
     });
 
-    this.props.handleRun(this.props.hdx.exportRegion.job.uid);
+    this.props.handleRun(this.exportRegion.job.uid);
   };
 
   render () {
     const { deleting, editing, featureSelection, locationOptions, running } = this.state;
-    const { error, handleSubmit, hdx: { exportRegion }, submitting } = this.props;
+    const { error, handleSubmit, submitting } = this.props;
+    const exportRegion = this.exportRegion;
     const datasetPrefix = this.props.datasetPrefix || '<prefix>';
     const name = this.props.name || 'Untitled';
 

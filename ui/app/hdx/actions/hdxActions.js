@@ -28,6 +28,13 @@ export function getExportRegions () {
     }).then(exportRegions => {
       return exportRegions.map(launderExportRegion);
     }).then(exportRegions => {
+      // convert to a keyed object
+      return exportRegions.reduce((obj, x) => {
+        obj[x.id] = x;
+
+        return obj;
+      }, {});
+    }).then(exportRegions => {
       dispatch({
         type: types.RECEIVED_EXPORT_REGIONS,
         exportRegions

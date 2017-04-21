@@ -23,8 +23,7 @@ export default {
     hdx: {
       fetching: false,
       fetched: false,
-      exportRegion: null,
-      exportRegions: [],
+      exportRegions: {},
       error: null,
     },
     importGeom: {
