@@ -134,10 +134,7 @@ class HDXExportSet(object):
             dataset['methodology_other'] = 'Volunteered geographic information'
             dataset['data_update_frequency'] = str(self._data_update_frequency)
             dataset['subnational'] = str(int(self.subnational))
-            # TODO this appends locations rather than resetting them
-            dataset['groups'] = []
             dataset.add_country_locations(self._locations)
-            # TODO probably appends tags rather than replacing them
             dataset.add_tags(tags)
 
             ga = GalleryItem({
