@@ -278,7 +278,6 @@ export class HDXExportRegionForm extends Component {
     }
 
     // TODO this would be cleaner if using reselect
-    // TODO this should also be in the exportRegions object to prevent conflicts when editing multiple regions
     if (props.featureSelection !== this.props.featureSelection) {
       try {
         this.setState({
