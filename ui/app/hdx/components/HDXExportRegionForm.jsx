@@ -91,6 +91,19 @@ const form = reduxForm({
         _error: 'Export region creation failed.'
       });
     });
+  },
+  validate: values => {
+    const errors = {};
+
+    try {
+      yaml.safeLoad(values.feature_selection);
+    } catch (err) {
+      errors.feature_selection = <pre>{err.message}</pre>;
+      errors._error = errors._error || [];
+      errors._error.push('Feature selection is invalid.');
+    }
+
+    return errors;
   }
 });
 
