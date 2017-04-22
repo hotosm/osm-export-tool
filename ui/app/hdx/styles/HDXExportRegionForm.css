@@ -2,7 +2,7 @@
   padding: 20px;
 }
 
-p.error {
+p.error, p.status {
   margin: 10px 0;
 }
 

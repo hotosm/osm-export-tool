@@ -1,4 +1,7 @@
 import axios from 'axios';
+import cookie from 'react-cookie';
+import { push } from 'react-router-redux';
+import { startSubmit, stopSubmit } from 'redux-form';
 
 import types from '../actions/actionTypes';
 
@@ -76,7 +79,7 @@ export function getExportRegion (id) {
   };
 }
 
-export function runExport (id, csrfToken) {
+export function runExport (id) {
   return dispatch => {
     dispatch({
       type: types.STARTING_EXPORT_REGION_RUN,
@@ -87,7 +90,7 @@ export function runExport (id, csrfToken) {
       url: `/api/runs?job_uid=${id}`,
       method: 'POST',
       headers: {
-        'X-CSRFToken': csrfToken
+        'X-CSRFToken': cookie.load('csrftoken')
       }
     })
     .then(rsp => dispatch({
@@ -103,7 +106,7 @@ export function runExport (id, csrfToken) {
   };
 }
 
-export function deleteExportRegion (id, csrfToken) {
+export function deleteExportRegion (id) {
   return dispatch => {
     dispatch({
       type: types.STARTING_EXPORT_REGION_DELETE,
@@ -114,7 +117,7 @@ export function deleteExportRegion (id, csrfToken) {
       url: `/api/hdx_export_regions/${id}`,
       method: 'DELETE',
       headers: {
-        'X-CSRFToken': csrfToken
+        'X-CSRFToken': cookie.load('csrftoken')
       }
     })
     .then(rsp => dispatch({
@@ -135,4 +138,91 @@ export function zoomToExportRegion (id) {
     type: types.ZOOM_TO_EXPORT_REGION,
     id
   });
+}
+
+export function createExportRegion (form) {
+  return data => {
+    return dispatch => {
+      dispatch(startSubmit(form));
+
+      return axios({
+        url: '/api/hdx_export_regions',
+        method: 'POST',
+        contentType: 'application/json; version=1.0',
+        data,
+        headers: {
+          'X-CSRFToken': cookie.load('csrftoken')
+        }
+      }).then(rsp => {
+        console.log('Success');
+
+        console.log('id:', rsp.data.id);
+
+        dispatch(stopSubmit(form));
+
+        dispatch({
+          type: types.EXPORT_REGION_CREATED,
+          id: data.id,
+          exportRegion: rsp.data
+        });
+
+        dispatch(push(`/edit/${rsp.data.id}`));
+      }).catch(err => {
+        console.warn(err);
+
+        if (err.response) {
+          return dispatch(stopSubmit(form, {
+            ...err.response.data,
+            _error: 'Your export region is invalid. Please check the fields above.'
+          }));
+        }
+
+        return dispatch(stopSubmit(form, {
+          _error: 'Export region creation failed.'
+        }));
+      });
+    };
+  };
+}
+
+export function updateExportRegion (form) {
+  return (id, data) => {
+    // TODO this is practically identical to createExportRegion
+    return dispatch => {
+      dispatch(startSubmit(form));
+
+      return axios({
+        url: `/api/hdx_export_regions/${id}`,
+        method: 'PUT',
+        contentType: 'application/json; version=1.0',
+        data,
+        headers: {
+          'X-CSRFToken': cookie.load('csrftoken')
+        }
+      }).then(rsp => {
+        console.log('Success');
+
+        dispatch(stopSubmit(form));
+
+        dispatch({
+          type: types.EXPORT_REGION_UPDATED,
+          id,
+          exportRegion: rsp.data
+        });
+      }).catch(err => {
+        console.warn(err);
+
+        if (err.response) {
+          return dispatch(stopSubmit(form, {
+            ...err.response.data,
+            _error: 'Your export region is invalid. Please check the fields above.'
+          }));
+        }
+
+        return dispatch(stopSubmit(form, {
+          _error: 'Export region creation failed.'
+        }));
+      });
+    };
+  };
 }

@@ -9,7 +9,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: true,
         fetched: false,
         error: null,
-        status: `Fetching export region ${id}...`
+        status: null
       };
 
     case types.FETCHING_EXPORT_REGIONS:
@@ -18,7 +18,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: true,
         fetched: false,
         error: null,
-        status: 'Fetching export regions...'
+        status: null
       };
 
     case types.RECEIVED_EXPORT_REGION:
@@ -31,7 +31,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
           [id]: exportRegion
         },
         error: null,
-        status: `Export region ${id} loaded.`
+        status: null
       };
 
     case types.RECEIVED_EXPORT_REGIONS:
@@ -41,7 +41,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetched: true,
         exportRegions,
         error: null,
-        status: `Export regions loaded.`
+        status: null
       };
 
     case types.FETCH_EXPORT_REGIONS_ERROR:
@@ -50,7 +50,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetching: false,
         fetched: false,
         exportRegions: {},
-        status: `Fetching export regions failed: ${error.message}`,
+        status: null,
         id,
         error,
         statusCode
@@ -82,7 +82,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
     case types.STARTING_EXPORT_REGION_DELETE:
       return {
         ...state,
-        status: 'Starting to delete export region...',
+        status: null,
         id
       };
 
@@ -112,6 +112,17 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
       return {
         ...state,
         selectedExportRegion: id
+      };
+
+    case types.EXPORT_REGION_CREATED:
+    case types.EXPORT_REGION_UPDATED:
+      return {
+        ...state,
+        exportRegions: {
+          ...state.exportRegions,
+          [id]: exportRegion
+        },
+        status: 'Export region saved.'
       };
 
     default:

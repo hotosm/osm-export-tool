@@ -5,7 +5,6 @@ import isEqual from 'lodash/isEqual';
 const jsts = require('jsts');
 import prettyBytes from 'pretty-bytes';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
-import cookie from 'react-cookie';
 import { Field, SubmissionError, formValueSelector, reduxForm } from 'redux-form';
 import { FormattedDate, FormattedRelative, FormattedTime, IntlMixin } from 'react-intl';
 import { connect } from 'react-redux';
@@ -17,7 +16,7 @@ import yaml from 'js-yaml';
 
 import { clickResetMap } from '../actions/AoiInfobarActions';
 import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
-import { deleteExportRegion, getExportRegion, runExport } from '../actions/hdxActions';
+import { createExportRegion as _createExportRegion, deleteExportRegion, getExportRegion, runExport, updateExportRegion as _updateExportRegion } from '../actions/hdxActions';
 import styles from '../styles/HDXExportRegionForm.css';
 
 const AVAILABLE_EXPORT_FORMATS = {
@@ -28,8 +27,13 @@ const AVAILABLE_EXPORT_FORMATS = {
   osm_pbf: 'OpenStreetMap .PBF'
 };
 
+const FORM_NAME = 'HDXExportRegionForm';
+
+const createExportRegion = _createExportRegion(FORM_NAME);
+const updateExportRegion = _updateExportRegion(FORM_NAME);
+
 const form = reduxForm({
-  form: 'HDXExportRegionForm',
+  form: FORM_NAME,
   onSubmit: (values, dispatch, props) => {
     console.log('Submitting form. Values:', values);
 
@@ -54,43 +58,11 @@ const form = reduxForm({
       the_geom: props.aoiInfo.geojson.features[0].geometry
     };
 
-    let url = '/api/hdx_export_regions';
-    let method = 'POST';
-
     if (values.id != null) {
-      url += `/${values.id}`;
-      method = 'PUT';
+      dispatch(updateExportRegion(values.id, formData));
+    } else {
+      dispatch(createExportRegion(formData));
     }
-
-    return axios({
-      url,
-      method: method,
-      contentType: 'application/json; version=1.0',
-      data: formData,
-      headers: {
-        'X-CSRFToken': cookie.load('csrftoken')
-      }
-    }).then(rsp => {
-      console.log('Success');
-
-      console.log('id:', rsp.data.id);
-
-      if (props.hdx.exportRegions[rsp.data.id] == null) {
-        dispatch(push(`/edit/${rsp.data.id}`));
-      }
-    }).catch(err => {
-      console.warn(err);
-
-      if (err.response) {
-        err.response.data._error = 'Your export region is invalid. Please check the fields above.';
-
-        throw new SubmissionError(err.response.data);
-      }
-
-      throw new SubmissionError({
-        _error: 'Export region creation failed.'
-      });
-    });
   },
   validate: values => {
     const errors = {};
@@ -173,6 +145,44 @@ const getFormatCheckboxes = () =>
       component={renderCheckbox}
       type='checkbox'
     />);
+
+const PendingDatasetsPanel = ({ datasetPrefix, error, featureSelection, handleSubmit, status, styles, submitting }) =>
+  <Panel>
+    This will immediately create {Object.keys(featureSelection).length} dataset{Object.keys(featureSelection).length === 1 ? '' : 's'} on HDX:
+    <ul>
+      {
+        Object.keys(featureSelection).map((x, i) => (
+          <li key={i}>
+            <code>{datasetPrefix}_{x}</code>
+          </li>
+        ))
+      }
+    </ul>
+    <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
+      {submitting ? 'Creating...' : 'Create Datasets + Schedule Export'}
+    </Button>
+    {error && <p className={styles.error}><strong>{error}</strong></p>}
+    {status && <p className={styles.status}><strong>{status}</strong></p>}
+  </Panel>;
+
+const ExistingDatasetsPanel = ({ error, datasets, handleSubmit, status, styles, submitting }) =>
+  <Panel>
+    This will immediately update {datasets.length} dataset{datasets.length === 1 ? '' : 's'} on HDX:
+    <ul>
+      {
+        datasets.map((x, i) => (
+          <li key={i}>
+            <code><a href={x.url}>{x.name}</a></code>
+          </li>
+        ))
+      }
+    </ul>
+    <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
+      {submitting ? 'Saving...' : 'Save + Sync to HDX'}
+    </Button>
+    {error && <p className={styles.error}><strong>{error}</strong></p>}
+    {status && <p className={styles.status}><strong>{status}</strong></p>}
+  </Panel>;
 
 export class HDXExportRegionForm extends Component {
   mixins = [IntlMixin];
@@ -332,7 +342,7 @@ export class HDXExportRegionForm extends Component {
 
   render () {
     const { deleting, editing, featureSelection, locationOptions, running } = this.state;
-    const { error, handleSubmit, submitting } = this.props;
+    const { error, handleSubmit, hdx: { status }, submitting } = this.props;
     const exportRegion = this.exportRegion;
     const datasetPrefix = this.props.datasetPrefix || '<prefix>';
     const name = this.props.name || 'Untitled';
@@ -454,22 +464,25 @@ export class HDXExportRegionForm extends Component {
               </Field>
             </Col>
             <Col xs={7}>
-              <Panel>
-                This will immediately create {Object.keys(featureSelection).length} dataset{Object.keys(featureSelection).length === 1 ? '' : 's'} on HDX:
-                <ul>
-                  {
-                    Object.keys(featureSelection).map((x, i) => (
-                      <li key={i}>
-                        <code>{datasetPrefix}_{x}</code>
-                      </li>
-                    ))
-                  }
-                </ul>
-                <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
-                  {editing ? 'Save + Sync to HDX' : 'Create Datasets + Schedule Export'}
-                </Button>
-                {error && <p className={styles.error}><strong>{error}</strong></p>}
-              </Panel>
+              { editing && exportRegion
+              ? <ExistingDatasetsPanel
+                datasets={exportRegion.datasets}
+                error={error}
+                handleSubmit={handleSubmit}
+                status={status}
+                styles={styles}
+                submitting={submitting}
+              />
+              : <PendingDatasetsPanel
+                datasetPrefix={datasetPrefix}
+                error={error}
+                featureSelection={featureSelection}
+                handleSubmit={handleSubmit}
+                status={status}
+                styles={styles}
+                submitting={submitting}
+              />
+              }
             </Col>
           </Row>
         </form>
@@ -524,8 +537,8 @@ export class HDXExportRegionForm extends Component {
 const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
-    datasetPrefix: formValueSelector('HDXExportRegionForm')(state, 'dataset_prefix'),
-    featureSelection: formValueSelector('HDXExportRegionForm')(state, 'feature_selection'),
+    datasetPrefix: formValueSelector(FORM_NAME)(state, 'dataset_prefix'),
+    featureSelection: formValueSelector(FORM_NAME)(state, 'feature_selection'),
     hdx: state.hdx,
     initialValues: {
       feature_selection: `buildings:
@@ -538,7 +551,7 @@ const mapStateToProps = state => {
       schedule_hour: 0,
       subnational: true
     },
-    name: formValueSelector('HDXExportRegionForm')(state, 'name')
+    name: formValueSelector(FORM_NAME)(state, 'name')
   };
 };
 
@@ -556,8 +569,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(clickResetMap());
     },
     getExportRegion: id => dispatch(getExportRegion(id)),
-    handleDelete: id => dispatch(deleteExportRegion(id, cookie.load('csrftoken'))),
-    handleRun: id => dispatch(runExport(id, cookie.load('csrftoken'))),
+    handleDelete: id => dispatch(deleteExportRegion(id)),
+    handleRun: id => dispatch(runExport(id)),
     showAllExportRegions: () => dispatch(push('/')),
     updateAOI: geometry => {
       const envelope = new jsts.io.GeoJSONReader().read(geometry).getEnvelope().getCoordinates();
