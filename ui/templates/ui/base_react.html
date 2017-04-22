@@ -71,6 +71,9 @@
             <li><a href="{% url 'create' %}">{% trans 'Create' %}</a></li>
             <li><a href="{% url 'list' %}">{% trans 'Exports' %}</a></li>
             <li><a href="{% url 'configurations' %}">{% trans 'Presets' %}</a></li>
+            {% if perms.jobs.add_hdxexportregion and perms.jobs.change_hdxexportregion and perms.jobs.delete_hdxexportregion %}
+              <li><a href="{% url 'hdx_list' %}">{% trans 'HDX' %}</a></li>
+            {% endif %}
             <li><a href="{% url 'help' %}">{% trans 'Help' %}</a></li>
             <li><a href="{% url 'about' %}">{% trans 'About' %}</a></li>
             {% if user.is_authenticated %}
