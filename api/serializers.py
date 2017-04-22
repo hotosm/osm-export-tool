@@ -425,7 +425,7 @@ class JobSerializer(serializers.Serializer):
 
 
 class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
-    dataset_prefix = serializers.RegexField('^[a-z0-9_]+$')
+    dataset_prefix = serializers.RegexField('^[a-z0-9-_]+$')
     export_formats = serializers.MultipleChoiceField(
         choices=HDXExportRegion.EXPORT_FORMAT_CHOICES)
     feature_selection = serializers.CharField()
