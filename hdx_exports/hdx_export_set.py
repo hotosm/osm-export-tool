@@ -134,6 +134,7 @@ class HDXExportSet(object):
             dataset['methodology_other'] = 'Volunteered geographic information'
             dataset['data_update_frequency'] = str(self._data_update_frequency)
             dataset['subnational'] = str(int(self.subnational))
+            dataset['groups'] = []
             dataset.add_country_locations(self._locations)
             dataset.add_tags(tags)
 

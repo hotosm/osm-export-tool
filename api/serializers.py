@@ -457,10 +457,9 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
             request = self.context['request']
 
             job = Job.objects.create(
-                the_geom=GEOSGeometry(
-                    json.dumps(validated_data.get('the_geom'))),
+                the_geom=validated_data.get('the_geom'),
                 name=validated_data.get('dataset_prefix'),
-                export_formats=validated_data.get('export_formats'),
+                export_formats=list(validated_data.get('export_formats')),
                 description=validated_data.get('name'),
                 feature_selection=validated_data.get('feature_selection'),
                 user=request.user,
@@ -480,14 +479,12 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
 
     def update(self, instance, validated_data): # noqa
         with transaction.atomic():
-            data = self.context['request'].data
-
             job = instance.job
-            job.name = data.get('dataset_prefix')
-            job.the_geom = GEOSGeometry(json.dumps(data.get('the_geom')))
-            job.export_formats = data.get('export_formats')
-            job.feature_selection = data.get('feature_selection')
-            job.description = data.get('name')
+            job.name = validated_data.get('dataset_prefix')
+            job.the_geom = validated_data.get('the_geom')
+            job.export_formats = list(validated_data.get('export_formats'))
+            job.feature_selection = validated_data.get('feature_selection')
+            job.description = validated_data.get('name')
             job.save()
 
             instance.extra_notes = validated_data.get('extra_notes')
