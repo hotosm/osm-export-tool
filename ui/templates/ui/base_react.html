@@ -84,11 +84,10 @@
       </div>
     </nav>
     {% endblock %}
-    <div id="root" class="{{ reactRootClass }} container-fluid" style="height:calc(100% - 125px)">
+    <div id="root" class="rootHdxList container-fluid" style="height:calc(100% - 125px)">
     </div>
     {% block corejs %}
     <script src="{% static 'ui/js/bundle.js' %}"></script>
     {% endblock %}
   </body>
 </html>
-
