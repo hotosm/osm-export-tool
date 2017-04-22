@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import shutil
+import traceback
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
@@ -168,6 +169,7 @@ def run_task_remote(run_uid): # noqa
 
         run.status = 'FAILED'
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+        LOG.warn(traceback.format_exc())
 
         send_error_notification(run)
         if run.job.hdx_export_region_set.count() >= 0:
