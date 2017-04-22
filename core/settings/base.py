@@ -13,13 +13,13 @@ TIME_ZONE = 'UTC'
 
 # default DEBUG setting
 # Set debug to true for development
-DEBUG = bool(os.environ.get('DEBUG', False))
+DEBUG = bool(os.getenv('DEBUG'))
 
 # from django.utils.crypto import get_random_string
 # secret_key = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
 if 'SECRET_KEY' not in os.environ:
     print "WARNING: secret key not set - setting a default for development."
-SECRET_KEY = os.environ.get('SECRET_KEY','default_secret_key')
+SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
 
 
 # Language code for this installation. All choices can be found here:

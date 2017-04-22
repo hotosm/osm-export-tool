@@ -1,3 +1,4 @@
+# noqa
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
@@ -60,12 +61,12 @@ EXPORT_DOWNLOAD_ROOT = ABS_PATH('../export_downloads/')
 # the root url for export downloads
 EXPORT_MEDIA_ROOT = '/downloads/'
 
-OSMAND_MAP_CREATOR_DIR = os.environ.get('OSMAND_MAP_CREATOR_DIR','/opt/osmandmapcreator/')
-GARMIN_SPLITTER = os.environ.get('GARMIN_SPLITTER','/opt/splitter/splitter.jar')
-GARMIN_MKGMAP = os.environ.get('GARMIN_MKGMAP','/opt/mkgmap/mkgmap.jar')
+OSMAND_MAP_CREATOR_DIR = os.getenv('OSMAND_MAP_CREATOR_DIR', '/opt/osmandmapcreator/')
+GARMIN_SPLITTER = os.getenv('GARMIN_SPLITTER', '/opt/splitter/splitter.jar')
+GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/opt/mkgmap/mkgmap.jar')
 
 # url to overpass api endpoint
-OVERPASS_API_URL = os.environ.get('OVERPASS_API_URL', 'http://overpass-api.de/api/interpreter')
+OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/interpreter')
 
 """
 Maximum extent of a Job
@@ -73,10 +74,10 @@ max of (latmax-latmin) * (lonmax-lonmin)
 """
 JOB_MAX_EXTENT = 2500000  # default export max extent in sq km
 
-HOSTNAME = os.environ.get('HOSTNAME', 'export.hotosm.org')
+HOSTNAME = os.getenv('HOSTNAME', 'export.hotosm.org')
 
 # Comment if you are not running behind proxy
-USE_X_FORWARDED_HOST = bool(os.environ.get('USE_X_FORWARDED_HOST', False))
+USE_X_FORWARDED_HOST = bool(os.getenv('USE_X_FORWARDED_HOST'))
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -103,7 +104,7 @@ http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL#timeout
 
 OVERPASS_TIMEOUT = 1600  # query timeout in seconds
 
-if os.environ.get('DJANGO_ENV', None) == 'development':
+if os.getenv('DJANGO_ENV') == 'development':
     INSTALLED_APPS += (
         'django_extensions',
     )
@@ -129,14 +130,14 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
-            'level': os.environ.get('LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('LOG_LEVEL', 'DEBUG'),
         }
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'propagate': True,
-            'level': os.environ.get('DJANGO_LOG_LEVEL', 'ERROR'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
         },
         'api': {
             'handlers': ['console'],
@@ -196,15 +197,15 @@ LOGGING = {
     }
 }
 
-EMAIL_HOST = os.environ.get('EMAIL_HOST', None)
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', None)
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', None)
-EMAIL_PORT = os.environ.get('EMAIL_PORT', None)
-EMAIL_USE_TLS = bool(os.environ.get('EMAIL_USE_TLS', None))
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = bool(os.getenv('EMAIL_USE_TLS'))
 
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 
-SYNC_TO_HDX = bool(os.environ.get('SYNC_TO_HDX', False))
+SYNC_TO_HDX = bool(os.getenv('SYNC_TO_HDX'))
 HDX_API_KEY = os.getenv('HDX_API_KEY')
 HDX_NOTIFICATION_EMAIL = os.getenv('HDX_NOTIFICATION_EMAIL')
 HDX_SITE = os.getenv('HDX_SITE', 'demo')

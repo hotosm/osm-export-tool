@@ -193,8 +193,8 @@ if __name__ == '__main__':
     logging.basicConfig()
 
     Configuration.create(
-        hdx_site='demo',
-        hdx_key=os.environ.get('HDX_API_KEY', None),
+        hdx_site=os.getenv('HDX_SITE', 'demo'),
+        hdx_key=os.getenv('HDX_API_KEY', None),
     )
     f_s = FeatureSelection(open('../feature_selection/examples/hdx.yml').read())
     extent = open('adm0/GIN_adm0.geojson').read()
