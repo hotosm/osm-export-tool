@@ -89,13 +89,16 @@ def logout(request):
 ))
 def hdx_list(request):
     user = request.user
-    context = {'user': user,'reactRootClass':'rootHdxList'}
+    context = {
+        'user': user,
+        'reactRootClass': 'rootHdxList'
+    }
     return render_to_response('ui/base_react.html', context)
 
 
 def require_email(request):
     """
-    View to handle email collection for new user loging in with OSM account.
+    View to handle email collection for new user logging in with OSM account.
     """
     backend = request.session['partial_pipeline']['backend']
     return render_to_response('osm/email.html', {'backend': backend}, RequestContext(request))
