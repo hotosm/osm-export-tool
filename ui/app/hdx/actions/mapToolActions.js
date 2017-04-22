@@ -43,7 +43,7 @@ export function processGeoJSONFile(file) {
         dispatch({type: types.FILE_PROCESSING});
         const fileName = file.name;
         const ext = fileName.split('.').pop();
-        if(ext != 'geojson') {
+        if(!['json', 'geojson'].includes(ext)) {
             dispatch({type: types.FILE_ERROR, error: 'File must be .geojson NOT .' + ext});
             return;
         }
