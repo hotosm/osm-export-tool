@@ -116,7 +116,10 @@ class FeatureSelection(object):
 
     @property
     def themes(self):
-        return self.doc.keys()
+        if self.doc:
+            return self.doc.keys()
+
+        return []
 
     def geom_types(self,theme):
         if 'types' in self.doc[theme]:
