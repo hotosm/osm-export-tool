@@ -87,13 +87,15 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
       };
 
     case types.EXPORT_REGION_DELETED:
+      exportRegions = {
+        ...state.exportRegions
+      };
+      delete exportRegions[id];
+
       return {
         ...state,
         status: 'Export region deleted.',
-        exportRegions: {
-          ...state.exportRegions,
-          [id]: null
-        },
+        exportRegions,
         id
       };
 

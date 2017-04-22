@@ -274,7 +274,7 @@ export class HDXExportRegionForm extends Component {
     }
 
     if (this.props.hdx.exportRegions[id] != null && exportRegions[id] == null) {
-      this.props.showAllExportRegions();
+      showAllExportRegions();
     }
 
     // TODO this would be cleaner if using reselect
