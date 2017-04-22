@@ -7,6 +7,7 @@ import logging
 import json
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
@@ -15,11 +16,16 @@ from django.db.models.fields import CharField
 from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
+from hdx.configuration import Configuration
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
 from utils import FORMAT_NAMES
 
+HDX_URL_PREFIX = Configuration.create(
+    hdx_site=settings.HDX_SITE,
+    hdx_key=settings.HDX_API_KEY,
+)
 LOG = logging.getLogger(__name__)
 
 # construct the upload path for export config files..
@@ -313,8 +319,11 @@ class HDXExportRegion(models.Model): # noqa
 
     @property
     def datasets(self): # noqa
-        return map(lambda x: '{}_{}'.format(self.dataset_prefix, x),
-                   self.job.feature_selection_object.themes)
+        return map(lambda x: {
+            'name': '{}_{}'.format(self.dataset_prefix, x),
+            'url': '{}dataset/{}_{}'.format(
+                HDX_URL_PREFIX, self.dataset_prefix, x),
+        }, self.job.feature_selection_object.themes)
 
     @property
     def runs(self): # noqa

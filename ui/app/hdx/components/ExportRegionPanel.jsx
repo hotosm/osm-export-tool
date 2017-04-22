@@ -9,7 +9,7 @@ import { zoomToExportRegion } from '../actions/hdxActions';
 
 function DatasetList (props) {
   const listItems = props.datasets.map((dataset, i) =>
-    <li key={i}><a target='_blank' href={`https://data.humdata.org/dataset/${dataset}`}><code>{dataset}</code></a></li>
+    <li key={i}><a target='_blank' href={dataset.url}><code>{dataset.name}</code></a></li>
   );
 
   return (

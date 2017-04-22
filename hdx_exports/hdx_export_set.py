@@ -13,8 +13,8 @@ from hdx.configuration import Configuration
 from django.contrib.gis.geos import GEOSGeometry
 
 Configuration.create(
-    hdx_site='demo',
-    hdx_key=os.environ.get('HDX_API_KEY', None),
+    hdx_site=os.getenv('HDX_SITE', 'demo'),
+    hdx_key=os.getenv('HDX_API_KEY'),
 )
 
 MARKDOWN = """
