@@ -27,7 +27,6 @@ class ExportRun(models.Model):
     finished_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
-        managed = True
         db_table = 'export_runs'
 
     def __str__(self):
