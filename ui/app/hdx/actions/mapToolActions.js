@@ -62,7 +62,7 @@ export function processGeoJSONFile(file) {
             const feature = geojsonReader.readFeatures(geojson)[0];
             const geom = feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
             if(geom.getType() == 'Polygon' || geom.getType() == 'MultiPolygon') {
-                dispatch({type: types.FILE_PROCESSED, geom: geom});
+                dispatch({type: types.FILE_PROCESSED, geojson});
             }
             else {
                 dispatch({type: types.FILE_ERROR, error: 'Geometry must be Polygon type, not ' + geom.getType()})

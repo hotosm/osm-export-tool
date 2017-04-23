@@ -29,7 +29,7 @@ export default {
     importGeom: {
         processing: false,
         processed: false,
-        geom: {},
+        geojson: {},
         error: null,
     },
     toolbarIcons: {

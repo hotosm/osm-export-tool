@@ -19,6 +19,8 @@ const WEB_MERCATOR = 'EPSG:3857';
 const jsts = require('jsts');
 const isEqual = require('lodash/isEqual');
 
+const GEOJSON_FORMAT = new ol.format.GeoJSON();
+
 export class ExportAOI extends Component {
 
     constructor(props) {
@@ -38,8 +40,7 @@ export class ExportAOI extends Component {
         this._updateInteractions();
         if(Object.keys(this.props.aoiInfo.geojson).length != 0) {
             const bbox = this.props.aoiInfo.geojson.features[0].bbox;
-            const reader = new ol.format.GeoJSON();
-            const feature = reader.readFeatures(this.props.aoiInfo.geojson, {
+            const feature = GEOJSON_FORMAT.readFeatures(this.props.aoiInfo.geojson, {
                 dataProjection: WGS84,
                 featureProjection: WEB_MERCATOR
             });
@@ -55,14 +56,26 @@ export class ExportAOI extends Component {
             this._clearDraw();
 
             if (this.props.aoiInfo.geojson.features != null) {
-              const bbox = this.props.aoiInfo.geojson.features[0].bbox;
-              const reader = new ol.format.GeoJSON();
-              const feature = reader.readFeatures(this.props.aoiInfo.geojson, {
+              // FeatureCollection
+              const feature = GEOJSON_FORMAT.readFeatures(this.props.aoiInfo.geojson, {
                   dataProjection: WGS84,
                   featureProjection: WEB_MERCATOR
               });
               this._drawLayer.getSource().addFeature(feature[0]);
-              this.handleZoomToSelection(bbox);
+              this.handleZoomToSelection(serialize(feature[0].getGeometry().getExtent()));
+              this.props.setNextEnabled();
+            } else if (this.props.aoiInfo.geojson.coordinates != null) {
+              // Geometry
+              const geom = GEOJSON_FORMAT.readGeometry(this.props.aoiInfo.geojson, {
+                  dataProjection: WGS84,
+                  featureProjection: WEB_MERCATOR
+              });
+              this._drawLayer.getSource().addFeature(
+                  new ol.Feature({
+                      geometry: geom
+                  })
+              );
+              this.handleZoomToSelection(serialize(geom.getExtent()));
               this.props.setNextEnabled();
             }
         }
@@ -81,7 +94,7 @@ export class ExportAOI extends Component {
             this.handleResetMap();
         }
         if(nextProps.importGeom.processed && !this.props.importGeom.processed) {
-            this.handleGeoJSONUpload(nextProps.importGeom.geom);
+            this.handleGeoJSONUpload(nextProps.importGeom.geojson);
         }
     }
 
@@ -124,26 +137,15 @@ export class ExportAOI extends Component {
         description = description + (result.countryName ? result.countryName : '');
         description = description + (result.adminName1 ? ', ' + result.adminName1 : '');
         description = description + (result.adminName2 ? ', ' + result.adminName2 : '');
-        
+
 
         this.props.updateAoiInfo(geojson, 'Polygon', result.name, description);
         this.props.setNextEnabled();
         this.handleZoomToSelection(bbox);
     }
 
-    handleGeoJSONUpload(geom) {
-        this._clearDraw();
-        this._drawLayer.getSource().addFeature(
-            new ol.Feature({
-                geometry: geom
-            })
-        )
-        const bbox = serialize(geom.getExtent());
-        const geojson = createGeoJSON(geom);
-        this.handleZoomToSelection(bbox);
+    handleGeoJSONUpload(geom, geojson) {
         this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Import');
-
-
     }
 
     setMapView() {
@@ -469,8 +471,7 @@ function unwrapPoint([x, y]) {
 }
 
 function featureToBbox(feature) {
-    const reader = new ol.format.GeoJSON()
-    const geometry = reader.readGeometry(feature.geometry, {featureProjection: WEB_MERCATOR})
+    const geometry = GEOJSON_FORMAT.readGeometry(feature.geometry, {featureProjection: WEB_MERCATOR})
     return geometry.getExtent()
 }
 

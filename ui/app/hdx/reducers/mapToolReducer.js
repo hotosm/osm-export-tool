@@ -68,13 +68,13 @@ export function showImportModalReducer(state = initialState.showImportModal, act
 export function importGeomReducer(state = initialState.importGeom, action) {
     switch(action.type) {
         case types.FILE_PROCESSING:
-            return {processing: true, processed: false, geom: {}, error: null};
+            return {processing: true, processed: false, geojson: {}, error: null};
         case types.FILE_PROCESSED:
-            return {processing: false, processed: true, geom: action.geom, error: null};
+            return {processing: false, processed: true, geojson: action.geojson, error: null};
         case types.FILE_ERROR:
-            return {processing: false, processed: false, geom: {}, error: action.error};
+            return {processing: false, processed: false, geojson: {}, error: action.error};
         case types.FILE_RESET:
-            return {processing: false, processed: false, geom: {}, error: null};
+            return {processing: false, processed: false, geojson: {}, error: null};
         default:
             return state;
     }
