@@ -1,14 +1,17 @@
 # noqa
 
 from datetime import datetime
+import logging
 import os
 import subprocess
+import traceback
 import zipfile
 
 from feature_selection.feature_selection import FeatureSelection
 from hdx.data.dataset import Dataset
 from hdx.data.galleryitem import GalleryItem
 from hdx.configuration import Configuration
+from raven import Client
 
 from django.contrib.gis.geos import GEOSGeometry
 
@@ -16,6 +19,10 @@ Configuration.create(
     hdx_site=os.getenv('HDX_SITE', 'demo'),
     hdx_key=os.getenv('HDX_API_KEY'),
 )
+
+client = Client()
+
+LOG = logging.getLogger(__name__)
 
 MARKDOWN = """
 Shapefiles of [OpenStreetMap](http://www.openstreetmap.org) features in
@@ -168,11 +175,16 @@ class HDXExportSet(object):
 
     def sync_datasets(self): # noqa
         for dataset in self.datasets.values():
-            exists = Dataset.read_from_hdx(dataset['name'])
-            if exists:
-                dataset.update_in_hdx()
-            else:
-                dataset.create_in_hdx()
+            try:
+                exists = Dataset.read_from_hdx(dataset['name'])
+                if exists:
+                    dataset.update_in_hdx()
+                else:
+                    dataset.create_in_hdx()
+            except Exception as e:
+                client.captureException()
+                LOG.warn(e)
+                LOG.warn(traceback.format_exc())
 
     def sync_resources(self,resources_by_theme,public_dir):
         for theme, zipfiles in resources_by_theme.iteritems():
