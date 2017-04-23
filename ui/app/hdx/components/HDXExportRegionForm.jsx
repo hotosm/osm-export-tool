@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 import isEqual from 'lodash/isEqual';
-const jsts = require('jsts');
 import prettyBytes from 'pretty-bytes';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
 import { Field, SubmissionError, formValueSelector, reduxForm } from 'redux-form';
@@ -573,18 +572,10 @@ const mapDispatchToProps = dispatch => {
     handleRun: id => dispatch(runExport(id)),
     showAllExportRegions: () => dispatch(push('/')),
     updateAOI: geometry => {
-      const envelope = new jsts.io.GeoJSONReader().read(geometry).getEnvelope().getCoordinates();
-
-      const bbox = [envelope[0], envelope[2]]
-        .map(c => [c.x, c.y])
-        .reduce((acc, val) => acc.concat(val), []);
-
       dispatch(updateAoiInfo({
         features: [
           {
-            // TODO wouldn't it be nice if ExportAOI didn't require a feature collection with a bbox?
             type: 'Feature',
-            bbox,
             geometry,
             properties: {}
           }
