@@ -24,7 +24,9 @@ const store = createStore(
     intl: intlReducer,
     router: routerReducer
   }),
-  applyMiddleware(routerMiddleware(history), thunk, createLogger())
+  applyMiddleware(routerMiddleware(history), thunk, createLogger({
+    collapsed: true
+  }))
 );
 
 // TODO 403 API responses should redirect to the login page
