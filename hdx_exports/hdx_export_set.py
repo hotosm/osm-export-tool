@@ -142,7 +142,7 @@ class HDXExportSet(object):
             dataset['data_update_frequency'] = str(self._data_update_frequency)
             dataset['subnational'] = str(int(self.subnational))
             dataset['groups'] = []
-            dataset.add_country_locations(self._locations)
+            [dataset.add_other_location(x) for x in self._locations]
             dataset.add_tags(tags)
 
             ga = GalleryItem({
