@@ -102,6 +102,8 @@ def run_task_remote(run_uid): # noqa
             os.makedirs(run_dir)
 
         aoi = GEOSGeometry(job.the_geom)
+        if job.buffer_aoi:
+            aoi = aoi.buffer(0.02) # 0.02 degrees is a reasonable amount for an admin 0 boundary
         aoi = simplify_max_points(aoi)
         try:
             feature_selection = job.feature_selection_object
