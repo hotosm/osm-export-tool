@@ -2,5 +2,6 @@
   "env": {
     "node": true
   },
-  "extends": "semistandard"
+  "extends": ["semistandard", "standard-react"],
+  "parser": "babel-eslint"
 }
