@@ -4,7 +4,7 @@ import axios from 'axios';
 import isEqual from 'lodash/isEqual';
 import prettyBytes from 'pretty-bytes';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
-import { Field, SubmissionError, formValueSelector, reduxForm } from 'redux-form';
+import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { FormattedDate, FormattedRelative, FormattedTime, IntlMixin } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -88,15 +88,15 @@ const form = reduxForm({
   }
 });
 
-const renderInput = ({ id, input, label, help, meta: { touched, error }, ...props }) =>
+const renderInput = ({ id, input, label, help, meta: { error }, ...props }) =>
   <FormGroup controlId={id || props.name} validationState={error && 'error'}>
     <ControlLabel>{label}</ControlLabel>
     <FormControl {...input} {...props} />
     <FormControl.Feedback />
-    <HelpBlock>{touched && error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
+    <HelpBlock>{error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
   </FormGroup>;
 
-const renderMultiSelect = ({ id, input, label, help, meta: { touched, error }, ...props }) =>
+const renderMultiSelect = ({ id, input, label, help, meta: { error }, ...props }) =>
   <FormGroup controlId={id || props.name} validationState={error && 'error'}>
     <ControlLabel>{label}</ControlLabel>
     <Select
@@ -105,34 +105,34 @@ const renderMultiSelect = ({ id, input, label, help, meta: { touched, error }, .
       onBlur={() => input.onBlur(input.value)}
     />
     <FormControl.Feedback />
-    <HelpBlock>{touched && error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
+    <HelpBlock>{error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
   </FormGroup>;
 
-const renderTextArea = ({id, label, input, data, meta: { touched, error }, ...props}) =>
+const renderTextArea = ({id, label, input, data, meta: { error }, ...props}) =>
   <FormGroup controlId={id || input.name} validationState={error && 'error'}>
     <ControlLabel>{label}</ControlLabel>
     <FormControl componentClass='textarea' {...input} {...props} />
     <FormControl.Feedback />
-    <HelpBlock>{touched && error && <span className={styles.error}>{error}</span>}</HelpBlock>
+    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
   </FormGroup>;
 
-const renderSelect = ({id, label, input, data, meta: { touched, error }, ...props}) =>
+const renderSelect = ({id, label, input, data, meta: { error }, ...props}) =>
   <FormGroup controlId={id || input.name} validationState={error && 'error'}>
     <ControlLabel>{label}</ControlLabel>
     <FormControl componentClass='select' {...input} {...props} />
     <FormControl.Feedback />
-    <HelpBlock>{touched && error && <span className={styles.error}>{error}</span>}</HelpBlock>
+    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
   </FormGroup>;
 
-const renderCheckboxes = ({id, label, input, data, meta: { touched, error }, description, ...props}) =>
+const renderCheckboxes = ({id, label, input, data, meta: { error }, description, ...props}) =>
   <FormGroup controlId={id || input.name} validationState={error && 'error'}>
     <ControlLabel>{label}</ControlLabel>
     {props.children}
     <FormControl.Feedback />
-    <HelpBlock>{touched && error && <span className={styles.error}>{error}</span>}</HelpBlock>
+    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
   </FormGroup>;
 
-const renderCheckbox = ({input, data, meta: { touched, error }, description, ...props}) =>
+const renderCheckbox = ({input, data, description, ...props}) =>
   <Checkbox {...input} {...props}>{description}</Checkbox>;
 
 const getTimeOptions = () => {
@@ -194,6 +194,10 @@ const ExistingDatasetsPanel = ({ error, datasets, handleSubmit, status, styles, 
   </Panel>;
 
 export class HDXExportRegionForm extends Component {
+  static propTypes = {
+    ...propTypes
+  }
+
   mixins = [IntlMixin];
 
   state = {
@@ -240,14 +244,17 @@ export class HDXExportRegionForm extends Component {
       return;
     }
 
-    const { change, updateAOI } = this.props;
+    const { anyTouched, change, updateAOI } = this.props;
 
     // NOTE: this also sets some form properties that we don't care about (but that show up in the onSubmit handler)
-    Object.entries(exportRegion).forEach(([k, v]) => change(k, v));
+    if (!anyTouched) {
+      // only update properties if they haven't been touched
+      Object.entries(exportRegion).forEach(([k, v]) => change(k, v));
 
-    exportRegion.export_formats.forEach(x => change(x, true));
+      exportRegion.export_formats.forEach(x => change(x, true));
 
-    updateAOI(exportRegion.the_geom);
+      updateAOI(exportRegion.the_geom);
+    }
 
     // TODO track runs separately from ExportRegion state (to avoid overwriting in-progress edits and to facilitate simpler refreshing)
     if (exportRegion.runs[0] != null && exportRegion.runs[0] === 'RUNNING') {
