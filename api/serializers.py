@@ -432,6 +432,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     job = JobSerializer(read_only=True)
     name = serializers.CharField()
     the_geom = geo_serializers.GeometryField()
+    buffer_aoi = serializers.BooleanField()
 
     class Meta: # noqa
         model = HDXExportRegion
@@ -439,7 +440,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
                   'schedule_period', 'schedule_hour', 'export_formats', 'runs',
                   'locations', 'name', 'last_run', 'next_run', 'the_geom',
                   'dataset_prefix', 'job', 'license', 'subnational',
-                  'extra_notes', 'is_private', )
+                  'extra_notes', 'is_private', 'buffer_aoi',)
 
     def validate(self, data): # noqa
         f = FeatureSelection(data.get('feature_selection'))
@@ -463,6 +464,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
                 description=validated_data.get('name'),
                 feature_selection=validated_data.get('feature_selection'),
                 user=request.user,
+                buffer_aoi=validated_data.get('buffer_aoi'),
             )
 
             region = HDXExportRegion.objects.create(
@@ -485,6 +487,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
             job.export_formats = list(validated_data.get('export_formats'))
             job.feature_selection = validated_data.get('feature_selection')
             job.description = validated_data.get('name')
+            job.buffer_aoi = validated_data.get('buffer_aoi')
             job.save()
 
             instance.extra_notes = validated_data.get('extra_notes')

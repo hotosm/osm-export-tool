@@ -439,6 +439,16 @@ export class HDXExportRegionForm extends Component {
               />
             </Col>
           </Row>
+          <Row>
+            <Col xs={12}>
+              <Field
+                name='buffer_aoi'
+                description='AOI is an administrative boundary (and should be buffered)'
+                component={renderCheckbox}
+                type='checkbox'
+              />
+            </Col>
+          </Row>
           <Field
             name='locations'
             multi

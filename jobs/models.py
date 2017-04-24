@@ -108,6 +108,7 @@ class Job(TimeStampedModelMixin):
     the_geom = models.GeometryField(verbose_name='Extent for export', srid=4326, default='')
     objects = models.GeoManager()
     feature_selection = models.TextField(blank=True)
+    buffer_aoi = models.BooleanField(default=False)
 
     class Meta:  # pragma: no cover
         managed = True
@@ -292,6 +293,10 @@ class HDXExportRegion(models.Model): # noqa
         last = self.job.runs.last()
         if last is not None:
             return last.finished_at
+
+    @property
+    def buffer_aoi(self): # noqa
+        return self.job.buffer_aoi
 
     @property
     def name(self): # noqa
