@@ -1,0 +1,18 @@
+planet_osm_point:
+  types:
+    - points
+  select:
+    - name
+
+planet_osm_line:
+  type:
+    - lines
+  select:
+    - name
+
+planet_osm_polygon:
+  type:
+    - polygons
+  select:
+    - name
+
