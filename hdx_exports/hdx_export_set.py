@@ -187,16 +187,23 @@ class HDXExportSet(object):
                 LOG.warn(traceback.format_exc())
 
     def sync_resources(self,resources_by_theme,public_dir):
+        HDX_FORMATS = {
+            'shp':'zipped shapefile',
+            'geopackage':'zipped geopackage',
+            'garmin_img':'zipped img',
+            'osm_pbf':'pbf',
+            'kml':'zipped kml'
+        }
         for theme, zipfiles in resources_by_theme.iteritems():
             resources = []
             for zipfile in zipfiles:
-                basename = zipfile[0]
+                file_name = zipfile[0]
                 format_name = zipfile[1]
                 resources.append({
-                    'name': format_name,
-                    'format': 'zipped shapefile',
-                    'description': format_name,
-                    'url': os.path.join(public_dir,basename)
+                    'name': file_name,
+                    'format': HDX_FORMATS[format_name],
+                    'description': file_name,
+                    'url': os.path.join(public_dir,file_name)
                 })
             self.datasets[theme].add_update_resources(resources)
         self.sync_datasets()
@@ -204,15 +211,10 @@ class HDXExportSet(object):
 if __name__ == '__main__':
     import logging
     logging.basicConfig()
-
-    Configuration.create(
-        hdx_site=os.getenv('HDX_SITE', 'demo'),
-        hdx_key=os.getenv('HDX_API_KEY', None),
-    )
-    f_s = FeatureSelection(open('../feature_selection/examples/hdx.yml').read())
+    f_s = FeatureSelection.example("simple")
     extent = open('adm0/GIN_adm0.geojson').read()
     h = HDXExportSet(
-        dataset_prefix='hotosm_guinea',
+        dataset_prefix='demodata_test',
         name='Guinea',
         extent=extent,
         feature_selection=f_s,
@@ -220,4 +222,4 @@ if __name__ == '__main__':
     )
 
     #h.sync_datasets()
-    h.sync_resources({'admin_boundaries':[('foo.zip','gpkg')]},'example.com')
+    h.sync_resources({'buildings':[('foo_buildings_polygons.zip','geopackage')]},'http://example.com/')
