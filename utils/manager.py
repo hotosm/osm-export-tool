@@ -16,7 +16,7 @@ def simplify_max_points(input_geom,max_points=500):
     num_coords = geom.num_coords
     param = 0.01
     while num_coords > 500:
-        output_geom = geom.simplify(param,preserve_topology=True)
+        geom = geom.simplify(param,preserve_topology=True)
         param = param * 2
         num_coords = geom.num_coords
     return geom
