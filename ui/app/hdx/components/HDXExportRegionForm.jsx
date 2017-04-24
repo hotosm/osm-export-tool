@@ -249,6 +249,7 @@ export class HDXExportRegionForm extends Component {
 
     updateAOI(exportRegion.the_geom);
 
+    // TODO track runs separately from ExportRegion state (to avoid overwriting in-progress edits and to facilitate simpler refreshing)
     if (exportRegion.runs[0] != null && exportRegion.runs[0] === 'RUNNING') {
       this.setState({
         running: true
@@ -328,7 +329,7 @@ export class HDXExportRegionForm extends Component {
     return this.exportRegion.runs.map((run, i) => (
       <tr key={i}>
         <td>
-          <FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} />
+          <a href={`/exports/${this.exportRegion.job.uid}#${run.uid}`}><FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} /></a>
         </td>
         <td>
           {run.status}
@@ -514,7 +515,7 @@ export class HDXExportRegionForm extends Component {
               <strong>Last run:</strong> {this.getLastRun()}<br />
               <strong>Next scheduled run:</strong> {this.getNextRun()}
             </Panel>
-            <h3>Run History</h3>
+            <h3>Run History <small><a href={`/exports/${exportRegion.job.uid}`}>view export details</a></small></h3>
             {exportRegion.runs.length > 0
               ? <Table>
                 <thead>

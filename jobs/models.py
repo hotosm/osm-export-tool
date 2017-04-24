@@ -329,6 +329,7 @@ class HDXExportRegion(models.Model): # noqa
             'size': sum(map(
                 lambda task: task.filesize_bytes or 0, run.tasks.all())),
             'status': run.status,
+            'uid': run.uid,
         }, self.job.runs.order_by('-created_at').all())
 
     @property
