@@ -244,7 +244,7 @@ export class HDXExportRegionForm extends Component {
       return;
     }
 
-    const { anyTouched, change, updateAOI } = this.props;
+    const { anyTouched, change, getExportRegion, updateAOI } = this.props;
 
     // NOTE: this also sets some form properties that we don't care about (but that show up in the onSubmit handler)
     if (!anyTouched) {
@@ -256,15 +256,21 @@ export class HDXExportRegionForm extends Component {
       updateAOI(exportRegion.the_geom);
     }
 
-    // TODO track runs separately from ExportRegion state (to avoid overwriting in-progress edits and to facilitate simpler refreshing)
-    if (exportRegion.runs[0] != null && exportRegion.runs[0] === 'RUNNING') {
+    if (exportRegion.runs[0] != null && exportRegion.runs[0].status === 'RUNNING') {
       this.setState({
         running: true
       });
+
+      if (this.runPoller == null) {
+        this.runPoller = setInterval(() => getExportRegion(exportRegion.id), 15e3);
+      }
     } else {
       this.setState({
         running: false
       });
+
+      clearInterval(this.runPoller);
+      this.runPoller = null;
     }
 
     console.log('Export region:', exportRegion);
