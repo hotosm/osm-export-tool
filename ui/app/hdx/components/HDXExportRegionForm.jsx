@@ -132,7 +132,7 @@ const renderCheckboxes = ({id, label, input, data, meta: { error }, description,
     <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
   </FormGroup>;
 
-const renderCheckbox = ({input, data, description, ...props}) =>
+const renderCheckbox = ({input, data, description, meta, ...props}) =>
   <Checkbox {...input} {...props}>{description}</Checkbox>;
 
 const getTimeOptions = () => {
