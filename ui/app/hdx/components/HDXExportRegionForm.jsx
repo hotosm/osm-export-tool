@@ -249,6 +249,16 @@ export class HDXExportRegionForm extends Component {
 
     updateAOI(exportRegion.the_geom);
 
+    if (exportRegion.runs[0] != null && exportRegion.runs[0] === 'RUNNING') {
+      this.setState({
+        running: true
+      });
+    } else {
+      this.setState({
+        running: false
+      });
+    }
+
     console.log('Export region:', exportRegion);
   }
 
