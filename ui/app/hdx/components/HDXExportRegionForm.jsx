@@ -50,11 +50,21 @@ const form = reduxForm({
       });
     }
 
+    let geom = props.aoiInfo.geojson;
+
+    if (props.aoiInfo.geojson.geometry) {
+      geom = props.aoiInfo.geojson.geometry;
+    }
+
+    if (props.aoiInfo.geojson.features) {
+      geom = props.aoiInfo.geojson.features[0].geometry;
+    }
+
     const formData = {
       ...values,
       export_formats: exportFormats,
       locations: (values.locations || []).map(x => x.value || x),
-      the_geom: props.aoiInfo.geojson.features[0].geometry
+      the_geom: geom
     };
 
     if (values.id != null) {
