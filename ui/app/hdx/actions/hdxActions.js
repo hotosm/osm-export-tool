@@ -79,7 +79,7 @@ export function getExportRegion (id) {
   };
 }
 
-export function runExport (id) {
+export function runExport (id, jobUid) {
   return dispatch => {
     dispatch({
       type: types.STARTING_EXPORT_REGION_RUN,
@@ -87,7 +87,7 @@ export function runExport (id) {
     });
 
     return axios({
-      url: `/api/runs?job_uid=${id}`,
+      url: `/api/runs?job_uid=${jobUid}`,
       method: 'POST',
       headers: {
         'X-CSRFToken': cookie.load('csrftoken')
@@ -97,6 +97,7 @@ export function runExport (id) {
       type: types.EXPORT_REGION_RUN_STARTED,
       id
     }))
+    .then(() => dispatch(getExportRegion(id)))
     .catch(error => dispatch({
       type: types.EXPORT_REGION_RUN_ERROR,
       id,

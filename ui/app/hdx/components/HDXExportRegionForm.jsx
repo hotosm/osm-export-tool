@@ -346,7 +346,7 @@ export class HDXExportRegionForm extends Component {
       running: true
     });
 
-    this.props.handleRun(this.exportRegion.job.uid);
+    this.props.handleRun(this.exportRegion.id, this.exportRegion.job.uid);
   };
 
   render () {
@@ -579,7 +579,7 @@ const mapDispatchToProps = dispatch => {
     },
     getExportRegion: id => dispatch(getExportRegion(id)),
     handleDelete: id => dispatch(deleteExportRegion(id)),
-    handleRun: id => dispatch(runExport(id)),
+    handleRun: (id, jobUid) => dispatch(runExport(id, jobUid)),
     showAllExportRegions: () => dispatch(push('/')),
     updateAOI: geometry => {
       dispatch(updateAoiInfo({
