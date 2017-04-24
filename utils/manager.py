@@ -58,10 +58,10 @@ class Zipper(object):
                 shutil.move(zipfile_path,target_path)
                 zips.append(target_path)
 
-            # side effect
-            if theme not in self._resources_by_theme:
-                self._resources_by_theme[theme] = []
-            self._resources_by_theme[theme].append((zipfile_name,resource_type))
+                # side effect
+                if theme not in self._resources_by_theme:
+                    self._resources_by_theme[theme] = []
+                self._resources_by_theme[theme].append((zipfile_name,resource_type))
         return zips
 
     def resources_by_theme(self):
