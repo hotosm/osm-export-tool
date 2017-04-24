@@ -10,7 +10,7 @@ class JobAdmin(OSMGeoAdmin):
     """
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid', 'name', 'user']
-    exclude = ['the_geom', 'the_geog']
+    exclude = ['the_geom']
 
 
 class ExportConfigAdmin(admin.ModelAdmin):

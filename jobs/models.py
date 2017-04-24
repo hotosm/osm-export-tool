@@ -105,9 +105,7 @@ class Job(TimeStampedModelMixin):
     published = models.BooleanField(default=False, db_index=True)  # publish export
     feature_save = models.BooleanField(default=False, db_index=True)  # save feature selections
     feature_pub = models.BooleanField(default=False, db_index=True)  # publish feature selections
-    the_geom = models.PolygonField(verbose_name='Extent for export', srid=4326, default='')
-    the_geom_webmercator = models.PolygonField(verbose_name='Mercator extent for export', srid=3857, default='')
-    the_geog = models.PolygonField(verbose_name='Geographic extent for export', geography=True, default='')
+    the_geom = models.GeometryField(verbose_name='Extent for export', srid=4326, default='')
     objects = models.GeoManager()
     feature_selection = models.TextField(blank=True)
 
@@ -116,8 +114,6 @@ class Job(TimeStampedModelMixin):
         db_table = 'jobs'
 
     def save(self, *args, **kwargs):
-        self.the_geog = GEOSGeometry(self.the_geom)
-        self.the_geom_webmercator = self.the_geom.transform(ct=3857, clone=True)
         super(Job, self).save(*args, **kwargs)
 
     def __str__(self):
