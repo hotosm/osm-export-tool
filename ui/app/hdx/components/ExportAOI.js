@@ -144,7 +144,7 @@ export class ExportAOI extends Component {
         this.handleZoomToSelection(bbox);
     }
 
-    handleGeoJSONUpload(geom, geojson) {
+    handleGeoJSONUpload(geojson) {
         this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Import');
     }
 
