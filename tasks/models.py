@@ -47,7 +47,7 @@ class ExportTask(models.Model):
     started_at = models.DateTimeField(editable=False, null=True)
     finished_at = models.DateTimeField(editable=False, null=True)
     filesize_bytes = models.IntegerField(null=True)
-    filenames = ArrayField(models.CharField(max_length=50,null=True),default=list)
+    filenames = ArrayField(models.TextField(null=True),default=list)
 
     class Meta:
         ordering = ['created_at']
