@@ -35,17 +35,46 @@ export class ExportAOI extends Component {
         this.handleGeoJSONUpload = this.handleGeoJSONUpload.bind(this);
     }
 
+    getFeature (geojson) {
+        switch (geojson.type) {
+            case 'FeatureCollection':
+                return GEOJSON_FORMAT.readFeature(geojson.features[0], {
+                    dataProjection: WGS84,
+                    featureProjection: WEB_MERCATOR
+                });
+
+            case 'Feature':
+                return GEOJSON_FORMAT.readFeature(geojson, {
+                    dataProjection: WGS84,
+                    featureProjection: WEB_MERCATOR
+                });
+
+            default:
+                const geometry = GEOJSON_FORMAT.readGeometry(geojson, {
+                    dataProjection: WGS84,
+                    featureProjection: WEB_MERCATOR
+                });
+
+                console.log('geometry:', geometry);
+                return new ol.Feature({
+                    geometry: GEOJSON_FORMAT.readGeometry(geojson, {
+                        dataProjection: WGS84,
+                        featureProjection: WEB_MERCATOR
+                    })
+                });
+        }
+    }
+
     componentDidMount() {
+        const { aoiInfo: { geojson } } = this.props;
+
         this._initializeOpenLayers();
         this._updateInteractions();
-        if(Object.keys(this.props.aoiInfo.geojson).length != 0) {
-            const bbox = this.props.aoiInfo.geojson.features[0].bbox;
-            const feature = GEOJSON_FORMAT.readFeatures(this.props.aoiInfo.geojson, {
-                dataProjection: WGS84,
-                featureProjection: WEB_MERCATOR
-            });
-            this._drawLayer.getSource().addFeature(feature[0]);
-            this.handleZoomToSelection(bbox);
+
+        if (geojson != null && Object.keys(geojson).length > 0) {
+            const feature = this.getFeature(geojson);
+            this._drawLayer.getSource().addFeature(feature);
+            this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
             this.props.setNextEnabled();
         }
     }
@@ -55,29 +84,10 @@ export class ExportAOI extends Component {
             // remove existing features
             this._clearDraw();
 
-            if (this.props.aoiInfo.geojson.features != null) {
-              // FeatureCollection
-              const feature = GEOJSON_FORMAT.readFeatures(this.props.aoiInfo.geojson, {
-                  dataProjection: WGS84,
-                  featureProjection: WEB_MERCATOR
-              });
-              this._drawLayer.getSource().addFeature(feature[0]);
-              this.handleZoomToSelection(serialize(feature[0].getGeometry().getExtent()));
-              this.props.setNextEnabled();
-            } else if (this.props.aoiInfo.geojson.coordinates != null) {
-              // Geometry
-              const geom = GEOJSON_FORMAT.readGeometry(this.props.aoiInfo.geojson, {
-                  dataProjection: WGS84,
-                  featureProjection: WEB_MERCATOR
-              });
-              this._drawLayer.getSource().addFeature(
-                  new ol.Feature({
-                      geometry: geom
-                  })
-              );
-              this.handleZoomToSelection(serialize(geom.getExtent()));
-              this.props.setNextEnabled();
-            }
+            const feature = this.getFeature(this.props.aoiInfo.geojson);
+            this._drawLayer.getSource().addFeature(feature);
+            this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
+            this.props.setNextEnabled();
         }
     }
 
