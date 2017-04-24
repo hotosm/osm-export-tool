@@ -31,7 +31,7 @@
     "react-dropzone": "~3.9.2",
     "react-intl": "^2.2.3",
     "react-intl-redux": "^0.4.1",
-    "react-redux": "~4.4.6",
+    "react-redux": "^5.0.4",
     "react-router-dom": "^4.0.0",
     "react-router-redux": "next",
     "react-select": "^1.0.0-rc.3",
