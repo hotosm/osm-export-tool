@@ -1,4 +1,8 @@
 buildings:
+  hdx:
+    name:
+    tags: building, osm
+    caveats:
   types:
     - polygons
   select:
@@ -13,6 +17,10 @@ buildings:
   where: building IS NOT NULL
 
 roads:
+  hdx:
+    name:
+    tags: roads, osm
+    caveats:
   types:
     - lines
     - polygons
@@ -27,9 +35,13 @@ roads:
     - bridge
     - layer
   where: highway IS NOT NULL
- 
+
 waterways:
-  types: 
+  hdx:
+    name:
+    tags: water, osm
+    caveats:
+  types:
     - lines
     - polygons
   select:
@@ -46,7 +58,11 @@ waterways:
   where: waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','bay')
 
 points_of_interest:
-  types: 
+  hdx:
+    name:
+    tags: poi, osm
+    caveats:
+  types:
     - points
     - polygons
   select:
@@ -65,7 +81,7 @@ points_of_interest:
 
 admin_boundaries:
   hdx:
-    name: Administrative Boundaries (OpenStreetMap Export)
+    name:
     tags: admin, osm
     caveats: Boundaries are crowd-sourced and may not align with other datasets
   types:

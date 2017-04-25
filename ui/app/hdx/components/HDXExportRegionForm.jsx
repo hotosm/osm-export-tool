@@ -584,9 +584,104 @@ const mapStateToProps = state => {
     featureSelection: formValueSelector(FORM_NAME)(state, 'feature_selection'),
     hdx: state.hdx,
     initialValues: {
-      feature_selection: `buildings:
+      feature_selection: `
+buildings:
+  hdx:
+    name:
+    tags: building, osm
+    caveats:
+  types:
+    - polygons
   select:
-     - building`,
+    - name
+    - building
+    - building_levels
+    - building_materials
+    - addr_housenumber
+    - addr_street
+    - addr_city
+    - office
+  where: building IS NOT NULL
+
+roads:
+  hdx:
+    name:
+    tags: roads, osm
+    caveats:
+  types:
+    - lines
+    - polygons
+  select:
+    - name
+    - highway
+    - surface
+    - smoothness
+    - width
+    - lanes
+    - oneway
+    - bridge
+    - layer
+  where: highway IS NOT NULL
+
+waterways:
+  hdx:
+    name:
+    tags: water, osm
+    caveats:
+  types:
+    - lines
+    - polygons
+  select:
+    - name
+    - waterway
+    - covered
+    - width
+    - depth
+    - layer
+    - blockage
+    - tunnel
+    - natural
+    - water
+  where: waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','bay')
+
+points_of_interest:
+  hdx:
+    name:
+    tags: poi, osm
+    caveats:
+  types:
+    - points
+    - polygons
+  select:
+    - name
+    - amenity
+    - man_made
+    - shop
+    - tourism
+    - opening_hours
+    - beds
+    - rooms
+    - addr_housenumber
+    - addr_street
+    - addr_city
+  where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
+
+admin_boundaries:
+  hdx:
+    name:
+    tags: admin, osm
+    caveats: Boundaries are crowd-sourced and may not align with other datasets
+  types:
+    - points
+    - lines
+    - polygons
+  select:
+    - name
+    - boundary
+    - admin_level
+    - place
+  where: boundary = 'administrative' OR admin_level IS NOT NULL
+`.trim(),
       is_private: true,
       license: 'hdx-odc-by',
       license_human_readable: 'Open Database License (ODC-ODbL)',

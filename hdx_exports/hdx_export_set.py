@@ -116,7 +116,7 @@ class HDXExportSet(object):
             caveats = ''
             if 'hdx' in self._feature_selection.doc[theme]:
                 hdx = self._feature_selection.doc[theme]['hdx']
-                title = hdx.get('name', title)
+                title = hdx.get('name') or title
                 caveats = hdx.get('caveats', caveats)
 
                 if 'tags' in hdx:
