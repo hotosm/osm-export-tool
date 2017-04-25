@@ -15,11 +15,6 @@ from raven import Client
 
 from django.contrib.gis.geos import GEOSGeometry
 
-Configuration.create(
-    hdx_site=os.getenv('HDX_SITE', 'demo'),
-    hdx_key=os.getenv('HDX_API_KEY'),
-)
-
 client = Client()
 
 LOG = logging.getLogger(__name__)
@@ -41,7 +36,6 @@ HDX](https://data.humdata.org/dataset?tags=openstreetmap).
 See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more
 information.
 """
-
 
 class HDXExportSet(object):
     """
@@ -142,6 +136,8 @@ class HDXExportSet(object):
             dataset['data_update_frequency'] = str(self._data_update_frequency)
             dataset['subnational'] = str(int(self.subnational))
             dataset['groups'] = []
+
+            # warning: this makes a network call
             [dataset.add_other_location(x) for x in self._locations]
             dataset.add_tags(tags)
 
@@ -174,6 +170,10 @@ class HDXExportSet(object):
         ))
 
     def sync_datasets(self): # noqa
+        Configuration.create(
+            hdx_site=os.getenv('HDX_SITE', 'demo'),
+            hdx_key=os.getenv('HDX_API_KEY'),
+        )
         for dataset in self.datasets.values():
             try:
                 exists = Dataset.read_from_hdx(dataset['name'])
@@ -187,6 +187,10 @@ class HDXExportSet(object):
                 LOG.warn(traceback.format_exc())
 
     def sync_resources(self,resources_by_theme,public_dir):
+        Configuration.create(
+            hdx_site=os.getenv('HDX_SITE', 'demo'),
+            hdx_key=os.getenv('HDX_API_KEY'),
+        )
         HDX_FORMATS = {
             'shp':'zipped shapefile',
             'geopackage':'zipped geopackage',

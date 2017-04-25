@@ -73,18 +73,6 @@ class TestHDXExportSet(unittest.TestCase):
             dataset_prefix="hot_dakar",
             name="Dakar Urban Area",
             extent=GEOSGeometry("{'type':'LineString','coordinates':[]}"),
-            feature_selection=BASIC_FEATURE_SELECTION,
-            locations=['XXX']
+            feature_selection=BASIC_FEATURE_SELECTION
             )
 
-    def test_invalid_country_codes(self):
-        h = HDXExportSet(
-            dataset_prefix="hot_dakar",
-            name="Dakar Urban Area",
-            extent=DAKAR_GEOJSON_POLYGON, # or multipolygon. maybe this should be Shapely geom instead of dict?
-            feature_selection=BASIC_FEATURE_SELECTION,
-            locations=['XXX']
-        )
-        with self.assertRaises(HDXError):
-            h.datasets
-    
