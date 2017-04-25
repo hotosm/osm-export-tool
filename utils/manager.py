@@ -48,7 +48,8 @@ class Zipper(object):
         zips = []
         for theme, groups in results_dict.iteritems():
             for group in groups:
-                zipfile_name = self.job_name + "_" + os.path.basename(group[0]) + ".zip"
+                # the created zipfile must end with only .zip for the HDX geopreview to work
+                zipfile_name = self.job_name + "_" + os.path.basename(group[0]).replace('.','_') + ".zip"
                 zipfile_path = os.path.join(self.stage_dir,zipfile_name)
                 with zipfile.ZipFile(zipfile_path,'w',zipfile.ZIP_DEFLATED) as z:
                     for filename in group:
