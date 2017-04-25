@@ -22,8 +22,7 @@ const AVAILABLE_EXPORT_FORMATS = {
   shp: 'ESRI Shapefiles',
   geopackage: 'GeoPackage',
   garmin_img: 'Garmin .IMG',
-  kml: '.KMZ',
-  osm_pbf: 'OpenStreetMap .PBF'
+  kml: '.KMZ'
 };
 
 const FORM_NAME = 'HDXExportRegionForm';
