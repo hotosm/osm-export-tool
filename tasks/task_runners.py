@@ -145,7 +145,8 @@ def run_task_remote(run_uid): # noqa
                 garmin_mkgmap=settings.GARMIN_MKGMAP,
                 per_theme=True,
                 on_task_start=on_task_start,
-                on_task_success=on_task_success
+                on_task_success=on_task_success,
+                overpass_api_url=settings.OVERPASS_API_URL
             )
         r.run()
 
