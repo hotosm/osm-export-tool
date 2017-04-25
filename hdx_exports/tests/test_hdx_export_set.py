@@ -57,12 +57,11 @@ class TestHDXExportSet(unittest.TestCase):
     def test_minimal_export_set(self):
 
         h = HDXExportSet(
-            "hot_dakar",
-            "Dakar Urban Area",
-            DAKAR_GEOJSON_POLYGON, # or multipolygon. maybe this should be Shapely geom instead of dict?
-            BASIC_FEATURE_SELECTION
+            dataset_prefix="hot_dakar",
+            name="Dakar Urban Area",
+            extent=DAKAR_GEOJSON_POLYGON, # or multipolygon. maybe this should be Shapely geom instead of dict?
+            feature_selection=BASIC_FEATURE_SELECTION
         )
-        self.assertEquals([],h.country_codes)
         datasets = h.datasets
         self.assertEquals(len(datasets),2)
         self.assertEquals(datasets['buildings']['name'],'hot_dakar_buildings')
@@ -71,19 +70,20 @@ class TestHDXExportSet(unittest.TestCase):
     def test_extent_not_polygon_or_multipolygon(self):
         with self.assertRaises(AssertionError):
             h = HDXExportSet(
-                "hot_dakar",
-                "Dakar Urban Area",
-                GEOSGeometry("{'type':'LineString','coordinates':[]}"),
-                BASIC_FEATURE_SELECTION 
+            dataset_prefix="hot_dakar",
+            name="Dakar Urban Area",
+            extent=GEOSGeometry("{'type':'LineString','coordinates':[]}"),
+            feature_selection=BASIC_FEATURE_SELECTION,
+            locations=['XXX']
             )
 
     def test_invalid_country_codes(self):
         h = HDXExportSet(
-            "hot_dakar",
-            "Dakar Urban Area",
-            DAKAR_GEOJSON_POLYGON,
-            BASIC_FEATURE_SELECTION,
-            country_codes=['XXX']
+            dataset_prefix="hot_dakar",
+            name="Dakar Urban Area",
+            extent=DAKAR_GEOJSON_POLYGON, # or multipolygon. maybe this should be Shapely geom instead of dict?
+            feature_selection=BASIC_FEATURE_SELECTION,
+            locations=['XXX']
         )
         with self.assertRaises(HDXError):
             h.datasets
