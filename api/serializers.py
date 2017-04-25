@@ -432,7 +432,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     job = JobSerializer(read_only=True)
     name = serializers.CharField()
     the_geom = geo_serializers.GeometryField()
-    buffer_aoi = serializers.BooleanField()
+    buffer_aoi = serializers.BooleanField(default=False)
 
     class Meta: # noqa
         model = HDXExportRegion
