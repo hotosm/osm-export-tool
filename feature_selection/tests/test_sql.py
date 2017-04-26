@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from feature_selection.sql import SQLValidator
+from feature_selection.sql import SQLValidator, OsmfilterRule
 
 class TestSQLValidator(unittest.TestCase):
 
@@ -17,15 +17,9 @@ class TestSQLValidator(unittest.TestCase):
     def test_float_value(self):
         s = SQLValidator("height > 20")
         self.assertTrue(s.valid)
-        s = SQLValidator("height > +20")
-        self.assertTrue(s.valid)
-        s = SQLValidator("height > -20")
-        self.assertTrue(s.valid)
 
     def test_not_null(self):
         s = SQLValidator("height IS NOT NULL")
-        self.assertTrue(s.valid)
-        s = SQLValidator("height IS NULL")
         self.assertTrue(s.valid)
 
     def test_and_or(self):
@@ -72,3 +66,28 @@ class TestSQLValidator(unittest.TestCase):
         self.assertTrue(s.valid)
         self.assertEquals(s.column_names,['height','level','admin'])
 
+
+class TestOsmfilterRule(unittest.TestCase):
+    def test_basic(self):
+        s = OsmfilterRule("name = 'somename'")
+        self.assertEqual(s.rule(),"name=somename")
+        s = OsmfilterRule("level > 4")
+        self.assertEqual(s.rule(),"level>4")
+
+    def test_basic_list(self):
+        s = OsmfilterRule("name IN ('val1','val2')")
+        self.assertEqual(s.rule(),"name=val1 =val2")
+
+    def test_whitespace(self):
+        s = OsmfilterRule("name = 'some value'")
+        self.assertEqual(s.rule(),"name=some\\ value")
+
+    def test_notnull(self):
+        s = OsmfilterRule("name is not null")
+        self.assertEqual(s.rule(),"name=*")
+
+    def test_and_or(self):
+        s = OsmfilterRule("name1 = 'foo' or name2 = 'bar'")
+        self.assertEqual(s.rule(),"( name1=foo or name2=bar )")
+        s = OsmfilterRule("(name1 = 'foo' and name2 = 'bar') or name3 = 'baz'")
+        self.assertEqual(s.rule(),"( ( name1=foo and name2=bar ) or name3=baz )")

@@ -10,6 +10,7 @@ def checkQuotedColon(s,loc,toks):
         raise InvalidSQL("identifier with colon : must be in double quotes.")
 
 def checkDoubleQuotes(s,loc,toks):
+    #TODO really?
     if toks[0][0] == "'":
         raise InvalidSQL("quoted strings must use double quotes.")
 
@@ -17,19 +18,15 @@ ident          = Word( alphas, alphanums + "_:" ).setParseAction(checkQuotedColo
 columnName =   (ident | quotedString().setParseAction(checkDoubleQuotes))("columnName")
 
 whereExpression = Forward()
-and_ = Keyword("and", caseless=True)
-or_ = Keyword("or", caseless=True)
-in_ = Keyword("in", caseless=True)
-isnull = Keyword("is null",caseless=True)
-isnotnull = Keyword("is not null",caseless=True)
-binop = oneOf("= != < > >= <=", caseless=True)
-arithSign = Word("+-",exact=1)
-realNum = Optional(arithSign) + ( Word( nums ) + "." + Optional( Word(nums) ) )
-intNum = Optional(arithSign) + Word( nums )
+and_ = Keyword("and", caseless=True)('and')
+or_ = Keyword("or", caseless=True)('or')
+in_ = Keyword("in", caseless=True)("in")
+isnotnull = Keyword("is not null",caseless=True)('notnull')
+binop = oneOf("= != < > >= <=", caseless=True)('binop')
+intNum = Word( nums )
 
-columnRval = realNum | intNum | quotedString | columnName
+columnRval = (intNum | quotedString)('rval*')
 whereCondition = Group(
-    ( columnName + isnull ) |
     ( columnName + isnotnull ) |
     ( columnName + binop + columnRval ) |
     ( columnName + in_ + "(" + delimitedList( columnRval ) + ")" ) |
@@ -71,3 +68,35 @@ class SQLValidator(object):
                     result = result + column_names_in_dict(value)
             return result
         return column_names_in_dict(self._parse_result.asDict())
+
+def strip_quotes(token):
+    if token[0] == '"' and token[-1] == '"':
+        token = token[1:-1]
+    if token[0] == "'" and token[-1] == "'":
+        token = token[1:-1]
+    return token.replace(' ','\\ ')
+
+class OsmfilterRule(object):
+    def __init__(self,s):
+        self._parse_result = whereExpression.parseString(s,parseAll=True)
+
+    def _rule(self,t):
+        if 'or' in t:
+            return '( ' + self._rule(t['condition']) + ' or ' + self._rule(t['expression']) + ' )'
+        if 'and' in t:
+            return '( ' + self._rule(t['condition']) + ' and ' + self._rule(t['expression']) + ' )'
+        if 'binop' in t:
+            return t['columnName'] + t['binop'] + strip_quotes(t['rval'][0])
+        if 'in' in t:
+            x = t['columnName'] + ' '.join(['=' + strip_quotes(r) for r in t['rval']])
+            return x
+        if 'notnull' in t:
+            return t['columnName'] + '=*'
+        if 'expression' in t: 
+            return self._rule(t['expression'])
+        if 'condition' in t:
+            return self._rule(t['condition'])
+
+
+    def rule(self):
+        return self._rule(self._parse_result.asDict())
