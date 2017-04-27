@@ -175,16 +175,7 @@ const PendingDatasetsPanel = ({ datasetPrefix, error, featureSelection, handleSu
 
 const ExistingDatasetsPanel = ({ error, datasets, handleSubmit, status, styles, submitting }) =>
   <Panel>
-    This will immediately update {datasets.length} dataset{datasets.length === 1 ? '' : 's'} on HDX:
-    <ul>
-      {
-        datasets.map((x, i) => (
-          <li key={i}>
-            <code><a href={x.url}>{x.name}</a></code>
-          </li>
-        ))
-      }
-    </ul>
+    This will immediately update {datasets.length} dataset{datasets.length === 1 ? '' : 's'} on HDX.
     <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
       {submitting ? 'Saving...' : 'Save + Sync to HDX'}
     </Button>
@@ -338,7 +329,7 @@ export class HDXExportRegionForm extends Component {
   }
 
   getRunRows () {
-    return this.exportRegion.runs.map((run, i) => (
+    return this.exportRegion.runs.slice(0, 10).map((run, i) => (
       <tr key={i}>
         <td>
           <a href={`/exports/${this.exportRegion.job.uid}#${run.uid}`}><FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} /></a>
@@ -530,13 +521,35 @@ export class HDXExportRegionForm extends Component {
         </form>
         {editing && exportRegion &&
           <div>
-            <Panel>
-              <Button bsStyle='primary' style={{float: 'right'}} disabled={running} onClick={this.handleRun}>
-                {running ? 'Running...' : 'Run Now'}
-              </Button>
-              <strong>Last run:</strong> {this.getLastRun()}<br />
-              <strong>Next scheduled run:</strong> {this.getNextRun()}
-            </Panel>
+            <Row>
+              <Col xs={7}>
+                <h4>HDX Datasets</h4>
+                <ul>
+                  {
+                    exportRegion.datasets.map((x, i) => (
+                      <li key={i}>
+                        <code><a href={x.url}>{x.name}</a></code>
+                      </li>
+                    ))
+                  }
+                </ul>
+              </Col>
+              <Col xs={5}>
+                <Panel>
+                  <p>
+                    <strong>Last run:</strong> {this.getLastRun()}<br />
+                    <strong>Next scheduled run:</strong> {this.getNextRun()}
+                  </p>
+                  <Button
+                    bsStyle='primary'
+                    disabled={running}
+                    onClick={this.handleRun}
+                  >
+                    {running ? 'Running...' : 'Run Now'}
+                  </Button>
+                </Panel>
+              </Col>
+            </Row>
             <h3>Run History <small><a href={`/exports/${exportRegion.job.uid}`}>view export details</a></small></h3>
             {exportRegion.runs.length > 0
               ? <Table>
