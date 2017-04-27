@@ -216,6 +216,13 @@ class HDXExportSet(object):
 
 if __name__ == '__main__':
     import logging
+    import json
+    import pprint
+    import logging
+    from hdx.configuration import Configuration
+    from hdx.data.dataset import Dataset
+    import requests
+    import os
     logging.basicConfig()
     f_s = FeatureSelection.example("simple")
     extent = open('adm0/GIN_adm0.geojson').read()
@@ -228,3 +235,12 @@ if __name__ == '__main__':
     )
 
     h.sync_resources([Artifact(['foo_buildings_polygons.zip'],'geopackage',theme=None)],'http://example.com/')
+    pp = pprint.PrettyPrinter(indent=4)
+    headers = {
+                'Authorization':os.getenv('HDX_API_KEY'),
+                'Content-type':'application/json'
+            }
+    data = json.dumps({'id':'demodata_test'})
+    resp = requests.post('https://data.humdata.org/api/action/package_show',headers=headers,data=data)
+    for r in resp.json()['result']['resources']:
+        pp.pprint(r)
