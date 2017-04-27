@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.gis.admin import OSMGeoAdmin
-from django.contrib.gis.geos import GEOSGeometry
 
 from .models import ExportConfig, Job
 
