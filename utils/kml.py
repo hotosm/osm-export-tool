@@ -7,6 +7,7 @@ import os
 import subprocess
 import zipfile
 from string import Template
+from artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class KML(object):
 
     @property
     def is_complete(self):
-        return all(os.path.isfile(result) for result in self.results)
+        return False
 
     @property
     def results(self):
@@ -56,11 +57,9 @@ class KML(object):
     # or a list of resources that should be together
     @property
     def results(self):
-        results_hsh = {}
+        results_list = []
         for theme in self.feature_selection.themes:
-            theme_results = []
             for geom_type in self.feature_selection.geom_types(theme):
                 basename = os.path.join(self.output_dir,theme+"_"+geom_type) + ".kml"
-                theme_results.append([basename])
-            results_hsh[theme] = theme_results
-        return results_hsh
+                results_list.append(Artifact([basename],KML.name,theme=theme))
+        return results_list

@@ -6,6 +6,7 @@ import os
 
 import requests
 from requests import exceptions
+from artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ class OSM_XML(object):
 
     @property
     def results(self):
-        return [self.output_xml]
+        return [Artifact([self.output_xml],OSM_XML.name)]
 
     @property
     def is_complete(self):

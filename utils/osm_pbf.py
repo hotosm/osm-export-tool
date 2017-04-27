@@ -4,6 +4,7 @@ import logging
 import os
 import subprocess
 from string import Template
+from artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class OSM_PBF(object):
 
     @property
     def results(self):
-        return [self.output_pbf]
+        return [Artifact([self.output_pbf],OSM_PBF.name)]
 
     @property
     def is_complete(self):

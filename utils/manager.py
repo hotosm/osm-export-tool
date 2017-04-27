@@ -5,11 +5,13 @@ from geopackage import Geopackage
 from shp import Shapefile
 from garmin_img import GarminIMG
 from osmand_obf import OsmAndOBF
+from artifact import Artifact
 
 import os
 import json
 import shutil
 import zipfile
+import copy
 
 def simplify_max_points(input_geom,max_points=500):
     geom = input_geom
@@ -32,41 +34,29 @@ class Zipper(object):
         with open(self.boundary_path,'w') as b:
             b.write(json.dumps(self.boundary_geom.json))
 
-        self._resources_by_theme = {}
+        self._zipped_resources = []
 
-    def run(self,results_dict,resource_type):
-        # hack, for themeless export types (XML, PBF, IMG, OBF)
-        if isinstance(results_dict,list):
-            retval = []
-            for item in results_dict:
-                basename = os.path.basename(item)
-                target_path = os.path.join(self.target_dir,basename)
-                shutil.copy(item,target_path)
-                retval.append(target_path)
-            return retval
-
+    def run(self,results_list):
         zips = []
-        for theme, groups in results_dict.iteritems():
-            for group in groups:
-                # the created zipfile must end with only .zip for the HDX geopreview to work
-                zipfile_name = self.job_name + "_" + os.path.basename(group[0]).replace('.','_') + ".zip"
-                zipfile_path = os.path.join(self.stage_dir,zipfile_name)
-                with zipfile.ZipFile(zipfile_path,'w',zipfile.ZIP_DEFLATED) as z:
-                    for filename in group:
-                        z.write(filename,self.job_name + "_" + os.path.basename(filename))
-                    z.write(self.boundary_path,"boundary.geojson")
-                target_path = os.path.join(self.target_dir,zipfile_name)
-                shutil.move(zipfile_path,target_path)
-                zips.append(target_path)
+        for a in results_list:
+            # the created zipfile must end with only .zip for the HDX geopreview to work
+            zipfile_name = self.job_name + "_" + os.path.basename(a.parts[0]).replace('.','_') + ".zip"
+            zipfile_path = os.path.join(self.stage_dir,zipfile_name)
+            with zipfile.ZipFile(zipfile_path,'w',zipfile.ZIP_DEFLATED) as z:
+                for filename in a.parts:
+                    z.write(filename,self.job_name + "_" + os.path.basename(filename))
+                z.write(self.boundary_path,"boundary.geojson")
+            target_path = os.path.join(self.target_dir,zipfile_name)
+            shutil.move(zipfile_path,target_path)
+            zips.append(target_path)
 
-                # side effect
-                if theme not in self._resources_by_theme:
-                    self._resources_by_theme[theme] = []
-                self._resources_by_theme[theme].append((zipfile_name,resource_type))
+            # side effect
+            self._zipped_resources.append(Artifact([target_path],a.format_name,theme=a.theme))
         return zips
 
-    def resources_by_theme(self):
-        return self._resources_by_theme
+    @property
+    def zipped_resources(self):
+        return self._zipped_resources
 
 
 class RunManager(object):
@@ -133,7 +123,8 @@ class RunManager(object):
                     self.dir+'export.pbf',
                     self.dir,
                     self.garmin_splitter,
-                    self.garmin_mkgmap)
+                    self.garmin_mkgmap,
+                    self.aoi_geom)
         if formatcls == OsmAndOBF:
             assert self.map_creator_dir
             task = OsmAndOBF(self.dir+'export.pbf',self.dir,self.map_creator_dir)
@@ -167,10 +158,8 @@ if __name__ == '__main__':
     aoi_geom = simplify_max_points(aoi_geom,500)
     
     #aoi_geom = Polygon.from_bbox((-10.80029,6.3254236,-10.79809,6.32752))
-    #aoi_geom = aoi_geom.buffer(0.02)
-    #aoi_geom = aoi_geom.simplify(0.01)
     aoi_geom = GEOSGeometry('POLYGON((-17.4682611807514 14.7168486569183,-17.4682611807514 14.6916060414416,-17.4359733230442 14.6916060414416,-17.4359733230442 14.7168486569183,-17.4682611807514 14.7168486569183))')
-    fmts = [Geopackage,Shapefile,KML,OsmAndOBF,GarminIMG,OSM_XML,OSM_PBF]
+    fmts = [OSM_XML, OSM_PBF, Geopackage, Shapefile, KML, GarminIMG, OsmAndOBF]
     r = RunManager(
         fmts,
         aoi_geom,
@@ -185,6 +174,5 @@ if __name__ == '__main__':
 
     zipper = Zipper("test",stage_dir,"target",aoi_geom)
     for f in fmts:
-        zipper.run(r.results[f].results,f.name)
-
-    print zipper.resources_by_theme()
+        zipper.run(r.results[f].results)
+    print zipper.zipped_resources

@@ -57,3 +57,26 @@ class TestManager(unittest.TestCase):
         self.assertEqual(roads[0],('test_roads_gpkg.zip', 'geopackage'))
         self.assertEqual(roads[1],('test_roads_lines_shp.zip', 'shp'))
 
+
+    #@unittest.skip("needs java utils")
+    def test_export_img(self):
+        self.setup_stage_dir()
+        feature_selection = FeatureSelection.example('hdx')
+        aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
+        r = RunManager(
+            [GarminIMG],
+            aoi_geom,
+            feature_selection,
+            stage_dir,
+            garmin_splitter='../splitter-r583/splitter.jar',
+            garmin_mkgmap='../mkgmap-r3890/mkgmap.jar'
+        )
+        r.run()
+        target_dir = stage_dir + "target"
+        os.mkdir(target_dir)
+        zipper = Zipper("test",stage_dir,target_dir,aoi_geom)
+        zipper.run(r.results[GarminIMG].results,'garmin_img')
+        z = zipper.resources_by_theme()
+        roads = z['roads']
+        self.assertEqual(roads[0],('test_roads_gpkg.zip', 'garmin_img'))
+

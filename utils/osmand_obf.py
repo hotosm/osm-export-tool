@@ -3,6 +3,8 @@ import logging
 import os
 import subprocess
 
+from artifact import Artifact
+
 LOG = logging.getLogger(__name__)
 
 BATCH_XML = """<?xml version="1.0" encoding="utf-8"?>
@@ -73,4 +75,4 @@ class OsmAndOBF(object):
 
     @property
     def results(self):
-        return [self.work_dir + "/Osmand_2.obf"]
+        return [Artifact([self.work_dir + "/Osmand_2.obf"],OsmAndOBF.name)]

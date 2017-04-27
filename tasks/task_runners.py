@@ -128,7 +128,7 @@ def run_task_remote(run_uid): # noqa
             LOG.debug('Task Success: {0} for run: {1}'.format(formatcls.name, run_uid))
             if formatcls in export_formats:
                 task = ExportTask.objects.get(run__uid=run_uid, name=formatcls.name)
-                zipfiles = zipper.run(results,formatcls.name)
+                zipfiles = zipper.run(results)
                 task.filesize_bytes = sum(os.stat(zipfile).st_size for zipfile in zipfiles)
                 task.filenames = [os.path.basename(zipfile) for zipfile in zipfiles]
                 task.status = 'SUCCESS'
@@ -156,7 +156,7 @@ def run_task_remote(run_uid): # noqa
             LOG.debug("Adding resources to HDX")
             region = HDXExportRegion.objects.get(job_id=run.job_id)
             export_set = region.hdx_dataset
-            export_set.sync_resources(zipper.resources_by_theme(),public_dir)
+            export_set.sync_resources(zipper.zipped_resources,public_dir)
 
         if run.job.hdx_export_region_set.count() == 0:
             # not associated with an HDX Export Regon; send mail

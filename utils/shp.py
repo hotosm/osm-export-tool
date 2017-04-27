@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import zipfile
 from string import Template
+from artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 
@@ -46,15 +47,14 @@ class Shapefile(object):
 
     @property
     def is_complete(self):
-        return all(os.path.isfile(result) for result in self.results)
+        return False
     
     # return a dict of themes -> lists, with each list entry being a file path of created artifact
     # or a list of resources that should be together
     @property
     def results(self):
-        results_hsh = {}
+        results_list = []
         for theme in self.feature_selection.themes:
-            theme_results = []
             for geom_type in self.feature_selection.geom_types(theme):
                 basename = os.path.join(self.output_dir,theme+"_"+geom_type)
                 if os.path.isfile(basename+".shp"):
@@ -65,7 +65,6 @@ class Shapefile(object):
                         basename+".prj",
                         basename+".shx",
                     ]
-                    theme_results.append(shpset)
-            results_hsh[theme] = theme_results
+                    results_list.append(Artifact(shpset,Shapefile.name,theme=theme))
                     
-        return results_hsh
+        return results_list

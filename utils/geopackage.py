@@ -4,6 +4,7 @@ import logging
 import os
 import subprocess
 from string import Template
+from artifact import Artifact
 
 from osgeo import gdal, ogr, osr
 import sqlite3
@@ -360,13 +361,10 @@ class Geopackage(object):
 
     @property
     def results(self):
-        # assume is per theme
-        results_hsh = {}
+        results_list = []
         for theme in self.feature_selection.themes:
-            results_hsh[theme] = [[os.path.join(self.stage_dir,theme) + ".gpkg"]]
-        return results_hsh
-                    
-        #return [self.output_gpkg]
+            results_list.append(Artifact([os.path.join(self.stage_dir,theme) + ".gpkg"],Geopackage.name,theme=theme))
+        return results_list
 
 
     def update_zindexes(self,cur,feature_selection):

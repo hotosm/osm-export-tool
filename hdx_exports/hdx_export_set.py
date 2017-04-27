@@ -14,6 +14,7 @@ from hdx.configuration import Configuration
 from raven import Client
 
 from django.contrib.gis.geos import GEOSGeometry
+from utils.artifact import Artifact
 
 client = Client()
 
@@ -186,7 +187,7 @@ class HDXExportSet(object):
                 LOG.warn(e)
                 LOG.warn(traceback.format_exc())
 
-    def sync_resources(self,resources_by_theme,public_dir):
+    def sync_resources(self,artifact_list,public_dir):
         Configuration.create(
             hdx_site=os.getenv('HDX_SITE', 'demo'),
             hdx_key=os.getenv('HDX_API_KEY'),
@@ -198,14 +199,15 @@ class HDXExportSet(object):
             'osm_pbf':'pbf',
             'kml':'zipped kml'
         }
-        for theme, zipfiles in resources_by_theme.iteritems():
+
+        for theme in self._feature_selection.themes:
+            theme_artifacts = [a for a in artifact_list if (a.theme == theme or a.theme == None)]
             resources = []
-            for zipfile in zipfiles:
-                file_name = zipfile[0]
-                format_name = zipfile[1]
+            for artifact in theme_artifacts:
+                file_name = artifact.parts[0] # only one part: the zip file
                 resources.append({
                     'name': file_name,
-                    'format': HDX_FORMATS[format_name],
+                    'format': HDX_FORMATS[artifact.format_name],
                     'description': file_name,
                     'url': os.path.join(public_dir,file_name)
                 })
@@ -225,5 +227,4 @@ if __name__ == '__main__':
         locations=['GIN']
     )
 
-    #h.sync_datasets()
-    h.sync_resources({'buildings':[('foo_buildings_polygons.zip','geopackage')]},'http://example.com/')
+    h.sync_resources([Artifact(['foo_buildings_polygons.zip'],'geopackage',theme=None)],'http://example.com/')

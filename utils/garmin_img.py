@@ -3,7 +3,18 @@ import logging
 import subprocess
 import zipfile
 
+from artifact import Artifact
+
 LOG = logging.getLogger(__name__)
+
+def geos_to_poly(aoi,fname):
+    with open(fname,'w') as f:
+        f.write("export_bounds\n")
+        f.write("1\n")
+        for coord in aoi.coords[0]:
+            f.write("%f %f\n" % (coord[0],coord[1]))
+        f.write("END\n")
+        f.write("END")
 
 class GarminIMG(object):
     """
@@ -16,17 +27,22 @@ class GarminIMG(object):
     name = "garmin_img"
     description = "Garmin IMG"
 
-    def __init__(self, input_pbf, work_dir, splitter, mkgmap):
+
+    def __init__(self, input_pbf, work_dir, splitter, mkgmap, aoi_geom):
         # the pbf file to convert to garmin
         self.input_pbf = input_pbf
         self.work_dir = work_dir
         self.splitter = splitter
         self.mkgmap = mkgmap
+        self.aoi_geom = aoi_geom
 
     def run(self):
         # Run the splitter utility to split large pbf into smaller tiles.
-        splitter_cmd = "java -Xmx1024m -jar {splitter} --output-dir={work_dir} {pbffile}"
-        cmd = splitter_cmd.format(splitter=self.splitter,work_dir=self.work_dir,pbffile=self.input_pbf)
+        polygon_file = self.work_dir + "/bounds.poly"
+        geos_to_poly(self.aoi_geom,polygon_file)
+
+        splitter_cmd = "java -Xmx1024m -jar {splitter} --polygon-file={polygon_file} --output-dir={work_dir} {pbffile}"
+        cmd = splitter_cmd.format(splitter=self.splitter,work_dir=self.work_dir,pbffile=self.input_pbf,polygon_file=polygon_file)
         LOG.debug('Running: %s' % cmd)
         subprocess.check_call(cmd, shell=True, executable='/bin/bash')
         # Generate the IMG file.
@@ -55,4 +71,4 @@ class GarminIMG(object):
 
     @property
     def results(self):
-        return [self.work_dir+"/gmapsupp.img"]
+        return [Artifact([self.work_dir+"/gmapsupp.img"],GarminIMG.name)]
