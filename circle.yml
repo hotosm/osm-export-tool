@@ -1,8 +1,0 @@
-machine:
-  services:
-    - docker
-
-test:
-  override:
-    - docker run quay.io/hotosm/osm-export-tool2 make test
-

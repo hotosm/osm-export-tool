@@ -1,0 +1,101 @@
+version: '2'
+services:
+  base:
+    image: quay.io/hotosm/osm-export-tool2
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://exports:exports@postgresql/exports
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - DEBUG=True
+      - DJANGO_LOG_LEVEL=INFO
+      - LOG_LEVEL=DEBUG
+      - DJANGO_ENV=development
+      - USE_X_FORWARDED_HOST=True
+  celery-beat:
+    extends:
+      service: base
+    depends_on:
+      - base
+      - postgresql
+      - rabbitmq
+    links:
+      - postgresql
+      - rabbitmq
+    volumes_from:
+      - site
+    command: celery -A core beat
+  celery:
+    extends:
+      service: base
+    depends_on:
+      - base
+      - postgresql
+      - rabbitmq
+    links:
+      - postgresql
+      - rabbitmq
+    environment:
+      - CONCURRENCY=2
+    volumes_from:
+      - site
+    command: celery -A core worker
+  migration:
+    extends:
+      service: base
+    depends_on:
+      - postgresql
+    links:
+      - postgresql
+    command: python manage.py migrate --no-input
+  site:
+    extends:
+      service: base
+    depends_on:
+      - base
+      - postgresql
+      - rabbitmq
+    expose:
+      - "6080"
+    links:
+      - postgresql
+      - rabbitmq
+    volumes:
+      - stage:/opt/export_staging
+      - downloads:/opt/export_downloads
+    command: gunicorn core.wsgi:application --workers=3 --bind :6080
+  nginx:
+    image: nginx
+    env_file:
+      - .env
+    links:
+      - site
+    ports:
+      - "80:80"
+    volumes:
+      # TODO bake this into the site image so that it doesn't rely on anything from the local filesystem
+      - ./ops/exports.conf:/etc/nginx/conf.d/exports.conf:ro
+    volumes_from:
+      - site
+  postgresql:
+    image: mdillon/postgis:9.6
+    environment:
+      - POSTGRES_USER=exports
+      - POSTGRES_PASSWORD=exports
+      - POSTGRES_DB=exports
+    expose:
+      - "5432"
+    logging:
+      driver: none
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  rabbitmq:
+    image: rabbitmq:3.6.8-management
+    expose:
+      - "5672"
+    logging:
+      driver: none
+volumes:
+  pgdata:
+  stage:
+  downloads:
