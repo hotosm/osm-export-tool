@@ -3,6 +3,7 @@ jobs:
   build:
     docker:
       - image: debian
+    working_directory: ~/
     steps:
       - checkout
       - run:
