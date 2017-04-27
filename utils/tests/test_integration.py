@@ -21,6 +21,38 @@ xml = os.path.dirname(os.path.realpath(__file__)) + '/files/export.osm'
 stage_dir = os.path.dirname(os.path.realpath(__file__)) + '/stage/'
 logging.basicConfig(level=logging.DEBUG)
 
+TEST_FEATURE_SELECTION = FeatureSelection("""
+buildings:
+  types:
+    - polygons
+  select:
+    - name
+    - building
+    - building_levels
+    - building_materials
+    - addr_housenumber
+    - addr_street
+    - addr_city
+    - office
+  where: building IS NOT NULL
+
+roads:
+  types:
+    - lines
+    - polygons
+  select:
+    - name
+    - highway
+    - surface
+    - smoothness
+    - width
+    - lanes
+    - oneway
+    - bridge
+    - layer
+  where: highway IS NOT NULL
+""")
+
 class TestManager(unittest.TestCase):
 
     def setup_stage_dir(self):
@@ -33,13 +65,12 @@ class TestManager(unittest.TestCase):
 
     def test_export_shp(self):
         self.setup_stage_dir()
-        feature_selection = FeatureSelection.example('hdx')
         aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
         fmts = [Geopackage,Shapefile,KML]
         r = RunManager(
             fmts,
             aoi_geom,
-            feature_selection,
+            TEST_FEATURE_SELECTION,
             stage_dir,
             per_theme=True,
             overpass_api_url=os.environ.get('OVERPASS_API_URL')
@@ -50,23 +81,20 @@ class TestManager(unittest.TestCase):
         os.mkdir(target_dir)
         zipper = Zipper("test",stage_dir,target_dir,aoi_geom)
         for f in fmts:
-            zipper.run(r.results[f].results,f.name)
+            zipper.run(r.results[f].results)
+        z = zipper.zipped_resources
+        self.assertEqual(len([x for x in z if x.format_name == 'kml']),3)
+        self.assertEqual(len([x for x in z if x.format_name == 'shp']),2) # no road polygons present
+        self.assertEqual(len([x for x in z if x.format_name == 'geopackage']),2)
 
-        z = zipper.resources_by_theme()
-        roads = z['roads']
-        self.assertEqual(roads[0],('test_roads_gpkg.zip', 'geopackage'))
-        self.assertEqual(roads[1],('test_roads_lines_shp.zip', 'shp'))
 
-
-    #@unittest.skip("needs java utils")
     def test_export_img(self):
         self.setup_stage_dir()
-        feature_selection = FeatureSelection.example('hdx')
         aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
         r = RunManager(
             [GarminIMG],
             aoi_geom,
-            feature_selection,
+            TEST_FEATURE_SELECTION,
             stage_dir,
             garmin_splitter='../splitter-r583/splitter.jar',
             garmin_mkgmap='../mkgmap-r3890/mkgmap.jar'
@@ -75,8 +103,7 @@ class TestManager(unittest.TestCase):
         target_dir = stage_dir + "target"
         os.mkdir(target_dir)
         zipper = Zipper("test",stage_dir,target_dir,aoi_geom)
-        zipper.run(r.results[GarminIMG].results,'garmin_img')
-        z = zipper.resources_by_theme()
-        roads = z['roads']
-        self.assertEqual(roads[0],('test_roads_gpkg.zip', 'garmin_img'))
+        zipper.run(r.results[GarminIMG].results)
+        z = zipper.zipped_resources
+        self.assertEqual(len(z),1) # one themeless img
 
