@@ -1,10 +1,9 @@
-[![Stories in Ready](https://badge.waffle.io/hotosm/osm-export-tool2.png?label=ready&title=Ready)](https://waffle.io/hotosm/osm-export-tool2)
 OSM Export Tool
 ======
 
 [![Join the chat at https://gitter.im/hotosm/osm-export-tool2](https://badges.gitter.im/hotosm/osm-export-tool2.svg)](https://gitter.im/hotosm/osm-export-tool2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-<!---![alt text](https://travis-ci.org/hotosm/osm-export-tool2.svg?branch=master)--->
+[![CircleCI](https://circleci.com/gh/hotosm/osm-export-tool2.svg?style=svg)](https://circleci.com/gh/hotosm/osm-export-tool2)
 
 **Osm Export Tool** platform allows you to create custom OpenStreetMap exports for various HOT regions. You can specify an area of interest and a list of features (OpenStreetMap tags) for the export. A current OpenStreetMap data extract for that area in various data formats is then created for you within minutes.
 
