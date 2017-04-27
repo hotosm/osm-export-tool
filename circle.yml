@@ -1,0 +1,17 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  cache_directories:
+    - "~/docker"
+  override:
+    - docker info
+    - if [[ -e ~/docker/image.tar ]]; then docker load --input ~/docker/image.tar; fi
+    - docker build -t quay.io/hotosm/osm-export-tool2 .
+    - mkdir -p ~/docker; docker save quay.io/hotosm/osm-export-tool2 > ~/docker/image.tar
+
+test:
+  override:
+    - docker run quay.io/hotosm/osm-export-tool2 make test
+
