@@ -9,6 +9,7 @@ import dj_database_url
 from .base import *
 from .celery import *  # NOQA
 from .utils import ABS_PATH
+from hdx.configuration import Configuration
 
 # Project apps
 INSTALLED_APPS += (
@@ -211,3 +212,8 @@ HDX_NOTIFICATION_EMAIL = os.getenv('HDX_NOTIFICATION_EMAIL')
 HDX_SITE = os.getenv('HDX_SITE', 'demo')
 
 GEONAMES_API_URL = os.getenv('GEONAMES_API_URL', 'http://api.geonames.org/searchJSON')
+
+Configuration.create(
+    hdx_site=os.getenv('HDX_SITE', 'demo'),
+    hdx_key=os.getenv('HDX_API_KEY'),
+)

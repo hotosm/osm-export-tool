@@ -10,7 +10,6 @@ import zipfile
 from feature_selection.feature_selection import FeatureSelection
 from hdx.data.dataset import Dataset
 from hdx.data.galleryitem import GalleryItem
-from hdx.configuration import Configuration
 from raven import Client
 
 from django.contrib.gis.geos import GEOSGeometry
@@ -171,10 +170,6 @@ class HDXExportSet(object):
         ))
 
     def sync_datasets(self): # noqa
-        Configuration.create(
-            hdx_site=os.getenv('HDX_SITE', 'demo'),
-            hdx_key=os.getenv('HDX_API_KEY'),
-        )
         for dataset in self.datasets.values():
             try:
                 exists = Dataset.read_from_hdx(dataset['name'])
@@ -188,10 +183,6 @@ class HDXExportSet(object):
                 LOG.warn(traceback.format_exc())
 
     def sync_resources(self,artifact_list,public_dir):
-        Configuration.create(
-            hdx_site=os.getenv('HDX_SITE', 'demo'),
-            hdx_key=os.getenv('HDX_API_KEY'),
-        )
         HDX_FORMATS = {
             'shp':'zipped shapefile',
             'geopackage':'zipped geopackage',
@@ -215,14 +206,15 @@ class HDXExportSet(object):
         self.sync_datasets()
 
 if __name__ == '__main__':
-    import logging
     import json
     import pprint
-    import logging
     from hdx.configuration import Configuration
-    from hdx.data.dataset import Dataset
     import requests
-    import os
+
+    Configuration.create(
+        hdx_site=os.getenv('HDX_SITE', 'demo'),
+        hdx_key=os.getenv('HDX_API_KEY'),
+    )
     logging.basicConfig()
     f_s = FeatureSelection.example("simple")
     extent = open('adm0/GIN_adm0.geojson').read()
@@ -240,7 +232,8 @@ if __name__ == '__main__':
                 'Authorization':os.getenv('HDX_API_KEY'),
                 'Content-type':'application/json'
             }
-    data = json.dumps({'id':'demodata_test'})
-    resp = requests.post('https://data.humdata.org/api/action/package_show',headers=headers,data=data)
+    data = json.dumps({'id':'demodata_test_buildings'})
+    resp = requests.post('https://demo-data.humdata.org/api/action/package_show',headers=headers,data=data)
+    print resp.json()
     for r in resp.json()['result']['resources']:
         pp.pprint(r)
