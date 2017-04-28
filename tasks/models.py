@@ -28,6 +28,7 @@ class ExportRun(models.Model):
 
     class Meta:
         db_table = 'export_runs'
+        ordering = ['created_at']
 
     def __str__(self):
         return '{0}'.format(self.uid)
@@ -50,9 +51,8 @@ class ExportTask(models.Model):
     filenames = ArrayField(models.TextField(null=True),default=list)
 
     class Meta:
-        ordering = ['created_at']
-        managed = True
         db_table = 'export_tasks'
+        ordering = ['created_at']
 
     def __str__(self):
         return 'ExportTask uid: {0}'.format(self.uid)
