@@ -4,7 +4,6 @@ MAINTAINER Seth Fitzsimmons <seth@mojodna.net>
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN \
-  echo "Installing apt packages" \
   && apt update \
   && apt upgrade -y \
   && apt install -y --no-install-recommends \
