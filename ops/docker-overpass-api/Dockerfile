@@ -24,7 +24,7 @@ RUN build_deps="g++ make expat libexpat1-dev zlib1g-dev curl" \
   && tar -zxvf osm-3s_v${OSM_VER}.tar.gz \
   && cd osm-3s_v* \
   && ./configure CXXFLAGS="-O3" --prefix="$EXEC_DIR" \
-  && make install \
+  && make -j $[$(nproc) * 2] install \
   && cd .. \
   && rm -rf osm-3s_v* \
   && apt-get purge -y --auto-remove $build_deps
