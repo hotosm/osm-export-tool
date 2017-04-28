@@ -168,8 +168,11 @@ def run_task_remote(run_uid): # noqa
         run.status = 'COMPLETED'
         LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
     except Exception as e:
-        client.captureException()
-
+        client.captureException(
+            extra={
+                'run_uid': run_uid,
+            }
+        )
         run.status = 'FAILED'
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
         LOG.warn(traceback.format_exc())
