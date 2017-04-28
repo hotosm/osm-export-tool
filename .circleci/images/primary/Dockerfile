@@ -8,7 +8,9 @@ RUN \
     apt-transport-https \
     ca-certificates \
     curl \
+    git \
     gnupg2 \
+    openssh-client \
     python-pip \
     python-yaml \
     software-properties-common \
