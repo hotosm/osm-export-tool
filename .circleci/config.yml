@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: mojodna/cci-docker-compose
-    working_directory: ~/
+    working_directory: /app/osm-export-tool2
     steps:
       - checkout
       - setup_remote_docker
