@@ -96,8 +96,8 @@ class TestManager(unittest.TestCase):
             aoi_geom,
             TEST_FEATURE_SELECTION,
             stage_dir,
-            garmin_splitter='../splitter-r583/splitter.jar',
-            garmin_mkgmap='../mkgmap-r3890/mkgmap.jar'
+            garmin_splitter=os.environ.get("GARMIN_SPLITTER",'/opt/splitter/splitter.jar'),
+            garmin_mkgmap=os.environ.get("GARMIN_MKGMAP",'/opt/mkgmap/mkgmap.jar')
         )
         r.run()
         target_dir = stage_dir + "target"
