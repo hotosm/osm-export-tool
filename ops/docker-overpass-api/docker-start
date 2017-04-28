@@ -6,4 +6,4 @@ service nginx start
 echo "Waiting for dispatcher..."
 sleep 20
 echo "Starting replication..."
-/srv/osm3s/bin/fetch_osc_and_apply.sh http://planet.osm.org/replication/minute
+/srv/osm3s/bin/fetch_osc_and_apply.sh http://planet.osm.org/replication/minute --meta=yes

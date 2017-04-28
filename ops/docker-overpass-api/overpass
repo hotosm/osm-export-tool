@@ -18,7 +18,7 @@ RUN_AS_USER=root
 mkdir $LOG_DIR 2>/dev/null
 
 DISPATCHER_PID_FILE=/var/run/dispatcher.pid
-DISPATCHER_OPTIONS="--osm-base --db-dir=$DB_DIR"
+DISPATCHER_OPTIONS="--meta --osm-base --db-dir=$DB_DIR"
 DISPATCHER=$EXEC_DIR/bin/dispatcher
 
 test -x $DISPATCHER || exit 0
