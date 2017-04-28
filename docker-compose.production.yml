@@ -57,8 +57,8 @@ services:
       - postgresql
       - rabbitmq
     volumes:
-      - stage:/opt/export_staging
-      - downloads:/opt/export_downloads
+      - /mnt-storage/stage:/opt/export_staging
+      - /mnt-storage/downloads:/opt/export_downloads
     command: gunicorn core.wsgi:application --workers=3 --bind :6080
   nginx:
     image: nginx
@@ -92,5 +92,3 @@ services:
       driver: none
 volumes:
   pgdata:
-  stage:
-  downloads:
