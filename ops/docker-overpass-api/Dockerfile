@@ -20,7 +20,7 @@ RUN build_deps="g++ make expat libexpat1-dev zlib1g-dev curl" \
        wget \
   && rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default \
   && rm -rf /var/lib/apt/lists/* \
-  && curl -o osm-3s_v$OSM_VER.tar.gz http://dev.overpass-api.de/releases/osm-3s_v$OSM_VER.tar.gz \
+  && curl -sfo osm-3s_v$OSM_VER.tar.gz http://dev.overpass-api.de/releases/osm-3s_v$OSM_VER.tar.gz \
   && tar -zxvf osm-3s_v${OSM_VER}.tar.gz \
   && cd osm-3s_v* \
   && ./configure CXXFLAGS="-O3" --prefix="$EXEC_DIR" \
