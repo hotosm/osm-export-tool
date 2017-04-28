@@ -17,5 +17,5 @@ python-social-auth==0.2.19
 pytz
 pyyaml==3.12
 raven==6.0.0
-requests>=2.5.1
+requests==2.13.0
 requests_oauthlib
