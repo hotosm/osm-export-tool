@@ -17,7 +17,7 @@ from ui import urls as ui_urls
 from ui.views import (
     about, create_error_view, help_create, help_exports, help_features,
     help_formats, help_main, help_presets, login, logout, require_email,
-    hdx_list
+    hdx_list, help_feature_selections
 )
 
 admin.autodiscover()
@@ -44,6 +44,7 @@ urlpatterns += i18n_patterns(
     url(r'^help/exports$', help_exports, name='help_exports'),
     url(r'^help/formats$', help_formats, name='help_formats'),
     url(r'^help/presets$', help_presets, name='help_presets'),
+    url(r'^help/feature_selections$', help_feature_selections, name='help_feature_selections'),
 )
 
 urlpatterns += i18n_patterns(

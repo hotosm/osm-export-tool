@@ -115,6 +115,10 @@ def help_create(request):
 def help_features(request):
     return render(request, 'help/help_features.html')
 
+@require_http_methods(['GET'])
+def help_feature_selections(request):
+    return render(request, 'help/help_feature_selections.html')
+
 
 @require_http_methods(['GET'])
 def help_exports(request):

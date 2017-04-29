@@ -1,0 +1,107 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block container %}
+
+<div class="help">
+  <a name="top"></a>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'help' %}">{% trans 'Help' %}</a></li>
+    <li class="active">Feature Selections</li>
+  </ol>
+
+  <h2>Feature Selections</h2>
+  <div class="well">
+    Feature Selections define how OSM is transformed into other formats, such as Shapefile, SQLite/Geopackage and KML.
+    Many of these formats are tabular, so we need to define a set of columns to fill with OSM data.
+    This feature selection format is  similar to style files used by programs such as <a href="http://wiki.openstreetmap.org/wiki/Osm2pgsql">osm2pgsql</a> and <a href="https://imposm.org">imposm</a>.
+    <br/><br/>
+    A basic complete example of a feature selection with 3 themes:
+    <pre>
+  buildings:
+      types:
+          - polygons
+      select:
+          - name
+          - building
+      where: building IS NOT NULL
+
+  waterways:
+      types:
+          - lines
+          - polygons
+      select:
+          - name
+          - waterway
+      where: natural IN ('waterway')
+
+  hospitals:
+      select:
+        - name
+        - amenity
+      where: amenity = "hospital"
+    </pre>
+
+    <h4>The YAML format:</h4>
+    <ul>
+      <li>Is whitespace sensitive. Each child element must be indented below its parent element.</li>
+      <li>Has two data structures: lists and mappings. In the above example, <code>buildings</code>, <code>types</code>, <code>select</code> are examples of keys in mappings.</li>
+      <li>the child elements of <code>select</code> and <code>types</code> are lists. List elements are preceded by a dash. This dash must have a space after it.</li>
+    </ul>
+
+    For more information about the YAML format, see the <a href="http://yaml.org/spec/1.2/spec.html">YAML specification</a>.
+  </div>
+
+  <a name="Customise Preset"></a>
+  <h3>Themes</h3>
+  <div class="well">
+    <code>buildings</code>, <code>waterways</code> and <codE>hospitals</code> are examples of themes. In formats that have layers/tables, one theme will be mapped to one table.<br/>
+
+    Themes are always be the top level keys of the YAML document. Valid characters for themes are letters, numbers and underscores.
+  </div>
+
+  <h3> Geometry Types</h3>
+  <div class="well">
+    the list values under types can be one or more of <code>- points</code>, <code>- lines</code>, <code>- polygons</code>. if the <code>types</code> key is omitted, all 3 geometry types will be included in the theme.
+  </div>
+
+
+  <a name="Download"></a>
+  <h3>Column selections</h3>
+  <div class="well">
+    List items under the <code>select</code> key determine the columns for each theme.
+    <pre>
+      select:
+        - name
+        - amenity</pre>
+    Will populate the <code>name</code> and <code>amenity</code> columns with their values from OSM.<br/><br/>
+    
+    Resources for finding information on OSM tagging conventions:
+    <ul>
+      <li><a href="http://wiki.openstreetmap.org/wiki/Main_Page">OpenStreetMap Wiki</a>, e.g. <a href="http://wiki.openstreetmap.org/wiki/Key:highway">Key:highway</a>
+      <li><a href="https://taginfo.openstreetmap.org">Taginfo</a>, which has statistics and maps on OSM keys/values
+      <li><a href="https://overpass-turbo.eu">Overpass Turbo</a> provides an interactive way to query an area for its OSM features and inspect their tags.</li>
+    </ul>
+  </div>
+
+  <a name="Upload"></a>
+  <h3>Filters</h3>
+  <div class="well">
+    Filters are under the <code>where:</code> key in each theme. They define what subset of OSM features belongs to that theme.
+    <pre>
+      where: natural IN ('waterway')</pre>
+    Will filter the theme to only features where the key <code>natural</code> has the value <code>waterway</code>.
+    It is almost always necessary to have some kind of filtering, otherwise your theme will simply include all OSM features for the given geometry types.
+    You can specify a filter using SQL-like syntax. valid SQL keywords are <code>IS NOT NULL, AND, OR, IN, =, !=</code>.
+    <br/><br/>
+    Other examples of filters:
+    <pre>
+      where: natural = 'waterway'
+      where: 'addr:housenumber' IS NOT NULL
+      where: natural IN ('waterway','riverbank')</pre>
+  </div>
+</div>
+
+
+{% endblock %}
+
