@@ -113,7 +113,8 @@ def run_task_remote(run_uid): # noqa
         export_formats = map_names_to_formats(job.export_formats)
 
         download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
-        zipper = Zipper(job.name,stage_dir,download_dir,aoi)
+        zipper = Zipper(
+            normalize_job_name(job.name), stage_dir, download_dir, aoi)
 
         def on_task_start(formatcls):
             LOG.debug('Task Start: {0} for run: {1}'.format(formatcls.name, run_uid))
