@@ -41,12 +41,12 @@ class Zipper(object):
         for a in results_list:
             # the created zipfile must end with only .zip for the HDX geopreview to work
             zipfile_name = self.job_name + "_" + os.path.basename(a.parts[0]).replace('.','_') + ".zip"
-            zipfile_path = os.path.join(self.stage_dir,zipfile_name)
+            zipfile_path = os.path.join(self.stage_dir, zipfile_name).encode('utf-8')
             with zipfile.ZipFile(zipfile_path,'w',zipfile.ZIP_DEFLATED) as z:
                 for filename in a.parts:
                     z.write(filename,self.job_name + "_" + os.path.basename(filename))
                 z.write(self.boundary_path,"boundary.geojson")
-            target_path = os.path.join(self.target_dir,zipfile_name)
+            target_path = os.path.join(self.target_dir, zipfile_name).encode('utf-8')
             shutil.move(zipfile_path,target_path)
             zips.append(target_path)
 

@@ -3,13 +3,13 @@
 
 import logging
 import os
-import re
 import shutil
 import traceback
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
+from django.utils.text import slugify
 
 from celery import shared_task
 from raven import Client
@@ -21,8 +21,6 @@ from feature_selection.feature_selection import FeatureSelection
 
 from utils import map_names_to_formats
 from utils.manager import RunManager, Zipper, simplify_max_points
-from utils.shp import Shapefile
-from utils.geopackage import Geopackage
 
 from .email import (
     send_completion_notification,
@@ -56,14 +54,6 @@ class ExportTaskRunner(object):
 
         run_task_remote.delay(run_uid)
         return run
-
-
-def normalize_job_name(name): # noqa
-    # Remove all non-word characters
-    s = re.sub(r"[^\w\s]", '', name)
-    # Replace all whitespace with a single underscore
-    s = re.sub(r"\s+", '_', s)
-    return s.lower()
 
 
 SIMPLE = '''
@@ -114,7 +104,7 @@ def run_task_remote(run_uid): # noqa
 
         download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
         zipper = Zipper(
-            normalize_job_name(job.name), stage_dir, download_dir, aoi)
+            slugify(job.name, allow_unicode=True), stage_dir, download_dir, aoi)
 
         def on_task_start(formatcls):
             LOG.debug('Task Start: {0} for run: {1}'.format(formatcls.name, run_uid))

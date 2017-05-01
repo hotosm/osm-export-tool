@@ -8,7 +8,7 @@ from django.template.loader import get_template
 
 def send_completion_notification(run):
     """Send a notification email to a user when their task finishes."""
-    subject = "Your OSM Export is ready: {}".format(run.job.name)
+    subject = u"Your OSM Export is ready: {}".format(run.job.name)
     from_email = 'OSM Export Tool <exports@hotosm.org>'
 
     ctx = {
@@ -33,7 +33,7 @@ def send_completion_notification(run):
 def send_hdx_completion_notification(run, region):
     """Send a notification email when an HDX task has completed."""
     if settings.HDX_NOTIFICATION_EMAIL:
-        subject = "HDX Task updated: {}".format(run.job.name)
+        subject = u"HDX Task updated: {}".format(run.job.name)
         from_email = 'OSM Export Tool <exports@hotosm.org>'
 
         ctx = {
@@ -59,7 +59,7 @@ def send_hdx_completion_notification(run, region):
 def send_hdx_error_notification(run, region):
     """Send a notification email when an HDX task has failed."""
     if settings.HDX_NOTIFICATION_EMAIL:
-        subject = "HDX Task has failed: {}".format(run.job.name)
+        subject = u"HDX Task has failed: {}".format(run.job.name)
         from_email = 'OSM Export Tool <exports@hotosm.org>'
 
         ctx = {
@@ -84,7 +84,7 @@ def send_hdx_error_notification(run, region):
 
 def send_error_notification(run):
     """Send a notification email to a user when their task fails."""
-    subject = "Your OSM Export has failed: {}".format(run.job.name)
+    subject = u"Your OSM Export has failed: {}".format(run.job.name)
     from_email = 'OSM Export Tool <exports@hotosm.org>'
 
     ctx = {
