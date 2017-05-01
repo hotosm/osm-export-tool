@@ -178,7 +178,7 @@ def run_task_remote(run_uid): # noqa
         LOG.warn(traceback.format_exc())
 
         send_error_notification(run)
-        if run.job.hdx_export_region_set.count() >= 0:
+        if run.job.hdx_export_region_set.count() > 0:
             send_hdx_error_notification(
                 run, run.job.hdx_export_region_set.first())
     finally:
