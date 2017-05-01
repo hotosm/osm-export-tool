@@ -20,7 +20,7 @@ class OSM_XML(object):
 
     name = "osm_xml"
     description = 'OSM XML'
-    default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;>>;>;);out body;')
+    default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;>>;>;);out meta;')
 
     def __init__(self, aoi_geom, output_xml, 
                 url='http://overpass-api.de/api/interpreter',
