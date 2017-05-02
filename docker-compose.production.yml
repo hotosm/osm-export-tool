@@ -18,6 +18,10 @@ services:
     links:
       - postgresql
       - rabbitmq
+    logging:
+      driver: syslog
+      options:
+        tag: celery-beat
     volumes_from:
       - site
     command: celery -A core beat
@@ -31,6 +35,10 @@ services:
     links:
       - postgresql
       - rabbitmq
+    logging:
+      driver: syslog
+      options:
+        tag: celery
     environment:
       - CONCURRENCY=2
     volumes_from:
@@ -81,7 +89,9 @@ services:
     expose:
       - "5432"
     logging:
-      driver: none
+      driver: syslog
+      options:
+        tag: postgresql
     volumes:
       - pgdata:/var/lib/postgresql/data
   rabbitmq:
@@ -89,6 +99,8 @@ services:
     expose:
       - "5672"
     logging:
-      driver: none
+      driver: syslog
+      options:
+        tag: rabbitmq
 volumes:
   pgdata:
