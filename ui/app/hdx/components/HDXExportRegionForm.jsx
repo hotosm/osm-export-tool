@@ -684,7 +684,6 @@ admin_boundaries:
     tags: admin, osm
     caveats: Boundaries are crowd-sourced and may not align with other datasets
   types:
-    - points
     - lines
     - polygons
   select:
