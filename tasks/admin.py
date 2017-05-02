@@ -3,6 +3,8 @@ from django.contrib import admin
 from .models import ExportRun, ExportTask
 
 class ExportRunAdmin(admin.ModelAdmin):
+    list_display = ['uid','status']
+    search_fields = ['uid']
     pass
 
 
