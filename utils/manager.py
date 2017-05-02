@@ -51,7 +51,7 @@ class Zipper(object):
             zips.append(target_path)
 
             # side effect
-            self._zipped_resources.append(Artifact([target_path],a.format_name,theme=a.theme))
+            self._zipped_resources.append(Artifact([os.path.basename(target_path)],a.format_name,theme=a.theme))
         return zips
 
     @property

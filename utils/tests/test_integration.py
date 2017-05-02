@@ -86,6 +86,7 @@ class TestManager(unittest.TestCase):
         self.assertEqual(len([x for x in z if x.format_name == 'kml']),3)
         self.assertEqual(len([x for x in z if x.format_name == 'shp']),2) # no road polygons present
         self.assertEqual(len([x for x in z if x.format_name == 'geopackage']),2)
+        self.assertEqual(z[0].parts[0],"test_roads_gpkg.zip")
 
 
     def test_export_img(self):
