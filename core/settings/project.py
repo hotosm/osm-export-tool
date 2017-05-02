@@ -67,7 +67,7 @@ GARMIN_SPLITTER = os.getenv('GARMIN_SPLITTER', '/opt/splitter/splitter.jar')
 GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/opt/mkgmap/mkgmap.jar')
 
 # url to overpass api endpoint
-OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/interpreter')
+OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/')
 
 """
 Maximum extent of a Job

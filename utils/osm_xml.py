@@ -22,8 +22,8 @@ class OSM_XML(object):
     description = 'OSM XML'
     default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;>>;>;);out meta;')
 
-    def __init__(self, aoi_geom, output_xml, 
-                url='http://overpass-api.de/api/interpreter',
+    def __init__(self, aoi_geom, output_xml,
+                url='http://overpass-api.de/api/',
                 overpass_max_size=2147483648,
                 timeout=1600):
         """
@@ -57,7 +57,7 @@ class OSM_XML(object):
         )
         # set up required paths
         LOG.debug("Query started at: %s" % datetime.now())
-        req = requests.post(self.url, data=query, stream=True)
+        req = requests.post('{}interpreter'.format(self.url), data=query, stream=True)
         CHUNK = 1024 * 1024 * 5  # 5MB chunks
         with open(self.output_xml, 'wb') as fd:
             for chunk in req.iter_content(CHUNK):

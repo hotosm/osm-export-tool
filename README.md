@@ -229,7 +229,7 @@ Finally, compile language files
 * `HOSTNAME` - Publicly-addressable hostname. Defaults to `export.hotosm.org`
 * `OSM_API_KEY` - OSM API key. Optional (a default will be used).
 * `OSM_API_SECRET` - OSM API secret. Optional (a default will be used).
-* `OVERPASS_API_URL` - Overpass API URL. Defaults to `http://overpass-api.de/api/interpreter`
+* `OVERPASS_API_URL` - Overpass API URL. Defaults to `http://overpass-api.de/api/`
 * `TASK_ERROR_EMAIL` - Email address to send task errors to. Defaults to `export-tool@hotosm.org`
 * `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`
 

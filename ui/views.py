@@ -17,9 +17,9 @@ import requests
 
 @ttl_cache(ttl=60)
 def get_overpass_last_updated_at():
-    r = requests.get('{}?data=[out:json];out;'.format(settings.OVERPASS_API_URL)).json()
+    r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
 
-    return dateutil.parser.parse(r['osm3s']['timestamp_osm_base'])
+    return dateutil.parser.parse(r.content)
 
 
 @require_http_methods(['GET'])
