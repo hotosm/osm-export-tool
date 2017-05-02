@@ -191,19 +191,41 @@ class HDXExportSet(object):
             'kml':'zipped kml'
         }
 
+        HDX_DESCRIPTIONS = {
+            'shp':'ESRI Shapefile',
+            'geopackage':'Geopackage, SQLite compatible',
+            'garmin_img':'.IMG for Garmin GPS Devices (All OSM layers for area)',
+            'osm_pbf':'OpenStreetMap .PBF',
+            'kml':'Google Earth .KML'
+        }
+
+        ".SHP Points", ".SHP Lines", ".SHP Polygons", ".IMG", ".KML"
+
         for theme in self._feature_selection.themes:
             theme_artifacts = [a for a in artifact_list if (a.theme == theme or a.theme == None)]
+            # stable sort, but put shapefiles first for Geopreview to pick up correctly
+            theme_artifacts.sort(key=lambda x: 0 if x.format_name == 'shp' else 1)
             resources = []
             for artifact in theme_artifacts:
                 file_name = artifact.parts[0] # only one part: the zip file
                 resources.append({
                     'name': file_name,
                     'format': HDX_FORMATS[artifact.format_name],
-                    'description': file_name,
+                    'description': HDX_DESCRIPTIONS[artifact.format_name],
                     'url': os.path.join(public_dir,file_name)
                 })
             self.datasets[theme].add_update_resources(resources)
         self.sync_datasets()
+
+F_S = """
+roads:
+    types:
+        - lines
+    select:
+        - name
+        - highway
+    where: highway IS NOT NULL
+"""
 
 if __name__ == '__main__':
     import json
@@ -216,24 +238,24 @@ if __name__ == '__main__':
         hdx_key=os.getenv('HDX_API_KEY'),
     )
     logging.basicConfig()
-    f_s = FeatureSelection.example("simple")
-    extent = open('adm0/GIN_adm0.geojson').read()
+    f_s = FeatureSelection(F_S)
+    extent = open('hdx_exports/adm0/GIN_adm0.geojson').read()
     h = HDXExportSet(
         dataset_prefix='demodata_test',
-        name='Guinea',
+        name='Geopreview Test',
         extent=extent,
         feature_selection=f_s,
         locations=['GIN']
     )
 
-    h.sync_resources([Artifact(['foo_buildings_polygons.zip'],'geopackage',theme=None)],'http://example.com/')
-    pp = pprint.PrettyPrinter(indent=4)
-    headers = {
-                'Authorization':os.getenv('HDX_API_KEY'),
-                'Content-type':'application/json'
-            }
-    data = json.dumps({'id':'demodata_test_buildings'})
-    resp = requests.post('https://demo-data.humdata.org/api/action/package_show',headers=headers,data=data)
-    print resp.json()
-    for r in resp.json()['result']['resources']:
-        pp.pprint(r)
+    h.sync_resources([Artifact(['hotosm_roads_gpkg.zip'],'geopackage',theme='roads'),Artifact(['hotosm_roads_lines_shp.zip'],'shp',theme='roads')],'http://exports-staging.hotosm.org/downloads/4fa2e396-a6bf-4476-829b-c88b953af42c')
+    #pp = pprint.PrettyPrinter(indent=4)
+    #headers = {
+    #            'Authorization':os.getenv('HDX_API_KEY'),
+    #            'Content-type':'application/json'
+    #        }
+    #data = json.dumps({'id':'demodata_test_buildings'})
+    #resp = requests.post('https://demo-data.humdata.org/api/action/package_show',headers=headers,data=data)
+    #print resp.json()
+    #for r in resp.json()['result']['resources']:
+    #    pp.pprint(r)
