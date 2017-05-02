@@ -100,7 +100,7 @@ class HDXExportSet(object):
     @property
     def osm_analytics_url(self): # noqa
         bounds = self._extent.extent
-        return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/highways/recency".format(*bounds)
+        return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/buildings/recency".format(*bounds)
 
     @property
     def datasets(self): # noqa
