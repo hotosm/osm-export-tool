@@ -6,6 +6,7 @@ FROM ubuntu:trusty
 ARG DEBIAN_FRONTEND=noninteractive
 
 ARG OSM_VER=0.7.54
+ARG FCGI_CHILDREN=10
 ENV EXEC_DIR=/srv/osm3s
 ENV DB_DIR=/srv/osm3s/db
 
@@ -29,6 +30,9 @@ RUN build_deps="g++ make expat libexpat1-dev zlib1g-dev curl" \
   && rm -rf osm-3s_v* \
   && apt-get purge -y --auto-remove $build_deps
 
+RUN echo "FCGI_CHILDREN=${FCGI_CHILDREN}" > /etc/default/fcgiwrap
+
+COPY default-fcgiwrap /etc/default/fcgiwrap
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY overpass /etc/init.d
 COPY docker-start /usr/local/sbin
