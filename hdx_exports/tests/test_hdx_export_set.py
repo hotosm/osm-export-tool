@@ -52,14 +52,47 @@ waterways:
 '''
 BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
 
+SINGLE_THEME_NOTE = """
+OpenStreetMap exports for use in GIS applications.
+
+This theme includes all OpenStreetMap features in this area.
+
+Features have these attributes:
+
+- [name](http://wiki.openstreetmap.org/wiki/Key:name)
+
+This dataset is one of many [OpenStreetMap exports on
+HDX](/dataset?tags=openstreetmap).
+See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more
+information.
+"""
+
+SINGLE_FILTER_NOTE = """
+OpenStreetMap exports for use in GIS applications.
+
+This theme includes all OpenStreetMap features in this area matching:
+
+    highway IS NOT NULL
+
+Features have these attributes:
+
+- [name](http://wiki.openstreetmap.org/wiki/Key:name)
+
+This dataset is one of many [OpenStreetMap exports on
+HDX](/dataset?tags=openstreetmap).
+See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more
+information.
+"""
+
 class TestHDXExportSet(unittest.TestCase):
+    maxDiff = None
 
     def test_minimal_export_set(self):
 
         h = HDXExportSet(
             dataset_prefix="hot_dakar",
             name="Dakar Urban Area",
-            extent=DAKAR_GEOJSON_POLYGON, # or multipolygon. maybe this should be Shapely geom instead of dict?
+            extent=DAKAR_GEOJSON_POLYGON,
             feature_selection=BASIC_FEATURE_SELECTION
         )
         datasets = h.datasets
@@ -76,3 +109,32 @@ class TestHDXExportSet(unittest.TestCase):
             feature_selection=BASIC_FEATURE_SELECTION
             )
 
+
+    def test_single_theme_note(self):
+        yaml = '''
+        all:
+            select:
+                - name
+        '''
+        h = HDXExportSet(
+            dataset_prefix="hot_dakar",
+            name="Dakar Urban Area",
+            extent=DAKAR_GEOJSON_POLYGON,
+            feature_selection=FeatureSelection(yaml)
+        )
+        self.assertMultiLineEqual(h.hdx_note('all'),SINGLE_THEME_NOTE)
+
+    def test_filtered_note(self):
+        yaml = '''
+        some:
+            select:
+                - name
+            where: highway IS NOT NULL
+        '''
+        h = HDXExportSet(
+            dataset_prefix="hot_dakar",
+            name="Dakar Urban Area",
+            extent=DAKAR_GEOJSON_POLYGON,
+            feature_selection=FeatureSelection(yaml)
+        )
+        self.assertMultiLineEqual(h.hdx_note('some'),SINGLE_FILTER_NOTE)

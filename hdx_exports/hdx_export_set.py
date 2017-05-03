@@ -19,20 +19,25 @@ client = Client()
 
 LOG = logging.getLogger(__name__)
 
+FILTER_NONE = """
+This theme includes all OpenStreetMap features in this area.
+"""
+
+FILTER_CRITERIA = """
+This theme includes all OpenStreetMap features in this area matching:
+
+    {criteria}
+"""
+
 MARKDOWN = """
-Shapefiles of [OpenStreetMap](http://www.openstreetmap.org) features in
-{region}.
-
-The shapefiles include all OpenStreetMap features matching:
-
-{criteria}
-
-The shapefiles include these attributes:
+OpenStreetMap exports for use in GIS applications.
+{filter_str}
+Features have these attributes:
 
 {columns}
 
 This dataset is one of many [OpenStreetMap exports on
-HDX](https://data.humdata.org/dataset?tags=openstreetmap).
+HDX](/dataset?tags=openstreetmap).
 See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more
 information.
 """
@@ -75,7 +80,7 @@ class HDXExportSet(object):
         self._dataset_date = dataset_date
         self._dataset_prefix = dataset_prefix
         self._extent = extent
-        self._extra_notes = extra_notes or ''
+        self._extra_notes = extra_notes + "\n" if extra_notes else ""
         self._feature_selection = feature_selection
         self.hostname = hostname
         self.is_private = is_private
@@ -159,15 +164,19 @@ class HDXExportSet(object):
         for key in self._feature_selection.key_selections(theme):
             columns.append('- [{0}](http://wiki.openstreetmap.org/wiki/Key:{0})'.format(key))
         columns = '\n'.join(columns)
+        
+        criteria = self._feature_selection.filter_clause(theme)
+        if criteria == '1':
+            filter_str = FILTER_NONE
+        else:
+            filter_str = FILTER_CRITERIA.format(criteria=criteria)
 
-        return '\n'.join((
-            self._extra_notes,
-            MARKDOWN.format(
+
+        return self._extra_notes + MARKDOWN.format(
                 region=self._name,
-                criteria=self._feature_selection.filter_clause(theme),
                 columns=columns,
-            ),
-        ))
+                filter_str=filter_str
+            )
 
     def sync_datasets(self): # noqa
         for dataset in self.datasets.values():
