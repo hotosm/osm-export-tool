@@ -22,10 +22,6 @@ from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
 from utils import FORMAT_NAMES
 
-HDX_URL_PREFIX = Configuration.create(
-    hdx_site=settings.HDX_SITE,
-    hdx_key=settings.HDX_API_KEY,
-)
 LOG = logging.getLogger(__name__)
 
 # construct the upload path for export config files..
@@ -323,7 +319,7 @@ class HDXExportRegion(models.Model): # noqa
         return map(lambda x: {
             'name': '{}_{}'.format(self.dataset_prefix, x),
             'url': '{}dataset/{}_{}'.format(
-                HDX_URL_PREFIX, self.dataset_prefix, x),
+                settings.HDX_URL_PREFIX, self.dataset_prefix, x),
         }, self.job.feature_selection_object.themes)
 
     @property
