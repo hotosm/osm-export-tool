@@ -32,7 +32,6 @@ RUN build_deps="g++ make expat libexpat1-dev zlib1g-dev curl" \
 
 RUN echo "FCGI_CHILDREN=${FCGI_CHILDREN}" > /etc/default/fcgiwrap
 
-COPY default-fcgiwrap /etc/default/fcgiwrap
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY overpass /etc/init.d
 COPY docker-start /usr/local/sbin
