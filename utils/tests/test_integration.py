@@ -79,7 +79,7 @@ class TestManager(unittest.TestCase):
 
         target_dir = stage_dir + "target"
         os.mkdir(target_dir)
-        zipper = Zipper("test",stage_dir,target_dir,aoi_geom)
+        zipper = Zipper("test",stage_dir,target_dir,aoi_geom,TEST_FEATURE_SELECTION)
         for f in fmts:
             zipper.run(r.results[f].results)
         z = zipper.zipped_resources
@@ -103,7 +103,7 @@ class TestManager(unittest.TestCase):
         r.run()
         target_dir = stage_dir + "target"
         os.mkdir(target_dir)
-        zipper = Zipper("test",stage_dir,target_dir,aoi_geom)
+        zipper = Zipper("test",stage_dir,target_dir,aoi_geom,TEST_FEATURE_SELECTION)
         zipper.run(r.results[GarminIMG].results)
         z = zipper.zipped_resources
         self.assertEqual(len(z),1) # one themeless img

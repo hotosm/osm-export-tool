@@ -25,15 +25,12 @@ def simplify_max_points(input_geom,max_points=500):
 
 # ugly class to handle renaming, zipping and moving
 class Zipper(object):
-    def __init__(self,job_name,stage_dir,target_dir,boundary_geom):
+    def __init__(self,job_name,stage_dir,target_dir,boundary_geom,feature_selection):
         self.job_name = job_name
         self.stage_dir = stage_dir
         self.target_dir = target_dir
         self.boundary_geom = boundary_geom
-        self.boundary_path = os.path.join(self.stage_dir,'boundary.geojson')
-        with open(self.boundary_path,'w') as b:
-            b.write(json.dumps(self.boundary_geom.json))
-
+        self.feature_selection = feature_selection
         self._zipped_resources = []
 
     def run(self,results_list):
@@ -45,7 +42,9 @@ class Zipper(object):
             with zipfile.ZipFile(zipfile_path,'w',zipfile.ZIP_DEFLATED) as z:
                 for filename in a.parts:
                     z.write(filename,self.job_name + "_" + os.path.basename(filename))
-                z.write(self.boundary_path,"boundary.geojson")
+                if a.theme:
+                    z.writestr("README.md",self.feature_selection.zip_readme(a.theme))
+                z.writestr("boundary.geojson",json.dumps(self.boundary_geom.json))
             target_path = os.path.join(self.target_dir, zipfile_name).encode('utf-8')
             shutil.move(zipfile_path,target_path)
             zips.append(target_path)
@@ -172,7 +171,7 @@ if __name__ == '__main__':
     )
     r.run()
 
-    zipper = Zipper("test",stage_dir,"target",aoi_geom)
+    zipper = Zipper("test",stage_dir,"target",aoi_geom,feature_selection)
     for f in fmts:
         zipper.run(r.results[f].results)
     print zipper.zipped_resources
