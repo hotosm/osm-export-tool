@@ -209,6 +209,14 @@ class SimpleJobSerializer(serializers.Serializer):
         return feature
 
 
+class SimplestJobSerializer(serializers.ModelSerializer):
+    """Return a sub-set of Job model attributes."""
+
+    class Meta:
+        model = Job
+        fields = ('uid', 'name',)
+
+
 class ExportRunSerializer(serializers.ModelSerializer):
     """Serialize ExportRun."""
     url = serializers.HyperlinkedIdentityField(
@@ -429,7 +437,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     export_formats = serializers.MultipleChoiceField(
         choices=HDXExportRegion.EXPORT_FORMAT_CHOICES)
     feature_selection = serializers.CharField()
-    job = JobSerializer(read_only=True)
+    job = SimplestJobSerializer(read_only=True)
     name = serializers.CharField()
     the_geom = geo_serializers.GeometryField()
     buffer_aoi = serializers.BooleanField(default=False)

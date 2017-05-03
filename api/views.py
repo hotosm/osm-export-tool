@@ -467,7 +467,7 @@ class OSMDataModelView(views.APIView):
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     serializer_class = HDXExportRegionSerializer
     permission_classes = (IsHDXAdmin,)
-    queryset = HDXExportRegion.objects.filter(deleted=False)
+    queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related('job__runs__tasks')
 
     def perform_create(self,serializer):
         serializer.save()

@@ -286,9 +286,8 @@ class HDXExportRegion(models.Model): # noqa
 
     @property
     def last_run(self): # noqa
-        last = self.job.runs.last()
-        if last is not None:
-            return last.finished_at
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
     @property
     def buffer_aoi(self): # noqa
@@ -331,7 +330,7 @@ class HDXExportRegion(models.Model): # noqa
                 lambda task: task.filesize_bytes or 0, run.tasks.all())),
             'status': run.status,
             'uid': run.uid,
-        }, self.job.runs.order_by('-created_at').all())
+        }, reversed(self.job.runs.all()))
 
     @property
     def hdx_dataset(self): # noqa
