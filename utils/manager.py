@@ -44,7 +44,7 @@ class Zipper(object):
                     z.write(filename,self.job_name + "_" + os.path.basename(filename))
                 if a.theme:
                     z.writestr("README.md",self.feature_selection.zip_readme(a.theme))
-                z.writestr("boundary.geojson",json.dumps(self.boundary_geom.json))
+                z.writestr("boundary.geojson",self.boundary_geom.json)
             target_path = os.path.join(self.target_dir, zipfile_name).encode('utf-8')
             shutil.move(zipfile_path,target_path)
             zips.append(target_path)
