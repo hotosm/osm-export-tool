@@ -72,7 +72,7 @@ OpenStreetMap exports for use in GIS applications.
 
 This theme includes all OpenStreetMap features in this area matching:
 
-    highway IS NOT NULL
+highway IS NOT NULL
 
 Features have these attributes:
 

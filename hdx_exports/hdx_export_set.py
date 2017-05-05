@@ -26,7 +26,7 @@ This theme includes all OpenStreetMap features in this area.
 FILTER_CRITERIA = """
 This theme includes all OpenStreetMap features in this area matching:
 
-    {criteria}
+{criteria}
 """
 
 MARKDOWN = """
