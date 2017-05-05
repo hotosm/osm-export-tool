@@ -17,10 +17,7 @@ app = Celery('exports')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-
 @worker_process_init.connect
-def something(signal, sender):
-    Configuration.create(
-        hdx_site=os.getenv('HDX_SITE', 'demo'),
-        hdx_key=os.getenv('HDX_API_KEY'),
-    )
+def recreate_http_client(signal, sender):
+    # make sure each process has a different instance of RemoteCKAN to deal with SSL and session bugs
+    Configuration.read().setup_remoteckan()

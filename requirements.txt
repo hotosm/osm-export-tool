@@ -7,7 +7,7 @@ dj_database_url
 django-filter==0.13.0
 djangorestframework-gis==0.10.1
 djangorestframework==3.3.3
-hdx-python-api==1.1.0
+hdx-python-api==1.2.1
 kombu<4
 lxml==3.3.3
 psycopg2==2.6.1
