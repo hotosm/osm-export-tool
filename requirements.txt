@@ -7,6 +7,7 @@ dj_database_url
 django-filter==0.13.0
 djangorestframework-gis==0.10.1
 djangorestframework==3.3.3
+git+git://github.com/bdon/ckanapi.git@51606e1233f285cce4f674d035b3b83aeccf209f#egg=ckanapi
 hdx-python-api==1.2.1
 kombu<4
 lxml==3.3.3
