@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgres://exports:exports@postgresql/exports
+      - DATABASE_URL=postgis://exports:exports@postgresql/exports
       - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
       - DEBUG=True
       - DJANGO_LOG_LEVEL=INFO

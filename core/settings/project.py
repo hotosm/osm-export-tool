@@ -22,8 +22,7 @@ INSTALLED_APPS += (
 
 DATABASES = {}
 
-DATABASES['default'] = dj_database_url.config(default='postgres:///exports')
-DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+DATABASES['default'] = dj_database_url.config(default='postgis:///exports', conn_max_age=500)
 
 CELERY_IMPORTS = (
     'tasks.scheduled_tasks',
