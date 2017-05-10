@@ -12,7 +12,7 @@ from jobs.models import HDXExportRegion
 from .task_runners import ExportTaskRunner
 
 
-@app.task(name='Queue Periodic Runs')
+@app.task(ignore_result=True, name='Queue Periodic Runs')
 def queue_periodic_job_runs(): # noqa
     now = timezone.now()
 

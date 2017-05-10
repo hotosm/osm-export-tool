@@ -9,6 +9,7 @@ from .contrib import *  # NOQA
 
 # Celery config
 CELERY_TRACK_STARTED = True
+CELERY_DISABLE_RATE_LIMITS = True
 
 # Pickle used to be the default, and accepting pickled content is a security concern.  Using the new default json,
 # causes a circular reference error, that will need to be resolved.

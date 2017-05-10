@@ -75,8 +75,8 @@ buildings:
 '''
 
 
-@shared_task
-def run_task_remote(run_uid): # noqa
+@shared_task(bind=True, ignore_result=True)
+def run_task_remote(self, run_uid): # noqa
     run = ExportRun.objects.get(uid=run_uid)
     run.status = 'RUNNING'
     run.started_at = timezone.now()
@@ -168,6 +168,10 @@ def run_task_remote(run_uid): # noqa
         run.status = 'FAILED'
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
         LOG.warn(traceback.format_exc())
+
+        # retry if appropriate; this will raise and prevent error notifications
+        # from being sent unless max_retries has been exceeded
+        self.retry(exc=e)
 
         send_error_notification(run)
         if run.job.hdx_export_region_set.count() > 0:
