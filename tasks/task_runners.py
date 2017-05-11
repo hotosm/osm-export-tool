@@ -86,7 +86,8 @@ def run_task_remote(self, run_uid): # noqa
 
     try:
         stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
-        os.makedirs(stage_dir, 6600)
+        if not os.path.exists(stage_dir):
+            os.makedirs(stage_dir, 6600)
         run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
