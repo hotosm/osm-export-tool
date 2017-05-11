@@ -246,7 +246,7 @@ export class HDXExportRegionForm extends Component {
       updateAOI(exportRegion.the_geom);
     }
 
-    if (exportRegion.runs[0] != null && exportRegion.runs[0].status === 'RUNNING') {
+    if (exportRegion.runs[0] != null && ['SUBMITTED', 'RUNNING'].indexOf(exportRegion.runs[0].status) >= 0) {
       this.setState({
         running: true
       });
