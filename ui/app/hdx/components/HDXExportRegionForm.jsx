@@ -600,7 +600,7 @@ const mapStateToProps = state => {
 buildings:
   hdx:
     name:
-    tags: building, osm
+    tags: building, osm, openstreetmap
     caveats:
   types:
     - polygons
@@ -618,7 +618,7 @@ buildings:
 roads:
   hdx:
     name:
-    tags: roads, osm
+    tags: roads, osm, openstreetmap
     caveats:
   types:
     - lines
@@ -638,7 +638,7 @@ roads:
 waterways:
   hdx:
     name:
-    tags: water, osm
+    tags: water, osm, openstreetmap
     caveats:
   types:
     - lines
@@ -659,7 +659,7 @@ waterways:
 points_of_interest:
   hdx:
     name:
-    tags: poi, osm
+    tags: poi, osm, openstreetmap
     caveats:
   types:
     - points
@@ -681,7 +681,7 @@ points_of_interest:
 admin_boundaries:
   hdx:
     name:
-    tags: admin, osm
+    tags: admin, osm, openstreetmap
     caveats: Boundaries are crowd-sourced and may not align with other datasets
   types:
     - lines
