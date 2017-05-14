@@ -71,8 +71,8 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         create_sqls, index_sqls = f.sqls
-        self.assertEquals(create_sqls[0],'CREATE TABLE buildings_points AS SELECT geom,osm_id,"name","addr:housenumber" FROM planet_osm_point WHERE (1)')
-        self.assertEquals(create_sqls[1],'CREATE TABLE buildings_polygons AS SELECT geom,osm_id,osm_way_id,"name","addr:housenumber" FROM planet_osm_polygon WHERE (1)')
+        self.assertEquals(create_sqls[0],'CREATE TABLE buildings_points(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom POINT,\nosm_id TEXT,"name" TEXT,"addr:housenumber" TEXT\n);\nINSERT INTO buildings_points(geom, osm_id,"name","addr:housenumber") select geom, osm_id,"name","addr:housenumber" from planet_osm_point WHERE (1);\n')
+        self.assertEquals(create_sqls[1],'CREATE TABLE buildings_polygons(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom MULTIPOLYGON,\nosm_id TEXT,osm_way_id TEXT,"name" TEXT,"addr:housenumber" TEXT\n);\nINSERT INTO buildings_polygons(geom, osm_id,osm_way_id,"name","addr:housenumber") select geom, osm_id,osm_way_id,"name","addr:housenumber" from planet_osm_polygon WHERE (1);\n')
 
     def test_zindex(self):
         y = '''
@@ -84,7 +84,7 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         create_sqls, index_sqls = f.sqls
-        self.assertEquals(create_sqls[0],'CREATE TABLE roads_lines AS SELECT geom,osm_id,"highway","z_index" FROM planet_osm_line WHERE (1)')
+        self.assertEquals(create_sqls[0],'CREATE TABLE roads_lines(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom MULTILINESTRING,\nosm_id TEXT,"highway" TEXT,"z_index" TEXT\n);\nINSERT INTO roads_lines(geom, osm_id,"highway","z_index") select geom, osm_id,"highway","z_index" from planet_osm_line WHERE (1);\n')
 
 
     def test_unsafe_yaml(self):

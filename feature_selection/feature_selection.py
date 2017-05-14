@@ -6,7 +6,13 @@ from yaml.scanner import ScannerError
 from yaml.parser import ParserError
 from sql import SQLValidator
 
-CREATE_TEMPLATE = 'CREATE TABLE {0} AS SELECT geom,{1} FROM {2} WHERE ({3})'
+CREATE_TEMPLATE = """CREATE TABLE {0}(
+fid INTEGER PRIMARY KEY AUTOINCREMENT,
+geom {1},
+{2}
+);
+INSERT INTO {0}(geom, {3}) select geom, {3} from {4} WHERE ({5});
+"""
 INDEX_TEMPLATE = """
 INSERT INTO gpkg_contents (table_name, data_type,identifier,srs_id) VALUES ('{0}','features','{0}','4326');
 INSERT INTO gpkg_geometry_columns VALUES ('{0}', 'geom', '{1}', '4326', '0', '0');
@@ -183,6 +189,28 @@ class FeatureSelection(object):
                 retval.append(theme + '_' + geom_type)
         return retval
 
+    def col_type(self,col_name):
+        if col_name == 'z_index':
+            return ' INTEGER(4) DEFAULT 0'
+        return ' TEXT'
+
+    def create_sql(self,theme,geom_type):
+        key_selections = ['"{0}"'.format(key) for key in self.key_selections(theme)]
+        cols = OSM_ID_TAGS[geom_type] + key_selections
+        table_name = theme + "_" + geom_type
+        sqls = []
+        sqls.append(CREATE_TEMPLATE.format(
+            table_name,
+            WKT_TYPE_MAP[geom_type],
+            ','.join([col + self.col_type(col) for col in cols]),
+            ','.join(cols), 
+            'geopackage.' + table_name,
+            '1'
+        ))
+        sqls.append("INSERT INTO gpkg_contents VALUES ('{0}', 'features', '{0}', '', '2017-04-08T01:35:16.576Z', null, null, null, null, '4326')".format(table_name))
+        sqls.append("\nINSERT INTO gpkg_geometry_columns VALUES ('{0}', 'geom', '{1}', '4326', '0', '0')".format(table_name,WKT_TYPE_MAP[geom_type]))
+        return sqls
+
 
     @property
     def sqls(self):
@@ -199,9 +227,12 @@ class FeatureSelection(object):
             for geom_type in self.geom_types(theme):
                 dst_tablename = theme + '_' + geom_type
                 src_tablename = OGR2OGR_TABLENAMES[geom_type]
+                cols = OSM_ID_TAGS[geom_type] + key_selections
                 create_sqls.append(CREATE_TEMPLATE.format(
                     dst_tablename, 
-                    ','.join(OSM_ID_TAGS[geom_type] + key_selections), 
+                    WKT_TYPE_MAP[geom_type],
+                    ','.join([col + self.col_type(col) for col in cols]),
+                    ','.join(cols), 
                     src_tablename, 
                     filter_clause
                 ))

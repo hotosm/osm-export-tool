@@ -325,7 +325,7 @@ class Geopackage(object):
         create_sqls, index_sqls = self.feature_selection.sqls
         for query in create_sqls:
             LOG.debug(query)
-            cur.execute(query)
+            cur.executescript(query)
         for query in index_sqls:
             LOG.debug(query)
             cur.executescript(query)
@@ -334,11 +334,6 @@ class Geopackage(object):
 
         if self.per_theme:
             # this creates per-theme GPKGs
-            WKT_TYPE_MAP = {
-                'points':'POINT',
-                'lines':'MULTILINESTRING',
-                'polygons':'MULTIPOLYGON'
-            }
             for theme in self.feature_selection.themes:
                 conn = sqlite3.connect(self.stage_dir + theme + ".gpkg")
                 conn.enable_load_extension(True)
@@ -348,10 +343,8 @@ class Geopackage(object):
                 cur.execute("create table gpkg_contents as select * from geopackage.gpkg_contents where 0")
                 cur.execute("create table gpkg_geometry_columns as select * from geopackage.gpkg_geometry_columns where 0")
                 for geom_type in self.feature_selection.geom_types(theme):
-                    table_name = theme + "_" + geom_type
-                    cur.execute("create table {0} as select * from geopackage.{0}".format(table_name))
-                    cur.execute("INSERT INTO gpkg_contents VALUES ('{0}', 'features', '{0}', '', '2017-04-08T01:35:16.576Z', null, null, null, null, '4326')".format(table_name))
-                    cur.execute("INSERT INTO gpkg_geometry_columns VALUES ('{0}', 'geom', '{1}', '4326', '0', '0')".format(table_name,WKT_TYPE_MAP[geom_type]))
+                    for stmt in self.feature_selection.create_sql(theme,geom_type):
+                        cur.executescript(stmt)
                 conn.commit()
                 conn.close()
 
