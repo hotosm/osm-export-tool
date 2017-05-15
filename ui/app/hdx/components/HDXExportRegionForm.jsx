@@ -609,6 +609,7 @@ buildings:
     - building
     - building:levels
     - building:materials
+    - addr:full
     - addr:housenumber
     - addr:street
     - addr:city
@@ -674,6 +675,7 @@ points_of_interest:
     - opening_hours
     - beds
     - rooms
+    - addr:full
     - addr:housenumber
     - addr:street
     - addr:city
