@@ -612,6 +612,7 @@ buildings:
     - addr:housenumber
     - addr:street
     - addr:city
+    - addr:full
     - office
   where: building IS NOT NULL
 
@@ -676,6 +677,7 @@ points_of_interest:
     - addr:housenumber
     - addr:street
     - addr:city
+    - addr:full
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 
 admin_boundaries:
