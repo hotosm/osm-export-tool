@@ -10,10 +10,17 @@ LOG = logging.getLogger(__name__)
 def geos_to_poly(aoi,fname):
     with open(fname,'w') as f:
         f.write("export_bounds\n")
-        f.write("1\n")
-        for coord in aoi.coords[0]:
-            f.write("%f %f\n" % (coord[0],coord[1]))
-        f.write("END\n")
+        if aoi.geom_type == 'MultiPolygon':
+            for i, geom in enumerate(aoi.coords):
+                f.write("{0}\n".format(i))
+                for coord in geom[0]:
+                    f.write("%f %f\n" % (coord[0],coord[1]))
+                f.write("END\n")
+        else:
+            f.write("1\n")
+            for coord in aoi.coords[0]:
+                f.write("%f %f\n" % (coord[0],coord[1]))
+            f.write("END\n")
         f.write("END")
 
 class GarminIMG(object):
