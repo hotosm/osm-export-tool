@@ -367,7 +367,7 @@ class Geopackage(object):
             key_union = feature_selection.key_union(geom_type + 's') # boo
             table_name = "planet_osm_" + geom_type
             if any([x in key_union for x in ['highway','railway','layer','bridge','tunnel']]):
-                cur.execute("ALTER TABLE {table} ADD COLUMN z_index INTEGER(4) DEFAULT 0;".format(table=table_name))
+                cur.execute("ALTER TABLE {table} ADD COLUMN z_index SMALLINT DEFAULT 0;".format(table=table_name))
                 if "highway" in key_union:
                     cur.executescript("""
                         UPDATE {table} SET z_index = 3 WHERE highway IN ('path', 'track', 'footway', 'minor', 'road', 'service', 'unclassified', 'residential');
@@ -380,7 +380,7 @@ class Geopackage(object):
                 if "railway" in key_union:
                     cur.execute("UPDATE {table} SET z_index = z_index + 5 WHERE railway IS NOT NULL".format(table=table_name))
                 if "layer" in key_union:
-                    cur.execute("UPDATE {table} SET z_index = z_index + 10 * cast(layer as int) WHERE layer IS NOT NULL".format(table=table_name))
+                    cur.execute("UPDATE {table} SET z_index = z_index + 10 * cast(layer AS SMALLINT) WHERE layer IS NOT NULL".format(table=table_name))
                 if "bridge" in key_union:
                     cur.execute("UPDATE {table} SET z_index = z_index + 10 WHERE bridge IN ('yes', 'true', 1)".format(table=table_name))
                 if "tunnel" in key_union:
