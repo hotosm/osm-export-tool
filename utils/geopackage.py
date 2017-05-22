@@ -25,11 +25,6 @@ DELETE FROM points where geom IS NULL;
 DELETE FROM lines where geom IS NULL;
 DELETE FROM multipolygons where geom IS NULL;
 
-
-ALTER TABLE points RENAME TO planet_osm_point;
-ALTER TABLE lines RENAME TO planet_osm_line;
-ALTER TABLE multipolygons RENAME TO planet_osm_polygon;
-
 DROP TRIGGER rtree_multipolygons_geom_delete;
 DROP TRIGGER rtree_multipolygons_geom_insert;
 DROP TRIGGER rtree_multipolygons_geom_update1;
@@ -52,17 +47,14 @@ DROP TRIGGER rtree_lines_geom_update4;
 -- TODO: these are invalid multipolygons that result in GeometryCollections of linear features.
 -- see https://github.com/hotosm/osm-export-tool2/issues/155 for discussion.
 -- maybe we should log these somewhere.
-DELETE FROM planet_osm_polygon where GeometryType(geom) NOT IN ('POLYGON','MULTIPOLYGON');
+DELETE FROM multipolygons where GeometryType(geom) NOT IN ('POLYGON','MULTIPOLYGON');
 
 SELECT gpkgAddSpatialIndex('boundary', 'geom');
-SELECT gpkgAddSpatialIndex('planet_osm_point', 'geom');
-SELECT gpkgAddSpatialIndex('planet_osm_line', 'geom');
-SELECT gpkgAddSpatialIndex('planet_osm_polygon', 'geom');
 
 UPDATE 'boundary' SET geom=AsGPB(geom);
-UPDATE 'planet_osm_point' SET geom=AsGPB(geom);
-UPDATE 'planet_osm_line' SET geom=AsGPB(geom);
-UPDATE 'planet_osm_polygon' SET geom=AsGPB(geom);
+UPDATE 'points' SET geom=AsGPB(geom);
+UPDATE 'lines' SET geom=AsGPB(geom);
+UPDATE 'multipolygons' SET geom=AsGPB(geom);
 
 DROP TABLE multilinestrings;
 DROP TABLE other_relations;
@@ -74,12 +66,6 @@ DROP TABLE rtree_points_geom;
 
 INSERT INTO gpkg_contents VALUES ('boundary', 'features', 'boundary', '', '2017-04-08T01:35:16.576Z', null, null, null, null, '4326');
 INSERT INTO gpkg_geometry_columns VALUES ('boundary', 'geom', 'MULTIPOLYGON', '4326', '0', '0');
-UPDATE gpkg_contents SET table_name = "planet_osm_point",identifier = "planet_osm_point" WHERE table_name = "points";
-UPDATE gpkg_geometry_columns SET table_name = "planet_osm_point" WHERE table_name = "points";
-UPDATE gpkg_contents SET table_name = "planet_osm_line",identifier = "planet_osm_line" WHERE table_name = "lines";
-UPDATE gpkg_geometry_columns SET table_name = "planet_osm_line" WHERE table_name = "lines";
-UPDATE gpkg_contents SET table_name = "planet_osm_polygon", identifier = "planet_osm_polygon" WHERE table_name = "multipolygons";
-UPDATE gpkg_geometry_columns SET table_name = "planet_osm_polygon" WHERE table_name = "multipolygons";
 DELETE FROM gpkg_contents WHERE table_name="multilinestrings";
 DELETE FROM gpkg_geometry_columns WHERE table_name="multilinestrings";
 DELETE FROM gpkg_contents WHERE table_name="other_relations";
@@ -89,7 +75,6 @@ DELETE FROM gpkg_extensions WHERE table_name="other_relations";
 DELETE FROM gpkg_geometry_columns WHERE table_name="multilinestrings";
 DELETE FROM gpkg_geometry_columns WHERE table_name="other_relations";
 '''
-
 
 INI_TEMPLATE = '''
 # Configuration file for OSM import
@@ -310,7 +295,6 @@ class Geopackage(object):
 
         """
         Create the default osm gpkg schema
-        Creates planet_osm_point, planet_osm_line, planet_osm_polygon tables
         """
         conn = sqlite3.connect(self.output_gpkg)
         conn.enable_load_extension(True)
@@ -365,7 +349,12 @@ class Geopackage(object):
         # to construct a consistent z-index.
         for geom_type in ['point','line','polygon']:
             key_union = feature_selection.key_union(geom_type + 's') # boo
-            table_name = "planet_osm_" + geom_type
+            MAPPING = {
+                'point':'points',
+                'line':'lines',
+                'polygon':'multipolygons'
+            }
+            table_name = MAPPING[geom_type]
             if any([x in key_union for x in ['highway','railway','layer','bridge','tunnel']]):
                 cur.execute("ALTER TABLE {table} ADD COLUMN z_index SMALLINT DEFAULT 0;".format(table=table_name))
                 if "highway" in key_union:

@@ -34,9 +34,9 @@ OSM_ID_TAGS = {
 }
 
 OGR2OGR_TABLENAMES = {
-    'points':'planet_osm_point',
-    'lines':'planet_osm_line',
-    'polygons':'planet_osm_polygon'
+    'points':'points',
+    'lines':'lines',
+    'polygons':'multipolygons'
 }
 
 ZIP_README = """
@@ -57,6 +57,15 @@ This theme includes the following OpenStreetMap keys:
 
 This file is made available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in individual contents of the database are licensed under the Database Contents License: http://opendatacommons.org/licenses/dbcl/1.0/
 """
+
+BANNED_THEME_NAMES = [
+    'points',
+    'lines',
+    'multipolygons',
+    'boundary',
+    'multilinestrings',
+    'other_relations'
+]
 
 
 # FeatureSelection seralizes as YAML.
@@ -84,6 +93,9 @@ class FeatureSelection(object):
                 self._errors.append("YAML must be dict, not list")
                 return False
             for theme, theme_dict in loaded_doc.iteritems():
+                if theme in BANNED_THEME_NAMES or theme.startswith("gpkg_") or theme.startswith("rtree_"):
+                    self._errors.append("Theme name reserved: {0}".format(theme))
+                    return False
                 if not re.match('^[a-z0-9-_]+$', theme):
                     self._errors.append("Each theme must be named using lowercase characters and underscores")
                     return False

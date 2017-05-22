@@ -53,7 +53,7 @@ roads:
   where: highway IS NOT NULL
 """)
 
-class TestManager(unittest.TestCase):
+class TestIntegration(unittest.TestCase):
 
     def setup_stage_dir(self):
         try:

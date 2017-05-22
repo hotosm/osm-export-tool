@@ -25,11 +25,39 @@ This file is made available under the Open Database License: http://opendatacomm
 class TestFeatureSelection(unittest.TestCase):
     maxDiff = None
 
+    def test_reserved_table_names(self):
+        # these table names are used by the ogr2ogr gpkg importer
+        y = '''
+        points:
+            select:
+                - name
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Theme name reserved: points")
+        y = '''
+        rtree_something:
+            select:
+                - name
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Theme name reserved: rtree_something")
+        y = '''
+        gpkg_something:
+            select:
+                - name
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Theme name reserved: gpkg_something")
+
     def test_empty_feature_selection(self):
         y = '''
         '''
         f = FeatureSelection(y)
         self.assertFalse(f.valid)
+
 
     def test_key_union_and_filters(self):
         y = '''
@@ -71,8 +99,8 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         create_sqls, index_sqls = f.sqls
-        self.assertEquals(create_sqls[0],'CREATE TABLE buildings_points(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom POINT,\nosm_id TEXT,"name" TEXT,"addr:housenumber" TEXT\n);\nINSERT INTO buildings_points(geom, osm_id,"name","addr:housenumber") select geom, osm_id,"name","addr:housenumber" from planet_osm_point WHERE (1);\n')
-        self.assertEquals(create_sqls[1],'CREATE TABLE buildings_polygons(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom MULTIPOLYGON,\nosm_id TEXT,osm_way_id TEXT,"name" TEXT,"addr:housenumber" TEXT\n);\nINSERT INTO buildings_polygons(geom, osm_id,osm_way_id,"name","addr:housenumber") select geom, osm_id,osm_way_id,"name","addr:housenumber" from planet_osm_polygon WHERE (1);\n')
+        self.assertEquals(create_sqls[0],'CREATE TABLE buildings_points(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom POINT,\nosm_id TEXT,"name" TEXT,"addr:housenumber" TEXT\n);\nINSERT INTO buildings_points(geom, osm_id,"name","addr:housenumber") select geom, osm_id,"name","addr:housenumber" from points WHERE (1);\n')
+        self.assertEquals(create_sqls[1],'CREATE TABLE buildings_polygons(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom MULTIPOLYGON,\nosm_id TEXT,osm_way_id TEXT,"name" TEXT,"addr:housenumber" TEXT\n);\nINSERT INTO buildings_polygons(geom, osm_id,osm_way_id,"name","addr:housenumber") select geom, osm_id,osm_way_id,"name","addr:housenumber" from multipolygons WHERE (1);\n')
 
     def test_zindex(self):
         y = '''
@@ -84,7 +112,7 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         create_sqls, index_sqls = f.sqls
-        self.assertEquals(create_sqls[0],'CREATE TABLE roads_lines(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom MULTILINESTRING,\nosm_id TEXT,"highway" TEXT,"z_index" TEXT\n);\nINSERT INTO roads_lines(geom, osm_id,"highway","z_index") select geom, osm_id,"highway","z_index" from planet_osm_line WHERE (1);\n')
+        self.assertEquals(create_sqls[0],'CREATE TABLE roads_lines(\nfid INTEGER PRIMARY KEY AUTOINCREMENT,\ngeom MULTILINESTRING,\nosm_id TEXT,"highway" TEXT,"z_index" TEXT\n);\nINSERT INTO roads_lines(geom, osm_id,"highway","z_index") select geom, osm_id,"highway","z_index" from lines WHERE (1);\n')
 
 
     def test_unsafe_yaml(self):
