@@ -167,7 +167,8 @@ if __name__ == '__main__':
         map_creator_dir='../../OsmAndMapCreator-main',
         garmin_splitter='../../splitter-r583/splitter.jar',
         garmin_mkgmap='../../mkgmap-r3890/mkgmap.jar',
-        per_theme=True
+        per_theme=True,
+        overpass_api_url=os.environ['OVERPASS_API_URL']
     )
     r.run()
 
