@@ -4,7 +4,7 @@ import django_filters
 
 from django.db.models import Q
 
-from jobs.models import ExportConfig, Job
+from jobs.models import Job
 from tasks.models import ExportRun
 
 
@@ -48,30 +48,3 @@ class ExportRunFilter(django_filters.FilterSet):
         fields = ('status',)
         order_by = ('-started_at',)
 
-
-class ExportConfigFilter(django_filters.FilterSet):
-    """Filter export configurations."""
-    name = django_filters.CharFilter(name="name", lookup_type="icontains")
-    config_type = django_filters.CharFilter(name="config_type", lookup_type="icontains")
-    start = django_filters.DateTimeFilter(name="created_at", lookup_type="gte")
-    end = django_filters.DateTimeFilter(name="created_at", lookup_type="lte")
-    user = django_filters.CharFilter(name="user__username", lookup_type="exact")
-    published = django_filters.BooleanFilter(name="published", lookup_type="exact")
-    user_private = django_filters.MethodFilter(action='user_private_filter')
-
-    class Meta:
-        model = ExportConfig
-        fields = ('name', 'config_type', 'start', 'end', 'user', 'published', 'user_private')
-        order_by = ('-created_at',)
-
-    def user_private_filter(self, queryset, value):
-        """
-        Filter export configurations by user and/or published status.
-
-        Return configurations for the specified user where configurations are either published or unpublished.
-        OR
-        Return configurations for all other users and where the configuration is published.
-        """
-        return queryset.filter(
-            (Q(user__username=value) | (~Q(user__username=value) & Q(published=True)))
-        )

@@ -24,7 +24,7 @@ from rest_framework import serializers
 
 import validators
 from jobs.models import (
-    ExportConfig, Job, Tag, HDXExportRegion
+    Job, HDXExportRegion
 )
 from tasks.models import (
     ExportRun, ExportTask
@@ -42,90 +42,6 @@ from feature_selection.feature_selection import FeatureSelection
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
-
-
-class TagSerializer(serializers.ModelSerializer):
-    """Serialize the Tag model."""
-    class Meta:
-        model = Tag
-        fields = ('key', 'value', 'data_model', 'geom_types')
-
-
-class SimpleExportConfigSerializer(serializers.Serializer):
-    """Return a sub-set of ExportConfig model attributes."""
-    uid = serializers.UUIDField(read_only=True)
-    name = serializers.CharField()
-    config_type = serializers.CharField()
-    filename = serializers.CharField()
-    published = serializers.BooleanField()
-    created = serializers.SerializerMethodField()
-    url = serializers.HyperlinkedIdentityField(
-       view_name='api:configs-detail',
-       lookup_field='uid'
-    )
-
-    def get_created(self, obj):
-        return obj.created_at
-
-
-class ExportConfigSerializer(serializers.Serializer):
-    """Return the full set of ExportConfig model attributes."""
-    uid = serializers.UUIDField(read_only=True)
-    url = serializers.HyperlinkedIdentityField(
-       view_name='api:configs-detail',
-       lookup_field='uid'
-    )
-    name = serializers.CharField(max_length=255)
-    config_type = serializers.ChoiceField(['PRESET'])
-    filename = serializers.CharField(max_length=255, read_only=True, default='')
-    size = serializers.SerializerMethodField()
-    content_type = serializers.CharField(max_length=50, read_only=True)
-    upload = serializers.FileField(allow_empty_file=False, max_length=100)
-    published = serializers.BooleanField()
-    created = serializers.SerializerMethodField()
-    owner = serializers.SerializerMethodField(read_only=True)
-    user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
-
-    def create(self, validated_data):
-        """Create an ExportConfig instance."""
-        return ExportConfig.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """Update an ExportConfig instance."""
-        instance.config_type = validated_data.get('config_type', instance.config_type)
-        instance.upload.delete(False)  # delete the old file..
-        instance.upload = validated_data.get('upload', instance.upload)
-        instance.name = validated_data.get('name', instance.name)
-        instance.filename = validated_data.get('filename', instance.filename)
-        instance.content_type = validated_data.get('content_type', instance.content_type)
-        instance.updated_at = timezone.now()
-        instance.save()
-        return instance
-
-    def validate(self, data):
-        """Validate the form data."""
-        upload = data['upload']
-        config_type = data['config_type']
-        content_type = validators.validate_content_type(upload, config_type)
-        if config_type == 'PRESET':
-            validators.validate_preset(upload)
-        data['content_type'] = content_type
-        fname = data['upload'].name
-        data['filename'] = fname.replace(' ', '_').lower()
-        return data
-
-    def get_size(self, obj):
-        size = obj.upload.size
-        return size
-
-    def get_created(self, obj):
-        return obj.created_at
-
-    def get_owner(self, obj):
-        return obj.user.username
-
 
 class ExportTaskSerializer(serializers.ModelSerializer):
     """Serialize ExportTasks models."""
@@ -415,17 +331,10 @@ class JobSerializer(serializers.Serializer):
         } for slug in obj.export_formats]
 
     def get_configurations(self, obj):
-        """Return the configurations selected for this export."""
-        configs = [obj.config]
-        serializer = SimpleExportConfigSerializer(configs, many=True,
-                                                  context={'request': self.context['request']})
-        return serializer.data
+        return []
 
     def get_tags(self, obj):
-        """Return the Tags selected for this export."""
-        tags = obj.tags.all()
-        serializer = TagSerializer(tags, many=True)
-        return serializer.data
+        return []
 
     def get_owner(self, obj):
         """Return the username for the owner of this export."""

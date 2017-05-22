@@ -1,5 +1,5 @@
 planet_osm_point:
-  type:
+  types:
     - points
   select:
     - addr:housenumber
@@ -32,7 +32,7 @@ planet_osm_point:
     - waterway
 
 planet_osm_line:
-  type:
+  types:
     - lines
   select:
     - aeroway
@@ -53,7 +53,7 @@ planet_osm_line:
 
 
 planet_osm_polygon:
-  type:
+  types:
     - polygons
   select:
     - addr:housenumber

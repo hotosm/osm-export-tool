@@ -22,13 +22,11 @@ from rest_framework.serializers import ValidationError
 
 import requests
 
-from jobs import presets
 from jobs.models import (
-    ExportConfig, HDXExportRegion, Job, Tag
+    HDXExportRegion, Job
 )
-from jobs.presets import PresetParser, UnfilteredPresetParser
 from serializers import (
-    ExportConfigSerializer, ExportRunSerializer,
+    ExportRunSerializer,
     ExportTaskSerializer, JobSerializer, ListJobSerializer,
     HDXExportRegionSerializer
 )
@@ -36,11 +34,12 @@ from tasks.models import ExportRun, ExportTask
 from utils import FORMAT_NAMES
 from tasks.task_runners import ExportTaskRunner
 
-from .filters import ExportConfigFilter, ExportRunFilter, JobFilter
+from .filters import ExportRunFilter, JobFilter
 from .pagination import LinkHeaderPagination
 from .permissions import IsHDXAdmin, IsOwnerOrReadOnly
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
+from feature_selection.feature_selection import FeatureSelection
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
@@ -201,68 +200,16 @@ class JobViewSet(viewsets.ModelViewSet):
             """Get the required data from the validated request."""
             export_formats = request.data.get('formats')
             tags = request.data.get('tags')
-            preset = request.data.get('preset')
             featuresave = request.data.get('featuresave')
             featurepub = request.data.get('featurepub')
             job = None
             if len(export_formats) > 0:
                 """Save the job and make sure it's committed before running tasks."""
-                try:
-                    with transaction.atomic():
-                        job = serializer.save()
-                        job.export_formats = export_formats
-                        if preset:
-                            """Get the tags from the uploaded preset."""
-                            config = ExportConfig.objects.get(uid=preset)
-                            job.config = config
-                            job.save()
-                            preset_path = config.upload.path
-                            """Use the UnfilteredPresetParser."""
-                            parser = presets.UnfilteredPresetParser(preset=preset_path)
-                            tags_dict = parser.parse()
-                            for entry in tags_dict:
-                                tag = Tag.objects.create(
-                                    name=entry['name'],
-                                    key=entry['key'],
-                                    value=entry['value'],
-                                    geom_types=entry['geom_types'],
-                                    data_model='PRESET',
-                                    job=job
-                                )
-                        elif tags:
-                            """Get tags from request."""
-                            for entry in tags:
-                                tag = Tag.objects.create(
-                                    name=entry['name'],
-                                    key=entry['key'],
-                                    value=entry['value'],
-                                    job=job,
-                                    data_model=entry['data_model'],
-                                    geom_types=entry['geom_types'],
-                                    groups=entry['groups']
-                                )
-                        else:
-                            """
-                            Use hdm preset as default tags if no preset or tags
-                            are provided in the request.
-                            """
-                            path = os.path.dirname(os.path.realpath(__file__))
-                            parser = presets.PresetParser(preset=path + '/presets/hdm_presets.xml')
-                            tags_dict = parser.parse()
-                            for entry in tags_dict:
-                                tag = Tag.objects.create(
-                                    name=entry['name'],
-                                    key=entry['key'],
-                                    value=entry['value'],
-                                    geom_types=entry['geom_types'],
-                                    data_model='HDM',
-                                    job=job
-                                )
-                except Exception as e:
-                    error_data = OrderedDict()
-                    error_data['id'] = _('server_error')
-                    error_data['message'] = _('Error creating export job: %(error)s') % {'error': e}
-                    return Response(error_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                with transaction.atomic():
+                    job = serializer.save()
+                    job.export_formats = export_formats
+                    job.feature_selection = FeatureSelection.example('hdm')
+                    job.save()
             else:
                 error_data = OrderedDict()
                 error_data['formats'] = [_('Invalid format provided.')]
@@ -388,24 +335,6 @@ class ExportRunViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ExportConfigViewSet(viewsets.ModelViewSet):
-    """
-    Endpoint for operations on export configurations.
-
-    Lists all available configuration files.
-    """
-    serializer_class = ExportConfigSerializer
-    pagination_class = LinkHeaderPagination
-    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
-    filter_class = ExportConfigFilter
-    search_fields = ('name', 'config_type', 'user__username')
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly)
-    parser_classes = (FormParser, MultiPartParser, JSONParser)
-    queryset = ExportConfig.objects.filter(config_type='PRESET')
-    lookup_field = 'uid'
-
-
 class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ###ExportTask API endpoint.
@@ -431,38 +360,6 @@ class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class PresetViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Returns the list of PRESET configuration files.
-    """
-    CONFIG_TYPE = 'PRESET'
-    serializer_class = ExportConfigSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    queryset = ExportConfig.objects.filter(config_type=CONFIG_TYPE)
-    lookup_field = 'uid'
-
-
-class HDMDataModelView(views.APIView):
-    """Endpoint exposing the HDM Data Model."""
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get(self, request, format='json'):
-        path = os.path.dirname(os.path.realpath(__file__))
-        parser = PresetParser(path + '/presets/hdm_presets.xml')
-        data = parser.build_hdm_preset_dict()
-        return JsonResponse(data, status=status.HTTP_200_OK)
-
-
-class OSMDataModelView(views.APIView):
-    """Endpoint exposing the OSM Data Model."""
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get(self, request, format='json'):
-        path = os.path.dirname(os.path.realpath(__file__))
-        parser = PresetParser(path + '/presets/osm_presets.xml')
-        data = parser.build_hdm_preset_dict()
-        return JsonResponse(data, status=status.HTTP_200_OK)
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     serializer_class = HDXExportRegionSerializer

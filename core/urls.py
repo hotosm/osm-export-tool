@@ -12,7 +12,7 @@ from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
 
 from api.urls import router
-from api.views import HDMDataModelView, OSMDataModelView, request_geonames
+from api.views import request_geonames
 from ui import urls as ui_urls
 from ui.views import (
     about, create_error_view, help_create, help_exports, help_features,
@@ -64,8 +64,6 @@ urlpatterns += i18n_patterns(
 urlpatterns += [
     url(r'^api/', include(router.urls, namespace='api')),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api/hdm-data-model$', HDMDataModelView.as_view(), name='hdm-data-model'),
-    url(r'^api/osm-data-model$', OSMDataModelView.as_view(), name='osm-data-model'),
     url(r'^request_geonames$', login_required(request_geonames)),
 ]
 
