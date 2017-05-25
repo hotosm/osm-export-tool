@@ -600,7 +600,7 @@ const mapStateToProps = state => {
 buildings:
   hdx:
     name:
-    tags: building, osm, openstreetmap
+    tags: building, shelter, osm, openstreetmap
     caveats:
   types:
     - polygons
@@ -609,17 +609,17 @@ buildings:
     - building
     - building:levels
     - building:materials
+    - addr:full
     - addr:housenumber
     - addr:street
     - addr:city
-    - addr:full
     - office
   where: building IS NOT NULL
 
 roads:
   hdx:
     name:
-    tags: roads, osm, openstreetmap
+    tags: roads, transportation, osm, openstreetmap
     caveats:
   types:
     - lines
@@ -639,7 +639,7 @@ roads:
 waterways:
   hdx:
     name:
-    tags: water, osm, openstreetmap
+    tags: rivers, hydrology, waterbodies, osm, openstreetmap
     caveats:
   types:
     - lines
@@ -660,7 +660,7 @@ waterways:
 points_of_interest:
   hdx:
     name:
-    tags: poi, osm, openstreetmap
+    tags: poi, points of interest, facilities, osm, openstreetmap
     caveats:
   types:
     - points
@@ -674,26 +674,11 @@ points_of_interest:
     - opening_hours
     - beds
     - rooms
+    - addr:full
     - addr:housenumber
     - addr:street
     - addr:city
-    - addr:full
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
-
-admin_boundaries:
-  hdx:
-    name:
-    tags: admin, osm, openstreetmap
-    caveats: Boundaries are crowd-sourced and may not align with other datasets
-  types:
-    - lines
-    - polygons
-  select:
-    - name
-    - boundary
-    - admin_level
-    - place
-  where: boundary = 'administrative' OR admin_level IS NOT NULL
 `.trim(),
       is_private: true,
       license: 'hdx-odc-by',
