@@ -1,25 +1,26 @@
 buildings:
   hdx:
     name:
-    tags: building, osm
+    tags: building, shelter, osm, openstreetmap
     caveats:
   types:
     - polygons
   select:
     - name
     - building
-    - building_levels
-    - building_materials
-    - addr_housenumber
-    - addr_street
-    - addr_city
+    - building:levels
+    - building:materials
+    - addr:full
+    - addr:housenumber
+    - addr:street
+    - addr:city
     - office
   where: building IS NOT NULL
 
 roads:
   hdx:
     name:
-    tags: roads, osm
+    tags: roads, transportation, osm, openstreetmap
     caveats:
   types:
     - lines
@@ -39,7 +40,7 @@ roads:
 waterways:
   hdx:
     name:
-    tags: water, osm
+    tags: rivers, hydrology, waterbodies, osm, openstreetmap
     caveats:
   types:
     - lines
@@ -60,7 +61,7 @@ waterways:
 points_of_interest:
   hdx:
     name:
-    tags: poi, osm
+    tags: poi, points of interest, facilities, osm, openstreetmap
     caveats:
   types:
     - points
@@ -74,22 +75,8 @@ points_of_interest:
     - opening_hours
     - beds
     - rooms
-    - addr_housenumber
-    - addr_street
-    - addr_city
+    - addr:full
+    - addr:housenumber
+    - addr:street
+    - addr:city
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
-
-admin_boundaries:
-  hdx:
-    name:
-    tags: admin, osm
-    caveats: Boundaries are crowd-sourced and may not align with other datasets
-  types:
-    - lines
-    - polygons
-  select:
-    - name
-    - boundary
-    - admin_level
-    - place
-  where: boundary = 'administrative' OR admin_level IS NOT NULL
