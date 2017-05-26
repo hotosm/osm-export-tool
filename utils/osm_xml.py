@@ -10,6 +10,9 @@ from artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 
+class EmptyOsmXmlException(Exception):
+    pass
+
 class OSM_XML(object):
     """
     Wrapper around an Overpass query.
@@ -43,8 +46,15 @@ class OSM_XML(object):
 
         # dump out all osm data for the specified bounding box
 
+    def raise_if_empty(self):
+        with open(self.output_xml,'rb') as fd:
+            first7 = fd.readlines(8)
+            if len(first7) == 7:
+                raise EmptyOsmXmlException
+
     def run(self):
         if self.is_complete:
+            self.raise_if_empty()
             LOG.debug("Skipping OSM_XML, file exists")
             return
         """
@@ -62,6 +72,7 @@ class OSM_XML(object):
         with open(self.output_xml, 'wb') as fd:
             for chunk in req.iter_content(CHUNK):
                 fd.write(chunk)
+        self.raise_if_empty()
         LOG.debug('Query finished at %s' % datetime.now())
         LOG.debug('Wrote overpass query results to: %s' % self.output_xml)
 
