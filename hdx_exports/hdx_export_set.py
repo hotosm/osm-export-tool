@@ -32,7 +32,7 @@ This theme includes all OpenStreetMap features in this area matching:
 MARKDOWN = """
 OpenStreetMap exports for use in GIS applications.
 {filter_str}
-Features have these attributes:
+Features may have these attributes:
 
 {columns}
 
