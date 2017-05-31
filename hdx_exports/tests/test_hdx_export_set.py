@@ -58,7 +58,7 @@ OpenStreetMap exports for use in GIS applications.
 
 This theme includes all OpenStreetMap features in this area.
 
-Features have these attributes:
+Features may have these attributes:
 
 - [name](http://wiki.openstreetmap.org/wiki/Key:name)
 
@@ -75,7 +75,7 @@ This theme includes all OpenStreetMap features in this area matching:
 
 highway IS NOT NULL
 
-Features have these attributes:
+Features may have these attributes:
 
 - [name](http://wiki.openstreetmap.org/wiki/Key:name)
 
