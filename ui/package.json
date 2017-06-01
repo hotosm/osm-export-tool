@@ -42,6 +42,7 @@
     "redux-thunk": "~2.1.0",
     "style-loader": "~0.13.1",
     "url-loader": "~0.5.7",
+    "urlify": "^0.3.6",
     "webpack": "~1.13.3"
   },
   "devDependencies": {

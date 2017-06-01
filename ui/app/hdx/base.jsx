@@ -14,6 +14,7 @@ import ExportAOI from './components/ExportAOI';
 import MapListView from './components/MapListView';
 import HDXExportRegionForm from './components/HDXExportRegionForm';
 import HDXExportRegionList from './components/HDXExportRegionList';
+import PresetToYaml from './components/PresetToYaml';
 import reducers from './reducers/';
 
 const history = createHistory();
@@ -40,6 +41,7 @@ ReactDOM.render(
           <Route exact path='/' component={HDXExportRegionList} />
           <Route path='/new' component={HDXExportRegionForm} />
           <Route path='/edit/:id' component={HDXExportRegionForm} />
+          <Route path='/preset_to_yaml' component={PresetToYaml} />
         </Col>
         <Col xs={6} style={{height: '100%'}}>
           <Route exact path='/' component={MapListView} />
