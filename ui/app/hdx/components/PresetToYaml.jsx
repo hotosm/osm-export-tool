@@ -61,7 +61,11 @@ class PresetParser {
   whereForTheme(themeElem) {
       var l = []
       for (var i of this.listForXpath(".//ns:key",themeElem)) {
-        l.push(i.getAttribute("key") + "=" + i.getAttribute("value"))
+        if (i.getAttribute("value")) {
+          l.push(i.getAttribute("key") + "=" + i.getAttribute("value"))
+        } else {
+          l.push(i.getAttribute("key") + " IS NOT NULL")
+        }
       }
 
       return l.join(' OR ')
