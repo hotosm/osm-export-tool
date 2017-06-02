@@ -1,0 +1,27 @@
+[Unit]
+Description=Celery
+After=docker.service docker.rabbitmq.service docker.postgresql.service docker.django.service
+Requires=docker.service docker.rabbitmq.service docker.postgresql.service docker.django.service
+BindsTo=docker.django.service
+PartOf=osm-export-tool.target
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull quay.io/hotosm/osm-export-tool2
+ExecStart=/usr/bin/docker run \
+  -e DATABASE_URL=postgis://exports:exports@docker.postgresql.service/exports \
+  -e BROKER_URL=amqp://guest:guest@docker.rabbitmq.service/ \
+  -e CONCURRENCY=2 \
+  --env-file /etc/exports.env \
+  --rm \
+  --name %n \
+  --network exports \
+  --volumes-from docker.django.service \
+  quay.io/hotosm/osm-export-tool2 \
+  celery -A core worker
+
+[Install]
+WantedBy=osm-export-tool.target

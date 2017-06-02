@@ -1,0 +1,22 @@
+[Unit]
+Description=RabbitMQ
+After=docker.service
+Requires=docker.service
+PartOf=osm-export-tool.target
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull rabbitmq:3.6.9-management
+ExecStartPre=-/usr/bin/docker network create exports
+ExecStart=/usr/bin/docker run \
+  --rm \
+  --name %n \
+  --network exports \
+  --network-alias rabbitmq \
+  rabbitmq:3.6.9-management
+
+[Install]
+WantedBy=osm-export-tool.target

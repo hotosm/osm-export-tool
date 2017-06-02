@@ -1,0 +1,27 @@
+[Unit]
+Description=PostgreSQL
+After=docker.service
+Requires=docker.service
+PartOf=osm-export-tool.target
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull mdillon/postgis:9.6
+ExecStartPre=-/usr/bin/docker volume create pgdata
+ExecStartPre=-/usr/bin/docker network create exports
+ExecStart=/usr/bin/docker run \
+  -e POSTGRES_USER=exports \
+  -e POSTGRES_PASSWORD=exports \
+  -e POSTGRES_DB=exports \
+  --rm \
+  --name %n \
+  --network exports \
+  --network-alias postgresql \
+  -v pgdata:/var/lib/postgresql/data \
+  mdillon/postgis:9.6
+
+[Install]
+WantedBy=osm-export-tool.target
