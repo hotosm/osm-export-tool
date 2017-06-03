@@ -25,15 +25,15 @@ class PresetParser {
     // find the first level of "group" that has more than one element.
     var path = "/ns:presets/ns:group"
     var l = this.listForXpath(path,this.doc)
-    var depth = 1
+    var depth = 0
     while (l.length === 1) {
-      path = path + "/ns:group"  
-      l = this.listForXpath(path,this.doc)
+      depth = depth + 1
+      l = this.listForXpath(path + "/ns:group".repeat(depth),this.doc)
     }
     if (l.length === 0) {
-      if (depth === 1) return null
-      // if all group depths are 1, just return the top level
-      return this.listForXpath("/ns:presets/ns:group")
+      // if all group depths are 1, just return the deepest
+      if (depth === 0) return []
+      else return this.listForXpath(path+"/ns:group".repeat(depth-1),this.doc)
     }
     return l
   }
@@ -75,7 +75,6 @@ class PresetParser {
     const parser = new DOMParser();
     this.doc = parser.parseFromString(doc, "text/xml");
     this.featureSelection = {}
-    console.log(this.themes())
     for (var themeElem of this.themes()) {
       const themeName = urlize(themeElem.getAttribute('name'))
       this.featureSelection[themeName] = {}
