@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { FormGroup, FormControl, Button } from 'react-bootstrap';
+import { Col, Row, FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as urlify from 'urlify';
 import yaml from 'js-yaml';
 
@@ -108,21 +108,24 @@ export class PresetToYaml extends Component {
 
     render() {
       return( 
-        <div>
-        <FormGroup>
-        <FormControl rows="10" onChange={this.handleChange.bind(this)} componentClass="textarea"/>
-        </FormGroup>
-         <Button
-           bsStyle='primary'
-           onClick={this.handleConvert.bind(this)}
-         >
-         Convert Preset
-         </Button>
-        <pre>
-          {this.state.yaml}
-        </pre>
-
-        </div>)
+        <Row style={{height: '100%'}}>
+          <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+            <FormGroup>
+            <FormControl rows="10" onChange={this.handleChange.bind(this)} componentClass="textarea"/>
+            </FormGroup>
+            <Button
+              bsStyle='primary'
+              onClick={this.handleConvert.bind(this)}
+            >
+            Convert Preset
+            </Button>
+          </Col>
+          <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+            <pre>
+              {this.state.yaml}
+            </pre>
+          </Col>
+        </Row>)
     }
 }
 

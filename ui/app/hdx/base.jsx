@@ -1,7 +1,6 @@
 import React from 'react';
 
 import createHistory from 'history/createHashHistory';
-import { Col, Row } from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 import { Route } from 'react-router';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
@@ -9,9 +8,8 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider, intlReducer } from 'react-intl-redux';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
+import { Row } from 'react-bootstrap';
 
-import ExportAOI from './components/ExportAOI';
-import MapListView from './components/MapListView';
 import HDXExportRegionForm from './components/HDXExportRegionForm';
 import HDXExportRegionList from './components/HDXExportRegionList';
 import PresetToYaml from './components/PresetToYaml';
@@ -36,19 +34,12 @@ ReactDOM.render(
   <Provider store={store}>
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
-      <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+        <div style={{height: '100%'}}>
           <Route exact path='/' component={HDXExportRegionList} />
           <Route path='/new' component={HDXExportRegionForm} />
           <Route path='/edit/:id' component={HDXExportRegionForm} />
           <Route path='/preset_to_yaml' component={PresetToYaml} />
-        </Col>
-        <Col xs={6} style={{height: '100%'}}>
-          <Route exact path='/' component={MapListView} />
-          <Route path='/new' component={ExportAOI} />
-          <Route path='/edit/:id' component={ExportAOI} />
-        </Col>
-      </Row>
+        </div>
     </ConnectedRouter>
   </Provider>,
   document.getElementById('root')

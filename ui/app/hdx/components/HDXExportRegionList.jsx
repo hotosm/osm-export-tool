@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
-import { Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import ExportRegionPanel from './ExportRegionPanel';
 import { getExportRegions } from '../actions/hdxActions';
+import MapListView from './MapListView';
 
 class ExportRegionList extends Component {
   render () {
@@ -41,13 +42,20 @@ export class HDXExportRegionList extends Component {
     const { hdx: { exportRegions } } = this.props;
 
     return (
-      <div style={{padding: '20px'}}>
-        <h2 style={{display: 'inline'}}>HDX Export Regions</h2>
-        <Link to='/new' style={{float: 'right'}} className='btn btn-primary btn-lg'>
-          Create New Export Region
-        </Link>
-        <ExportRegionList regions={exportRegions} />
-      </div>
+      <Row style={{height: '100%'}}>
+        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+          <div style={{padding: '20px'}}>
+            <h2 style={{display: 'inline'}}>HDX Export Regions</h2>
+            <Link to='/new' style={{float: 'right'}} className='btn btn-primary btn-lg'>
+              Create New Export Region
+            </Link>
+            <ExportRegionList regions={exportRegions} />
+          </div>
+        </Col>
+        <Col xs={6} style={{height: '100%'}}>
+          <MapListView/>
+        </Col>
+      </Row>
     );
   }
 }

@@ -12,6 +12,7 @@ import { push } from 'react-router-redux';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 import yaml from 'js-yaml';
+import ExportAOI from './ExportAOI';
 
 import { clickResetMap } from '../actions/AoiInfobarActions';
 import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
@@ -371,220 +372,227 @@ export class HDXExportRegionForm extends Component {
     const name = this.props.name || 'Untitled';
 
     return (
-      <div className={styles.hdxForm}>
-        <ol className='breadcrumb'>
-          <li><Link to='/'>Export Regions</Link></li>
-          <li className='active'>{name}</li>
-        </ol>
-        <form onSubmit={handleSubmit}>
-          <h2>{editing ? 'Edit' : 'Create'} Export Region</h2>
-          {this.props.hdx.error && <p><strong className={styles.error}>{this.props.hdx.status}</strong></p>}
-          <Field
-            name='name'
-            type='text'
-            label='Dataset Name'
-            placeholder='Senegal'
-            component={renderInput}
-          />
-          <hr />
-          <Field
-            name='dataset_prefix'
-            type='text'
-            label='Dataset Prefix'
-            placeholder='hotosm_senegal'
-            help={<div>Example: prefix <code>hotosm_senegal</code> results in datasets <code>hotosm_senegal_roads</code>, <code>hotosm_senegal_buildings</code>, etc.</div>}
-            component={renderInput}
-          />
-          <hr />
-          <Field
-            id='formControlsTextarea'
-            label='Feature Selection'
-            rows='10'
-            name='feature_selection'
-            component={renderTextArea}
-            className={styles.featureSelection}
-          />
-          <Field
-            id='formControlExtraNotes'
-            name='extra_notes'
-            rows='4'
-            label='Extra Notes (prepended to notes section)'
-            component={renderTextArea}
-          />
-          <Row>
-            <Col xs={6}>
+      <Row style={{height: '100%'}}>
+        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+          <div className={styles.hdxForm}>
+            <ol className='breadcrumb'>
+              <li><Link to='/'>Export Regions</Link></li>
+              <li className='active'>{name}</li>
+            </ol>
+            <form onSubmit={handleSubmit}>
+              <h2>{editing ? 'Edit' : 'Create'} Export Region</h2>
+              {this.props.hdx.error && <p><strong className={styles.error}>{this.props.hdx.status}</strong></p>}
               <Field
-                name='is_private'
-                description='Private'
-                component={renderCheckbox}
-                type='checkbox'
+                name='name'
+                type='text'
+                label='Dataset Name'
+                placeholder='Senegal'
+                component={renderInput}
               />
-            </Col>
-            <Col xs={6}>
+              <hr />
               <Field
-                name='subnational'
-                description='Dataset contains sub-national data'
-                component={renderCheckbox}
-                type='checkbox'
+                name='dataset_prefix'
+                type='text'
+                label='Dataset Prefix'
+                placeholder='hotosm_senegal'
+                help={<div>Example: prefix <code>hotosm_senegal</code> results in datasets <code>hotosm_senegal_roads</code>, <code>hotosm_senegal_buildings</code>, etc.</div>}
+                component={renderInput}
               />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12}>
+              <hr />
               <Field
-                name='buffer_aoi'
-                description='AOI is an administrative boundary (and should be buffered)'
-                component={renderCheckbox}
-                type='checkbox'
+                id='formControlsTextarea'
+                label='Feature Selection'
+                rows='10'
+                name='feature_selection'
+                component={renderTextArea}
+                className={styles.featureSelection}
               />
-            </Col>
-          </Row>
-          <Field
-            name='locations'
-            multi
-            label='Location'
-            component={renderMultiSelect}
-            options={locationOptions}
-            isLoading={locationOptions == null}
-          />
-          <Field
-            name='license_human_readable'
-            type='text'
-            label='License'
-            disabled
-            component={renderInput}
-          />
-          <Field
-            name='license'
-            label='License'
-            disabled
-            component='input'
-            type='hidden'
-          />
-          <hr />
-          <Row>
-            <Col xs={6}>
               <Field
-                name='schedule_period'
-                label='Run this export on an automated schedule:'
-                component={renderSelect}
-              >
-                <option value='daily'>Daily</option>
-                <option value='weekly'>Weekly (Sunday)</option>
-                <option value='monthly'>Monthly (1st of month)</option>
-                <option value='6hrs'>Every 6 hours</option>
-                <option value='disabled'>Don't automatically schedule</option>
-              </Field>
-            </Col>
-            <Col xs={5} xsOffset={1}>
-              <Field
-                name='schedule_hour'
-                label='At time:'
-                component={renderSelect}
-              >
-                { getTimeOptions() }
-              </Field>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={5}>
-              <Field
-                name='export_formats'
-                label='File Formats'
-                component={renderCheckboxes}
-              >
-                {getFormatCheckboxes()}
-              </Field>
-            </Col>
-            <Col xs={7}>
-              { editing && exportRegion
-              ? <ExistingDatasetsPanel
-                datasets={exportRegion.datasets}
-                error={error}
-                handleSubmit={handleSubmit}
-                status={status}
-                styles={styles}
-                submitting={submitting}
+                id='formControlExtraNotes'
+                name='extra_notes'
+                rows='4'
+                label='Extra Notes (prepended to notes section)'
+                component={renderTextArea}
               />
-              : <PendingDatasetsPanel
-                datasetPrefix={datasetPrefix}
-                error={error}
-                featureSelection={featureSelection}
-                handleSubmit={handleSubmit}
-                status={status}
-                styles={styles}
-                submitting={submitting}
+              <Row>
+                <Col xs={6}>
+                  <Field
+                    name='is_private'
+                    description='Private'
+                    component={renderCheckbox}
+                    type='checkbox'
+                  />
+                </Col>
+                <Col xs={6}>
+                  <Field
+                    name='subnational'
+                    description='Dataset contains sub-national data'
+                    component={renderCheckbox}
+                    type='checkbox'
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={12}>
+                  <Field
+                    name='buffer_aoi'
+                    description='AOI is an administrative boundary (and should be buffered)'
+                    component={renderCheckbox}
+                    type='checkbox'
+                  />
+                </Col>
+              </Row>
+              <Field
+                name='locations'
+                multi
+                label='Location'
+                component={renderMultiSelect}
+                options={locationOptions}
+                isLoading={locationOptions == null}
               />
-              }
-            </Col>
-          </Row>
-        </form>
-        {editing && exportRegion &&
-          <div>
-            <Row>
-              <Col xs={7}>
-                <h4>HDX Datasets</h4>
-                <ul>
-                  {
-                    exportRegion.datasets.map((x, i) => (
-                      <li key={i}>
-                        <code><a href={x.url}>{x.name}</a></code>
-                      </li>
-                    ))
+              <Field
+                name='license_human_readable'
+                type='text'
+                label='License'
+                disabled
+                component={renderInput}
+              />
+              <Field
+                name='license'
+                label='License'
+                disabled
+                component='input'
+                type='hidden'
+              />
+              <hr />
+              <Row>
+                <Col xs={6}>
+                  <Field
+                    name='schedule_period'
+                    label='Run this export on an automated schedule:'
+                    component={renderSelect}
+                  >
+                    <option value='daily'>Daily</option>
+                    <option value='weekly'>Weekly (Sunday)</option>
+                    <option value='monthly'>Monthly (1st of month)</option>
+                    <option value='6hrs'>Every 6 hours</option>
+                    <option value='disabled'>Don't automatically schedule</option>
+                  </Field>
+                </Col>
+                <Col xs={5} xsOffset={1}>
+                  <Field
+                    name='schedule_hour'
+                    label='At time:'
+                    component={renderSelect}
+                  >
+                    { getTimeOptions() }
+                  </Field>
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={5}>
+                  <Field
+                    name='export_formats'
+                    label='File Formats'
+                    component={renderCheckboxes}
+                  >
+                    {getFormatCheckboxes()}
+                  </Field>
+                </Col>
+                <Col xs={7}>
+                  { editing && exportRegion
+                  ? <ExistingDatasetsPanel
+                    datasets={exportRegion.datasets}
+                    error={error}
+                    handleSubmit={handleSubmit}
+                    status={status}
+                    styles={styles}
+                    submitting={submitting}
+                  />
+                  : <PendingDatasetsPanel
+                    datasetPrefix={datasetPrefix}
+                    error={error}
+                    featureSelection={featureSelection}
+                    handleSubmit={handleSubmit}
+                    status={status}
+                    styles={styles}
+                    submitting={submitting}
+                  />
                   }
-                </ul>
-              </Col>
-              <Col xs={5}>
+                </Col>
+              </Row>
+            </form>
+            {editing && exportRegion &&
+              <div>
+                <Row>
+                  <Col xs={7}>
+                    <h4>HDX Datasets</h4>
+                    <ul>
+                      {
+                        exportRegion.datasets.map((x, i) => (
+                          <li key={i}>
+                            <code><a href={x.url}>{x.name}</a></code>
+                          </li>
+                        ))
+                      }
+                    </ul>
+                  </Col>
+                  <Col xs={5}>
+                    <Panel>
+                      <p>
+                        <strong>Last run:</strong> {this.getLastRun()}<br />
+                        <strong>Next scheduled run:</strong> {this.getNextRun()}
+                      </p>
+                      <Button
+                        bsStyle='primary'
+                        disabled={running}
+                        onClick={this.handleRun}
+                      >
+                        {running ? 'Running...' : 'Run Now'}
+                      </Button>
+                    </Panel>
+                  </Col>
+                </Row>
+                <h3>Run History <small><a href={`/exports/${exportRegion.job.uid}`}>view export details</a></small></h3>
+                {exportRegion.runs.length > 0
+                  ? <Table>
+                    <thead>
+                      <tr>
+                        <th>
+                          Run Started
+                        </th>
+                        <th>
+                          Status
+                        </th>
+                        <th>
+                          Elapsed Time
+                        </th>
+                        <th>
+                          Total Size
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>{this.getRunRows()}</tbody>
+                  </Table>
+                  : <p>This regional export has never been run.</p>
+                }
                 <Panel>
                   <p>
-                    <strong>Last run:</strong> {this.getLastRun()}<br />
-                    <strong>Next scheduled run:</strong> {this.getNextRun()}
+                    This will unschedule the export region.
+                    Any existing datasets created by this region will remain on HDX.
                   </p>
-                  <Button
-                    bsStyle='primary'
-                    disabled={running}
-                    onClick={this.handleRun}
-                  >
-                    {running ? 'Running...' : 'Run Now'}
+                  <Button bsStyle='danger' block disabled={deleting} onClick={this.handleDelete}>
+                    {deleting ? 'Removing Export Region...' : 'Remove Export Region'}
                   </Button>
                 </Panel>
-              </Col>
-            </Row>
-            <h3>Run History <small><a href={`/exports/${exportRegion.job.uid}`}>view export details</a></small></h3>
-            {exportRegion.runs.length > 0
-              ? <Table>
-                <thead>
-                  <tr>
-                    <th>
-                      Run Started
-                    </th>
-                    <th>
-                      Status
-                    </th>
-                    <th>
-                      Elapsed Time
-                    </th>
-                    <th>
-                      Total Size
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>{this.getRunRows()}</tbody>
-              </Table>
-              : <p>This regional export has never been run.</p>
+              </div>
             }
-            <Panel>
-              <p>
-                This will unschedule the export region.
-                Any existing datasets created by this region will remain on HDX.
-              </p>
-              <Button bsStyle='danger' block disabled={deleting} onClick={this.handleDelete}>
-                {deleting ? 'Removing Export Region...' : 'Remove Export Region'}
-              </Button>
-            </Panel>
           </div>
-        }
-      </div>
+        </Col>
+        <Col xs={6} style={{height: '100%'}}>
+          <ExportAOI/>
+        </Col>
+      </Row>
     );
   }
 }
