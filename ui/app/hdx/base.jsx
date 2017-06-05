@@ -35,10 +35,11 @@ ReactDOM.render(
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
         <div style={{height: '100%'}}>
-          <Route exact path='/' component={HDXExportRegionList} />
-          <Route path='/new' component={HDXExportRegionForm} />
-          <Route path='/edit/:id' component={HDXExportRegionForm} />
-          <Route path='/preset_to_yaml' component={PresetToYaml} />
+          <Route exact path='/' component={ExportForm}/>
+          <Route exact path='/hdx' component={HDXExportRegionList} />
+          <Route path='/hdx/new' component={HDXExportRegionForm} />
+          <Route path='/hdx/edit/:id' component={HDXExportRegionForm} />
+          <Route path='/hdx/preset_to_yaml' component={PresetToYaml} />
         </div>
     </ConnectedRouter>
   </Provider>,

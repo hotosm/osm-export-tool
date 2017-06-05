@@ -72,7 +72,7 @@ def logout(request):
     'jobs.change_hdxexportregion',
     'jobs.delete_hdxexportregion',
 ))
-def hdx_list(request):
+def v3(request):
     return render(request, 'ui/base_react.html')
 
 
