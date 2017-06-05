@@ -73,7 +73,7 @@ nav > div.container {
     border: none !important;
 }
 
-ul.nav {
+#navbar ul.nav {
     float: right !important;
     font-size: large;
     font-weight: 700;
@@ -205,7 +205,7 @@ span.heading {
     width: 230px;
 }
 
-.btn-group {
+#create-controls .btn-group, #list-controls-temp .btn-group {
     position: absolute;
     top: 9px;
     left: 50px;
