@@ -76,8 +76,8 @@ class ExportRegionPanel extends Component {
     return (
       <Panel>
         <h4>
-          <Link to={`/edit/${region.id}`}>{region.name || 'Untitled'}</Link>
-          <Link className='btn btn-default pull-right' to={`/edit/${region.id}`} title='Settings'>
+          <Link to={`/hdx/edit/${region.id}`}>{region.name || 'Untitled'}</Link>
+          <Link className='btn btn-default pull-right' to={`/hdx/edit/${region.id}`} title='Settings'>
             <i className='fa fa-cog' />
           </Link>
           <Button title='Show on map' className='pull-right' onClick={this.selectRegion}>

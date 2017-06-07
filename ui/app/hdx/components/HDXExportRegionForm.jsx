@@ -376,7 +376,7 @@ export class HDXExportRegionForm extends Component {
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
           <div className={styles.hdxForm}>
             <ol className='breadcrumb'>
-              <li><Link to='/'>Export Regions</Link></li>
+              <li><Link to='/hdx'>Export Regions</Link></li>
               <li className='active'>{name}</li>
             </ol>
             <form onSubmit={handleSubmit}>

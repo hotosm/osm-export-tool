@@ -46,7 +46,7 @@ export class HDXExportRegionList extends Component {
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
           <div style={{padding: '20px'}}>
             <h2 style={{display: 'inline'}}>HDX Export Regions</h2>
-            <Link to='/new' style={{float: 'right'}} className='btn btn-primary btn-lg'>
+            <Link to='/hdx/new' style={{float: 'right'}} className='btn btn-primary btn-lg'>
               Create New Export Region
             </Link>
             <ExportRegionList regions={exportRegions} />
