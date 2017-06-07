@@ -167,7 +167,7 @@ export function createExportRegion (form) {
           exportRegion: rsp.data
         });
 
-        dispatch(push(`/edit/${rsp.data.id}`));
+        dispatch(push(`/hdx/edit/${rsp.data.id}`));
       }).catch(err => {
         console.warn(err);
 
