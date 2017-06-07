@@ -20,3 +20,4 @@ pyyaml==3.12
 raven==6.0.0
 requests==2.13.0
 requests_oauthlib
+pyparsing==2.2.0
