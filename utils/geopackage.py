@@ -8,6 +8,7 @@ from artifact import Artifact
 
 from osgeo import gdal, ogr, osr
 import sqlite3
+from feature_selection.feature_selection import slugify
 
 LOG = logging.getLogger(__name__)
 
@@ -319,7 +320,7 @@ class Geopackage(object):
         if self.per_theme:
             # this creates per-theme GPKGs
             for theme in self.feature_selection.themes:
-                conn = sqlite3.connect(self.stage_dir + theme + ".gpkg")
+                conn = sqlite3.connect(self.stage_dir + slugify(theme) + ".gpkg")
                 conn.enable_load_extension(True)
                 cur = conn.cursor()
                 cur.execute("attach database ? as 'geopackage'",(self.output_gpkg,))
@@ -340,7 +341,7 @@ class Geopackage(object):
     def results(self):
         results_list = []
         for theme in self.feature_selection.themes:
-            results_list.append(Artifact([os.path.join(self.stage_dir,theme) + ".gpkg"],Geopackage.name,theme=theme))
+            results_list.append(Artifact([os.path.join(self.stage_dir,slugify(theme)) + ".gpkg"],Geopackage.name,theme=theme))
         return results_list
 
 

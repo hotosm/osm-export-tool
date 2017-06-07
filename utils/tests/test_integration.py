@@ -22,7 +22,7 @@ stage_dir = os.path.dirname(os.path.realpath(__file__)) + '/stage/'
 logging.basicConfig(level=logging.DEBUG)
 
 TEST_FEATURE_SELECTION = FeatureSelection("""
-buildings:
+Some Buildings:
   types:
     - polygons
   select:
@@ -87,8 +87,15 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(len([x for x in z if x.format_name == 'shp']),2) # no road polygons present
         self.assertEqual(len([x for x in z if x.format_name == 'geopackage']),2)
         self.assertEqual(z[0].parts[0],"test_roads_gpkg.zip")
+        self.assertEqual(z[1].parts[0],"test_some_buildings_gpkg.zip")
+        self.assertEqual(z[2].parts[0],"test_roads_lines_shp.zip")
+        self.assertEqual(z[3].parts[0],"test_some_buildings_polygons_shp.zip")
+        self.assertEqual(z[4].parts[0],"test_roads_lines_kml.zip")
+        self.assertEqual(z[5].parts[0],"test_roads_polygons_kml.zip")
+        self.assertEqual(z[6].parts[0],"test_some_buildings_polygons_kml.zip")
 
 
+    @unittest.skip("Takes a long time")
     def test_export_img(self):
         self.setup_stage_dir()
         aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))

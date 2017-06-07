@@ -8,6 +8,7 @@ import subprocess
 import zipfile
 from string import Template
 from artifact import Artifact
+from feature_selection.feature_selection import slugify
 
 LOG = logging.getLogger(__name__)
 
@@ -60,6 +61,6 @@ class KML(object):
         results_list = []
         for theme in self.feature_selection.themes:
             for geom_type in self.feature_selection.geom_types(theme):
-                basename = os.path.join(self.output_dir,theme+"_"+geom_type) + ".kml"
+                basename = os.path.join(self.output_dir,slugify(theme)+"_"+geom_type) + ".kml"
                 results_list.append(Artifact([basename],KML.name,theme=theme))
         return results_list

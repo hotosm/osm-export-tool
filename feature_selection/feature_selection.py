@@ -1,6 +1,7 @@
 import os
 import re
 import yaml
+import unicodedata
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
 from yaml.parser import ParserError
@@ -67,6 +68,14 @@ BANNED_THEME_NAMES = [
     'other_relations'
 ]
 
+# adapted from https://github.com/django/django/blob/92053acbb9160862c3e743a99ed8ccff8d4f8fd6/django/utils/text.py#L417
+def slugify(s):
+    slug = unicodedata.normalize('NFKD', unicode(s))
+    slug = slug.encode('ascii', 'ignore').lower()
+    slug = re.sub(r'[^a-z0-9]+', '_', slug).strip('_')
+    slug = re.sub(r'[_]+', '_', slug)
+    return slug
+
 
 # FeatureSelection seralizes as YAML.
 # It describes a set of tables (themes)
@@ -96,8 +105,8 @@ class FeatureSelection(object):
                 if theme in BANNED_THEME_NAMES or theme.startswith("gpkg_") or theme.startswith("rtree_"):
                     self._errors.append("Theme name reserved: {0}".format(theme))
                     return False
-                if not re.match('^[a-z0-9-_]+$', theme):
-                    self._errors.append("Each theme must be named using lowercase characters and underscores")
+                if not re.match('^[a-zA-Z0-9_ ]+$', theme):
+                    self._errors.append("Each theme must be named using only characters, numbers, underscores and spaces")
                     return False
                 if 'select' not in theme_dict:
                     self._errors.append("Each theme must have a 'select' key")
@@ -155,8 +164,11 @@ class FeatureSelection(object):
     def themes(self):
         if self.doc:
             return self.doc.keys()
-
         return []
+
+    @property
+    def slug_themes(self):
+        return map(lambda x: slugify(x), self.themes)
 
     def geom_types(self,theme):
         if 'types' in self.doc[theme]:
@@ -198,7 +210,7 @@ class FeatureSelection(object):
         retval = []
         for theme in self.themes:
             for geom_type in self.geom_types(theme):
-                retval.append(theme + '_' + geom_type)
+                retval.append(slugify(theme) + '_' + geom_type)
         return retval
 
     def col_type(self,col_name):
@@ -209,7 +221,7 @@ class FeatureSelection(object):
     def create_sql(self,theme,geom_type):
         key_selections = ['"{0}"'.format(key) for key in self.key_selections(theme)]
         cols = OSM_ID_TAGS[geom_type] + key_selections
-        table_name = theme + "_" + geom_type
+        table_name = slugify(theme) + "_" + geom_type
         sqls = []
         sqls.append(CREATE_TEMPLATE.format(
             table_name,
@@ -237,7 +249,7 @@ class FeatureSelection(object):
 
             filter_clause = self.filter_clause(theme)
             for geom_type in self.geom_types(theme):
-                dst_tablename = theme + '_' + geom_type
+                dst_tablename = slugify(theme) + '_' + geom_type
                 src_tablename = OGR2OGR_TABLENAMES[geom_type]
                 cols = OSM_ID_TAGS[geom_type] + key_selections
                 create_sqls.append(CREATE_TEMPLATE.format(
