@@ -7,7 +7,7 @@ import subprocess
 import traceback
 import zipfile
 
-from feature_selection.feature_selection import FeatureSelection
+from feature_selection.feature_selection import FeatureSelection, slugify
 from hdx.data.dataset import Dataset
 from hdx.data.galleryitem import GalleryItem
 from raven import Client
@@ -115,13 +115,12 @@ class HDXExportSet(object):
         self._datasets = {}
         for theme in self._feature_selection.themes:
             dataset = Dataset()
-            name = u'{}_{}'.format(self._dataset_prefix, theme)
+            name = u'{}_{}'.format(self._dataset_prefix, slugify(theme))
             title = u'{} {} (OpenStreetMap Export)'.format(self._name, theme)
             tags = []
             caveats = ''
             if 'hdx' in self._feature_selection.doc[theme]:
                 hdx = self._feature_selection.doc[theme]['hdx']
-                title = hdx.get('name') or title
                 caveats = hdx.get('caveats', caveats)
 
                 if 'tags' in hdx:

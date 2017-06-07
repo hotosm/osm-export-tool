@@ -36,7 +36,7 @@ DAKAR_GEOJSON_MULTIPOLYGON = json.dumps({
       })
 
 yaml = '''
-buildings:
+Some Buildings:
     types:
         - polygons
     select:
@@ -104,7 +104,7 @@ class TestHDXExportSet(unittest.TestCase):
         )
         datasets = h.datasets
         self.assertEquals(len(datasets),2)
-        self.assertEquals(datasets['buildings']['name'],'hot_dakar_buildings')
+        self.assertEquals(datasets['Some Buildings']['name'],'hot_dakar_some_buildings')
         self.assertEquals(datasets['waterways']['name'],'hot_dakar_waterways')
 
     def test_extent_not_polygon_or_multipolygon(self):
