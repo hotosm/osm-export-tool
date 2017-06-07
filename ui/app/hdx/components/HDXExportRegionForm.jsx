@@ -693,7 +693,11 @@ points_of_interest:
       license_human_readable: 'Open Database License (ODC-ODbL)',
       schedule_period: 'daily',
       schedule_hour: 0,
-      subnational: true
+      subnational: true,
+      geopackage:true,
+      shp:true,
+      garmin_img:true,
+      kml:true
     },
     name: formValueSelector(FORM_NAME)(state, 'name')
   };
