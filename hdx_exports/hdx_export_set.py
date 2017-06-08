@@ -107,6 +107,14 @@ class HDXExportSet(object):
         bounds = self._extent.extent
         return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/buildings/recency".format(*bounds)
 
+    # used in the serializer
+    def dataset_links(self,hdx_prefix_url):
+        return map(lambda x: {
+            'name': '{}_{}'.format(self._dataset_prefix, x),
+            'url': '{}dataset/{}_{}'.format(
+                hdx_prefix_url, self._dataset_prefix, x),
+        }, self._feature_selection.slug_themes)
+
     @property
     def datasets(self): # noqa
         if self._datasets:

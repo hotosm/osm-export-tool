@@ -212,11 +212,7 @@ class HDXExportRegion(models.Model): # noqa
 
     @property
     def datasets(self): # noqa
-        return map(lambda x: {
-            'name': '{}_{}'.format(self.dataset_prefix, x),
-            'url': '{}dataset/{}_{}'.format(
-                settings.HDX_URL_PREFIX, self.dataset_prefix, x),
-        }, self.job.feature_selection_object.themes)
+        return self.hdx_dataset.dataset_links(settings.HDX_URL_PREFIX)
 
     @property
     def runs(self): # noqa
