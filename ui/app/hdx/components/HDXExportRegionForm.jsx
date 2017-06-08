@@ -26,6 +26,21 @@ const AVAILABLE_EXPORT_FORMATS = {
   kml: '.KMZ'
 };
 
+const slugify = (text) => {
+  const a = 'àáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ'
+  const b = 'aaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh'
+  const p = new RegExp(a.split('').join('|'), 'g')
+
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '_')           // Replace spaces with -
+    .replace(p, c =>
+        b.charAt(a.indexOf(c)))     // Replace special chars
+    .replace(/[^\w_]+/g, '')       // Remove all non-word chars
+    .replace(/\_\_+/g, '_')         // Replace multiple - with single -
+    .replace(/^_+/, '')             // Trim - from start of text
+    .replace(/_+$/, '')             // Trim - from end of text
+}
+
 const FORM_NAME = 'HDXExportRegionForm';
 
 const createExportRegion = _createExportRegion(FORM_NAME);
@@ -174,7 +189,7 @@ const PendingDatasetsPanel = ({ datasetPrefix, error, featureSelection, handleSu
       {
         Object.keys(featureSelection).map((x, i) => (
           <li key={i}>
-            <code>{datasetPrefix}_{x}</code>
+            <code>{datasetPrefix}_{slugify(x)}</code>
           </li>
         ))
       }
