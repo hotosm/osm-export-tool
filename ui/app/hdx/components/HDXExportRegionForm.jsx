@@ -42,9 +42,7 @@ const form = reduxForm({
       });
     }
 
-    const exportFormats = Object.keys(AVAILABLE_EXPORT_FORMATS).filter(x => values[x]);
-
-    if (exportFormats.length === 0) {
+    if (values.export_formats.length === 0) {
       throw new SubmissionError({
         export_formats: 'At least one data format is required.'
       });
@@ -62,7 +60,6 @@ const form = reduxForm({
 
     const formData = {
       ...values,
-      export_formats: exportFormats,
       locations: (values.locations || []).map(x => x.value || x),
       the_geom: geom
     };
@@ -146,14 +143,29 @@ const getTimeOptions = () => {
 };
 
 const getFormatCheckboxes = () =>
-  Object.keys(AVAILABLE_EXPORT_FORMATS).map((k, i) =>
     <Field
-      key={i}
-      name={k}
-      description={AVAILABLE_EXPORT_FORMATS[k]}
-      component={renderCheckbox}
-      type='checkbox'
-    />);
+      name="export_formats"
+      component={(props) => {
+        const ks = Object.keys(AVAILABLE_EXPORT_FORMATS).map((k, i) =>
+          <Checkbox
+          key={i}
+          name={k}
+          checked={props.input.value.indexOf(k) !== -1}
+          onChange={event => {
+            const newValue = [...props.input.value];
+            if(event.target.checked) {
+              newValue.push(k);
+            } else {
+              newValue.splice(newValue.indexOf(k), 1);
+            }
+            return props.input.onChange(newValue);
+          }}>
+          {AVAILABLE_EXPORT_FORMATS[k]}
+          </Checkbox>
+        );
+        return <div>{ks}</div>
+      }}/>
+
 
 const PendingDatasetsPanel = ({ datasetPrefix, error, featureSelection, handleSubmit, status, styles, submitting }) =>
   <Panel>
@@ -694,10 +706,7 @@ points_of_interest:
       schedule_period: 'daily',
       schedule_hour: 0,
       subnational: true,
-      geopackage:true,
-      shp:true,
-      garmin_img:true,
-      kml:true
+      export_formats:["shp","geopackage","kml","garmin_img"]
     },
     name: formValueSelector(FORM_NAME)(state, 'name')
   };
