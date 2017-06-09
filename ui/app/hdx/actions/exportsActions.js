@@ -1,25 +1,7 @@
 import {Config} from '../config';
 import types from './actionTypes';
 
-export function createExportRequest(exportData) {
-    return {
-        type: types.CREATE_EXPORT_SUCCESS,
-        exportInfo: exportData
-    }
-}
 
-export function exportInfoDone() {
-    return {
-        type: types.EXPORT_INFO_DONE,
-        setExportPackageFlag: true
-    }
-}
-export function exportInfoNotDone() {
-    return {
-        type: types.EXPORT_INFO_NOTDONE,
-        setExportPackageFlag: false
-    }
-}
 
 export function updateAoiInfo(geojson, geomType, title, description,) {
     return {
@@ -28,38 +10,6 @@ export function updateAoiInfo(geojson, geomType, title, description,) {
         geomType,
         title,
         description,
-    }
-}
-export function updateExportInfo(exportName, datapackDescription, projectName, makePublic, providers, area_str, layers) {
-    return {
-        type: types.UPDATE_EXPORT_INFO,
-        exportName : exportName,
-        datapackDescription,
-        projectName,
-        makePublic,
-        providers,
-        area_str,
-        layers,
-    }
-}
-
-export function clearExportInfo() {
-    return {
-        type: types.CLEAR_EXPORT_INFO,
-    }
-}
-
-export function stepperNextDisabled() {
-    return {
-        type: types.MAKE_STEPPER_INACTIVE,
-        stepperNextEnabled: false
-    }
-}
-
-export function stepperNextEnabled() {
-    return {
-        type: types.MAKE_STEPPER_ACTIVE,
-        stepperNextEnabled: true
     }
 }
 

@@ -12,17 +12,6 @@ export function drawerMenuReducer(state = initialState.drawerOpen, action) {
     }
 }
 
-export function stepperReducer(state = initialState.stepperNextEnabled, action) {
-    switch(action.type) {
-        case types.MAKE_STEPPER_ACTIVE:
-            return true;
-        case types.MAKE_STEPPER_INACTIVE:
-            return false;
-        default:
-            return state;
-    }
-}
-
 export function exportModeReducer(state = initialState.mode, action) {
     switch(action.type) {
         case types.SET_MODE:

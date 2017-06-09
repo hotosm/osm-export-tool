@@ -18,7 +18,6 @@ export default {
   toolbarIcons: toolbarIconsReducer,
   showImportModal: showImportModalReducer,
   importGeom: importGeomReducer,
-  stepperNextEnabled: stepperReducer,
   form: reduxFormReducer,
   hdx: getHdxReducer
 };

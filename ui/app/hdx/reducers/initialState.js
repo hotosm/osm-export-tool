@@ -67,6 +67,5 @@ export default {
         layers: '',
     },
     providers: [],
-    stepperNextEnabled: false,
     setExportPackageFlag: false,
 }

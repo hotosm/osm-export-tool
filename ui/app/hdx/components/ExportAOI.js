@@ -8,7 +8,7 @@ import SearchAOIToolbar from './SearchAOIToolbar.js';
 import DrawAOIToolbar from './DrawAOIToolbar.js';
 import InvalidDrawWarning from './InvalidDrawWarning.js';
 import DropZone from './DropZone.js';
-import {updateMode, updateAoiInfo, clearAoiInfo, stepperNextDisabled, stepperNextEnabled} from '../actions/exportsActions.js';
+import {updateMode, updateAoiInfo, clearAoiInfo} from '../actions/exportsActions.js';
 import {hideInvalidDrawWarning, showInvalidDrawWarning} from '../actions/drawToolBarActions.js';
 
 export const MODE_DRAW_BBOX = 'MODE_DRAW_BBOX';
@@ -75,7 +75,6 @@ export class ExportAOI extends Component {
             const feature = this.getFeature(geojson);
             this._drawLayer.getSource().addFeature(feature);
             this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
-            this.props.setNextEnabled();
         }
     }
 
@@ -87,7 +86,6 @@ export class ExportAOI extends Component {
             const feature = this.getFeature(this.props.aoiInfo.geojson);
             this._drawLayer.getSource().addFeature(feature);
             this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
-            this.props.setNextEnabled();
         }
     }
 
@@ -115,7 +113,6 @@ export class ExportAOI extends Component {
         }
         this._clearDraw();
         this.props.clearAoiInfo();
-        this.props.setNextDisabled();
     }
 
     handleZoomToSelection(bbox) {
@@ -150,7 +147,6 @@ export class ExportAOI extends Component {
 
 
         this.props.updateAoiInfo(geojson, 'Polygon', result.name, description);
-        this.props.setNextEnabled();
         this.handleZoomToSelection(bbox);
     }
 
@@ -169,7 +165,6 @@ export class ExportAOI extends Component {
         const bbox = serialize(extent)
         this._drawLayer.getSource().addFeature(bboxFeature);
         this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Map View');
-        this.props.setNextEnabled();
     }
 
 
@@ -205,7 +200,6 @@ export class ExportAOI extends Component {
 
             if(isGeoJSONValid(geojson)) {
                 this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Draw');
-                this.props.setNextEnabled();
             }
             else {
                 this.props.showInvalidDrawWarning();
@@ -214,7 +208,6 @@ export class ExportAOI extends Component {
         else if (this.props.mode == MODE_DRAW_BBOX) {
             const bbox = serialize(geometry.getExtent());
             this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Box');
-            this.props.setNextEnabled();
         }
         // exit drawing mode
         this.props.updateMode('MODE_NORMAL');
@@ -334,8 +327,6 @@ ExportAOI.propTypes = {
     showInvalidDrawWarning: React.PropTypes.func,
     updateAoiInfo: React.PropTypes.func,
     clearAoiInfo: React.PropTypes.func,
-    setNextDisabled: React.PropTypes.func,
-    setNextEnabled: React.PropTypes.func
 }
 
 
@@ -366,13 +357,7 @@ function mapDispatchToProps(dispatch) {
         },
         clearAoiInfo: () => {
             dispatch(clearAoiInfo());
-        },
-        setNextDisabled: () => {
-            dispatch(stepperNextDisabled());
-        },
-        setNextEnabled: () => {
-            dispatch(stepperNextEnabled());
-        },
+        }
     }
 }
 
