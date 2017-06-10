@@ -6,6 +6,7 @@ from datetime import timedelta
 import logging
 import json
 import uuid
+import math
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -17,6 +18,7 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
 from hdx.configuration import Configuration
+from django.core.exceptions import ValidationError
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
@@ -62,35 +64,69 @@ class TimeStampedModelMixin(models.Model):
     class Meta:  # pragma: no cover
         abstract = True
 
+def get_geodesic_area(geom):
+    """
+    Uses the algorithm to calculate geodesic area of a polygon from OpenLayers 2.
+    See http://bit.ly/1Mite1X.
+
+    Args:
+        geom (GEOSGeometry): the export extent as a GEOSGeometry.
+
+    Returns
+        area (float): the geodesic area of the provided geometry.
+    """
+    area = 0.0
+    coords = geom.coords[0]
+    length = len(coords)
+    if length > 2:
+        for x in range(length - 1):
+            p1 = coords[x]
+            p2 = coords[x+1]
+            area += math.radians(p2[0] - p1[0]) * (2 + math.sin(math.radians(p1[1]))
+                                                   + math.sin(math.radians(p2[1])))
+        area = area * 6378137 * 6378137 / 2.0
+    return area
+
+def validate_aoi(aoi):
+    area = get_geodesic_area(aoi)
+    if area > 2500000:
+        raise ValidationError(
+            "Geometry too large",
+            params={'the_geom': area},
+        )
+
+def validate_export_formats(value):
+    if not value:
+        raise ValidationError(
+            "Must choose at least one export format",
+            params={'export_formats': value},
+        )
+
+    for format_name in value:
+        if format_name not in FORMAT_NAMES:
+            raise ValidationError(
+                "Bad format name: {0}".format(format_name),
+                params={'export_formats': value},
+            )
+
 
 class Job(TimeStampedModelMixin):
-    """
-    Model for a Job.
-    """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     user = models.ForeignKey(User, related_name='owner')
-    name = models.CharField(max_length=100, db_index=True)
-    description = models.CharField(max_length=1000, db_index=True)
+    name = models.CharField(max_length=100, db_index=True, blank=False)
+    description = models.CharField(max_length=1000, db_index=True, default='', blank=True)
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
-    export_formats = ArrayField(models.CharField(max_length=10), default=list)
-    published = models.BooleanField(default=False, db_index=True)  # publish export
-    feature_save = models.BooleanField(default=False, db_index=True)  # save feature selections
-    feature_pub = models.BooleanField(default=False, db_index=True)  # publish feature selections
-    the_geom = models.GeometryField(verbose_name='Extent for export', srid=4326, default='')
+    export_formats = ArrayField(models.CharField(max_length=10),validators=[validate_export_formats],blank=False)
+    published = models.BooleanField(default=False, db_index=True)
+    the_geom = models.GeometryField(verbose_name='Extent for export', srid=4326, blank=False,validators=[validate_aoi])
     objects = models.GeoManager()
-    feature_selection = models.TextField(blank=True)
+    feature_selection = models.TextField(blank=True) # TODO make me required
     buffer_aoi = models.BooleanField(default=False)
 
     class Meta:  # pragma: no cover
         managed = True
         db_table = 'jobs'
-
-    def save(self, *args, **kwargs):
-        super(Job, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return '{0}'.format(self.name)
 
 
     @property

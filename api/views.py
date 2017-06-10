@@ -31,7 +31,6 @@ from serializers import (
     HDXExportRegionSerializer
 )
 from tasks.models import ExportRun, ExportTask
-from utils import FORMAT_NAMES
 from tasks.task_runners import ExportTaskRunner
 
 from .filters import ExportRunFilter, JobFilter
@@ -63,10 +62,6 @@ class JobViewSet(viewsets.ModelViewSet):
     * name (required): The name of the export.
     * description (required): A description of the export.
     * event: The project or event associated with this export, eg Nepal Activation.
-    * xmin (required): The minimum longitude coordinate.
-    * ymin (required): The minimum latitude coordinate.
-    * xmax (required): The maximum longitude coordinate.
-    * ymax (required): The maximum latitude coordinate.
     * formats (required): One of the supported export formats ([html](/api/formats) or [json](/api/formats.json)).
         * Use the format `slug` as the value of the formats parameter, eg `formats=thematic&formats=shp`.
     * preset: One of the published preset files ([html](/api/configurations) or [json](/api/configurations.json)).
@@ -85,10 +80,6 @@ class JobViewSet(viewsets.ModelViewSet):
             "name": "Dar es Salaam",
             "description": "A description of the test export",
             "event": "A HOT project or activation",
-            "xmin": 39.054879,
-            "ymin": -7.036697,
-            "xmax": 39.484149,
-            "ymax": -6.610281,
             "formats": ["thematic", "shp", "kml"],
             "published": "true"
         }
@@ -115,6 +106,7 @@ class JobViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = JobFilter
     search_fields = ('name', 'description', 'event', 'user__username')
+    http_method_names = ['get', 'post', 'head']
 
     def get_queryset(self,):
         """Return all objects by default."""
@@ -177,79 +169,19 @@ class JobViewSet(viewsets.ModelViewSet):
                 LOG.debug(e.detail)
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
+
     def create(self, request, *args, **kwargs):
-        """
-        Create a Job from the supplied request data.
-
-        The request data is validated by *api.serializers.JobSerializer*.
-        Associates the *Job* with required export formats, *ExportConfig* and *Tags*
-
-        Args:
-            request: the HTTP request.
-            *args: Variable length argument list.
-            **kwargs: Arbitary keyword arguments.
-
-        Returns:
-            the newly created Job instance.
-
-        Raises:
-            ValidationError: in case of validation errors.
-        """
+        request.data['user'] = request.user.id
         serializer = self.get_serializer(data=request.data)
-        if (serializer.is_valid()):
-            """Get the required data from the validated request."""
-            export_formats = request.data.get('formats')
-            tags = request.data.get('tags')
-            featuresave = request.data.get('featuresave')
-            featurepub = request.data.get('featurepub')
-            job = None
-            if len(export_formats) > 0:
-                """Save the job and make sure it's committed before running tasks."""
-                with transaction.atomic():
-                    job = serializer.save()
-                    job.export_formats = export_formats
-                    job.feature_selection = FeatureSelection.example('hdm')
-                    job.save()
-            else:
-                error_data = OrderedDict()
-                error_data['formats'] = [_('Invalid format provided.')]
-                return Response(error_data, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-            # run the tasks
-            task_runner = ExportTaskRunner()
-            job_uid = str(job.uid)
-            task_runner.run_task(job_uid=job_uid)
-            running = JobSerializer(job, context={'request': request})
-            return Response(running.data, status=status.HTTP_202_ACCEPTED)
-        else:
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
-
-
-class ExportFormatViewSet(viewsets.ViewSet):
-    """
-    ###ExportFormat API endpoint.
-
-    Endpoint exposing the supported export formats.
-    """
-    permission_classes = (permissions.AllowAny,)
-
-    def list(self, request, format=None):
-        return Response([{
-            'slug': slug,
-            'name': slug,
-            'description': FORMAT_NAMES[slug].description,
-            'url': reverse('api:formats-detail', args=[slug], request=request),
-        } for slug in FORMAT_NAMES.keys()])
-
-    def retrieve(self, request, pk=None, format=None):
-        return Response({
-            'slug': pk,
-            'name': FORMAT_NAMES[pk].name,
-            'description': FORMAT_NAMES[pk].description,
-            'url': reverse('api:formats-detail', args=[pk], request=request),
-        })
-
+    def perform_create(self,serializer):
+        job = serializer.save()
+        task_runner = ExportTaskRunner()
+        task_runner.run_task(job_uid=str(job.uid))
 
 class ExportRunViewSet(viewsets.ModelViewSet):
     """

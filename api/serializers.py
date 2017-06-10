@@ -213,132 +213,36 @@ class ListJobSerializer(serializers.Serializer):
         return obj.user.username
 
 
-class JobSerializer(serializers.Serializer):
-    """
-    Return a full representation of an export Job.
+class JobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        fields = ('id', 'uid', 'user', 'name',
+                  'description', 'event', 'export_formats', 'published',
+                  'the_geom', 'feature_selection','buffer_aoi','exports','configurations','tags', 'extent')
 
-    This is the core representation of the API.
-    """
-    formats = serializers.MultipleChoiceField(
-        choices=FORMAT_NAMES.keys(),
-        allow_blank=False,
-        write_only=True,
-        error_messages={
-            'invalid_choice': _("invalid export format."),
-            'not_a_list': _('Expected a list of items but got type "{input_type}".')
-        }
-    )
 
-    uid = serializers.UUIDField(read_only=True)
-    url = serializers.HyperlinkedIdentityField(
-        view_name='api:jobs-detail',
-        lookup_field='uid'
-    )
-    name = serializers.CharField(
-        max_length=100,
-    )
-    description = serializers.CharField(
-        max_length=255,
-    )
-    event = serializers.CharField(
-        max_length=100,
-        allow_blank=True,
-        required=False
-    )
-    created_at = serializers.DateTimeField(read_only=True)
-    owner = serializers.SerializerMethodField(read_only=True)
+    # TODO delete me below here soon
     exports = serializers.SerializerMethodField()
-    configurations = serializers.SerializerMethodField()
-    published = serializers.BooleanField(required=False)
-    feature_save = serializers.BooleanField(required=False)
-    feature_pub = serializers.BooleanField(required=False)
-    xmin = serializers.FloatField(
-        max_value=180, min_value=-180, write_only=True,
-        error_messages={
-            'required': _('xmin is required.'),
-            'invalid': _('invalid xmin value.'),
-        }
-    )
-    ymin = serializers.FloatField(
-        max_value=90, min_value=-90, write_only=True,
-        error_messages={
-            'required': _('ymin is required.'),
-            'invalid': _('invalid ymin value.'),
-        }
-    )
-    xmax = serializers.FloatField(
-        max_value=180, min_value=-180, write_only=True,
-        error_messages={
-            'required': _('xmax is required.'),
-            'invalid': _('invalid xmax value.'),
-        }
-    )
-    ymax = serializers.FloatField(
-        max_value=90, min_value=-90, write_only=True,
-        error_messages={
-            'required': _('ymax is required.'),
-            'invalid': _('invalid ymax value.'),
-        }
-    )
-    extent = serializers.SerializerMethodField(read_only=True)
-    user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
-    tags = serializers.SerializerMethodField()
-
-    def create(self, validated_data):
-        """Creates an export Job."""
-        return Job.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """Not implemented as Jobs are cloned rather than updated."""
-        pass
-
-    def validate(self, data):
-        """
-        Validates the data submitted during Job creation.
-
-        See api/validators.py for validation code.
-        """
-        user = data['user']
-        validators.validate_formats(data)
-        extents = validators.validate_bbox_params(data)
-        the_geom = validators.validate_bbox(extents, user=user)
-        data['the_geom'] = the_geom
-        data['export_formats'] = list(data['formats'])
-        # remove unwanted fields, these are pulled from the request in the view if the serializer is valid
-        data.pop('xmin'), data.pop('ymin'), data.pop('xmax'), data.pop('ymax'), data.pop('formats')
-        return data
-
-    def get_extent(self, obj):
-        """Return the export extent as a GeoJSON Feature."""
-        uid = str(obj.uid)
-        name = obj.name
-        geom = obj.the_geom
-        geometry = json.loads(GEOSGeometry(geom).geojson)
-        feature = OrderedDict()
-        feature['type'] = 'Feature'
-        feature['properties'] = {'uid': uid, 'name': name}
-        feature['geometry'] = geometry
-        return feature
-
     def get_exports(self, obj):
-        """Return the export formats selected for this export."""
-        return [{
-            'slug': slug,
-            'description': FORMAT_NAMES[slug].description,
-            'url': reverse('api:formats-detail', args=[slug], request=self.context['request']),
-        } for slug in obj.export_formats]
+        return map(lambda x: {'name':x},obj.export_formats)
 
-    def get_configurations(self, obj):
-        return []
-
+    tags = serializers.SerializerMethodField()
     def get_tags(self, obj):
         return []
 
-    def get_owner(self, obj):
-        """Return the username for the owner of this export."""
-        return obj.user.username
+    configurations = serializers.SerializerMethodField()
+    def get_configurations(self, obj):
+        return []
+
+    extent = serializers.SerializerMethodField()
+    def get_extent(self, obj):
+        return {
+            'type':'Feature',
+            'geometry':json.loads(obj.the_geom.json),
+            'properties':{}
+        }
+
+
 
 
 class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
