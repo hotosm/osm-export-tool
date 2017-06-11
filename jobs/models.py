@@ -9,15 +9,12 @@ import uuid
 import math
 
 from django.conf import settings
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
-from django.db.models.signals import post_delete, post_save
-from django.dispatch.dispatcher import receiver
 from django.utils import timezone
-from hdx.configuration import Configuration
 from django.core.exceptions import ValidationError
 
 from hdx_exports.hdx_export_set import HDXExportSet
@@ -25,44 +22,6 @@ from feature_selection.feature_selection import FeatureSelection
 from utils import FORMAT_NAMES
 
 LOG = logging.getLogger(__name__)
-
-# construct the upload path for export config files..
-
-
-def get_upload_path(instance, filename):
-    """
-    Construct the path to where the uploaded config file is to be stored.
-    """
-    configtype = instance.config_type.lower()
-    # sanitize the filename here..
-    path = 'export/config/{0}/{1}'.format(configtype, instance.filename)
-    return path
-
-
-class LowerCaseCharField(CharField):
-    """
-    Defines a charfield which automatically converts all inputs to
-    lowercase and saves.
-    """
-
-    def pre_save(self, model_instance, add):
-        """
-        Converts the string to lowercase before saving.
-        """
-        current_value = getattr(model_instance, self.attname)
-        setattr(model_instance, self.attname, current_value.lower())
-        return getattr(model_instance, self.attname)
-
-
-class TimeStampedModelMixin(models.Model):
-    """
-    Mixin for timestamped models.
-    """
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
-    updated_at = models.DateTimeField(default=timezone.now, editable=False)
-
-    class Meta:  # pragma: no cover
-        abstract = True
 
 def get_geodesic_area(geom):
     """
@@ -110,7 +69,7 @@ def validate_export_formats(value):
             )
 
 
-class Job(TimeStampedModelMixin):
+class Job(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     user = models.ForeignKey(User, related_name='owner')
@@ -123,6 +82,8 @@ class Job(TimeStampedModelMixin):
     objects = models.GeoManager()
     feature_selection = models.TextField(blank=True) # TODO make me required
     buffer_aoi = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(default=timezone.now, editable=False)
 
     class Meta:  # pragma: no cover
         managed = True

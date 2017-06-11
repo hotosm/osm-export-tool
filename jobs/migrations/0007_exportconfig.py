@@ -6,6 +6,14 @@ import django.utils.timezone
 import jobs.models
 import uuid
 
+def get_upload_path(instance, filename):
+    """
+    Construct the path to where the uploaded config file is to be stored.
+    """
+    configtype = instance.config_type.lower()
+    # sanitize the filename here..
+    path = 'export/config/{0}/{1}'.format(configtype, instance.filename)
+    return path
 
 class Migration(migrations.Migration):
 
@@ -25,7 +33,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=255, blank=True)),
                 ('type', models.CharField(default='PRESET', max_length=10, choices=[('PRESET', 'Preset'), ('TRANSLATION', 'Translation'), ('TRANSFORM', 'Transform')])),
                 ('filename', models.CharField(max_length=255)),
-                ('upload', models.FileField(max_length=255, upload_to=jobs.models.get_upload_path)),
+                ('upload', models.FileField(max_length=255, upload_to=get_upload_path)),
             ],
             options={
                 'abstract': False,

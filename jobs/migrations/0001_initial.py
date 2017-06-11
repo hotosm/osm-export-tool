@@ -5,9 +5,23 @@ from django.db import models, migrations
 import django.contrib.gis.db.models.fields
 import django.utils.timezone
 import jobs.models
+from django.db.models.fields import CharField
 from django.conf import settings
 import uuid
 
+class LowerCaseCharField(CharField):
+    """
+    Defines a charfield which automatically converts all inputs to
+    lowercase and saves.
+    """
+
+    def pre_save(self, model_instance, add):
+        """
+        Converts the string to lowercase before saving.
+        """
+        current_value = getattr(model_instance, self.attname)
+        setattr(model_instance, self.attname, current_value.lower())
+        return getattr(model_instance, self.attname)
 
 class Migration(migrations.Migration):
 
@@ -24,7 +38,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, editable=False, primary_key=True)),
                 ('uid', models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)),
                 ('name', models.CharField(max_length=100)),
-                ('slug', jobs.models.LowerCaseCharField(default='', unique=True, max_length=10)),
+                ('slug', LowerCaseCharField(default='', unique=True, max_length=10)),
                 ('description', models.CharField(max_length=255)),
                 ('cmd', models.TextField(max_length=1000)),
             ],
