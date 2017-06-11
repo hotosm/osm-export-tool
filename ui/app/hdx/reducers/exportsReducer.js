@@ -21,6 +21,14 @@ export function exportModeReducer(state = initialState.mode, action) {
     }
 }
 
+export function exportInfoReducer(state = initialState.exportInfo, action) {
+  switch(action.type) {
+    case types.RECEIVED_EXPORT:
+      return action.job
+  }
+  return state;
+}
+
 export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
     switch(action.type) {
         case types.UPDATE_AOI_INFO:

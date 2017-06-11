@@ -29,6 +29,23 @@ export function createExport (data,form_name) {
   }
 }
 
+export function getExport(id) {
+  return dispatch => {
+    return axios({
+      url:`/api/jobs/${id}`
+    }).then(rsp => {
+      dispatch({
+        type: types.RECEIVED_EXPORT,
+        id:id,
+        job:rsp.data
+      })
+    })
+    .catch(error => {
+      console.log("ERROR")
+    })
+  }
+}
+
 export function updateAoiInfo(geojson, geomType, title, description,) {
     return {
         type: types.UPDATE_AOI_INFO,

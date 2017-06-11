@@ -13,6 +13,7 @@ import { Row } from 'react-bootstrap';
 import HDXExportRegionForm from './components/HDXExportRegionForm';
 import HDXExportRegionList from './components/HDXExportRegionList';
 import ExportForm from './components/ExportForm';
+import ExportDetails from './components/ExportDetails';
 import PresetToYaml from './components/PresetToYaml';
 import reducers from './reducers/';
 
@@ -36,7 +37,8 @@ ReactDOM.render(
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
         <div style={{height: '100%'}}>
-          <Route exact path='/' component={ExportForm}/>
+          <Route exact path='/exports/new' component={ExportForm}/>
+          <Route path='/exports/:id' component={ExportDetails}/>
           <Route exact path='/hdx' component={HDXExportRegionList} />
           <Route path='/hdx/new' component={HDXExportRegionForm} />
           <Route path='/hdx/edit/:id' component={HDXExportRegionForm} />

@@ -26,6 +26,7 @@ export default {
       exportRegions: {},
       error: null,
     },
+    exportInfo:null,
     importGeom: {
         processing: false,
         processed: false,
