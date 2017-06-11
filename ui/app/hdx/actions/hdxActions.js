@@ -141,48 +141,45 @@ export function zoomToExportRegion (id) {
   });
 }
 
-export function createExportRegion (form) {
-  return data => {
-    return dispatch => {
-      dispatch(startSubmit(form));
+export function createExportRegion (data, form) {
+  return dispatch => {
+    dispatch(startSubmit(form));
+    return axios({
+      url: '/api/hdx_export_regions',
+      method: 'POST',
+      contentType: 'application/json; version=1.0',
+      data,
+      headers: {
+        'X-CSRFToken': cookie.load('csrftoken')
+      }
+    }).then(rsp => {
+      console.log('Success');
 
-      return axios({
-        url: '/api/hdx_export_regions',
-        method: 'POST',
-        contentType: 'application/json; version=1.0',
-        data,
-        headers: {
-          'X-CSRFToken': cookie.load('csrftoken')
-        }
-      }).then(rsp => {
-        console.log('Success');
+      console.log('id:', rsp.data.id);
 
-        console.log('id:', rsp.data.id);
+      dispatch(stopSubmit(form));
 
-        dispatch(stopSubmit(form));
-
-        dispatch({
-          type: types.EXPORT_REGION_CREATED,
-          id: data.id,
-          exportRegion: rsp.data
-        });
-
-        dispatch(push(`/hdx/edit/${rsp.data.id}`));
-      }).catch(err => {
-        console.warn(err);
-
-        if (err.response) {
-          return dispatch(stopSubmit(form, {
-            ...err.response.data,
-            _error: 'Your export region is invalid. Please check the fields above.'
-          }));
-        }
-
-        return dispatch(stopSubmit(form, {
-          _error: 'Export region creation failed.'
-        }));
+      dispatch({
+        type: types.EXPORT_REGION_CREATED,
+        id: data.id,
+        exportRegion: rsp.data
       });
-    };
+
+      dispatch(push(`/hdx/edit/${rsp.data.id}`));
+    }).catch(err => {
+      console.warn(err);
+
+      if (err.response) {
+        return dispatch(stopSubmit(form, {
+          ...err.response.data,
+          _error: 'Your export region is invalid. Please check the fields above.'
+        }));
+      }
+
+      return dispatch(stopSubmit(form, {
+        _error: 'Export region creation failed.'
+      }));
+    });
   };
 }
 

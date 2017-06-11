@@ -16,7 +16,7 @@ import ExportAOI from './ExportAOI';
 
 import { clickResetMap } from '../actions/AoiInfobarActions';
 import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
-import { createExportRegion as _createExportRegion, deleteExportRegion, getExportRegion, runExport, updateExportRegion as _updateExportRegion } from '../actions/hdxActions';
+import { createExportRegion, deleteExportRegion, getExportRegion, runExport, updateExportRegion } from '../actions/hdxActions';
 import styles from '../styles/HDXExportRegionForm.css';
 
 const AVAILABLE_EXPORT_FORMATS = {
@@ -43,8 +43,6 @@ const slugify = (text) => {
 
 const FORM_NAME = 'HDXExportRegionForm';
 
-const createExportRegion = _createExportRegion(FORM_NAME);
-const updateExportRegion = _updateExportRegion(FORM_NAME);
 
 const form = reduxForm({
   form: FORM_NAME,
@@ -80,9 +78,9 @@ const form = reduxForm({
     };
 
     if (values.id != null) {
-      dispatch(updateExportRegion(values.id, formData));
+      dispatch(updateExportRegion(values.id, formData,FORM_NAME));
     } else {
-      dispatch(createExportRegion(formData));
+      dispatch(createExportRegion(formData,FORM_NAME));
     }
   },
   validate: values => {
