@@ -1,7 +1,33 @@
+import axios from 'axios';
+import cookie from 'react-cookie';
 import {Config} from '../config';
 import types from './actionTypes';
+import { startSubmit, stopSubmit } from 'redux-form';
 
+export function createExport (data,form_name) {
+  return dispatch => {
+    dispatch(startSubmit(form_name));
+    return axios({
+      url: '/api/jobs',
+      method: 'POST',
+      contentType: 'application/json; version=1.0',
+      data,
+      headers: {
+        'X-CSRFToken': cookie.load('csrftoken')
+      }
+    }).then(rsp => {
 
+    }).catch(err => {
+      console.log("ERROR")
+      console.warn(err)
+      return dispatch(stopSubmit(form_name, {
+        ...err.response.data,
+        _error: 'Your export is invalid. Please check the fields above.'
+      }));
+    })
+
+  }
+}
 
 export function updateAoiInfo(geojson, geomType, title, description,) {
     return {

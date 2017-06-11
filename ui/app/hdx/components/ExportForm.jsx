@@ -3,6 +3,8 @@ import { Nav, NavItem, ButtonGroup, FormGroup, ControlLabel, FormControl, HelpBl
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import ExportAOI from './ExportAOI';
+import { createExport } from '../actions/exportsActions';
+import styles from '../styles/ExportForm.css';
 
 const AVAILABLE_EXPORT_FORMATS = {
   shp: 'ESRI Shapefiles',
@@ -120,15 +122,50 @@ const renderChooseFormats = (
     </Row>
 )
 
-const renderSummary = (
-  <Row>
-    <Button>Create Export</Button>
-  </Row>
-)
-
 const form = reduxForm({
-  form: "ExportForm"
+  form: "ExportForm",
+  onSubmit: (values, dispatch, props) => {
+    console.log("Submitting form. Values:", values)
+
+    let geom = props.aoiInfo.geojson;
+    if (props.aoiInfo.geomType == null) {
+      throw new SubmissionError({
+        _error: 'Please select an area of interest →'
+      });
+    }
+
+    if (props.aoiInfo.geojson.geometry) {
+      geom = props.aoiInfo.geojson.geometry;
+    }
+
+    if (props.aoiInfo.geojson.features) {
+      geom = props.aoiInfo.geojson.features[0].geometry;
+    }
+
+    const formData = {
+      ...values,
+      the_geom: geom
+    };
+    dispatch(createExport(formData,"ExportForm"))
+  },
+
+  validate: values => {
+    console.log("Validating: ", values)
+  }
 })
+
+const Summary = ({ handleSubmit, formValues, error}) => 
+  <Row>
+    <Col xs={6}>
+      {JSON.stringify(formValues)}
+    </Col>
+    <Col>
+      <Button bsStyle="primary" bsSize="large" type="submit" onClick={handleSubmit}>Create Export</Button>
+      {error && <p className={styles.error}><strong>{error}</strong></p>}
+    </Col>
+
+    
+  </Row>
 
 export class ExportForm extends Component {
   constructor(props) {
@@ -156,6 +193,7 @@ export class ExportForm extends Component {
   }
 
   render() {
+    const { handleSubmit, formValues, error } = this.props
     return( 
       <Row style={{height: '100%'}}>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
@@ -169,7 +207,7 @@ export class ExportForm extends Component {
             { this.state.step == '1' ? renderDescribe : null }
             { this.state.step == '2' ? renderSelectFeatures : null }
             { this.state.step == '3' ? renderChooseFormats : null }
-            { this.state.step == '4' ? renderSummary: null }
+            { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
           </form>
         </Col>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
@@ -179,4 +217,18 @@ export class ExportForm extends Component {
   }
 }
 
-export default connect()(form(ExportForm));
+const mapStateToProps = state => {
+  return {
+    aoiInfo: state.aoiInfo,
+    formValues:formValueSelector("ExportForm")(state,"name","description","project")
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {}
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(form(ExportForm));

@@ -100,7 +100,6 @@ class JobViewSet(viewsets.ModelViewSet):
 
     serializer_class = JobSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
-    parser_classes = (FormParser, MultiPartParser, JSONParser)
     lookup_field = 'uid'
     pagination_class = LinkHeaderPagination
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
@@ -171,8 +170,9 @@ class JobViewSet(viewsets.ModelViewSet):
 
 
     def create(self, request, *args, **kwargs):
-        request.data['user'] = request.user.id
-        serializer = self.get_serializer(data=request.data)
+        post = request.data.copy()
+        post['user'] = request.user.id
+        serializer = self.get_serializer(data=post)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
