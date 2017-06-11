@@ -47,26 +47,10 @@ export default {
         runs: [],
         error: null,
     },
-    runsDeletion: {
-        deleting: false,
-        deleted: false,
-        error: null,
-    },
     jobSubmit: {
         fetching: false,
         fetched: false,
         jobuid: '',
         error: null,
-    },
-    exportInfo: {
-        exportName: '',
-        datapackDescription: '',
-        projectName: '',
-        makePublic: false,
-        providers: [],
-        area_str: '',
-        layers: '',
-    },
-    providers: [],
-    setExportPackageFlag: false,
+    }
 }

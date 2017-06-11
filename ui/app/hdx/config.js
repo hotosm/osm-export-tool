@@ -1,9 +1,3 @@
-
-export const CLASSIFICATION_BANNER_BACKGROUND = 'green';
-export const CLASSIFICATION_BANNER_FOREGROUND = 'white';
-export const CLASSIFICATION_BANNER_TEXT       = 'UNCLASSIFIED';
-
-
 export const Config = {
     REGIONS_URL : '/api/regions.json',
     REGION_MASK_URL : '/api/maskregions.json',

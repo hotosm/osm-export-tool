@@ -50,32 +50,6 @@ export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
     }
 }
 
-export function exportInfoReducer(state = initialState.exportInfo, action) {
-    switch(action.type) {
-        case types.UPDATE_EXPORT_INFO:
-            return {
-                exportName: action.exportName,
-                datapackDescription: action.datapackDescription,
-                projectName: action.projectName,
-                makePublic: action.makePublic,
-                providers: action.providers,
-                area_str: action.area_str,
-                layers: action.layers,
-            };
-        case types.CLEAR_EXPORT_INFO:
-            return {
-                exportName: '',
-                datapackDescription: '',
-                projectName: '',
-                makePublic: false,
-                providers: [],
-                area_str: '',
-                layers: '',
-            }
-        default:
-            return state;
-    }
-}
 
 export function getProvidersReducer(state = initialState.providers, action ) {
     switch (action.type) {
