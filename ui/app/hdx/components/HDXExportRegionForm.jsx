@@ -55,11 +55,6 @@ const form = reduxForm({
       });
     }
 
-    if (values.export_formats.length === 0) {
-      throw new SubmissionError({
-        export_formats: 'At least one data format is required.'
-      });
-    }
 
     let geom = props.aoiInfo.geojson;
 
