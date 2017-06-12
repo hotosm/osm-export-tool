@@ -11,3 +11,4 @@ test:
 	hdx_exports/tests/test_hdx_export_set.py \
 	utils/tests/test_manager.py \
 	utils/tests/test_integration.py
+	python manage.py test api.tests jobs.tests tasks.tests
