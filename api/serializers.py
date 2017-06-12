@@ -6,23 +6,22 @@ Used by the View classes api/views.py to serialize API responses as JSON or HTML
 See DEFAULT_RENDERER_CLASSES setting in core.settings.contrib for the enabled renderers.
 """
 # -*- coding: utf-8 -*-
-import cPickle
 import json
 import logging
 import os
+from collections import OrderedDict
 
-from rest_framework.reverse import reverse
-from rest_framework_gis import serializers as geo_serializers
 
 from django.db import transaction
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+import django.core.exceptions
 
 from rest_framework import serializers
+from rest_framework_gis import serializers as geo_serializers
 
-import validators
 from jobs.models import (
     Job, HDXExportRegion
 )
@@ -31,14 +30,8 @@ from tasks.models import (
 )
 from utils import FORMAT_NAMES
 
-try:
-    from collections import OrderedDict
-# python 2.6
-except ImportError:
-    from ordereddict import OrderedDict
 
 
-from feature_selection.feature_selection import FeatureSelection
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
@@ -244,16 +237,24 @@ class JobSerializer(serializers.ModelSerializer):
 
 
 
+def validate_model(model):
+    try:
+        model.full_clean()
+    except django.core.exceptions.ValidationError as e:
+        raise serializers.ValidationError(e.message_dict)
 
 class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
-    dataset_prefix = serializers.RegexField('^[a-z0-9-_]+$')
-    export_formats = serializers.MultipleChoiceField(
-        choices=HDXExportRegion.EXPORT_FORMAT_CHOICES)
+    # Internally, an export region is a job model + an export region model
+    # but to the UI, it appears as a single entity
+
+    # hint to DRF these fields on creation
+    export_formats = serializers.ListField()
+    dataset_prefix = serializers.CharField()
     feature_selection = serializers.CharField()
-    job = SimplestJobSerializer(read_only=True)
-    name = serializers.CharField()
     the_geom = geo_serializers.GeometryField()
-    buffer_aoi = serializers.BooleanField(default=False)
+    name = serializers.CharField()
+    buffer_aoi = serializers.BooleanField()
+
 
     class Meta: # noqa
         model = HDXExportRegion
@@ -263,60 +264,48 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
                   'dataset_prefix', 'job', 'license', 'subnational',
                   'extra_notes', 'is_private', 'buffer_aoi',)
 
-    def validate(self, data): # noqa
-        f = FeatureSelection(data.get('feature_selection'))
-
-        if not f.valid:
-            raise serializers.ValidationError({
-                'feature_selection': f.errors
-            })
-
-        return data
 
     def create(self, validated_data): # noqa
-        LOG.info('validated_data: {}'.format(validated_data))
+        def slice_dict(in_dict,wanted_keys):
+            return dict((k, in_dict[k]) for k in wanted_keys if k in in_dict)
+
+        job_dict = slice_dict(validated_data,['the_geom','export_formats',
+                                              'feature_selection','buffer_aoi'])
+        job_dict['user'] = self.context['request'].user
+        job_dict['name'] = validated_data.get('dataset_prefix')
+        job_dict['description'] = validated_data.get('name')
+
+        region_dict = slice_dict(validated_data,['extra_notes','is_private','locations',
+                                                 'license','schedule_period','schedule_hour',
+                                                 'subnational'])
+        job = Job(**job_dict)
+        validate_model(job)
         with transaction.atomic():
-            request = self.context['request']
-
-            job = Job.objects.create(
-                the_geom=validated_data.get('the_geom'),
-                name=validated_data.get('dataset_prefix'),
-                export_formats=list(validated_data.get('export_formats')),
-                description=validated_data.get('name'),
-                feature_selection=validated_data.get('feature_selection'),
-                user=request.user,
-                buffer_aoi=validated_data.get('buffer_aoi'),
-            )
-
-            region = HDXExportRegion.objects.create(
-                extra_notes=validated_data.get('extra_notes'),
-                is_private=validated_data.get('is_private') or False,
-                locations=validated_data.get('locations'),
-                license=validated_data.get('license'),
-                schedule_period=validated_data.get('schedule_period'),
-                schedule_hour=validated_data.get('schedule_hour'),
-                subnational=validated_data.get('subnational'),
-                job=job,
-            )
+            job.save()
+            region_dict['job'] = job
+            region = HDXExportRegion(**region_dict)
+            validate_model(region)
+            region.save()
         return region
 
-    def update(self, instance, validated_data): # noqa
-        with transaction.atomic():
-            job = instance.job
-            job.name = validated_data.get('dataset_prefix')
-            job.the_geom = validated_data.get('the_geom')
-            job.export_formats = list(validated_data.get('export_formats'))
-            job.feature_selection = validated_data.get('feature_selection')
-            job.description = validated_data.get('name')
-            job.buffer_aoi = validated_data.get('buffer_aoi')
-            job.save()
 
-            instance.extra_notes = validated_data.get('extra_notes')
-            instance.is_private = validated_data.get('is_private') or False
-            instance.locations = validated_data.get('locations')
-            instance.license = validated_data.get('license')
-            instance.schedule_period = validated_data.get('schedule_period')
-            instance.schedule_hour = validated_data.get('schedule_hour')
-            instance.subnational = validated_data.get('subnational') or False
+    def update(self, instance, validated_data): # noqa
+        def update_attrs(model,v_data,keys):
+            for key in keys:
+                if key in v_data:
+                    setattr(model,key,v_data[key])
+
+        job = instance.job
+        update_attrs(job,validated_data,['the_geom','export_formats',
+                                         'feature_selection','buffer_aoi'])
+        job.name = validated_data.get('dataset_prefix')
+        job.description = validated_data.get('name')
+
+        validate_model(job)
+        update_attrs(instance,validated_data,['extra_notes','is_private','locations',
+                                              'license','schedule_period','schedule_hour','subnational'])
+        validate_model(instance)
+        with transaction.atomic():
             instance.save()
+            job.save()
         return instance

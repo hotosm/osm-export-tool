@@ -7,7 +7,8 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from jobs.models import Job
+from jobs.models import Job, HDXExportRegion
+from feature_selection.feature_selection import FeatureSelection
 
 LOG = logging.getLogger(__name__)
 
@@ -22,7 +23,8 @@ class TestJob(TestCase):
             'event': 'Nepal Activation',
             'user': user,
             'the_geom': the_geom,
-            'export_formats': ['shp']
+            'export_formats': ['shp'],
+            'feature_selection':FeatureSelection.example('simple')
         }
 
     def test_job_creation(self):
@@ -39,6 +41,13 @@ class TestJob(TestCase):
         with self.assertRaises(ValidationError) as e:
             job.full_clean()
         self.assertTrue('the_geom' in e.exception.message_dict)
+
+    def test_missing_fields(self):
+        job = Job(**self.fixture)
+        job.full_clean()
+        job.save()
+        self.assertIsNotNone(job.uid)
+        self.assertFalse(job.buffer_aoi)
 
     def test_export_formats(self):
         self.fixture['export_formats'] = []
@@ -66,37 +75,55 @@ class TestJob(TestCase):
         with self.assertRaises(ValidationError) as e:
             job.full_clean()
         self.assertTrue('the_geom' in e.exception.message_dict)
+
+    def test_validates_feature_selection(self):
+        self.fixture['feature_selection'] = ""
+        job = Job(**self.fixture)
+        with self.assertRaises(ValidationError) as e:
+            job.full_clean()
+        self.assertTrue('feature_selection' in e.exception.message_dict)
+        self.fixture['feature_selection'] = """
+        - a list
+        - not a dict
+        """
+        job = Job(**self.fixture)
+        with self.assertRaises(ValidationError) as e:
+            job.full_clean()
+        self.assertTrue('feature_selection' in e.exception.message_dict)
+        self.assertEqual(e.exception.message_dict['feature_selection'],[u'YAML must be dict, not list'])
         
 
-    @skip('')
-    def test_job_creation_with_config(self,):
-        saved_job = Job.objects.all()[0]
-        self.assertEqual(self.job, saved_job)
-        self.assertEquals(self.uid, saved_job.uid)
-        self.assertIsNotNone(saved_job.created_at)
-        self.assertIsNotNone(saved_job.updated_at)
-        saved_formats = saved_job.export_formats
-        self.assertIsNotNone(saved_formats)
-        self.assertItemsEqual(saved_formats, self.formats)
-        # attach a configuration to a job
-        f = File(open(self.path + '/files/hdm_presets.xml'))
-        filename = f.name.split('/')[-1]
-        config = ExportConfig.objects.create(name='Test Preset Config', filename=filename,
-                                             upload=f, config_type='PRESET', user=self.user)
-        f.close()
-        self.assertIsNotNone(config)
-        saved_job.config = config
-        saved_job.save()
-        saved_config = saved_job.config
-        self.assertEqual(config, saved_config)
-        saved_config.delete()  # cleanup
+class TestHDXExportRegion(TestCase):
+    def setUp(self,):
+        user = User.objects.create(
+            username='demo', email='demo@demo.com', password='demo')
+        the_geom = Polygon.from_bbox((-10.80029,6.3254236,-10.79809,6.32752))
+        self.job_fixture = {
+            'name': 'valid_dataset_prefix',
+            'description': 'Test Description',
+            'event': 'Nepal Activation',
+            'user': user,
+            'the_geom': the_geom,
+            'export_formats': ['shp'],
+            'feature_selection':FeatureSelection.example('simple')
+        }
+        self.job = Job.objects.create(**self.job_fixture)
+        self.fixture = {
+            'job':self.job,
+            'locations':['SEN']
+        }
 
+    def test_region_creation(self):
+        region = HDXExportRegion(**self.fixture)
+        region.full_clean()
+        region.save()
+        self.assertIsNotNone(region.id)
 
+    def test_region_validates_job_name(self):
+        self.job_fixture['name'] = 'InvalidPrefixWithCaps'
+        another_job = Job(**self.job_fixture)
+        region = HDXExportRegion(job=another_job)
 
-    @skip('')
-    def test_overpass_extents(self,):
-        job = Job.objects.all()[0]
-        extents = job.overpass_extents
-        self.assertIsNotNone(extents)
-        self.assertEquals(4, len(extents.split(',')))
-
+        with self.assertRaises(ValidationError) as e:
+            region.full_clean()
+        self.assertTrue('dataset_prefix' in e.exception.message_dict)

@@ -7,6 +7,7 @@ import logging
 import json
 import uuid
 import math
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -50,24 +51,27 @@ def validate_aoi(aoi):
     area = get_geodesic_area(aoi)
     if area > 2500000:
         raise ValidationError(
-            "Geometry too large",
-            params={'the_geom': area},
+            "Geometry too large: %(area)s km",
+            params={'area': area},
         )
 
 def validate_export_formats(value):
     if not value:
         raise ValidationError(
-            "Must choose at least one export format",
-            params={'export_formats': value},
+            "Must choose at least one export format."
         )
 
     for format_name in value:
         if format_name not in FORMAT_NAMES:
             raise ValidationError(
-                "Bad format name: {0}".format(format_name),
-                params={'export_formats': value},
+                "Bad format name: %(format_name)s",
+                params={'format_name': format_name},
             )
 
+def validate_feature_selection(value):
+    f = FeatureSelection(value)
+    if not f.valid:
+        raise ValidationError(f.errors)
 
 class Job(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
@@ -80,7 +84,7 @@ class Job(models.Model):
     published = models.BooleanField(default=False, db_index=True)
     the_geom = models.GeometryField(verbose_name='Extent for export', srid=4326, blank=False,validators=[validate_aoi])
     objects = models.GeoManager()
-    feature_selection = models.TextField(blank=True) # TODO make me required
+    feature_selection = models.TextField(blank=False,validators=[validate_feature_selection])
     buffer_aoi = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -89,15 +93,13 @@ class Job(models.Model):
         managed = True
         db_table = 'jobs'
 
-
     @property
     def feature_selection_object(self):
         """
-        a valid FeatureSelection object based off the feature_selection column.
+        a valid FeatureSelection object based off the feature_selection text column.
         """
-        fs = FeatureSelection(self.feature_selection)
-        # assert fs.valid, 'Feature selection is invalid'
-        return fs
+        return FeatureSelection(self.feature_selection)
+
 
 class HDXExportRegion(models.Model): # noqa
     PERIOD_CHOICES = (
@@ -108,24 +110,26 @@ class HDXExportRegion(models.Model): # noqa
         ('disabled', 'Disabled'),
     )
     HOUR_CHOICES = zip(xrange(0, 24), xrange(0, 24))
-    EXPORT_FORMAT_CHOICES = map(
-        lambda name: (name, FORMAT_NAMES[name].description), FORMAT_NAMES)
     schedule_period = models.CharField(
         blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
     schedule_hour = models.IntegerField(
         blank=False, choices=HOUR_CHOICES, default=0)
     deleted = models.BooleanField(default=False)
-    job = models.ForeignKey(Job, null=True,
-        related_name='hdx_export_region_set')
+    # a job should really be required, but that interferes with DRF validation lifecycle.
+    job = models.ForeignKey(Job, null=True, related_name='hdx_export_region_set')
     is_private = models.BooleanField(default=False)
     locations = ArrayField(
         models.CharField(blank=False, max_length=32), null=True)
-    license = models.CharField(max_length=32, null=True)
+    license = models.CharField(max_length=32, null=True,blank=True)
     subnational = models.BooleanField(default=True)
-    extra_notes = models.TextField(null=True)
+    extra_notes = models.TextField(null=True,blank=True)
 
     class Meta: # noqa
         db_table = 'hdx_export_regions'
+
+    def clean(self):
+        if self.job and not re.match(r'^[a-z0-9-_]+$',self.job.name):
+            raise ValidationError({'dataset_prefix':"Invalid dataset_prefix: {0}".format(self.job.name)})
 
     @property
     def delta(self): # noqa
