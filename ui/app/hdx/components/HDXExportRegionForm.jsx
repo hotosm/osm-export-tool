@@ -714,7 +714,8 @@ points_of_interest:
       schedule_period: 'daily',
       schedule_hour: 0,
       subnational: true,
-      export_formats:["shp","geopackage","kml","garmin_img"]
+      export_formats:["shp","geopackage","kml","garmin_img"],
+      buffer_aoi:false
     },
     name: formValueSelector(FORM_NAME)(state, 'name')
   };
