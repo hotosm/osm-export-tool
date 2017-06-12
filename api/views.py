@@ -267,32 +267,6 @@ class ExportRunViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ExportTaskViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ###ExportTask API endpoint.
-
-    Provides List and Retrieve endpoints for ExportTasks.
-    """
-    serializer_class = ExportTaskSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    queryset = ExportTask.objects.all()
-    lookup_field = 'uid'
-
-    def retrieve(self, request, uid=None, *args, **kwargs):
-        """
-        GET a single export task.
-
-        Args:
-            request: the http request.
-            uid: the uid of the export task to GET.
-        Returns:
-            the serialized ExportTask data.
-        """
-        queryset = ExportTask.objects.filter(uid=uid)
-        serializer = self.get_serializer(queryset, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     serializer_class = HDXExportRegionSerializer
     permission_classes = (IsHDXAdmin,)
