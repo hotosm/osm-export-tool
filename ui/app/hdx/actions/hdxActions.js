@@ -183,44 +183,43 @@ export function createExportRegion (data, form) {
   };
 }
 
-export function updateExportRegion (form) {
-  return (id, data) => {
-    // TODO this is practically identical to createExportRegion
-    return dispatch => {
-      dispatch(startSubmit(form));
+export function updateExportRegion (id, data, form) {
+  // TODO this is practically identical to createExportRegion
+  return dispatch => {
+    dispatch(startSubmit(form));
 
-      return axios({
-        url: `/api/hdx_export_regions/${id}`,
-        method: 'PUT',
-        contentType: 'application/json; version=1.0',
-        data,
-        headers: {
-          'X-CSRFToken': cookie.load('csrftoken')
-        }
-      }).then(rsp => {
-        console.log('Success');
+    return axios({
+      url: `/api/hdx_export_regions/${id}`,
+      method: 'PUT',
+      contentType: 'application/json; version=1.0',
+      data,
+      headers: {
+        'X-CSRFToken': cookie.load('csrftoken')
+      }
+    }).then(rsp => {
+      console.log('Success');
 
-        dispatch(stopSubmit(form));
+      dispatch(stopSubmit(form));
 
-        dispatch({
-          type: types.EXPORT_REGION_UPDATED,
-          id,
-          exportRegion: rsp.data
-        });
-      }).catch(err => {
-        console.warn(err);
-
-        if (err.response) {
-          return dispatch(stopSubmit(form, {
-            ...err.response.data,
-            _error: 'Your export region is invalid. Please check the fields above.'
-          }));
-        }
-
-        return dispatch(stopSubmit(form, {
-          _error: 'Export region creation failed.'
-        }));
+      dispatch({
+        type: types.EXPORT_REGION_UPDATED,
+        id,
+        exportRegion: rsp.data
       });
-    };
+    }).catch(err => {
+      console.warn(err);
+
+      if (err.response) {
+        return dispatch(stopSubmit(form, {
+          ...err.response.data,
+          _error: 'Your export region is invalid. Please check the fields above.'
+        }));
+      }
+
+      return dispatch(stopSubmit(form, {
+        _error: 'Export region creation failed.'
+      }));
+    });
   };
+  
 }
