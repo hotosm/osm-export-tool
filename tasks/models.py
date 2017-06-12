@@ -2,8 +2,10 @@
 from __future__ import unicode_literals
 
 import uuid
+import os
 
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
@@ -33,6 +35,11 @@ class ExportRun(models.Model):
     def __str__(self):
         return '{0}'.format(self.uid)
 
+    @property
+    def duration(self):
+        if self.started_at and self.finished_at:
+            return (self.finished_at - self.started_at).seconds
+        return None
 
 class ExportTask(models.Model):
     """
@@ -56,3 +63,17 @@ class ExportTask(models.Model):
 
     def __str__(self):
         return 'ExportTask uid: {0}'.format(self.uid)
+
+    @property
+    def duration(self):
+        if self.started_at and self.finished_at:
+            return (self.finished_at - self.started_at).seconds
+        return None
+
+    @property
+    def download_url(self):
+        if self.filenames:
+            filename = self.filenames[0] #TODO make me work with multiple URLs
+            return os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), filename)
+        return None
+
