@@ -4,6 +4,9 @@ deploy:
 	docker-compose rm -f -v
 	DOCKER_CLIENT_TIMEOUT=120 COMPOSE_HTTP_TIMEOUT=120 docker-compose -f docker-compose.production.yml up
 
+django_test:
+	python manage.py test api.tests jobs.tests tasks.tests
+
 test:
 	nosetests \
 	feature_selection/tests/test_feature_selection.py \
@@ -11,4 +14,3 @@ test:
 	hdx_exports/tests/test_hdx_export_set.py \
 	utils/tests/test_manager.py \
 	utils/tests/test_integration.py
-	python manage.py test api.tests jobs.tests tasks.tests
