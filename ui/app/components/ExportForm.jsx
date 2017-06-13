@@ -158,10 +158,23 @@ const ChooseFormats = ({next}) =>
 const Summary = ({ handleSubmit, formValues, error}) => 
   <Row>
     <Col xs={6}>
-      Summary:
+      Debugging form values:
       {JSON.stringify(formValues)}
     </Col>
     <Col xs={6}>
+      <Field
+        name='buffer_aoi'
+        description='Buffer AOI'
+        component={renderCheckbox}
+        type='checkbox'
+      />
+      <Field
+        name='published'
+        description='Publish this export'
+        component={renderCheckbox}
+        type='checkbox'
+      />
+
       <Button bsStyle="success" bsSize="large" type="submit" style={{width:"100%"}} onClick={handleSubmit}>Create Export</Button>
       {error && <p className={styles.error}><strong>{error}</strong></p>}
     </Col>
