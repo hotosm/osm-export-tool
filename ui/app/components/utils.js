@@ -2,6 +2,7 @@ import React from 'react';
 import { HelpBlock, FormControl, FormGroup, ControlLabel, Checkbox } from 'react-bootstrap';
 import { Field } from 'redux-form'
 import Select from 'react-select';
+import styles from '../styles/utilsStyles.css'
 
 export const AVAILABLE_EXPORT_FORMATS = {
   shp: 'ESRI Shapefiles',

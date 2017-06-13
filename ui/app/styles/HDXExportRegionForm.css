@@ -2,14 +2,6 @@
   padding: 20px;
 }
 
-p.error, p.status {
-  margin: 10px 0;
-}
-
-.error {
-  color: #d73f3f;
-}
-
 .featureSelection {
   font-family: monospace;
 }
