@@ -1,72 +1,11 @@
 import React, {Component} from 'react';
-import { Nav, NavItem, ButtonGroup, FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
+import { Nav, NavItem, ButtonGroup, Row, Col, Panel, Button } from 'react-bootstrap';
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import ExportAOI from './aoi/ExportAOI';
 import { createExport } from '../actions/exportsActions';
 import styles from '../styles/ExportForm.css';
-
-const AVAILABLE_EXPORT_FORMATS = {
-  shp: 'ESRI Shapefiles',
-  geopackage: 'GeoPackage',
-  garmin_img: 'Garmin .IMG',
-  kml: 'Google Earth .KMZ',
-  xml: 'OSM .XML',
-  pbf: 'OSM .PBF'
-};
-
-const getFormatCheckboxes = () =>
-    <Field
-      name="export_formats"
-      component={(props) => {
-        const ks = Object.keys(AVAILABLE_EXPORT_FORMATS).map((k, i) =>
-          <Checkbox
-          key={i}
-          name={k}
-          checked={props.input.value.indexOf(k) !== -1}
-          onChange={event => {
-            const newValue = [...props.input.value];
-            if(event.target.checked) {
-              newValue.push(k);
-            } else {
-              newValue.splice(newValue.indexOf(k), 1);
-            }
-            return props.input.onChange(newValue);
-          }}>
-          {AVAILABLE_EXPORT_FORMATS[k]}
-          </Checkbox>
-        );
-        return <div>{ks}</div>
-      }}/>
-
-const renderCheckboxes = ({id, label, input, data, meta: { error }, description, ...props}) =>
-  <FormGroup controlId={id || input.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
-    {props.children}
-    <FormControl.Feedback />
-    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
-  </FormGroup>;
-
-const renderCheckbox = ({input, data, description, meta, ...props}) =>
-  <Checkbox {...input} {...props}>{description}</Checkbox>;
-
-const renderInput = ({ id, input, label, help, meta: { error }, ...props }) =>
-  <FormGroup controlId={id || props.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
-    <FormControl {...input} {...props} />
-    <FormControl.Feedback />
-    <HelpBlock>{error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
-  </FormGroup>;
-
-const renderTextArea = ({id, label, input, data, meta: { error }, ...props}) =>
-  <FormGroup controlId={id || input.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
-    <FormControl componentClass='textarea' {...input} {...props} />
-    <FormControl.Feedback />
-    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
-  </FormGroup>;
-
-
+import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea } from './utils';
 
 const form = reduxForm({
   form: "ExportForm",

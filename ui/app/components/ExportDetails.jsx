@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
+import { Row, Col, Panel, Button }  from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getExport } from '../actions/exportsActions'
 
