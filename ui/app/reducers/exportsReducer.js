@@ -1,17 +1,6 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-export function drawerMenuReducer(state = initialState.drawerOpen, action) {
-    switch(action.type) {
-        case types.OPEN_DRAWER:
-            return true;
-        case types.CLOSE_DRAWER:
-            return false;
-        default:
-            return state;
-    }
-}
-
 export function exportModeReducer(state = initialState.mode, action) {
     switch(action.type) {
         case types.SET_MODE:
@@ -47,17 +36,5 @@ export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
             };
         default:
             return state;
-    }
-}
-
-
-export function getProvidersReducer(state = initialState.providers, action ) {
-    switch (action.type) {
-        case types.GETTING_PROVIDERS:
-            return  []
-        case types.PROVIDERS_RECEIVED:
-            return action.providers
-        default:
-            return state
     }
 }

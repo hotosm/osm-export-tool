@@ -72,18 +72,3 @@ export function updateMode(mode) {
         mode: mode
     }
 }
-
-export function closeDrawer() {
-    return {
-        type: types.CLOSE_DRAWER
-    }
-}
-
-export function openDrawer() {
-    return {
-        type: types.OPEN_DRAWER
-    }
-}
-
-
-

@@ -40,7 +40,6 @@ export default {
         import: "DEFAULT",
         search: "DEFAULT",
     },
-    drawerOpen: true,
     runsList: {
         fetching: false,
         fetched: false,
