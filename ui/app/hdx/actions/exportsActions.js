@@ -2,6 +2,7 @@ import axios from 'axios';
 import cookie from 'react-cookie';
 import {Config} from '../config';
 import types from './actionTypes';
+import { push } from 'react-router-redux';
 import { startSubmit, stopSubmit } from 'redux-form';
 
 export function createExport (data,form_name) {
@@ -16,7 +17,10 @@ export function createExport (data,form_name) {
         'X-CSRFToken': cookie.load('csrftoken')
       }
     }).then(rsp => {
-
+      console.log("SUCCESS")
+      console.log("export uid: ", rsp.data.uid)
+      dispatch(stopSubmit(form_name))
+      dispatch(push(`/exports/detail/${rsp.data.uid}`));
     }).catch(err => {
       console.log("ERROR")
       console.warn(err)

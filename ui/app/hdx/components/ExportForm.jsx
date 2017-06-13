@@ -66,61 +66,7 @@ const renderTextArea = ({id, label, input, data, meta: { error }, ...props}) =>
     <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
   </FormGroup>;
 
-const renderDescribe = <Row>
-    <Field
-      name='name'
-      type="text"
-      label='Name'
-      placeholder="name this export"
-      component={renderInput}
-    />
-    <Field
-      name='description'
-      type="text"
-      label='Description'
-      component={renderTextArea}
-      rows='4'
-    />
-    <Field
-      name='project'
-      type="text"
-      label='Project'
-      placeholder="which activation this export is for"
-      component={renderInput}
-    />
-    Coordinates:
-    <Button>Next</Button>
-  </Row>
 
-const renderSelectFeatures = (
-    <Row>
-      <ButtonGroup justified>
-        <Button href="#">Tree Tag</Button>
-        <Button href="#" active={true}>YAML</Button>
-      </ButtonGroup>
-      <Field
-        name='feature_selection'
-        type="text"
-        label='Feature Selection'
-        component={renderTextArea}
-        rows='10'
-      />
-      <Button>Next</Button>
-    </Row>
-)
-
-const renderChooseFormats = (
-    <Row>
-      <Field
-        name='export_formats'
-        label='File Formats'
-        component={renderCheckboxes}
-      >
-        {getFormatCheckboxes()}
-      </Field>
-      <Button>Next</Button>
-    </Row>
-)
 
 const form = reduxForm({
   form: "ExportForm",
@@ -154,17 +100,71 @@ const form = reduxForm({
   }
 })
 
+const Describe = ({next}) => 
+  <Row>
+    <Field
+      name='name'
+      type="text"
+      label='Name'
+      placeholder="name this export"
+      component={renderInput}
+    />
+    <Field
+      name='description'
+      type="text"
+      label='Description'
+      component={renderTextArea}
+      rows='4'
+    />
+    <Field
+      name='project'
+      type="text"
+      label='Project'
+      placeholder="which activation this export is for"
+      component={renderInput}
+    />
+    Coordinates:
+    <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
+  </Row>
+
+const SelectFeatures = ({next}) =>
+  <Row>
+    <ButtonGroup justified>
+      <Button href="#">Tree Tag</Button>
+      <Button href="#" active={true}>YAML</Button>
+    </ButtonGroup>
+    <Field
+      name='feature_selection'
+      type="text"
+      label='Feature Selection'
+      component={renderTextArea}
+      rows='10'
+    />
+    <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
+  </Row>
+
+const ChooseFormats = ({next}) => 
+  <Row>
+    <Field
+      name='export_formats'
+      label='File Formats'
+      component={renderCheckboxes}
+    >
+      {getFormatCheckboxes()}
+    </Field>
+    <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
+  </Row>
+
 const Summary = ({ handleSubmit, formValues, error}) => 
   <Row>
     <Col xs={6}>
+      Summary:
       {JSON.stringify(formValues)}
     </Col>
-    <Col>
-      <Button bsStyle="primary" bsSize="large" type="submit" onClick={handleSubmit}>Create Export</Button>
+    <Col xs={6}>
+      <Button bsStyle="success" bsSize="large" type="submit" style={{width:"100%"}} onClick={handleSubmit}>Create Export</Button>
       {error && <p className={styles.error}><strong>{error}</strong></p>}
     </Col>
-
-    
   </Row>
 
 export class ExportForm extends Component {
@@ -196,17 +196,17 @@ export class ExportForm extends Component {
     const { handleSubmit, formValues, error } = this.props
     return( 
       <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-          <Nav bsStyle="tabs" activeKey={this.state.step.toString()}>
+        <Col xs={6} style={{height: '100%', overflowY: 'scroll', padding:"20px"}}>
+          <Nav bsStyle="tabs" activeKey={this.state.step.toString()} style={{marginBottom:"20px"}}>
             <NavItem eventKey="1" onClick={this.handleStep1}>1 Describe Export</NavItem>
             <NavItem eventKey="2" onClick={this.handleStep2}>2 Select Features</NavItem>
             <NavItem eventKey="3" onClick={this.handleStep3}>3 Choose Formats</NavItem>
             <NavItem eventKey="4" onClick={this.handleStep4}>4 Summary</NavItem>
           </Nav>
           <form>
-            { this.state.step == '1' ? renderDescribe : null }
-            { this.state.step == '2' ? renderSelectFeatures : null }
-            { this.state.step == '3' ? renderChooseFormats : null }
+            { this.state.step == '1' ? <Describe next={this.handleStep2}/> : null }
+            { this.state.step == '2' ? <SelectFeatures next={this.handleStep3}/> : null }
+            { this.state.step == '3' ? <ChooseFormats next={this.handleStep4}/> : null }
             { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
           </form>
         </Col>
