@@ -209,11 +209,15 @@ export class ExportForm extends Component {
             { this.state.step == '3' ? <ChooseFormats next={this.handleStep4}/> : null }
             { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
           </form>
+          <Panel style={{marginTop:'20px'}}>
+            OpenStreetMap database last updated: x (x minutes ago)
+          </Panel>
         </Col>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
           <ExportAOI/>
         </Col>
-      </Row>)
+      </Row>
+      )
   }
 }
 

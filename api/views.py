@@ -20,6 +20,9 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
 
+
+import dateutil.parser
+from cachetools.func import ttl_cache
 import requests
 
 from jobs.models import (
@@ -309,3 +312,9 @@ def request_geonames(request):
             },
             status=500,
         )
+
+@ttl_cache(ttl=60)
+@require_http_methods(['GET'])
+def get_overpass_timestamp(request):
+    r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
+    return JsonResponse({'timestamp':dateutil.parser.parse(r.content)})

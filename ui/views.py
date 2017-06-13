@@ -1,25 +1,12 @@
 # -*- coding: utf-8 -*-
 """UI view definitions."""
 
-from cachetools.func import ttl_cache
-
-import dateutil.parser
-
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
-
-import requests
-
-
-@ttl_cache(ttl=60)
-def get_overpass_last_updated_at():
-    r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
-
-    return dateutil.parser.parse(r.content)
 
 
 @require_http_methods(['GET'])
@@ -28,8 +15,7 @@ def create_export(request):
     Handle display of the create export page.
     """
     return render(request, 'ui/create.html', {
-        'max_extent': settings.JOB_MAX_EXTENT,
-        'overpass_last_updated_at': get_overpass_last_updated_at(),
+        'max_extent': settings.JOB_MAX_EXTENT
     })
 
 
@@ -39,8 +25,7 @@ def clone_export(request, uuid=None):
     Handle display of the clone export page.
     """
     return render(request, 'ui/clone.html', {
-        'max_extent': settings.JOB_MAX_EXTENT,
-        'overpass_last_updated_at': get_overpass_last_updated_at(),
+        'max_extent': settings.JOB_MAX_EXTENT
     })
 
 

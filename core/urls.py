@@ -12,7 +12,7 @@ from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
 
 from api.urls import router
-from api.views import request_geonames
+from api.views import request_geonames, get_overpass_timestamp
 from ui import urls as ui_urls
 from ui.views import (
     about, create_error_view, help_create, help_exports, help_features,
@@ -65,6 +65,7 @@ urlpatterns += [
     url(r'^api/', include(router.urls, namespace='api')),
     url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^request_geonames$', login_required(request_geonames)),
+    url(r'^api/overpass_timestamp$', login_required(get_overpass_timestamp))
 ]
 
 # i18n for js
