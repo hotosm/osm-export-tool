@@ -28,10 +28,28 @@ LOG = logging.getLogger(__name__)
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
+class ExportTaskSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ExportTask
+        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 
+                  'duration', 'errors','filesize_bytes','filenames', 'download_url')
+
+class ExportRunSerializer(serializers.ModelSerializer):
+    tasks = ExportTaskSerializer(many=True,read_only=True)
+
+    class Meta:
+        model = ExportRun
+        lookup_field = 'uid'
+        fields = ('uid', 'url', 'started_at', 'finished_at', 'duration', 
+                  'user', 'status', 'tasks')
+
 class JobSerializer(serializers.ModelSerializer):
+    runs = ExportRunSerializer(many=True,read_only=True)
+
     class Meta:
         model = Job
-        fields = ('id', 'uid', 'user', 'name',
+        fields = ('id', 'uid', 'user', 'name','runs',
                   'description', 'event', 'export_formats', 'published',
                   'the_geom', 'feature_selection','buffer_aoi')
 
@@ -45,22 +63,6 @@ class ListJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = ('id', 'uid', 'user', 'name','description', 'event', 'export_formats', 'published')
-
-
-class ExportTaskSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ExportTask
-        fields = ('uid', 'url', 'name', 'status', 'started_at', 'finished_at', 
-                  'duration', 'errors','filesize_bytes','filenames', 'download_url')
-
-class ExportRunSerializer(serializers.ModelSerializer):
-    tasks = ExportTaskSerializer(many=True)
-
-    class Meta:
-        model = ExportRun
-        fields = ('uid', 'url', 'started_at', 'finished_at', 'duration', 
-                  'username', 'status', 'job', 'tasks')
 
 
 def validate_model(model):
