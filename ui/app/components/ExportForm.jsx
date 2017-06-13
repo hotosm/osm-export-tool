@@ -89,7 +89,7 @@ const ChooseFormats = ({next}) =>
       label='File Formats'
       component={renderCheckboxes}
     >
-      {getFormatCheckboxes()}
+      {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
     </Field>
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>

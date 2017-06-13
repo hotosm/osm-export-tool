@@ -9,7 +9,6 @@ import { FormattedDate, FormattedRelative, FormattedTime, IntlMixin } from 'reac
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
-import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 import yaml from 'js-yaml';
 import ExportAOI from './aoi/ExportAOI';
@@ -21,6 +20,13 @@ import styles from '../styles/HDXExportRegionForm.css';
 import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, renderSelect, renderMultiSelect, slugify } from './utils';
 
 const FORM_NAME = 'HDXExportRegionForm';
+
+const HDX_EXPORT_FORMATS = {
+  shp: AVAILABLE_EXPORT_FORMATS.shp,
+  geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
+  garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
+  kml: AVAILABLE_EXPORT_FORMATS.kml
+}
 
 const form = reduxForm({
   form: FORM_NAME,
@@ -422,7 +428,7 @@ export class HDXExportRegionForm extends Component {
                     label='File Formats'
                     component={renderCheckboxes}
                   >
-                    {getFormatCheckboxes()}
+                    {getFormatCheckboxes(HDX_EXPORT_FORMATS)}
                   </Field>
                 </Col>
                 <Col xs={7}>

@@ -12,11 +12,11 @@ export const AVAILABLE_EXPORT_FORMATS = {
   pbf: 'OSM .PBF'
 };
 
-export const getFormatCheckboxes = () =>
+export const getFormatCheckboxes = (export_formats) =>
     <Field
       name="export_formats"
       component={(props) => {
-        const ks = Object.keys(AVAILABLE_EXPORT_FORMATS).map((k, i) =>
+        const ks = Object.keys(export_formats).map((k, i) =>
           <Checkbox
           key={i}
           name={k}
@@ -30,7 +30,7 @@ export const getFormatCheckboxes = () =>
             }
             return props.input.onChange(newValue);
           }}>
-          {AVAILABLE_EXPORT_FORMATS[k]}
+          {export_formats[k]}
           </Checkbox>
         );
         return <div>{ks}</div>
