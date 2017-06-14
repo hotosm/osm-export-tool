@@ -33,6 +33,22 @@ export function createExport (data,form_name) {
   }
 }
 
+export function getOverpassTimestamp() {
+  return dispatch => {
+    return axios({
+      url:'/api/overpass_timestamp'
+    }).then(rsp => {
+      dispatch({
+        type: types.RECEIVED_OVERPASS_TIMESTAMP,
+        timestamp:rsp.data.timestamp
+      })
+    })
+    .catch(error => {
+      console.log("ERROR")
+    })
+  }
+}
+
 export function getExport(id) {
   return dispatch => {
     return axios({

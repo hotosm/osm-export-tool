@@ -51,5 +51,6 @@ export default {
         fetched: false,
         jobuid: '',
         error: null,
-    }
+    },
+    overpassTimestamp: null
 }

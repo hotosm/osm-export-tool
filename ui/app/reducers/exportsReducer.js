@@ -18,6 +18,14 @@ export function exportInfoReducer(state = initialState.exportInfo, action) {
   return state;
 }
 
+export function overpassTimestampReducer(state = initialState.overpassTimestamp, action) {
+  switch(action.type) {
+    case types.RECEIVED_OVERPASS_TIMESTAMP:
+      return action.timestamp;
+  }
+  return state;
+}
+
 export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
     switch(action.type) {
         case types.UPDATE_AOI_INFO:

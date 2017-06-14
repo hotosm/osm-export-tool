@@ -3,7 +3,7 @@ import { Nav, NavItem, ButtonGroup, Row, Col, Panel, Button } from 'react-bootst
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import ExportAOI from './aoi/ExportAOI';
-import { createExport } from '../actions/exportsActions';
+import { createExport, getOverpassTimestamp } from '../actions/exportsActions';
 import styles from '../styles/ExportForm.css';
 import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea } from './utils';
 
@@ -124,6 +124,11 @@ export class ExportForm extends Component {
       super(props);
   }
 
+  componentDidMount() {
+    const { getOverpassTimestamp } = this.props
+    getOverpassTimestamp()
+  }
+
   state = {
     step: 1
   }
@@ -145,7 +150,7 @@ export class ExportForm extends Component {
   }
 
   render() {
-    const { handleSubmit, formValues, error } = this.props
+    const { handleSubmit, formValues, error, overpassTimestamp } = this.props
     return( 
       <Row style={{height: '100%'}}>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll', padding:"20px"}}>
@@ -162,7 +167,7 @@ export class ExportForm extends Component {
             { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
           </form>
           <Panel style={{marginTop:'20px'}}>
-            OpenStreetMap database last updated: x (x minutes ago)
+            OpenStreetMap database last updated: {overpassTimestamp} (x minutes ago)
           </Panel>
         </Col>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
@@ -176,12 +181,15 @@ export class ExportForm extends Component {
 const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
-    formValues:formValueSelector("ExportForm")(state,"name","description","project")
+    formValues:formValueSelector("ExportForm")(state,"name","description","project"),
+    overpassTimestamp: state.overpassTimestamp
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return {}
+  return {
+    getOverpassTimestamp: () => dispatch(getOverpassTimestamp())
+  }
 }
 
 export default connect(
