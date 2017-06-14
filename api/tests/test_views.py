@@ -50,21 +50,6 @@ class TestJobViewSet(APITestCase):
         url = reverse('api:jobs-list')
         self.assertEquals(expected, url)
 
-    @skip('test runs')
-    @patch('api.views.ExportTaskRunner')
-    def test_get_job_detail(self, mock):
-        task_runner = mock.return_value
-        url = reverse('api:jobs-list')
-        response = self.client.post(url, self.request_data, format='json')
-        job_uid = response.data['uid']
-
-        url = reverse('api:jobs-detail', args=[job_uid])
-        response = self.client.get(url)
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
-        self.assertEquals(response.data['export_runs'],[])
-
-
     @patch('api.views.ExportTaskRunner')
     def test_create_job_success(self, mock):
         task_runner = mock.return_value
@@ -123,6 +108,52 @@ class TestJobViewSet(APITestCase):
         response = self.client.post(url, self.request_data,format='json')
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertTrue('export_formats' in response.data)
+
+class TestExportRunViewSet(APITestCase):
+    """
+    Test cases for ExportRunViewSet
+    """
+
+    def setUp(self, ):
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+
+        the_geom = Polygon.from_bbox((-10.80029,6.3254236,-10.79809,6.32752))
+        self.job = Job.objects.create(
+            name='TestJob',
+            user=self.user,
+            the_geom=the_geom,
+            export_formats=['shp'],
+            feature_selection=FeatureSelection.example('simple')
+        )
+        run = ExportRun.objects.create(
+            job=self.job,
+            user=self.user
+        )
+        ExportTask.objects.create(
+            run=run
+        )
+
+
+    def test_list_runs(self):
+        url = reverse('api:runs-list')
+        query = '{0}?job_uid={1}'.format(url, self.job.uid)
+        response = self.client.get(query)
+        result = response.data
+        self.assertEquals(1, len(result))
+        self.assertEquals(1, len(result[0]['tasks']))
+
+    @patch('api.views.ExportTaskRunner')
+    def test_create_run(self, mock):
+        url = reverse('api:runs-list')
+        query = '{0}?job_uid={1}'.format(url, self.job.uid)
+        response = self.client.post(query)
+        task_runner = mock.return_value
+        task_runner.run_task.assert_called_once_with(job_uid=str(self.job.uid),user=self.user)
 
 class TestHDXExportRegionViewSet(APITestCase):
     def setUp(self):
@@ -299,49 +330,3 @@ class TestBBoxSearch(APITestCase):
 
 
 
-class TestExportRunViewSet(APITestCase):
-    """
-    Test cases for ExportRunViewSet
-    """
-
-    def setUp(self, ):
-        Group.objects.create(name='TestDefaultExportExtentGroup')
-        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
-                                HTTP_ACCEPT='application/json; version=1.0',
-                                HTTP_ACCEPT_LANGUAGE='en',
-                                HTTP_HOST='testserver')
-        extents = (-3.9, 16.1, 7.0, 27.6)
-        bbox = Polygon.from_bbox(extents)
-        the_geom = GEOSGeometry(bbox, srid=4326)
-        self.job = Job.objects.create(name='TestJob',
-                                 description='Test description', user=self.user,
-                                 the_geom=the_geom)
-        self.job_uid = str(self.job.uid)
-        self.run = ExportRun.objects.create(job=self.job, user=self.user)
-        self.run_uid = str(self.run.uid)
-
-    @skip('')
-    def test_retrieve_run(self, ):
-        expected = '/api/runs/{0}'.format(self.run_uid)
-        url = reverse('api:runs-detail', args=[self.run_uid])
-        self.assertEquals(expected, url)
-        response = self.client.get(url)
-        self.assertIsNotNone(response)
-        result = response.data
-        # make sure we get the correct uid back out
-        self.assertEquals(self.run_uid, result[0].get('uid'))
-
-    @skip('')
-    def test_list_runs(self, ):
-        expected = '/api/runs'
-        url = reverse('api:runs-list')
-        self.assertEquals(expected, url)
-        query = '{0}?job_uid={1}'.format(url, self.job.uid)
-        response = self.client.get(query)
-        self.assertIsNotNone(response)
-        result = response.data
-        # make sure we get the correct uid back out
-        self.assertEquals(1, len(result))
-        self.assertEquals(self.run_uid, result[0].get('uid'))

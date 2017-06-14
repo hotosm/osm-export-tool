@@ -216,6 +216,10 @@ class HDXExportRegion(models.Model): # noqa
         return self.hdx_dataset.dataset_links(settings.HDX_URL_PREFIX)
 
     @property
+    def job_uid(self):
+        return self.job.uid
+
+    @property
     def runs(self): # noqa
         return map(lambda run: {
             'elapsed_time': (run.finished_at or timezone.now()) - run.started_at,

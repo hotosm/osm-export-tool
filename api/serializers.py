@@ -45,11 +45,10 @@ class ExportRunSerializer(serializers.ModelSerializer):
                   'user', 'status', 'tasks')
 
 class JobSerializer(serializers.ModelSerializer):
-    runs = ExportRunSerializer(many=True,read_only=True)
 
     class Meta:
         model = Job
-        fields = ('id', 'uid', 'user', 'name','runs',
+        fields = ('id', 'uid', 'user', 'name',
                   'description', 'event', 'export_formats', 'published',
                   'the_geom', 'feature_selection','buffer_aoi')
 
@@ -89,7 +88,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
         fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats', 'runs',
                   'locations', 'name', 'last_run', 'next_run', 'the_geom',
-                  'dataset_prefix', 'job', 'license', 'subnational',
+                  'dataset_prefix', 'job_uid', 'license', 'subnational',
                   'extra_notes', 'is_private', 'buffer_aoi',)
 
 

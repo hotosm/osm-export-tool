@@ -216,19 +216,9 @@ class ExportRunViewSet(viewsets.ModelViewSet):
             the serialized run data.
         """
         job_uid = request.query_params.get('job_uid', None)
-        user = request.user
-        if (job_uid):
-            # run the tasks
-            job = Job.objects.get(uid=job_uid)
-            task_runner = ExportTaskRunner()
-            run = task_runner.run_task(job_uid=job_uid, user=user)
-            if run:
-                running = ExportRunSerializer(run, context={'request': request})
-                return Response(running.data, status=status.HTTP_202_ACCEPTED)
-            else:
-                return Response([{'detail': _('Failed to run Export')}], status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response([{'detail': _('Export not found')}], status.HTTP_404_NOT_FOUND)
+        task_runner = ExportTaskRunner()
+        task_runner.run_task(job_uid=job_uid, user=request.user)
+        return Response({'status':'OK'}, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         return ExportRun.objects.all().order_by('-started_at')
