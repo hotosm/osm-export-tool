@@ -10,10 +10,11 @@ import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
 import { Row } from 'react-bootstrap';
 
-import HDXExportRegionForm from './components/HDXExportRegionForm';
-import HDXExportRegionList from './components/HDXExportRegionList';
 import ExportForm from './components/ExportForm';
 import ExportDetails from './components/ExportDetails';
+import ExportList from './components/ExportList';
+import HDXExportRegionForm from './components/HDXExportRegionForm';
+import HDXExportRegionList from './components/HDXExportRegionList';
 import PresetToYaml from './components/PresetToYaml';
 import reducers from './reducers/';
 
@@ -39,6 +40,7 @@ ReactDOM.render(
         <div style={{height: '100%'}}>
           <Route exact path='/exports/new' component={ExportForm}/>
           <Route path='/exports/detail/:id' component={ExportDetails}/>
+          <Route exact path='/exports' component={ExportList}/>
           <Route exact path='/hdx' component={HDXExportRegionList} />
           <Route path='/hdx/new' component={HDXExportRegionForm} />
           <Route path='/hdx/edit/:id' component={HDXExportRegionForm} />

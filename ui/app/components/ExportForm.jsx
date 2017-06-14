@@ -62,7 +62,6 @@ const Describe = ({next}) =>
       placeholder="which activation this export is for"
       component={renderInput}
     />
-    Coordinates:
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>
 
@@ -72,6 +71,7 @@ const SelectFeatures = ({next}) =>
       <Button href="#">Tree Tag</Button>
       <Button href="#" active={true}>YAML</Button>
     </ButtonGroup>
+    <Button style={{marginTop:'10px'}}>Load from JOSM Preset .XML</Button>
     <Field
       name='feature_selection'
       type="text"
@@ -182,7 +182,10 @@ const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
     formValues:formValueSelector("ExportForm")(state,"name","description","project"),
-    overpassTimestamp: state.overpassTimestamp
+    overpassTimestamp: state.overpassTimestamp,
+    initialValues: {
+      published: true
+    }
   }
 }
 
