@@ -1,20 +1,68 @@
 import React, {Component} from 'react';
-import { Row, Col, Panel, Button }  from 'react-bootstrap';
+import { Row, Col, Panel, Button, Table }  from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getExport } from '../actions/exportsActions'
+import MapListView from './MapListView';
 
 const Details = ({exportInfo}) => {
-    return <ul>
-      <li>Job id: {exportInfo.uid}</li>
-      <li>Name: {exportInfo.name}</li>
-      <li>Description: {exportInfo.description}</li>
-      <li>Project: {exportInfo.event}</li>
-      <li>Area: {exportInfo.area}</li>
-      <li>Created: {exportInfo.created_at}</li>
-      <li>Created By: {exportInfo.user}</li>
-      <li>Published: {exportInfo.published}</li>
-      <li>Export formats: {exportInfo.export_formats}</li>
-    </ul>
+    return <Table responsive>
+      <tbody>
+        <tr>
+          <td>Export ID:</td>
+          <td colSpan="3">{exportInfo.uid}</td>
+        </tr>
+        <tr>
+          <td>Description:</td>
+          <td colSpan="3">{exportInfo.description}</td>
+        </tr>
+        <tr>
+          <td>Project:</td>
+          <td colSpan="3">{exportInfo.event}</td>
+        </tr>
+        <tr>
+          <td>Area:</td>
+          <td colSpan="3">{exportInfo.area}</td>
+        </tr>
+        <tr>
+          <td>Created at:</td>
+          <td colSpan="3">{exportInfo.created_at}</td>
+        </tr>
+        <tr>
+          <td>Created by:</td>
+          <td colSpan="3">{exportInfo.user}</td>
+        </tr>
+        <tr>
+          <td>Published:</td>
+          <td colSpan="3">{exportInfo.published}</td>
+        </tr>
+        <tr>
+          <td>Export formats:</td>
+          <td colSpan="3">{exportInfo.export_formats}</td>
+        </tr>
+      </tbody>
+    </Table>
+}
+
+const TaskList = ({tasks}) => {
+  return <ul>
+    {tasks.map((task,i) => {
+      return <li key={i}>
+        {task.uid}
+      </li>
+    })}
+  </ul>
+}
+
+const RunList = ({runs}) => {
+  return <div>
+    {runs.map((run,i) => {
+      return <div key={i}>
+        {run.uid}
+        <TaskList tasks={run.tasks}/>
+      </div>
+    })}
+  </div>
+
 }
 
 export class ExportDetails extends Component {
@@ -32,23 +80,21 @@ export class ExportDetails extends Component {
     console.log(exportInfo)
     return( 
       <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%'}}>
-          <Panel>
-            <Col xs={6} style={{height: '100%'}}>
-              { exportInfo ? <Details exportInfo={exportInfo}/> : null }
-              <Button>Features</Button>
-              <Button>Re-Run Export</Button>
-              <Button>Clone Export</Button>
-            </Col>
-            <Col xs={6} style={{height: '100%'}}>
-              Map
-            </Col>
+        <Col xs={4} style={{height: '100%', padding:"20px", paddingRight:"10px"}}>
+          <Panel header="Export Details">
+            { exportInfo ? <Details exportInfo={exportInfo}/> : null }
+            <Button bsSize="large">Features</Button>
+            <Button bsStyle="success" bsSize="large">Re-Run Export</Button>
+            <Button bsStyle="primary" bsSize="large">Clone Export</Button>
           </Panel>
         </Col>
-        <Col xs={6} style={{height: '100%'}}>
-          <Panel>
-            Runs
+        <Col xs={4} style={{height: '100%', padding:"20px", paddingLeft:"10px"}}>
+          <Panel header="Export Runs">
+          { exportInfo ? <RunList runs={exportInfo.runs}/> : null }
           </Panel>
+        </Col>
+        <Col xs={4} style={{height: '100%'}}>
+          <MapListView/>
         </Col>
       </Row>)
   }
