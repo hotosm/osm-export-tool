@@ -13,7 +13,6 @@ from django.views.i18n import javascript_catalog
 
 from api.urls import router
 from api.views import request_geonames, get_overpass_timestamp
-from ui import urls as ui_urls
 from ui.views import (
     about, create_error_view, help_create, help_exports, help_features,
     help_formats, help_main, help_presets, login, logout, require_email,
@@ -26,7 +25,6 @@ urlpatterns = []
 
 urlpatterns += i18n_patterns(
     url(r'^$', login, name='index'),
-    url(r'^exports/', include(ui_urls)),
     url(r'^v3/$', v3, name="v3"),
     url(r'^login/$', login, name="login"),
     url(r'^logout$', logout, name='logout'),

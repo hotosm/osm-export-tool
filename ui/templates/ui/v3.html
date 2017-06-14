@@ -1,0 +1,10 @@
+{% extends "ui/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% block container %}
+<div id="root" class="container-fluid" style="height:calc(100% - 125px)">
+</div>
+{% endblock %}
+{% block corejs %}
+<script src="{% static 'ui/js/bundle.js' %}"></script>
+{% endblock %}
