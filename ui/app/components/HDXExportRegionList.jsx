@@ -39,7 +39,12 @@ export class HDXExportRegionList extends Component {
   }
 
   render () {
-    const { hdx: { exportRegions } } = this.props;
+    const { hdx: { exportRegions, selectedExportRegion } } = this.props;
+
+    const regionGeoms = {
+      features: Object.entries(exportRegions).map(([id, x]) => x.the_geom),
+      type: 'FeatureCollection'
+    }
 
     return (
       <Row style={{height: '100%'}}>
@@ -53,7 +58,7 @@ export class HDXExportRegionList extends Component {
           </div>
         </Col>
         <Col xs={6} style={{height: '100%'}}>
-          <MapListView/>
+          <MapListView features={regionGeoms} selectedFeatureId={selectedExportRegion}/>
         </Col>
       </Row>
     );

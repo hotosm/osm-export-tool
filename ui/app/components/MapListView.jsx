@@ -11,14 +11,14 @@ const GEOJSON_READER = new jsts.io.GeoJSONReader();
 const WGS84 = 'EPSG:4326';
 const WEB_MERCATOR = 'EPSG:3857';
 
-export class MapListView extends Component {
+export default class MapListView extends Component {
   static propTypes = {
     features: PropTypes.shape({
       features: PropTypes.array,
       geomType: PropTypes.string,
       type: PropTypes.string
     }),
-    resetMap: PropTypes.object
+    selectedFeatureId: PropTypes.number
   }
 
   state = {
@@ -29,25 +29,18 @@ export class MapListView extends Component {
     this._initializeOpenLayers();
 
     this.updateFeatures(this.props.features);
-    this.zoomToExportRegion(this.props.selectedExportRegion);
+    this.zoomToFeatureId(this.props.selectedFeatureId);
   }
 
   componentDidUpdate (prevProps, prevState) {
-    const { features, selectedExportRegion } = this.props;
+    const { features, selectedFeatureId } = this.props;
 
     if (!isEqual(prevProps.features, features)) {
       this.updateFeatures(features);
     }
 
-    if (prevProps.selectedExportRegion !== selectedExportRegion) {
-      this.zoomToExportRegion(selectedExportRegion);
-    }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    // Check if the reset map button has been clicked
-    if (this.props.resetMap.click !== nextProps.resetMap.click) {
-      this.handleResetMap();
+    if (prevProps.selectedFeatureId !== selectedFeatureId) {
+      this.zoomToFeatureId(selectedFeatureId);
     }
   }
 
@@ -67,7 +60,7 @@ export class MapListView extends Component {
     });
   }
 
-  zoomToExportRegion (id) {
+  zoomToFeatureId(id) {
     const { features } = this.props;
 
     const selectedFeature = features.features.filter(x => x.id === id).shift();
@@ -159,21 +152,6 @@ export class MapListView extends Component {
     );
   }
 }
-const mapStateToProps = state => {
-  return {
-    features: {
-      features: Object.entries(state.hdx.exportRegions).map(([id, x]) => x.the_geom),
-      geomType: 'Polygon',
-      type: 'FeatureCollection'
-    },
-    resetMap: state.resetMap,
-    selectedExportRegion: state.hdx.selectedExportRegion
-  };
-};
-
-export default connect(
-  mapStateToProps
-)(MapListView);
 
 ol.control.ZoomExtent = function (options = {}) {
   options.className = options.className || '';
