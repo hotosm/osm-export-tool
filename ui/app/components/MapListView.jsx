@@ -28,8 +28,12 @@ export default class MapListView extends Component {
   componentDidMount () {
     this._initializeOpenLayers();
 
-    this.updateFeatures(this.props.features);
-    this.zoomToFeatureId(this.props.selectedFeatureId);
+    if (this.props.features) {
+      this.updateFeatures(this.props.features);
+    }
+    if (this.props.selectedFeatureId) {
+      this.zoomToFeatureId(this.props.selectedFeatureId);
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {

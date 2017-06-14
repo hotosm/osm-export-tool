@@ -77,7 +77,8 @@ export class ExportDetails extends Component {
 
   render() {
     const { exportInfo } = this.props
-    console.log(exportInfo)
+    const geom = exportInfo ? {'features':[exportInfo.the_geom],'type':'FeatureCollection'} : null
+    const selectedId = exportInfo ? exportInfo.the_geom.id : null
     return( 
       <Row style={{height: '100%'}}>
         <Col xs={4} style={{height: '100%', padding:"20px", paddingRight:"10px"}}>
@@ -94,7 +95,7 @@ export class ExportDetails extends Component {
           </Panel>
         </Col>
         <Col xs={4} style={{height: '100%'}}>
-          <MapListView/>
+          <MapListView features={geom} selectedFeatureId={selectedId}/>
         </Col>
       </Row>)
   }
