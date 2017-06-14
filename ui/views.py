@@ -52,11 +52,6 @@ def logout(request):
     })
 
 
-@permission_required((
-    'jobs.add_hdxexportregion',
-    'jobs.change_hdxexportregion',
-    'jobs.delete_hdxexportregion',
-))
 def v3(request):
     return render(request, 'ui/base_react.html')
 
