@@ -33,6 +33,17 @@ export function createExport (data,form_name) {
   }
 }
 
+export function cloneExport(exportInfo) {
+  return dispatch => {
+    dispatch(push('/exports/new'))
+    dispatch({
+      type:"@@redux-form/INITIALIZE",
+      meta:{form:"ExportForm"},
+      payload:{name:exportInfo.name,feature_selection:exportInfo.feature_selection}
+    })
+  }
+}
+
 export function runExport (jobUid) {
   return dispatch => {
     return axios({

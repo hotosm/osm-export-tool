@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Row, Col, Panel, Button, Table }  from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getExport, getExportRuns, runExport } from '../actions/exportsActions'
+import { getExport, getExportRuns, runExport, cloneExport } from '../actions/exportsActions'
 import MapListView from './MapListView';
 
 const Details = ({exportInfo}) => {
@@ -136,6 +136,10 @@ export class ExportDetails extends Component {
     this.props.handleRun(this.props.match.params.id)
   }
 
+  handleClone = () => {
+    this.props.handleClone(this.props.exportInfo)
+  }
+
   render() {
     const { match: { params: { id }}, exportInfo } = this.props
     const geom = exportInfo ? {'features':[exportInfo.the_geom],'type':'FeatureCollection'} : null
@@ -147,7 +151,7 @@ export class ExportDetails extends Component {
             { exportInfo ? <Details exportInfo={exportInfo}/> : null }
             <Button bsSize="large">Features</Button>
             <Button bsStyle="success" bsSize="large" onClick={this.handleRun}>Re-Run Export</Button>
-            <Button bsStyle="primary" bsSize="large">Clone Export</Button>
+            <Button bsStyle="primary" bsSize="large" onClick={this.handleClone} {...exportInfo ? {} : {disabled: true}}>Clone Export</Button>
           </Panel>
         </Col>
         <Col xs={4} style={{height: '100%', padding:"20px", paddingLeft:"10px", overflowY: 'scroll'}}>
@@ -171,7 +175,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     getExport: id => dispatch(getExport(id)),
-    handleRun: id => dispatch(runExport(id))
+    handleRun: id => dispatch(runExport(id)),
+    handleClone: (exportInfo) => dispatch(cloneExport(exportInfo))
   }
 }
 
