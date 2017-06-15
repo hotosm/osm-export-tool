@@ -15,7 +15,6 @@ import ExportDetails from './components/ExportDetails';
 import ExportList from './components/ExportList';
 import HDXExportRegionForm from './components/HDXExportRegionForm';
 import HDXExportRegionList from './components/HDXExportRegionList';
-import PresetToYaml from './components/PresetToYaml';
 import reducers from './reducers/';
 
 const history = createHistory();
@@ -44,7 +43,6 @@ ReactDOM.render(
           <Route exact path='/hdx' component={HDXExportRegionList} />
           <Route path='/hdx/new' component={HDXExportRegionForm} />
           <Route path='/hdx/edit/:id' component={HDXExportRegionForm} />
-          <Route path='/hdx/preset_to_yaml' component={PresetToYaml} />
         </div>
     </ConnectedRouter>
   </Provider>,

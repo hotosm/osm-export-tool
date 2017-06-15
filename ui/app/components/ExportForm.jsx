@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import ExportAOI from './aoi/ExportAOI';
 import { createExport, getOverpassTimestamp } from '../actions/exportsActions';
 import styles from '../styles/ExportForm.css';
-import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea } from './utils';
+import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, PresetParser } from './utils';
+const Dropzone = require('react-dropzone');
 
 const form = reduxForm({
   form: "ExportForm",
@@ -65,18 +66,22 @@ const Describe = ({next}) =>
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>
 
-const SelectFeatures = ({next}) =>
+
+const SelectFeatures = ({next, onDrop}) =>
   <Row>
     <ButtonGroup justified>
       <Button href="#">Tree Tag</Button>
       <Button href="#" active={true}>YAML</Button>
     </ButtonGroup>
-    <Button style={{marginTop:'10px'}}>Load from JOSM Preset .XML</Button>
+    <Dropzone className="nullClassName" onDrop={onDrop}>
+      <Button style={{marginTop:'10px'}}>Load from JOSM Preset .XML</Button>
+    </Dropzone>
     <Field
       name='feature_selection'
       type="text"
       label='Feature Selection'
       component={renderTextArea}
+      className={styles.featureSelection}
       rows='10'
     />
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
@@ -149,6 +154,17 @@ export class ExportForm extends Component {
     this.setState({step:4})
   }
 
+  onDrop = (files) => {
+    const file = files[0]
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = reader.result;
+      const p = new PresetParser(data);
+      this.props.change("feature_selection",p.as_yaml())
+    }
+    reader.readAsText(file)
+  }
+
   render() {
     const { handleSubmit, formValues, error, overpassTimestamp } = this.props
     return( 
@@ -162,7 +178,7 @@ export class ExportForm extends Component {
           </Nav>
           <form>
             { this.state.step == '1' ? <Describe next={this.handleStep2}/> : null }
-            { this.state.step == '2' ? <SelectFeatures next={this.handleStep3}/> : null }
+            { this.state.step == '2' ? <SelectFeatures next={this.handleStep3} onDrop={this.onDrop}/> : null }
             { this.state.step == '3' ? <ChooseFormats next={this.handleStep4}/> : null }
             { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
           </form>
