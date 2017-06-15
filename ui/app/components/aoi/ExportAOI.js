@@ -55,7 +55,6 @@ export class ExportAOI extends Component {
                     featureProjection: WEB_MERCATOR
                 });
 
-                console.log('geometry:', geometry);
                 return new ol.Feature({
                     geometry: GEOJSON_FORMAT.readGeometry(geojson, {
                         dataProjection: WGS84,
@@ -82,10 +81,11 @@ export class ExportAOI extends Component {
         if (!isEqual(prevProps.aoiInfo.geojson, this.props.aoiInfo.geojson)) {
             // remove existing features
             this._clearDraw();
-
-            const feature = this.getFeature(this.props.aoiInfo.geojson);
-            this._drawLayer.getSource().addFeature(feature);
-            this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
+            if (this.props.aoiInfo.geojson) {
+              const feature = this.getFeature(this.props.aoiInfo.geojson);
+              this._drawLayer.getSource().addFeature(feature);
+              this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
+            }
         }
     }
 
@@ -321,7 +321,6 @@ ExportAOI.propTypes = {
     zoomToSelection: React.PropTypes.object,
     resetMap: React.PropTypes.object,
     importGeom: React.PropTypes.object,
-    drawerOpen: React.PropTypes.bool,
     updateMode: React.PropTypes.func,
     hideInvalidDrawWarning: React.PropTypes.func,
     showInvalidDrawWarning: React.PropTypes.func,
@@ -336,8 +335,7 @@ function mapStateToProps(state) {
         mode: state.mode,
         zoomToSelection: state.zoomToSelection,
         resetMap: state.resetMap,
-        importGeom: state.importGeom,
-        drawerOpen: state.drawerOpen,
+        importGeom: state.importGeom
     };
 }
 

@@ -53,7 +53,7 @@ export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
             };
         case types.CLEAR_AOI_INFO:
             return {
-                geojson: {},
+                geojson: null,
                 geomType: null,
                 title: null,
                 description: null,
