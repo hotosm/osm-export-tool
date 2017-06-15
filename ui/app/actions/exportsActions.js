@@ -33,6 +33,18 @@ export function createExport (data,form_name) {
   }
 }
 
+export function runExport (jobUid) {
+  return dispatch => {
+    return axios({
+      url: `/api/runs?job_uid=${jobUid}`,
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': cookie.load('csrftoken')
+      }
+    })
+  };
+}
+
 export function getOverpassTimestamp() {
   return dispatch => {
     return axios({

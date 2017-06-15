@@ -184,7 +184,18 @@ const mapStateToProps = state => {
     formValues:formValueSelector("ExportForm")(state,"name","description","project"),
     overpassTimestamp: state.overpassTimestamp,
     initialValues: {
-      published: true
+      published: true,
+      feature_selection: `
+buildings:
+    types:
+        - lines
+        - polygons
+    select:
+        - name
+        - building
+    where: building IS NOT NULL
+      `.trim(),
+      export_formats:["shp"]
     }
   }
 }

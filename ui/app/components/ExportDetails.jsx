@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Row, Col, Panel, Button, Table }  from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getExport, getExportRuns } from '../actions/exportsActions'
+import { getExport, getExportRuns, runExport } from '../actions/exportsActions'
 import MapListView from './MapListView';
 
 const Details = ({exportInfo}) => {
@@ -55,7 +55,7 @@ const TaskList = ({tasks}) => {
     <tbody>
       {tasks.map((task,i) => {
         return <tr key={i}>
-          <td>{task.name}</td>
+          <td><a href={task.download_url}>{task.name}</a></td>
           <td>{task.duration}</td>
           <td>{task.filesize_bytes}</td>
         </tr>
@@ -132,9 +132,12 @@ export class ExportDetails extends Component {
     getExport(id)
   }
 
+  handleRun = () => {
+    this.props.handleRun(this.props.match.params.id)
+  }
+
   render() {
-    const { match: { params: { id }}} = this.props
-    const { exportInfo } = this.props
+    const { match: { params: { id }}, exportInfo } = this.props
     const geom = exportInfo ? {'features':[exportInfo.the_geom],'type':'FeatureCollection'} : null
     const selectedId = exportInfo ? exportInfo.the_geom.id : null
     return( 
@@ -143,11 +146,11 @@ export class ExportDetails extends Component {
           <Panel header="Export Details">
             { exportInfo ? <Details exportInfo={exportInfo}/> : null }
             <Button bsSize="large">Features</Button>
-            <Button bsStyle="success" bsSize="large">Re-Run Export</Button>
+            <Button bsStyle="success" bsSize="large" onClick={this.handleRun}>Re-Run Export</Button>
             <Button bsStyle="primary" bsSize="large">Clone Export</Button>
           </Panel>
         </Col>
-        <Col xs={4} style={{height: '100%', padding:"20px", paddingLeft:"10px"}}>
+        <Col xs={4} style={{height: '100%', padding:"20px", paddingLeft:"10px", overflowY: 'scroll'}}>
           <Panel header="Export Runs">
           { exportInfo ? <ExportRunsR jobId={id}/> : null }
           </Panel>
@@ -168,6 +171,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     getExport: id => dispatch(getExport(id)),
+    handleRun: id => dispatch(runExport(id))
   }
 }
 
