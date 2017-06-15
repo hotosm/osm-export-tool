@@ -33,7 +33,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportTask
         fields = ('uid', 'name', 'status', 'started_at', 'finished_at', 
-                  'duration', 'filesize_bytes','filenames', 'download_url')
+                  'duration', 'filesize_bytes','download_urls')
 
 class ExportRunSerializer(serializers.ModelSerializer):
     tasks = ExportTaskSerializer(many=True,read_only=True)

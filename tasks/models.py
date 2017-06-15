@@ -71,9 +71,11 @@ class ExportTask(models.Model):
         return None
 
     @property
-    def download_url(self):
-        if self.filenames:
-            filename = self.filenames[0] #TODO make me work with multiple URLs
-            return os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), filename)
-        return None
+    def download_urls(self):
+        def fdownload(fname):
+            return {
+                "filename":fname,
+                "download_url":os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
+            }
+        return map(fdownload, self.filenames)
 

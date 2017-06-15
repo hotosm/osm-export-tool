@@ -75,7 +75,7 @@ class TestExportRunAndTask(TestCase):
         self.assertEqual(len(run1.tasks.all()),2)
         self.assertEqual(len(self.job.runs.all()),2)
 
-    def test_download_url(self):
+    def test_download_urls(self):
         run = ExportRun.objects.create(
             job=self.job,
             user=self.user1
@@ -85,7 +85,8 @@ class TestExportRunAndTask(TestCase):
             filenames = ['a_filename']
         )
         root = settings.EXPORT_MEDIA_ROOT
-        self.assertEqual(task.download_url,root+str(run.uid)+'/'+'a_filename')
+        self.assertEqual(task.download_urls[0]['download_url'],root+str(run.uid)+'/'+'a_filename')
+        self.assertEqual(task.download_urls[0]['filename'],'a_filename')
 
 
 

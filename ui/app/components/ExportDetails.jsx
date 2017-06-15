@@ -44,24 +44,16 @@ const Details = ({exportInfo}) => {
 }
 
 const TaskList = ({tasks}) => {
-  return <Table>
-    <thead>
-      <tr>
-        <th>File</th>
-        <th>Duration</th>
-        <th>Size</th>
-      </tr>
-    </thead>
-    <tbody>
+  return <div>
       {tasks.map((task,i) => {
-        return <tr key={i}>
-          <td><a href={task.download_url}>{task.name}</a></td>
-          <td>{task.duration}</td>
-          <td>{task.filesize_bytes}</td>
-        </tr>
+        return <div key={i}>
+          {task.download_urls.map((dl,j) => {
+          return <div key={j}>
+            <a href={dl.download_url}>{dl.filename}</a>
+          </div>
+        })}</div>
       })}
-    </tbody>
-  </Table>
+  </div>
 }
 
 
