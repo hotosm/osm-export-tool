@@ -202,7 +202,7 @@ buildings:
 
 const mapDispatchToProps = dispatch => {
   return {
-    getOverpassTimestamp: () => dispatch(getOverpassTimestamp())
+    getOverpassTimestamp: () => dispatch(getOverpassTimestamp)
   }
 }
 

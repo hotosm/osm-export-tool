@@ -64,8 +64,8 @@ export function runExport (jobUid) {
   };
 }
 
-export function getOverpassTimestamp() {
-  return dispatch => {
+
+export function getOverpassTimestamp(dispatch) {
     return axios({
       url:'/api/overpass_timestamp'
     }).then(rsp => {
@@ -77,7 +77,6 @@ export function getOverpassTimestamp() {
     .catch(error => {
       console.log("ERROR")
     })
-  }
 }
 
 export function getExport(id) {
