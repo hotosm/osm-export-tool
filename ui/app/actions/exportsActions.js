@@ -33,13 +33,21 @@ export function createExport (data,form_name) {
   }
 }
 
-export function cloneExport(exportInfo) {
+export function cloneExport(e) {
   return dispatch => {
     dispatch(push('/exports/new'))
     dispatch({
       type:"@@redux-form/INITIALIZE",
       meta:{form:"ExportForm"},
-      payload:{name:exportInfo.name,feature_selection:exportInfo.feature_selection}
+      payload:{
+        buffer_aoi:e.buffer_aoi,
+        description:e.description,
+        event:e.event,
+        export_formats:e.export_formats,
+        feature_selection:e.feature_selection,
+        name:e.name,
+        published:e.published
+      }
     })
   }
 }
