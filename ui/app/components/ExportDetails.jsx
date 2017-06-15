@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Row, Col, Panel, Button, Table }  from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getExport, getExportRuns, runExport, cloneExport } from '../actions/exportsActions'
+import { getExport, pollRunsTillComplete, runExport, cloneExport } from '../actions/exportsActions'
 import MapListView from './MapListView';
 
 const Details = ({exportInfo}) => {
@@ -59,7 +59,7 @@ const TaskList = ({tasks}) => {
 
 class ExportRuns extends Component {
   componentDidMount() {
-    this.props.getExportRuns(this.props.jobId)
+    this.props.pollRunsTillComplete(this.props.jobId)
   }
 
   render() {
@@ -108,7 +108,7 @@ const ExportRunsR = connect(
   },
   dispatch => {
     return {
-      getExportRuns: id => dispatch(getExportRuns(id)),
+      pollRunsTillComplete: id => dispatch(pollRunsTillComplete(id)),
     }
   }
 )(ExportRuns);

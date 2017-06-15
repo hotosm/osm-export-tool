@@ -114,7 +114,7 @@ export function getExports() {
   }
 }
 
-export function getExportRuns(id) {
+export function pollRunsTillComplete(id) {
   return dispatch => {
     return axios({
       url:`/api/runs?job_uid=${id}`
@@ -124,6 +124,9 @@ export function getExportRuns(id) {
         id:id,
         runs:rsp.data
       })
+      if (rsp.data.length > 0 &&  (rsp.data[0].status === 'SUBMITTED' || rsp.data[0].status === 'RUNNING')) {
+        setTimeout(() => dispatch(pollRunsTillComplete(id)),5e3)
+      }
     })
     .catch(error => {
       console.log("ERROR")
