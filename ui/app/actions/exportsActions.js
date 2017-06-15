@@ -66,6 +66,23 @@ export function getExport(id) {
   }
 }
 
+export function getExportRuns(id) {
+  return dispatch => {
+    return axios({
+      url:`/api/runs?job_uid=${id}`
+    }).then(rsp => {
+      dispatch({
+        type: types.RECEIVED_RUNS,
+        id:id,
+        runs:rsp.data
+      })
+    })
+    .catch(error => {
+      console.log("ERROR")
+    })
+  }
+}
+
 export function updateAoiInfo(geojson, geomType, title, description,) {
     return {
         type: types.UPDATE_AOI_INFO,

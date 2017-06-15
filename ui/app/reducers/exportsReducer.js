@@ -18,6 +18,14 @@ export function exportInfoReducer(state = initialState.exportInfo, action) {
   return state;
 }
 
+export function exportRunsReducer(state = initialState.exportRuns, action) {
+  switch(action.type) {
+    case types.RECEIVED_RUNS:
+      return action.runs
+  }
+  return state;
+}
+
 export function overpassTimestampReducer(state = initialState.overpassTimestamp, action) {
   switch(action.type) {
     case types.RECEIVED_OVERPASS_TIMESTAMP:

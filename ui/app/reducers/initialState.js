@@ -27,6 +27,7 @@ export default {
       error: null,
     },
     exportInfo:null,
+    exportRuns:[],
     importGeom: {
         processing: false,
         processed: false,
