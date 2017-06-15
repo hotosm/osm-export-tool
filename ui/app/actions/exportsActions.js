@@ -78,6 +78,23 @@ export function getExport(id) {
   }
 }
 
+export function getExports() {
+  return dispatch => {
+    return axios({
+      url:`/api/jobs`
+    }).then(rsp => {
+      dispatch({
+        type: types.RECEIVED_EXPORT_LIST,
+        id:id,
+        jobs:rsp.data
+      })
+    })
+    .catch(error => {
+      console.log("ERROR")
+    })
+  }
+}
+
 export function getExportRuns(id) {
   return dispatch => {
     return axios({

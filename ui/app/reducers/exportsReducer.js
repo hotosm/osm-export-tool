@@ -26,6 +26,14 @@ export function exportRunsReducer(state = initialState.exportRuns, action) {
   return state;
 }
 
+export function exportListReducer(state = initialState.exportList, action) {
+  switch(action.type) {
+    case types.RECEIVED_EXPORT_LIST:
+      return action.jobs
+  }
+  return state;
+}
+
 export function overpassTimestampReducer(state = initialState.overpassTimestamp, action) {
   switch(action.type) {
     case types.RECEIVED_OVERPASS_TIMESTAMP:

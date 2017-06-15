@@ -28,6 +28,7 @@ export default {
     },
     exportInfo:null,
     exportRuns:[],
+    exportList:[],
     importGeom: {
         processing: false,
         processed: false,
