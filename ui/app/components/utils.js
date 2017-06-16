@@ -148,13 +148,13 @@ export class PresetParser {
 
     const fs = {}
     fs.planet_osm_point = {}
-    fs.planet_osm_point.geom_types = ["points"]
+    fs.planet_osm_point.types = ["points"]
     fs.planet_osm_point.select = [...collector.points].sort()
     fs.planet_osm_line = {}
-    fs.planet_osm_line.geom_types = ["lines"]
+    fs.planet_osm_line.types = ["lines"]
     fs.planet_osm_line.select = [...collector.lines].sort()
     fs.planet_osm_polygon = {}
-    fs.planet_osm_polygon.geom_types = ["polygons"]
+    fs.planet_osm_polygon.types = ["polygons"]
     fs.planet_osm_polygon.select = [...collector.polygons].sort()
     this.featureSelection = fs
   }
