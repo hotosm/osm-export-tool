@@ -7157,10 +7157,6 @@ url@~0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-urlify@^0.3.6:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/urlify/-/urlify-0.3.6.tgz#83bb52af5ec04f6006b5f5f20b51e0dbec85fcff"
-
 user-home@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/user-home/-/user-home-2.0.0.tgz#9c70bfd8169bc1dcbf48604e0f04b8b49cde9e9f"

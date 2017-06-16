@@ -42,7 +42,6 @@
     "redux-thunk": "~2.1.0",
     "style-loader": "~0.13.1",
     "url-loader": "~0.5.7",
-    "urlify": "^0.3.6",
     "webpack": "~1.13.3"
   },
   "devDependencies": {
@@ -81,24 +80,6 @@
       "react",
       "es2015",
       "stage-0"
-    ]
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "jsx"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "bower_components",
-      "shared"
-    ],
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css|less)$": "identity-obj-proxy"
-    },
-    "modulePathIgnorePatterns": [
-      "staticfiles/"
     ]
   },
   "scripts": {

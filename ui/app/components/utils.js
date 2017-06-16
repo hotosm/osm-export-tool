@@ -3,7 +3,6 @@ import { HelpBlock, FormControl, FormGroup, ControlLabel, Checkbox } from 'react
 import { Field } from 'redux-form'
 import Select from 'react-select';
 import styles from '../styles/utilsStyles.css'
-import * as urlify from 'urlify';
 import yaml from 'js-yaml';
 
 export const AVAILABLE_EXPORT_FORMATS = {
@@ -101,7 +100,6 @@ export const slugify = (text) => {
     .replace(/_+$/, '')             // Trim - from end of text
 }
 
-const urlize = urlify.create()
 
 export class PresetParser {
   listForXpath(xpath,root) {
@@ -119,68 +117,46 @@ export class PresetParser {
     return "http://josm.openstreetmap.de/tagging-preset-1.0"
   }
 
-  themes() {
-    // find the first level of "group" that has more than one element.
-    var path = "/ns:presets/ns:group"
-    var l = this.listForXpath(path,this.doc)
-    var depth = 0
-    while (l.length === 1) {
-      depth = depth + 1
-      l = this.listForXpath(path + "/ns:group".repeat(depth),this.doc)
+  collectInputs(itemElem,set) {
+    for (var elemType of [".//ns:key",".//ns:text",".//ns:combo",".//ns:multiselect",".//ns:check"]) {
+      for (var k of this.listForXpath(elemType,itemElem)) {
+        set.add(k.getAttribute('key')) 
+      }
     }
-    if (l.length === 0) {
-      // if all group depths are 1, just return the deepest
-      if (depth === 0) return []
-      else return this.listForXpath(path+"/ns:group".repeat(depth-1),this.doc)
-    }
-    return l
-  }
-
-  geomTypesForTheme(themeElem) {
-      console.log(themeElem)
-      const l = new Set()
-      for (var i of this.listForXpath(".//ns:item",themeElem)) {
-        const types = i.getAttribute("type").split(',')
-        if (types.includes("node")) l.add("points")
-        if (types.includes("closedway")) l.add("polygons")
-        if (types.includes("way")) l.add("lines")
-        if (types.includes("relation")) l.add("polygons") // this is questionable
-      }
-      return l
-  }
-
-  keysForTheme(themeElem) {
-      const l = new Set()
-      for (var i of this.listForXpath(".//ns:key",themeElem)) {
-        l.add(i.getAttribute("key"))
-      }
-      return l
-  }
-
-  whereForTheme(themeElem) {
-      var l = []
-      for (var i of this.listForXpath(".//ns:key",themeElem)) {
-        if (i.getAttribute("value")) {
-          l.push(i.getAttribute("key") + "=" + '"' + i.getAttribute("value") + '"')
-        } else {
-          l.push(i.getAttribute("key") + " IS NOT NULL")
-        }
-      }
-
-      return l.join(' OR ')
   }
 
   constructor(doc) {
-    const parser = new DOMParser();
+    const parser = new DOMParser()
     this.doc = parser.parseFromString(doc, "text/xml");
-    this.featureSelection = {}
-    for (var themeElem of this.themes()) {
-      const themeName = urlize(themeElem.getAttribute('name'))
-      this.featureSelection[themeName] = {}
-      this.featureSelection[themeName].geom_types = [...this.geomTypesForTheme(themeElem)]
-      this.featureSelection[themeName].select = [...this.keysForTheme(themeElem)]
-      this.featureSelection[themeName].where = this.whereForTheme(themeElem)
+    const collector = {
+      points:new Set(),
+      lines:new Set(),
+      polygons:new Set()
     }
+    for (var itemElem of this.listForXpath(".//ns:item",this.doc)) {
+      const types = itemElem.getAttribute("type").split(',')
+      if (types.includes("node")) {
+        this.collectInputs(itemElem,collector.points)
+      }
+      if (types.includes("closedway") || types.includes("relation")) { // relation?
+        this.collectInputs(itemElem,collector.polygons)
+      }
+      if (types.includes("way")) {
+        this.collectInputs(itemElem,collector.lines)
+      }
+    }
+
+    const fs = {}
+    fs.planet_osm_point = {}
+    fs.planet_osm_point.geom_types = ["points"]
+    fs.planet_osm_point.select = [...collector.points].sort()
+    fs.planet_osm_line = {}
+    fs.planet_osm_line.geom_types = ["lines"]
+    fs.planet_osm_line.select = [...collector.lines].sort()
+    fs.planet_osm_polygon = {}
+    fs.planet_osm_polygon.geom_types = ["polygons"]
+    fs.planet_osm_polygon.select = [...collector.polygons].sort()
+    this.featureSelection = fs
   }
 
   as_yaml() {
