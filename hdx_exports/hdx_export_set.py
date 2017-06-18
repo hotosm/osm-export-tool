@@ -187,16 +187,11 @@ class HDXExportSet(object):
 
     def sync_datasets(self): # noqa
         for dataset in self.datasets.values():
-            try:
-                exists = Dataset.read_from_hdx(dataset['name'])
-                if exists:
-                    dataset.update_in_hdx()
-                else:
-                    dataset.create_in_hdx()
-            except Exception as e:
-                client.captureException()
-                LOG.warn(e)
-                LOG.warn(traceback.format_exc())
+            exists = Dataset.read_from_hdx(dataset['name'])
+            if exists:
+                dataset.update_in_hdx()
+            else:
+                dataset.create_in_hdx()
 
     def sync_resources(self,artifact_list,public_dir):
         HDX_FORMATS = {
