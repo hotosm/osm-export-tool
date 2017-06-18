@@ -8,7 +8,6 @@ import styles from '../styles/ExportForm.css';
 import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, PresetParser } from './utils';
 const Dropzone = require('react-dropzone');
 import TreeMenu from './react-tree-menu/TreeMenu'
-import CheckboxTree from 'react-checkbox-tree'
 import { TreeTag } from '../utils/TreeTag'
 import { HDM_DATA } from '../utils/TreeTagSettings'
 
