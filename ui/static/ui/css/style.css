@@ -807,3 +807,228 @@ div.help {
 a.top {
     padding: 15px !important;
 }
+
+
+/* hack in react tree menu */
+/*
+
+<classNamePrefix>-root
+
+The outer container
+
+*/
+.tree-view-root {}
+
+/*
+
+<classNamePrefix>-root
+
+The outer container for a single node
+
+*/
+.tree-view-node {
+    margin-left: 10px;
+}
+
+
+/*
+
+<classNamePrefix>-node-collapse-toggle.collapse-spacer
+
+Used to provide spacing when a parent node has no children
+
+*/
+.tree-view-node-collapse-toggle.collapse-spacer {
+    width: 14px;
+    display: inline-block;
+}
+
+/*
+<classNamePrefix>-node-collapse-toggle.<expandIconClass>
+
+The class to use for the icon that expands a collapsed parent node
+
+*/
+
+
+/*
+
+<classNamePrefix>-node-collapse-toggle.<collapseIconClass>
+
+The class to use for the icon that collapses an expanded parent node
+
+*/
+
+.tree-view-node-collapse-toggle {
+    margin-right: 3px;
+    width: 14px;
+}
+
+/*
+
+<classNamePrefix>-node-label
+
+*/
+.tree-view-node-label {
+    margin-left: 3px;
+    padding: 1px;
+    border: 1px solid #fff;
+}
+
+/*
+
+<classNamePrefix>-node-label.selected
+
+*/
+.tree-view-node-label.selected {
+    border: 1px solid #003f81;
+    border-radius: 3px;
+    background-color: #808080;
+}
+
+/*
+
+<classNamePrefix>-node-checkbox
+
+The class for a node checkbox
+
+*/
+
+.tree-view-node-checkbox {}
+
+/*
+
+<classNamePrefix>-node-children
+
+The class for the element that wraps a nodes children (if any exist)
+
+*/
+
+.tree-view-node-children {}
+
+
+
+
+/* checkbox-tree */
+
+.react-checkbox-tree ol {
+  margin: 0;
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.react-checkbox-tree ol ol {
+  padding-left: 24px;
+}
+
+.react-checkbox-tree button {
+  line-height: normal;
+  color: inherit;
+}
+
+.react-checkbox-tree button:focus {
+  outline: none;
+}
+
+.react-checkbox-tree label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.react-checkbox-tree label:hover {
+  background: rgba(51, 51, 204, 0.1);
+}
+
+.react-checkbox-tree input {
+  display: none;
+}
+
+.react-checkbox-tree .rct-icon {
+  font-family: "FontAwesome";
+  font-style: normal;
+}
+
+.rct-collapse,
+.rct-node-icon,
+.rct-checkbox {
+  padding: 0 5px;
+}
+
+.rct-collapse *,
+.rct-node-icon *,
+.rct-checkbox * {
+  display: inline-block;
+  margin: 0;
+  width: 14px;
+}
+
+.rct-text {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.rct-collapse {
+  border: 0;
+  background: none;
+  line-height: normal;
+  color: inherit;
+  font-size: 12px;
+}
+
+.rct-collapse.rct-collapse-btn {
+  cursor: pointer;
+}
+
+.rct-collapse > .rct-icon-expand-close {
+  opacity: .5;
+}
+
+.rct-collapse > .rct-icon-expand-close:hover {
+  opacity: 1;
+}
+
+.rct-node-icon {
+  color: #33c;
+}
+
+.rct-title {
+  padding: 0 5px;
+}
+
+.rct-icon-expand-close::before {
+  content: "\f054";
+}
+
+.rct-icon-expand-open::before {
+  content: "\f078";
+}
+
+.rct-icon-uncheck::before {
+  content: "\f096";
+}
+
+.rct-icon-check::before {
+  content: "\f046";
+}
+
+.rct-icon-half-check::before {
+  opacity: .5;
+  content: "\f046";
+}
+
+.rct-icon-leaf::before {
+  content: "\f016";
+}
+
+.rct-icon-parent-open::before {
+  content: "\f115";
+}
+
+.rct-icon-parent-close::before {
+  content: "\f114";
+}
+

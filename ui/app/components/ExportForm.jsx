@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Nav, NavItem, ButtonGroup, Row, Col, Panel, Button } from 'react-bootstrap';
+import { Nav, NavItem, ButtonGroup, Row, Col, Panel, Button, FormControl } from 'react-bootstrap';
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import ExportAOI from './aoi/ExportAOI';
@@ -7,6 +7,10 @@ import { createExport, getOverpassTimestamp } from '../actions/exportsActions';
 import styles from '../styles/ExportForm.css';
 import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, PresetParser } from './utils';
 const Dropzone = require('react-dropzone');
+import TreeMenu from './react-tree-menu/TreeMenu'
+import CheckboxTree from 'react-checkbox-tree'
+import { TreeTag } from '../utils/TreeTag'
+import { HDM_DATA } from '../utils/TreeTagSettings'
 
 const form = reduxForm({
   form: "ExportForm",
@@ -66,16 +70,8 @@ const Describe = ({next}) =>
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>
 
-
-const SelectFeatures = ({next, onDrop}) =>
-  <Row>
-    <ButtonGroup justified>
-      <Button href="#">Tree Tag</Button>
-      <Button href="#" active={true}>YAML</Button>
-    </ButtonGroup>
-    <Dropzone className="nullClassName" onDrop={onDrop}>
-      <Button style={{marginTop:'10px'}}>Load from JOSM Preset .XML</Button>
-    </Dropzone>
+const YamlUi = ({onDrop}) => 
+  <div>
     <Field
       name='feature_selection'
       type="text"
@@ -84,6 +80,62 @@ const SelectFeatures = ({next, onDrop}) =>
       className={styles.featureSelection}
       rows='10'
     />
+    <Dropzone className="nullClassName" onDrop={onDrop}>
+      <Button>Load from JOSM Preset .XML</Button>
+    </Dropzone>
+  </div>
+
+class TreeTagUi extends React.Component {
+    constructor() {
+      super();
+      this.treeTag = new TreeTag(HDM_DATA)
+      this.state = { data: this.treeTag.visibleData(), searchQuery:"" }
+    }
+
+    onTreeNodeCollapseChange = (node) => {
+      this.treeTag.onTreeNodeCollapseChange(node)
+      this.setState({data:this.treeTag.visibleData(this.state.searchQuery)})
+    }
+
+    onTreeNodeCheckChange = (node) => {
+      this.treeTag.onTreeNodeCheckChange(node)
+      this.setState({data:this.treeTag.visibleData(this.state.searchQuery)})
+    }
+
+    onSearchChange = (e) => {
+      this.setState({searchQuery:e.target.value,data:this.treeTag.visibleData(e.target.value)})
+    } 
+
+    render() {
+      return <div>
+          <FormControl
+            id="treeTagSearch"
+            type="text"
+            label="treeTagSearch"
+            placeholder="Search for a feature type..."
+            onChange={this.onSearchChange}
+          />
+          <TreeMenu 
+            data={this.state.data}
+            onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
+            onTreeNodeCheckChange={this.onTreeNodeCheckChange}
+            expandIconClass="fa fa-chevron-right"
+            collapseIconClass="fa fa-chevron-down"
+            labelFilter={this.treeTag.labelFilter}
+          />
+        </div>;
+    }
+}
+
+
+const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml}) =>
+  <Row>
+    <ButtonGroup justified>
+      <Button href="#" active={featuresUi === "treetag"} onClick={switchToTreeTag}>Tree Tag</Button>
+      <Button href="#" active={featuresUi === "yaml"} onClick={switchToYaml}>YAML</Button>
+    </ButtonGroup>
+    { featuresUi == "yaml" ? <YamlUi onDrop={onDrop}/> : null }
+    { featuresUi == "treetag" ? <TreeTagUi/> : null }
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>
 
@@ -118,7 +170,6 @@ const Summary = ({ handleSubmit, formValues, error}) =>
         component={renderCheckbox}
         type='checkbox'
       />
-
       <Button bsStyle="success" bsSize="large" type="submit" style={{width:"100%"}} onClick={handleSubmit}>Create Export</Button>
       {error && <p className={styles.error}><strong>{error}</strong></p>}
     </Col>
@@ -154,6 +205,14 @@ export class ExportForm extends Component {
     this.setState({step:4})
   }
 
+  switchToTreeTag = () => {
+    this.setState({featuresUi:"treetag"})
+  }
+
+  switchToYaml= () => {
+    this.setState({featuresUi:"yaml"})
+  }
+
   onDrop = (files) => {
     const file = files[0]
     const reader = new FileReader();
@@ -178,7 +237,13 @@ export class ExportForm extends Component {
           </Nav>
           <form>
             { this.state.step == '1' ? <Describe next={this.handleStep2}/> : null }
-            { this.state.step == '2' ? <SelectFeatures next={this.handleStep3} onDrop={this.onDrop}/> : null }
+            { this.state.step == '2' ? <SelectFeatures 
+              next={this.handleStep3} 
+              onDrop={this.onDrop} 
+              featuresUi={this.state.featuresUi}
+              switchToTreeTag={this.switchToTreeTag}
+              switchToYaml={this.switchToYaml}
+            /> : null }
             { this.state.step == '3' ? <ChooseFormats next={this.handleStep4}/> : null }
             { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
           </form>
