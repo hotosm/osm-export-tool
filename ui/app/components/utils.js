@@ -103,7 +103,7 @@ export const slugify = (text) => {
 
 export class PresetParser {
   listForXpath(xpath,root) {
-    const a = this.doc.evaluate(xpath,root,this.resolver,XPathResult.ORDERED_NODE_ITERATOR_TYPE)
+    const a = this.doc.evaluate(xpath,root,this.resolver,XPathResult.ORDERED_NODE_ITERATOR_TYPE,null)
     var r = a.iterateNext()
     const l = []
     while(r) {
