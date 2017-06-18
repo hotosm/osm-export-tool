@@ -54,5 +54,5 @@ export default {
         jobuid: '',
         error: null,
     },
-    overpassTimestamp: null
+    overpassLastUpdated: null
 }

@@ -225,7 +225,7 @@ export class ExportForm extends Component {
   }
 
   render() {
-    const { handleSubmit, formValues, error, overpassTimestamp } = this.props
+    const { handleSubmit, formValues, error, overpassLastUpdated } = this.props
     return( 
       <Row style={{height: '100%'}}>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll', padding:"20px"}}>
@@ -248,7 +248,7 @@ export class ExportForm extends Component {
             { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
           </form>
           <Panel style={{marginTop:'20px'}}>
-            OpenStreetMap database last updated: {overpassTimestamp} (x minutes ago)
+            OpenStreetMap database last updated {overpassLastUpdated} 
           </Panel>
         </Col>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
@@ -263,7 +263,7 @@ const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
     formValues:formValueSelector("ExportForm")(state,"name","description","project"),
-    overpassTimestamp: state.overpassTimestamp,
+    overpassLastUpdated: state.overpassLastUpdated,
     initialValues: {
       published: true,
       feature_selection: `

@@ -34,10 +34,10 @@ export function exportListReducer(state = initialState.exportList, action) {
   return state;
 }
 
-export function overpassTimestampReducer(state = initialState.overpassTimestamp, action) {
+export function overpassTimestampReducer(state = initialState.overpassLastUpdated, action) {
   switch(action.type) {
     case types.RECEIVED_OVERPASS_TIMESTAMP:
-      return action.timestamp;
+      return action.lastUpdated;
   }
   return state;
 }

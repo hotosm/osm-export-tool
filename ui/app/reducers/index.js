@@ -22,5 +22,5 @@ export default {
   exportInfo: exportInfoReducer,
   exportRuns: exportRunsReducer,
   exportList: exportListReducer,
-  overpassTimestamp: overpassTimestampReducer
+  overpassLastUpdated: overpassTimestampReducer
 };

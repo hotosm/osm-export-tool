@@ -4,6 +4,7 @@ import {Config} from '../config';
 import types from './actionTypes';
 import { push } from 'react-router-redux';
 import { startSubmit, stopSubmit } from 'redux-form';
+import moment from 'moment'
 
 export function createExport (data,form_name) {
   return dispatch => {
@@ -71,7 +72,7 @@ export function getOverpassTimestamp(dispatch) {
     }).then(rsp => {
       dispatch({
         type: types.RECEIVED_OVERPASS_TIMESTAMP,
-        timestamp:rsp.data.timestamp
+        lastUpdated:moment(rsp.data.timestamp).fromNow()
       })
     })
     .catch(error => {
