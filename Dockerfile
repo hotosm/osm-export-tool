@@ -1,5 +1,5 @@
 FROM ubuntu:16.04
-MAINTAINER Seth Fitzsimmons <seth@mojodna.net>
+LABEL maintainer "Seth Fitzsimmons <seth@mojodna.net>"
 
 ENV DEBIAN_FRONTEND noninteractive
 
