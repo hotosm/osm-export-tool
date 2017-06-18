@@ -186,7 +186,8 @@ export class ExportForm extends Component {
   }
 
   state = {
-    step: 1
+    step: 1,
+    featuresUi:"treetag"
   }
 
   handleStep1 = () => {
