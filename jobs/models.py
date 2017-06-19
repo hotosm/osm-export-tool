@@ -49,9 +49,9 @@ def get_geodesic_area(geom):
 
 def validate_aoi(aoi):
     area = get_geodesic_area(aoi)
-    if area > 2500000:
+    if area > 3000000000000:
         raise ValidationError(
-            "Geometry too large: %(area)s km",
+            "Geometry too large: %(area)s m",
             params={'area': area},
         )
 
