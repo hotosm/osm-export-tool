@@ -537,9 +537,8 @@ const mapStateToProps = state => {
     hdx: state.hdx,
     initialValues: {
       feature_selection: `
-buildings:
+Buildings:
   hdx:
-    name:
     tags: building, shelter, osm, openstreetmap
     caveats:
   types:
@@ -556,9 +555,8 @@ buildings:
     - office
   where: building IS NOT NULL
 
-roads:
+Roads:
   hdx:
-    name:
     tags: roads, transportation, osm, openstreetmap
     caveats:
   types:
@@ -576,9 +574,8 @@ roads:
     - layer
   where: highway IS NOT NULL
 
-waterways:
+Waterways:
   hdx:
-    name:
     tags: rivers, hydrology, waterbodies, osm, openstreetmap
     caveats:
   types:
@@ -597,9 +594,8 @@ waterways:
     - water
   where: waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','wetland','bay')
 
-points_of_interest:
+Points of Interest:
   hdx:
-    name:
     tags: poi, points of interest, facilities, osm, openstreetmap
     caveats:
   types:
