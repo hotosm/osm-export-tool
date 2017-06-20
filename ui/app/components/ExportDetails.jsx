@@ -39,6 +39,10 @@ const Details = ({exportInfo}) => {
           <td>Export formats:</td>
           <td colSpan="3">{exportInfo.export_formats}</td>
         </tr>
+        <tr>
+          <td>OSM Analytics:</td>
+          <td colSpan="3"><a href={exportInfo.osma_link} target="_blank">View this area</a></td>
+        </tr>
       </tbody>
     </Table>
 }

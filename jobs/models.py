@@ -94,6 +94,11 @@ class Job(models.Model):
         db_table = 'jobs'
 
     @property
+    def osma_link(self):
+        bounds = self.the_geom.extent
+        return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/buildings/recency".format(*bounds)
+
+    @property
     def feature_selection_object(self):
         """
         a valid FeatureSelection object based off the feature_selection text column.

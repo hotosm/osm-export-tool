@@ -50,7 +50,7 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         fields = ('id', 'uid', 'user', 'name',
                   'description', 'event', 'export_formats', 'published',
-                  'the_geom', 'feature_selection','buffer_aoi')
+                  'the_geom', 'feature_selection','buffer_aoi','osma_link')
 
 class ListJobSerializer(serializers.ModelSerializer):
     """
