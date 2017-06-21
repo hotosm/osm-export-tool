@@ -38,7 +38,7 @@ ReactDOM.render(
     <ConnectedRouter history={history}>
         <div style={{height: '100%'}}>
           <Route exact path='/exports/new' component={ExportForm}/>
-          <Route path='/exports/detail/:id' component={ExportDetails}/>
+          <Route path='/exports/detail/:id/:run_id?' component={ExportDetails}/>
           <Route exact path='/exports' component={ExportList}/>
           <Route exact path='/hdx' component={HDXExportRegionList} />
           <Route path='/hdx/new' component={HDXExportRegionForm} />

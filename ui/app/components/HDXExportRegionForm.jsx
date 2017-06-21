@@ -265,7 +265,7 @@ export class HDXExportRegionForm extends Component {
     return this.exportRegion.runs.slice(0, 10).map((run, i) => (
       <tr key={i}>
         <td>
-          <a href={`/v3/#/exports/detail/${this.exportRegion.job_uid}#${run.uid}`}><FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} /></a>
+          <a href={`/v3/#/exports/detail/${this.exportRegion.job_uid}/${run.uid}`}><FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} /></a>
         </td>
         <td>
           {run.status}
