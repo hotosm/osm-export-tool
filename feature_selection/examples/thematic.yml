@@ -4,6 +4,16 @@ amenities_all:
     - polygons
   select:
     - amenity
+    - name
+    - addr:housenumber
+    - addr:street
+    - building
+    - historic
+    - information
+    - leisure
+    - shop
+    - tourism
+    - office
   where: amenity IS NOT NULL
 
 health_schools:
@@ -12,6 +22,10 @@ health_schools:
     - polygons
   select:
     - amenity
+    - name
+    - building
+    - addr:housenumber
+    - addr:street
   where: amenity IN ("clinic","hospital","school","pharmacy")
 
 airports_all:
@@ -20,6 +34,8 @@ airports_all:
     - polygons
   select:
     - aeroway
+    - name
+    - surface
   where: aeroway IS NOT NULL
 
 villages:
@@ -28,6 +44,8 @@ villages:
     - polygons
   select:
     - place
+    - name
+    - is_in
   where: place IS NOT NULL
 
 buildings:
@@ -35,6 +53,10 @@ buildings:
     - polygons
   select:
     - building
+    - name
+    - addr:housenumber
+    - addr:street
+    - hazard_prone
   where: building IS NOT NULL
 
 natural:
@@ -43,6 +65,8 @@ natural:
     - polygons
   select:
     - natural
+    - name
+    - hazard_prone
   where: natural IS NOT NULL
 
 landuse_other:
@@ -50,6 +74,7 @@ landuse_other:
     - polygons
   select:
     - landuse
+    - name
   where: landuse IS NOT NULL AND landuse != "residential"
 
 landuse_residential:
@@ -57,6 +82,7 @@ landuse_residential:
     - polygons
   select:
     - landuse
+    - name
   where: landuse IS NOT NULL AND landuse = "residential"
 
 roads_paths:
@@ -64,6 +90,14 @@ roads_paths:
     - lines
   select:
     - highway
+    - barrier
+    - ford
+    - hazard_prone
+    - name
+    - traffic_calming
+    - tunnel
+    - layer
+    - bicycle_road
   where: highway IS NOT NULL
 
 waterways:
@@ -71,6 +105,8 @@ waterways:
     - lines
   select:
     - waterway
+    - name
+    - hazard_prone
   where: waterway IS NOT NULL
 
 towers_antennas:
@@ -78,6 +114,7 @@ towers_antennas:
     - points
   select:
     - man_made
+    - name
   where: man_made IN ("antenna","mast","tower")
 
 harbours:
@@ -85,6 +122,9 @@ harbours:
     - points
   select:
     - harbour
+    - name
+    - leisure
+    - landuse
   where: harbour IS NOT NULL
 
 grassy_fields:
@@ -92,4 +132,5 @@ grassy_fields:
     - polygons
   select:
     - leisure
+    - name
   where:  leisure IN ("pitch","common","golf_course")
