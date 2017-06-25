@@ -56,7 +56,9 @@ BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
 SINGLE_THEME_NOTE = """
 OpenStreetMap exports for use in GIS applications.
 
-This theme includes all OpenStreetMap features in this area.
+This theme includes all OpenStreetMap features in this area matching:
+
+"name" IS NOT NULL
 
 Features may have these attributes:
 
