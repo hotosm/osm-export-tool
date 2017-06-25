@@ -1,4 +1,4 @@
-
+import yaml from 'js-yaml'
 
 export class TreeTag {
   constructor(data) {
@@ -111,6 +111,29 @@ export class TreeTag {
     }
   }
 
+  checkedValues = () => {
+    var retval = []
+    for (var key in this.data) {
+      retval = retval.concat(this.checkedSubtree(this.data[key],key))
+    }
+    return retval
+  }
+
+  checkedSubtree = (node,key) => {
+    if (node.children) {
+      var retval = []
+      for (var childKey in node.children) {
+        retval = retval.concat(this.checkedSubtree(node.children[childKey],childKey))
+      }
+      return retval
+    } else {
+      if (node.checked) {
+        return [key]
+      }
+      return []
+    }
+  }
+
   visibleData = (query) => {
     // given a search string, return filtered tree, uncollapsing the path to results
     if (query) {
@@ -152,5 +175,48 @@ export class TreeTag {
   labelFilter = (label) => {
     // do localization here
     return label[0].toUpperCase() + label.substring(1);
+  }
+}
+
+// consumes a list of checkbox names and outputs a YAML feature selection.
+export class TreeTagYAML {
+  createPropIfNeeded = (table_name,geom_type) => {
+    if (this.data[table_name]) return
+    this.data[table_name] = {
+      types:[geom_type],
+      select:new Set(),
+      where:[]
+    }
+  }
+
+  constructor(lookup,checkbox_list) {
+    this.data = {}
+    for (var name of checkbox_list) {
+      for(var geom_type of lookup[name].geom_types) {
+        const t = "planet_osm_" + geom_type
+        this.createPropIfNeeded(t,geom_type + "s")
+        for (var key of lookup[name].keys) {
+          this.data[t].select.add(key)
+        }
+        this.data[t].where.push(lookup[name].where)
+      }
+    }
+
+  }
+
+  dataAsObj = () => {
+    const retval = {}
+    for(var tname in this.data) {
+      retval[tname] = {
+        'types':this.data[tname].types,
+        'select':[...this.data[tname].select].sort(),
+        'where':{'or':this.data[tname].where}
+      }
+    }
+    return retval
+  }
+
+  dataAsYaml = () => {
+    return yaml.safeDump(this.dataAsObj(),{lineWidth:-1,noCompatMode:true})
   }
 }

@@ -49,6 +49,7 @@
     "babel-eslint": "^7.2.1",
     "babel-jest": "17.0.2",
     "chai": "~3.5.0",
+    "csv-parse": "^1.2.0",
     "enzyme": "~2.7.1",
     "eslint": "^3.19.0",
     "eslint-config-semistandard": "^11.0.0",

@@ -1,5 +1,5 @@
 var clonedeep = require('lodash/clonedeep')
-import { TreeTag } from './TreeTag'
+import { TreeTag, TreeTagYAML } from './TreeTag'
 
 const TEST_DATA = {
   'buildings':{
@@ -83,4 +83,27 @@ test('filtering to search values uncollapses parents', () => {
   expect(v.buildings.collapsed).toBe(false)
   expect(v.buildings.children.schools.collapsed).toBe(false)
 })
-test('getting flattened list of checked values')
+test('getting flattened list of checked values', () => {
+  const t = new TreeTag(clonedeep(TEST_DATA))
+  t.onTreeNodeCheckChange(['buildings','schools'])
+  t.onTreeNodeCheckChange(['buildings','libraries'])
+  const c = t.checkedValues()
+  expect(c).toEqual(['highschools','libraries'])
+})
+
+const TEST_LOOKUP = {
+  'libraries':{
+    'geom_types':['polygon'],
+    'keys':['name','amenity'],
+    'where':"amenity='library'"
+  }
+}
+
+test("converts list of checkboxes to YAML", () => {
+  const y = new TreeTagYAML(TEST_LOOKUP,['libraries']).dataAsObj()
+  expect(y.planet_osm_line).toBeUndefined()
+  expect(y.planet_osm_polygon.select[0]).toEqual("amenity")
+  expect(y.planet_osm_polygon.select[1]).toEqual("name")
+  
+
+})
