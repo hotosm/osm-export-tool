@@ -186,7 +186,7 @@ class FeatureSelection(object):
         theme = self.doc[theme]
         if 'where' in theme:
             return theme['where']
-        return '1'
+        return ' OR '.join(map(lambda x:'"' + x + '" IS NOT NULL',theme['select']))
 
     def zip_readme(self,theme):
         columns = []
