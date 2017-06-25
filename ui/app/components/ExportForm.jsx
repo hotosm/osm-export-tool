@@ -192,11 +192,6 @@ export class ExportForm extends Component {
     this.setState({searchQuery:e.target.value,tagTreeData:this.tagTree.visibleData(e.target.value)})
   } 
 
-  state = {
-    step: 1,
-    featuresUi:"treetag"
-  }
-
   handleStep1 = () => {
     this.setState({step:1})
   }
