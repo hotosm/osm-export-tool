@@ -128,14 +128,19 @@ class FeatureSelection(object):
 
                 self.keys_from_sql[theme] = set()
                 if 'where' in theme_dict:
-                    s = SQLValidator(theme_dict['where'])
-                    if not s.valid:
-                        self._errors.append("SQL WHERE Invalid: " + ';'.join(s.errors))
-                        return False
+                    if not isinstance(theme_dict['where'],list):
+                        clauses = [theme_dict['where']]
+                    else:
+                        clauses = theme_dict['where']
+                    for clause in clauses:
+                        s = SQLValidator(clause)
+                        if not s.valid:
+                            self._errors.append("SQL WHERE Invalid: " + ';'.join(s.errors))
+                            return False
 
-                    # also add the keys to keys_from_sql
-                    for k in s.column_names:
-                        self.keys_from_sql[theme].add(k)
+                        # also add the keys to keys_from_sql
+                        for k in s.column_names:
+                            self.keys_from_sql[theme].add(k)
 
             return True
 
@@ -185,6 +190,8 @@ class FeatureSelection(object):
     def filter_clause(self,theme):
         theme = self.doc[theme]
         if 'where' in theme:
+            if isinstance(theme['where'],list):
+                return ' OR '.join(theme['where'])
             return theme['where']
         return ' OR '.join(map(lambda x:'"' + x + '" IS NOT NULL',theme['select']))
 

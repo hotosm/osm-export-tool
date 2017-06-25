@@ -98,6 +98,20 @@ class TestFeatureSelection(unittest.TestCase):
         self.assertEquals(f.key_union('points'), ['building','name'])
         self.assertEquals(f.filter_clause('buildings'),'building IS NOT NULL')
 
+    def test_sql_list(self):
+        y = '''
+        waterways:
+            types:
+                - polygons
+            select:
+                - name
+            where:
+                - name IS NOT NULL
+                - name = 'some building'
+        '''
+        f = FeatureSelection(y)
+        self.assertEquals(f.filter_clause('waterways'),"name IS NOT NULL OR name = 'some building'")
+
     def test_sqls(self):
         y = '''
         buildings:
