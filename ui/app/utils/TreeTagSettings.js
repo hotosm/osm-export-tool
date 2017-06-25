@@ -461,7 +461,7 @@ export const TAGLOOKUP = {
             "admin_level",
             "boundary",
             "name",
-            "(is_in)"
+            "is_in"
         ],
         "where": "boundary IS NOT NULL"
     },
@@ -491,7 +491,7 @@ export const TAGLOOKUP = {
             "communication:mobile",
             "communication:radio"
         ],
-        "where": "man_made='communications_tower' OR tower:type='communication'"
+        "where": "man_made='communications_tower' OR \"tower:type\"='communication'"
     },
     "Water Supply Systems": {
         "geom_types": [
