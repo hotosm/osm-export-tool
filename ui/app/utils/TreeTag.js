@@ -198,7 +198,9 @@ export class TreeTagYAML {
         for (var key of lookup[name].keys) {
           this.data[t].select.add(key)
         }
-        this.data[t].where.push(lookup[name].where)
+        if (lookup[name].where) {
+          this.data[t].where.push(lookup[name].where)
+        }
       }
     }
 
@@ -210,7 +212,7 @@ export class TreeTagYAML {
       retval[tname] = {
         'types':this.data[tname].types,
         'select':[...this.data[tname].select].sort(),
-        'where':{'or':this.data[tname].where}
+        'where':this.data[tname].where
       }
     }
     return retval

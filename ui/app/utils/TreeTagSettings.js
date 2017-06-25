@@ -451,7 +451,7 @@ export const TAGLOOKUP = {
             "addr:housenumber",
             "addr:street"
         ],
-        "where": "addr:housenumber IS NOT NULL OR addr:street IS NOT NULL"
+        "where": ""
     },
     "Administrative Boundaries": {
         "geom_types": [

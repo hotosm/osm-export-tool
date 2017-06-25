@@ -8,8 +8,8 @@ import styles from '../styles/ExportForm.css';
 import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, PresetParser } from './utils';
 const Dropzone = require('react-dropzone');
 import TreeMenu from './react-tree-menu/TreeMenu'
-import { TreeTag } from '../utils/TreeTag'
-import { HDM_DATA } from '../utils/TreeTagSettings'
+import { TreeTag, TreeTagYAML } from '../utils/TreeTag'
+import { TAGTREE, TAGLOOKUP } from '../utils/TreeTagSettings'
 
 const form = reduxForm({
   form: "ExportForm",
@@ -87,23 +87,7 @@ const YamlUi = ({onDrop}) =>
 class TreeTagUi extends React.Component {
     constructor() {
       super();
-      this.treeTag = new TreeTag(HDM_DATA)
-      this.state = { data: this.treeTag.visibleData(), searchQuery:"" }
     }
-
-    onTreeNodeCollapseChange = (node) => {
-      this.treeTag.onTreeNodeCollapseChange(node)
-      this.setState({data:this.treeTag.visibleData(this.state.searchQuery)})
-    }
-
-    onTreeNodeCheckChange = (node) => {
-      this.treeTag.onTreeNodeCheckChange(node)
-      this.setState({data:this.treeTag.visibleData(this.state.searchQuery)})
-    }
-
-    onSearchChange = (e) => {
-      this.setState({searchQuery:e.target.value,data:this.treeTag.visibleData(e.target.value)})
-    } 
 
     render() {
       return <div>
@@ -112,29 +96,35 @@ class TreeTagUi extends React.Component {
             type="text"
             label="treeTagSearch"
             placeholder="Search for a feature type..."
-            onChange={this.onSearchChange}
+            onChange={this.props.onSearchChange}
           />
           <TreeMenu 
-            data={this.state.data}
-            onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
-            onTreeNodeCheckChange={this.onTreeNodeCheckChange}
+            data={this.props.tagTreeData}
+            onTreeNodeCollapseChange={this.props.onTreeNodeCollapseChange}
+            onTreeNodeCheckChange={this.props.onTreeNodeCheckChange}
             expandIconClass="fa fa-chevron-right"
             collapseIconClass="fa fa-chevron-down"
-            labelFilter={this.treeTag.labelFilter}
+            labelFilter={this.props.labelFilter}
           />
         </div>;
     }
 }
 
 
-const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml}) =>
+const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml, onSearchChange,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
   <Row>
     <ButtonGroup justified>
       <Button href="#" active={featuresUi === "treetag"} onClick={switchToTreeTag}>Tree Tag</Button>
       <Button href="#" active={featuresUi === "yaml"} onClick={switchToYaml}>YAML</Button>
     </ButtonGroup>
     { featuresUi == "yaml" ? <YamlUi onDrop={onDrop}/> : null }
-    { featuresUi == "treetag" ? <TreeTagUi/> : null }
+    { featuresUi == "treetag" ? <TreeTagUi
+        onSearchChange={onSearchChange}
+        onTreeNodeCollapseChange={onTreeNodeCollapseChange}
+        onTreeNodeCheckChange={onTreeNodeCheckChange}
+        labelFilter={labelFilter}
+        tagTreeData={tagTreeData}
+        /> : null }
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>
 
@@ -177,12 +167,30 @@ const Summary = ({ handleSubmit, formValues, error}) =>
 export class ExportForm extends Component {
   constructor(props) {
       super(props);
+      this.tagTree = new TreeTag(TAGTREE)
+      this.state = { step: 1, featuresUi: "treetag", tagTreeData: this.tagTree.visibleData(), searchQuery:"" }
   }
 
   componentDidMount() {
     const { getOverpassTimestamp } = this.props
     getOverpassTimestamp()
   }
+
+  onTreeNodeCollapseChange = (node) => {
+    this.tagTree.onTreeNodeCollapseChange(node)
+    this.setState({tagTreeData:this.tagTree.visibleData(this.state.searchQuery)})
+  }
+
+  onTreeNodeCheckChange = (node) => {
+    this.tagTree.onTreeNodeCheckChange(node)
+    const y = new TreeTagYAML(TAGLOOKUP,this.tagTree.checkedValues())
+    this.props.change("feature_selection",y.dataAsYaml())
+    this.setState({tagTreeData:this.tagTree.visibleData(this.state.searchQuery)})
+  }
+
+  onSearchChange = (e) => {
+    this.setState({searchQuery:e.target.value,tagTreeData:this.tagTree.visibleData(e.target.value)})
+  } 
 
   state = {
     step: 1,
@@ -243,6 +251,11 @@ export class ExportForm extends Component {
               featuresUi={this.state.featuresUi}
               switchToTreeTag={this.switchToTreeTag}
               switchToYaml={this.switchToYaml}
+              tagTreeData={this.state.tagTreeData}
+              onSearchChange={this.onSearchChange}
+              onTreeNodeCheckChange={this.onTreeNodeCheckChange}
+              onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
+              labelFilter={this.tagTree.labelFilter}
             /> : null }
             { this.state.step == '3' ? <ChooseFormats next={this.handleStep4}/> : null }
             { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
