@@ -110,14 +110,21 @@ class TreeTagUi extends React.Component {
     }
 }
 
+class StoredConfUi extends React.Component {
+  render() {
+    return <div>
+      </div>;
+  }
+}
 
-const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml, onSearchChange,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
+
+const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml, switchToStoredConf, onSearchChange,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
   <Row>
     <ButtonGroup justified>
       <Button href="#" active={featuresUi === "treetag"} onClick={switchToTreeTag}>Tree Tag</Button>
+      <Button href="#" active={featuresUi === "stored"} onClick={switchToStoredConf}>Stored Configuration</Button>
       <Button href="#" active={featuresUi === "yaml"} onClick={switchToYaml}>YAML</Button>
     </ButtonGroup>
-    { featuresUi == "yaml" ? <YamlUi onDrop={onDrop}/> : null }
     { featuresUi == "treetag" ? <TreeTagUi
         onSearchChange={onSearchChange}
         onTreeNodeCollapseChange={onTreeNodeCollapseChange}
@@ -125,6 +132,8 @@ const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml
         labelFilter={labelFilter}
         tagTreeData={tagTreeData}
         /> : null }
+    { featuresUi == "stored" ? <StoredConfUi/> : null }
+    { featuresUi == "yaml" ? <YamlUi onDrop={onDrop}/> : null }
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>
 
@@ -216,6 +225,10 @@ export class ExportForm extends Component {
     this.setState({featuresUi:"yaml"})
   }
 
+  switchToStoredConf = () => {
+    this.setState({featuresUi:"stored"})
+  }
+
   onDrop = (files) => {
     const file = files[0]
     const reader = new FileReader();
@@ -246,6 +259,7 @@ export class ExportForm extends Component {
               featuresUi={this.state.featuresUi}
               switchToTreeTag={this.switchToTreeTag}
               switchToYaml={this.switchToYaml}
+              switchToStoredConf ={this.switchToStoredConf}
               tagTreeData={this.state.tagTreeData}
               onSearchChange={this.onSearchChange}
               onTreeNodeCheckChange={this.onTreeNodeCheckChange}
