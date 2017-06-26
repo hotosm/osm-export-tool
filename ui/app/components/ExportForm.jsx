@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Nav, NavItem, ButtonGroup, Row, Col, Panel, Button, FormControl } from 'react-bootstrap';
+import { Nav, NavItem, InputGroup, ButtonGroup, Row, Col, Panel, Button, FormControl } from 'react-bootstrap';
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import ExportAOI from './aoi/ExportAOI';
@@ -91,14 +91,20 @@ class TreeTagUi extends React.Component {
 
     render() {
       return <div>
-          <FormControl
-            id="treeTagSearch"
-            type="text"
-            label="treeTagSearch"
-            placeholder="Search for a feature type..."
-            onChange={this.props.onSearchChange}
-          />
-          <TreeMenu 
+          <InputGroup style={{width:'100%',marginTop:'20px',marginBottom:'10px'}}>
+            <FormControl
+              id="treeTagSearch"
+              type="text"
+              label="treeTagSearch"
+              placeholder="Search for a feature type..."
+              onChange={this.props.onSearchChange}
+            />
+            <InputGroup.Button>
+              <Button onClick={this.props.clearSearch}>Clear</Button>
+            </InputGroup.Button>
+          </InputGroup>
+
+          <TreeMenu
             data={this.props.tagTreeData}
             onTreeNodeCollapseChange={this.props.onTreeNodeCollapseChange}
             onTreeNodeCheckChange={this.props.onTreeNodeCheckChange}
@@ -118,7 +124,7 @@ class StoredConfUi extends React.Component {
 }
 
 
-const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml, switchToStoredConf, onSearchChange,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
+const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml, switchToStoredConf, onSearchChange,clearSearch,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
   <Row>
     <ButtonGroup justified>
       <Button href="#" active={featuresUi === "treetag"} onClick={switchToTreeTag}>Tree Tag</Button>
@@ -127,6 +133,7 @@ const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml
     </ButtonGroup>
     { featuresUi == "treetag" ? <TreeTagUi
         onSearchChange={onSearchChange}
+        clearSearch={clearSearch}
         onTreeNodeCollapseChange={onTreeNodeCollapseChange}
         onTreeNodeCheckChange={onTreeNodeCheckChange}
         labelFilter={labelFilter}
@@ -201,6 +208,10 @@ export class ExportForm extends Component {
     this.setState({searchQuery:e.target.value,tagTreeData:this.tagTree.visibleData(e.target.value)})
   } 
 
+  clearSearch = (e) => {
+    this.setState({searchQuery:'',tagTreeData:this.tagTree.visibleData()})
+  }
+
   handleStep1 = () => {
     this.setState({step:1})
   }
@@ -262,6 +273,7 @@ export class ExportForm extends Component {
               switchToStoredConf ={this.switchToStoredConf}
               tagTreeData={this.state.tagTreeData}
               onSearchChange={this.onSearchChange}
+              clearSearch={this.clearSearch}
               onTreeNodeCheckChange={this.onTreeNodeCheckChange}
               onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
               labelFilter={this.tagTree.labelFilter}

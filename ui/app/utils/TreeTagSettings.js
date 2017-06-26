@@ -1,42 +1,70 @@
 export const TAGTREE = {
     "Commerce": {
         "children": {
-            "Finance": {},
+            "Finance": {
+                "search_terms": "bank,atm,money"
+            },
             "Shops & Markets": {},
             "Tourism": {},
-            "Accommodation": {}
+            "Accommodation": {
+                "search_terms": "hotel,hostel,motel"
+            }
         }
     },
     "Health, Emergency and Sanitation": {
         "children": {
             "Police and Fire Stations": {},
-            "Drinking Water": {},
+            "Drinking Water": {
+                "search_terms": "water,pump,well"
+            },
             "Fire Hydrants and Defibrillators": {},
             "Public Toilets": {},
-            "Health Facilities": {}
+            "Health Facilities": {
+                "search_terms": "clinic,doctor,pharmacy,hospital,dentist"
+            }
         }
     },
     "Public Institutions, Government and Offices": {
         "children": {
-            "Educational Facilities": {},
-            "Places of Worship": {},
-            "Government": {},
+            "Educational Facilities": {
+                "search_terms": "school,college,university"
+            },
+            "Places of Worship": {
+                "search_terms": "church,mosque,synagogue,religion,religious"
+            },
+            "Government": {
+                "search_terms": "court,town hall"
+            },
             "Offices": {},
-            "Embassies": {},
+            "Embassies": {
+                "search_terms": "embassy"
+            },
             "Military": {},
             "Community Centres": {}
         }
     },
     "Transportation": {
         "children": {
-            "Gas Stations": {},
-            "All Transit Stations": {},
+            "Gas Stations": {
+                "search_terms": "fuel"
+            },
+            "All Transit Stations": {
+                "search_terms": "transport"
+            },
             "Roads": {},
-            "Footpaths": {},
+            "Footpaths": {
+                "search_terms": "trail"
+            },
             "Bus Stations": {},
-            "Rail Stations": {},
-            "Rail": {},
-            "Ferry": {},
+            "Rail Stations": {
+                "search_terms": "train"
+            },
+            "Rail": {
+                "search_terms": "train"
+            },
+            "Ferry": {
+                "search_terms": "boat"
+            },
             "Airports": {}
         }
     },
@@ -48,39 +76,63 @@ export const TAGTREE = {
     },
     "Localities": {
         "children": {
-            "Administrative Boundaries": {},
-            "Places": {}
+            "Administrative Boundaries": {
+                "search_terms": "border"
+            },
+            "Places": {
+                "search_terms": "population"
+            }
         }
     },
     "Infrastructure": {
         "children": {
-            "Communication": {},
-            "Water Supply Systems": {},
-            "Solid Waste": {},
-            "Drainage": {},
-            "Power Systems": {},
-            "Backup Generators": {},
+            "Communication": {
+                "search_terms": "tower"
+            },
+            "Water Supply Systems": {
+                "search_terms": "pump"
+            },
+            "Solid Waste": {
+                "search_terms": "dump,landfill"
+            },
+            "Drainage": {
+                "search_terms": "ditch"
+            },
+            "Power Systems": {
+                "search_terms": "electricity"
+            },
+            "Backup Generators": {
+                "search_terms": "electricity"
+            },
             "Storage Warehouse": {}
         }
     },
     "Sport and Recreation": {
         "children": {
-            "Stadiums": {},
+            "Stadiums": {
+                "search_terms": "arena"
+            },
             "Swimming Pools": {},
-            "Pitch": {},
+            "Pitch": {
+                "search_terms": "field,court"
+            },
             "Sport Centres": {}
         }
     },
     "Land Use": {
         "children": {
-            "Cemetaries": {},
+            "Cemetaries": {
+                "search_terms": "graveyard"
+            },
             "Brownfields and Greenfields": {},
             "Parks": {}
         }
     },
     "Natural": {
         "children": {
-            "Bodies of Water": {},
+            "Bodies of Water": {
+                "search_terms": "lakes,ponds,rivers,streams"
+            },
             "Coastlines": {},
             "Wetlands": {}
         }
@@ -638,6 +690,7 @@ export const TAGLOOKUP = {
     },
     "Bodies of Water": {
         "geom_types": [
+            "line",
             "polygon"
         ],
         "keys": [

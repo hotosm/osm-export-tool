@@ -137,6 +137,7 @@ export class TreeTag {
   visibleData = (query) => {
     // given a search string, return filtered tree, uncollapsing the path to results
     if (query) {
+      query = query.toLowerCase()
       const retval = {}
       for (var key in this.data) {
         const subtree = this.visibleSubtree(this.data[key],key,query)
@@ -166,7 +167,7 @@ export class TreeTag {
     retval.checked = node.checked
     retval.indeterminate = node.indeterminate
     retval.checkbox = true
-    if (found || key.includes(query)) {
+    if (found || key.toLowerCase().includes(query) || (node.search_terms && node.search_terms.includes(query))) {
       return retval
     }
     return false

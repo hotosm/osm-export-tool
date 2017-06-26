@@ -83,6 +83,20 @@ test('filtering to search values uncollapses parents', () => {
   expect(v.buildings.collapsed).toBe(false)
   expect(v.buildings.children.schools.collapsed).toBe(false)
 })
+
+const SEARCHABLE_DATA = {
+  'buildings':{},
+  'transportation':{
+    'search_terms':'transit'
+  }
+}
+
+test('filtering uses additional search terms', () => {
+  const t = new TreeTag(clonedeep(SEARCHABLE_DATA))
+  const v = t.visibleData("transit")
+  expect(v.transportation).toBeDefined()
+})
+
 test('getting flattened list of checked values', () => {
   const t = new TreeTag(clonedeep(TEST_DATA))
   t.onTreeNodeCheckChange(['buildings','schools'])

@@ -8,6 +8,9 @@ fs.readFile("tagtree.csv", function (err, data) {
       const category = row['Category']
       if (!tagtree[category]) tagtree[category] = {'children':{}}
       tagtree[category]['children'][row['Checkbox Name']] = {}
+      if(row['additional search terms']) {
+        tagtree[category]['children'][row['Checkbox Name']].search_terms = row['additional search terms']
+      }
       taglookup[row['Checkbox Name']] = {
         'geom_types':row['geom types'].split(',').map(function(x) { return x.trim() }),
         'keys':row['key selections'].split(',').map(function(x) { return x.trim() }),
