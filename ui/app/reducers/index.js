@@ -4,6 +4,7 @@ import {invalidDrawWarningReducer} from './aoi/drawToolBarReducer';
 import {zoomToSelectionReducer, resetMapReducer} from './aoi/AoiInfobarReducer.js';
 import {getGeonamesReducer} from './aoi/searchToolbarReducer.js';
 import {toolbarIconsReducer, showImportModalReducer, importGeomReducer} from './aoi/mapToolReducer';
+import {configurationsReducer} from './configurationsReducer';
 import {getHdxReducer} from './hdxReducer';
 
 export default {
@@ -22,5 +23,6 @@ export default {
   exportInfo: exportInfoReducer,
   exportRuns: exportRunsReducer,
   exportList: exportListReducer,
+  configurations: configurationsReducer,
   overpassLastUpdated: overpassTimestampReducer
 };

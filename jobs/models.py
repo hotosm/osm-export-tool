@@ -106,6 +106,16 @@ class Job(models.Model):
         return FeatureSelection(self.feature_selection)
 
 
+class SavedFeatureSelection(models.Model):
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(default=timezone.now, editable=False)
+    user = models.ForeignKey(User)
+    name = models.CharField(max_length=100,db_index=True,blank=False)
+    description = models.CharField(max_length=1000, db_index=True, default='', blank=True)
+    yaml = models.TextField(blank=False,validators=[validate_feature_selection])
+    public = models.BooleanField(default=False)
+    deleted = models.BooleanField(default=False)
+
 class HDXExportRegion(models.Model): # noqa
     PERIOD_CHOICES = (
         ('6hrs', 'Every 6 hours'),

@@ -109,6 +109,35 @@ class TestJobViewSet(APITestCase):
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertTrue('export_formats' in response.data)
 
+class TestConfigurationViewSet(APITestCase):
+    def setUp(self, ):
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+        self.request_data = {
+            'name':'My Configuration',
+            'description':'Configuration for Health and Sanitation',
+            'yaml':FeatureSelection.example_raw("simple") ,
+            'public':True
+        }
+
+    def test_create_configuration(self):
+        url = reverse('api:configurations-list')
+        response = self.client.post(url,self.request_data, format="json")
+        self.assertEqual(response.status_code,status.HTTP_201_CREATED)
+        self.assertEqual(response.data["user"]["username"],"demo")
+
+    def test_invalid_configuration(self):
+        self.request_data["yaml"] = " - foo"
+        url = reverse('api:configurations-list')
+        response = self.client.post(url,self.request_data, format="json")
+        self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.data['yaml'],[u"YAML must be dict, not list"])
+
+
 class TestExportRunViewSet(APITestCase):
     """
     Test cases for ExportRunViewSet

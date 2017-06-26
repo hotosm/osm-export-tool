@@ -54,5 +54,6 @@ export default {
         jobuid: '',
         error: null,
     },
+    configurations: [],
     overpassLastUpdated: null
 }

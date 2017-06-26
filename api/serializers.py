@@ -11,12 +11,13 @@ import logging
 from django.db import transaction
 from django.utils.translation import ugettext as _
 import django.core.exceptions
+from django.contrib.auth.models import User
 
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 
 from jobs.models import (
-    Job, HDXExportRegion
+    Job, HDXExportRegion, SavedFeatureSelection
 )
 from tasks.models import (
     ExportRun, ExportTask
@@ -25,8 +26,11 @@ from tasks.models import (
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
-class UserSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields=('username',)
+
 
 class ExportTaskSerializer(serializers.ModelSerializer):
 
@@ -37,6 +41,7 @@ class ExportTaskSerializer(serializers.ModelSerializer):
 
 class ExportRunSerializer(serializers.ModelSerializer):
     tasks = ExportTaskSerializer(many=True,read_only=True)
+    user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
 
     class Meta:
         model = ExportRun
@@ -44,7 +49,15 @@ class ExportRunSerializer(serializers.ModelSerializer):
         fields = ('uid', 'started_at', 'finished_at', 'duration', 
                   'user', 'status', 'tasks')
 
+class ConfigurationSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = SavedFeatureSelection
+        fields = ('id','name','description','yaml','public','user')
+
 class JobSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Job
@@ -59,6 +72,7 @@ class ListJobSerializer(serializers.ModelSerializer):
     Provides a stripped down set of export attributes.
     Used to display the list of exports in the export browser.
     """
+    user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
     class Meta:
         model = Job
         fields = ('id', 'uid', 'user', 'name','description', 'event', 'export_formats', 'published','the_geom')

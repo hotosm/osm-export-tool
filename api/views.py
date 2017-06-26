@@ -26,12 +26,12 @@ from cachetools.func import ttl_cache
 import requests
 
 from jobs.models import (
-    HDXExportRegion, Job
+    HDXExportRegion, Job, SavedFeatureSelection
 )
 from serializers import (
     ExportRunSerializer,
     ExportTaskSerializer, JobSerializer, ListJobSerializer,
-    HDXExportRegionSerializer
+    HDXExportRegionSerializer, ConfigurationSerializer
 )
 from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
@@ -172,19 +172,16 @@ class JobViewSet(viewsets.ModelViewSet):
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def create(self, request, *args, **kwargs):
-        post = request.data.copy()
-        post['user'] = request.user.id
-        serializer = self.get_serializer(data=post)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
     def perform_create(self,serializer):
         job = serializer.save()
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
+
+
+class ConfigurationViewSet(viewsets.ModelViewSet):
+    serializer_class = ConfigurationSerializer
+    queryset = SavedFeatureSelection.objects.filter(deleted=False)
+    
 
 class ExportRunViewSet(viewsets.ModelViewSet):
     """
