@@ -424,7 +424,7 @@ function _generateDrawFreeInteraction(drawLayer) {
     const draw = new ol.interaction.Draw({
         source: drawLayer.getSource(),
         type: 'Polygon',
-        freehand: true,
+        freehand: false,
         style: new ol.style.Style({
             image: new ol.style.RegularShape({
                 stroke: new ol.style.Stroke({
