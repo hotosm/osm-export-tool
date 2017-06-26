@@ -115,6 +115,7 @@ class SavedFeatureSelection(models.Model):
     yaml = models.TextField(blank=False,validators=[validate_feature_selection])
     public = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
+    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
 
 class HDXExportRegion(models.Model): # noqa
     PERIOD_CHOICES = (

@@ -9,7 +9,7 @@ import { getConfigurations } from '../actions/configurationActions'
 const ConfigurationTable = ({configurations}) => <tbody>
   {configurations.map((configuration,i) => {
     return <tr key={i}>
-      <td>{configuration.name}</td>
+      <td><Link to={`/configurations/detail/${configuration.uid}`}>{configuration.name}</Link></td>
       <td>{configuration.description}</td>
       <td></td>
       <td>{configuration.user.username}</td>
@@ -77,7 +77,16 @@ export class ConfigurationNew extends Component {
 
 export class ConfigurationDetail extends Component {
   render() {
-    return <div></div>
+    return (
+      <Row style={{height: '100%'}}>
+        <ConfigurationListPaneR/>
+        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+          <div style={{padding: '20px'}}>
+            <ConfigurationForm/>
+          </div>
+        </Col>
+      </Row>
+    );
   }
 }
 

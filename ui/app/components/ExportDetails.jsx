@@ -29,7 +29,7 @@ const Details = ({exportInfo}) => {
         </tr>
         <tr>
           <td>Created by:</td>
-          <td colSpan="3">{exportInfo.user}</td>
+          <td colSpan="3">{exportInfo.user.username}</td>
         </tr>
         <tr>
           <td>Published:</td>

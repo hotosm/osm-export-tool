@@ -54,7 +54,7 @@ class ConfigurationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SavedFeatureSelection
-        fields = ('id','name','description','yaml','public','user')
+        fields = ('uid','name','description','yaml','public','user')
 
 class JobSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
