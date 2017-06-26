@@ -10,8 +10,8 @@ export const AVAILABLE_EXPORT_FORMATS = {
   geopackage: 'GeoPackage',
   garmin_img: 'Garmin .IMG',
   kml: 'Google Earth .KMZ',
-  xml: 'OSM .XML',
-  pbf: 'OSM .PBF'
+  osm_xml: 'OSM .XML',
+  osm_pbf: 'OSM .PBF'
 };
 
 export const getFormatCheckboxes = (export_formats) =>
