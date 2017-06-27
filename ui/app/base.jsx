@@ -43,7 +43,7 @@ ReactDOM.render(
           <Route exact path='/exports' component={ExportList}/>
           <Route exact path='/configurations' component={ConfigurationList}/>
           <Route exact path='/configurations/new' component={ConfigurationNew}/>
-          <Route path='/configurations/detail/:id' component={ConfigurationDetail}/>
+          <Route path='/configurations/detail/:uid' component={ConfigurationDetail}/>
           <Route exact path='/hdx' component={HDXExportRegionList} />
           <Route path='/hdx/new' component={HDXExportRegionForm} />
           <Route path='/hdx/edit/:id' component={HDXExportRegionForm} />

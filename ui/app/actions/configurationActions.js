@@ -41,3 +41,26 @@ export function getConfigurations(dispatch) {
     console.log("ERROR")
   })
 }
+
+export function getConfiguration(uid) {
+  return dispatch => {
+    return axios({
+      url:`/api/configurations/${uid}`
+    }).then(rsp => {
+      console.log(rsp.data)
+      dispatch({
+        type: types.RECEIVED_CONFIGURATION,
+        configuration:rsp.data
+      })
+      dispatch({
+        type:"@@redux-form/INITIALIZE",
+        meta:{form:"ConfigurationForm"},
+        payload:rsp.data
+      })
+    })
+    .catch(error => {
+      console.log(error)
+      console.log("ERROR")
+    })
+  }
+}

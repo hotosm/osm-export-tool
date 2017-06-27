@@ -4,7 +4,7 @@ import { Col, Row, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ConfigurationForm from './ConfigurationForm';
-import { getConfigurations } from '../actions/configurationActions'
+import { getConfigurations,getConfiguration } from '../actions/configurationActions'
 
 const ConfigurationTable = ({configurations}) => <tbody>
   {configurations.map((configuration,i) => {
@@ -61,6 +61,7 @@ const ConfigurationListPaneR = connect(
 )(ConfigurationListPane);
 
 export class ConfigurationNew extends Component {
+
   render () {
     return (
       <Row style={{height: '100%'}}>
@@ -75,20 +76,45 @@ export class ConfigurationNew extends Component {
   }
 }
 
-export class ConfigurationDetail extends Component {
+class ConfigurationDetailC extends Component {
+  componentDidMount () {
+    const { match: { params: { uid } },getConfiguration } = this.props;
+    this.props.getConfiguration(uid);
+  }
+
+  componentWillReceiveProps(props) {
+    const { match: { params: { uid } },getConfiguration } = props;
+    this.props.getConfiguration(uid);
+  }
+
   render() {
+    const { match: { params: { uid } } } = this.props;
+    const configuration = this.props.configurations[uid]
     return (
       <Row style={{height: '100%'}}>
         <ConfigurationListPaneR/>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
           <div style={{padding: '20px'}}>
-            <ConfigurationForm/>
+            <ConfigurationForm configuration={configuration}/>
           </div>
         </Col>
       </Row>
     );
   }
 }
+
+export const ConfigurationDetail = connect(
+  state => {
+    return {
+      configurations: state.configurations
+    }
+  },
+  dispatch => {
+    return {
+      getConfiguration: (uid) => dispatch(getConfiguration(uid))
+    }
+  }
+)(ConfigurationDetailC);
 
 export class ConfigurationList extends Component {
   componentDidMount () {

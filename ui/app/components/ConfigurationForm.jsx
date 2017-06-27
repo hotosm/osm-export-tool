@@ -14,11 +14,11 @@ const form = reduxForm({
 })
 
 export class ConfigurationForm extends Component {
-  componentDidMount () {
-  }
 
   render () {
     const handleSubmit = null
+    const editing = true
+
     return (
       <Row style={{height: '100%'}}>
         <form>
@@ -43,7 +43,7 @@ export class ConfigurationForm extends Component {
           type="text"
           label='Feature Selection'
           component={renderTextArea}
-          rows='20'
+          rows='12'
         />
         <Field
           name="public"
@@ -51,7 +51,14 @@ export class ConfigurationForm extends Component {
           type="checkbox"
           component={renderCheckbox}
         />
-        <Button bsStyle="success" bsSize="large" type="submit" onClick={this.props.handleSubmit}>Create Configuration</Button>
+        <Button bsStyle="success" bsSize="large" type="submit" onClick={this.props.handleSubmit}>
+          { editing ? 'Update Configuration' : 'Create Configuration' }
+        </Button>
+        { editing ? 
+        <Button bsStyle="danger" bsSize="large" type="submit" style={{float:'right'}} onClick={this.props.handleSubmit}>
+          Delete Configuration
+        </Button> : null
+        }
       </Row>
     );
   }
