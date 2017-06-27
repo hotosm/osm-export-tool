@@ -1,7 +1,7 @@
 import axios from 'axios';
 import cookie from 'react-cookie';
 import types from './actionTypes';
-import { startSubmit, stopSubmit } from 'redux-form';
+import { startSubmit, stopSubmit, change } from 'redux-form';
 
 export function createConfiguration(data,form_name) {
   return dispatch => {

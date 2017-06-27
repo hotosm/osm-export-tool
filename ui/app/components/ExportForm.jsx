@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { Nav, NavItem, InputGroup, ButtonGroup, Row, Col, Panel, Button, FormControl } from 'react-bootstrap';
-import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
+import { Nav, NavItem, InputGroup, ButtonGroup, Row, Col, Panel, Button, FormControl, FormGroup, Radio, Table } from 'react-bootstrap';
+import { Field, SubmissionError, formValueSelector, propTypes, reduxForm, change } from 'redux-form';
 import { connect } from 'react-redux';
 import ExportAOI from './aoi/ExportAOI';
 import { createExport, getOverpassTimestamp } from '../actions/exportsActions';
@@ -10,6 +10,7 @@ const Dropzone = require('react-dropzone');
 import TreeMenu from './react-tree-menu/TreeMenu'
 import { TreeTag, TreeTagYAML } from '../utils/TreeTag'
 import { TAGTREE, TAGLOOKUP } from '../utils/TreeTagSettings'
+import { getConfigurations, setYaml } from '../actions/configurationActions'
 
 const form = reduxForm({
   form: "ExportForm",
@@ -36,10 +37,6 @@ const form = reduxForm({
       the_geom: geom
     };
     dispatch(createExport(formData,"ExportForm"))
-  },
-
-  validate: values => {
-    console.log("Validating: ", values)
   }
 })
 
@@ -116,18 +113,71 @@ class TreeTagUi extends React.Component {
     }
 }
 
-class StoredConfUi extends React.Component {
+class StoredConfComponent extends React.Component {
+  componentDidMount() {
+    this.props.getConfigurations()
+  }
+
+  onClick = (yaml) => {
+    this.props.setYaml(yaml)
+    this.props.switchToYaml()
+  }
+
   render() {
     return <div>
+        <InputGroup style={{width:'100%',marginTop:'20px',marginBottom:'10px'}}>
+          <FormControl
+            id="storedConfigSearch"
+            type="text"
+            label="storedConfigSearch"
+            placeholder="Search for a configuration..."
+          />
+          <InputGroup.Button>
+            <Button>Clear</Button>
+          </InputGroup.Button>
+        </InputGroup>
+        <Table>
+          <thead>
+            <tr>
+              <th>name</th>
+              <th>description</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.props.configurations.map((configuration,i) => {
+              return <tr key={i}>
+                <td>{configuration.name}</td>
+                <td>{configuration.description}</td>
+                <td><Button bsSize="small" onClick={() => this.onClick(configuration.yaml)}>Load YAML</Button></td>
+              </tr>
+            })}
+          </tbody>
+        </Table>
       </div>;
   }
 }
 
+const StoredConfContainer = connect(
+  state => {
+    return {
+      configurations:state.configurations
+    }
+  },
+  dispatch => {
+    return {
+      getConfigurations: () => dispatch(getConfigurations),
+      setYaml: (yaml) => dispatch(change("ExportForm","feature_selection",yaml))
+    }
+  }
+)(StoredConfComponent);
 
-const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml, switchToStoredConf, onSearchChange,clearSearch,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
+
+
+const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, setYaml, switchToYaml, switchToStoredConf, onSearchChange,clearSearch,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
   <Row>
     <ButtonGroup justified>
-      <Button href="#" active={featuresUi === "treetag"} onClick={switchToTreeTag}>Tree Tag</Button>
+      <Button href="#" active={featuresUi === "treetag"} onClick={switchToTreeTag}>Tag Tree</Button>
       <Button href="#" active={featuresUi === "stored"} onClick={switchToStoredConf}>Stored Configuration</Button>
       <Button href="#" active={featuresUi === "yaml"} onClick={switchToYaml}>YAML</Button>
     </ButtonGroup>
@@ -139,7 +189,7 @@ const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, switchToYaml
         labelFilter={labelFilter}
         tagTreeData={tagTreeData}
         /> : null }
-    { featuresUi == "stored" ? <StoredConfUi/> : null }
+    { featuresUi == "stored" ? <StoredConfContainer switchToYaml={switchToYaml}/> : null }
     { featuresUi == "yaml" ? <YamlUi onDrop={onDrop}/> : null }
     <Button bsSize="large" style={{float:"right"}} onClick={next}>Next</Button>
   </Row>
@@ -188,8 +238,7 @@ export class ExportForm extends Component {
   }
 
   componentDidMount() {
-    const { getOverpassTimestamp } = this.props
-    getOverpassTimestamp()
+    this.props.getOverpassTimestamp()
   }
 
   onTreeNodeCollapseChange = (node) => {
