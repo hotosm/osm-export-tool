@@ -86,7 +86,7 @@ export class ExportAOI extends Component {
         var sphere = new ol.Sphere(6378137)
         var area_sqkm = Math.round(Math.abs(sphere.geodesicArea(extentPoly.getCoordinates()[0]) / 1000 / 1000));
 
-        const MAX = 2500000
+        const MAX = 3000000
         if (area_sqkm > MAX) {
             this.props.showInvalidDrawWarning(`The bounds of the polygon are too large: ${area_sqkm} sq km, max ${MAX}`);
         }

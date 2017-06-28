@@ -70,7 +70,7 @@ class TestJob(TestCase):
         self.assertTrue('name' in e.exception.message_dict)
 
     def test_max_aoi_extent(self):
-        self.fixture['the_geom'] = Polygon.from_bbox((0,0,1,1))
+        self.fixture['the_geom'] = Polygon.from_bbox((0,0,30,30))
         job = Job(**self.fixture)
         with self.assertRaises(ValidationError) as e:
             job.full_clean()

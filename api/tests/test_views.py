@@ -97,10 +97,10 @@ class TestJobViewSet(APITestCase):
 
     def test_toolarge_geojson_extent(self):
         url = reverse('api:jobs-list')
-        self.request_data['the_geom'] = {'type':'Polygon','coordinates':[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}
+        self.request_data['the_geom'] = {'type':'Polygon','coordinates':[[[0,0],[0,30],[30,30],[30,0],[0,0]]]}
         response = self.client.post(url, self.request_data,format='json')
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
-        self.assertEquals(response.data['the_geom'],['Geometry too large: 12391399902.1 km'])
+        self.assertTrue('the_geom' in response.data)
 
     def test_export_format_not_list_or_empty(self):
         url = reverse('api:jobs-list')

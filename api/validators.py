@@ -47,42 +47,6 @@ def validate_search_bbox(extents):
         raise serializers.ValidationError(detail)
 
 
-def validate_bbox(extents, user=None):
-    """
-    Validates the extents by calculating the geodesic area of the extents,
-    then checking the resulting area against the max_extent for the user.
-
-    Args:
-        extents: a tuple containing xmin,ymin,xmax,ymax export extents.
-        user: the authenticated user.
-
-    Returns:
-        a valid GEOSGeometry.
-
-    Raises:
-        ValidationError: if the extents are greater than the allowed max_extent
-            for the user, or if the GEOSGeometry cannot be created or
-            are invalid.
-    """
-    max_extent = settings.JOB_MAX_EXTENT
-    detail = OrderedDict()
-    detail['id'] = _('invalid_bounds')
-    detail['message'] = _('Invalid bounding box.')
-    try:
-        bbox = GEOSGeometry(Polygon.from_bbox(extents), srid=4326)
-        if (bbox.valid):
-            area = get_geodesic_area(bbox) / 1000000
-            if area > max_extent:
-                detail['id'] = _('invalid_extents')
-                detail['message'] = _('Job extents too large: %(area)s') % {'area': area}
-                raise serializers.ValidationError(detail)
-            return bbox
-        else:
-            raise serializers.ValidationError(detail)
-    except GEOSException:
-        raise serializers.ValidationError(detail)
-
-
 def validate_bbox_params(data):
     """
     Validates the bounding box parameters supplied during form sumission.

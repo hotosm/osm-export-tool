@@ -12,7 +12,7 @@ import re
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
 from django.utils import timezone
@@ -44,16 +44,8 @@ def get_geodesic_area(geom):
             p2 = coords[x+1]
             area += math.radians(p2[0] - p1[0]) * (2 + math.sin(math.radians(p1[1]))
                                                    + math.sin(math.radians(p2[1])))
-        area = area * 6378137 * 6378137 / 2.0
+        area = int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000)
     return area
-
-def validate_aoi(aoi):
-    area = get_geodesic_area(aoi)
-    if area > 3000000000000:
-        raise ValidationError(
-            "Geometry too large: %(area)s m",
-            params={'area': area},
-        )
 
 def validate_export_formats(value):
     if not value:
@@ -72,6 +64,16 @@ def validate_feature_selection(value):
     f = FeatureSelection(value)
     if not f.valid:
         raise ValidationError(f.errors)
+
+def validate_aoi(aoi):
+    MAX_SQKM = 3000000
+    # because overpass queries by total extent bbox, check area against extent (example:diagonal shaped area)
+    area = get_geodesic_area(Polygon.from_bbox(aoi.extent))
+    if area >  MAX_SQKM:
+        raise ValidationError(
+            "Geometry too large: %(area)s sq km, max %(max)s",
+            params={'area': area, 'max': MAX_SQKM},
+        )
 
 class Job(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
