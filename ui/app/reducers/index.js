@@ -14,7 +14,7 @@ export default {
   zoomToSelection: zoomToSelectionReducer,
   resetMap: resetMapReducer,
   geonames: getGeonamesReducer,
-  showInvalidDrawWarning: invalidDrawWarningReducer,
+  invalidDrawWarning: invalidDrawWarningReducer,
   toolbarIcons: toolbarIconsReducer,
   showImportModal: showImportModalReducer,
   importGeom: importGeomReducer,

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import styles from '../../styles/aoi/InvalidDrawWarning.css';
-import {showInvalidDrawWarning, hideInvalidDrawWarning} from '../../actions/aoi/drawToolBarActions.js';
 
 export class InvalidDrawWarning extends Component {
 
@@ -27,7 +26,7 @@ export class InvalidDrawWarning extends Component {
 
         return (
             <div className={styles.invalidWarning + " " + this.state.visibilityClass}>
-                <span>You drew an invalid bounding box, please redraw.</span>
+                <span>{this.props.msg}</span>
             </div>
         )
     }
@@ -35,19 +34,13 @@ export class InvalidDrawWarning extends Component {
 
 function mapStateToProps(state) {
     return {
-        show: state.showInvalidDrawWarning
+        show: (state.invalidDrawWarning !== ""),
+        msg: state.invalidDrawWarning
     };
 }
 
 function mapDispatchToProps(dispatch) {
-    return {
-        hideInvalidDrawWarning: () => {
-            dispatch(hideInvalidDrawWarning());
-        },
-        showInvalidDrawWarning: () => {
-            dispatch(showInvalidDrawWarning());
-        },
-    }
+    return {}
 }
 
 export default connect(

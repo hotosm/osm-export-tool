@@ -77,14 +77,38 @@ export class ExportAOI extends Component {
         }
     }
 
+
+    checkSize(geometry) {
+        var current_projection = new ol.proj.Projection({code: "EPSG:3857"})
+        var new_projection = new ol.proj.Projection({code: "EPSG:4326"})
+        var extentPoly = ol.geom.Polygon.fromExtent(geometry.getExtent())
+        extentPoly.transform(current_projection, new_projection)
+        var sphere = new ol.Sphere(6378137)
+        var area_sqkm = Math.round(Math.abs(sphere.geodesicArea(extentPoly.getCoordinates()[0]) / 1000 / 1000));
+
+        const MAX = 2500000
+        if (area_sqkm > MAX) {
+            this.props.showInvalidDrawWarning(`The bounds of the polygon are too large: ${area_sqkm} sq km, max ${MAX}`);
+        }
+    }
+
+    checkValid(geojson) {
+        if (!isGeoJSONValid(geojson)) {
+            this.props.showInvalidDrawWarning("You drew an invalid polygon, please redraw.");
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (!isEqual(prevProps.aoiInfo.geojson, this.props.aoiInfo.geojson)) {
             // remove existing features
             this._clearDraw();
             if (this.props.aoiInfo.geojson) {
+              this.checkValid(this.props.aoiInfo.geojson)
               const feature = this.getFeature(this.props.aoiInfo.geojson);
               this._drawLayer.getSource().addFeature(feature);
-              this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
+              const geometry = feature.getGeometry()
+              this.checkSize(geometry)
+              this.handleZoomToSelection(serialize(geometry.getExtent()));
 
               if (this.props.aoiInfo.geojson.features) {
                 this.props.setFormGeoJSON(this.props.aoiInfo.geojson.features[0].geometry)
@@ -169,11 +193,6 @@ export class ExportAOI extends Component {
         const extent = this._map.getView().calculateExtent(this._map.getSize());
         const geom = new ol.geom.Polygon.fromExtent(extent);
         const geojson = createGeoJSON(geom);
-        const bboxFeature = new ol.Feature({
-            geometry: geom
-        });
-        const bbox = serialize(extent)
-        this._drawLayer.getSource().addFeature(bboxFeature);
         this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Map View');
     }
 
@@ -202,24 +221,7 @@ export class ExportAOI extends Component {
         // get the drawn bounding box
         const geometry = event.feature.getGeometry();
         const geojson = createGeoJSON(geometry);
-        if (this.props.mode == MODE_DRAW_FREE) {
-            let drawFeature = new ol.Feature({
-                geometry: geometry
-            });
-            this._drawLayer.getSource().addFeature(drawFeature);
-
-            if(isGeoJSONValid(geojson)) {
-                this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Draw');
-            }
-            else {
-                this.props.showInvalidDrawWarning();
-            }
-        }
-        else if (this.props.mode == MODE_DRAW_BBOX) {
-            const bbox = serialize(geometry.getExtent());
-            this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Box');
-        }
-        // exit drawing mode
+        this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Draw');
         this.props.updateMode('MODE_NORMAL');
     }
 
@@ -357,8 +359,8 @@ function mapDispatchToProps(dispatch) {
         hideInvalidDrawWarning: () => {
             dispatch(hideInvalidDrawWarning());
         },
-        showInvalidDrawWarning: () => {
-            dispatch(showInvalidDrawWarning());
+        showInvalidDrawWarning: (msg) => {
+            dispatch(showInvalidDrawWarning(msg));
         },
         updateAoiInfo: (geojson, geomType, title, description) => {
             dispatch(updateAoiInfo(geojson, geomType, title, description));

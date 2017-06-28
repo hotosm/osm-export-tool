@@ -34,7 +34,7 @@ export class AoiInfobar extends Component {
     }
 
     handleAoiInfo(aoiInfo) {
-        if(!isEqual(aoiInfo.geojson, {})) {
+        if(aoiInfo.geojson && !isEqual(aoiInfo.geojson, {})) {
             if(aoiInfo.geomType == 'Point') {
             this.setState({geometryIcon: POINT_ICON});
             }
@@ -121,7 +121,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        
         clickZoomToSelection: () => {
             dispatch(clickZoomToSelection());
         },

@@ -6,7 +6,7 @@ export default {
         description: null,
     },
     mode: 'DRAW_NORMAL',
-    showInvalidDrawWarning: false,
+    invalidDrawWarning: "",
     showImportModal: false,
     zoomToSelection: {
         click: false
