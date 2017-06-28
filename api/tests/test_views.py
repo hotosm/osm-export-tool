@@ -68,6 +68,11 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['description'], self.request_data['description'])
         self.assertTrue(response.data['published'])
 
+        j = Job.objects.get(uid=job_uid)
+        self.assertFalse(j.hidden)
+        self.assertFalse(j.unlimited_extent)
+
+
     @patch('api.views.ExportTaskRunner')
     def test_delete_disabled(self, mock):
         url = reverse('api:jobs-list')
@@ -214,6 +219,9 @@ class TestHDXExportRegionViewSet(APITestCase):
         url = reverse("api:hdx_export_regions-list")
         response = self.client.post(url, self.request_data,format='json')
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        j = Job.objects.get(uid=response.data['job_uid'])
+        self.assertTrue(j.hidden)
+        self.assertTrue(j.unlimited_extent)
 
     def test_create_region_permission(self):
         self.user = User.objects.create_user(

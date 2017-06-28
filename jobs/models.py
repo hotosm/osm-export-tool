@@ -85,9 +85,14 @@ class Job(models.Model):
     the_geom = models.GeometryField(verbose_name='Extent for export', srid=4326, blank=False,validators=[validate_aoi])
     objects = models.GeoManager()
     feature_selection = models.TextField(blank=False,validators=[validate_feature_selection])
-    buffer_aoi = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
+    
+    # flags
+    buffer_aoi = models.BooleanField(default=False)
+    unlimited_extent = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False) # hidden from the list page
+    expire_old_runs = models.BooleanField(default=True)
 
     class Meta:  # pragma: no cover
         managed = True
