@@ -17,8 +17,6 @@ from raven import Client
 from jobs.models import Job, HDXExportRegion
 from tasks.models import ExportRun, ExportTask
 
-from feature_selection.feature_selection import FeatureSelection
-
 from utils import map_names_to_formats
 from utils.manager import RunManager, Zipper, simplify_max_points
 
@@ -55,26 +53,6 @@ class ExportTaskRunner(object):
         run_task_remote.delay(run_uid)
         return run
 
-
-SIMPLE = '''
-waterways:
-    types:
-        - lines
-        - polygons
-    select:
-        - name
-        - waterway
-buildings:
-    types:
-        - lines
-        - polygons
-    select:
-        - name
-        - building
-    where: building IS NOT NULL
-'''
-
-
 @shared_task(bind=True, ignore_result=True)
 def run_task_remote(self, run_uid): # noqa
     run = ExportRun.objects.get(uid=run_uid)
@@ -96,10 +74,7 @@ def run_task_remote(self, run_uid): # noqa
         if job.buffer_aoi:
             aoi = aoi.buffer(0.02) # 0.02 degrees is a reasonable amount for an admin 0 boundary
         aoi = simplify_max_points(aoi)
-        try:
-            feature_selection = job.feature_selection_object
-        except Exception:
-            feature_selection = FeatureSelection(SIMPLE)
+        feature_selection = job.feature_selection_object
 
         export_formats = map_names_to_formats(job.export_formats)
 
