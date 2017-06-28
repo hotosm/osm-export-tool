@@ -16,27 +16,7 @@ const form = reduxForm({
   form: "ExportForm",
   onSubmit: (values, dispatch, props) => {
     console.log("Submitting form. Values:", values)
-
-    let geom = props.aoiInfo.geojson;
-    if (props.aoiInfo.geomType == null) {
-      throw new SubmissionError({
-        _error: 'Please select an area of interest →'
-      });
-    }
-
-    if (props.aoiInfo.geojson.geometry) {
-      geom = props.aoiInfo.geojson.geometry;
-    }
-
-    if (props.aoiInfo.geojson.features) {
-      geom = props.aoiInfo.geojson.features[0].geometry;
-    }
-
-    const formData = {
-      ...values,
-      the_geom: geom
-    };
-    dispatch(createExport(formData,"ExportForm"))
+    dispatch(createExport(values,"ExportForm"))
   }
 })
 
@@ -300,6 +280,10 @@ export class ExportForm extends Component {
     reader.readAsText(file)
   }
 
+  setFormGeoJSON = (geojson) => {
+      this.props.change("the_geom",geojson)
+  }
+
   render() {
     const { handleSubmit, formValues, error, overpassLastUpdated } = this.props
     return( 
@@ -335,7 +319,7 @@ export class ExportForm extends Component {
           </Panel>
         </Col>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-          <ExportAOI/>
+          <ExportAOI setFormGeoJSON={this.setFormGeoJSON}/>
         </Col>
       </Row>
       )

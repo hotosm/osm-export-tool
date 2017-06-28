@@ -170,9 +170,13 @@ export function createExportRegion (data, form) {
       console.warn(err);
 
       if (err.response) {
+        var msg = 'Your export region is invalid. Please check the fields above.'
+        if ('the_geom' in err.response.data) {
+          msg = msg + " Choose an area to the right."
+        }
         return dispatch(stopSubmit(form, {
           ...err.response.data,
-          _error: 'Your export region is invalid. Please check the fields above.'
+          _error: msg
         }));
       }
 

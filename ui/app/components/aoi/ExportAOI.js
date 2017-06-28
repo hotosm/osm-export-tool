@@ -85,6 +85,16 @@ export class ExportAOI extends Component {
               const feature = this.getFeature(this.props.aoiInfo.geojson);
               this._drawLayer.getSource().addFeature(feature);
               this.handleZoomToSelection(serialize(feature.getGeometry().getExtent()));
+
+              if (this.props.aoiInfo.geojson.features) {
+                this.props.setFormGeoJSON(this.props.aoiInfo.geojson.features[0].geometry)
+              } else if (this.props.aoiInfo.geojson.geometry) {
+                this.props.setFormGeoJSON(this.props.aoiInfo.geojson.geometry)
+              } else {
+                this.props.setFormGeoJSON(this.props.aoiInfo.geojson)
+              }
+            } else {
+                this.props.setFormGeoJSON(undefined)
             }
         }
     }

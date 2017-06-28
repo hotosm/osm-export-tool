@@ -24,9 +24,11 @@ export function createExport (data,form_name) {
     }).catch(err => {
       console.log("ERROR")
       console.warn(err)
+      var msg = 'Your export is invalid. Please check each page of the form for errors.'
+      if ('the_geom' in err.response.data) msg = msg + " Select an area to the right."
       return dispatch(stopSubmit(form_name, {
         ...err.response.data,
-        _error: 'Your export is invalid. Please check the fields above.'
+        _error: msg
       }));
     })
 
@@ -36,6 +38,8 @@ export function createExport (data,form_name) {
 export function cloneExport(e) {
   return dispatch => {
     dispatch(push('/exports/new'))
+
+    dispatch(updateAoiInfo(e.the_geom,"Polygon","Custom Polygon","Cloned Area"))
     dispatch({
       type:"@@redux-form/INITIALIZE",
       meta:{form:"ExportForm"},

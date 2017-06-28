@@ -33,27 +33,9 @@ const form = reduxForm({
   onSubmit: (values, dispatch, props) => {
     console.log('Submitting form. Values:', values);
 
-    if (props.aoiInfo.geomType == null) {
-      throw new SubmissionError({
-        _error: 'Please select an area of interest →'
-      });
-    }
-
-
-    let geom = props.aoiInfo.geojson;
-
-    if (props.aoiInfo.geojson.geometry) {
-      geom = props.aoiInfo.geojson.geometry;
-    }
-
-    if (props.aoiInfo.geojson.features) {
-      geom = props.aoiInfo.geojson.features[0].geometry;
-    }
-
     const formData = {
       ...values,
-      locations: (values.locations || []).map(x => x.value || x),
-      the_geom: geom
+      locations: (values.locations || []).map(x => x.value || x)
     };
 
     if (values.id != null) {
@@ -296,6 +278,10 @@ export class HDXExportRegionForm extends Component {
     this.props.handleRun(this.exportRegion.id, this.exportRegion.job_uid);
   };
 
+  setFormGeoJSON = (geojson) => {
+    this.props.change("the_geom",geojson)
+  }
+
   render () {
     const { deleting, editing, featureSelection, locationOptions, running } = this.state;
     const { error, handleSubmit, hdx: { status }, submitting } = this.props;
@@ -522,7 +508,7 @@ export class HDXExportRegionForm extends Component {
           </div>
         </Col>
         <Col xs={6} style={{height: '100%'}}>
-          <ExportAOI/>
+          <ExportAOI setFormGeoJSON={this.setFormGeoJSON}/>
         </Col>
       </Row>
     );
