@@ -212,12 +212,7 @@ HDX_SITE = os.getenv('HDX_SITE', 'demo')
 
 GEONAMES_API_URL = os.getenv('GEONAMES_API_URL', 'http://api.geonames.org/searchJSON')
 
-if SYNC_TO_HDX:
-    HDX_URL_PREFIX = Configuration.create(
-        hdx_site=os.getenv('HDX_SITE', 'demo'),
-        hdx_key=os.getenv('HDX_API_KEY'),
-    )
-else:
-    # bleh. this is so the tests don't make any network calls.
-    # ideally Configuration.create would not make any calls.
-    HDX_URL_PREFIX = 'http://demo-data.humdata.org'
+HDX_URL_PREFIX = Configuration.create(
+    hdx_site=os.getenv('HDX_SITE', 'demo'),
+    hdx_key=os.getenv('HDX_API_KEY'),
+)
