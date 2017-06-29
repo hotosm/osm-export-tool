@@ -312,8 +312,8 @@ export class HDXExportRegionForm extends Component {
                 name='dataset_prefix'
                 type='text'
                 label='Dataset Prefix'
-                placeholder='hotosm_senegal'
-                help={<div>Example: prefix <code>hotosm_senegal</code> results in datasets <code>hotosm_senegal_roads</code>, <code>hotosm_senegal_buildings</code>, etc.</div>}
+                placeholder='hotosm_sen'
+                help={<div>Example: prefix <code>hotosm_sen</code> results in datasets <code>hotosm_sen_roads</code>, <code>hotosm_sen_buildings</code>, etc. Always use the ISO 3-letter code where possible.</div>}
                 component={renderInput}
               />
               <hr />
