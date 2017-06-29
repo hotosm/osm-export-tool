@@ -46,6 +46,12 @@ export class SearchAOIToolbar extends Component {
     }
 
     handleChange(e) {
+        // if it matches minx,miny,maxx,maxy
+        const match = e.match(/(-?\d+(\.\d+)?){4}/g)
+        if (match) {
+          this.props.setSearchAOIButtonSelected();
+          this.props.handleSearch({name:'Manually Entered Bounds',bbox:{'west':match[0], 'south':match[1], 'east':match[2], 'north':match[3]}})
+        }
         // If 2 or more characters are entered then make request for suggested names.
         if(e.length >= 2) {
             this.props.getGeonames(e);
@@ -77,7 +83,7 @@ export class SearchAOIToolbar extends Component {
                         disabled={this.props.toolbarIcons.search == 'INACTIVE'}
                         options={this.state.suggestions}
                         onChange={this.handleEnter}
-                        placeholder={'Search admin boundary or location...'}
+                        placeholder={'Search admin boundary or location, or paste a minX,minY,maxX,maxY...'}
                         onInputChange={this.debouncer}
                         labelKey={'name'}
                         paginate={false}
@@ -87,7 +93,7 @@ export class SearchAOIToolbar extends Component {
                             return(
                                 <Menu {...menuProps}>
                                     {results.map((result, index) => (
-                                        <TypeaheadMenuItem result={result} index={index}/>
+                                        <TypeaheadMenuItem result={result} index={index} key={index}/>
                                     ))
                                     }
                                 </Menu>        
