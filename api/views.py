@@ -304,5 +304,6 @@ def request_geonames(request):
 @ttl_cache(ttl=60)
 @require_http_methods(['GET'])
 def get_overpass_timestamp(request):
+    # TODO: this sometimes fails, returning a HTTP 200 but empty content.
     r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
     return JsonResponse({'timestamp':dateutil.parser.parse(r.content)})
