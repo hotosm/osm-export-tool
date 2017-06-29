@@ -304,7 +304,7 @@ export class HDXExportRegionForm extends Component {
                 name='name'
                 type='text'
                 label='Dataset Name'
-                placeholder='Senegal'
+                placeholder='HOTOSM Senegal'
                 component={renderInput}
               />
               <hr />
