@@ -63,7 +63,7 @@ class TestIntegration(unittest.TestCase):
         os.mkdir(stage_dir)
         shutil.copy(xml,stage_dir+"export.osm")
 
-    def test_export_shp(self):
+    def test_export_shp_per_theme(self):
         self.setup_stage_dir()
         aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
         fmts = [Geopackage,Shapefile,KML]
@@ -93,6 +93,33 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(z[4].parts[0],"test_roads_lines_kml.zip")
         self.assertEqual(z[5].parts[0],"test_roads_polygons_kml.zip")
         self.assertEqual(z[6].parts[0],"test_some_buildings_polygons_kml.zip")
+
+    def test_export_shp(self):
+        self.setup_stage_dir()
+        aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
+        fmts = [Geopackage,Shapefile,KML]
+        r = RunManager(
+            fmts,
+            aoi_geom,
+            TEST_FEATURE_SELECTION,
+            stage_dir,
+            per_theme=False,
+            overpass_api_url=os.environ.get('OVERPASS_API_URL')
+        )
+        r.run()
+
+        target_dir = stage_dir + "target"
+        os.mkdir(target_dir)
+        zipper = Zipper("test",stage_dir,target_dir,aoi_geom,TEST_FEATURE_SELECTION)
+        for f in fmts:
+            zipper.run(r.results[f].results)
+        z = zipper.zipped_resources
+        self.assertEqual(len([x for x in z if x.format_name == 'kml']),1)
+        self.assertEqual(len([x for x in z if x.format_name == 'shp']),1) # no road polygons present
+        self.assertEqual(len([x for x in z if x.format_name == 'geopackage']),1)
+        self.assertEqual(z[0].parts[0],"test_export_gpkg.zip")
+        self.assertEqual(z[1].parts[0],"test_shp.zip")
+        self.assertEqual(z[2].parts[0],"test_kml.zip")
 
 
     @unittest.skip("Takes a long time")

@@ -339,10 +339,13 @@ class Geopackage(object):
 
     @property
     def results(self):
-        results_list = []
-        for theme in self.feature_selection.themes:
-            results_list.append(Artifact([os.path.join(self.stage_dir,slugify(theme)) + ".gpkg"],Geopackage.name,theme=theme))
-        return results_list
+        if self.per_theme:
+            results_list = []
+            for theme in self.feature_selection.themes:
+                results_list.append(Artifact([os.path.join(self.stage_dir,slugify(theme)) + ".gpkg"],Geopackage.name,theme=theme))
+            return results_list
+        else:
+            return [Artifact([self.output_gpkg],Geopackage.name)]
 
 
     def update_zindexes(self,cur,feature_selection):

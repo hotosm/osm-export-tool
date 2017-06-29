@@ -37,7 +37,7 @@ class Zipper(object):
         zips = []
         for a in results_list:
             # the created zipfile must end with only .zip for the HDX geopreview to work
-            zipfile_name = self.job_name + "_" + os.path.basename(a.parts[0]).replace('.','_') + ".zip"
+            zipfile_name = self.job_name + "_" + os.path.basename(a.basename).replace('.','_') + ".zip"
             zipfile_path = os.path.join(self.stage_dir, zipfile_name).encode('utf-8')
             with zipfile.ZipFile(zipfile_path,'w',zipfile.ZIP_DEFLATED) as z:
                 for filename in a.parts:
@@ -128,9 +128,9 @@ class RunManager(object):
             assert self.map_creator_dir
             task = OsmAndOBF(self.dir+'export.pbf',self.dir,self.map_creator_dir)
         if formatcls == KML:
-            task = KML(self.dir + 'export.gpkg',self.dir,self.feature_selection)
+            task = KML(self.dir + 'export.gpkg',self.dir,self.feature_selection,per_theme=self.per_theme)
         if formatcls == Shapefile:
-            task = Shapefile(self.dir + 'export.gpkg',self.dir,self.feature_selection)
+            task = Shapefile(self.dir + 'export.gpkg',self.dir,self.feature_selection,per_theme=self.per_theme)
 
         self.on_task_start(formatcls)
         task.run()
@@ -167,7 +167,7 @@ if __name__ == '__main__':
         map_creator_dir='../../OsmAndMapCreator-main',
         garmin_splitter='../../splitter-r583/splitter.jar',
         garmin_mkgmap='../../mkgmap-r3890/mkgmap.jar',
-        per_theme=True,
+        per_theme=False,
         overpass_api_url=os.environ['OVERPASS_API_URL']
     )
     r.run()

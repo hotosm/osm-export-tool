@@ -22,7 +22,7 @@ class Shapefile(object):
     name = 'shp'
     description = 'ESRI SHP (OSM Schema)'
 
-    def __init__(self, input_gpkg, output_dir, feature_selection):
+    def __init__(self, input_gpkg, output_dir, feature_selection,per_theme=False):
         """
         Args:
             gpg: the GeoPackage to convert.
@@ -31,12 +31,12 @@ class Shapefile(object):
         self.gpkg = input_gpkg
         self.feature_selection = feature_selection
         self.output_dir = output_dir
+        self.per_theme = per_theme
 
     def run(self):
         if self.is_complete:
             LOG.debug("Skipping SHP, files exist")
             return
-
         for table in self.feature_selection.tables:
             subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}/{1}.shp {2} -lco ENCODING=UTF-8 -sql "select * from {1};"'.format(
                 self.output_dir,
@@ -55,6 +55,7 @@ class Shapefile(object):
     @property
     def results(self):
         results_list = []
+        one_zipfile_contents = []
         for theme in self.feature_selection.themes:
             for geom_type in self.feature_selection.geom_types(theme):
                 basename = os.path.join(self.output_dir,slugify(theme)+"_"+geom_type)
@@ -66,6 +67,11 @@ class Shapefile(object):
                         basename+".prj",
                         basename+".shx",
                     ]
-                    results_list.append(Artifact(shpset,Shapefile.name,theme=theme))
+                    if self.per_theme:
+                        results_list.append(Artifact(shpset,Shapefile.name,theme=theme,basename=basename+".shp"))
+                    else:
+                        one_zipfile_contents = one_zipfile_contents + shpset
                     
+        if not self.per_theme:
+            results_list.append(Artifact(one_zipfile_contents,Shapefile.name,basename="shp"))
         return results_list

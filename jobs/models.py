@@ -95,6 +95,7 @@ class Job(models.Model):
     unlimited_extent = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False) # hidden from the list page
     expire_old_runs = models.BooleanField(default=True)
+    per_theme = models.BooleanField(default=False)
 
     class Meta:  # pragma: no cover
         managed = True

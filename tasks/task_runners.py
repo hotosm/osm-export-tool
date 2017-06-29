@@ -110,7 +110,7 @@ def run_task_remote(self, run_uid): # noqa
                 map_creator_dir=settings.OSMAND_MAP_CREATOR_DIR,
                 garmin_splitter=settings.GARMIN_SPLITTER,
                 garmin_mkgmap=settings.GARMIN_MKGMAP,
-                per_theme=True,
+                per_theme=job.per_theme,
                 on_task_start=on_task_start,
                 on_task_success=on_task_success,
                 overpass_api_url=settings.OVERPASS_API_URL

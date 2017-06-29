@@ -122,6 +122,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
         job = Job(**job_dict)
         job.hidden = True
         job.unlimited_extent = True
+        job.per_theme = True
         validate_model(job)
         with transaction.atomic():
             job.save()
