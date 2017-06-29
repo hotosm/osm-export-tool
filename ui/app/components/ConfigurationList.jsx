@@ -89,13 +89,12 @@ class ConfigurationDetailC extends Component {
 
   render() {
     const { match: { params: { uid } } } = this.props;
-    const configuration = this.props.configurations[uid]
     return (
       <Row style={{height: '100%'}}>
         <ConfigurationListPaneR/>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
           <div style={{padding: '20px'}}>
-            <ConfigurationForm configuration={configuration}/>
+            <ConfigurationForm configurationUid={uid}/>
           </div>
         </Col>
       </Row>

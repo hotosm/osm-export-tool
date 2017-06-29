@@ -3,21 +3,29 @@ import { Col, Row, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { renderInput, renderTextArea, renderCheckbox  } from './utils';
-import { createConfiguration } from '../actions/configurationActions';
+import { createConfiguration, updateConfiguration, deleteConfiguration } from '../actions/configurationActions';
+
+const FORM_NAME = 'ConfigurationForm'
 
 const form = reduxForm({
-  form:'ConfigurationForm',
+  form:FORM_NAME,
   onSubmit:(values,dispatch,props) => {
-    console.log("Form submitted:", values)
-    dispatch(createConfiguration(values,'ConfigurationForm'))
+    if (props.configurationUid) {
+      dispatch(updateConfiguration(props.configurationUid, values,FORM_NAME))
+    } else {
+      dispatch(createConfiguration(values,FORM_NAME))
+    }
   }
 })
 
 export class ConfigurationForm extends Component {
 
+  handleDelete = () => {
+    this.props.handleDelete(this.props.configurationUid)
+  }
+
   render () {
-    const handleSubmit = null
-    const editing = true
+    const editing = (this.props.configurationUid !== undefined)
 
     return (
       <Row style={{height: '100%'}}>
@@ -55,7 +63,7 @@ export class ConfigurationForm extends Component {
           { editing ? 'Update Configuration' : 'Create Configuration' }
         </Button>
         { editing ? 
-        <Button bsStyle="danger" bsSize="large" type="submit" style={{float:'right'}} onClick={this.props.handleSubmit}>
+        <Button bsStyle="danger" bsSize="large" type="submit" style={{float:'right'}} onClick={this.handleDelete}>
           Delete Configuration
         </Button> : null
         }
@@ -73,7 +81,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    handleDelete: (uid) => dispatch(deleteConfiguration(uid))
+  };
 };
 
 export default connect(

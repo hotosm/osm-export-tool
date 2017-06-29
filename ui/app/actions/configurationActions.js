@@ -1,6 +1,7 @@
 import axios from 'axios';
 import cookie from 'react-cookie';
 import types from './actionTypes';
+import { push } from 'react-router-redux';
 import { startSubmit, stopSubmit, change } from 'redux-form';
 
 export function createConfiguration(data,form_name) {
@@ -15,10 +16,31 @@ export function createConfiguration(data,form_name) {
         'X-CSRFToken': cookie.load('csrftoken')
       }
     }).then(rsp => {
+
       console.log("Success")
     }).catch(err => {
-      console.log("ERROR")
-      console.warn(err)
+      return dispatch(stopSubmit(form_name, {
+        ...err.response.data,
+        _error: 'Your configuration is invalid. Please check the fields above.'
+      }));
+    })
+  }
+}
+
+export function updateConfiguration(uid,data,form_name) {
+  return dispatch => {
+    dispatch(startSubmit(form_name));
+    return axios({
+      url:`/api/configurations/${uid}`,
+      method:'PUT',
+      contentType: 'application/json; version=1.0',
+      data,
+      headers: {
+        'X-CSRFToken': cookie.load('csrftoken')
+      }
+    }).then(rsp => {
+      console.log("Success")
+    }).catch(err => {
       return dispatch(stopSubmit(form_name, {
         ...err.response.data,
         _error: 'Your configuration is invalid. Please check the fields above.'
@@ -36,10 +58,6 @@ export function getConfigurations(dispatch) {
       configurations:rsp.data
     })
   })
-  .catch(error => {
-    console.log(error)
-    console.log("ERROR")
-  })
 }
 
 export function getConfiguration(uid) {
@@ -47,7 +65,6 @@ export function getConfiguration(uid) {
     return axios({
       url:`/api/configurations/${uid}`
     }).then(rsp => {
-      console.log(rsp.data)
       dispatch({
         type: types.RECEIVED_CONFIGURATION,
         configuration:rsp.data
@@ -58,9 +75,20 @@ export function getConfiguration(uid) {
         payload:rsp.data
       })
     })
-    .catch(error => {
-      console.log(error)
-      console.log("ERROR")
-    })
   }
+}
+
+export function deleteConfiguration(uid) {
+  return dispatch => {
+    return axios({
+      url: `/api/configurations/${uid}`,
+      method: 'DELETE',
+      headers: {
+        'X-CSRFToken': cookie.load('csrftoken')
+      }
+    })
+    .then(rsp => {
+      dispatch(push('/configurations'));
+    })
+  };
 }
