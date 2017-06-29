@@ -7,9 +7,6 @@ import os
 from collections import OrderedDict
 from StringIO import StringIO
 
-import magic
-from lxml import etree
-
 from django.conf import settings
 from django.contrib.gis.geos import GEOSException, GEOSGeometry, Polygon
 from django.utils.translation import ugettext as _
