@@ -181,6 +181,7 @@ class JobViewSet(viewsets.ModelViewSet):
 class ConfigurationViewSet(viewsets.ModelViewSet):
     serializer_class = ConfigurationSerializer
     queryset = SavedFeatureSelection.objects.filter(deleted=False)
+    permission_classes = (IsOwnerOrReadOnly,permissions.IsAuthenticatedOrReadOnly)
     lookup_field = 'uid'
     
 

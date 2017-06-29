@@ -129,11 +129,18 @@ class TestConfigurationViewSet(APITestCase):
             'public':True
         }
 
-    def test_create_configuration(self):
+    def test_create_update_delete_configuration(self):
         url = reverse('api:configurations-list')
         response = self.client.post(url,self.request_data, format="json")
         self.assertEqual(response.status_code,status.HTTP_201_CREATED)
         self.assertEqual(response.data["user"]["username"],"demo")
+        url = reverse("api:configurations-detail",args=[response.data['uid']])
+        self.request_data['name'] = "Updated Name"
+        response = self.client.put(url,self.request_data, format="json")
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(response.data["name"],"Updated Name")
+        response = self.client.delete(url,format="json")
+        self.assertEqual(response.status_code,status.HTTP_204_NO_CONTENT) # TODO: implement soft delete
 
     def test_invalid_configuration(self):
         self.request_data["yaml"] = " - foo"
