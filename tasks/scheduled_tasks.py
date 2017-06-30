@@ -1,14 +1,17 @@
 # noqa
 # -*- coding: utf-8 -*-
 
+import os
+import shutil
 from datetime import datetime, timedelta
 
-from django.utils import timezone
 import pytz
-
 from core.celery import app
+from django.conf import settings
+from django.utils import timezone
 from jobs.models import HDXExportRegion
 
+from .models import ExportRun
 from .task_runners import ExportTaskRunner
 
 
@@ -42,3 +45,28 @@ def queue_periodic_job_runs(): # noqa
                 region.schedule_hour == now.hour and
                 delta > timedelta(hours=2)):
             ExportTaskRunner().run_task(job_uid=region.job.uid)
+
+
+@app.task(ignore_result=True, name="Remove Old Downloads")
+def remove_old_downloads():
+    for run in ExportRun.objects.raw("""
+SELECT
+    id,
+    uid
+FROM (
+    SELECT
+        export_runs.id,
+        export_runs.uid,
+        export_runs.created_at,
+        rank() OVER
+            (PARTITION BY job_id ORDER BY export_runs.created_at DESC) AS rank
+    FROM export_runs
+    LEFT JOIN jobs ON jobs.id = export_runs.job_id
+    WHERE status='COMPLETED'
+        AND expire_old_runs = true
+) AS _
+WHERE rank > 1
+  AND created_at < NOW() - INTERVAL '2 weeks'
+    """):
+        shutil.rmtree(
+            os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(run.uid)), True)

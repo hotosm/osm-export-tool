@@ -8,19 +8,20 @@ from celery.schedules import crontab
 from .contrib import *  # NOQA
 
 # Celery config
-CELERY_TRACK_STARTED = True
-CELERY_DISABLE_RATE_LIMITS = True
-
-# Pickle used to be the default, and accepting pickled content is a security concern.  Using the new default json,
-# causes a circular reference error, that will need to be resolved.
-CELERY_TASK_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_DISABLE_RATE_LIMITS = True
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TRACK_STARTED = True
 
 # configure periodic task
 CELERYBEAT_SCHEDULE = {
     'periodic-runs': {
         'task': 'Queue Periodic Runs',
         'schedule': crontab(minute='*/15'),
+    },
+    'remove-old-downloads': {
+        'task': 'Remove Old Downloads',
+        'schedule': crontab(hour='*'),
     }
 }
 
