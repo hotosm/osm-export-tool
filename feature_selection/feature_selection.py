@@ -109,7 +109,7 @@ class FeatureSelection(object):
                 if theme in BANNED_THEME_NAMES or theme.startswith("gpkg_") or theme.startswith("rtree_"):
                     self._errors.append("Theme name reserved: {0}".format(theme))
                     return False
-                if not re.match('^[a-zA-Z0-9_ ]+$', theme):
+                if not re.match('(?u)^[\w\s]+$', theme):
                     self._errors.append("Each theme must be named using only characters, numbers, underscores and spaces")
                     return False
                 if 'select' not in theme_dict:
@@ -119,7 +119,7 @@ class FeatureSelection(object):
                     if not key:
                         self._errors.append("Missing OSM key")
                         return False
-                    if not re.match("[a-zA-Z0-9 _\:]+$",key):
+                    if not re.match("(?u)[\w\s\:]+$",key):
                         self._errors.append("Invalid OSM key: {0}".format(key))
                         return False
                 if not isinstance(theme_dict['select'],list):
