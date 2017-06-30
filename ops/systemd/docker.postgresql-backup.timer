@@ -1,0 +1,10 @@
+[Unit]
+Description=Back up PostgreSQL daily
+PartOf=docker.postgresql.service
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=osm-export-tool.target

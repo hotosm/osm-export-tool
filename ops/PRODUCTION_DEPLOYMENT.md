@@ -26,3 +26,8 @@ restart osm-export-tool.target` to restart.
 
 Systemd's `journalctl` should be used to view logs. To tail celery logs, run: `journalctl -fu
 docker.celery`.
+
+## Backups
+
+`docker.postgresql-backup.{service,timer}` define a unit that runs daily to back the database up to
+S3. To check its schedule, run `systemctl list-timers`.
