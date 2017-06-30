@@ -46,7 +46,7 @@ const config = {
   }
 };
 
-if (process.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   config.devtool = 'source-map';
   config.plugins = [
     new webpack.optimize.OccurenceOrderPlugin(),
