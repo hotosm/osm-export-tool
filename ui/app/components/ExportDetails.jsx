@@ -21,7 +21,7 @@ const Details = ({exportInfo}) => {
         </tr>
         <tr>
           <td>Area:</td>
-          <td colSpan="3">{exportInfo.area}</td>
+          <td colSpan="3">{exportInfo.area} sq km</td>
         </tr>
         <tr>
           <td>Created at:</td>
@@ -33,7 +33,7 @@ const Details = ({exportInfo}) => {
         </tr>
         <tr>
           <td>Published:</td>
-          <td colSpan="3">{exportInfo.published}</td>
+          <td colSpan="3">{exportInfo.published ? 'Yes' : 'No'}</td>
         </tr>
         <tr>
           <td>Export formats:</td>
@@ -48,9 +48,9 @@ const Details = ({exportInfo}) => {
 }
 
 const TaskList = ({tasks}) => {
-  return <div>
+  return <div><strong>Downloads:</strong>
       {tasks.map((task,i) => {
-        return <div key={i}>
+        return <div key={i}>{task.name}
           {task.download_urls.map((dl,j) => {
           return <div key={j}>
             <a href={dl.download_url}>{dl.filename}</a>

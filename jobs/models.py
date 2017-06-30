@@ -44,7 +44,7 @@ def get_geodesic_area(geom):
             p2 = coords[x+1]
             area += math.radians(p2[0] - p1[0]) * (2 + math.sin(math.radians(p1[1]))
                                                    + math.sin(math.radians(p2[1])))
-        area = int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000)
+        area = abs(int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000))
     return area
 
 def validate_export_formats(value):
@@ -112,6 +112,10 @@ class Job(models.Model):
         a valid FeatureSelection object based off the feature_selection text column.
         """
         return FeatureSelection(self.feature_selection)
+
+    @property
+    def area(self):
+        return get_geodesic_area(self.the_geom)
 
 
 class SavedFeatureSelection(models.Model):
