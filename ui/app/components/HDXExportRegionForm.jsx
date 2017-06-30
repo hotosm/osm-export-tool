@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 import isEqual from 'lodash/isEqual';
-import prettyBytes from 'pretty-bytes';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
 import { FormattedDate, FormattedRelative, FormattedTime, IntlMixin } from 'react-intl';
@@ -17,7 +16,7 @@ import { clickResetMap } from '../actions/aoi/AoiInfobarActions';
 import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
 import { createExportRegion, deleteExportRegion, getExportRegion, runExport, updateExportRegion } from '../actions/hdxActions';
 import styles from '../styles/HDXExportRegionForm.css';
-import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, renderSelect, renderMultiSelect, slugify } from './utils';
+import { prettyBytes, AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, renderSelect, renderMultiSelect, slugify } from './utils';
 
 const FORM_NAME = 'HDXExportRegionForm';
 
