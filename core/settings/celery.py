@@ -21,7 +21,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'remove-old-downloads': {
         'task': 'Remove Old Downloads',
-        'schedule': crontab(hour='*'),
+        'schedule': crontab(minute=0),
     }
 }
 
