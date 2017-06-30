@@ -127,7 +127,11 @@ export class PresetParser {
 
   constructor(doc) {
     const parser = new DOMParser()
-    this.doc = parser.parseFromString(doc, "text/xml");
+    try {
+      this.doc = parser.parseFromString(doc, "text/xml");
+    } catch(err) {
+      alert("Could not parse XML! Please make sure your JOSM Preset is valid and use the Chrome, Firefox, or Safari browser.")
+    }
     const collector = {
       points:new Set(),
       lines:new Set(),
