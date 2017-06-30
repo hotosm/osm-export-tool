@@ -17,5 +17,5 @@ N.b: step #8 may need to be done twice, as the migration step (part of
 failing (which takes longer on first-run while the Postgres database is
 initialized).
 
-To upgrade, `systemctl restart osm-export-tool.target` should work, pulling down
-new versions of Docker images.
+To upgrade, run `docker pull` for each image that needs to be upgraded and then run `systemctl
+restart osm-export-tool.target` to restart.

@@ -9,7 +9,6 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker kill %n
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/docker pull quay.io/hotosm/overpass-api
 ExecStart=/usr/bin/docker run \
   -v /mnt-overpass/:/srv/osm3s/db \
   -p 6080:80 \

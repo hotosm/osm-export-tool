@@ -1,6 +1,6 @@
 [Unit]
 Description=Django
-After=docker.service docker.rabbitmq.service docker.postgresql.service docker.django.service
+After=docker.service docker.rabbitmq.service docker.postgresql.service
 Requires=docker.service docker.rabbitmq.service docker.postgresql.service
 PartOf=osm-export-tool.target
 
@@ -9,19 +9,7 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker kill %n
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/docker pull quay.io/hotosm/osm-export-tool2
 ExecStartPre=-/usr/bin/docker volume prune -f
-# TODO this should wait for postgres to be available
-ExecStartPre=-/usr/bin/docker run \
-  -e DATABASE_URL=postgis://exports:exports@postgresql/exports \
-  --env-file /etc/exports.env \
-  --rm \
-  --name %n-migration \
-  --network exports \
-  -v /mnt-storage/stage:/opt/export_staging \
-  -v /mnt-storage/downloads:/opt/export_downloads \
-  quay.io/hotosm/osm-export-tool2 \
-  python manage.py migrate --no-input
 ExecStart=/usr/bin/docker run \
   -e DATABASE_URL=postgis://exports:exports@postgresql/exports \
   -e BROKER_URL=amqp://guest:guest@rabbitmq/ \

@@ -10,7 +10,6 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker kill %n
 ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=/usr/bin/docker pull quay.io/hotosm/osm-export-tool2
 ExecStart=/usr/bin/docker run \
   -e DATABASE_URL=postgis://exports:exports@docker.postgresql.service/exports \
   -e BROKER_URL=amqp://guest:guest@docker.rabbitmq.service/ \
