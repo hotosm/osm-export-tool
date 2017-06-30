@@ -11,11 +11,18 @@
   file>`
 7. Bootstrap `/mnt-overpass` with metadata
 8. Start everything: `systemctl start osm-export-tool.target`
+9. Migrate the database: `systemctl start docker.django-migration`
+10. Restart everything to ensure that migrations are picked up: `systemctl restart osm-export-tool.target`
 
-N.b: step #8 may need to be done twice, as the migration step (part of
-`docker.django.service`) doesn't wait for PostgreSQL to be fully online before
-failing (which takes longer on first-run while the Postgres database is
-initialized).
+N.b: step #9 may need to be done twice, as the migration step doesn't wait for PostgreSQL to be
+fully online before failing (which takes longer on first-run while the Postgres database is
+initialized). To determine whether it applied migrations successfully, run `journalctl -u
+docker.django-migration`
 
 To upgrade, run `docker pull` for each image that needs to be upgraded and then run `systemctl
 restart osm-export-tool.target` to restart.
+
+## Logs
+
+Systemd's `journalctl` should be used to view logs. To tail celery logs, run: `journalctl -fu
+docker.celery`.
