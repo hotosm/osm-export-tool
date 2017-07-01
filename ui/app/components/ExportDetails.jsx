@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Row, Col, Panel, Button, Table }  from 'react-bootstrap';
+import { Row, Col, Panel, Button, Table, Modal }  from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getExport, pollRunsTillComplete, runExport, cloneExport } from '../actions/exportsActions'
 import MapListView from './MapListView';
@@ -121,6 +121,7 @@ const ExportRunsR = connect(
 export class ExportDetails extends Component {
   constructor(props) {
       super(props);
+      this.state = {showModal:false}
   }
 
   componentDidMount() {
@@ -136,6 +137,14 @@ export class ExportDetails extends Component {
     this.props.handleClone(this.props.exportInfo)
   }
 
+  closeModal = () => {
+    this.setState({showModal:false})
+  }
+
+  showModal = () => {
+    this.setState({showModal:true})
+  }
+
   render() {
     const { match: { params: { id }}, exportInfo } = this.props
     const geom = exportInfo ? {'features':[exportInfo.the_geom],'type':'FeatureCollection'} : null
@@ -145,7 +154,7 @@ export class ExportDetails extends Component {
         <Col xs={4} style={{height: '100%', padding:"20px", paddingRight:"10px"}}>
           <Panel header="Export Details">
             { exportInfo ? <Details exportInfo={exportInfo}/> : null }
-            <Button bsSize="large">Features</Button>
+            <Button bsSize="large" onClick={this.showModal}>Features</Button>
             <Button bsStyle="success" bsSize="large" onClick={this.handleRun}>Re-Run Export</Button>
             <Button bsStyle="primary" bsSize="large" onClick={this.handleClone} {...exportInfo ? {} : {disabled: true}}>Clone Export</Button>
           </Panel>
@@ -158,6 +167,19 @@ export class ExportDetails extends Component {
         <Col xs={4} style={{height: '100%'}}>
           <MapListView features={geom} selectedFeatureId={selectedId}/>
         </Col>
+        <Modal show={this.state.showModal} onHide={this.closeModal}>
+            <Modal.Header closeButton>
+              <Modal.Title>Feature Selection</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <pre>
+              {exportInfo? exportInfo.feature_selection : "" }
+              </pre>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={this.closeModal}>Close</Button>
+            </Modal.Footer>
+          </Modal>
       </Row>)
   }
 }
