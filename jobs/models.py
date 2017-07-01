@@ -66,6 +66,8 @@ def validate_feature_selection(value):
         raise ValidationError(f.errors)
 
 def validate_aoi(aoi):
+    if not aoi.valid:
+        raise ValidationError(aoi.valid_reason)
     MAX_SQKM = 3000000
     # because overpass queries by total extent bbox, check area against extent (example:diagonal shaped area)
     area = get_geodesic_area(Polygon.from_bbox(aoi.extent))

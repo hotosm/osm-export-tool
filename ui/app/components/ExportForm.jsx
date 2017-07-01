@@ -210,6 +210,10 @@ const Summary = ({ handleSubmit, formValues, error}) =>
     </Col>
   </Row>
 
+const renderExportAOI = ({input,meta,...props}) =>  {
+  return <ExportAOI errors={meta.error} setFormGeoJSON={props.setFormGeoJSON}/>
+}
+
 export class ExportForm extends Component {
   constructor(props) {
       super(props);
@@ -288,39 +292,39 @@ export class ExportForm extends Component {
     const { handleSubmit, formValues, error, overpassLastUpdated } = this.props
     return( 
       <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll', padding:"20px"}}>
-          <Nav bsStyle="tabs" activeKey={this.state.step.toString()} style={{marginBottom:"20px"}}>
-            <NavItem eventKey="1" onClick={this.handleStep1}>1 Describe Export</NavItem>
-            <NavItem eventKey="2" onClick={this.handleStep2}>2 Select Features</NavItem>
-            <NavItem eventKey="3" onClick={this.handleStep3}>3 Choose Formats</NavItem>
-            <NavItem eventKey="4" onClick={this.handleStep4}>4 Summary</NavItem>
-          </Nav>
-          <form>
-            { this.state.step == '1' ? <Describe next={this.handleStep2}/> : null }
-            { this.state.step == '2' ? <SelectFeatures 
-              next={this.handleStep3} 
-              onDrop={this.onDrop} 
-              featuresUi={this.state.featuresUi}
-              switchToTreeTag={this.switchToTreeTag}
-              switchToYaml={this.switchToYaml}
-              switchToStoredConf ={this.switchToStoredConf}
-              tagTreeData={this.state.tagTreeData}
-              onSearchChange={this.onSearchChange}
-              clearSearch={this.clearSearch}
-              onTreeNodeCheckChange={this.onTreeNodeCheckChange}
-              onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
-              labelFilter={this.tagTree.labelFilter}
-            /> : null }
-            { this.state.step == '3' ? <ChooseFormats next={this.handleStep4}/> : null }
-            { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
-          </form>
-          <Panel style={{marginTop:'20px'}}>
-            OpenStreetMap database last updated {overpassLastUpdated} 
-          </Panel>
-        </Col>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-          <ExportAOI setFormGeoJSON={this.setFormGeoJSON}/>
-        </Col>
+        <form style={{height:'100%'}}>
+          <Col xs={6} style={{height: '100%', overflowY: 'scroll', padding:"20px"}}>
+            <Nav bsStyle="tabs" activeKey={this.state.step.toString()} style={{marginBottom:"20px"}}>
+              <NavItem eventKey="1" onClick={this.handleStep1}>1 Describe Export</NavItem>
+              <NavItem eventKey="2" onClick={this.handleStep2}>2 Select Features</NavItem>
+              <NavItem eventKey="3" onClick={this.handleStep3}>3 Choose Formats</NavItem>
+              <NavItem eventKey="4" onClick={this.handleStep4}>4 Summary</NavItem>
+            </Nav>
+              { this.state.step == '1' ? <Describe next={this.handleStep2}/> : null }
+              { this.state.step == '2' ? <SelectFeatures 
+                next={this.handleStep3} 
+                onDrop={this.onDrop} 
+                featuresUi={this.state.featuresUi}
+                switchToTreeTag={this.switchToTreeTag}
+                switchToYaml={this.switchToYaml}
+                switchToStoredConf ={this.switchToStoredConf}
+                tagTreeData={this.state.tagTreeData}
+                onSearchChange={this.onSearchChange}
+                clearSearch={this.clearSearch}
+                onTreeNodeCheckChange={this.onTreeNodeCheckChange}
+                onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
+                labelFilter={this.tagTree.labelFilter}
+              /> : null }
+              { this.state.step == '3' ? <ChooseFormats next={this.handleStep4}/> : null }
+              { this.state.step == '4' ? <Summary handleSubmit={handleSubmit} formValues={formValues} error={error}/>: null }
+            <Panel style={{marginTop:'20px'}}>
+              OpenStreetMap database last updated {overpassLastUpdated} 
+            </Panel>
+          </Col>
+          <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+            <Field name="the_geom" component={renderExportAOI} setFormGeoJSON={this.setFormGeoJSON}/>
+          </Col>
+        </form>
       </Row>
       )
   }

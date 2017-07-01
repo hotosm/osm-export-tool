@@ -89,11 +89,13 @@
     margin: 0;
     padding: 0;
     background-color: #fff;
+    text-align:center;
 }
 
 .drawButtonGeneral i {
-    color: #4498c0;
+    color: #d73f3f;
     padding: 0;
+    margin-top: 10px;
 }
 
 .drawButtonGeneral:focus {
@@ -101,7 +103,7 @@
 }
 
 .buttonName {
-    color: #4498c0;
+    color: #d73f3f;
     bottom: 0;
 }
 

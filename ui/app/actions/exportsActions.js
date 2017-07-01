@@ -17,15 +17,10 @@ export function createExport (data,form_name) {
         'X-CSRFToken': cookie.load('csrftoken')
       }
     }).then(rsp => {
-      console.log("SUCCESS")
-      console.log("export uid: ", rsp.data.uid)
       dispatch(stopSubmit(form_name))
       dispatch(push(`/exports/detail/${rsp.data.uid}`));
     }).catch(err => {
-      console.log("ERROR")
-      console.warn(err)
       var msg = 'Your export is invalid. Please check each page of the form for errors.'
-      if ('the_geom' in err.response.data) msg = msg + " Select an area to the right."
       return dispatch(stopSubmit(form_name, {
         ...err.response.data,
         _error: msg

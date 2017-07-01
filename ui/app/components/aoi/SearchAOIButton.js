@@ -40,9 +40,9 @@ export class SearchAOIButton extends Component {
 
     render() {
         return(
-            <button className={styles.buttonGeneral} onClick={this.handleOnClick}>
+            <div className={styles.buttonGeneral} onClick={this.handleOnClick}>
                 {this.state.icon}
-            </button>
+            </div>
         )
     }
 }

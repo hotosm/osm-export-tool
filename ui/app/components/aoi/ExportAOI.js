@@ -16,7 +16,6 @@ export const MODE_NORMAL = 'MODE_NORMAL';
 export const MODE_DRAW_FREE = 'MODE_DRAW_FREE';
 const WGS84 = 'EPSG:4326';
 const WEB_MERCATOR = 'EPSG:3857';
-const jsts = require('jsts');
 const isEqual = require('lodash/isEqual');
 
 const GEOJSON_FORMAT = new ol.format.GeoJSON();
@@ -92,18 +91,14 @@ export class ExportAOI extends Component {
         }
     }
 
-    checkValid(geojson) {
-        if (!isGeoJSONValid(geojson)) {
-            this.props.showInvalidDrawWarning("You drew an invalid polygon, please redraw.");
-        }
-    }
-
     componentDidUpdate(prevProps, prevState) {
+        if (this.props.errors) {
+          this.props.showInvalidDrawWarning(this.props.errors);
+        }
         if (!isEqual(prevProps.aoiInfo.geojson, this.props.aoiInfo.geojson)) {
             // remove existing features
             this._clearDraw();
             if (this.props.aoiInfo.geojson) {
-              this.checkValid(this.props.aoiInfo.geojson)
               const feature = this.getFeature(this.props.aoiInfo.geojson);
               this._drawLayer.getSource().addFeature(feature);
               const geometry = feature.getGeometry()
@@ -492,13 +487,6 @@ function serialize(extent) {
     const p1 = unwrapPoint(bbox.slice(0, 2))
     const p2 = unwrapPoint(bbox.slice(2, 4))
     return p1.concat(p2).map(truncate)
-}
-
-function isGeoJSONValid(geojson) {
-    const parser = new jsts.io.GeoJSONReader();
-    const jstsGeom = parser.read(geojson);
-    const valid = jstsGeom.features[0].geometry.isValid();
-    return valid;
 }
 
 function createGeoJSON(ol3Geometry) {
