@@ -69,6 +69,16 @@ class TestFeatureSelection(unittest.TestCase):
         self.assertEqual(f.themes,["A Theme Name"])
         self.assertEqual(f.slug_themes,["a_theme_name"])
 
+        u = u'''
+        Å Theme Name:
+            select:
+                - name
+        '''
+        f = FeatureSelection(y)
+        self.assertTrue(f.valid)
+        self.assertEqual(f.themes,["A Theme Name"])
+        self.assertEqual(f.slug_themes,["a_theme_name"])
+
 
     def test_key_union_and_filters(self):
         y = '''
