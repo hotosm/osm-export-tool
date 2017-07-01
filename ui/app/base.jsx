@@ -6,7 +6,6 @@ import { Route } from 'react-router';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider, intlReducer } from 'react-intl-redux';
-import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
 import { Row } from 'react-bootstrap';
 
@@ -20,15 +19,23 @@ import reducers from './reducers/';
 
 const history = createHistory();
 
+const middleware = [routerMiddleware(history), thunk];
+
+if (process.env.NODE_ENV !== 'production') {
+  const createLogger = require('redux-logger');
+
+  middleware.push(createLogger({
+    collapsed: true
+  }));
+}
+
 const store = createStore(
   combineReducers({
     ...reducers,
     intl: intlReducer,
     router: routerReducer
   }),
-  applyMiddleware(routerMiddleware(history), thunk, createLogger({
-    collapsed: true
-  }))
+  applyMiddleware(...middleware)
 );
 
 // TODO 403 API responses should redirect to the login page
