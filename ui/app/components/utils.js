@@ -4,6 +4,7 @@ import { Field } from 'redux-form'
 import Select from 'react-select';
 import styles from '../styles/utilsStyles.css'
 import yaml from 'js-yaml';
+import moment from 'moment';
 
 export const AVAILABLE_EXPORT_FORMATS = {
   shp: 'ESRI Shapefiles',
@@ -13,6 +14,18 @@ export const AVAILABLE_EXPORT_FORMATS = {
   osm_xml: 'OSM .XML',
   osm_pbf: 'OSM .PBF'
 };
+
+export const exportFormatNicename = (slug) => {
+  return AVAILABLE_EXPORT_FORMATS[slug]
+}
+
+export const formatDate = (isodate) => {
+  return moment(isodate).format("dddd, MMMM Do YYYY, h:mm a")
+}
+
+export const formatDuration = (seconds) => {
+  return moment.duration(seconds,'seconds').humanize()
+}
 
 export const getFormatCheckboxes = (export_formats) =>
     <Field

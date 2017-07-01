@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import { Row, Col, Panel, Button, Table, Modal }  from 'react-bootstrap';
+import { Alert, Row, Col, Panel, Button, Table, Modal }  from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getExport, pollRunsTillComplete, runExport, cloneExport } from '../actions/exportsActions'
 import MapListView from './MapListView';
+import { exportFormatNicename, formatDate, formatDuration } from './utils'
 
 const Details = ({exportInfo}) => {
     return <Table responsive>
@@ -25,7 +26,7 @@ const Details = ({exportInfo}) => {
         </tr>
         <tr>
           <td>Created at:</td>
-          <td colSpan="3">{exportInfo.created_at}</td>
+          <td colSpan="3">{formatDate(exportInfo.created_at)}</td>
         </tr>
         <tr>
           <td>Created by:</td>
@@ -37,7 +38,7 @@ const Details = ({exportInfo}) => {
         </tr>
         <tr>
           <td>Export formats:</td>
-          <td colSpan="3">{exportInfo.export_formats}</td>
+          <td colSpan="3">{exportInfo.export_formats.map(x => exportFormatNicename(x)).join(', ')}</td>
         </tr>
         <tr>
           <td>OSM Analytics:</td>
@@ -45,19 +46,6 @@ const Details = ({exportInfo}) => {
         </tr>
       </tbody>
     </Table>
-}
-
-const TaskList = ({tasks}) => {
-  return <div><strong>Downloads:</strong>
-      {tasks.map((task,i) => {
-        return <div key={i}>{task.name}
-          {task.download_urls.map((dl,j) => {
-          return <div key={j}>
-            <a href={dl.download_url}>{dl.filename}</a>
-          </div>
-        })}</div>
-      })}
-  </div>
 }
 
 
@@ -70,41 +58,49 @@ class ExportRuns extends Component {
     const runs = this.props.runs
     return <div>
       {runs.map((run,i) => {
-        return <Table key={i} responsive>
-          <tbody>
-            <tr>
-              <td>Run ID:</td>
-              <td colSpan="3">{run.uid}</td>
-            </tr>
-            <tr>
-              <td>Status:</td>
-              <td colSpan="3">{run.status}</td>
-            </tr>
-            <tr>
-              <td>Started:</td>
-              <td colSpan="3">{run.started_at}</td>
-            </tr>
-            <tr>
-              <td>Finished:</td>
-              <td colSpan="3">{run.finished_at}</td>
-            </tr>
-            <tr>
-              <td>Duration:</td>
-              <td colSpan="3">{run.duration}</td>
-            </tr>
-            <tr>
-              <td colSpan="4">
-                <TaskList tasks={run.tasks}/>
-              </td>
-            </tr>
-          </tbody>
-        </Table>
+        return <Panel header={'Run #' + run.uid } key={i}> 
+          <Table responsive>
+            <tbody>
+              <tr>
+                <td>Status:</td>
+                <td colSpan="3">
+                  <Alert bsStyle="success" style={{marginBottom:'0px'}}>
+                    {run.status}
+                  </Alert>
+                </td>
+              </tr>
+              <tr>
+                <td>Started:</td>
+                <td colSpan="3">{formatDate(run.started_at)}</td>
+              </tr>
+              <tr>
+                <td>Finished:</td>
+                <td colSpan="3">{formatDate(run.finished_at)}</td>
+              </tr>
+              <tr>
+                <td>Duration:</td>
+                <td colSpan="3">{formatDuration(run.duration)}</td>
+              </tr>
+
+              {run.tasks.map((task,i) => {
+                return <tr key={i}>
+                  <td>{exportFormatNicename(task.name)}</td>
+                  <td>
+                  {task.download_urls.map((dl,j) => {
+                    return <a key={j} style={{display:'block'}} href={dl.download_url}>{dl.filename}</a>
+                  })}
+                  </td>
+                </tr>
+               })}
+            </tbody>
+          </Table>
+        </Panel>
       })}
     </div>
   }
 }
 
-const ExportRunsR = connect(
+const ExportRunsContainer = connect(
   state => {
     return {
       runs: state.exportRuns
@@ -160,9 +156,7 @@ export class ExportDetails extends Component {
           </Panel>
         </Col>
         <Col xs={4} style={{height: '100%', padding:"20px", paddingLeft:"10px", overflowY: 'scroll'}}>
-          <Panel header="Export Runs">
-          { exportInfo ? <ExportRunsR jobId={id}/> : null }
-          </Panel>
+          { exportInfo ? <ExportRunsContainer jobId={id}/> : null }
         </Col>
         <Col xs={4} style={{height: '100%'}}>
           <MapListView features={geom} selectedFeatureId={selectedId}/>
