@@ -45,7 +45,8 @@ export function cloneExport(e) {
         export_formats:e.export_formats,
         feature_selection:e.feature_selection,
         name:e.name,
-        published:e.published
+        published:e.published,
+        the_geom:e.the_geom
       }
     })
   }
