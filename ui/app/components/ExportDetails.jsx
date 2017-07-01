@@ -1,17 +1,13 @@
 import React, {Component} from 'react';
 import { Alert, Row, Col, Panel, Button, Table, Modal }  from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getExport, pollRunsTillComplete, runExport, cloneExport } from '../actions/exportsActions'
+import { getExport, getRuns, runExport, cloneExport } from '../actions/exportsActions'
 import MapListView from './MapListView';
 import { exportFormatNicename, formatDate, formatDuration } from './utils'
 
 const Details = ({exportInfo}) => {
     return <Table responsive>
       <tbody>
-        <tr>
-          <td>Export ID:</td>
-          <td colSpan="3">{exportInfo.uid}</td>
-        </tr>
         <tr>
           <td>Description:</td>
           <td colSpan="3">{exportInfo.description}</td>
@@ -51,7 +47,23 @@ const Details = ({exportInfo}) => {
 
 class ExportRuns extends Component {
   componentDidMount() {
-    this.props.pollRunsTillComplete(this.props.jobId)
+    this.props.getRuns(this.props.jobUid)
+    this.poller = setInterval(() => this.props.getRuns(this.props.jobUid),15e3)
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.jobUid != this.props.jobUid) {
+      clearInterval(this.poller)
+      this.poller.getRuns(this.props.jobUid)
+    } else {
+      if (this.props.runs.length > 0 && (this.props.runs[0].status === "FAILED" || this.props.runs[0].status === "COMPLETE")) {
+        clearInterval(this.poller)
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.poller)
   }
 
   render() {
@@ -75,7 +87,7 @@ class ExportRuns extends Component {
               </tr>
               <tr>
                 <td>Finished:</td>
-                <td colSpan="3">{formatDate(run.finished_at)}</td>
+                <td colSpan="3">{run.finished_at ? formatDate(run.finished_at) : ""}</td>
               </tr>
               <tr>
                 <td>Duration:</td>
@@ -108,7 +120,7 @@ const ExportRunsContainer = connect(
   },
   dispatch => {
     return {
-      pollRunsTillComplete: id => dispatch(pollRunsTillComplete(id)),
+      getRuns: jobUid => dispatch(getRuns(jobUid)),
     }
   }
 )(ExportRuns);
@@ -148,7 +160,7 @@ export class ExportDetails extends Component {
     return( 
       <Row style={{height: '100%'}}>
         <Col xs={4} style={{height: '100%', padding:"20px", paddingRight:"10px"}}>
-          <Panel header="Export Details">
+          <Panel header={exportInfo ? "Export #" + exportInfo.uid : null }>
             { exportInfo ? <Details exportInfo={exportInfo}/> : null }
             <Button bsSize="large" onClick={this.showModal}>Features</Button>
             <Button bsStyle="success" bsSize="large" onClick={this.handleRun}>Re-Run Export</Button>
@@ -156,7 +168,7 @@ export class ExportDetails extends Component {
           </Panel>
         </Col>
         <Col xs={4} style={{height: '100%', padding:"20px", paddingLeft:"10px", overflowY: 'scroll'}}>
-          { exportInfo ? <ExportRunsContainer jobId={id}/> : null }
+          { exportInfo ? <ExportRunsContainer jobUid={id}/> : null }
         </Col>
         <Col xs={4} style={{height: '100%'}}>
           <MapListView features={geom} selectedFeatureId={selectedId}/>

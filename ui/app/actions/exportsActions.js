@@ -115,22 +115,16 @@ export function getExports(dispatch) {
   })
 }
 
-export function pollRunsTillComplete(id) {
+export function getRuns(jobUid) {
   return dispatch => {
     return axios({
-      url:`/api/runs?job_uid=${id}`
+      url:`/api/runs?job_uid=${jobUid}`
     }).then(rsp => {
       dispatch({
         type: types.RECEIVED_RUNS,
-        id:id,
+        id:jobUid,
         runs:rsp.data
       })
-      if (rsp.data.length > 0 &&  (rsp.data[0].status === 'SUBMITTED' || rsp.data[0].status === 'RUNNING')) {
-        setTimeout(() => dispatch(pollRunsTillComplete(id)),5e3)
-      }
-    })
-    .catch(error => {
-      console.log("ERROR")
     })
   }
 }
