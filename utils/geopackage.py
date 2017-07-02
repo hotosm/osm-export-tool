@@ -6,7 +6,6 @@ import subprocess
 from string import Template
 from artifact import Artifact
 
-from osgeo import gdal, ogr, osr
 import sqlite3
 from feature_selection.feature_selection import slugify
 
@@ -271,11 +270,6 @@ class Geopackage(object):
             --config OGR_INTERLEAVED_READING YES \
             --config OSM_MAX_TMPFILE_SIZE 100 -gt 65536
         """)
-
-        # Enable GDAL/OGR exceptions
-        gdal.UseExceptions()
-        self.srs = osr.SpatialReference()
-        self.srs.ImportFromEPSG(4326)  # configurable
 
     def run(self):
         """

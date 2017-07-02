@@ -1,5 +1,4 @@
 Django==1.9
-GDAL
 billiard
 cachetools
 celery[librabbitmq]==3.1.23
