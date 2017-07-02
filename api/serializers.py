@@ -75,7 +75,7 @@ class ListJobSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
     class Meta:
         model = Job
-        fields = ('id', 'uid', 'user', 'name','description', 'event', 'export_formats', 'published','the_geom')
+        fields = ('uid', 'user', 'name','description', 'event', 'published','the_geom','created_at')
 
 
 def validate_model(model):
