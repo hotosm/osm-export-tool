@@ -19,28 +19,26 @@ const launderExportRegion = (exportRegion) => {
   return exportRegion;
 };
 
-export function getExportRegions () {
+export function getExportRegions (url) {
   return dispatch => {
     dispatch({
       type: types.FETCHING_EXPORT_REGIONS
     });
 
-    return axios.get('/api/hdx_export_regions')
+    return axios.get(url || '/api/hdx_export_regions')
     .then(rsp => {
-      return rsp.data;
-    }).then(exportRegions => {
-      return exportRegions.map(launderExportRegion);
-    }).then(exportRegions => {
+      var exportRegions = rsp.data.results.map(launderExportRegion)
       // convert to a keyed object
-      return exportRegions.reduce((obj, x) => {
+      exportRegions = exportRegions.reduce((obj, x) => {
         obj[x.id] = x;
-
         return obj;
       }, {});
-    }).then(exportRegions => {
       dispatch({
         type: types.RECEIVED_EXPORT_REGIONS,
-        exportRegions
+        exportRegions: exportRegions,
+        nextPageUrl: rsp.data.next,
+        prevPageUrl: rsp.data.previous,
+        total: rsp.data.count
       });
     }).catch(error => {
       dispatch({

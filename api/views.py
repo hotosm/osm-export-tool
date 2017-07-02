@@ -36,8 +36,7 @@ from serializers import (
 from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
 
-from .filters import ExportRunFilter, JobFilter
-from .pagination import LinkHeaderPagination
+#from .filters import ExportRunFilter, JobFilter
 from .permissions import IsHDXAdmin, IsOwnerOrReadOnly
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
@@ -104,9 +103,8 @@ class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     lookup_field = 'uid'
-    pagination_class = LinkHeaderPagination
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
-    filter_class = JobFilter
+    #filter_class = JobFilter
     search_fields = ('name', 'description', 'event', 'user__username')
     http_method_names = ['get', 'post', 'head']
 
@@ -197,7 +195,6 @@ class ExportRunViewSet(viewsets.ModelViewSet):
     serializer_class = ExportRunSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = ExportRunFilter
     lookup_field = 'uid'
 
     def create(self,request,format='json'):

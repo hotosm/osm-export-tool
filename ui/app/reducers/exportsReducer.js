@@ -26,10 +26,16 @@ export function exportRunsReducer(state = initialState.exportRuns, action) {
   return state;
 }
 
-export function exportListReducer(state = initialState.exportList, action) {
+export function jobListReducer(state = initialState.jobs, action) {
   switch(action.type) {
     case types.RECEIVED_EXPORT_LIST:
-      return action.jobs
+      return {
+        ...state,
+        nextPageUrl:action.response.next,
+        prevPageUrl:action.response.previous,
+        items:action.response.results,
+        total:action.response.count
+      }
   }
   return state;
 }

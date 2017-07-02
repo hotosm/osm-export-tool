@@ -16,7 +16,6 @@ export function createConfiguration(data,form_name) {
         'X-CSRFToken': cookie.load('csrftoken')
       }
     }).then(rsp => {
-
       console.log("Success")
     }).catch(err => {
       return dispatch(stopSubmit(form_name, {
@@ -49,15 +48,17 @@ export function updateConfiguration(uid,data,form_name) {
   }
 }
 
-export function getConfigurations(dispatch) {
-  return axios({
-    url:'/api/configurations'
-  }).then(rsp => {
-    dispatch({
-      type: types.RECEIVED_CONFIGURATIONS_LIST,
-      configurations:rsp.data
+export function getConfigurations(url) {
+  return dispatch => {
+    return axios({
+      url:url || '/api/configurations'
+    }).then(rsp => {
+      dispatch({
+        type: types.RECEIVED_CONFIGURATIONS_LIST,
+        response:rsp.data
+      })
     })
-  })
+  }
 }
 
 export function getConfiguration(uid) {

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import ExportRegionPanel from './ExportRegionPanel';
 import { getExportRegions } from '../actions/hdxActions';
 import MapListView from './MapListView';
+import { Paginator } from './utils'
 
 class ExportRegionList extends Component {
   render () {
@@ -39,7 +40,7 @@ export class HDXExportRegionList extends Component {
   }
 
   render () {
-    const { hdx: { exportRegions, selectedExportRegion } } = this.props;
+    const { hdx: { exportRegions, selectedExportRegion, nextPageUrl, prevPageUrl, total }, getExportRegions } = this.props;
 
     const regionGeoms = {
       features: Object.entries(exportRegions).map(([id, x]) => x.the_geom),
@@ -55,6 +56,7 @@ export class HDXExportRegionList extends Component {
               Create New Export Region
             </Link>
             <ExportRegionList regions={exportRegions} />
+            <Paginator collection={this.props.hdx} getPage={getExportRegions}/>
           </div>
         </Col>
         <Col xs={6} style={{height: '100%'}}>
@@ -73,7 +75,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getExportRegions: () => dispatch(getExportRegions())
+    getExportRegions: (url) => dispatch(getExportRegions(url))
   };
 };
 

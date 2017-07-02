@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import ExportAOI from './aoi/ExportAOI';
 import { createExport, getOverpassTimestamp } from '../actions/exportsActions';
 import styles from '../styles/ExportForm.css';
-import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, PresetParser } from './utils';
+import { AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, PresetParser, Paginator } from './utils';
 const Dropzone = require('react-dropzone');
 import TreeMenu from './react-tree-menu/TreeMenu'
 import { TreeTag, TreeTagYAML } from '../utils/TreeTag'
@@ -116,6 +116,7 @@ class StoredConfComponent extends React.Component {
             <Button>Clear</Button>
           </InputGroup.Button>
         </InputGroup>
+        <Paginator collection={this.props.configurations} getPage={this.props.getConfigurations}/>
         <Table>
           <thead>
             <tr>
@@ -125,7 +126,7 @@ class StoredConfComponent extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.configurations.map((configuration,i) => {
+            {this.props.configurations.items.map((configuration,i) => {
               return <tr key={i}>
                 <td>{configuration.name}</td>
                 <td>{configuration.description}</td>
@@ -146,7 +147,7 @@ const StoredConfContainer = connect(
   },
   dispatch => {
     return {
-      getConfigurations: () => dispatch(getConfigurations),
+      getConfigurations: (url) => dispatch(getConfigurations(url)),
       setYaml: (yaml) => dispatch(change("ExportForm","feature_selection",yaml))
     }
   }
@@ -155,7 +156,7 @@ const StoredConfContainer = connect(
 
 
 const SelectFeatures = ({next, onDrop, featuresUi, switchToTreeTag, setYaml, switchToYaml, switchToStoredConf, onSearchChange,clearSearch,onTreeNodeCollapseChange,onTreeNodeCheckChange,labelFilter,tagTreeData}) =>
-  <Row>
+  <Row style={{height:"auto"}}>
     <ButtonGroup justified>
       <Button href="#" active={featuresUi === "treetag"} onClick={switchToTreeTag}>Tag Tree</Button>
       <Button href="#" active={featuresUi === "stored"} onClick={switchToStoredConf}>Stored Configuration</Button>

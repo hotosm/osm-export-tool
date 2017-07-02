@@ -1,5 +1,5 @@
 import { reducer as reduxFormReducer } from 'redux-form';
-import {exportModeReducer, exportRunsReducer, exportListReducer, exportAoiInfoReducer, exportInfoReducer, overpassTimestampReducer } from './exportsReducer';
+import {exportModeReducer, exportRunsReducer, jobListReducer, exportAoiInfoReducer, exportInfoReducer, overpassTimestampReducer } from './exportsReducer';
 import {invalidDrawWarningReducer} from './aoi/drawToolBarReducer';
 import {zoomToSelectionReducer, resetMapReducer} from './aoi/AoiInfobarReducer.js';
 import {getGeonamesReducer} from './aoi/searchToolbarReducer.js';
@@ -22,7 +22,7 @@ export default {
   hdx: getHdxReducer,
   exportInfo: exportInfoReducer,
   exportRuns: exportRunsReducer,
-  exportList: exportListReducer,
+  jobs: jobListReducer,
   configurations: configurationsReducer,
   overpassLastUpdated: overpassTimestampReducer
 };

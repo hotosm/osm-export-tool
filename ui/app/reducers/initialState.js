@@ -25,10 +25,12 @@ export default {
       fetched: false,
       exportRegions: {},
       error: null,
+      prevPageUrl:null,
+      nextPageUrl:null,
+      total:null
     },
     exportInfo:null,
     exportRuns:[],
-    exportList:[],
     importGeom: {
         processing: false,
         processed: false,
@@ -54,6 +56,17 @@ export default {
         jobuid: '',
         error: null,
     },
-    configurations: [],
+    configurations: {
+      nextPageUrl:null,
+      prevPageUrl:null,
+      total:null,
+      items:[]
+    },
+    jobs: {
+      items:[],
+      total:null,
+      nextPageUrl:null,
+      prevPageUrl:null
+    },
     overpassLastUpdated: null
 }

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
-import { Col, Row, Table } from 'react-bootstrap';
+import { Col, Row, Table, Button, InputGroup, FormControl, Checkbox, Form, FormGroup } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ConfigurationForm from './ConfigurationForm';
 import { getConfigurations,getConfiguration } from '../actions/configurationActions'
+import { Paginator } from './utils'
 
 const ConfigurationTable = ({configurations}) => <tbody>
   {configurations.map((configuration,i) => {
@@ -19,7 +20,17 @@ const ConfigurationTable = ({configurations}) => <tbody>
 
 class ConfigurationListPane extends Component {
   componentDidMount() {
+    this.state = {searchQuery:'',onlyMine:false}
     this.props.getConfigurations()
+  }
+
+  onSearchSubmit = (e) => {
+    console.log("Submit")
+    this.setState({searchQuery:e.target.value})
+  }
+
+  clearSearch = (e) => {
+    this.setState({searchQuery:""})
   }
 
   render() {
@@ -30,6 +41,21 @@ class ConfigurationListPane extends Component {
           <Link to='/configurations/new' style={{float: "right"}} className='btn btn-primary btn-lg'>
             Create New Configuration
           </Link>
+          <InputGroup style={{width:'100%',marginTop:'20px',marginBottom:'10px'}}>
+            <InputGroup.Button>
+              <Button>Clear</Button>
+            </InputGroup.Button>
+            <FormControl
+              type="text"
+              placeholder="Search for a name or description..."
+            />
+            <InputGroup.Button>
+              <Button>Search</Button>
+            </InputGroup.Button>
+          </InputGroup>
+          <Checkbox>
+            My Configurations
+          </Checkbox>
           <Table>
             <thead>
               <tr>
@@ -39,15 +65,16 @@ class ConfigurationListPane extends Component {
                 <th>Owner</th>
               </tr>
             </thead>
-            <ConfigurationTable configurations={this.props.configurations}/>
+            <ConfigurationTable configurations={this.props.configurations.items}/>
           </Table>
+          <Paginator collection={this.props.configurations} getPage={this.props.getConfigurations}/>
         </div>
       </Col>
     )
   }
 }
 
-const ConfigurationListPaneR = connect(
+const ConfigurationListPaneContainer = connect(
   state => {
     return {
       configurations: state.configurations
@@ -55,7 +82,7 @@ const ConfigurationListPaneR = connect(
   },
   dispatch => {
     return {
-      getConfigurations: () => dispatch(getConfigurations)
+      getConfigurations: (url) => dispatch(getConfigurations(url))
     }
   }
 )(ConfigurationListPane);
@@ -65,7 +92,7 @@ export class ConfigurationNew extends Component {
   render () {
     return (
       <Row style={{height: '100%'}}>
-        <ConfigurationListPaneR/>
+        <ConfigurationListPaneContainer/>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
           <div style={{padding: '20px'}}>
             <ConfigurationForm/>
@@ -76,7 +103,7 @@ export class ConfigurationNew extends Component {
   }
 }
 
-class ConfigurationDetailC extends Component {
+class ConfigurationDetail extends Component {
   componentDidMount () {
     const { match: { params: { uid } },getConfiguration } = this.props;
     this.props.getConfiguration(uid);
@@ -91,7 +118,7 @@ class ConfigurationDetailC extends Component {
     const { match: { params: { uid } } } = this.props;
     return (
       <Row style={{height: '100%'}}>
-        <ConfigurationListPaneR/>
+        <ConfigurationListPaneContainer/>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
           <div style={{padding: '20px'}}>
             <ConfigurationForm configurationUid={uid}/>
@@ -102,7 +129,7 @@ class ConfigurationDetailC extends Component {
   }
 }
 
-export const ConfigurationDetail = connect(
+export const ConfigurationDetailContainer = connect(
   state => {
     return {
       configurations: state.configurations
@@ -113,7 +140,7 @@ export const ConfigurationDetail = connect(
       getConfiguration: (uid) => dispatch(getConfiguration(uid))
     }
   }
-)(ConfigurationDetailC);
+)(ConfigurationDetail);
 
 export class ConfigurationList extends Component {
   componentDidMount () {
@@ -122,7 +149,7 @@ export class ConfigurationList extends Component {
   render () {
     return (
       <Row style={{height: '100%'}}>
-        <ConfigurationListPaneR/>
+        <ConfigurationListPaneContainer/>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
         </Col>
       </Row>

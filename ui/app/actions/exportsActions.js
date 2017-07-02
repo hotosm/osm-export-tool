@@ -74,9 +74,6 @@ export function getOverpassTimestamp(dispatch) {
         lastUpdated:moment(rsp.data.timestamp).fromNow()
       })
     })
-    .catch(error => {
-      console.log("ERROR")
-    })
 }
 
 export function getExport(id) {
@@ -90,25 +87,20 @@ export function getExport(id) {
         job:rsp.data
       })
     })
-    .catch(error => {
-      console.log("ERROR")
-    })
   }
 }
 
-export function getExports(dispatch) {
-  return axios({
-    url:'/api/jobs'
-  }).then(rsp => {
-    dispatch({
-      type: types.RECEIVED_EXPORT_LIST,
-      id:id,
-      jobs:rsp.data
+export function getExports(url) {
+  return dispatch => {
+    return axios({
+      url:url || '/api/jobs'
+    }).then(rsp => {
+      dispatch({
+        type: types.RECEIVED_EXPORT_LIST,
+        response:rsp.data
+      })
     })
-  })
-  .catch(error => {
-    console.log("ERROR")
-  })
+  }
 }
 
 export function getRuns(jobUid) {

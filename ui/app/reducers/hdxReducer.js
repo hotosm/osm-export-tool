@@ -1,7 +1,7 @@
 import types from '../actions/actionTypes';
 import initialState from './initialState';
 
-export function getHdxReducer (state = initialState.hdx, { error, exportRegion, exportRegions, id, statusCode, type }) {
+export function getHdxReducer (state = initialState.hdx, { error, exportRegion, exportRegions, id, statusCode, prevPageUrl, nextPageUrl, total, type }) {
   switch (type) {
     case types.FETCHING_EXPORT_REGION:
       return {
@@ -41,7 +41,10 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         fetched: true,
         exportRegions,
         error: null,
-        status: null
+        status: null,
+        prevPageUrl:prevPageUrl,
+        nextPageUrl:nextPageUrl,
+        total:total
       };
 
     case types.FETCH_EXPORT_REGIONS_ERROR:

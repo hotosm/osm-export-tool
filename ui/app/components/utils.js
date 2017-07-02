@@ -1,5 +1,5 @@
 import React from 'react';
-import { HelpBlock, FormControl, FormGroup, ControlLabel, Checkbox } from 'react-bootstrap';
+import { Button, HelpBlock, FormControl, FormGroup, ControlLabel, Checkbox } from 'react-bootstrap';
 import { Field } from 'redux-form'
 import Select from 'react-select';
 import styles from '../styles/utilsStyles.css'
@@ -205,3 +205,18 @@ export const prettyBytes = num => {
 
 	return (neg ? '-' : '') + numStr + ' ' + unit;
 };
+
+export const Paginator = (props) => {
+  const collection = props.collection
+  return <div>
+   { collection.total } results.
+   { collection.nextPageUrl ? <Button 
+       style={{float:"right"}} 
+       onClick={() => props.getPage(collection.nextPageUrl)}
+     >Next</Button> : null }
+   { collection.prevPageUrl ? <Button 
+       style={{float:"right"}}
+       onClick={() => props.getPage(collection.prevPageUrl)}
+     >Previous</Button> : null }
+  </div>
+}
