@@ -72,7 +72,7 @@
   },
   "scripts": {
     "dist": "NODE_ENV=production npm run pack",
-    "pack": "webpack -p --progress --config webpack.config.js",
+    "pack": "webpack -p --progress --display-optimization-bailout --config webpack.config.js",
     "watch": "webpack --watch --progress --config webpack.config.js",
     "test": "jest --verbose"
   },
