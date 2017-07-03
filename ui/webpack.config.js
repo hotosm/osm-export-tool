@@ -10,7 +10,7 @@ const config = {
   },
   devtool: 'eval',
   module: {
-    loaders: [
+    rules: [
       {
         test: /app\/.*\.jsx?$/,
         exclude: [/node_modules/],
@@ -42,21 +42,23 @@ const config = {
     noParse: /dist\/ol.js/
   },
   resolve: {
-    extensions: ['', '.js', '.jsx', '.json', '.css']
+    extensions: ['.js', '.jsx', '.json', '.css']
   }
 };
 
 if (process.env.NODE_ENV === 'production') {
   config.devtool = 'source-map';
   config.plugins = [
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production')
       }
     }),
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      warnings: true
+    })
   ];
 }
 
