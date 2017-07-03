@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import styles from '../../styles/aoi/PopupBox.css';
 
@@ -29,9 +30,9 @@ export class PopupBox extends Component {
 }
 
 PopupBox.propTypes = {
-    show: React.PropTypes.bool,
-    title: React.PropTypes.string,
-    onExit: React.PropTypes.func,
+    show: PropTypes.bool,
+    title: PropTypes.string,
+    onExit: PropTypes.func,
 }
 
 export default PopupBox;

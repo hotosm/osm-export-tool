@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import styles from '../../styles/aoi/SearchAOIButton.css';
@@ -63,11 +64,11 @@ const SELECTED_ICON =<div>
                     </div>
 
 SearchAOIButton.propTypes = {
-    toolbarIcons: React.PropTypes.object,
-    handleCancel: React.PropTypes.func,
-    setSearchAOIButtonSelected: React.PropTypes.func,
-    setAllButtonsDefault: React.PropTypes.func,
-    
+    toolbarIcons: PropTypes.object,
+    handleCancel: PropTypes.func,
+    setSearchAOIButtonSelected: PropTypes.func,
+    setAllButtonsDefault: PropTypes.func,
+
 }
 
 function mapStateToProps(state) {

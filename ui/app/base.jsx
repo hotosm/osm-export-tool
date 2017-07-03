@@ -22,7 +22,7 @@ const history = createHistory();
 const middleware = [routerMiddleware(history), thunk];
 
 if (process.env.NODE_ENV !== 'production') {
-  const createLogger = require('redux-logger');
+  const { createLogger } = require('redux-logger');
 
   middleware.push(createLogger({
     collapsed: true

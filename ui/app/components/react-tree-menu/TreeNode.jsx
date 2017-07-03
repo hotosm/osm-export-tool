@@ -1,6 +1,9 @@
-var React = require('react'),
-  TreeNodeMixin = require('./TreeNodeMixin'),
-  noop = require('lodash/noop');
+import PropTypes from 'prop-types';
+import createClass from 'create-react-class';
+import noop from 'lodash/noop';
+import React from 'react';
+
+import TreeNodeMixin from './TreeNodeMixin';
 
 /**
  * Individual nodes in tree hierarchy, nested under a single <TreeMenu/> node
@@ -8,28 +11,28 @@ var React = require('react'),
  *
  * @type {TreeNode}
  */
-var TreeNode = React.createClass({
+var TreeNode = createClass({
 
   mixins : [TreeNodeMixin],
 
   propTypes : {
 
-    stateful: React.PropTypes.bool,
-    checkbox: React.PropTypes.bool,
-    collapsible : React.PropTypes.bool,
-    collapsed : React.PropTypes.bool,
-    expandIconClass: React.PropTypes.string,
-    collapseIconClass: React.PropTypes.string,
-    checked: React.PropTypes.bool,
-    label: React.PropTypes.string.isRequired,
-    classNamePrefix: React.PropTypes.string,
-    onClick: React.PropTypes.func,
-    onCheckChange: React.PropTypes.func,
-    onSelectChange: React.PropTypes.func,
-    onCollapseChange: React.PropTypes.func,
-    labelFilter: React.PropTypes.func,
-    labelFactory: React.PropTypes.func,
-    checkboxFactory: React.PropTypes.func
+    stateful: PropTypes.bool,
+    checkbox: PropTypes.bool,
+    collapsible : PropTypes.bool,
+    collapsed : PropTypes.bool,
+    expandIconClass: PropTypes.string,
+    collapseIconClass: PropTypes.string,
+    checked: PropTypes.bool,
+    label: PropTypes.string.isRequired,
+    classNamePrefix: PropTypes.string,
+    onClick: PropTypes.func,
+    onCheckChange: PropTypes.func,
+    onSelectChange: PropTypes.func,
+    onCollapseChange: PropTypes.func,
+    labelFilter: PropTypes.func,
+    labelFactory: PropTypes.func,
+    checkboxFactory: PropTypes.func
 
   },
 
@@ -265,4 +268,4 @@ var TreeNode = React.createClass({
 });
 
 
-module.exports = TreeNode;
+export default TreeNode;

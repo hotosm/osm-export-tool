@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import styles from '../../styles/aoi/AoiInfobar.css';
@@ -107,9 +108,9 @@ export class AoiInfobar extends Component {
 }
 
 AoiInfobar.propTypes = {
-    aoiInfo: React.PropTypes.object,
-    zoomToSelection: React.PropTypes.object,
-    clickZoomToSelection: React.PropTypes.func,
+    aoiInfo: PropTypes.object,
+    zoomToSelection: PropTypes.object,
+    clickZoomToSelection: PropTypes.func,
 }
 
 function mapStateToProps(state) {

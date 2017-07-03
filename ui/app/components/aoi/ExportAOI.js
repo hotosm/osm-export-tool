@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Attribution from 'ol/control/attribution';
@@ -365,18 +366,18 @@ export class ExportAOI extends Component {
 }
 
 ExportAOI.propTypes = {
-  aoiInfo: React.PropTypes.object,
-  errors: React.PropTypes.object,
-  mode: React.PropTypes.string,
-  zoomToSelection: React.PropTypes.object,
-  resetMap: React.PropTypes.object,
-  importGeom: React.PropTypes.object,
-  updateMode: React.PropTypes.func,
-  hideInvalidDrawWarning: React.PropTypes.func,
-  showInvalidDrawWarning: React.PropTypes.func,
-  updateAoiInfo: React.PropTypes.func,
-  clearAoiInfo: React.PropTypes.func,
-  setFormGeoJSON: React.PropTypes.func
+  aoiInfo: PropTypes.object,
+  errors: PropTypes.object,
+  mode: PropTypes.string,
+  zoomToSelection: PropTypes.object,
+  resetMap: PropTypes.object,
+  importGeom: PropTypes.object,
+  updateMode: PropTypes.func,
+  hideInvalidDrawWarning: PropTypes.func,
+  showInvalidDrawWarning: PropTypes.func,
+  updateAoiInfo: PropTypes.func,
+  clearAoiInfo: PropTypes.func,
+  setFormGeoJSON: PropTypes.func
 };
 
 function mapStateToProps (state) {

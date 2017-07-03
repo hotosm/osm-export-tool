@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { Col, Panel, Button } from 'react-bootstrap';
-import { FormattedRelative, IntlMixin } from 'react-intl';
+import { FormattedRelative } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -20,8 +20,6 @@ function DatasetList (props) {
 }
 
 class ExportRegionPanel extends Component {
-  mixins = [IntlMixin];
-
   getLastRun () {
     const { region } = this.props;
 

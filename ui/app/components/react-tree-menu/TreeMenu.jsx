@@ -1,44 +1,48 @@
-var React = require('react'),
-  TreeNode = require('./TreeNode.jsx'),
-  TreeNodeFactory = React.createFactory(TreeNode),
-  TreeNodeMixin = require('./TreeNodeMixin'),
-  clone = require('lodash/clone'),
-  omit = require('lodash/omit'),
-  sortBy = require('lodash/sortBy'),
-  invariant = require('invariant'),
-  assign = require('object-assign'),
-  map = require('lodash/map');
+import createClass from 'create-react-class';
+import invariant from 'invariant';
+import clone from 'lodash/clone';
+import map from 'lodash/map';
+import omit from 'lodash/omit';
+import sortBy from 'lodash/sortBy';
+import assign from 'object-assign';
+import PropTypes from 'prop-types';
+import React from 'react';
+
+import TreeNode from './TreeNode.jsx';
+import TreeNodeMixin from './TreeNodeMixin';
+
+const TreeNodeFactory = React.createFactory(TreeNode);
 
 /**
  * The root component for a tree view. Can have one or many <TreeNode/> children
  *
  * @type {TreeMenu}
  */
-var TreeMenu = React.createClass({
+var TreeMenu = createClass({
 
   mixins : [TreeNodeMixin],
 
   propTypes : {
 
-    stateful: React.PropTypes.bool,
-    classNamePrefix: React.PropTypes.string,
-    identifier: React.PropTypes.string,
-    onTreeNodeClick: React.PropTypes.func,
-    onTreeNodeCheckChange: React.PropTypes.func,
-    onTreeNodeSelectChange: React.PropTypes.func,
-    collapsible: React.PropTypes.bool,
-    expandIconClass: React.PropTypes.string,
-    collapseIconClass: React.PropTypes.string,
-    data: React.PropTypes.oneOfType([
-      React.PropTypes.array,
-      React.PropTypes.object
+    stateful: PropTypes.bool,
+    classNamePrefix: PropTypes.string,
+    identifier: PropTypes.string,
+    onTreeNodeClick: PropTypes.func,
+    onTreeNodeCheckChange: PropTypes.func,
+    onTreeNodeSelectChange: PropTypes.func,
+    collapsible: PropTypes.bool,
+    expandIconClass: PropTypes.string,
+    collapseIconClass: PropTypes.string,
+    data: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.object
     ]),
-    labelFilter: React.PropTypes.func,
-    labelFactory: React.PropTypes.func,
-    checkboxFactory: React.PropTypes.func,
-    sort: React.PropTypes.oneOfType([
-      React.PropTypes.bool,
-      React.PropTypes.function
+    labelFilter: PropTypes.func,
+    labelFactory: PropTypes.func,
+    checkboxFactory: PropTypes.func,
+    sort: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.func
     ])
   },
 
@@ -152,4 +156,4 @@ var TreeMenu = React.createClass({
 });
 
 
-module.exports = TreeMenu;
+export default TreeMenu;

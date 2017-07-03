@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import styles from '../../styles/aoi/TypeaheadMenuItem.css';
 import {MenuItem} from 'react-bootstrap-typeahead';
@@ -37,8 +38,8 @@ export class TypeaheadMenuItem extends Component {
 }
 
 TypeaheadMenuItem.propTypes = {
-    result: React.PropTypes.object,
-    index: React.PropTypes.number,
+    result: PropTypes.object,
+    index: PropTypes.number,
 }
 
 export default TypeaheadMenuItem;

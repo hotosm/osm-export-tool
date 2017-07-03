@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import styles from '../../styles/aoi/SearchAOIToolbar.css';
@@ -110,13 +111,13 @@ export class SearchAOIToolbar extends Component {
 }
 
 SearchAOIToolbar.propTypes = {
-    toolbarIcons: React.PropTypes.object,
-    geonames: React.PropTypes.object,
-    getGeonames: React.PropTypes.func,
-    handleSearch: React.PropTypes.func,
-    handleCancel: React.PropTypes.func,
-    setAllButtonsDefault: React.PropTypes.func,
-    setSearchAOIButtonSelected: React.PropTypes.func,
+    toolbarIcons: PropTypes.object,
+    geonames: PropTypes.object,
+    getGeonames: PropTypes.func,
+    handleSearch: PropTypes.func,
+    handleCancel: PropTypes.func,
+    setAllButtonsDefault: PropTypes.func,
+    setSearchAOIButtonSelected: PropTypes.func,
 }
 
 function mapStateToProps(state) {

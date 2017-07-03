@@ -16,7 +16,20 @@ const config = {
         exclude: [/node_modules/],
         loader: 'babel-loader',
         query: {
-          presets: ['es2015', 'react', 'stage-0']
+          presets: [
+            [
+              'env',
+              {
+                modules: false,
+                targets: {
+                  browsers: ['last 2 versions', '> 5%']
+                },
+                useBuiltIns: true
+              }
+            ],
+            'react',
+            'stage-2'
+          ]
         }
       },
       {
@@ -38,8 +51,7 @@ const config = {
         loaders: ['style-loader', 'css-loader'],
         include: [/node_modules/]
       }
-    ],
-    noParse: /dist\/ol.js/
+    ]
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.css']

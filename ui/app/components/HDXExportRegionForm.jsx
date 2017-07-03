@@ -4,7 +4,7 @@ import axios from 'axios';
 import isEqual from 'lodash/isEqual';
 import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
 import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
-import { FormattedDate, FormattedRelative, FormattedTime, IntlMixin } from 'react-intl';
+import { FormattedDate, FormattedRelative, FormattedTime } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
@@ -101,8 +101,6 @@ export class HDXExportRegionForm extends Component {
   static propTypes = {
     ...propTypes
   }
-
-  mixins = [IntlMixin];
 
   state = {
     deleting: false,
