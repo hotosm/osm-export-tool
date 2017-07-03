@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 
 from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.renderers import JSONRenderer
@@ -25,7 +26,7 @@ from jobs.models import (
 )
 from serializers import (
     ExportRunSerializer,
-    ExportTaskSerializer, JobSerializer, ListJobSerializer,
+    ExportTaskSerializer, JobSerializer,
     HDXExportRegionSerializer, ConfigurationSerializer
 )
 from tasks.models import ExportRun, ExportTask
@@ -41,6 +42,13 @@ LOG = logging.getLogger(__name__)
 
 # controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
+
+def bbox_to_geom(s):
+    try:
+        return GEOSGeometry(Polygon.from_bbox(s.split(',')), srid=4326)
+    except:
+        raise ValidationError({'bbox':'Query bounding box is malformed.'})
+        
 
 class JobViewSet(viewsets.ModelViewSet):
     """
@@ -60,16 +68,9 @@ class JobViewSet(viewsets.ModelViewSet):
     * event: The project or event associated with this export, eg Nepal Activation.
     * formats (required): One of the supported export formats ([html](/api/formats) or [json](/api/formats.json)).
         * Use the format `slug` as the value of the formats parameter, eg `formats=thematic&formats=shp`.
-    * preset: One of the published preset files ([html](/api/configurations) or [json](/api/configurations.json)).
-        * Use the `uid` as the value of the preset parameter, eg `preset=eed84023-6874-4321-9b48-2f7840e76257`.
-        * If no preset parameter is provided, then the default [HDM](http://export.hotosm.org/api/hdm-data-model?format=json) tags will be used for the export.
     * published: `true` if this export is to be published globally, `false` otherwise.
         * Unpublished exports will be purged from the system 48 hours after they are created.
 
-    ###Example JSON Request
-
-    This example will create a publicly published export using the default set of HDM tags
-    for an area around Dar es Salaam, Tanzania. The export will create thematic shapefile, shapefile and kml files.
 
     <pre>
         {
@@ -103,69 +104,15 @@ class JobViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self,):
         user = self.request.user
+        queryset = Job.objects
         mineonly = self.request.query_params.get('mineonly', None)
+        bbox = self.request.query_params.get('bbox', None)
+        if bbox is not None:
+            bbox = bbox_to_geom(bbox)
+            queryset = queryset.filter(Q(the_geom__within=bbox))
         if mineonly is not None:
-            return Job.objects.filter(Q(user_id=user.id))
-
-        return Job.objects.filter(Q(user_id=user.id) | Q(published=True))
-
-    def list(self, request, *args, **kwargs):
-        """
-        List export jobs.
-
-        The list of returned exports can be filtered by the **filters.JobFilter**
-        and/or by a bounding box extent.
-
-        Args:
-            request: the HTTP request.
-            *args: Variable length argument list.
-            **kwargs: Arbitary keyword arguments.
-
-        Returns:
-            A serialized collection of export jobs.
-            Uses the **serializers.ListJobSerializer** to
-            return a simplified representation of export jobs.
-
-        Raises:
-            ValidationError: if the supplied extents are invalid.
-        """
-        params = self.request.query_params.get('bbox', None)
-        if params == None:
-            queryset = self.filter_queryset(self.get_queryset())
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = ListJobSerializer(page, many=True, context={'request': request})
-                return self.get_paginated_response(serializer.data)
-            else:
-                serializer = ListJobSerializer(queryset, many=True, context={'request': request})
-                return Response(serializer.data)
-        if (len(params.split(',')) < 4):
-            errors = OrderedDict()
-            errors['id'] = _('missing_bbox_parameter')
-            errors['message'] = _('Missing bounding box parameter')
-            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            extents = params.split(',')
-            data = {'xmin': extents[0],
-                    'ymin': extents[1],
-                    'xmax': extents[2],
-                    'ymax': extents[3]
-            }
-            try:
-                bbox_extents = validate_bbox_params(data)
-                bbox = validate_search_bbox(bbox_extents)
-                queryset = self.filter_queryset(Job.objects.filter(the_geom__within=bbox))
-                page = self.paginate_queryset(queryset)
-                if page is not None:
-                    serializer = ListJobSerializer(page, many=True, context={'request': request})
-                    return self.get_paginated_response(serializer.data)
-                else:
-                    serializer = ListJobSerializer(queryset, many=True, context={'request': request})
-                    return Response(serializer.data)
-            except ValidationError as e:
-                LOG.debug(e.detail)
-                return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-
+            return queryset.filter(Q(user_id=user.id))
+        return queryset.filter(Q(user_id=user.id) | Q(published=True))
 
     def perform_create(self,serializer):
         job = serializer.save()
@@ -182,11 +129,11 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self,):
         user = self.request.user
+        queryset = SavedFeatureSelection.objects.filter(deleted=False)
         mineonly = self.request.query_params.get('mineonly', None)
         if mineonly is not None:
-            return SavedFeatureSelection.objects.filter(deleted=False).filter(Q(user_id=user.id))
-
-        return SavedFeatureSelection.objects.filter(deleted=False).filter(Q(user_id=user.id) | Q(public=True))
+            return queryset.filter(Q(user_id=user.id))
+        return queryset.filter(Q(user_id=user.id) | Q(public=True))
     
 
 class ExportRunViewSet(viewsets.ModelViewSet):
