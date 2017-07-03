@@ -63,7 +63,7 @@ export function processGeoJSONFile (file) {
       const geojsonReader = new ol.format.GeoJSON();
       const feature = geojsonReader.readFeatures(geojson)[0];
       const geom = feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
-      if (geom.getType() == 'Polygon' || geom.getType() == 'MultiPolygon') {
+      if (geom.getType() === 'Polygon' || geom.getType() === 'MultiPolygon') {
         dispatch({ type: types.FILE_PROCESSED, geojson });
       } else {
         dispatch({

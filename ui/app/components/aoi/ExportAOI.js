@@ -2,12 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ol from 'openlayers';
 import styles from '../../styles/aoi/CreateExport.css';
-import {
-  Toolbar,
-  ToolbarGroup,
-  ToolbarSeparator,
-  ToolbarTitle
-} from 'material-ui/Toolbar';
 import AoiInfobar from './AoiInfobar.js';
 import SearchAOIToolbar from './SearchAOIToolbar.js';
 import DrawAOIToolbar from './DrawAOIToolbar.js';
@@ -60,11 +54,6 @@ export class ExportAOI extends Component {
         });
 
       default:
-        const geometry = GEOJSON_FORMAT.readGeometry(geojson, {
-          dataProjection: WGS84,
-          featureProjection: WEB_MERCATOR
-        });
-
         return new ol.Feature({
           geometry: GEOJSON_FORMAT.readGeometry(geojson, {
             dataProjection: WGS84,
@@ -88,21 +77,21 @@ export class ExportAOI extends Component {
   }
 
   checkSize (geometry) {
-    var current_projection = new ol.proj.Projection({ code: 'EPSG:3857' });
-    var new_projection = new ol.proj.Projection({ code: 'EPSG:4326' });
+    var currentProjection = new ol.proj.Projection({ code: 'EPSG:3857' });
+    var newProjection = new ol.proj.Projection({ code: 'EPSG:4326' });
     var extentPoly = ol.geom.Polygon.fromExtent(geometry.getExtent());
-    extentPoly.transform(current_projection, new_projection);
+    extentPoly.transform(currentProjection, newProjection);
     var sphere = new ol.Sphere(6378137);
-    var area_sqkm = Math.round(
+    var areaSqkm = Math.round(
       Math.abs(
         sphere.geodesicArea(extentPoly.getCoordinates()[0]) / 1000 / 1000
       )
     );
 
     const MAX = 3000000;
-    if (area_sqkm > MAX) {
+    if (areaSqkm > MAX) {
       this.props.showInvalidDrawWarning(
-        `The bounds of the polygon are too large: ${area_sqkm} sq km, max ${MAX}`
+        `The bounds of the polygon are too large: ${areaSqkm} sq km, max ${MAX}`
       );
     }
   }
@@ -138,16 +127,19 @@ export class ExportAOI extends Component {
 
   componentWillReceiveProps (nextProps) {
     // Check if the map mode has changed (DRAW or NORMAL)
-    if (this.props.mode != nextProps.mode) {
+    if (this.props.mode !== nextProps.mode) {
       this._updateInteractions(nextProps.mode);
     }
-    if (this.props.zoomToSelection.click != nextProps.zoomToSelection.click) {
+
+    if (this.props.zoomToSelection.click !== nextProps.zoomToSelection.click) {
       this.handleZoomToSelection(nextProps.aoiInfo.geojson.features[0].bbox);
     }
+
     // Check if the reset map button has been clicked
-    if (this.props.resetMap.click != nextProps.resetMap.click) {
+    if (this.props.resetMap.click !== nextProps.resetMap.click) {
       this.handleResetMap();
     }
+
     if (nextProps.importGeom.processed && !this.props.importGeom.processed) {
       this.handleGeoJSONUpload(nextProps.importGeom.geojson);
     }
@@ -155,9 +147,11 @@ export class ExportAOI extends Component {
 
   handleCancel (sender) {
     this.props.hideInvalidDrawWarning();
-    if (this.props.mode != MODE_NORMAL) {
+
+    if (this.props.mode !== MODE_NORMAL) {
       this.props.updateMode(MODE_NORMAL);
     }
+
     this._clearDraw();
     this.props.clearAoiInfo();
   }
@@ -181,18 +175,18 @@ export class ExportAOI extends Component {
   }
 
   handleSearch (result) {
-    const unformatted_bbox = result.bbox;
-    const formatted_bbox = [
-      unformatted_bbox.west,
-      unformatted_bbox.south,
-      unformatted_bbox.east,
-      unformatted_bbox.north
+    const unformattedBbox = result.bbox;
+    const formattedBbox = [
+      unformattedBbox.west,
+      unformattedBbox.south,
+      unformattedBbox.east,
+      unformattedBbox.north
     ];
     this._clearDraw();
     this.props.hideInvalidDrawWarning();
-    const bbox = formatted_bbox.map(truncate);
+    const bbox = formattedBbox.map(truncate);
     const mercBbox = ol.proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
-    const geom = new ol.geom.Polygon.fromExtent(mercBbox);
+    const geom = ol.geom.Polygon.fromExtent(mercBbox);
     const geojson = createGeoJSON(geom);
     const bboxFeature = new ol.Feature({
       geometry: geom
@@ -216,16 +210,16 @@ export class ExportAOI extends Component {
   setMapView () {
     this._clearDraw();
     const extent = this._map.getView().calculateExtent(this._map.getSize());
-    const geom = new ol.geom.Polygon.fromExtent(extent);
+    const geom = ol.geom.Polygon.fromExtent(extent);
     const geojson = createGeoJSON(geom);
     this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Map View');
   }
 
   _activateDrawInteraction (mode) {
-    if (mode == MODE_DRAW_BBOX) {
+    if (mode === MODE_DRAW_BBOX) {
       this._drawFreeInteraction.setActive(false);
       this._drawBoxInteraction.setActive(true);
-    } else if (mode == MODE_DRAW_FREE) {
+    } else if (mode === MODE_DRAW_FREE) {
       this._drawBoxInteraction.setActive(false);
       this._drawFreeInteraction.setActive(true);
     }
@@ -253,10 +247,6 @@ export class ExportAOI extends Component {
   }
 
   _initializeOpenLayers () {
-    const scaleStyle = {
-      background: 'white'
-    };
-
     this._drawLayer = generateDrawLayer();
     this._drawBoxInteraction = _generateDrawBoxInteraction(this._drawLayer);
     this._drawBoxInteraction.on('drawstart', this._handleDrawStart);
@@ -317,8 +307,6 @@ export class ExportAOI extends Component {
   render () {
     const mapStyle = {};
 
-    let buttonClass = `${styles.draw || ''} ol-unselectable ol-control`;
-
     return (
       <div>
         <div id='map' className={styles.map} style={mapStyle} ref='olmap'>
@@ -355,6 +343,7 @@ export class ExportAOI extends Component {
 
 ExportAOI.propTypes = {
   aoiInfo: React.PropTypes.object,
+  errors: React.PropTypes.object,
   mode: React.PropTypes.string,
   zoomToSelection: React.PropTypes.object,
   resetMap: React.PropTypes.object,
@@ -363,7 +352,8 @@ ExportAOI.propTypes = {
   hideInvalidDrawWarning: React.PropTypes.func,
   showInvalidDrawWarning: React.PropTypes.func,
   updateAoiInfo: React.PropTypes.func,
-  clearAoiInfo: React.PropTypes.func
+  clearAoiInfo: React.PropTypes.func,
+  setFormGeoJSON: React.PropTypes.func
 };
 
 function mapStateToProps (state) {
@@ -492,20 +482,6 @@ function unwrapPoint ([x, y]) {
   return [x > 0 ? Math.min(180, x) : Math.max(-180, x), y];
 }
 
-function featureToBbox (feature) {
-  const geometry = GEOJSON_FORMAT.readGeometry(feature.geometry, {
-    featureProjection: WEB_MERCATOR
-  });
-  return geometry.getExtent();
-}
-
-function deserialize (serialized) {
-  if (serialized && serialized.length === 4) {
-    return ol.proj.transformExtent(serialized, WGS84, WEB_MERCATOR);
-  }
-  return null;
-}
-
 function serialize (extent) {
   const bbox = ol.proj.transformExtent(extent, WEB_MERCATOR, WGS84);
   const p1 = unwrapPoint(bbox.slice(0, 2));
@@ -533,20 +509,9 @@ function createGeoJSON (ol3Geometry) {
   return geojson;
 }
 
-function processGeoJSONFile (file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    const dataURL = reader.result;
-    const geojsonReader = new ol.format.GeoJSON();
-    const geom = geojsonReader.readFeatures(JSON.parse(dataURL));
-    return geom;
-  };
-  return reader.readAsText(file);
-}
-
-ol.control.ZoomExtent = function (opt_option) {
-  let options = opt_option || {};
-  options.className = options.className != undefined ? options.className : '';
+ol.control.ZoomExtent = function (options) {
+  options = options || {};
+  options.className = options.className != null ? options.className : '';
 
   let button = document.createElement('button');
   let icon = document.createElement('i');
@@ -555,9 +520,6 @@ ol.control.ZoomExtent = function (opt_option) {
   let this_ = this;
 
   this.zoomer = () => {
-    const extent = !options.extent
-      ? view.getProjection.getExtent()
-      : options.extent;
     const map = this_.getMap();
     const view = map.getView();
     const size = map.getSize();

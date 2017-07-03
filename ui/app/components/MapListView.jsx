@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-const jsts = require('jsts');
 import isEqual from 'lodash/isEqual';
 import ol from 'openlayers';
-import { connect } from 'react-redux';
 
 import styles from '../styles/aoi/CreateExport.css';
+
+const jsts = require('jsts');
 
 const GEOJSON_FORMAT = new ol.format.GeoJSON();
 const GEOJSON_READER = new jsts.io.GeoJSONReader();
