@@ -16,29 +16,30 @@ RUN \
   && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
   && add-apt-repository -y -u "deb https://dl.yarnpkg.com/debian/ stable main" \
   && apt install -y --no-install-recommends \
+    build-essential \
+    default-jre-headless \
+    gdal-bin \
+    git \
+    libffi-dev \
+    libgdal-dev \
+    libmagic1 \
     libpq-dev \
+    libsqlite3-mod-spatialite \
+    libspatialite7 \
+    libspatialite-dev \
+    libxslt1-dev \
+    nodejs \
+    osmctools \
+    postgresql-client \
     python-dev \
     python-pip \
     python-setuptools \
     python-wheel \
-    gdal-bin \
-    libgdal-dev \
     python-gdal \
-    osmctools \
     spatialite-bin \
-    libspatialite7 \
-    libspatialite-dev \
-    default-jre-headless \
-    zip \
     unzip \
-    libxslt1-dev \
-    build-essential \
-    git \
-    libffi-dev \
-    libmagic1 \
-    libsqlite3-mod-spatialite \
-    nodejs \
     yarn \
+    zip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -96,5 +97,7 @@ RUN \
   && touch /opt/static/css/style.css
 
 VOLUME ["/opt/export_staging", "/opt/export_downloads", "/opt/osm-export-tool2", "/opt/static"]
+
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/osm-export-tool2/bin
 
 CMD ["echo", "Override this command"]
