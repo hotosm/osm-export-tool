@@ -19,11 +19,11 @@ export default class MapListView extends Component {
       type: PropTypes.string
     }),
     selectedFeatureId: PropTypes.number
-  }
+  };
 
   state = {
     _features: []
-  }
+  };
 
   componentDidMount () {
     this._initializeOpenLayers();
@@ -49,7 +49,11 @@ export default class MapListView extends Component {
   }
 
   handleResetMap () {
-    const worldExtent = ol.proj.transformExtent([-180, -90, 180, 90], WGS84, WEB_MERCATOR);
+    const worldExtent = ol.proj.transformExtent(
+      [-180, -90, 180, 90],
+      WGS84,
+      WEB_MERCATOR
+    );
     this._map.getView().fit(worldExtent, this._map.getSize());
   }
 
@@ -64,22 +68,26 @@ export default class MapListView extends Component {
     });
   }
 
-  zoomToFeatureId(id) {
+  zoomToFeatureId (id) {
     const { features } = this.props;
 
     const selectedFeature = features.features.filter(x => x.id === id).shift();
 
     if (selectedFeature != null) {
-      const envelope = GEOJSON_READER.read(selectedFeature).getEnvelope().getCoordinates();
+      const envelope = GEOJSON_READER.read(selectedFeature)
+        .getEnvelope()
+        .getCoordinates();
 
       const bbox = [envelope[0], envelope[2]]
         .map(c => [c.x, c.y])
         .reduce((acc, val) => acc.concat(val), []);
 
-      this._map.getView().fit(
-        ol.proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
-        this._map.getSize()
-      );
+      this._map
+        .getView()
+        .fit(
+          ol.proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
+          this._map.getSize()
+        );
     }
   }
 
@@ -120,7 +128,12 @@ export default class MapListView extends Component {
         }),
         new ol.control.ZoomExtent({
           className: styles.olZoomToExtent,
-          extent: [-14251567.50789682, -10584983.780136958, 14251787.50789682, 10584983.780136958]
+          extent: [
+            -14251567.50789682,
+            -10584983.780136958,
+            14251787.50789682,
+            10584983.780136958
+          ]
         })
       ],
       interactions: ol.interaction.defaults({
