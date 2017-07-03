@@ -17,13 +17,11 @@ import VectorLayer from 'ol/layer/vector';
 import VectorSource from 'ol/source/vector';
 import View from 'ol/view';
 import Zoom from 'ol/control/zoom';
+import bbox from '@turf/bbox';
 
 import styles from '../styles/aoi/CreateExport.css';
 
-const jsts = require('jsts');
-
 const GEOJSON_FORMAT = new GeoJSONFormat();
-const GEOJSON_READER = new jsts.io.GeoJSONReader();
 const WGS84 = 'EPSG:4326';
 const WEB_MERCATOR = 'EPSG:3857';
 
@@ -90,18 +88,10 @@ export default class MapListView extends Component {
     const selectedFeature = features.features.filter(x => x.id === id).shift();
 
     if (selectedFeature != null) {
-      const envelope = GEOJSON_READER.read(selectedFeature)
-        .getEnvelope()
-        .getCoordinates();
-
-      const bbox = [envelope[0], envelope[2]]
-        .map(c => [c.x, c.y])
-        .reduce((acc, val) => acc.concat(val), []);
-
       this._map
         .getView()
         .fit(
-          proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
+          proj.transformExtent(bbox(selectedFeature), WGS84, WEB_MERCATOR),
           this._map.getSize()
         );
     }

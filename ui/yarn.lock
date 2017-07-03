@@ -12,6 +12,16 @@
   dependencies:
     "@mapbox/point-geometry" "~0.1.0"
 
+"@turf/bbox@^4.5.2":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-4.5.2.tgz#1a6c6e7d0ea03b26cbc14d46e6df408ae3ddf87a"
+  dependencies:
+    "@turf/meta" "^4.5.2"
+
+"@turf/meta@^4.5.2":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-4.5.2.tgz#8450fc442d2a59494251a5a52ae520017e2dcf0d"
+
 abab@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.3.tgz#b81de5f7274ec4e756d797cd834f303642724e5d"
@@ -3734,10 +3744,6 @@ jsprim@^1.2.2:
     extsprintf "1.0.2"
     json-schema "0.2.3"
     verror "1.3.6"
-
-jsts@~1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/jsts/-/jsts-1.3.0.tgz#e93a76f97ac9bda7d4625d9d6470f0d60ac80e45"
 
 jsx-ast-utils@^1.3.4:
   version "1.4.0"
