@@ -8,8 +8,6 @@ PartOf=osm-export-tool.target
 TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker kill %n
-ExecStartPre=-/usr/bin/docker rm %n
-ExecStartPre=-/usr/bin/docker volume create pgdata
 ExecStartPre=-/usr/bin/docker network create exports
 ExecStart=/usr/bin/docker run \
   -e POSTGRES_USER=exports \
@@ -19,7 +17,7 @@ ExecStart=/usr/bin/docker run \
   --name %n \
   --network exports \
   --network-alias postgresql \
-  -v pgdata:/var/lib/postgresql/data \
+  -v /mnt-storage/postgresql:/var/lib/postgresql/data \
   mdillon/postgis:9.6
 
 [Install]

@@ -8,7 +8,6 @@ PartOf=osm-export-tool.target
 TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker kill %n
-ExecStartPre=-/usr/bin/docker rm %n
 ExecStartPre=-/usr/bin/docker volume prune -f
 ExecStart=/usr/bin/docker run \
   -e DATABASE_URL=postgis://exports:exports@postgresql/exports \
