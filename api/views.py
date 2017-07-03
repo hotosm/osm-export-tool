@@ -2,24 +2,19 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
-import json
 from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db import Error, transaction
+from django.db.models import Q
 from django.http import JsonResponse
 from django.utils.translation import ugettext as _
-from django.contrib.gis.geos import GEOSGeometry
 from django.views.decorators.http import require_http_methods
 
 from rest_framework import filters, permissions, status, views, viewsets
-from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework.serializers import ValidationError
-
 
 import dateutil.parser
 from cachetools.func import ttl_cache
@@ -36,7 +31,6 @@ from serializers import (
 from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
 
-#from .filters import ExportRunFilter, JobFilter
 from .permissions import IsHDXAdmin, IsOwnerOrReadOnly
 from .renderers import HOTExportApiRenderer
 from .validators import validate_bbox_params, validate_search_bbox
@@ -103,14 +97,17 @@ class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     lookup_field = 'uid'
-    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
-    #filter_class = JobFilter
-    search_fields = ('name', 'description', 'event', 'user__username')
     http_method_names = ['get', 'post', 'head']
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'description', 'event')
 
     def get_queryset(self,):
-        """Return all objects by default."""
-        return Job.objects.all()
+        user = self.request.user
+        mineonly = self.request.query_params.get('mineonly', None)
+        if mineonly is not None:
+            return Job.objects.filter(Q(user_id=user.id))
+
+        return Job.objects.filter(Q(user_id=user.id) | Q(published=True))
 
     def list(self, request, *args, **kwargs):
         """
@@ -178,9 +175,18 @@ class JobViewSet(viewsets.ModelViewSet):
 
 class ConfigurationViewSet(viewsets.ModelViewSet):
     serializer_class = ConfigurationSerializer
-    queryset = SavedFeatureSelection.objects.filter(deleted=False)
     permission_classes = (IsOwnerOrReadOnly,permissions.IsAuthenticatedOrReadOnly)
     lookup_field = 'uid'
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'description')
+
+    def get_queryset(self,):
+        user = self.request.user
+        mineonly = self.request.query_params.get('mineonly', None)
+        if mineonly is not None:
+            return SavedFeatureSelection.objects.filter(deleted=False).filter(Q(user_id=user.id))
+
+        return SavedFeatureSelection.objects.filter(deleted=False).filter(Q(user_id=user.id) | Q(public=True))
     
 
 class ExportRunViewSet(viewsets.ModelViewSet):
@@ -194,7 +200,6 @@ class ExportRunViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ExportRunSerializer
     permission_classes = (permissions.AllowAny,)
-    filter_backends = (filters.DjangoFilterBackend,)
     lookup_field = 'uid'
 
     def create(self,request,format='json'):
