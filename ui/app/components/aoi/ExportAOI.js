@@ -316,8 +316,8 @@ export class ExportAOI extends Component {
       view: new View({
         projection: 'EPSG:3857',
         center: [110, 0],
-        zoom: 2.5,
-        minZoom: 2.5,
+        zoom: 3,
+        minZoom: 3,
         maxZoom: 22
       })
     });
