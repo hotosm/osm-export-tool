@@ -1,6 +1,29 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import ol from 'openlayers';
+import Attribution from 'ol/control/attribution';
+import Control from 'ol/control/control';
+import Draw from 'ol/interaction/draw';
+import Feature from 'ol/feature';
+import Fill from 'ol/style/fill';
+import GeoJSONFormat from 'ol/format/geojson';
+import interaction from 'ol/interaction';
+import Polygon from 'ol/geom/polygon';
+import Projection from 'ol/proj/projection';
+import Map from 'ol/map';
+import ol from 'ol';
+import OSM from 'ol/source/osm';
+import proj from 'ol/proj';
+import RegularShape from 'ol/style/regularshape';
+import ScaleLine from 'ol/control/scaleline';
+import Sphere from 'ol/sphere';
+import Stroke from 'ol/style/stroke';
+import Style from 'ol/style/style';
+import Tile from 'ol/layer/tile';
+import VectorLayer from 'ol/layer/vector';
+import VectorSource from 'ol/source/vector';
+import View from 'ol/view';
+import Zoom from 'ol/control/zoom';
+
 import styles from '../../styles/aoi/CreateExport.css';
 import AoiInfobar from './AoiInfobar.js';
 import SearchAOIToolbar from './SearchAOIToolbar.js';
@@ -24,7 +47,7 @@ const WGS84 = 'EPSG:4326';
 const WEB_MERCATOR = 'EPSG:3857';
 const isEqual = require('lodash/isEqual');
 
-const GEOJSON_FORMAT = new ol.format.GeoJSON();
+const GEOJSON_FORMAT = new GeoJSONFormat();
 
 export class ExportAOI extends Component {
   constructor (props) {
@@ -54,7 +77,7 @@ export class ExportAOI extends Component {
         });
 
       default:
-        return new ol.Feature({
+        return new Feature({
           geometry: GEOJSON_FORMAT.readGeometry(geojson, {
             dataProjection: WGS84,
             featureProjection: WEB_MERCATOR
@@ -77,11 +100,11 @@ export class ExportAOI extends Component {
   }
 
   checkSize (geometry) {
-    var currentProjection = new ol.proj.Projection({ code: 'EPSG:3857' });
-    var newProjection = new ol.proj.Projection({ code: 'EPSG:4326' });
-    var extentPoly = ol.geom.Polygon.fromExtent(geometry.getExtent());
+    var currentProjection = new Projection({ code: 'EPSG:3857' });
+    var newProjection = new Projection({ code: 'EPSG:4326' });
+    var extentPoly = Polygon.fromExtent(geometry.getExtent());
     extentPoly.transform(currentProjection, newProjection);
-    var sphere = new ol.Sphere(6378137);
+    var sphere = new Sphere(6378137);
     var areaSqkm = Math.round(
       Math.abs(
         sphere.geodesicArea(extentPoly.getCoordinates()[0]) / 1000 / 1000
@@ -160,13 +183,13 @@ export class ExportAOI extends Component {
     this._map
       .getView()
       .fit(
-        ol.proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
+        transformExtent(bbox, WGS84, WEB_MERCATOR),
         this._map.getSize()
       );
   }
 
   handleResetMap () {
-    let worldExtent = ol.proj.transformExtent(
+    let worldExtent = transformExtent(
       [-180, -90, 180, 90],
       WGS84,
       WEB_MERCATOR
@@ -185,10 +208,10 @@ export class ExportAOI extends Component {
     this._clearDraw();
     this.props.hideInvalidDrawWarning();
     const bbox = formattedBbox.map(truncate);
-    const mercBbox = ol.proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
-    const geom = ol.geom.Polygon.fromExtent(mercBbox);
+    const mercBbox = transformExtent(bbox, WGS84, WEB_MERCATOR);
+    const geom = Polygon.fromExtent(mercBbox);
     const geojson = createGeoJSON(geom);
-    const bboxFeature = new ol.Feature({
+    const bboxFeature = new Feature({
       geometry: geom
     });
     this._drawLayer.getSource().addFeature(bboxFeature);
@@ -210,7 +233,7 @@ export class ExportAOI extends Component {
   setMapView () {
     this._clearDraw();
     const extent = this._map.getView().calculateExtent(this._map.getSize());
-    const geom = ol.geom.Polygon.fromExtent(extent);
+    const geom = Polygon.fromExtent(extent);
     const geojson = createGeoJSON(geom);
     this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Map View');
   }
@@ -256,19 +279,19 @@ export class ExportAOI extends Component {
     this._drawFreeInteraction.on('drawstart', this._handleDrawStart);
     this._drawFreeInteraction.on('drawend', this._handleDrawEnd);
 
-    this._map = new ol.Map({
+    this._map = new Map({
       controls: [
-        new ol.control.ScaleLine({
+        new ScaleLine({
           className: styles.olScaleLine
         }),
-        new ol.control.Attribution({
+        new Attribution({
           collapsible: false,
           collapsed: false
         }),
-        new ol.control.Zoom({
+        new Zoom({
           className: styles.olZoom
         }),
-        new ol.control.ZoomExtent({
+        new ZoomExtent({
           className: styles.olZoomToExtent,
           extent: [
             -14251567.50789682,
@@ -278,19 +301,19 @@ export class ExportAOI extends Component {
           ]
         })
       ],
-      interactions: ol.interaction.defaults({
+      interactions: interaction.defaults({
         keyboard: false,
         altShiftDragRotate: false,
         pinchRotate: false
       }),
       layers: [
         // Order matters here
-        new ol.layer.Tile({
-          source: new ol.source.OSM()
+        new Tile({
+          source: new OSM()
         })
       ],
       target: 'map',
-      view: new ol.View({
+      view: new View({
         projection: 'EPSG:3857',
         center: [110, 0],
         zoom: 2.5,
@@ -389,15 +412,15 @@ function mapDispatchToProps (dispatch) {
 export default connect(mapStateToProps, mapDispatchToProps)(ExportAOI);
 
 function generateDrawLayer () {
-  return new ol.layer.Vector({
-    source: new ol.source.Vector({
+  return new VectorLayer({
+    source: new VectorSource({
       wrapX: false
     }),
-    style: new ol.style.Style({
-      fill: new ol.style.Fill({
+    style: new Style({
+      fill: new Fill({
         color: 'hsla(202, 70%, 50%, .35)'
       }),
-      stroke: new ol.style.Stroke({
+      stroke: new Stroke({
         color: 'hsla(202, 70%, 50%, .7)',
         width: 1,
         lineDash: [5, 5]
@@ -407,21 +430,21 @@ function generateDrawLayer () {
 }
 
 function _generateDrawBoxInteraction (drawLayer) {
-  const draw = new ol.interaction.Draw({
+  const draw = new Draw({
     source: drawLayer.getSource(),
     maxPoints: 2,
     type: 'LineString',
     geometryFunction (coordinates, geometry) {
-      geometry = geometry || new ol.geom.Polygon(null);
+      geometry = geometry || new Polygon(null);
       const [[x1, y1], [x2, y2]] = coordinates;
       geometry.setCoordinates([
         [[x1, y1], [x1, y2], [x2, y2], [x2, y1], [x1, y1]]
       ]);
       return geometry;
     },
-    style: new ol.style.Style({
-      image: new ol.style.RegularShape({
-        stroke: new ol.style.Stroke({
+    style: new Style({
+      image: new RegularShape({
+        stroke: new Stroke({
           color: 'black',
           width: 1
         }),
@@ -430,10 +453,10 @@ function _generateDrawBoxInteraction (drawLayer) {
         radius2: 0,
         angle: 0
       }),
-      fill: new ol.style.Fill({
+      fill: new Fill({
         color: 'hsla(202, 70%, 50%, .6)'
       }),
-      stroke: new ol.style.Stroke({
+      stroke: new Stroke({
         color: 'hsl(202, 70%, 50%)',
         width: 1,
         lineDash: [5, 5]
@@ -445,13 +468,13 @@ function _generateDrawBoxInteraction (drawLayer) {
 }
 
 function _generateDrawFreeInteraction (drawLayer) {
-  const draw = new ol.interaction.Draw({
+  const draw = new Draw({
     source: drawLayer.getSource(),
     type: 'Polygon',
     freehand: false,
-    style: new ol.style.Style({
-      image: new ol.style.RegularShape({
-        stroke: new ol.style.Stroke({
+    style: new Style({
+      image: new RegularShape({
+        stroke: new Stroke({
           color: 'black',
           width: 1
         }),
@@ -460,10 +483,10 @@ function _generateDrawFreeInteraction (drawLayer) {
         radius2: 0,
         angle: 0
       }),
-      fill: new ol.style.Fill({
+      fill: new Fill({
         color: 'hsla(202, 70%, 50%, .6)'
       }),
-      stroke: new ol.style.Stroke({
+      stroke: new Stroke({
         color: 'hsl(202, 70%, 50%)',
         width: 1,
         lineDash: [5, 5]
@@ -483,7 +506,7 @@ function unwrapPoint ([x, y]) {
 }
 
 function serialize (extent) {
-  const bbox = ol.proj.transformExtent(extent, WEB_MERCATOR, WGS84);
+  const bbox = proj.transformExtent(extent, WEB_MERCATOR, WGS84);
   const p1 = unwrapPoint(bbox.slice(0, 2));
   const p2 = unwrapPoint(bbox.slice(2, 4));
   return p1.concat(p2).map(truncate);
@@ -493,7 +516,7 @@ function createGeoJSON (ol3Geometry) {
   const bbox = serialize(ol3Geometry.getExtent());
   const coords = ol3Geometry.getCoordinates();
   // need to apply transform to a cloned geom but simple geometry does not support .clone() operation.
-  const polygonGeom = new ol.geom.Polygon(coords);
+  const polygonGeom = new Polygon(coords);
   polygonGeom.transform(WEB_MERCATOR, WGS84);
   const wgs84Coords = polygonGeom.getCoordinates();
   const geojson = {
@@ -509,7 +532,7 @@ function createGeoJSON (ol3Geometry) {
   return geojson;
 }
 
-ol.control.ZoomExtent = function (options) {
+const ZoomExtent = function (options) {
   options = options || {};
   options.className = options.className != null ? options.className : '';
 
@@ -532,9 +555,9 @@ ol.control.ZoomExtent = function (options) {
   element.className = options.className + ' ol-unselectable ol-control';
   element.appendChild(button);
 
-  ol.control.Control.call(this, {
+  Control.call(this, {
     element: element,
     target: options.target
   });
 };
-ol.inherits(ol.control.ZoomExtent, ol.control.Control);
+ol.inherits(ZoomExtent, Control);

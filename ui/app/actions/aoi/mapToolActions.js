@@ -1,5 +1,6 @@
+import GeoJSONFormat from 'ol/format/geojson';
+
 import types from './mapToolActionTypes';
-import ol from 'openlayers';
 
 export function setBoxButtonSelected () {
   return { type: types.SET_BOX_SELECTED };
@@ -60,7 +61,7 @@ export function processGeoJSONFile (file) {
         dispatch({ type: types.FILE_ERROR, error: 'Could not parse GeoJSON' });
         return;
       }
-      const geojsonReader = new ol.format.GeoJSON();
+      const geojsonReader = new GeoJSONFormat();
       const feature = geojsonReader.readFeatures(geojson)[0];
       const geom = feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
       if (geom.getType() === 'Polygon' || geom.getType() === 'MultiPolygon') {

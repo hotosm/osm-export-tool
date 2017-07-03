@@ -1,12 +1,28 @@
 import React, { Component, PropTypes } from 'react';
 import isEqual from 'lodash/isEqual';
-import ol from 'openlayers';
+import Attribution from 'ol/control/attribution';
+import Control from 'ol/control/control';
+import Fill from 'ol/style/fill';
+import GeoJSONFormat from 'ol/format/geojson';
+import interaction from 'ol/interaction';
+import Map from 'ol/map';
+import ol from 'ol';
+import OSM from 'ol/source/osm';
+import proj from 'ol/proj';
+import ScaleLine from 'ol/control/scaleline';
+import Stroke from 'ol/style/stroke';
+import Style from 'ol/style/style';
+import Tile from 'ol/layer/tile';
+import VectorLayer from 'ol/layer/vector';
+import VectorSource from 'ol/source/vector';
+import View from 'ol/view';
+import Zoom from 'ol/control/zoom';
 
 import styles from '../styles/aoi/CreateExport.css';
 
 const jsts = require('jsts');
 
-const GEOJSON_FORMAT = new ol.format.GeoJSON();
+const GEOJSON_FORMAT = new GeoJSONFormat();
 const GEOJSON_READER = new jsts.io.GeoJSONReader();
 const WGS84 = 'EPSG:4326';
 const WEB_MERCATOR = 'EPSG:3857';
@@ -49,7 +65,7 @@ export default class MapListView extends Component {
   }
 
   handleResetMap () {
-    const worldExtent = ol.proj.transformExtent(
+    const worldExtent = proj.transformExtent(
       [-180, -90, 180, 90],
       WGS84,
       WEB_MERCATOR
@@ -85,7 +101,7 @@ export default class MapListView extends Component {
       this._map
         .getView()
         .fit(
-          ol.proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
+          proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
           this._map.getSize()
         );
     }
@@ -96,15 +112,15 @@ export default class MapListView extends Component {
   }
 
   _generateDrawLayer () {
-    return new ol.layer.Vector({
-      source: new ol.source.Vector({
+    return new VectorLayer({
+      source: new VectorSource({
         wrapX: false
       }),
-      style: new ol.style.Style({
-        fill: new ol.style.Fill({
+      style: new Style({
+        fill: new Fill({
           color: 'hsla(202, 70%, 50%, .35)'
         }),
-        stroke: new ol.style.Stroke({
+        stroke: new Stroke({
           color: 'hsla(202, 70%, 50%, .7)',
           width: 1,
           lineDash: [5, 5]
@@ -114,19 +130,19 @@ export default class MapListView extends Component {
   }
 
   _initializeOpenLayers () {
-    this._map = new ol.Map({
+    this._map = new Map({
       controls: [
-        new ol.control.ScaleLine({
+        new ScaleLine({
           className: styles.olScaleLine
         }),
-        new ol.control.Attribution({
+        new Attribution({
           collapsible: false,
           collapsed: false
         }),
-        new ol.control.Zoom({
+        new Zoom({
           className: styles.olZoom
         }),
-        new ol.control.ZoomExtent({
+        new ZoomExtent({
           className: styles.olZoomToExtent,
           extent: [
             -14251567.50789682,
@@ -136,19 +152,19 @@ export default class MapListView extends Component {
           ]
         })
       ],
-      interactions: ol.interaction.defaults({
+      interactions: interaction.defaults({
         keyboard: false,
         altShiftDragRotate: false,
         pinchRotate: false
       }),
       layers: [
         // Order matters here
-        new ol.layer.Tile({
-          source: new ol.source.OSM()
+        new Tile({
+          source: new OSM()
         })
       ],
       target: 'map',
-      view: new ol.View({
+      view: new View({
         projection: WEB_MERCATOR,
         center: [110, 0],
         zoom: 2.5,
@@ -170,7 +186,7 @@ export default class MapListView extends Component {
   }
 }
 
-ol.control.ZoomExtent = function (options = {}) {
+const ZoomExtent = function (options = {}) {
   options.className = options.className || '';
 
   const button = document.createElement('button');
@@ -194,10 +210,10 @@ ol.control.ZoomExtent = function (options = {}) {
   element.className = options.className + ' ol-unselectable ol-control';
   element.appendChild(button);
 
-  ol.control.Control.call(this, {
+  Control.call(this, {
     element: element,
     target: options.target
   });
 };
 
-ol.inherits(ol.control.ZoomExtent, ol.control.Control);
+ol.inherits(ZoomExtent, Control);
