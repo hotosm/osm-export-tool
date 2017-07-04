@@ -183,13 +183,13 @@ export class ExportAOI extends Component {
     this._map
       .getView()
       .fit(
-        transformExtent(bbox, WGS84, WEB_MERCATOR),
+        proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
         this._map.getSize()
       );
   }
 
   handleResetMap () {
-    let worldExtent = transformExtent(
+    let worldExtent = proj.transformExtent(
       [-180, -90, 180, 90],
       WGS84,
       WEB_MERCATOR
@@ -208,7 +208,7 @@ export class ExportAOI extends Component {
     this._clearDraw();
     this.props.hideInvalidDrawWarning();
     const bbox = formattedBbox.map(truncate);
-    const mercBbox = transformExtent(bbox, WGS84, WEB_MERCATOR);
+    const mercBbox = proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
     const geom = Polygon.fromExtent(mercBbox);
     const geojson = createGeoJSON(geom);
     const bboxFeature = new Feature({
