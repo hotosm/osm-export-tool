@@ -39,7 +39,7 @@ const ExportTable = ({ jobs, selectRegion }) =>
   </tbody>;
 
 export class ExportList extends Component {
-  componentDidMount () {
+  componentWillMount () {
     this.props.getExports();
   }
 
