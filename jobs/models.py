@@ -77,6 +77,15 @@ def validate_aoi(aoi):
             params={'area': area, 'max': MAX_SQKM},
         )
 
+def simplify_geom(geom):
+    num_coords = geom.num_coords
+    param = 0.01
+    while num_coords > 500:
+        geom = geom.simplify(param, preserve_topology=True)
+        param = param * 2
+        num_coords = geom.num_coords
+    return geom
+
 class Job(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
@@ -86,7 +95,8 @@ class Job(models.Model):
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
     export_formats = ArrayField(models.CharField(max_length=10),validators=[validate_export_formats],blank=False)
     published = models.BooleanField(default=False, db_index=True)
-    the_geom = models.GeometryField(verbose_name='Extent for export', srid=4326, blank=False,validators=[validate_aoi])
+    the_geom = models.GeometryField(verbose_name='Uploaded geometry', srid=4326, blank=False,validators=[validate_aoi])
+    simplified_geom = models.GeometryField(verbose_name='Simplified geometry', srid=4326, blank=True,null=True)
     objects = models.GeoManager()
     feature_selection = models.TextField(blank=False,validators=[validate_feature_selection])
     created_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -118,6 +128,10 @@ class Job(models.Model):
     @property
     def area(self):
         return get_geodesic_area(self.the_geom)
+
+    def save(self, *args, **kwargs):
+        self.simplified_geom = simplify_geom(self.the_geom)
+        super(Job, self).save(*args, **kwargs)
 
 
 class SavedFeatureSelection(models.Model):
@@ -230,8 +244,8 @@ class HDXExportRegion(models.Model): # noqa
         return self.job.name
 
     @property
-    def the_geom(self): # noqa
-        return json.loads(GEOSGeometry(self.job.the_geom).geojson)
+    def simplified_geom(self): # noqa
+        return self.job.simplified_geom
 
     @property
     def feature_selection(self): # noqa

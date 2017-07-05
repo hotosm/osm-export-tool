@@ -157,7 +157,7 @@ export class HDXExportRegionForm extends Component {
 
       exportRegion.export_formats.forEach(x => change(x, true));
 
-      updateAOI(exportRegion.the_geom);
+      updateAOI(exportRegion.simplified_geom);
     }
 
     if (exportRegion.runs[0] != null && ['SUBMITTED', 'RUNNING'].indexOf(exportRegion.runs[0].status) >= 0) {

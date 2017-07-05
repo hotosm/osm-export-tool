@@ -31,7 +31,7 @@ export class ExportList extends Component {
 
   render () {
     const { getExports, jobs } = this.props
-    const features = {'features':jobs.items.map((j) => j.the_geom),'type':'FeatureCollection'}
+    const features = {'features':jobs.items.map((j) => j.simplified_geom),'type':'FeatureCollection'}
     return (
       <Row style={{height: '100%'}}>
         <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>

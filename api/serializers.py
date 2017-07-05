@@ -63,20 +63,11 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         fields = ('id', 'uid', 'user', 'name',
                   'description', 'event', 'export_formats', 'published',
-                  'the_geom', 'feature_selection','buffer_aoi','osma_link','created_at','area')
-
-class ListJobSerializer(serializers.ModelSerializer):
-    """
-    Return a sub-set of Job model attributes.
-
-    Provides a stripped down set of export attributes.
-    Used to display the list of exports in the export browser.
-    """
-    user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
-    class Meta:
-        model = Job
-        fields = ('uid', 'user', 'name','description', 'event', 'published','the_geom','created_at')
-
+                  'feature_selection','buffer_aoi','osma_link','created_at','area','the_geom','simplified_geom')
+        extra_kwargs = {
+                'the_geom': {'write_only': True},
+                'simplified_geom': {'read_only':True}
+        }
 
 def validate_model(model):
     try:
@@ -92,7 +83,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     export_formats = serializers.ListField()
     dataset_prefix = serializers.CharField()
     feature_selection = serializers.CharField()
-    the_geom = geo_serializers.GeometryField()
+    simplified_geom = geo_serializers.GeometryField()
     name = serializers.CharField()
     buffer_aoi = serializers.BooleanField()
 
@@ -101,7 +92,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
         model = HDXExportRegion
         fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats', 'runs',
-                  'locations', 'name', 'last_run', 'next_run', 'the_geom',
+                  'locations', 'name', 'last_run', 'next_run', 'simplified_geom',
                   'dataset_prefix', 'job_uid', 'license', 'subnational',
                   'extra_notes', 'is_private', 'buffer_aoi',)
 

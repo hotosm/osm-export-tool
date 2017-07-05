@@ -155,8 +155,8 @@ export class ExportDetails extends Component {
 
   render() {
     const { match: { params: { id }}, exportInfo } = this.props
-    const geom = exportInfo ? {'features':[exportInfo.the_geom],'type':'FeatureCollection'} : null
-    const selectedId = exportInfo ? exportInfo.the_geom.id : null
+    const geom = exportInfo ? {'features':[exportInfo.simplified_geom],'type':'FeatureCollection'} : null
+    const selectedId = exportInfo ? exportInfo.simplified_geom.id : null
     return( 
       <Row style={{height: '100%'}}>
         <Col xs={4} style={{height: '100%', padding:"20px", paddingRight:"10px"}}>

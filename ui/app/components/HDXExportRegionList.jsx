@@ -43,7 +43,7 @@ export class HDXExportRegionList extends Component {
     const { hdx: { exportRegions, selectedExportRegion, nextPageUrl, prevPageUrl, total }, getExportRegions } = this.props;
 
     const regionGeoms = {
-      features: Object.entries(exportRegions).map(([id, x]) => x.the_geom),
+      features: Object.entries(exportRegions).map(([id, x]) => x.simplified_geom),
       type: 'FeatureCollection'
     }
 

@@ -46,7 +46,7 @@ export function cloneExport(e) {
         feature_selection:e.feature_selection,
         name:e.name,
         published:e.published,
-        the_geom:e.the_geom
+        the_geom:e.simplified_geom
       }
     })
   }

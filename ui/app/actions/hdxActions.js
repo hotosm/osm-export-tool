@@ -14,7 +14,7 @@ const launderExportRegion = (exportRegion) => {
     exportRegion.next_run = new Date(exportRegion.next_run);
   }
 
-  exportRegion.the_geom.id = exportRegion.id;
+  exportRegion.simplified_geom.id = exportRegion.id;
 
   return exportRegion;
 };
