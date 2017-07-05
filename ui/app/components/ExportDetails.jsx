@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { Alert, Button, ButtonGroup, Col, Modal, Panel, Row, Table } from 'react-bootstrap';
+import {
+  Alert,
+  Button,
+  ButtonGroup,
+  Col,
+  Modal,
+  Panel,
+  Row,
+  Table
+} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   getExport,
@@ -186,7 +195,7 @@ export class ExportDetails extends Component {
     this.state = { showModal: false };
   }
 
-  componentDidMount () {
+  componentWillMount () {
     const { getExport, match: { params: { id } } } = this.props;
     getExport(id);
   }

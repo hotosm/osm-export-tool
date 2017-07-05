@@ -38,9 +38,12 @@ export function cloneExport (e) {
   return dispatch => {
     dispatch(push('/exports/new'));
 
+    // TODO fetch the_geom rather than using simplified_geom
+
     dispatch(
-      updateAoiInfo(e.the_geom, 'Polygon', 'Custom Polygon', 'Cloned Area')
+      updateAoiInfo(e.simplified_geom, 'Polygon', 'Custom Polygon', 'Cloned Area')
     );
+
     dispatch({
       type: '@@redux-form/INITIALIZE',
       meta: { form: 'ExportForm' },
