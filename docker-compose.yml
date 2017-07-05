@@ -71,7 +71,9 @@ services:
       - downloads:/opt/export_downloads
     command: gunicorn core.wsgi:application --workers=3 --bind :6080
   nginx:
-    image: nginx
+    build:
+      context: .
+      dockerfile: ops/docker-nginx/Dockerfile
     env_file:
       - .env
     links:
@@ -80,9 +82,6 @@ services:
       driver: none
     ports:
       - "80:80"
-    volumes:
-      # TODO bake this into the site image so that it doesn't rely on anything from the local filesystem
-      - ./ops/exports.conf:/etc/nginx/conf.d/exports.conf:ro
     volumes_from:
       - site
   postgresql:

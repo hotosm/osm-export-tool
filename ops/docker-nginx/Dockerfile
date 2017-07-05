@@ -1,3 +1,4 @@
 FROM nginx
 
-COPY ops/exports.conf /etc/nginx/conf.d/
+# overwrite Nginx's default config
+COPY ops/exports.conf /etc/nginx/conf.d/default.conf
