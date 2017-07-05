@@ -9,15 +9,11 @@ import {
   Panel,
   Button,
   FormControl,
-  FormGroup,
-  Radio,
   Table
 } from 'react-bootstrap';
 import {
   Field,
-  SubmissionError,
   formValueSelector,
-  propTypes,
   reduxForm,
   change
 } from 'redux-form';
@@ -35,11 +31,11 @@ import {
   PresetParser,
   Paginator
 } from './utils';
-const Dropzone = require('react-dropzone');
+import Dropzone from 'react-dropzone';
 import TreeMenu from './react-tree-menu/TreeMenu';
 import { TreeTag, TreeTagYAML } from '../utils/TreeTag';
 import { TAGTREE, TAGLOOKUP } from '../utils/TreeTagSettings';
-import { getConfigurations, setYaml } from '../actions/configurationActions';
+import { getConfigurations } from '../actions/configurationActions';
 
 const form = reduxForm({
   form: 'ExportForm',
@@ -93,10 +89,6 @@ const YamlUi = ({ onDrop }) =>
   </div>;
 
 class TreeTagUi extends React.Component {
-  constructor () {
-    super();
-  }
-
   render () {
     return (
       <div>
@@ -243,7 +235,7 @@ const SelectFeatures = ({
         YAML
       </Button>
     </ButtonGroup>
-    {featuresUi == 'treetag'
+    {featuresUi === 'treetag'
       ? <TreeTagUi
         onSearchChange={onSearchChange}
         clearSearch={clearSearch}
@@ -253,10 +245,10 @@ const SelectFeatures = ({
         tagTreeData={tagTreeData}
       />
       : null}
-    {featuresUi == 'stored'
+    {featuresUi === 'stored'
       ? <StoredConfContainer switchToYaml={switchToYaml} />
       : null}
-    {featuresUi == 'yaml' ? <YamlUi onDrop={onDrop} /> : null}
+    {featuresUi === 'yaml' ? <YamlUi onDrop={onDrop} /> : null}
     <Button bsSize='large' style={{ float: 'right' }} onClick={next}>
       Next
     </Button>
@@ -444,10 +436,10 @@ export class ExportForm extends Component {
                 4 Summary
               </NavItem>
             </Nav>
-            {this.state.step == '1'
+            {this.state.step === 1
               ? <Describe next={this.handleStep2} />
               : null}
-            {this.state.step == '2'
+            {this.state.step === 2
               ? <SelectFeatures
                 next={this.handleStep3}
                 onDrop={this.onDrop}
@@ -463,10 +455,10 @@ export class ExportForm extends Component {
                 labelFilter={this.tagTree.labelFilter}
               />
               : null}
-            {this.state.step == '3'
+            {this.state.step === 3
               ? <ChooseFormats next={this.handleStep4} />
               : null}
-            {this.state.step == '4'
+            {this.state.step === 4
               ? <Summary
                 handleSubmit={handleSubmit}
                 formValues={formValues}
