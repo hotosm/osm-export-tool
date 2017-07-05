@@ -1,8 +1,15 @@
 import React from 'react';
-import { Button, HelpBlock, FormControl, FormGroup, ControlLabel, Checkbox } from 'react-bootstrap';
-import { Field } from 'redux-form'
+import {
+  Button,
+  HelpBlock,
+  FormControl,
+  FormGroup,
+  ControlLabel,
+  Checkbox
+} from 'react-bootstrap';
+import { Field } from 'redux-form';
 import Select from 'react-select';
-import styles from '../styles/utilsStyles.css'
+import styles from '../styles/utilsStyles.css';
 import yaml from 'js-yaml';
 import moment from 'moment';
 
@@ -21,208 +28,309 @@ export const REQUIRES_FEATURE_SELECTION = {
   kml: true
 };
 
-export const exportFormatNicename = (slug) => {
-  return AVAILABLE_EXPORT_FORMATS[slug]
-}
+export const exportFormatNicename = slug => {
+  return AVAILABLE_EXPORT_FORMATS[slug];
+};
 
-export const formatDate = (isodate) => {
-  return moment(isodate).format("dddd, MMMM Do YYYY, h:mm a")
-}
+export const formatDate = isodate => {
+  return moment(isodate).format('dddd, MMMM Do YYYY, h:mm a');
+};
 
-export const formatDuration = (seconds) => {
-  return moment.duration(seconds,'seconds').humanize()
-}
+export const formatDuration = seconds => {
+  return moment.duration(seconds, 'seconds').humanize();
+};
 
-export const getFormatCheckboxes = (export_formats) =>
-    <Field
-      name="export_formats"
-      component={(props) => {
-        const ks = Object.keys(export_formats).map((k, i) =>
-          <Checkbox
+export const getFormatCheckboxes = export_formats =>
+  <Field
+    name='export_formats'
+    component={props => {
+      const ks = Object.keys(export_formats).map((k, i) =>
+        <Checkbox
           key={i}
           name={k}
           checked={props.input.value.indexOf(k) !== -1}
           onChange={event => {
             const newValue = [...props.input.value];
-            if(event.target.checked) {
+            if (event.target.checked) {
               newValue.push(k);
             } else {
               newValue.splice(newValue.indexOf(k), 1);
             }
             return props.input.onChange(newValue);
-          }}>
+          }}
+        >
           {export_formats[k]}
-          </Checkbox>
-        );
-        return <div>{ks}</div>
-      }}/>
+        </Checkbox>
+      );
+      return (
+        <div>
+          {ks}
+        </div>
+      );
+    }}
+  />;
 
-export const renderCheckboxes = ({id, label, input, data, meta: { error }, description, ...props}) =>
+export const renderCheckboxes = ({
+  id,
+  label,
+  input,
+  data,
+  meta: { error },
+  description,
+  ...props
+}) =>
   <FormGroup controlId={id || input.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
+    <ControlLabel>
+      {label}
+    </ControlLabel>
     {props.children}
     <FormControl.Feedback />
-    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
+    <HelpBlock>
+      {error &&
+        <span className={styles.error}>
+          {error}
+        </span>}
+    </HelpBlock>
   </FormGroup>;
 
-export const renderCheckbox = ({input, data, description, meta, ...props}) =>
-  <Checkbox {...input} {...props}>{description}</Checkbox>;
+export const renderCheckbox = ({ input, data, description, meta, ...props }) =>
+  <Checkbox {...input} {...props}>
+    {description}
+  </Checkbox>;
 
-export const renderInput = ({ id, input, label, help, meta: { error }, ...props }) =>
+export const renderInput = ({
+  id,
+  input,
+  label,
+  help,
+  meta: { error },
+  ...props
+}) =>
   <FormGroup controlId={id || props.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
+    <ControlLabel>
+      {label}
+    </ControlLabel>
     <FormControl {...input} {...props} />
     <FormControl.Feedback />
-    <HelpBlock>{error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
+    <HelpBlock>
+      {error &&
+        <p className={styles.error}>
+          {error}
+        </p>}
+      {help}
+    </HelpBlock>
   </FormGroup>;
 
-export const renderSelect = ({id, label, input, data, meta: { error }, ...props}) =>
+export const renderSelect = ({
+  id,
+  label,
+  input,
+  data,
+  meta: { error },
+  ...props
+}) =>
   <FormGroup controlId={id || input.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
+    <ControlLabel>
+      {label}
+    </ControlLabel>
     <FormControl componentClass='select' {...input} {...props} />
     <FormControl.Feedback />
-    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
+    <HelpBlock>
+      {error &&
+        <span className={styles.error}>
+          {error}
+        </span>}
+    </HelpBlock>
   </FormGroup>;
 
-export const renderMultiSelect = ({ id, input, label, help, meta: { error }, ...props }) =>
+export const renderMultiSelect = ({
+  id,
+  input,
+  label,
+  help,
+  meta: { error },
+  ...props
+}) =>
   <FormGroup controlId={id || props.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
-    <Select
-      {...input}
-      {...props}
-      onBlur={() => input.onBlur(input.value)}
-    />
+    <ControlLabel>
+      {label}
+    </ControlLabel>
+    <Select {...input} {...props} onBlur={() => input.onBlur(input.value)} />
     <FormControl.Feedback />
-    <HelpBlock>{error && <p className={styles.error}>{error}</p>}{help}</HelpBlock>
+    <HelpBlock>
+      {error &&
+        <p className={styles.error}>
+          {error}
+        </p>}
+      {help}
+    </HelpBlock>
   </FormGroup>;
 
-export const renderTextArea = ({id, label, input, data, meta: { error }, ...props}) =>
+export const renderTextArea = ({
+  id,
+  label,
+  input,
+  data,
+  meta: { error },
+  ...props
+}) =>
   <FormGroup controlId={id || input.name} validationState={error && 'error'}>
-    <ControlLabel>{label}</ControlLabel>
+    <ControlLabel>
+      {label}
+    </ControlLabel>
     <FormControl componentClass='textarea' {...input} {...props} />
     <FormControl.Feedback />
-    <HelpBlock>{error && <span className={styles.error}>{error}</span>}</HelpBlock>
+    <HelpBlock>
+      {error &&
+        <span className={styles.error}>
+          {error}
+        </span>}
+    </HelpBlock>
   </FormGroup>;
 
-export const slugify = (text) => {
-  const a = 'àáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ'
-  const b = 'aaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh'
-  const p = new RegExp(a.split('').join('|'), 'g')
+export const slugify = text => {
+  const a = 'àáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ';
+  const b = 'aaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh';
+  const p = new RegExp(a.split('').join('|'), 'g');
 
-  return text.toString().toLowerCase()
-    .replace(/\s+/g, '_')           // Replace spaces with -
-    .replace(p, c =>
-        b.charAt(a.indexOf(c)))     // Replace special chars
-    .replace(/[^\w_]+/g, '')       // Remove all non-word chars
-    .replace(/\_\_+/g, '_')         // Replace multiple - with single -
-    .replace(/^_+/, '')             // Trim - from start of text
-    .replace(/_+$/, '')             // Trim - from end of text
-}
-
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '_') // Replace spaces with -
+    .replace(p, c => b.charAt(a.indexOf(c))) // Replace special chars
+    .replace(/[^\w_]+/g, '') // Remove all non-word chars
+    .replace(/\_\_+/g, '_') // Replace multiple - with single -
+    .replace(/^_+/, '') // Trim - from start of text
+    .replace(/_+$/, ''); // Trim - from end of text
+};
 
 export class PresetParser {
-  listForXpath(xpath,root) {
-    const a = this.doc.evaluate(xpath,root,this.resolver,XPathResult.ORDERED_NODE_ITERATOR_TYPE,null)
-    var r = a.iterateNext()
-    const l = []
-    while(r) {
-      l.push(r)
-      r = a.iterateNext()
+  listForXpath (xpath, root) {
+    const a = this.doc.evaluate(
+      xpath,
+      root,
+      this.resolver,
+      XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+      null
+    );
+    var r = a.iterateNext();
+    const l = [];
+    while (r) {
+      l.push(r);
+      r = a.iterateNext();
     }
-    return l
+    return l;
   }
 
-  resolver() {
-    return "http://josm.openstreetmap.de/tagging-preset-1.0"
+  resolver () {
+    return 'http://josm.openstreetmap.de/tagging-preset-1.0';
   }
 
-  collectInputs(itemElem,set) {
-    for (var elemType of [".//ns:key",".//ns:text",".//ns:combo",".//ns:multiselect",".//ns:check"]) {
-      for (var k of this.listForXpath(elemType,itemElem)) {
-        set.add(k.getAttribute('key')) 
+  collectInputs (itemElem, set) {
+    for (var elemType of [
+      './/ns:key',
+      './/ns:text',
+      './/ns:combo',
+      './/ns:multiselect',
+      './/ns:check'
+    ]) {
+      for (var k of this.listForXpath(elemType, itemElem)) {
+        set.add(k.getAttribute('key'));
       }
     }
   }
 
-  constructor(doc) {
-    const parser = new DOMParser()
+  constructor (doc) {
+    const parser = new DOMParser();
     try {
-      this.doc = parser.parseFromString(doc, "text/xml");
-    } catch(err) {
-      alert("Could not parse XML! Please make sure your JOSM Preset is valid and use the Chrome, Firefox, or Safari browser.")
+      this.doc = parser.parseFromString(doc, 'text/xml');
+    } catch (err) {
+      alert(
+        'Could not parse XML! Please make sure your JOSM Preset is valid and use the Chrome, Firefox, or Safari browser.'
+      );
     }
     const collector = {
-      points:new Set(),
-      lines:new Set(),
-      polygons:new Set()
-    }
-    for (var itemElem of this.listForXpath(".//ns:item",this.doc)) {
-      const types = itemElem.getAttribute("type").split(',')
-      if (types.includes("node")) {
-        this.collectInputs(itemElem,collector.points)
+      points: new Set(),
+      lines: new Set(),
+      polygons: new Set()
+    };
+    for (var itemElem of this.listForXpath('.//ns:item', this.doc)) {
+      const types = itemElem.getAttribute('type').split(',');
+      if (types.includes('node')) {
+        this.collectInputs(itemElem, collector.points);
       }
-      if (types.includes("closedway") || types.includes("relation")) { // relation?
-        this.collectInputs(itemElem,collector.polygons)
+      if (types.includes('closedway') || types.includes('relation')) {
+        // relation?
+        this.collectInputs(itemElem, collector.polygons);
       }
-      if (types.includes("way")) {
-        this.collectInputs(itemElem,collector.lines)
+      if (types.includes('way')) {
+        this.collectInputs(itemElem, collector.lines);
       }
     }
 
-    const fs = {}
-    fs.planet_osm_point = {}
-    fs.planet_osm_point.types = ["points"]
-    fs.planet_osm_point.select = [...collector.points].sort()
-    fs.planet_osm_line = {}
-    fs.planet_osm_line.types = ["lines"]
-    fs.planet_osm_line.select = [...collector.lines].sort()
-    fs.planet_osm_polygon = {}
-    fs.planet_osm_polygon.types = ["polygons"]
-    fs.planet_osm_polygon.select = [...collector.polygons].sort()
-    this.featureSelection = fs
+    const fs = {};
+    fs.planet_osm_point = {};
+    fs.planet_osm_point.types = ['points'];
+    fs.planet_osm_point.select = [...collector.points].sort();
+    fs.planet_osm_line = {};
+    fs.planet_osm_line.types = ['lines'];
+    fs.planet_osm_line.select = [...collector.lines].sort();
+    fs.planet_osm_polygon = {};
+    fs.planet_osm_polygon.types = ['polygons'];
+    fs.planet_osm_polygon.select = [...collector.polygons].sort();
+    this.featureSelection = fs;
   }
 
-  as_yaml() {
-    return yaml.safeDump(this.featureSelection)
+  as_yaml () {
+    return yaml.safeDump(this.featureSelection);
   }
-  
 }
 
 const UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
 export const prettyBytes = num => {
-	if (!Number.isFinite(num)) {
-		throw new TypeError(`Expected a finite number, got ${typeof num}: ${num}`);
-	}
+  if (!Number.isFinite(num)) {
+    throw new TypeError(`Expected a finite number, got ${typeof num}: ${num}`);
+  }
 
-	const neg = num < 0;
+  const neg = num < 0;
 
-	if (neg) {
-		num = -num;
-	}
+  if (neg) {
+    num = -num;
+  }
 
-	if (num < 1) {
-		return (neg ? '-' : '') + num + ' B';
-	}
+  if (num < 1) {
+    return (neg ? '-' : '') + num + ' B';
+  }
 
-	const exponent = Math.min(Math.floor(Math.log10(num) / 3), UNITS.length - 1);
-	const numStr = Number((num / Math.pow(1000, exponent)).toPrecision(3));
-	const unit = UNITS[exponent];
+  const exponent = Math.min(Math.floor(Math.log10(num) / 3), UNITS.length - 1);
+  const numStr = Number((num / Math.pow(1000, exponent)).toPrecision(3));
+  const unit = UNITS[exponent];
 
-	return (neg ? '-' : '') + numStr + ' ' + unit;
+  return (neg ? '-' : '') + numStr + ' ' + unit;
 };
 
-export const Paginator = (props) => {
-  const collection = props.collection
-  return <div>
-   { collection.total } results.
-   { collection.nextPageUrl ? <Button 
-       style={{float:"right"}} 
-       onClick={() => props.getPage(collection.nextPageUrl)}
-     >Next</Button> : null }
-   { collection.prevPageUrl ? <Button 
-       style={{float:"right"}}
-       onClick={() => props.getPage(collection.prevPageUrl)}
-     >Previous</Button> : null }
-  </div>
-}
+export const Paginator = props => {
+  const collection = props.collection;
+  return (
+    <div>
+      {collection.total} results.
+      {collection.nextPageUrl
+        ? <Button
+          style={{ float: 'right' }}
+          onClick={() => props.getPage(collection.nextPageUrl)}
+        >
+            Next
+        </Button>
+        : null}
+      {collection.prevPageUrl
+        ? <Button
+          style={{ float: 'right' }}
+          onClick={() => props.getPage(collection.prevPageUrl)}
+        >
+            Previous
+        </Button>
+        : null}
+    </div>
+  );
+};
