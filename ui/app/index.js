@@ -2,7 +2,7 @@ import React from 'react';
 
 import createHistory from 'history/createHashHistory';
 import ReactDOM from 'react-dom';
-import { Route } from 'react-router';
+import { Redirect, Route } from 'react-router';
 import {
   ConnectedRouter,
   routerReducer,
@@ -54,6 +54,11 @@ ReactDOM.render(
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
       <div style={{ height: '100%' }}>
+        <Route
+          path='/'
+          exact
+          render={props => <Redirect to='/exports/new' />}
+        />
         <Route path='/exports/new/:step?' component={ExportForm} />
         <Route path='/exports/detail/:id/:run_id?' component={ExportDetails} />
         <Route exact path='/exports' component={ExportList} />
