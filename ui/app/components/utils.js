@@ -15,6 +15,12 @@ export const AVAILABLE_EXPORT_FORMATS = {
   osm_pbf: 'OSM .PBF'
 };
 
+export const REQUIRES_FEATURE_SELECTION = {
+  shp: true,
+  geopackage: true,
+  kml: true
+};
+
 export const exportFormatNicename = (slug) => {
   return AVAILABLE_EXPORT_FORMATS[slug]
 }

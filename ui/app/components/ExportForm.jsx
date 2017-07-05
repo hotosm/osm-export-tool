@@ -26,7 +26,8 @@ import {
   renderInput,
   renderTextArea,
   PresetParser,
-  Paginator
+  Paginator,
+  REQUIRES_FEATURE_SELECTION
 } from './utils';
 import Dropzone from 'react-dropzone';
 import TreeMenu from './react-tree-menu/TreeMenu';
@@ -362,25 +363,25 @@ export class ExportForm extends Component {
     this.setState({ searchQuery: '', tagTreeData: this.tagTree.visibleData() });
   };
 
-  handleStep1 = () => {
+  describeExport = () => {
     const { dispatch } = this.props;
 
     dispatch(push('/exports/new/describe'));
   };
 
-  handleStep2 = () => {
+  selectFeatures = () => {
     const { dispatch } = this.props;
 
     dispatch(push('/exports/new/select'));
   };
 
-  handleStep3 = () => {
+  chooseFormats = () => {
     const { dispatch } = this.props;
 
     dispatch(push('/exports/new/formats'));
   };
 
-  handleStep4 = () => {
+  showSummary = () => {
     const { dispatch } = this.props;
 
     dispatch(push('/exports/new/summary'));
@@ -423,10 +424,16 @@ export class ExportForm extends Component {
     const {
       error,
       formValues,
+      formValues: { export_formats: exportFormats },
       handleSubmit,
       match: { params: { featuresUi, step } },
       overpassLastUpdated
     } = this.props;
+
+    let idx = 0;
+
+    const requiresFeatureSelection = (exportFormats || [])
+      .some(x => REQUIRES_FEATURE_SELECTION[x]);
 
     return (
       <Row style={{ height: '100%' }}>
@@ -440,17 +447,18 @@ export class ExportForm extends Component {
               activeKey={step}
               style={{ marginBottom: '20px' }}
             >
-              <NavItem eventKey='describe' onClick={this.handleStep1}>
-                1 Describe Export
+              <NavItem eventKey='describe' onClick={this.describeExport}>
+                {++idx} Describe Export
               </NavItem>
-              <NavItem eventKey='select' onClick={this.handleStep2}>
-                2 Select Features
+              <NavItem eventKey='formats' onClick={this.chooseFormats}>
+                {++idx} Choose Formats
               </NavItem>
-              <NavItem eventKey='formats' onClick={this.handleStep3}>
-                3 Choose Formats
-              </NavItem>
-              <NavItem eventKey='summary' onClick={this.handleStep4}>
-                4 Summary
+              {requiresFeatureSelection &&
+                <NavItem eventKey='select' onClick={this.selectFeatures}>
+                  {++idx} Select Features
+                </NavItem>}
+              <NavItem eventKey='summary' onClick={this.showSummary}>
+                {++idx} Summary
               </NavItem>
             </Nav>
             <Switch>
@@ -462,7 +470,7 @@ export class ExportForm extends Component {
               <Route
                 path='/exports/new/describe'
                 render={props =>
-                  <Describe next={this.handleStep1} {...props} />}
+                  <Describe next={this.chooseFormats} {...props} />}
               />
               <Route
                 path='/exports/new/select'
@@ -473,7 +481,7 @@ export class ExportForm extends Component {
                 path='/exports/new/select/:featuresUi'
                 render={props =>
                   <SelectFeatures
-                    next={this.handleStep3}
+                    next={this.showSummary}
                     onDrop={this.onDrop}
                     featuresUi={featuresUi}
                     switchToTreeTag={this.switchToTreeTag}
@@ -490,7 +498,14 @@ export class ExportForm extends Component {
               />
               <Route
                 path='/exports/new/formats'
-                render={props => <ChooseFormats next={this.handleStep4} />}
+                render={props =>
+                  <ChooseFormats
+                    next={
+                      requiresFeatureSelection
+                        ? this.selectFeatures
+                        : this.showSummary
+                    }
+                  />}
               />
               <Route
                 path='/exports/new/summary'
