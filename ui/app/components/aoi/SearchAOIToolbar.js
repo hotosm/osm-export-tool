@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styles from '../../styles/aoi/SearchAOIToolbar.css';
-import { Typeahead, Menu, MenuItem } from 'react-bootstrap-typeahead';
+import { Typeahead, Menu } from 'react-bootstrap-typeahead';
 import { getGeonames } from '../../actions/aoi/searchToolbarActions';
 import { TypeaheadMenuItem } from './TypeaheadMenuItem';
 import SearchAOIButton from './SearchAOIButton';
@@ -33,15 +33,15 @@ export class SearchAOIToolbar extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.geonames.fetched == true) {
+    if (nextProps.geonames.fetched) {
       this.setState({ suggestions: nextProps.geonames.geonames });
     } else {
       if (this.state.suggestions.length > 0) {
         this.setState({ suggestions: [] });
       }
     }
-    if (nextProps.toolbarIcons.search != this.props.toolbarIcons.search) {
-      if (nextProps.toolbarIcons.search == 'DEFAULT') {
+    if (nextProps.toolbarIcons.search !== this.props.toolbarIcons.search) {
+      if (nextProps.toolbarIcons.search === 'DEFAULT') {
         this.refs.typeahead.getInstance().clear();
       }
     }
@@ -89,7 +89,7 @@ export class SearchAOIToolbar extends Component {
         <div className={styles.typeahead}>
           <Typeahead
             ref='typeahead'
-            disabled={this.props.toolbarIcons.search == 'INACTIVE'}
+            disabled={this.props.toolbarIcons.search === 'INACTIVE'}
             options={this.state.suggestions}
             onChange={this.handleEnter}
             placeholder={
@@ -129,7 +129,6 @@ SearchAOIToolbar.propTypes = {
   getGeonames: PropTypes.func,
   handleSearch: PropTypes.func,
   handleCancel: PropTypes.func,
-  setAllButtonsDefault: PropTypes.func,
   setSearchAOIButtonSelected: PropTypes.func
 };
 
