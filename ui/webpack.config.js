@@ -3,7 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const config = {
-  entry: ['babel-polyfill', './app/base.jsx'],
+  entry: ['babel-polyfill', './app/index.js'],
   output: {
     path: path.resolve(__dirname, 'static', 'ui', 'js'),
     filename: 'bundle.js'
