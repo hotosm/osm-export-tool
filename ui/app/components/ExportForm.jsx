@@ -411,7 +411,7 @@ export class ExportForm extends Component {
     reader.onload = () => {
       const data = reader.result;
       const p = new PresetParser(data);
-      this.props.change('feature_selection', p.as_yaml());
+      this.props.change('feature_selection', p.asYAML());
     };
     reader.readAsText(file);
   };

@@ -40,11 +40,11 @@ export const formatDuration = seconds => {
   return moment.duration(seconds, 'seconds').humanize();
 };
 
-export const getFormatCheckboxes = export_formats =>
+export const getFormatCheckboxes = exportFormats =>
   <Field
     name='export_formats'
     component={props => {
-      const ks = Object.keys(export_formats).map((k, i) =>
+      const ks = Object.keys(exportFormats).map((k, i) =>
         <Checkbox
           key={i}
           name={k}
@@ -59,7 +59,7 @@ export const getFormatCheckboxes = export_formats =>
             return props.input.onChange(newValue);
           }}
         >
-          {export_formats[k]}
+          {exportFormats[k]}
         </Checkbox>
       );
       return (
@@ -199,7 +199,7 @@ export const slugify = text => {
     .replace(/\s+/g, '_') // Replace spaces with -
     .replace(p, c => b.charAt(a.indexOf(c))) // Replace special chars
     .replace(/[^\w_]+/g, '') // Remove all non-word chars
-    .replace(/\_\_+/g, '_') // Replace multiple - with single -
+    .replace(/__+/g, '_') // Replace multiple - with single -
     .replace(/^_+/, '') // Trim - from start of text
     .replace(/_+$/, ''); // Trim - from end of text
 };
@@ -281,7 +281,7 @@ export class PresetParser {
     this.featureSelection = fs;
   }
 
-  as_yaml () {
+  asYAML () {
     return yaml.safeDump(this.featureSelection);
   }
 }
