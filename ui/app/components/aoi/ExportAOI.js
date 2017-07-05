@@ -367,7 +367,7 @@ export class ExportAOI extends Component {
 
 ExportAOI.propTypes = {
   aoiInfo: PropTypes.object,
-  errors: PropTypes.object,
+  errors: PropTypes.array,
   mode: PropTypes.string,
   zoomToSelection: PropTypes.object,
   resetMap: PropTypes.object,
