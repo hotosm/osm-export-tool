@@ -54,7 +54,7 @@ ReactDOM.render(
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
       <div style={{ height: '100%' }}>
-        <Route exact path='/exports/new' component={ExportForm} />
+        <Route path='/exports/new/:step?' component={ExportForm} />
         <Route path='/exports/detail/:id/:run_id?' component={ExportDetails} />
         <Route exact path='/exports' component={ExportList} />
         <Route exact path='/configurations' component={ConfigurationList} />

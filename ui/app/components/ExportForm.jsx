@@ -11,13 +11,10 @@ import {
   FormControl,
   Table
 } from 'react-bootstrap';
-import {
-  Field,
-  formValueSelector,
-  reduxForm,
-  change
-} from 'redux-form';
+import { Field, formValueSelector, reduxForm, change } from 'redux-form';
 import { connect } from 'react-redux';
+import { Redirect, Route, Switch } from 'react-router';
+import { push } from 'react-router-redux';
 import ExportAOI from './aoi/ExportAOI';
 import { createExport, getOverpassTimestamp } from '../actions/exportsActions';
 import styles from '../styles/ExportForm.css';
@@ -279,11 +276,12 @@ const Summary = ({ handleSubmit, formValues, error }) =>
       <br />
       <strong>Export Formats:</strong>
       <ul>
-        {formValues.export_formats.map((format, idx) =>
-          <li key={idx}>
-            {AVAILABLE_EXPORT_FORMATS[format]}
-          </li>
-        )}
+        {formValues.export_formats &&
+          formValues.export_formats.map((format, idx) =>
+            <li key={idx}>
+              {AVAILABLE_EXPORT_FORMATS[format]}
+            </li>
+          )}
       </ul>
     </Col>
     <Col xs={6}>
@@ -367,19 +365,27 @@ export class ExportForm extends Component {
   };
 
   handleStep1 = () => {
-    this.setState({ step: 1 });
+    const { dispatch } = this.props;
+
+    dispatch(push('/exports/new/describe'));
   };
 
   handleStep2 = () => {
-    this.setState({ step: 2 });
+    const { dispatch } = this.props;
+
+    dispatch(push('/exports/new/select'));
   };
 
   handleStep3 = () => {
-    this.setState({ step: 3 });
+    const { dispatch } = this.props;
+
+    dispatch(push('/exports/new/formats'));
   };
 
   handleStep4 = () => {
-    this.setState({ step: 4 });
+    const { dispatch } = this.props;
+
+    dispatch(push('/exports/new/summary'));
   };
 
   switchToTreeTag = () => {
@@ -410,7 +416,14 @@ export class ExportForm extends Component {
   };
 
   render () {
-    const { handleSubmit, formValues, error, overpassLastUpdated } = this.props;
+    const {
+      error,
+      formValues,
+      handleSubmit,
+      match: { params: { step } },
+      overpassLastUpdated
+    } = this.props;
+
     return (
       <Row style={{ height: '100%' }}>
         <form style={{ height: '100%' }}>
@@ -420,51 +433,66 @@ export class ExportForm extends Component {
           >
             <Nav
               bsStyle='tabs'
-              activeKey={this.state.step.toString()}
+              activeKey={step}
               style={{ marginBottom: '20px' }}
             >
-              <NavItem eventKey='1' onClick={this.handleStep1}>
+              <NavItem eventKey='describe' onClick={this.handleStep1}>
                 1 Describe Export
               </NavItem>
-              <NavItem eventKey='2' onClick={this.handleStep2}>
+              <NavItem eventKey='select' onClick={this.handleStep2}>
                 2 Select Features
               </NavItem>
-              <NavItem eventKey='3' onClick={this.handleStep3}>
+              <NavItem eventKey='formats' onClick={this.handleStep3}>
                 3 Choose Formats
               </NavItem>
-              <NavItem eventKey='4' onClick={this.handleStep4}>
+              <NavItem eventKey='summary' onClick={this.handleStep4}>
                 4 Summary
               </NavItem>
             </Nav>
-            {this.state.step === 1
-              ? <Describe next={this.handleStep2} />
-              : null}
-            {this.state.step === 2
-              ? <SelectFeatures
-                next={this.handleStep3}
-                onDrop={this.onDrop}
-                featuresUi={this.state.featuresUi}
-                switchToTreeTag={this.switchToTreeTag}
-                switchToYaml={this.switchToYaml}
-                switchToStoredConf={this.switchToStoredConf}
-                tagTreeData={this.state.tagTreeData}
-                onSearchChange={this.onSearchChange}
-                clearSearch={this.clearSearch}
-                onTreeNodeCheckChange={this.onTreeNodeCheckChange}
-                onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
-                labelFilter={this.tagTree.labelFilter}
+            <Switch>
+              <Route
+                path='/exports/new'
+                exact
+                render={props => <Redirect to='/exports/new/describe' />}
               />
-              : null}
-            {this.state.step === 3
-              ? <ChooseFormats next={this.handleStep4} />
-              : null}
-            {this.state.step === 4
-              ? <Summary
-                handleSubmit={handleSubmit}
-                formValues={formValues}
-                error={error}
+              <Route
+                path='/exports/new/describe'
+                render={props =>
+                  <Describe next={this.handleStep1} {...props} />}
               />
-              : null}
+              <Route
+                path='/exports/new/select'
+                render={props =>
+                  <SelectFeatures
+                    next={this.handleStep3}
+                    onDrop={this.onDrop}
+                    featuresUi={this.state.featuresUi}
+                    switchToTreeTag={this.switchToTreeTag}
+                    switchToYaml={this.switchToYaml}
+                    switchToStoredConf={this.switchToStoredConf}
+                    tagTreeData={this.state.tagTreeData}
+                    onSearchChange={this.onSearchChange}
+                    clearSearch={this.clearSearch}
+                    onTreeNodeCheckChange={this.onTreeNodeCheckChange}
+                    onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
+                    labelFilter={this.tagTree.labelFilter}
+                    {...props}
+                  />}
+              />
+              <Route
+                path='/exports/new/formats'
+                render={props => <ChooseFormats next={this.handleStep4} />}
+              />
+              <Route
+                path='/exports/new/summary'
+                render={props =>
+                  <Summary
+                    handleSubmit={handleSubmit}
+                    formValues={formValues}
+                    error={error}
+                  />}
+              />
+            </Switch>
             <Panel style={{ marginTop: '20px' }}>
               OpenStreetMap database last updated {overpassLastUpdated}
             </Panel>
