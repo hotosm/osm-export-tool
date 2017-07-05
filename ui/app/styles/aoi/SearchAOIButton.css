@@ -25,6 +25,7 @@
 
 @media screen and (max-width: 600px) {
     .buttonGeneral {
+        cursor: pointer;
         height: 50px;
         width: 50px;
     }
