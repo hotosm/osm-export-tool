@@ -11,7 +11,6 @@ import {
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider, intlReducer } from 'react-intl-redux';
 import thunk from 'redux-thunk';
-import { Row } from 'react-bootstrap';
 
 import ExportForm from './components/ExportForm';
 import ExportDetails from './components/ExportDetails';
