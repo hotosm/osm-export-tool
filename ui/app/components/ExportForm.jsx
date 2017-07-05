@@ -326,8 +326,6 @@ export class ExportForm extends Component {
     super(props);
     this.tagTree = new TreeTag(TAGTREE);
     this.state = {
-      step: 1,
-      featuresUi: 'treetag',
       tagTreeData: this.tagTree.visibleData(),
       searchQuery: ''
     };
@@ -389,15 +387,21 @@ export class ExportForm extends Component {
   };
 
   switchToTreeTag = () => {
-    this.setState({ featuresUi: 'treetag' });
+    const { dispatch } = this.props;
+
+    dispatch(push('/exports/new/select/treetag'));
   };
 
   switchToYaml = () => {
-    this.setState({ featuresUi: 'yaml' });
+    const { dispatch } = this.props;
+
+    dispatch(push('/exports/new/select/yaml'));
   };
 
   switchToStoredConf = () => {
-    this.setState({ featuresUi: 'stored' });
+    const { dispatch } = this.props;
+
+    dispatch(push('/exports/new/select/stored'));
   };
 
   onDrop = files => {
@@ -420,7 +424,7 @@ export class ExportForm extends Component {
       error,
       formValues,
       handleSubmit,
-      match: { params: { step } },
+      match: { params: { featuresUi, step } },
       overpassLastUpdated
     } = this.props;
 
@@ -462,11 +466,16 @@ export class ExportForm extends Component {
               />
               <Route
                 path='/exports/new/select'
+                exact
+                render={props => <Redirect to='/exports/new/select/treetag' />}
+              />
+              <Route
+                path='/exports/new/select/:featuresUi'
                 render={props =>
                   <SelectFeatures
                     next={this.handleStep3}
                     onDrop={this.onDrop}
-                    featuresUi={this.state.featuresUi}
+                    featuresUi={featuresUi}
                     switchToTreeTag={this.switchToTreeTag}
                     switchToYaml={this.switchToYaml}
                     switchToStoredConf={this.switchToStoredConf}

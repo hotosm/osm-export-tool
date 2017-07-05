@@ -59,7 +59,7 @@ ReactDOM.render(
           exact
           render={props => <Redirect to='/exports/new' />}
         />
-        <Route path='/exports/new/:step?' component={ExportForm} />
+        <Route path='/exports/new/:step?/:featuresUi?' component={ExportForm} />
         <Route path='/exports/detail/:id/:run_id?' component={ExportDetails} />
         <Route exact path='/exports' component={ExportList} />
         <Route exact path='/configurations' component={ConfigurationList} />
