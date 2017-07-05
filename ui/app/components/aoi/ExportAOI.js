@@ -538,20 +538,20 @@ const ZoomExtent = function (options) {
   options.className = options.className != null ? options.className : '';
 
   let button = document.createElement('button');
+  button.setAttribute('type', 'button');
   let icon = document.createElement('i');
   icon.className = 'fa fa-globe';
   button.appendChild(icon);
-  let this_ = this;
 
   this.zoomer = () => {
-    const map = this_.getMap();
+    const map = this.getMap();
     const view = map.getView();
     const size = map.getSize();
     view.fit(options.extent, size);
   };
 
-  button.addEventListener('click', this_.zoomer, false);
-  button.addEventListener('touchstart', this_.zoomer, false);
+  button.addEventListener('click', this.zoomer, false);
+  button.addEventListener('touchstart', this.zoomer, false);
   let element = document.createElement('div');
   element.className = options.className + ' ol-unselectable ol-control';
   element.appendChild(button);
