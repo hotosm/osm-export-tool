@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from unittest import skip
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -20,21 +19,21 @@ class TestJobFilter(APITestCase):
         #minx, miny, maxx, maxy
         bbox1 = GEOSGeometry(Polygon.from_bbox([1.0, 1.0, 2.0, 2.0]), srid=4326)
         bbox2 = GEOSGeometry(Polygon.from_bbox([10.0, 10.0, 11.0, 11.0]), srid=4326)
-        Job.objects.create(
+        self.job1 = Job.objects.create(
             name='MyPrivateJob',
             export_formats=["shp"],
             user=user1,
             the_geom=bbox1,
             published=False
         )
-        Job.objects.create(
+        self.job2 = Job.objects.create(
             name='TheirPublicJob',
             export_formats=["shp"],
             user=user2,
             the_geom=bbox2,
             published=True
         )
-        Job.objects.create(
+        self.job3 = Job.objects.create(
             name='TheirPrivateJob',
             export_formats=["shp"],
             user=user2,
@@ -78,9 +77,23 @@ class TestJobFilter(APITestCase):
         response = self.client.get(url + '?search=nothing')
         self.assertEquals(0, len(response.data['results']))
 
-    @skip('')
     def test_search_jobs_by_date(self):
-        pass
+        self.job1.created_at = '2017-06-05T00:00:00Z'
+        self.job1.save()
+        self.job2.created_at = '2017-06-10T00:00:00Z'
+        self.job2.save()
+
+        url = reverse('api:jobs-list')
+        response = self.client.get(url + '?before=2017-06-07T00:00:00Z')
+        self.assertEquals(1, len(response.data['results']))
+        self.assertEquals('MyPrivateJob', response.data['results'][0]['name'])
+
+        response = self.client.get(url + '?after=2017-06-09T00:00:00Z')
+        self.assertEquals(1, len(response.data['results']))
+        self.assertEquals('TheirPublicJob', response.data['results'][0]['name'])
+
+        response = self.client.get(url + '?after=2017-06-07T00:00:00Z&before=2017-06-09T00:00:00Z')
+        self.assertEquals(0, len(response.data['results']))
 
     def test_search_jobs_by_bbox(self):
         url = reverse('api:jobs-list')

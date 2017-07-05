@@ -2,7 +2,6 @@
 import json
 import os
 import uuid
-from unittest import skip
 
 from mock import patch
 
@@ -43,11 +42,6 @@ class TestJobViewSet(APITestCase):
             'feature_selection':FeatureSelection.example_raw("simple")
         }
 
-    @skip("test the representation of export")
-    def test_list(self, ):
-        expected = '/api/jobs'
-        url = reverse('api:jobs-list')
-        self.assertEquals(expected, url)
 
     @patch('api.views.ExportTaskRunner')
     def test_create_job_success(self, mock):
@@ -67,9 +61,19 @@ class TestJobViewSet(APITestCase):
         self.assertEqual(response.data['description'], self.request_data['description'])
         self.assertTrue(response.data['published'])
 
+        # test setting of bool fields
+        job_uid = response.data['uid']
         j = Job.objects.get(uid=job_uid)
         self.assertFalse(j.hidden)
         self.assertFalse(j.unlimited_extent)
+
+        # test list response
+        url = reverse('api:jobs-list')
+        response = self.client.get(url, format='json')
+        results = response.data['results']
+        self.assertEqual(len(results),1)
+        self.assertTrue('the_geom' not in results[0])
+        self.assertTrue('simplified_geom' in results[0])
 
 
     @patch('api.views.ExportTaskRunner')

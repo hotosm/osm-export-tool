@@ -107,6 +107,12 @@ class JobViewSet(viewsets.ModelViewSet):
         queryset = Job.objects
         mineonly = self.request.query_params.get('mineonly', None)
         bbox = self.request.query_params.get('bbox', None)
+        before = self.request.query_params.get('before', None)
+        after = self.request.query_params.get('after', None)
+        if before is not None:
+            queryset = queryset.filter(Q(created_at__lte=before))
+        if after is not None:
+            queryset = queryset.filter(Q(created_at__gte=after))
         if bbox is not None:
             bbox = bbox_to_geom(bbox)
             queryset = queryset.filter(Q(the_geom__within=bbox))
