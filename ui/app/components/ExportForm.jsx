@@ -190,8 +190,13 @@ const ChooseFormats = ({next}) =>
 const Summary = ({ handleSubmit, formValues, error}) => 
   <Row>
     <Col xs={6}>
-      Debugging form values:
-      {JSON.stringify(formValues)}
+      <strong>Name:</strong> {formValues.name}<br />
+      <strong>Description:</strong> {formValues.description}<br />
+      <strong>Activation:</strong> {formValues.project}<br />
+      <strong>Export Formats:</strong>
+      <ul>
+        {formValues.export_formats.map((format, idx) => <li key={idx}>{AVAILABLE_EXPORT_FORMATS[format]}</li>)}
+      </ul>
     </Col>
     <Col xs={6}>
       <Field
@@ -334,7 +339,7 @@ export class ExportForm extends Component {
 const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
-    formValues:formValueSelector("ExportForm")(state,"name","description","project"),
+    formValues:formValueSelector("ExportForm")(state,"name","description","project","export_formats"),
     overpassLastUpdated: state.overpassLastUpdated,
     initialValues: {
       published: true,
