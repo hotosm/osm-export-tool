@@ -48,8 +48,10 @@ export class SearchAOIToolbar extends Component {
 
     handleChange(e) {
         // if it matches minx,miny,maxx,maxy
-        const match = e.match(/(-?\d+(\.\d+)?){4}/g)
-        if (match) {
+        const match = e.split(",").map(Number);
+        if (match.length === 4 &&
+            match[0] < match[2] &&
+            match[1] < match[3]) {
           this.props.setSearchAOIButtonSelected();
           this.props.handleSearch({name:'Manually Entered Bounds',bbox:{'west':match[0], 'south':match[1], 'east':match[2], 'north':match[3]}})
         }
