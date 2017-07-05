@@ -3,7 +3,11 @@ import React from 'react';
 import createHistory from 'history/createHashHistory';
 import ReactDOM from 'react-dom';
 import { Route } from 'react-router';
-import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
+import {
+  ConnectedRouter,
+  routerReducer,
+  routerMiddleware
+} from 'react-router-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider, intlReducer } from 'react-intl-redux';
 import thunk from 'redux-thunk';
@@ -14,7 +18,11 @@ import ExportDetails from './components/ExportDetails';
 import ExportList from './components/ExportList';
 import HDXExportRegionForm from './components/HDXExportRegionForm';
 import HDXExportRegionList from './components/HDXExportRegionList';
-import  { ConfigurationList, ConfigurationNew, ConfigurationDetailContainer } from './components/ConfigurationList';
+import {
+  ConfigurationList,
+  ConfigurationNew,
+  ConfigurationDetailContainer
+} from './components/ConfigurationList';
 import reducers from './reducers/';
 
 const history = createHistory();
@@ -24,9 +32,11 @@ const middleware = [routerMiddleware(history), thunk];
 if (process.env.NODE_ENV !== 'production') {
   const { createLogger } = require('redux-logger');
 
-  middleware.push(createLogger({
-    collapsed: true
-  }));
+  middleware.push(
+    createLogger({
+      collapsed: true
+    })
+  );
 }
 
 const store = createStore(
@@ -44,17 +54,20 @@ ReactDOM.render(
   <Provider store={store}>
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
-        <div style={{height: '100%'}}>
-          <Route exact path='/exports/new' component={ExportForm}/>
-          <Route path='/exports/detail/:id/:run_id?' component={ExportDetails}/>
-          <Route exact path='/exports' component={ExportList}/>
-          <Route exact path='/configurations' component={ConfigurationList}/>
-          <Route exact path='/configurations/new' component={ConfigurationNew}/>
-          <Route path='/configurations/detail/:uid' component={ConfigurationDetailContainer}/>
-          <Route exact path='/hdx' component={HDXExportRegionList} />
-          <Route path='/hdx/new' component={HDXExportRegionForm} />
-          <Route path='/hdx/edit/:id' component={HDXExportRegionForm} />
-        </div>
+      <div style={{ height: '100%' }}>
+        <Route exact path='/exports/new' component={ExportForm} />
+        <Route path='/exports/detail/:id/:run_id?' component={ExportDetails} />
+        <Route exact path='/exports' component={ExportList} />
+        <Route exact path='/configurations' component={ConfigurationList} />
+        <Route exact path='/configurations/new' component={ConfigurationNew} />
+        <Route
+          path='/configurations/detail/:uid'
+          component={ConfigurationDetailContainer}
+        />
+        <Route exact path='/hdx' component={HDXExportRegionList} />
+        <Route path='/hdx/new' component={HDXExportRegionForm} />
+        <Route path='/hdx/edit/:id' component={HDXExportRegionForm} />
+      </div>
     </ConnectedRouter>
   </Provider>,
   document.getElementById('root')
