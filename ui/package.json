@@ -56,10 +56,8 @@
     "eslint-plugin-react": "^7.1.0",
     "eslint-plugin-standard": "^3.0.1",
     "git-exec-and-restage": "^1.0.1",
-    "husky": "^0.14.3",
     "identity-obj-proxy": "~3.0.0",
     "jest-cli": "^20.0.4",
-    "lint-staged": "^4.0.0",
     "nock": "^9.0.13",
     "prettier": "^1.5.2",
     "react-addons-test-utils": "^15.6.0",
@@ -78,23 +76,10 @@
     "dist": "NODE_ENV=production npm run pack",
     "pack": "webpack -p --progress --display-optimization-bailout --config webpack.config.js",
     "watch": "webpack --watch --progress --config webpack.config.js",
-    "test": "jest --verbose",
-    "precommit": "lint-staged"
+    "test": "jest --verbose"
   },
   "license": "BSD-3-Clause",
   "standard": {
     "parser": "babel-eslint"
-  },
-  "lint-staged": {
-    "gitDir": "../",
-    "linters": {
-      "*.css": [
-        "git-exec-and-restage prettier --write --"
-      ],
-      "DISABLED-*.{js,jsx}": [
-        "git-exec-and-restage prettier --write --",
-        "git-exec-and-restage eslint --fix --"
-      ]
-    }
   }
 }
