@@ -81,7 +81,7 @@ class ExportRuns extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.jobUid != this.props.jobUid) {
+    if (prevProps.jobUid !== this.props.jobUid) {
       clearInterval(this.poller);
       this.poller.getRuns(this.props.jobUid);
     } else {
