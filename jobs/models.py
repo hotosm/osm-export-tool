@@ -244,6 +244,10 @@ class HDXExportRegion(models.Model): # noqa
         return self.job.name
 
     @property
+    def the_geom(self):
+        return self.job.the_geom
+
+    @property
     def simplified_geom(self): # noqa
         return self.job.simplified_geom
 

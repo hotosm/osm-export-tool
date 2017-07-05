@@ -83,7 +83,8 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     export_formats = serializers.ListField()
     dataset_prefix = serializers.CharField()
     feature_selection = serializers.CharField()
-    simplified_geom = geo_serializers.GeometryField()
+    simplified_geom = geo_serializers.GeometryField(required=False)
+    the_geom = geo_serializers.GeometryField()
     name = serializers.CharField()
     buffer_aoi = serializers.BooleanField()
 
@@ -94,7 +95,11 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
                   'schedule_period', 'schedule_hour', 'export_formats', 'runs',
                   'locations', 'name', 'last_run', 'next_run', 'simplified_geom',
                   'dataset_prefix', 'job_uid', 'license', 'subnational',
-                  'extra_notes', 'is_private', 'buffer_aoi',)
+                  'extra_notes', 'is_private', 'buffer_aoi','the_geom')
+        extra_kwargs = {
+            'simplified_geom': {'read_only':True},
+            'the_geom': {'write_only':True}
+        }
 
 
     def create(self, validated_data): # noqa
