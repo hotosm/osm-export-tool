@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Row, Col, Panel, Button, Table, Modal } from 'react-bootstrap';
+import { Alert, Button, ButtonGroup, Col, Modal, Panel, Row, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   getExport,
@@ -221,20 +221,22 @@ export class ExportDetails extends Component {
         >
           <Panel header={exportInfo ? 'Export #' + exportInfo.uid : null}>
             {exportInfo ? <Details exportInfo={exportInfo} /> : null}
-            <Button bsSize='large' onClick={this.showModal}>
-              Features
-            </Button>
-            <Button bsStyle='success' bsSize='large' onClick={this.handleRun}>
-              Re-Run Export
-            </Button>
-            <Button
-              bsStyle='primary'
-              bsSize='large'
-              onClick={this.handleClone}
-              {...(exportInfo ? {} : { disabled: true })}
-            >
-              Clone Export
-            </Button>
+            <ButtonGroup>
+              <Button bsSize='large' onClick={this.showModal}>
+                Features
+              </Button>
+              <Button bsStyle='success' bsSize='large' onClick={this.handleRun}>
+                Re-Run Export
+              </Button>
+              <Button
+                bsStyle='primary'
+                bsSize='large'
+                onClick={this.handleClone}
+                {...(exportInfo ? {} : { disabled: true })}
+              >
+                Clone Export
+              </Button>
+            </ButtonGroup>
           </Panel>
         </Col>
         <Col
