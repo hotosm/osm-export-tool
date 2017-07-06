@@ -54,7 +54,7 @@ export class ExportList extends Component {
   }
 
   render () {
-    const { getExports, jobs, selectedFeatureId } = this.props;
+    const { getExports, jobs, selectedFeatureId, selectRegion } = this.props;
 
     const features = {
       features: jobs.items.map(j => j.simplified_geom),
@@ -76,9 +76,9 @@ export class ExportList extends Component {
                   <th />
                 </tr>
               </thead>
-              <ExportTable jobs={jobs.items} selectRegion={this.props.selectRegion} />
+              <ExportTable jobs={jobs.items} selectRegion={selectRegion} />
             </Table>
-            <Paginator collection={jobs} getPage={this.props.getExports} />
+            <Paginator collection={jobs} getPage={getExports} />
           </div>
         </Col>
         <Col xs={6} style={{ height: '100%' }}>
