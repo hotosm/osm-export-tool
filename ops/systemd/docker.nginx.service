@@ -1,7 +1,7 @@
 [Unit]
 Description=Nginx
-After=docker.service docker.django.service
-Requires=docker.service docker.django.service
+After=docker.service docker.django.service docker.exports-network.service
+Requires=docker.service docker.django.service docker.exports-network.service
 BindsTo=docker.django.service
 PartOf=osm-export-tool.target
 

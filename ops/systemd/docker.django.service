@@ -1,7 +1,7 @@
 [Unit]
 Description=Django
-After=docker.service docker.rabbitmq.service docker.postgresql.service
-Requires=docker.service docker.rabbitmq.service docker.postgresql.service
+After=docker.service docker.rabbitmq.service docker.postgresql.service docker.exports-network.service
+Requires=docker.service docker.rabbitmq.service docker.postgresql.service docker.exports-network.service
 PartOf=osm-export-tool.target
 
 [Service]
