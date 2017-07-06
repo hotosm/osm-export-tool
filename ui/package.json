@@ -38,7 +38,7 @@
     "babel-core": "^6.25.0",
     "babel-jest": "^20.0.3",
     "babel-loader": "^7.1.1",
-    "babel-preset-env": "^1.5.2",
+    "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^4.0.2",
@@ -58,7 +58,7 @@
     "redux-mock-store": "^1.2.3",
     "sinon": "^2.3.6",
     "style-loader": "^0.18.2",
-    "webpack": "^3.0.0",
+    "webpack": "^3.1.0",
     "webpack-dev-middleware": "^1.11.0",
     "webpack-dev-server": "^2.5.0",
     "write-file-webpack-plugin": "^4.1.0"
