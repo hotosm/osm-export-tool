@@ -5,16 +5,7 @@ from __future__ import unicode_literals
 import django.contrib.gis.db.models.fields
 from django.db import migrations
 import jobs.models
-from jobs.models import simplify_geom
 
-
-def simplify_geoms(apps, schema_editor):
-    # We can't import the Person model directly as it may be a newer
-    # version than this migration expects. We use the historical version.
-    Job = apps.get_model('jobs', 'Job')
-    for job in Job.objects.all():
-        job.simplified_geom = simplify_geom(job.the_geom)
-        job.save()
 
 class Migration(migrations.Migration):
 
@@ -33,5 +24,7 @@ class Migration(migrations.Migration):
             name='the_geom',
             field=django.contrib.gis.db.models.fields.GeometryField(srid=4326, validators=[jobs.models.validate_aoi], verbose_name='Uploaded geometry'),
         ),
-        migrations.RunPython(simplify_geoms)
+        migrations.RunSQL(
+            "UPDATE jobs SET simplified_geom=ST_SimplifyPreserveTopology(the_geom, 0.01)"
+        )
     ]
