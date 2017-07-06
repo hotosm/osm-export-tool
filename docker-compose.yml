@@ -39,11 +39,9 @@ services:
     links:
       - postgresql
       - rabbitmq
-    environment:
-      - CONCURRENCY=2
     volumes_from:
       - site
-    command: celery -A core worker
+    command: celery -A core worker --concurrency=2 --maxtasksperchild=1
   migration:
     extends:
       service: base
