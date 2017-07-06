@@ -9,7 +9,7 @@ import zipfile
 
 from feature_selection.feature_selection import FeatureSelection, slugify
 from hdx.data.dataset import Dataset
-from hdx.data.galleryitem import GalleryItem
+#from hdx.data.galleryitem import GalleryItem
 from raven import Client
 
 from django.contrib.gis.geos import GEOSGeometry
@@ -153,14 +153,14 @@ class HDXExportSet(object):
             [dataset.add_other_location(x) for x in self._locations]
             dataset.add_tags(tags)
 
-            ga = GalleryItem({
-                'title': 'OSM Analytics',
-                'description': 'View detailed information about OpenStreetMap edit history in this area.',
-                'url': self.osm_analytics_url,
-                'image_url': 'http://{}/static/ui/images/osm_analytics.png'.format(self.hostname),
-                'type': 'Visualization',
-            })
-            dataset.add_update_galleryitem(ga)
+            #ga = GalleryItem({
+            #    'title': 'OSM Analytics',
+            #    'description': 'View detailed information about OpenStreetMap edit history in this area.',
+            #    'url': self.osm_analytics_url,
+            #    'image_url': 'http://{}/static/ui/images/osm_analytics.png'.format(self.hostname),
+            #    'type': 'Visualization',
+            #})
+            #dataset.add_update_galleryitem(ga)
 
             self._datasets[theme] = dataset
         return self._datasets
