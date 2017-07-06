@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Nav,
   NavItem,
@@ -10,14 +10,14 @@ import {
   Button,
   FormControl,
   Table
-} from 'react-bootstrap';
-import { Field, formValueSelector, reduxForm, change } from 'redux-form';
-import { connect } from 'react-redux';
-import { Redirect, Route, Switch } from 'react-router';
-import { push } from 'react-router-redux';
-import ExportAOI from './aoi/ExportAOI';
-import { createExport, getOverpassTimestamp } from '../actions/exportsActions';
-import styles from '../styles/ExportForm.css';
+} from "react-bootstrap";
+import { Field, formValueSelector, reduxForm, change } from "redux-form";
+import { connect } from "react-redux";
+import { Redirect, Route, Switch } from "react-router";
+import { push } from "react-router-redux";
+import ExportAOI from "./aoi/ExportAOI";
+import { createExport, getOverpassTimestamp } from "../actions/exportsActions";
+import styles from "../styles/ExportForm.css";
 import {
   AVAILABLE_EXPORT_FORMATS,
   getFormatCheckboxes,
@@ -28,45 +28,45 @@ import {
   PresetParser,
   Paginator,
   REQUIRES_FEATURE_SELECTION
-} from './utils';
-import Dropzone from 'react-dropzone';
-import TreeMenu from './react-tree-menu/TreeMenu';
-import { TreeTag, TreeTagYAML } from '../utils/TreeTag';
-import { TAGTREE, TAGLOOKUP } from '../utils/TreeTagSettings';
-import { getConfigurations } from '../actions/configurationActions';
+} from "./utils";
+import Dropzone from "react-dropzone";
+import TreeMenu from "./react-tree-menu/TreeMenu";
+import { TreeTag, TreeTagYAML } from "../utils/TreeTag";
+import { TAGTREE, TAGLOOKUP } from "../utils/TreeTagSettings";
+import { getConfigurations } from "../actions/configurationActions";
 
 const form = reduxForm({
-  form: 'ExportForm',
+  form: "ExportForm",
   onSubmit: (values, dispatch, props) => {
-    console.log('Submitting form. Values:', values);
-    dispatch(createExport(values, 'ExportForm'));
+    console.log("Submitting form. Values:", values);
+    dispatch(createExport(values, "ExportForm"));
   }
 });
 
 const Describe = ({ next }) =>
   <Row>
     <Field
-      name='name'
-      type='text'
-      label='Name'
-      placeholder='name this export'
+      name="name"
+      type="text"
+      label="Name"
+      placeholder="name this export"
       component={renderInput}
     />
     <Field
-      name='description'
-      type='text'
-      label='Description'
+      name="description"
+      type="text"
+      label="Description"
       component={renderTextArea}
-      rows='4'
+      rows="4"
     />
     <Field
-      name='project'
-      type='text'
-      label='Project'
-      placeholder='which activation this export is for'
+      name="project"
+      type="text"
+      label="Project"
+      placeholder="which activation this export is for"
       component={renderInput}
     />
-    <Button bsSize='large' style={{ float: 'right' }} onClick={next}>
+    <Button bsSize="large" style={{ float: "right" }} onClick={next}>
       Next
     </Button>
   </Row>;
@@ -74,30 +74,30 @@ const Describe = ({ next }) =>
 const YamlUi = ({ onDrop }) =>
   <div>
     <Field
-      name='feature_selection'
-      type='text'
-      label='Feature Selection'
+      name="feature_selection"
+      type="text"
+      label="Feature Selection"
       component={renderTextArea}
       className={styles.featureSelection}
-      rows='10'
+      rows="10"
     />
-    <Dropzone className='nullClassName' onDrop={onDrop}>
+    <Dropzone className="nullClassName" onDrop={onDrop}>
       <Button>Load from JOSM Preset .XML</Button>
     </Dropzone>
   </div>;
 
 class TreeTagUi extends React.Component {
-  render () {
+  render() {
     return (
       <div>
         <InputGroup
-          style={{ width: '100%', marginTop: '20px', marginBottom: '10px' }}
+          style={{ width: "100%", marginTop: "20px", marginBottom: "10px" }}
         >
           <FormControl
-            id='treeTagSearch'
-            type='text'
-            label='treeTagSearch'
-            placeholder='Search for a feature type...'
+            id="treeTagSearch"
+            type="text"
+            label="treeTagSearch"
+            placeholder="Search for a feature type..."
             onChange={this.props.onSearchChange}
           />
           <InputGroup.Button>
@@ -109,8 +109,8 @@ class TreeTagUi extends React.Component {
           data={this.props.tagTreeData}
           onTreeNodeCollapseChange={this.props.onTreeNodeCollapseChange}
           onTreeNodeCheckChange={this.props.onTreeNodeCheckChange}
-          expandIconClass='fa fa-chevron-right'
-          collapseIconClass='fa fa-chevron-down'
+          expandIconClass="fa fa-chevron-right"
+          collapseIconClass="fa fa-chevron-down"
           labelFilter={this.props.labelFilter}
         />
       </div>
@@ -119,7 +119,7 @@ class TreeTagUi extends React.Component {
 }
 
 class StoredConfComponent extends React.Component {
-  componentDidMount () {
+  componentDidMount() {
     this.props.getConfigurations();
   }
 
@@ -128,17 +128,17 @@ class StoredConfComponent extends React.Component {
     this.props.switchToYaml();
   };
 
-  render () {
+  render() {
     return (
       <div>
         <InputGroup
-          style={{ width: '100%', marginTop: '20px', marginBottom: '10px' }}
+          style={{ width: "100%", marginTop: "20px", marginBottom: "10px" }}
         >
           <FormControl
-            id='storedConfigSearch'
-            type='text'
-            label='storedConfigSearch'
-            placeholder='Search for a configuration...'
+            id="storedConfigSearch"
+            type="text"
+            label="storedConfigSearch"
+            placeholder="Search for a configuration..."
           />
           <InputGroup.Button>
             <Button>Clear</Button>
@@ -168,7 +168,7 @@ class StoredConfComponent extends React.Component {
                   </td>
                   <td>
                     <Button
-                      bsSize='small'
+                      bsSize="small"
                       onClick={() => this.onClick(configuration.yaml)}
                     >
                       Load YAML
@@ -193,7 +193,7 @@ const StoredConfContainer = connect(
   dispatch => {
     return {
       getConfigurations: url => dispatch(getConfigurations(url)),
-      setYaml: yaml => dispatch(change('ExportForm', 'feature_selection', yaml))
+      setYaml: yaml => dispatch(change("ExportForm", "feature_selection", yaml))
     };
   }
 )(StoredConfComponent);
@@ -213,41 +213,41 @@ const SelectFeatures = ({
   labelFilter,
   tagTreeData
 }) =>
-  <Row style={{ height: 'auto' }}>
+  <Row style={{ height: "auto" }}>
     <ButtonGroup justified>
       <Button
-        href='#'
-        active={featuresUi === 'treetag'}
+        href="#"
+        active={featuresUi === "treetag"}
         onClick={switchToTreeTag}
       >
         Tag Tree
       </Button>
       <Button
-        href='#'
-        active={featuresUi === 'stored'}
+        href="#"
+        active={featuresUi === "stored"}
         onClick={switchToStoredConf}
       >
         Stored Configuration
       </Button>
-      <Button href='#' active={featuresUi === 'yaml'} onClick={switchToYaml}>
+      <Button href="#" active={featuresUi === "yaml"} onClick={switchToYaml}>
         YAML
       </Button>
     </ButtonGroup>
-    {featuresUi === 'treetag'
+    {featuresUi === "treetag"
       ? <TreeTagUi
-        onSearchChange={onSearchChange}
-        clearSearch={clearSearch}
-        onTreeNodeCollapseChange={onTreeNodeCollapseChange}
-        onTreeNodeCheckChange={onTreeNodeCheckChange}
-        labelFilter={labelFilter}
-        tagTreeData={tagTreeData}
-      />
+          onSearchChange={onSearchChange}
+          clearSearch={clearSearch}
+          onTreeNodeCollapseChange={onTreeNodeCollapseChange}
+          onTreeNodeCheckChange={onTreeNodeCheckChange}
+          labelFilter={labelFilter}
+          tagTreeData={tagTreeData}
+        />
       : null}
-    {featuresUi === 'stored'
+    {featuresUi === "stored"
       ? <StoredConfContainer switchToYaml={switchToYaml} />
       : null}
-    {featuresUi === 'yaml' ? <YamlUi onDrop={onDrop} /> : null}
-    <Button bsSize='large' style={{ float: 'right' }} onClick={next}>
+    {featuresUi === "yaml" ? <YamlUi onDrop={onDrop} /> : null}
+    <Button bsSize="large" style={{ float: "right" }} onClick={next}>
       Next
     </Button>
   </Row>;
@@ -255,13 +255,13 @@ const SelectFeatures = ({
 const ChooseFormats = ({ next }) =>
   <Row>
     <Field
-      name='export_formats'
-      label='File Formats'
+      name="export_formats"
+      label="File Formats"
       component={renderCheckboxes}
     >
       {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
     </Field>
-    <Button bsSize='large' style={{ float: 'right' }} onClick={next}>
+    <Button bsSize="large" style={{ float: "right" }} onClick={next}>
       Next
     </Button>
   </Row>;
@@ -287,22 +287,22 @@ const Summary = ({ handleSubmit, formValues, error }) =>
     </Col>
     <Col xs={6}>
       <Field
-        name='buffer_aoi'
-        description='Buffer AOI'
+        name="buffer_aoi"
+        description="Buffer AOI"
         component={renderCheckbox}
-        type='checkbox'
+        type="checkbox"
       />
       <Field
-        name='published'
-        description='Publish this export'
+        name="published"
+        description="Publish this export"
         component={renderCheckbox}
-        type='checkbox'
+        type="checkbox"
       />
       <Button
-        bsStyle='success'
-        bsSize='large'
-        type='submit'
-        style={{ width: '100%' }}
+        bsStyle="success"
+        bsSize="large"
+        type="submit"
+        style={{ width: "100%" }}
         onClick={handleSubmit}
       >
         Create Export
@@ -323,16 +323,16 @@ const renderExportAOI = ({ input, meta, ...props }) => {
 };
 
 export class ExportForm extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.tagTree = new TreeTag(TAGTREE);
     this.state = {
       tagTreeData: this.tagTree.visibleData(),
-      searchQuery: ''
+      searchQuery: ""
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.getOverpassTimestamp();
   }
 
@@ -346,7 +346,7 @@ export class ExportForm extends Component {
   onTreeNodeCheckChange = node => {
     this.tagTree.onTreeNodeCheckChange(node);
     const y = new TreeTagYAML(TAGLOOKUP, this.tagTree.checkedValues());
-    this.props.change('feature_selection', y.dataAsYaml());
+    this.props.change("feature_selection", y.dataAsYaml());
     this.setState({
       tagTreeData: this.tagTree.visibleData(this.state.searchQuery)
     });
@@ -360,49 +360,49 @@ export class ExportForm extends Component {
   };
 
   clearSearch = e => {
-    this.setState({ searchQuery: '', tagTreeData: this.tagTree.visibleData() });
+    this.setState({ searchQuery: "", tagTreeData: this.tagTree.visibleData() });
   };
 
   describeExport = () => {
     const { dispatch } = this.props;
 
-    dispatch(push('/exports/new/describe'));
+    dispatch(push("/exports/new/describe"));
   };
 
   selectFeatures = () => {
     const { dispatch } = this.props;
 
-    dispatch(push('/exports/new/select'));
+    dispatch(push("/exports/new/select"));
   };
 
   chooseFormats = () => {
     const { dispatch } = this.props;
 
-    dispatch(push('/exports/new/formats'));
+    dispatch(push("/exports/new/formats"));
   };
 
   showSummary = () => {
     const { dispatch } = this.props;
 
-    dispatch(push('/exports/new/summary'));
+    dispatch(push("/exports/new/summary"));
   };
 
   switchToTreeTag = () => {
     const { dispatch } = this.props;
 
-    dispatch(push('/exports/new/select/treetag'));
+    dispatch(push("/exports/new/select/treetag"));
   };
 
   switchToYaml = () => {
     const { dispatch } = this.props;
 
-    dispatch(push('/exports/new/select/yaml'));
+    dispatch(push("/exports/new/select/yaml"));
   };
 
   switchToStoredConf = () => {
     const { dispatch } = this.props;
 
-    dispatch(push('/exports/new/select/stored'));
+    dispatch(push("/exports/new/select/stored"));
   };
 
   onDrop = files => {
@@ -411,16 +411,16 @@ export class ExportForm extends Component {
     reader.onload = () => {
       const data = reader.result;
       const p = new PresetParser(data);
-      this.props.change('feature_selection', p.asYAML());
+      this.props.change("feature_selection", p.asYAML());
     };
     reader.readAsText(file);
   };
 
   setFormGeoJSON = geojson => {
-    this.props.change('the_geom', geojson);
+    this.props.change("the_geom", geojson);
   };
 
-  render () {
+  render() {
     const {
       error,
       formValues,
@@ -436,49 +436,49 @@ export class ExportForm extends Component {
       .some(x => REQUIRES_FEATURE_SELECTION[x]);
 
     return (
-      <Row style={{ height: '100%' }}>
-        <form style={{ height: '100%' }}>
+      <Row style={{ height: "100%" }}>
+        <form style={{ height: "100%" }}>
           <Col
             xs={6}
-            style={{ height: '100%', overflowY: 'scroll', padding: '20px' }}
+            style={{ height: "100%", overflowY: "scroll", padding: "20px" }}
           >
             <Nav
-              bsStyle='tabs'
+              bsStyle="tabs"
               activeKey={step}
-              style={{ marginBottom: '20px' }}
+              style={{ marginBottom: "20px" }}
             >
-              <NavItem eventKey='describe' onClick={this.describeExport}>
+              <NavItem eventKey="describe" onClick={this.describeExport}>
                 {++idx} Describe Export
               </NavItem>
-              <NavItem eventKey='formats' onClick={this.chooseFormats}>
+              <NavItem eventKey="formats" onClick={this.chooseFormats}>
                 {++idx} Choose Formats
               </NavItem>
               {requiresFeatureSelection &&
-                <NavItem eventKey='select' onClick={this.selectFeatures}>
+                <NavItem eventKey="select" onClick={this.selectFeatures}>
                   {++idx} Select Features
                 </NavItem>}
-              <NavItem eventKey='summary' onClick={this.showSummary}>
+              <NavItem eventKey="summary" onClick={this.showSummary}>
                 {++idx} Summary
               </NavItem>
             </Nav>
             <Switch>
               <Route
-                path='/exports/new'
+                path="/exports/new"
                 exact
-                render={props => <Redirect to='/exports/new/describe' />}
+                render={props => <Redirect to="/exports/new/describe" />}
               />
               <Route
-                path='/exports/new/describe'
+                path="/exports/new/describe"
                 render={props =>
                   <Describe next={this.chooseFormats} {...props} />}
               />
               <Route
-                path='/exports/new/select'
+                path="/exports/new/select"
                 exact
-                render={props => <Redirect to='/exports/new/select/treetag' />}
+                render={props => <Redirect to="/exports/new/select/treetag" />}
               />
               <Route
-                path='/exports/new/select/:featuresUi'
+                path="/exports/new/select/:featuresUi"
                 render={props =>
                   <SelectFeatures
                     next={this.showSummary}
@@ -497,7 +497,7 @@ export class ExportForm extends Component {
                   />}
               />
               <Route
-                path='/exports/new/formats'
+                path="/exports/new/formats"
                 render={props =>
                   <ChooseFormats
                     next={
@@ -508,7 +508,7 @@ export class ExportForm extends Component {
                   />}
               />
               <Route
-                path='/exports/new/summary'
+                path="/exports/new/summary"
                 render={props =>
                   <Summary
                     handleSubmit={handleSubmit}
@@ -517,13 +517,13 @@ export class ExportForm extends Component {
                   />}
               />
             </Switch>
-            <Panel style={{ marginTop: '20px' }}>
+            <Panel style={{ marginTop: "20px" }}>
               OpenStreetMap database last updated {overpassLastUpdated}
             </Panel>
           </Col>
-          <Col xs={6} style={{ height: '100%', overflowY: 'scroll' }}>
+          <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
             <Field
-              name='the_geom'
+              name="the_geom"
               component={renderExportAOI}
               setFormGeoJSON={this.setFormGeoJSON}
             />
@@ -537,12 +537,12 @@ export class ExportForm extends Component {
 const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
-    formValues: formValueSelector('ExportForm')(
+    formValues: formValueSelector("ExportForm")(
       state,
-      'name',
-      'description',
-      'project',
-      'export_formats'
+      "name",
+      "description",
+      "project",
+      "export_formats"
     ),
     overpassLastUpdated: state.overpassLastUpdated,
     initialValues: {
@@ -557,7 +557,7 @@ buildings:
         - building
     where: building IS NOT NULL
       `.trim(),
-      export_formats: ['shp']
+      export_formats: ["shp"]
     }
   };
 };

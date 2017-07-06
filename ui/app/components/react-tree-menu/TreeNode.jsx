@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
-import createClass from 'create-react-class';
-import noop from 'lodash/noop';
-import React from 'react';
+import PropTypes from "prop-types";
+import createClass from "create-react-class";
+import noop from "lodash/noop";
+import React from "react";
 
-import TreeNodeMixin from './TreeNodeMixin';
+import TreeNodeMixin from "./TreeNodeMixin";
 
 /**
  * Individual nodes in tree hierarchy, nested under a single <TreeMenu/> node
@@ -12,15 +12,13 @@ import TreeNodeMixin from './TreeNodeMixin';
  * @type {TreeNode}
  */
 var TreeNode = createClass({
+  mixins: [TreeNodeMixin],
 
-  mixins : [TreeNodeMixin],
-
-  propTypes : {
-
+  propTypes: {
     stateful: PropTypes.bool,
     checkbox: PropTypes.bool,
-    collapsible : PropTypes.bool,
-    collapsed : PropTypes.bool,
+    collapsible: PropTypes.bool,
+    collapsed: PropTypes.bool,
     expandIconClass: PropTypes.string,
     collapseIconClass: PropTypes.string,
     checked: PropTypes.bool,
@@ -33,50 +31,66 @@ var TreeNode = createClass({
     labelFilter: PropTypes.func,
     labelFactory: PropTypes.func,
     checkboxFactory: PropTypes.func
-
   },
 
-  getInitialState: function () {
+  getInitialState: function() {
     return {};
   },
 
-  getDefaultProps: function () {
+  getDefaultProps: function() {
     return {
       stateful: false,
       collapsible: true,
       collapsed: false,
-      checkbox : false,
+      checkbox: false,
       onClick: function(lineage) {
         console.log("Tree Node clicked: " + lineage.join(" > "));
       },
-      onCheckChange: function (lineage) {
-        console.log("Tree Node indicating a checkbox check state should change: " + lineage.join(" > "));
+      onCheckChange: function(lineage) {
+        console.log(
+          "Tree Node indicating a checkbox check state should change: " +
+            lineage.join(" > ")
+        );
       },
-      onCollapseChange: function (lineage) {
-        console.log("Tree Node indicating collapse state should change: " + lineage.join(" > "));
+      onCollapseChange: function(lineage) {
+        console.log(
+          "Tree Node indicating collapse state should change: " +
+            lineage.join(" > ")
+        );
       },
-      checked : false,
+      checked: false,
       expandIconClass: "",
       collapseIconClass: "",
-      labelFactory: function (labelClassName, displayLabel) {
-        return <label className={labelClassName}>{displayLabel}</label>;
+      labelFactory: function(labelClassName, displayLabel) {
+        return (
+          <label className={labelClassName}>
+            {displayLabel}
+          </label>
+        );
       },
-      checkboxFactory: function (className, isChecked, lineage, isIndeterminate) {
+      checkboxFactory: function(
+        className,
+        isChecked,
+        lineage,
+        isIndeterminate
+      ) {
         return (
           <input
-          className={className}
-          type="checkbox"
-          checked={isChecked}
-          ref={input => {
-            if (input) {
-              input.indeterminate = isIndeterminate;
-            }
-          }}
-          onChange={noop}/>);
+            className={className}
+            type="checkbox"
+            checked={isChecked}
+            ref={input => {
+              if (input) {
+                input.indeterminate = isIndeterminate;
+              }
+            }}
+            onChange={noop}
+          />
+        );
       }
-    }
+    };
   },
-  
+
   _getCollapseNode: function() {
     var props = this.props,
       collapseNode = null;
@@ -88,14 +102,18 @@ var TreeNode = createClass({
         collapseToggleHandler = noop;
         collapseClassName += "collapse-spacer";
       } else {
-        collapseClassName += (this._isCollapsed() ? props.expandIconClass : props.collapseIconClass);
+        collapseClassName += this._isCollapsed()
+          ? props.expandIconClass
+          : props.collapseIconClass;
       }
-      collapseNode = <span onClick={collapseToggleHandler} className={collapseClassName}></span>
+      collapseNode = (
+        <span onClick={collapseToggleHandler} className={collapseClassName} />
+      );
     }
     return collapseNode;
   },
 
-  render : function () {
+  render: function() {
     return (
       <div className={this._getRootCssClass()}>
         {this._getCollapseNode()}
@@ -108,8 +126,7 @@ var TreeNode = createClass({
     );
   },
 
-  componentWillReceiveProps: function (nextProps) {
-
+  componentWillReceiveProps: function(nextProps) {
     if (!this._isStateful()) return;
 
     var mutations = {};
@@ -119,15 +136,13 @@ var TreeNode = createClass({
     }
 
     this.setState(mutations);
-
   },
 
-  _getRootCssClass: function () {
+  _getRootCssClass: function() {
     return this.props.classNamePrefix + "-node";
   },
 
-  _getChildrenNode: function () {
-
+  _getChildrenNode: function() {
     var props = this.props;
 
     if (this._isCollapsed()) return null;
@@ -136,25 +151,23 @@ var TreeNode = createClass({
 
     if (this._isStateful()) {
       var state = this.state;
-      children = React.Children.map(props.children, function (child) {
+      children = React.Children.map(props.children, function(child) {
         return React.cloneElement(child, {
           key: child.key,
           ref: child.ref,
-          checked : state.checked
-        })
+          checked: state.checked
+        });
       });
-    } 
+    }
 
     return (
       <div className={this._getRootCssClass() + "-children"}>
-          {children}
+        {children}
       </div>
     );
-
   },
 
-  _getLabelNode: function () {
-
+  _getLabelNode: function() {
     var props = this.props,
       labelClassName = props.classNamePrefix + "-node-label";
 
@@ -166,52 +179,57 @@ var TreeNode = createClass({
 
     if (props.labelFilter) displayLabel = props.labelFilter(displayLabel);
 
-    return this.props.labelFactory(labelClassName, displayLabel, this._getLineage());
+    return this.props.labelFactory(
+      labelClassName,
+      displayLabel,
+      this._getLineage()
+    );
   },
 
-  _getCheckboxNode: function () {
+  _getCheckboxNode: function() {
     var props = this.props;
     if (!props.checkbox) return null;
 
-    return this.props.checkboxFactory(props.classNamePrefix + "-node-checkbox", this._isChecked(), this._getLineage(), this._isIndeterminate());
+    return this.props.checkboxFactory(
+      props.classNamePrefix + "-node-checkbox",
+      this._isChecked(),
+      this._getLineage(),
+      this._isIndeterminate()
+    );
   },
 
-  _isStateful: function () {
-
+  _isStateful: function() {
     return this.props.stateful ? true : false;
-
   },
 
-  _isChecked: function () {
-
-    if (this._isStateful() && typeof this.state.checked !== "undefined") return this.state.checked;
+  _isChecked: function() {
+    if (this._isStateful() && typeof this.state.checked !== "undefined")
+      return this.state.checked;
     return this.props.checked;
-
   },
 
   _isIndeterminate: function() {
-    if (this._isStateful() && typeof this.state.indeterminate !== "undefined") return this.state.indeterminate;
+    if (this._isStateful() && typeof this.state.indeterminate !== "undefined")
+      return this.state.indeterminate;
     return this.props.indeterminate;
   },
 
-  _isSelected: function () {
-
-    if (this._isStateful() && typeof this.state.selected !== "undefined") return this.state.selected;
+  _isSelected: function() {
+    if (this._isStateful() && typeof this.state.selected !== "undefined")
+      return this.state.selected;
     return this.props.selected;
-
   },
 
-  _isCollapsed: function () {
-
-    if (this._isStateful() && typeof this.state.collapsed !== "undefined") return this.state.collapsed;
+  _isCollapsed: function() {
+    if (this._isStateful() && typeof this.state.collapsed !== "undefined")
+      return this.state.collapsed;
 
     if (!this.props.collapsible) return false;
 
     return this.props.collapsed;
-
   },
 
-  _handleClick: function () {
+  _handleClick: function() {
     if (this.props.checkbox) {
       return this._handleCheckChange();
     } else if (this.props.onSelectChange) {
@@ -219,10 +237,9 @@ var TreeNode = createClass({
     }
 
     this.props.onClick(this._getLineage());
-
   },
 
-  _toggleNodeStateIfStateful: function (field) {
+  _toggleNodeStateIfStateful: function(field) {
     if (this._isStateful()) {
       var newValue = !this.props[field];
       if (typeof this.state[field] !== "undefined") {
@@ -232,40 +249,29 @@ var TreeNode = createClass({
       mutation[field] = newValue;
       this.setState(mutation);
     }
-
   },
 
-  _handleCheckChange: function () {
-
+  _handleCheckChange: function() {
     this._toggleNodeStateIfStateful("checked");
 
     this.props.onCheckChange(this._getLineage());
-
   },
 
-  _handleSelectChange: function () {
-
+  _handleSelectChange: function() {
     this._toggleNodeStateIfStateful("selected");
 
     this.props.onSelectChange(this._getLineage());
-
   },
 
-  _handleCollapseChange: function () {
-
+  _handleCollapseChange: function() {
     this._toggleNodeStateIfStateful("collapsed");
 
     this.props.onCollapseChange(this._getLineage());
-
   },
 
-  _getLineage: function () {
-
+  _getLineage: function() {
     return this.props.ancestor.concat(this.props.id);
-
   }
-
 });
-
 
 export default TreeNode;

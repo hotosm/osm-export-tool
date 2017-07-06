@@ -1,11 +1,25 @@
-import { reducer as reduxFormReducer } from 'redux-form';
-import {exportModeReducer, exportRunsReducer, jobListReducer, exportAoiInfoReducer, exportInfoReducer, overpassTimestampReducer } from './exportsReducer';
-import {invalidDrawWarningReducer} from './aoi/drawToolBarReducer';
-import {zoomToSelectionReducer, resetMapReducer} from './aoi/AoiInfobarReducer.js';
-import {getGeonamesReducer} from './aoi/searchToolbarReducer.js';
-import {toolbarIconsReducer, showImportModalReducer, importGeomReducer} from './aoi/mapToolReducer';
-import {configurationsReducer} from './configurationsReducer';
-import {getHdxReducer} from './hdxReducer';
+import { reducer as reduxFormReducer } from "redux-form";
+import {
+  exportModeReducer,
+  exportRunsReducer,
+  jobListReducer,
+  exportAoiInfoReducer,
+  exportInfoReducer,
+  overpassTimestampReducer
+} from "./exportsReducer";
+import { invalidDrawWarningReducer } from "./aoi/drawToolBarReducer";
+import {
+  zoomToSelectionReducer,
+  resetMapReducer
+} from "./aoi/AoiInfobarReducer.js";
+import { getGeonamesReducer } from "./aoi/searchToolbarReducer.js";
+import {
+  toolbarIconsReducer,
+  showImportModalReducer,
+  importGeomReducer
+} from "./aoi/mapToolReducer";
+import { configurationsReducer } from "./configurationsReducer";
+import { getHdxReducer } from "./hdxReducer";
 
 export default {
   // short hand property names

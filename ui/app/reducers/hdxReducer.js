@@ -1,7 +1,20 @@
-import types from '../actions/actionTypes';
-import initialState from './initialState';
+import types from "../actions/actionTypes";
+import initialState from "./initialState";
 
-export function getHdxReducer (state = initialState.hdx, { error, exportRegion, exportRegions, id, statusCode, prevPageUrl, nextPageUrl, total, type }) {
+export function getHdxReducer(
+  state = initialState.hdx,
+  {
+    error,
+    exportRegion,
+    exportRegions,
+    id,
+    statusCode,
+    prevPageUrl,
+    nextPageUrl,
+    total,
+    type
+  }
+) {
   switch (type) {
     case types.FETCHING_EXPORT_REGION:
       return {
@@ -42,9 +55,9 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
         exportRegions,
         error: null,
         status: null,
-        prevPageUrl:prevPageUrl,
-        nextPageUrl:nextPageUrl,
-        total:total
+        prevPageUrl: prevPageUrl,
+        nextPageUrl: nextPageUrl,
+        total: total
       };
 
     case types.FETCH_EXPORT_REGIONS_ERROR:
@@ -62,14 +75,14 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
     case types.STARTING_EXPORT_REGION_RUN:
       return {
         ...state,
-        status: 'Starting export region run...',
+        status: "Starting export region run...",
         id
       };
 
     case types.EXPORT_REGION_RUN_STARTED:
       return {
         ...state,
-        status: 'Export region run started.',
+        status: "Export region run started.",
         id
       };
 
@@ -97,7 +110,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
 
       return {
         ...state,
-        status: 'Export region deleted.',
+        status: "Export region deleted.",
         exportRegions,
         id
       };
@@ -125,7 +138,7 @@ export function getHdxReducer (state = initialState.hdx, { error, exportRegion, 
           ...state.exportRegions,
           [id]: exportRegion
         },
-        status: 'Export region saved.'
+        status: "Export region saved."
       };
 
     default:

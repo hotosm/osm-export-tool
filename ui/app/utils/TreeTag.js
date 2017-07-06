@@ -1,225 +1,236 @@
-import yaml from 'js-yaml'
+import yaml from "js-yaml";
 
 export class TreeTag {
   constructor(data) {
-    this.data = data
+    this.data = data;
     for (var key in this.data) {
-      this.initialize(this.data[key])
+      this.initialize(this.data[key]);
     }
   }
 
-  initialize = (node) => {
-    node.checked = false
-    node.checkbox = true
+  initialize = node => {
+    node.checked = false;
+    node.checkbox = true;
 
     if (node.children) {
-      node.collapsed = true
-      node.indeterminate = false
+      node.collapsed = true;
+      node.indeterminate = false;
       for (var key in node.children) {
-        this.initialize(node.children[key])
+        this.initialize(node.children[key]);
       }
     }
-  }
+  };
 
-  getNode = (input_path) => {
-    const path = input_path.slice() // untested
-    var theNode = this.data[path[0]]
-    path.shift()
+  getNode = input_path => {
+    const path = input_path.slice(); // untested
+    var theNode = this.data[path[0]];
+    path.shift();
     for (var key of path) {
-      theNode = theNode.children[key]
+      theNode = theNode.children[key];
     }
-    return theNode
-  }
+    return theNode;
+  };
 
-  onTreeNodeCollapseChange = (path) => {
-    const node = this.getNode(path)
-    node.collapsed = !node.collapsed
-  }
+  onTreeNodeCollapseChange = path => {
+    const node = this.getNode(path);
+    node.collapsed = !node.collapsed;
+  };
 
-  setChecked = (node,bool) => {
-    node.checked = bool
-    for(var key in node.children) {
-      this.setChecked(node.children[key],bool)
-    }
-  }
-
-  allChecked = (node) => {
-    // this can be short-circuited?
-    var retval = true
-    if (node.children) {
-      for (var key in node.children) {
-        retval = retval && this.allChecked(node.children[key])
-      }
-    }
-    return retval && node.checked
-  }
-
-  noneChecked = (node) => {
-    // this can be short-circuited?
-    var retval = true
-    if (node.children) {
-      for (var key in node.children) {
-        retval = retval && this.noneChecked(node.children[key])
-      }
-    }
-    return retval && !node.checked
-  }
-
-  setParents = (path) => {
-    const node = this.getNode(path)
-    var numTrue = 0
-    var numChildren = 0
+  setChecked = (node, bool) => {
+    node.checked = bool;
     for (var key in node.children) {
-      if (node.children[key].checked) numTrue++
-      numChildren++
+      this.setChecked(node.children[key], bool);
+    }
+  };
+
+  allChecked = node => {
+    // this can be short-circuited?
+    var retval = true;
+    if (node.children) {
+      for (var key in node.children) {
+        retval = retval && this.allChecked(node.children[key]);
+      }
+    }
+    return retval && node.checked;
+  };
+
+  noneChecked = node => {
+    // this can be short-circuited?
+    var retval = true;
+    if (node.children) {
+      for (var key in node.children) {
+        retval = retval && this.noneChecked(node.children[key]);
+      }
+    }
+    return retval && !node.checked;
+  };
+
+  setParents = path => {
+    const node = this.getNode(path);
+    var numTrue = 0;
+    var numChildren = 0;
+    for (var key in node.children) {
+      if (node.children[key].checked) numTrue++;
+      numChildren++;
     }
     if (numTrue === numChildren) {
-      node.checked = true
-      node.indeterminate = false
+      node.checked = true;
+      node.indeterminate = false;
     } else if (numTrue === 0) {
-      node.checked = false
-      node.indeterminate = false
+      node.checked = false;
+      node.indeterminate = false;
     } else {
-      node.checked = true // semantics; indeterminate = true
-      node.indeterminate = true
+      node.checked = true; // semantics; indeterminate = true
+      node.indeterminate = true;
     }
-  }
+  };
 
-  onTreeNodeCheckChange = (path) => {
-    const node = this.getNode(path)
+  onTreeNodeCheckChange = path => {
+    const node = this.getNode(path);
     if (node.children) {
-      node.indeterminate = false // untested
+      node.indeterminate = false; // untested
       if (this.allChecked(node)) {
-        this.setChecked(node,false)
+        this.setChecked(node, false);
       } else {
-        this.setChecked(node,true)
+        this.setChecked(node, true);
       }
-
     } else {
       // it's a leaf node.
-      node.checked = !node.checked
+      node.checked = !node.checked;
     }
 
     // the clicked node and its children's state are determined.
-    // now each parent of the clicked node needs to have its 
+    // now each parent of the clicked node needs to have its
     // check/indeterminate state set correctly,
     // starting from bottom up.
-    path.pop() //untested (for 2+ depth)
+    path.pop(); //untested (for 2+ depth)
     while (path.length > 0) {
-      this.setParents(path)
-      path.pop()
+      this.setParents(path);
+      path.pop();
     }
-  }
+  };
 
   checkedValues = () => {
-    var retval = []
+    var retval = [];
     for (var key in this.data) {
-      retval = retval.concat(this.checkedSubtree(this.data[key],key))
+      retval = retval.concat(this.checkedSubtree(this.data[key], key));
     }
-    return retval
-  }
+    return retval;
+  };
 
-  checkedSubtree = (node,key) => {
+  checkedSubtree = (node, key) => {
     if (node.children) {
-      var retval = []
+      var retval = [];
       for (var childKey in node.children) {
-        retval = retval.concat(this.checkedSubtree(node.children[childKey],childKey))
+        retval = retval.concat(
+          this.checkedSubtree(node.children[childKey], childKey)
+        );
       }
-      return retval
+      return retval;
     } else {
       if (node.checked) {
-        return [key]
+        return [key];
       }
-      return []
+      return [];
     }
-  }
+  };
 
-  visibleData = (query) => {
+  visibleData = query => {
     // given a search string, return filtered tree, uncollapsing the path to results
     if (query) {
-      query = query.toLowerCase()
-      const retval = {}
+      query = query.toLowerCase();
+      const retval = {};
       for (var key in this.data) {
-        const subtree = this.visibleSubtree(this.data[key],key,query)
+        const subtree = this.visibleSubtree(this.data[key], key, query);
         if (subtree) {
-          retval[key] = subtree
+          retval[key] = subtree;
         }
       }
-      return retval
+      return retval;
     }
-    return this.data
-  }
+    return this.data;
+  };
 
-  visibleSubtree = (node,key,query) => {
-    const retval = {}
-    retval.children = {}
-    var found = false
+  visibleSubtree = (node, key, query) => {
+    const retval = {};
+    retval.children = {};
+    var found = false;
     if (node.children) {
       for (var childKey in node.children) {
-        const subtree = this.visibleSubtree(node.children[childKey], childKey, query)
+        const subtree = this.visibleSubtree(
+          node.children[childKey],
+          childKey,
+          query
+        );
         if (subtree) {
-          retval.children[childKey] = subtree
-          found = true
+          retval.children[childKey] = subtree;
+          found = true;
         }
       }
     }
-    retval.collapsed = false
-    retval.checked = node.checked
-    retval.indeterminate = node.indeterminate
-    retval.checkbox = true
-    if (found || key.toLowerCase().includes(query) || (node.search_terms && node.search_terms.includes(query))) {
-      return retval
+    retval.collapsed = false;
+    retval.checked = node.checked;
+    retval.indeterminate = node.indeterminate;
+    retval.checkbox = true;
+    if (
+      found ||
+      key.toLowerCase().includes(query) ||
+      (node.search_terms && node.search_terms.includes(query))
+    ) {
+      return retval;
     }
-    return false
-  }
+    return false;
+  };
 
-  labelFilter = (label) => {
+  labelFilter = label => {
     // do localization here
     return label[0].toUpperCase() + label.substring(1);
-  }
+  };
 }
 
 // consumes a list of checkbox names and outputs a YAML feature selection.
 export class TreeTagYAML {
-  createPropIfNeeded = (table_name,geom_type) => {
-    if (this.data[table_name]) return
+  createPropIfNeeded = (table_name, geom_type) => {
+    if (this.data[table_name]) return;
     this.data[table_name] = {
-      types:[geom_type],
-      select:new Set(),
-      where:[]
-    }
-  }
+      types: [geom_type],
+      select: new Set(),
+      where: []
+    };
+  };
 
-  constructor(lookup,checkbox_list) {
-    this.data = {}
+  constructor(lookup, checkbox_list) {
+    this.data = {};
     for (var name of checkbox_list) {
-      for(var geom_type of lookup[name].geom_types) {
-        const t = "planet_osm_" + geom_type
-        this.createPropIfNeeded(t,geom_type + "s")
+      for (var geom_type of lookup[name].geom_types) {
+        const t = "planet_osm_" + geom_type;
+        this.createPropIfNeeded(t, geom_type + "s");
         for (var key of lookup[name].keys) {
-          this.data[t].select.add(key)
+          this.data[t].select.add(key);
         }
         if (lookup[name].where) {
-          this.data[t].where.push(lookup[name].where)
+          this.data[t].where.push(lookup[name].where);
         }
       }
     }
-
   }
 
   dataAsObj = () => {
-    const retval = {}
-    for(var tname in this.data) {
+    const retval = {};
+    for (var tname in this.data) {
       retval[tname] = {
-        'types':this.data[tname].types,
-        'select':[...this.data[tname].select].sort(),
-        'where':this.data[tname].where
-      }
+        types: this.data[tname].types,
+        select: [...this.data[tname].select].sort(),
+        where: this.data[tname].where
+      };
     }
-    return retval
-  }
+    return retval;
+  };
 
   dataAsYaml = () => {
-    return yaml.safeDump(this.dataAsObj(),{lineWidth:-1,noCompatMode:true})
-  }
+    return yaml.safeDump(this.dataAsObj(), {
+      lineWidth: -1,
+      noCompatMode: true
+    });
+  };
 }

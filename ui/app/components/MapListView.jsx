@@ -1,29 +1,29 @@
-import React, { Component, PropTypes } from 'react';
-import isEqual from 'lodash/isEqual';
-import Attribution from 'ol/control/attribution';
-import Control from 'ol/control/control';
-import Fill from 'ol/style/fill';
-import GeoJSONFormat from 'ol/format/geojson';
-import interaction from 'ol/interaction';
-import Map from 'ol/map';
-import ol from 'ol';
-import OSM from 'ol/source/osm';
-import proj from 'ol/proj';
-import ScaleLine from 'ol/control/scaleline';
-import Stroke from 'ol/style/stroke';
-import Style from 'ol/style/style';
-import Tile from 'ol/layer/tile';
-import VectorLayer from 'ol/layer/vector';
-import VectorSource from 'ol/source/vector';
-import View from 'ol/view';
-import Zoom from 'ol/control/zoom';
-import bbox from '@turf/bbox';
+import React, { Component, PropTypes } from "react";
+import isEqual from "lodash/isEqual";
+import Attribution from "ol/control/attribution";
+import Control from "ol/control/control";
+import Fill from "ol/style/fill";
+import GeoJSONFormat from "ol/format/geojson";
+import interaction from "ol/interaction";
+import Map from "ol/map";
+import ol from "ol";
+import OSM from "ol/source/osm";
+import proj from "ol/proj";
+import ScaleLine from "ol/control/scaleline";
+import Stroke from "ol/style/stroke";
+import Style from "ol/style/style";
+import Tile from "ol/layer/tile";
+import VectorLayer from "ol/layer/vector";
+import VectorSource from "ol/source/vector";
+import View from "ol/view";
+import Zoom from "ol/control/zoom";
+import bbox from "@turf/bbox";
 
-import styles from '../styles/aoi/CreateExport.css';
+import styles from "../styles/aoi/CreateExport.css";
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
-const WGS84 = 'EPSG:4326';
-const WEB_MERCATOR = 'EPSG:3857';
+const WGS84 = "EPSG:4326";
+const WEB_MERCATOR = "EPSG:3857";
 
 export default class MapListView extends Component {
   static propTypes = {
@@ -39,7 +39,7 @@ export default class MapListView extends Component {
     _features: []
   };
 
-  componentDidMount () {
+  componentDidMount() {
     this._initializeOpenLayers();
 
     if (this.props.features) {
@@ -50,7 +50,7 @@ export default class MapListView extends Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     const { features, selectedFeatureId } = this.props;
 
     if (!isEqual(prevProps.features, features)) {
@@ -62,7 +62,7 @@ export default class MapListView extends Component {
     }
   }
 
-  handleResetMap () {
+  handleResetMap() {
     const worldExtent = proj.transformExtent(
       [-180, -90, 180, 90],
       WGS84,
@@ -71,7 +71,7 @@ export default class MapListView extends Component {
     this._map.getView().fit(worldExtent, this._map.getSize());
   }
 
-  updateFeatures (features) {
+  updateFeatures(features) {
     this._clearDraw();
 
     GEOJSON_FORMAT.readFeatures(features, {
@@ -82,7 +82,7 @@ export default class MapListView extends Component {
     });
   }
 
-  zoomToFeatureId (id) {
+  zoomToFeatureId(id) {
     const { features } = this.props;
 
     const selectedFeature = features.features.filter(x => x.id === id).shift();
@@ -97,21 +97,21 @@ export default class MapListView extends Component {
     }
   }
 
-  _clearDraw () {
+  _clearDraw() {
     this._drawLayer.getSource().clear();
   }
 
-  _generateDrawLayer () {
+  _generateDrawLayer() {
     return new VectorLayer({
       source: new VectorSource({
         wrapX: false
       }),
       style: new Style({
         fill: new Fill({
-          color: 'hsla(202, 70%, 50%, .35)'
+          color: "hsla(202, 70%, 50%, .35)"
         }),
         stroke: new Stroke({
-          color: 'hsla(202, 70%, 50%, .7)',
+          color: "hsla(202, 70%, 50%, .7)",
           width: 1,
           lineDash: [5, 5]
         })
@@ -119,7 +119,7 @@ export default class MapListView extends Component {
     });
   }
 
-  _initializeOpenLayers () {
+  _initializeOpenLayers() {
     this._map = new Map({
       controls: [
         new ScaleLine({
@@ -153,7 +153,7 @@ export default class MapListView extends Component {
           source: new OSM()
         })
       ],
-      target: 'map',
+      target: "map",
       view: new View({
         projection: WEB_MERCATOR,
         center: [110, 0],
@@ -167,21 +167,21 @@ export default class MapListView extends Component {
     this._map.addLayer(this._drawLayer);
   }
 
-  render () {
+  render() {
     return (
       <div>
-        <div id='map' className={styles.map} ref='olmap' />
+        <div id="map" className={styles.map} ref="olmap" />
       </div>
     );
   }
 }
 
-const ZoomExtent = function (options = {}) {
-  options.className = options.className || '';
+const ZoomExtent = function(options = {}) {
+  options.className = options.className || "";
 
-  const button = document.createElement('button');
-  const icon = document.createElement('i');
-  icon.className = 'fa fa-globe';
+  const button = document.createElement("button");
+  const icon = document.createElement("i");
+  icon.className = "fa fa-globe";
   button.appendChild(icon);
 
   this.zoomer = () => {
@@ -193,11 +193,11 @@ const ZoomExtent = function (options = {}) {
     view.fit(extent, size);
   };
 
-  button.addEventListener('click', this.zoomer, false);
-  button.addEventListener('touchstart', this.zoomer, false);
+  button.addEventListener("click", this.zoomer, false);
+  button.addEventListener("touchstart", this.zoomer, false);
 
-  const element = document.createElement('div');
-  element.className = options.className + ' ol-unselectable ol-control';
+  const element = document.createElement("div");
+  element.className = options.className + " ol-unselectable ol-control";
   element.appendChild(button);
 
   Control.call(this, {

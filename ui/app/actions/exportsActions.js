@@ -1,20 +1,20 @@
-import axios from 'axios';
-import cookie from 'react-cookie';
-import types from './actionTypes';
-import { push } from 'react-router-redux';
-import { startSubmit, stopSubmit } from 'redux-form';
-import moment from 'moment';
+import axios from "axios";
+import cookie from "react-cookie";
+import types from "./actionTypes";
+import { push } from "react-router-redux";
+import { startSubmit, stopSubmit } from "redux-form";
+import moment from "moment";
 
-export function createExport (data, formName) {
+export function createExport(data, formName) {
   return dispatch => {
     dispatch(startSubmit(formName));
     return axios({
-      url: '/api/jobs',
-      method: 'POST',
-      contentType: 'application/json; version=1.0',
+      url: "/api/jobs",
+      method: "POST",
+      contentType: "application/json; version=1.0",
       data,
       headers: {
-        'X-CSRFToken': cookie.load('csrftoken')
+        "X-CSRFToken": cookie.load("csrftoken")
       }
     })
       .then(rsp => {
@@ -23,7 +23,7 @@ export function createExport (data, formName) {
       })
       .catch(err => {
         var msg =
-          'Your export is invalid. Please check each page of the form for errors.';
+          "Your export is invalid. Please check each page of the form for errors.";
         return dispatch(
           stopSubmit(formName, {
             ...err.response.data,
@@ -34,19 +34,24 @@ export function createExport (data, formName) {
   };
 }
 
-export function cloneExport (e) {
+export function cloneExport(e) {
   return dispatch => {
-    dispatch(push('/exports/new'));
+    dispatch(push("/exports/new"));
 
     // TODO fetch the_geom rather than using simplified_geom
 
     dispatch(
-      updateAoiInfo(e.simplified_geom, 'Polygon', 'Custom Polygon', 'Cloned Area')
+      updateAoiInfo(
+        e.simplified_geom,
+        "Polygon",
+        "Custom Polygon",
+        "Cloned Area"
+      )
     );
 
     dispatch({
-      type: '@@redux-form/INITIALIZE',
-      meta: { form: 'ExportForm' },
+      type: "@@redux-form/INITIALIZE",
+      meta: { form: "ExportForm" },
       payload: {
         buffer_aoi: e.buffer_aoi,
         description: e.description,
@@ -61,21 +66,21 @@ export function cloneExport (e) {
   };
 }
 
-export function runExport (jobUid) {
+export function runExport(jobUid) {
   return dispatch => {
     return axios({
       url: `/api/runs?job_uid=${jobUid}`,
-      method: 'POST',
+      method: "POST",
       headers: {
-        'X-CSRFToken': cookie.load('csrftoken')
+        "X-CSRFToken": cookie.load("csrftoken")
       }
     });
   };
 }
 
-export function getOverpassTimestamp (dispatch) {
+export function getOverpassTimestamp(dispatch) {
   return axios({
-    url: '/api/overpass_timestamp'
+    url: "/api/overpass_timestamp"
   }).then(rsp => {
     dispatch({
       type: types.RECEIVED_OVERPASS_TIMESTAMP,
@@ -84,7 +89,7 @@ export function getOverpassTimestamp (dispatch) {
   });
 }
 
-export function getExport (id) {
+export function getExport(id) {
   return dispatch => {
     return axios({
       url: `/api/jobs/${id}`
@@ -98,10 +103,10 @@ export function getExport (id) {
   };
 }
 
-export function getExports (url) {
+export function getExports(url) {
   return dispatch => {
     return axios({
-      url: url || '/api/jobs'
+      url: url || "/api/jobs"
     }).then(rsp => {
       dispatch({
         type: types.RECEIVED_EXPORT_LIST,
@@ -111,7 +116,7 @@ export function getExports (url) {
   };
 }
 
-export function getRuns (jobUid) {
+export function getRuns(jobUid) {
   return dispatch => {
     return axios({
       url: `/api/runs?job_uid=${jobUid}`
@@ -125,7 +130,7 @@ export function getRuns (jobUid) {
   };
 }
 
-export function updateAoiInfo (geojson, geomType, title, description) {
+export function updateAoiInfo(geojson, geomType, title, description) {
   return {
     type: types.UPDATE_AOI_INFO,
     geojson: geojson,
@@ -135,13 +140,13 @@ export function updateAoiInfo (geojson, geomType, title, description) {
   };
 }
 
-export function clearAoiInfo () {
+export function clearAoiInfo() {
   return {
     type: types.CLEAR_AOI_INFO
   };
 }
 
-export function updateMode (mode) {
+export function updateMode(mode) {
   return {
     type: types.SET_MODE,
     mode: mode

@@ -1,36 +1,70 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import axios from 'axios';
-import isEqual from 'lodash/isEqual';
-import { FormGroup, ControlLabel, FormControl, HelpBlock, Row, Col, Checkbox, Panel, Button, Table } from 'react-bootstrap';
-import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
-import { FormattedDate, FormattedRelative, FormattedTime } from 'react-intl';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { push } from 'react-router-redux';
-import 'react-select/dist/react-select.css';
-import yaml from 'js-yaml';
-import ExportAOI from './aoi/ExportAOI';
+import axios from "axios";
+import isEqual from "lodash/isEqual";
+import {
+  FormGroup,
+  ControlLabel,
+  FormControl,
+  HelpBlock,
+  Row,
+  Col,
+  Checkbox,
+  Panel,
+  Button,
+  Table
+} from "react-bootstrap";
+import {
+  Field,
+  SubmissionError,
+  formValueSelector,
+  propTypes,
+  reduxForm
+} from "redux-form";
+import { FormattedDate, FormattedRelative, FormattedTime } from "react-intl";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { push } from "react-router-redux";
+import "react-select/dist/react-select.css";
+import yaml from "js-yaml";
+import ExportAOI from "./aoi/ExportAOI";
 
-import { clickResetMap } from '../actions/aoi/AoiInfobarActions';
-import { clearAoiInfo, updateAoiInfo } from '../actions/exportsActions';
-import { createExportRegion, deleteExportRegion, getExportRegion, runExport, updateExportRegion } from '../actions/hdxActions';
-import styles from '../styles/HDXExportRegionForm.css';
-import { prettyBytes, AVAILABLE_EXPORT_FORMATS, getFormatCheckboxes, renderCheckboxes, renderCheckbox, renderInput, renderTextArea, renderSelect, renderMultiSelect, slugify } from './utils';
+import { clickResetMap } from "../actions/aoi/AoiInfobarActions";
+import { clearAoiInfo, updateAoiInfo } from "../actions/exportsActions";
+import {
+  createExportRegion,
+  deleteExportRegion,
+  getExportRegion,
+  runExport,
+  updateExportRegion
+} from "../actions/hdxActions";
+import styles from "../styles/HDXExportRegionForm.css";
+import {
+  prettyBytes,
+  AVAILABLE_EXPORT_FORMATS,
+  getFormatCheckboxes,
+  renderCheckboxes,
+  renderCheckbox,
+  renderInput,
+  renderTextArea,
+  renderSelect,
+  renderMultiSelect,
+  slugify
+} from "./utils";
 
-const FORM_NAME = 'HDXExportRegionForm';
+const FORM_NAME = "HDXExportRegionForm";
 
 const HDX_EXPORT_FORMATS = {
   shp: AVAILABLE_EXPORT_FORMATS.shp,
   geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
   garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
   kml: AVAILABLE_EXPORT_FORMATS.kml
-}
+};
 
 const form = reduxForm({
   form: FORM_NAME,
   onSubmit: (values, dispatch, props) => {
-    console.log('Submitting form. Values:', values);
+    console.log("Submitting form. Values:", values);
 
     const formData = {
       ...values,
@@ -38,9 +72,9 @@ const form = reduxForm({
     };
 
     if (values.id != null) {
-      dispatch(updateExportRegion(values.id, formData,FORM_NAME));
+      dispatch(updateExportRegion(values.id, formData, FORM_NAME));
     } else {
-      dispatch(createExportRegion(formData,FORM_NAME));
+      dispatch(createExportRegion(formData, FORM_NAME));
     }
   },
   validate: values => {
@@ -49,9 +83,13 @@ const form = reduxForm({
     try {
       yaml.safeLoad(values.feature_selection);
     } catch (err) {
-      errors.feature_selection = <pre>{err.message}</pre>;
+      errors.feature_selection = (
+        <pre>
+          {err.message}
+        </pre>
+      );
       errors._error = errors._error || [];
-      errors._error.push('Feature selection is invalid.');
+      errors._error.push("Feature selection is invalid.");
     }
 
     return errors;
@@ -62,45 +100,100 @@ const getTimeOptions = () => {
   const options = [];
 
   for (let i = 0; i < 24; i++) {
-    options.push(<option key={i} value={i}>{i}:00 UTC</option>);
+    options.push(
+      <option key={i} value={i}>
+        {i}:00 UTC
+      </option>
+    );
   }
 
   return options;
 };
 
-const PendingDatasetsPanel = ({ datasetPrefix, error, featureSelection, handleSubmit, status, styles, submitting }) =>
+const PendingDatasetsPanel = ({
+  datasetPrefix,
+  error,
+  featureSelection,
+  handleSubmit,
+  status,
+  styles,
+  submitting
+}) =>
   <Panel>
-    This will immediately create {Object.keys(featureSelection).length} dataset{Object.keys(featureSelection).length === 1 ? '' : 's'} on HDX:
+    This will immediately create {Object.keys(featureSelection).length} dataset{Object.keys(featureSelection).length === 1 ? "" : "s"}{" "}
+    on HDX:
     <ul>
-      {
-        Object.keys(featureSelection).map((x, i) => (
-          <li key={i}>
-            <code>{datasetPrefix}_{slugify(x)}</code>
-          </li>
-        ))
-      }
+      {Object.keys(featureSelection).map((x, i) =>
+        <li key={i}>
+          <code>
+            {datasetPrefix}_{slugify(x)}
+          </code>
+        </li>
+      )}
     </ul>
-    <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
-      {submitting ? 'Creating...' : 'Create Datasets + Schedule Export'}
+    <Button
+      bsStyle="primary"
+      bsSize="large"
+      type="submit"
+      disabled={submitting}
+      onClick={handleSubmit}
+      block
+    >
+      {submitting ? "Creating..." : "Create Datasets + Schedule Export"}
     </Button>
-    {error && <p className={styles.error}><strong>{error}</strong></p>}
-    {status && <p className={styles.status}><strong>{status}</strong></p>}
+    {error &&
+      <p className={styles.error}>
+        <strong>
+          {error}
+        </strong>
+      </p>}
+    {status &&
+      <p className={styles.status}>
+        <strong>
+          {status}
+        </strong>
+      </p>}
   </Panel>;
 
-const ExistingDatasetsPanel = ({ error, datasets, handleSubmit, status, styles, submitting }) =>
+const ExistingDatasetsPanel = ({
+  error,
+  datasets,
+  handleSubmit,
+  status,
+  styles,
+  submitting
+}) =>
   <Panel>
-    This will immediately update {datasets.length} dataset{datasets.length === 1 ? '' : 's'} on HDX.
-    <Button bsStyle='primary' bsSize='large' type='submit' disabled={submitting} onClick={handleSubmit} block>
-      {submitting ? 'Saving...' : 'Save + Sync to HDX'}
+    This will immediately update {datasets.length} dataset{datasets.length === 1 ? "" : "s"}{" "}
+    on HDX.
+    <Button
+      bsStyle="primary"
+      bsSize="large"
+      type="submit"
+      disabled={submitting}
+      onClick={handleSubmit}
+      block
+    >
+      {submitting ? "Saving..." : "Save + Sync to HDX"}
     </Button>
-    {error && <p className={styles.error}><strong>{error}</strong></p>}
-    {status && <p className={styles.status}><strong>{status}</strong></p>}
+    {error &&
+      <p className={styles.error}>
+        <strong>
+          {error}
+        </strong>
+      </p>}
+    {status &&
+      <p className={styles.status}>
+        <strong>
+          {status}
+        </strong>
+      </p>}
   </Panel>;
 
 export class HDXExportRegionForm extends Component {
   static propTypes = {
     ...propTypes
-  }
+  };
 
   state = {
     deleting: false,
@@ -109,39 +202,42 @@ export class HDXExportRegionForm extends Component {
     running: false
   };
 
-  getLastRun () {
+  getLastRun() {
     const exportRegion = this.exportRegion;
 
     if (exportRegion.last_run == null) {
-      return 'Never';
+      return "Never";
     }
 
     return <FormattedRelative value={exportRegion.last_run} />;
   }
 
-  getNextRun () {
+  getNextRun() {
     const exportRegion = this.exportRegion;
 
     if (exportRegion.next_run == null) {
-      return 'Never';
+      return "Never";
     }
 
     return <FormattedRelative value={exportRegion.next_run} />;
   }
 
-  loadLocationOptions () {
-    return axios('https://data.humdata.org/api/3/action/group_list?all_fields=true')
-      .then(rsp => this.setState({
+  loadLocationOptions() {
+    return axios(
+      "https://data.humdata.org/api/3/action/group_list?all_fields=true"
+    ).then(rsp =>
+      this.setState({
         locationOptions: rsp.data.result
-          .filter(x => x.state === 'active')
+          .filter(x => x.state === "active")
           .map(x => ({
             value: x.name,
             label: x.title
           }))
-      }));
+      })
+    );
   }
 
-  didReceiveRegion (exportRegion) {
+  didReceiveRegion(exportRegion) {
     if (exportRegion == null) {
       return;
     }
@@ -158,13 +254,19 @@ export class HDXExportRegionForm extends Component {
       updateAOI(exportRegion.simplified_geom);
     }
 
-    if (exportRegion.runs[0] != null && ['SUBMITTED', 'RUNNING'].indexOf(exportRegion.runs[0].status) >= 0) {
+    if (
+      exportRegion.runs[0] != null &&
+      ["SUBMITTED", "RUNNING"].indexOf(exportRegion.runs[0].status) >= 0
+    ) {
       this.setState({
         running: true
       });
 
       if (this.runPoller == null) {
-        this.runPoller = setInterval(() => getExportRegion(exportRegion.id), 15e3);
+        this.runPoller = setInterval(
+          () => getExportRegion(exportRegion.id),
+          15e3
+        );
       }
     } else {
       this.setState({
@@ -175,11 +277,16 @@ export class HDXExportRegionForm extends Component {
       this.runPoller = null;
     }
 
-    console.log('Export region:', exportRegion);
+    console.log("Export region:", exportRegion);
   }
 
-  componentDidMount () {
-    const { clearAOI, getExportRegion, hdx: { exportRegions }, match: { params: { id } } } = this.props;
+  componentDidMount() {
+    const {
+      clearAOI,
+      getExportRegion,
+      hdx: { exportRegions },
+      match: { params: { id } }
+    } = this.props;
 
     if (id == null) {
       clearAOI();
@@ -197,8 +304,12 @@ export class HDXExportRegionForm extends Component {
     this.didReceiveRegion(exportRegions[id]);
   }
 
-  componentWillReceiveProps (props) {
-    const { hdx: { exportRegions, statusCode }, match: { params: { id } }, showAllExportRegions } = props;
+  componentWillReceiveProps(props) {
+    const {
+      hdx: { exportRegions, statusCode },
+      match: { params: { id } },
+      showAllExportRegions
+    } = props;
 
     if (this.props.hdx.statusCode !== statusCode) {
       switch (statusCode) {
@@ -235,16 +346,22 @@ export class HDXExportRegionForm extends Component {
     }
   }
 
-  get exportRegion () {
+  get exportRegion() {
     const { hdx: { exportRegions }, match: { params: { id } } } = this.props;
     return exportRegions[id];
   }
 
-  getRunRows () {
-    return this.exportRegion.runs.slice(0, 10).map((run, i) => (
+  getRunRows() {
+    return this.exportRegion.runs.slice(0, 10).map((run, i) =>
       <tr key={i}>
         <td>
-          <a href={`/v3/#/exports/detail/${this.exportRegion.job_uid}/${run.uid}`}><FormattedDate value={run.run_at} /> <FormattedTime value={run.run_at} /></a>
+          <a
+            href={`/v3/#/exports/detail/${this.exportRegion
+              .job_uid}/${run.uid}`}
+          >
+            <FormattedDate value={run.run_at} />{" "}
+            <FormattedTime value={run.run_at} />
+          </a>
         </td>
         <td>
           {run.status}
@@ -256,7 +373,7 @@ export class HDXExportRegionForm extends Component {
           {prettyBytes(run.size)}
         </td>
       </tr>
-    ));
+    );
   }
 
   handleDelete = () => {
@@ -275,237 +392,272 @@ export class HDXExportRegionForm extends Component {
     this.props.handleRun(this.exportRegion.id, this.exportRegion.job_uid);
   };
 
-  setFormGeoJSON = (geojson) => {
-    this.props.change("the_geom",geojson)
-  }
+  setFormGeoJSON = geojson => {
+    this.props.change("the_geom", geojson);
+  };
 
-  render () {
-    const { deleting, editing, featureSelection, locationOptions, running } = this.state;
+  render() {
+    const {
+      deleting,
+      editing,
+      featureSelection,
+      locationOptions,
+      running
+    } = this.state;
     const { error, handleSubmit, hdx: { status }, submitting } = this.props;
     const exportRegion = this.exportRegion;
-    const datasetPrefix = this.props.datasetPrefix || '<prefix>';
-    const name = this.props.name || 'Untitled';
+    const datasetPrefix = this.props.datasetPrefix || "<prefix>";
+    const name = this.props.name || "Untitled";
 
     return (
-      <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
+      <Row style={{ height: "100%" }}>
+        <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
           <div className={styles.hdxForm}>
-            <ol className='breadcrumb'>
-              <li><Link to='/hdx'>Export Regions</Link></li>
-              <li className='active'>{name}</li>
+            <ol className="breadcrumb">
+              <li>
+                <Link to="/hdx">Export Regions</Link>
+              </li>
+              <li className="active">
+                {name}
+              </li>
             </ol>
             <form onSubmit={handleSubmit}>
-              <h2>{editing ? 'Edit' : 'Create'} Export Region</h2>
-              {this.props.hdx.error && <p><strong className={styles.error}>{this.props.hdx.status}</strong></p>}
+              <h2>
+                {editing ? "Edit" : "Create"} Export Region
+              </h2>
+              {this.props.hdx.error &&
+                <p>
+                  <strong className={styles.error}>
+                    {this.props.hdx.status}
+                  </strong>
+                </p>}
               <Field
-                name='name'
-                type='text'
-                label='Dataset Name'
-                placeholder='HOTOSM Senegal'
+                name="name"
+                type="text"
+                label="Dataset Name"
+                placeholder="HOTOSM Senegal"
                 component={renderInput}
               />
               <hr />
               <Field
-                name='dataset_prefix'
-                type='text'
-                label='Dataset Prefix'
-                placeholder='hotosm_sen'
-                help={<div>Example: prefix <code>hotosm_sen</code> results in datasets <code>hotosm_sen_roads</code>, <code>hotosm_sen_buildings</code>, etc. Always use the ISO 3-letter code where possible.</div>}
+                name="dataset_prefix"
+                type="text"
+                label="Dataset Prefix"
+                placeholder="hotosm_sen"
+                help={
+                  <div>
+                    Example: prefix <code>hotosm_sen</code> results in datasets{" "}
+                    <code>hotosm_sen_roads</code>,{" "}
+                    <code>hotosm_sen_buildings</code>, etc. Always use the ISO
+                    3-letter code where possible.
+                  </div>
+                }
                 component={renderInput}
               />
               <hr />
               <Field
-                id='formControlsTextarea'
-                label='Feature Selection'
-                rows='10'
-                name='feature_selection'
+                id="formControlsTextarea"
+                label="Feature Selection"
+                rows="10"
+                name="feature_selection"
                 component={renderTextArea}
                 className={styles.featureSelection}
               />
               <Field
-                id='formControlExtraNotes'
-                name='extra_notes'
-                rows='4'
-                label='Extra Notes (prepended to notes section)'
+                id="formControlExtraNotes"
+                name="extra_notes"
+                rows="4"
+                label="Extra Notes (prepended to notes section)"
                 component={renderTextArea}
               />
               <Row>
                 <Col xs={6}>
                   <Field
-                    name='is_private'
-                    description='Private'
+                    name="is_private"
+                    description="Private"
                     component={renderCheckbox}
-                    type='checkbox'
+                    type="checkbox"
                   />
                 </Col>
                 <Col xs={6}>
                   <Field
-                    name='subnational'
-                    description='Dataset contains sub-national data'
+                    name="subnational"
+                    description="Dataset contains sub-national data"
                     component={renderCheckbox}
-                    type='checkbox'
+                    type="checkbox"
                   />
                 </Col>
               </Row>
               <Row>
                 <Col xs={12}>
                   <Field
-                    name='buffer_aoi'
-                    description='AOI is an administrative boundary (and should be buffered)'
+                    name="buffer_aoi"
+                    description="AOI is an administrative boundary (and should be buffered)"
                     component={renderCheckbox}
-                    type='checkbox'
+                    type="checkbox"
                   />
                 </Col>
               </Row>
               <Field
-                name='locations'
+                name="locations"
                 multi
-                label='Location'
+                label="Location"
                 component={renderMultiSelect}
                 options={locationOptions}
                 isLoading={locationOptions == null}
               />
               <Field
-                name='license_human_readable'
-                type='text'
-                label='License'
+                name="license_human_readable"
+                type="text"
+                label="License"
                 disabled
                 component={renderInput}
               />
               <Field
-                name='license'
-                label='License'
+                name="license"
+                label="License"
                 disabled
-                component='input'
-                type='hidden'
+                component="input"
+                type="hidden"
               />
               <hr />
               <Row>
                 <Col xs={6}>
                   <Field
-                    name='schedule_period'
-                    label='Run this export on an automated schedule:'
+                    name="schedule_period"
+                    label="Run this export on an automated schedule:"
                     component={renderSelect}
                   >
-                    <option value='daily'>Daily</option>
-                    <option value='weekly'>Weekly (Sunday)</option>
-                    <option value='monthly'>Monthly (1st of month)</option>
-                    <option value='6hrs'>Every 6 hours</option>
-                    <option value='disabled'>Don't automatically schedule</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly (Sunday)</option>
+                    <option value="monthly">Monthly (1st of month)</option>
+                    <option value="6hrs">Every 6 hours</option>
+                    <option value="disabled">
+                      Don't automatically schedule
+                    </option>
                   </Field>
                 </Col>
                 <Col xs={5} xsOffset={1}>
                   <Field
-                    name='schedule_hour'
-                    label='At time:'
+                    name="schedule_hour"
+                    label="At time:"
                     component={renderSelect}
                   >
-                    { getTimeOptions() }
+                    {getTimeOptions()}
                   </Field>
                 </Col>
               </Row>
               <Row>
                 <Col xs={5}>
                   <Field
-                    name='export_formats'
-                    label='File Formats'
+                    name="export_formats"
+                    label="File Formats"
                     component={renderCheckboxes}
                   >
                     {getFormatCheckboxes(HDX_EXPORT_FORMATS)}
                   </Field>
                 </Col>
                 <Col xs={7}>
-                  { editing && exportRegion
-                  ? <ExistingDatasetsPanel
-                    datasets={exportRegion.datasets}
-                    error={error}
-                    handleSubmit={handleSubmit}
-                    status={status}
-                    styles={styles}
-                    submitting={submitting}
-                  />
-                  : <PendingDatasetsPanel
-                    datasetPrefix={datasetPrefix}
-                    error={error}
-                    featureSelection={featureSelection}
-                    handleSubmit={handleSubmit}
-                    status={status}
-                    styles={styles}
-                    submitting={submitting}
-                  />
-                  }
+                  {editing && exportRegion
+                    ? <ExistingDatasetsPanel
+                        datasets={exportRegion.datasets}
+                        error={error}
+                        handleSubmit={handleSubmit}
+                        status={status}
+                        styles={styles}
+                        submitting={submitting}
+                      />
+                    : <PendingDatasetsPanel
+                        datasetPrefix={datasetPrefix}
+                        error={error}
+                        featureSelection={featureSelection}
+                        handleSubmit={handleSubmit}
+                        status={status}
+                        styles={styles}
+                        submitting={submitting}
+                      />}
                 </Col>
               </Row>
             </form>
-            {editing && exportRegion &&
+            {editing &&
+              exportRegion &&
               <div>
                 <Row>
                   <Col xs={7}>
                     <h4>HDX Datasets</h4>
                     <ul>
-                      {
-                        exportRegion.datasets.map((x, i) => (
-                          <li key={i}>
-                            <code><a href={x.url}>{x.name}</a></code>
-                          </li>
-                        ))
-                      }
+                      {exportRegion.datasets.map((x, i) =>
+                        <li key={i}>
+                          <code>
+                            <a href={x.url}>
+                              {x.name}
+                            </a>
+                          </code>
+                        </li>
+                      )}
                     </ul>
                   </Col>
                   <Col xs={5}>
                     <Panel>
                       <p>
-                        <strong>Last run:</strong> {this.getLastRun()}<br />
+                        <strong>Last run:</strong> {this.getLastRun()}
+                        <br />
                         <strong>Next scheduled run:</strong> {this.getNextRun()}
                       </p>
                       <Button
-                        bsStyle='primary'
+                        bsStyle="primary"
                         disabled={running}
                         onClick={this.handleRun}
                       >
-                        {running ? 'Running...' : 'Run Now'}
+                        {running ? "Running..." : "Run Now"}
                       </Button>
                     </Panel>
                   </Col>
                 </Row>
-                <h3>Run History <small><a href={`/v3/#/exports/detail/${exportRegion.job_uid}`}>view export details</a></small></h3>
+                <h3>
+                  Run History{" "}
+                  <small>
+                    <a href={`/v3/#/exports/detail/${exportRegion.job_uid}`}>
+                      view export details
+                    </a>
+                  </small>
+                </h3>
                 {exportRegion.runs.length > 0
                   ? <Table>
-                    <thead>
-                      <tr>
-                        <th>
-                          Run Started
-                        </th>
-                        <th>
-                          Status
-                        </th>
-                        <th>
-                          Elapsed Time
-                        </th>
-                        <th>
-                          Total Size
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>{this.getRunRows()}</tbody>
-                  </Table>
-                  : <p>This regional export has never been run.</p>
-                }
+                      <thead>
+                        <tr>
+                          <th>Run Started</th>
+                          <th>Status</th>
+                          <th>Elapsed Time</th>
+                          <th>Total Size</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.getRunRows()}
+                      </tbody>
+                    </Table>
+                  : <p>This regional export has never been run.</p>}
                 <Panel>
                   <p>
-                    This will unschedule the export region.
-                    Any existing datasets created by this region will remain on HDX.
+                    This will unschedule the export region. Any existing
+                    datasets created by this region will remain on HDX.
                   </p>
-                  <Button bsStyle='danger' block disabled={deleting} onClick={this.handleDelete}>
-                    {deleting ? 'Removing Export Region...' : 'Remove Export Region'}
+                  <Button
+                    bsStyle="danger"
+                    block
+                    disabled={deleting}
+                    onClick={this.handleDelete}
+                  >
+                    {deleting
+                      ? "Removing Export Region..."
+                      : "Remove Export Region"}
                   </Button>
                 </Panel>
-              </div>
-            }
+              </div>}
           </div>
         </Col>
-        <Col xs={6} style={{height: '100%'}}>
-          <ExportAOI setFormGeoJSON={this.setFormGeoJSON}/>
+        <Col xs={6} style={{ height: "100%" }}>
+          <ExportAOI setFormGeoJSON={this.setFormGeoJSON} />
         </Col>
       </Row>
     );
@@ -515,8 +667,8 @@ export class HDXExportRegionForm extends Component {
 const mapStateToProps = state => {
   return {
     aoiInfo: state.aoiInfo,
-    datasetPrefix: formValueSelector(FORM_NAME)(state, 'dataset_prefix'),
-    featureSelection: formValueSelector(FORM_NAME)(state, 'feature_selection'),
+    datasetPrefix: formValueSelector(FORM_NAME)(state, "dataset_prefix"),
+    featureSelection: formValueSelector(FORM_NAME)(state, "feature_selection"),
     hdx: state.hdx,
     initialValues: {
       feature_selection: `
@@ -600,24 +752,23 @@ Points of Interest:
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 `.trim(),
       is_private: true,
-      license: 'hdx-odc-by',
-      license_human_readable: 'Open Database License (ODC-ODbL)',
-      schedule_period: 'daily',
+      license: "hdx-odc-by",
+      license_human_readable: "Open Database License (ODC-ODbL)",
+      schedule_period: "daily",
       schedule_hour: 0,
       subnational: true,
-      export_formats:["shp","geopackage","kml","garmin_img"],
-      buffer_aoi:false
+      export_formats: ["shp", "geopackage", "kml", "garmin_img"],
+      buffer_aoi: false
     },
-    name: formValueSelector(FORM_NAME)(state, 'name')
+    name: formValueSelector(FORM_NAME)(state, "name")
   };
 };
 
-const flatten = arr => arr.reduce(
-  (acc, val) => acc.concat(
-    Array.isArray(val) ? flatten(val) : val
-  ),
-  []
-);
+const flatten = arr =>
+  arr.reduce(
+    (acc, val) => acc.concat(Array.isArray(val) ? flatten(val) : val),
+    []
+  );
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -628,25 +779,31 @@ const mapDispatchToProps = dispatch => {
     getExportRegion: id => dispatch(getExportRegion(id)),
     handleDelete: id => dispatch(deleteExportRegion(id)),
     handleRun: (id, jobUid) => dispatch(runExport(id, jobUid)),
-    showAllExportRegions: () => dispatch(push('/')),
+    showAllExportRegions: () => dispatch(push("/")),
     updateAOI: geometry => {
-      dispatch(updateAoiInfo({
-        features: [
+      dispatch(
+        updateAoiInfo(
           {
-            type: 'Feature',
-            geometry,
-            properties: {}
-          }
-        ],
-        type: 'FeatureCollection',
-        geomType: 'Polygon',
-        title: 'Custom Polygon'
-      }, 'Polygon', 'Custom Polygon', 'Saved'));
+            features: [
+              {
+                type: "Feature",
+                geometry,
+                properties: {}
+              }
+            ],
+            type: "FeatureCollection",
+            geomType: "Polygon",
+            title: "Custom Polygon"
+          },
+          "Polygon",
+          "Custom Polygon",
+          "Saved"
+        )
+      );
     }
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(form(HDXExportRegionForm));
+export default connect(mapStateToProps, mapDispatchToProps)(
+  form(HDXExportRegionForm)
+);

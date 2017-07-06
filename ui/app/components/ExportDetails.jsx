@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Alert,
   Button,
@@ -8,16 +8,16 @@ import {
   Panel,
   Row,
   Table
-} from 'react-bootstrap';
-import { connect } from 'react-redux';
+} from "react-bootstrap";
+import { connect } from "react-redux";
 import {
   getExport,
   getRuns,
   runExport,
   cloneExport
-} from '../actions/exportsActions';
-import MapListView from './MapListView';
-import { exportFormatNicename, formatDate, formatDuration } from './utils';
+} from "../actions/exportsActions";
+import MapListView from "./MapListView";
+import { exportFormatNicename, formatDate, formatDuration } from "./utils";
 
 const Details = ({ exportInfo }) => {
   return (
@@ -25,52 +25,52 @@ const Details = ({ exportInfo }) => {
       <tbody>
         <tr>
           <td>Description:</td>
-          <td colSpan='3'>
+          <td colSpan="3">
             {exportInfo.description}
           </td>
         </tr>
         <tr>
           <td>Project:</td>
-          <td colSpan='3'>
+          <td colSpan="3">
             {exportInfo.event}
           </td>
         </tr>
         <tr>
           <td>Area:</td>
-          <td colSpan='3'>
+          <td colSpan="3">
             {exportInfo.area} sq km
           </td>
         </tr>
         <tr>
           <td>Created at:</td>
-          <td colSpan='3'>
+          <td colSpan="3">
             {formatDate(exportInfo.created_at)}
           </td>
         </tr>
         <tr>
           <td>Created by:</td>
-          <td colSpan='3'>
+          <td colSpan="3">
             {exportInfo.user.username}
           </td>
         </tr>
         <tr>
           <td>Published:</td>
-          <td colSpan='3'>
-            {exportInfo.published ? 'Yes' : 'No'}
+          <td colSpan="3">
+            {exportInfo.published ? "Yes" : "No"}
           </td>
         </tr>
         <tr>
           <td>Export formats:</td>
-          <td colSpan='3'>
+          <td colSpan="3">
             {exportInfo.export_formats
               .map(x => exportFormatNicename(x))
-              .join(', ')}
+              .join(", ")}
           </td>
         </tr>
         <tr>
           <td>OSM Analytics:</td>
-          <td colSpan='3'>
-            <a href={exportInfo.osma_link} target='_blank'>
+          <td colSpan="3">
+            <a href={exportInfo.osma_link} target="_blank">
               View this area
             </a>
           </td>
@@ -81,7 +81,7 @@ const Details = ({ exportInfo }) => {
 };
 
 class ExportRuns extends Component {
-  componentDidMount () {
+  componentDidMount() {
     this.props.getRuns(this.props.jobUid);
     this.poller = setInterval(
       () => this.props.getRuns(this.props.jobUid),
@@ -89,57 +89,57 @@ class ExportRuns extends Component {
     );
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (prevProps.jobUid !== this.props.jobUid) {
       clearInterval(this.poller);
       this.poller.getRuns(this.props.jobUid);
     } else {
       if (
         this.props.runs.length > 0 &&
-        (this.props.runs[0].status === 'FAILED' ||
-          this.props.runs[0].status === 'COMPLETE')
+        (this.props.runs[0].status === "FAILED" ||
+          this.props.runs[0].status === "COMPLETE")
       ) {
         clearInterval(this.poller);
       }
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     clearInterval(this.poller);
   }
 
-  render () {
+  render() {
     const runs = this.props.runs;
     return (
       <div>
         {runs.map((run, i) => {
           return (
-            <Panel header={'Run #' + run.uid} key={i}>
+            <Panel header={"Run #" + run.uid} key={i}>
               <Table responsive>
                 <tbody>
                   <tr>
                     <td>Status:</td>
-                    <td colSpan='3'>
-                      <Alert bsStyle='success' style={{ marginBottom: '0px' }}>
+                    <td colSpan="3">
+                      <Alert bsStyle="success" style={{ marginBottom: "0px" }}>
                         {run.status}
                       </Alert>
                     </td>
                   </tr>
                   <tr>
                     <td>Started:</td>
-                    <td colSpan='3'>
+                    <td colSpan="3">
                       {formatDate(run.started_at)}
                     </td>
                   </tr>
                   <tr>
                     <td>Finished:</td>
-                    <td colSpan='3'>
-                      {run.finished_at ? formatDate(run.finished_at) : ''}
+                    <td colSpan="3">
+                      {run.finished_at ? formatDate(run.finished_at) : ""}
                     </td>
                   </tr>
                   <tr>
                     <td>Duration:</td>
-                    <td colSpan='3'>
+                    <td colSpan="3">
                       {formatDuration(run.duration)}
                     </td>
                   </tr>
@@ -155,7 +155,7 @@ class ExportRuns extends Component {
                             return (
                               <a
                                 key={j}
-                                style={{ display: 'block' }}
+                                style={{ display: "block" }}
                                 href={dl.download_url}
                               >
                                 {dl.filename}
@@ -190,12 +190,12 @@ const ExportRunsContainer = connect(
 )(ExportRuns);
 
 export class ExportDetails extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = { showModal: false };
   }
 
-  componentWillMount () {
+  componentWillMount() {
     const { getExport, match: { params: { id } } } = this.props;
     getExport(id);
   }
@@ -216,30 +216,30 @@ export class ExportDetails extends Component {
     this.setState({ showModal: true });
   };
 
-  render () {
+  render() {
     const { match: { params: { id } }, exportInfo } = this.props;
     const geom = exportInfo
-      ? { features: [exportInfo.simplified_geom], type: 'FeatureCollection' }
+      ? { features: [exportInfo.simplified_geom], type: "FeatureCollection" }
       : null;
     const selectedId = exportInfo ? exportInfo.simplified_geom.id : null;
     return (
-      <Row style={{ height: '100%' }}>
+      <Row style={{ height: "100%" }}>
         <Col
           xs={4}
-          style={{ height: '100%', padding: '20px', paddingRight: '10px' }}
+          style={{ height: "100%", padding: "20px", paddingRight: "10px" }}
         >
-          <Panel header={exportInfo ? 'Export #' + exportInfo.uid : null}>
+          <Panel header={exportInfo ? "Export #" + exportInfo.uid : null}>
             {exportInfo ? <Details exportInfo={exportInfo} /> : null}
             <ButtonGroup>
-              <Button bsSize='large' onClick={this.showModal}>
+              <Button bsSize="large" onClick={this.showModal}>
                 Features
               </Button>
-              <Button bsStyle='success' bsSize='large' onClick={this.handleRun}>
+              <Button bsStyle="success" bsSize="large" onClick={this.handleRun}>
                 Re-Run Export
               </Button>
               <Button
-                bsStyle='primary'
-                bsSize='large'
+                bsStyle="primary"
+                bsSize="large"
                 onClick={this.handleClone}
                 {...(exportInfo ? {} : { disabled: true })}
               >
@@ -251,15 +251,15 @@ export class ExportDetails extends Component {
         <Col
           xs={4}
           style={{
-            height: '100%',
-            padding: '20px',
-            paddingLeft: '10px',
-            overflowY: 'scroll'
+            height: "100%",
+            padding: "20px",
+            paddingLeft: "10px",
+            overflowY: "scroll"
           }}
         >
           {exportInfo ? <ExportRunsContainer jobUid={id} /> : null}
         </Col>
-        <Col xs={4} style={{ height: '100%' }}>
+        <Col xs={4} style={{ height: "100%" }}>
           <MapListView features={geom} selectedFeatureId={selectedId} />
         </Col>
         <Modal show={this.state.showModal} onHide={this.closeModal}>
@@ -268,7 +268,7 @@ export class ExportDetails extends Component {
           </Modal.Header>
           <Modal.Body>
             <pre>
-              {exportInfo ? exportInfo.feature_selection : ''}
+              {exportInfo ? exportInfo.feature_selection : ""}
             </pre>
           </Modal.Body>
           <Modal.Footer>

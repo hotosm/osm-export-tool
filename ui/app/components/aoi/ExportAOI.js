@@ -1,57 +1,57 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import Attribution from 'ol/control/attribution';
-import Control from 'ol/control/control';
-import Draw from 'ol/interaction/draw';
-import Feature from 'ol/feature';
-import Fill from 'ol/style/fill';
-import GeoJSONFormat from 'ol/format/geojson';
-import interaction from 'ol/interaction';
-import Polygon from 'ol/geom/polygon';
-import Projection from 'ol/proj/projection';
-import Map from 'ol/map';
-import ol from 'ol';
-import OSM from 'ol/source/osm';
-import proj from 'ol/proj';
-import RegularShape from 'ol/style/regularshape';
-import ScaleLine from 'ol/control/scaleline';
-import Sphere from 'ol/sphere';
-import Stroke from 'ol/style/stroke';
-import Style from 'ol/style/style';
-import Tile from 'ol/layer/tile';
-import VectorLayer from 'ol/layer/vector';
-import VectorSource from 'ol/source/vector';
-import View from 'ol/view';
-import Zoom from 'ol/control/zoom';
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import Attribution from "ol/control/attribution";
+import Control from "ol/control/control";
+import Draw from "ol/interaction/draw";
+import Feature from "ol/feature";
+import Fill from "ol/style/fill";
+import GeoJSONFormat from "ol/format/geojson";
+import interaction from "ol/interaction";
+import Polygon from "ol/geom/polygon";
+import Projection from "ol/proj/projection";
+import Map from "ol/map";
+import ol from "ol";
+import OSM from "ol/source/osm";
+import proj from "ol/proj";
+import RegularShape from "ol/style/regularshape";
+import ScaleLine from "ol/control/scaleline";
+import Sphere from "ol/sphere";
+import Stroke from "ol/style/stroke";
+import Style from "ol/style/style";
+import Tile from "ol/layer/tile";
+import VectorLayer from "ol/layer/vector";
+import VectorSource from "ol/source/vector";
+import View from "ol/view";
+import Zoom from "ol/control/zoom";
 
-import styles from '../../styles/aoi/CreateExport.css';
-import AoiInfobar from './AoiInfobar.js';
-import SearchAOIToolbar from './SearchAOIToolbar.js';
-import DrawAOIToolbar from './DrawAOIToolbar.js';
-import InvalidDrawWarning from './InvalidDrawWarning.js';
-import DropZone from './DropZone.js';
+import styles from "../../styles/aoi/CreateExport.css";
+import AoiInfobar from "./AoiInfobar.js";
+import SearchAOIToolbar from "./SearchAOIToolbar.js";
+import DrawAOIToolbar from "./DrawAOIToolbar.js";
+import InvalidDrawWarning from "./InvalidDrawWarning.js";
+import DropZone from "./DropZone.js";
 import {
   updateMode,
   updateAoiInfo,
   clearAoiInfo
-} from '../../actions/exportsActions.js';
+} from "../../actions/exportsActions.js";
 import {
   hideInvalidDrawWarning,
   showInvalidDrawWarning
-} from '../../actions/aoi/drawToolBarActions.js';
+} from "../../actions/aoi/drawToolBarActions.js";
 
-export const MODE_DRAW_BBOX = 'MODE_DRAW_BBOX';
-export const MODE_NORMAL = 'MODE_NORMAL';
-export const MODE_DRAW_FREE = 'MODE_DRAW_FREE';
-const WGS84 = 'EPSG:4326';
-const WEB_MERCATOR = 'EPSG:3857';
-const isEqual = require('lodash/isEqual');
+export const MODE_DRAW_BBOX = "MODE_DRAW_BBOX";
+export const MODE_NORMAL = "MODE_NORMAL";
+export const MODE_DRAW_FREE = "MODE_DRAW_FREE";
+const WGS84 = "EPSG:4326";
+const WEB_MERCATOR = "EPSG:3857";
+const isEqual = require("lodash/isEqual");
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
 
 export class ExportAOI extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this._handleDrawStart = this._handleDrawStart.bind(this);
     this._handleDrawEnd = this._handleDrawEnd.bind(this);
@@ -63,15 +63,15 @@ export class ExportAOI extends Component {
     this.handleGeoJSONUpload = this.handleGeoJSONUpload.bind(this);
   }
 
-  getFeature (geojson) {
+  getFeature(geojson) {
     switch (geojson.type) {
-      case 'FeatureCollection':
+      case "FeatureCollection":
         return GEOJSON_FORMAT.readFeature(geojson.features[0], {
           dataProjection: WGS84,
           featureProjection: WEB_MERCATOR
         });
 
-      case 'Feature':
+      case "Feature":
         return GEOJSON_FORMAT.readFeature(geojson, {
           dataProjection: WGS84,
           featureProjection: WEB_MERCATOR
@@ -87,7 +87,7 @@ export class ExportAOI extends Component {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { aoiInfo: { geojson } } = this.props;
 
     this._initializeOpenLayers();
@@ -100,9 +100,9 @@ export class ExportAOI extends Component {
     }
   }
 
-  checkSize (geometry) {
-    var currentProjection = new Projection({ code: 'EPSG:3857' });
-    var newProjection = new Projection({ code: 'EPSG:4326' });
+  checkSize(geometry) {
+    var currentProjection = new Projection({ code: "EPSG:3857" });
+    var newProjection = new Projection({ code: "EPSG:4326" });
     var extentPoly = Polygon.fromExtent(geometry.getExtent());
     extentPoly.transform(currentProjection, newProjection);
     var sphere = new Sphere(6378137);
@@ -120,7 +120,7 @@ export class ExportAOI extends Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.errors) {
       this.props.showInvalidDrawWarning(this.props.errors);
     }
@@ -149,7 +149,7 @@ export class ExportAOI extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     // Check if the map mode has changed (DRAW or NORMAL)
     if (this.props.mode !== nextProps.mode) {
       this._updateInteractions(nextProps.mode);
@@ -169,7 +169,7 @@ export class ExportAOI extends Component {
     }
   }
 
-  handleCancel (sender) {
+  handleCancel(sender) {
     this.props.hideInvalidDrawWarning();
 
     if (this.props.mode !== MODE_NORMAL) {
@@ -180,7 +180,7 @@ export class ExportAOI extends Component {
     this.props.clearAoiInfo();
   }
 
-  handleZoomToSelection (bbox) {
+  handleZoomToSelection(bbox) {
     this._map
       .getView()
       .fit(
@@ -189,7 +189,7 @@ export class ExportAOI extends Component {
       );
   }
 
-  handleResetMap () {
+  handleResetMap() {
     let worldExtent = proj.transformExtent(
       [-180, -90, 180, 90],
       WGS84,
@@ -198,7 +198,7 @@ export class ExportAOI extends Component {
     this._map.getView().fit(worldExtent, this._map.getSize());
   }
 
-  handleSearch (result) {
+  handleSearch(result) {
     const unformattedBbox = result.bbox;
     const formattedBbox = [
       unformattedBbox.west,
@@ -216,30 +216,30 @@ export class ExportAOI extends Component {
       geometry: geom
     });
     this._drawLayer.getSource().addFeature(bboxFeature);
-    let description = '';
-    description = description + (result.countryName ? result.countryName : '');
+    let description = "";
+    description = description + (result.countryName ? result.countryName : "");
     description =
-      description + (result.adminName1 ? ', ' + result.adminName1 : '');
+      description + (result.adminName1 ? ", " + result.adminName1 : "");
     description =
-      description + (result.adminName2 ? ', ' + result.adminName2 : '');
+      description + (result.adminName2 ? ", " + result.adminName2 : "");
 
-    this.props.updateAoiInfo(geojson, 'Polygon', result.name, description);
+    this.props.updateAoiInfo(geojson, "Polygon", result.name, description);
     this.handleZoomToSelection(bbox);
   }
 
-  handleGeoJSONUpload (geojson) {
-    this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Import');
+  handleGeoJSONUpload(geojson) {
+    this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Import");
   }
 
-  setMapView () {
+  setMapView() {
     this._clearDraw();
     const extent = this._map.getView().calculateExtent(this._map.getSize());
     const geom = Polygon.fromExtent(extent);
     const geojson = createGeoJSON(geom);
-    this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Map View');
+    this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Map View");
   }
 
-  _activateDrawInteraction (mode) {
+  _activateDrawInteraction(mode) {
     if (mode === MODE_DRAW_BBOX) {
       this._drawFreeInteraction.setActive(false);
       this._drawBoxInteraction.setActive(true);
@@ -249,36 +249,36 @@ export class ExportAOI extends Component {
     }
   }
 
-  _clearDraw () {
+  _clearDraw() {
     this._drawLayer.getSource().clear();
   }
 
-  _deactivateDrawInteraction () {
+  _deactivateDrawInteraction() {
     this._drawBoxInteraction.setActive(false);
     this._drawFreeInteraction.setActive(false);
   }
 
-  _handleDrawEnd (event) {
+  _handleDrawEnd(event) {
     // get the drawn bounding box
     const geometry = event.feature.getGeometry();
     const geojson = createGeoJSON(geometry);
-    this.props.updateAoiInfo(geojson, 'Polygon', 'Custom Polygon', 'Draw');
-    this.props.updateMode('MODE_NORMAL');
+    this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Draw");
+    this.props.updateMode("MODE_NORMAL");
   }
 
-  _handleDrawStart () {
+  _handleDrawStart() {
     this._clearDraw();
   }
 
-  _initializeOpenLayers () {
+  _initializeOpenLayers() {
     this._drawLayer = generateDrawLayer();
     this._drawBoxInteraction = _generateDrawBoxInteraction(this._drawLayer);
-    this._drawBoxInteraction.on('drawstart', this._handleDrawStart);
-    this._drawBoxInteraction.on('drawend', this._handleDrawEnd);
+    this._drawBoxInteraction.on("drawstart", this._handleDrawStart);
+    this._drawBoxInteraction.on("drawend", this._handleDrawEnd);
 
     this._drawFreeInteraction = _generateDrawFreeInteraction(this._drawLayer);
-    this._drawFreeInteraction.on('drawstart', this._handleDrawStart);
-    this._drawFreeInteraction.on('drawend', this._handleDrawEnd);
+    this._drawFreeInteraction.on("drawstart", this._handleDrawStart);
+    this._drawFreeInteraction.on("drawend", this._handleDrawEnd);
 
     this._map = new Map({
       controls: [
@@ -313,9 +313,9 @@ export class ExportAOI extends Component {
           source: new OSM()
         })
       ],
-      target: 'map',
+      target: "map",
       view: new View({
-        projection: 'EPSG:3857',
+        projection: "EPSG:3857",
         center: [110, 0],
         zoom: 3,
         minZoom: 3,
@@ -328,12 +328,12 @@ export class ExportAOI extends Component {
     this._map.addLayer(this._drawLayer);
   }
 
-  render () {
+  render() {
     const mapStyle = {};
 
     return (
       <div>
-        <div id='map' className={styles.map} style={mapStyle} ref='olmap'>
+        <div id="map" className={styles.map} style={mapStyle} ref="olmap">
           <AoiInfobar />
           <SearchAOIToolbar
             handleSearch={result => this.handleSearch(result)}
@@ -350,7 +350,7 @@ export class ExportAOI extends Component {
     );
   }
 
-  _updateInteractions (mode) {
+  _updateInteractions(mode) {
     switch (mode) {
       case MODE_DRAW_BBOX:
         this._activateDrawInteraction(MODE_DRAW_BBOX);
@@ -380,7 +380,7 @@ ExportAOI.propTypes = {
   setFormGeoJSON: PropTypes.func
 };
 
-function mapStateToProps (state) {
+function mapStateToProps(state) {
   return {
     aoiInfo: state.aoiInfo,
     mode: state.mode,
@@ -390,7 +390,7 @@ function mapStateToProps (state) {
   };
 }
 
-function mapDispatchToProps (dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
     updateMode: newMode => {
       dispatch(updateMode(newMode));
@@ -412,17 +412,17 @@ function mapDispatchToProps (dispatch) {
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExportAOI);
 
-function generateDrawLayer () {
+function generateDrawLayer() {
   return new VectorLayer({
     source: new VectorSource({
       wrapX: false
     }),
     style: new Style({
       fill: new Fill({
-        color: 'hsla(202, 70%, 50%, .35)'
+        color: "hsla(202, 70%, 50%, .35)"
       }),
       stroke: new Stroke({
-        color: 'hsla(202, 70%, 50%, .7)',
+        color: "hsla(202, 70%, 50%, .7)",
         width: 1,
         lineDash: [5, 5]
       })
@@ -430,12 +430,12 @@ function generateDrawLayer () {
   });
 }
 
-function _generateDrawBoxInteraction (drawLayer) {
+function _generateDrawBoxInteraction(drawLayer) {
   const draw = new Draw({
     source: drawLayer.getSource(),
     maxPoints: 2,
-    type: 'LineString',
-    geometryFunction (coordinates, geometry) {
+    type: "LineString",
+    geometryFunction(coordinates, geometry) {
       geometry = geometry || new Polygon(null);
       const [[x1, y1], [x2, y2]] = coordinates;
       geometry.setCoordinates([
@@ -446,7 +446,7 @@ function _generateDrawBoxInteraction (drawLayer) {
     style: new Style({
       image: new RegularShape({
         stroke: new Stroke({
-          color: 'black',
+          color: "black",
           width: 1
         }),
         points: 4,
@@ -455,10 +455,10 @@ function _generateDrawBoxInteraction (drawLayer) {
         angle: 0
       }),
       fill: new Fill({
-        color: 'hsla(202, 70%, 50%, .6)'
+        color: "hsla(202, 70%, 50%, .6)"
       }),
       stroke: new Stroke({
-        color: 'hsl(202, 70%, 50%)',
+        color: "hsl(202, 70%, 50%)",
         width: 1,
         lineDash: [5, 5]
       })
@@ -468,15 +468,15 @@ function _generateDrawBoxInteraction (drawLayer) {
   return draw;
 }
 
-function _generateDrawFreeInteraction (drawLayer) {
+function _generateDrawFreeInteraction(drawLayer) {
   const draw = new Draw({
     source: drawLayer.getSource(),
-    type: 'Polygon',
+    type: "Polygon",
     freehand: false,
     style: new Style({
       image: new RegularShape({
         stroke: new Stroke({
-          color: 'black',
+          color: "black",
           width: 1
         }),
         points: 4,
@@ -485,10 +485,10 @@ function _generateDrawFreeInteraction (drawLayer) {
         angle: 0
       }),
       fill: new Fill({
-        color: 'hsla(202, 70%, 50%, .6)'
+        color: "hsla(202, 70%, 50%, .6)"
       }),
       stroke: new Stroke({
-        color: 'hsl(202, 70%, 50%)',
+        color: "hsl(202, 70%, 50%)",
         width: 1,
         lineDash: [5, 5]
       })
@@ -498,22 +498,22 @@ function _generateDrawFreeInteraction (drawLayer) {
   return draw;
 }
 
-function truncate (number) {
+function truncate(number) {
   return Math.round(number * 100) / 100;
 }
 
-function unwrapPoint ([x, y]) {
+function unwrapPoint([x, y]) {
   return [x > 0 ? Math.min(180, x) : Math.max(-180, x), y];
 }
 
-function serialize (extent) {
+function serialize(extent) {
   const bbox = proj.transformExtent(extent, WEB_MERCATOR, WGS84);
   const p1 = unwrapPoint(bbox.slice(0, 2));
   const p2 = unwrapPoint(bbox.slice(2, 4));
   return p1.concat(p2).map(truncate);
 }
 
-function createGeoJSON (ol3Geometry) {
+function createGeoJSON(ol3Geometry) {
   const bbox = serialize(ol3Geometry.getExtent());
   const coords = ol3Geometry.getCoordinates();
   // need to apply transform to a cloned geom but simple geometry does not support .clone() operation.
@@ -521,26 +521,26 @@ function createGeoJSON (ol3Geometry) {
   polygonGeom.transform(WEB_MERCATOR, WGS84);
   const wgs84Coords = polygonGeom.getCoordinates();
   const geojson = {
-    type: 'FeatureCollection',
+    type: "FeatureCollection",
     features: [
       {
-        type: 'Feature',
+        type: "Feature",
         bbox: bbox,
-        geometry: { type: 'Polygon', coordinates: wgs84Coords }
+        geometry: { type: "Polygon", coordinates: wgs84Coords }
       }
     ]
   };
   return geojson;
 }
 
-const ZoomExtent = function (options) {
+const ZoomExtent = function(options) {
   options = options || {};
-  options.className = options.className != null ? options.className : '';
+  options.className = options.className != null ? options.className : "";
 
-  let button = document.createElement('button');
-  button.setAttribute('type', 'button');
-  let icon = document.createElement('i');
-  icon.className = 'fa fa-globe';
+  let button = document.createElement("button");
+  button.setAttribute("type", "button");
+  let icon = document.createElement("i");
+  icon.className = "fa fa-globe";
   button.appendChild(icon);
 
   this.zoomer = () => {
@@ -550,10 +550,10 @@ const ZoomExtent = function (options) {
     view.fit(options.extent, size);
   };
 
-  button.addEventListener('click', this.zoomer, false);
-  button.addEventListener('touchstart', this.zoomer, false);
-  let element = document.createElement('div');
-  element.className = options.className + ' ol-unselectable ol-control';
+  button.addEventListener("click", this.zoomer, false);
+  button.addEventListener("touchstart", this.zoomer, false);
+  let element = document.createElement("div");
+  element.className = options.className + " ol-unselectable ol-control";
   element.appendChild(button);
 
   Control.call(this, {

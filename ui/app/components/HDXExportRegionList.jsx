@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { Col, Row, Button } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Col, Row, Button } from "react-bootstrap";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
-import ExportRegionPanel from './ExportRegionPanel';
-import { getExportRegions } from '../actions/hdxActions';
-import MapListView from './MapListView';
-import { Paginator } from './utils'
+import ExportRegionPanel from "./ExportRegionPanel";
+import { getExportRegions } from "../actions/hdxActions";
+import MapListView from "./MapListView";
+import { Paginator } from "./utils";
 
 class ExportRegionList extends Component {
-  render () {
+  render() {
     const { regions } = this.props;
 
     if (regions == null || Object.keys(regions).length === 0) {
@@ -33,34 +33,52 @@ class ExportRegionList extends Component {
 }
 
 export class HDXExportRegionList extends Component {
-  componentDidMount () {
+  componentDidMount() {
     const { getExportRegions } = this.props;
 
     getExportRegions();
   }
 
-  render () {
-    const { hdx: { exportRegions, selectedExportRegion, nextPageUrl, prevPageUrl, total }, getExportRegions } = this.props;
+  render() {
+    const {
+      hdx: {
+        exportRegions,
+        selectedExportRegion,
+        nextPageUrl,
+        prevPageUrl,
+        total
+      },
+      getExportRegions
+    } = this.props;
 
     const regionGeoms = {
-      features: Object.entries(exportRegions).map(([id, x]) => x.simplified_geom),
-      type: 'FeatureCollection'
-    }
+      features: Object.entries(exportRegions).map(
+        ([id, x]) => x.simplified_geom
+      ),
+      type: "FeatureCollection"
+    };
 
     return (
-      <Row style={{height: '100%'}}>
-        <Col xs={6} style={{height: '100%', overflowY: 'scroll'}}>
-          <div style={{padding: '20px'}}>
-            <h2 style={{display: 'inline'}}>HDX Export Regions</h2>
-            <Link to='/hdx/new' style={{float: 'right'}} className='btn btn-primary btn-lg'>
+      <Row style={{ height: "100%" }}>
+        <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
+          <div style={{ padding: "20px" }}>
+            <h2 style={{ display: "inline" }}>HDX Export Regions</h2>
+            <Link
+              to="/hdx/new"
+              style={{ float: "right" }}
+              className="btn btn-primary btn-lg"
+            >
               Create New Export Region
             </Link>
             <ExportRegionList regions={exportRegions} />
-            <Paginator collection={this.props.hdx} getPage={getExportRegions}/>
+            <Paginator collection={this.props.hdx} getPage={getExportRegions} />
           </div>
         </Col>
-        <Col xs={6} style={{height: '100%'}}>
-          <MapListView features={regionGeoms} selectedFeatureId={selectedExportRegion}/>
+        <Col xs={6} style={{ height: "100%" }}>
+          <MapListView
+            features={regionGeoms}
+            selectedFeatureId={selectedExportRegion}
+          />
         </Col>
       </Row>
     );
@@ -75,11 +93,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getExportRegions: (url) => dispatch(getExportRegions(url))
+    getExportRegions: url => dispatch(getExportRegions(url))
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HDXExportRegionList);
+export default connect(mapStateToProps, mapDispatchToProps)(
+  HDXExportRegionList
+);

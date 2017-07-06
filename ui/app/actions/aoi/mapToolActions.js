@@ -1,53 +1,53 @@
-import GeoJSONFormat from 'ol/format/geojson';
+import GeoJSONFormat from "ol/format/geojson";
 
-import types from './mapToolActionTypes';
+import types from "./mapToolActionTypes";
 
-export function setBoxButtonSelected () {
+export function setBoxButtonSelected() {
   return { type: types.SET_BOX_SELECTED };
 }
 
-export function setFreeButtonSelected () {
+export function setFreeButtonSelected() {
   return { type: types.SET_FREE_SELECTED };
 }
 
-export function setMapViewButtonSelected () {
+export function setMapViewButtonSelected() {
   return { type: types.SET_VIEW_SELECTED };
 }
 
-export function setImportButtonSelected () {
+export function setImportButtonSelected() {
   return { type: types.SET_IMPORT_SELECTED };
 }
 
-export function setSearchAOIButtonSelected () {
+export function setSearchAOIButtonSelected() {
   return { type: types.SET_SEARCH_SELECTED };
 }
 
-export function setAllButtonsDefault () {
+export function setAllButtonsDefault() {
   return { type: types.SET_BUTTONS_DEFAULT };
 }
 
-export function setImportModalState (visibility) {
+export function setImportModalState(visibility) {
   return {
     type: types.SET_IMPORT_MODAL_STATE,
     showImportModal: visibility
   };
 }
 
-export function resetGeoJSONFile () {
+export function resetGeoJSONFile() {
   return {
     type: types.FILE_RESET
   };
 }
 
-export function processGeoJSONFile (file) {
+export function processGeoJSONFile(file) {
   return dispatch => {
     dispatch({ type: types.FILE_PROCESSING });
     const fileName = file.name;
-    const ext = fileName.split('.').pop();
-    if (!['json', 'geojson'].includes(ext)) {
+    const ext = fileName.split(".").pop();
+    if (!["json", "geojson"].includes(ext)) {
       dispatch({
         type: types.FILE_ERROR,
-        error: 'File must be .geojson NOT .' + ext
+        error: "File must be .geojson NOT ." + ext
       });
       return;
     }
@@ -58,25 +58,25 @@ export function processGeoJSONFile (file) {
       try {
         geojson = JSON.parse(dataURL);
       } catch (e) {
-        dispatch({ type: types.FILE_ERROR, error: 'Could not parse GeoJSON' });
+        dispatch({ type: types.FILE_ERROR, error: "Could not parse GeoJSON" });
         return;
       }
       const geojsonReader = new GeoJSONFormat();
       const feature = geojsonReader.readFeatures(geojson)[0];
-      const geom = feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
-      if (geom.getType() === 'Polygon' || geom.getType() === 'MultiPolygon') {
+      const geom = feature.getGeometry().transform("EPSG:4326", "EPSG:3857");
+      if (geom.getType() === "Polygon" || geom.getType() === "MultiPolygon") {
         dispatch({ type: types.FILE_PROCESSED, geojson });
       } else {
         dispatch({
           type: types.FILE_ERROR,
-          error: 'Geometry must be Polygon type, not ' + geom.getType()
+          error: "Geometry must be Polygon type, not " + geom.getType()
         });
       }
     };
     reader.onerror = () => {
       dispatch({
         type: types.FILE_ERROR,
-        error: 'An error was encountered while reading your file'
+        error: "An error was encountered while reading your file"
       });
     };
     reader.readAsText(file);

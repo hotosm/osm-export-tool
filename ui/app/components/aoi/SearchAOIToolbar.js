@@ -1,38 +1,38 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import styles from '../../styles/aoi/SearchAOIToolbar.css';
-import { Typeahead, Menu } from 'react-bootstrap-typeahead';
-import { getGeonames } from '../../actions/aoi/searchToolbarActions';
-import { TypeaheadMenuItem } from './TypeaheadMenuItem';
-import SearchAOIButton from './SearchAOIButton';
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import styles from "../../styles/aoi/SearchAOIToolbar.css";
+import { Typeahead, Menu } from "react-bootstrap-typeahead";
+import { getGeonames } from "../../actions/aoi/searchToolbarActions";
+import { TypeaheadMenuItem } from "./TypeaheadMenuItem";
+import SearchAOIButton from "./SearchAOIButton";
 import {
   setSearchAOIButtonSelected,
   setAllButtonsDefault
-} from '../../actions/aoi/mapToolActions';
+} from "../../actions/aoi/mapToolActions";
 
-const debounce = require('lodash/debounce');
+const debounce = require("lodash/debounce");
 
 export class SearchAOIToolbar extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.handleChange = this.handleChange.bind(this);
     this.handleEnter = this.handleEnter.bind(this);
 
     this.state = {
-      value: '',
+      value: "",
       suggestions: []
     };
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.debouncer = debounce(e => {
       this.handleChange(e);
     }, 500);
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.geonames.fetched) {
       this.setState({ suggestions: nextProps.geonames.geonames });
     } else {
@@ -41,19 +41,19 @@ export class SearchAOIToolbar extends Component {
       }
     }
     if (nextProps.toolbarIcons.search !== this.props.toolbarIcons.search) {
-      if (nextProps.toolbarIcons.search === 'DEFAULT') {
+      if (nextProps.toolbarIcons.search === "DEFAULT") {
         this.refs.typeahead.getInstance().clear();
       }
     }
   }
 
-  handleChange (e) {
+  handleChange(e) {
     // if it matches minx,miny,maxx,maxy
-    const match = e.split(',').map(Number);
+    const match = e.split(",").map(Number);
     if (match.length === 4 && match[0] < match[2] && match[1] < match[3]) {
       this.props.setSearchAOIButtonSelected();
       this.props.handleSearch({
-        name: 'Manually Entered Bounds',
+        name: "Manually Entered Bounds",
         bbox: {
           west: match[0],
           south: match[1],
@@ -74,7 +74,7 @@ export class SearchAOIToolbar extends Component {
     }
   }
 
-  handleEnter (e) {
+  handleEnter(e) {
     this.setState({ suggestions: [] });
     if (e.length > 0) {
       this.props.setSearchAOIButtonSelected();
@@ -83,22 +83,22 @@ export class SearchAOIToolbar extends Component {
     }
   }
 
-  render () {
+  render() {
     return (
       <div className={styles.searchbarDiv}>
         <div className={styles.typeahead}>
           <Typeahead
-            ref='typeahead'
-            disabled={this.props.toolbarIcons.search === 'INACTIVE'}
+            ref="typeahead"
+            disabled={this.props.toolbarIcons.search === "INACTIVE"}
             options={this.state.suggestions}
             onChange={this.handleEnter}
             placeholder={
-              'Search admin boundary or location, or paste a minX,minY,maxX,maxY...'
+              "Search admin boundary or location, or paste a minX,minY,maxX,maxY..."
             }
             onInputChange={this.debouncer}
-            labelKey={'name'}
+            labelKey={"name"}
             paginate={false}
-            emptyLabel={''}
+            emptyLabel={""}
             minLength={2}
             renderMenu={(results, menuProps) => {
               return (
@@ -132,14 +132,14 @@ SearchAOIToolbar.propTypes = {
   setSearchAOIButtonSelected: PropTypes.func
 };
 
-function mapStateToProps (state) {
+function mapStateToProps(state) {
   return {
     geonames: state.geonames,
     toolbarIcons: state.toolbarIcons
   };
 }
 
-function mapDispatchToProps (dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
     getGeonames: query => {
       dispatch(getGeonames(query));

@@ -1,34 +1,43 @@
-import React, { Component } from 'react';
-import { Col, Row, Button } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { Field, SubmissionError, formValueSelector, propTypes, reduxForm } from 'redux-form';
-import { renderInput, renderTextArea, renderCheckbox  } from './utils';
-import { createConfiguration, updateConfiguration, deleteConfiguration } from '../actions/configurationActions';
+import React, { Component } from "react";
+import { Col, Row, Button } from "react-bootstrap";
+import { connect } from "react-redux";
+import {
+  Field,
+  SubmissionError,
+  formValueSelector,
+  propTypes,
+  reduxForm
+} from "redux-form";
+import { renderInput, renderTextArea, renderCheckbox } from "./utils";
+import {
+  createConfiguration,
+  updateConfiguration,
+  deleteConfiguration
+} from "../actions/configurationActions";
 
-const FORM_NAME = 'ConfigurationForm'
+const FORM_NAME = "ConfigurationForm";
 
 const form = reduxForm({
-  form:FORM_NAME,
-  onSubmit:(values,dispatch,props) => {
+  form: FORM_NAME,
+  onSubmit: (values, dispatch, props) => {
     if (props.configurationUid) {
-      dispatch(updateConfiguration(props.configurationUid, values,FORM_NAME))
+      dispatch(updateConfiguration(props.configurationUid, values, FORM_NAME));
     } else {
-      dispatch(createConfiguration(values,FORM_NAME))
+      dispatch(createConfiguration(values, FORM_NAME));
     }
   }
-})
+});
 
 export class ConfigurationForm extends Component {
-
   handleDelete = () => {
-    this.props.handleDelete(this.props.configurationUid)
-  }
+    this.props.handleDelete(this.props.configurationUid);
+  };
 
-  render () {
-    const editing = (this.props.configurationUid !== undefined)
+  render() {
+    const editing = this.props.configurationUid !== undefined;
 
     return (
-      <Row style={{height: '100%'}}>
+      <Row style={{ height: "100%" }}>
         <form>
           <Field
             name="name"
@@ -43,15 +52,15 @@ export class ConfigurationForm extends Component {
             label="Description"
             placeholder="Features for Project A in Region B"
             component={renderTextArea}
-            rows='4'
+            rows="4"
           />
         </form>
         <Field
-          name='yaml'
+          name="yaml"
           type="text"
-          label='Feature Selection'
+          label="Feature Selection"
           component={renderTextArea}
-          rows='12'
+          rows="12"
         />
         <Field
           name="public"
@@ -59,14 +68,25 @@ export class ConfigurationForm extends Component {
           type="checkbox"
           component={renderCheckbox}
         />
-        <Button bsStyle="success" bsSize="large" type="submit" onClick={this.props.handleSubmit}>
-          { editing ? 'Update Configuration' : 'Create Configuration' }
+        <Button
+          bsStyle="success"
+          bsSize="large"
+          type="submit"
+          onClick={this.props.handleSubmit}
+        >
+          {editing ? "Update Configuration" : "Create Configuration"}
         </Button>
-        { editing ? 
-        <Button bsStyle="danger" bsSize="large" type="submit" style={{float:'right'}} onClick={this.handleDelete}>
-          Delete Configuration
-        </Button> : null
-        }
+        {editing
+          ? <Button
+              bsStyle="danger"
+              bsSize="large"
+              type="submit"
+              style={{ float: "right" }}
+              onClick={this.handleDelete}
+            >
+              Delete Configuration
+            </Button>
+          : null}
       </Row>
     );
   }
@@ -75,18 +95,17 @@ export class ConfigurationForm extends Component {
 const mapStateToProps = state => {
   return {
     initialValues: {
-      public:true
+      public: true
     }
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleDelete: (uid) => dispatch(deleteConfiguration(uid))
+    handleDelete: uid => dispatch(deleteConfiguration(uid))
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(form(ConfigurationForm));
+export default connect(mapStateToProps, mapDispatchToProps)(
+  form(ConfigurationForm)
+);

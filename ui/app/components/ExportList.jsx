@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { Col, Row, Table, Button } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import MapListView from './MapListView';
-import { getExports } from '../actions/exportsActions';
-import { zoomToExportRegion } from '../actions/hdxActions';
-import { Paginator } from './utils';
+import { Col, Row, Table, Button } from "react-bootstrap";
+import { connect } from "react-redux";
+import MapListView from "./MapListView";
+import { getExports } from "../actions/exportsActions";
+import { zoomToExportRegion } from "../actions/hdxActions";
+import { Paginator } from "./utils";
 
 class ExportTable extends Component {
   selectRegion = id => this.props.selectRegion(id);
 
-  render () {
+  render() {
     const { jobs } = this.props;
 
     return (
@@ -36,8 +36,11 @@ class ExportTable extends Component {
                 {job.user.username}
               </td>
               <td>
-                <Button title='Show on map' onClick={() => this.selectRegion(job.simplified_geom.id)}>
-                  <i className='fa fa-globe' />
+                <Button
+                  title="Show on map"
+                  onClick={() => this.selectRegion(job.simplified_geom.id)}
+                >
+                  <i className="fa fa-globe" />
                 </Button>
               </td>
             </tr>
@@ -49,22 +52,22 @@ class ExportTable extends Component {
 }
 
 export class ExportList extends Component {
-  componentWillMount () {
+  componentWillMount() {
     this.props.getExports();
   }
 
-  render () {
+  render() {
     const { getExports, jobs, selectedFeatureId, selectRegion } = this.props;
 
     const features = {
       features: jobs.items.map(j => j.simplified_geom),
-      type: 'FeatureCollection'
+      type: "FeatureCollection"
     };
     return (
-      <Row style={{ height: '100%' }}>
-        <Col xs={6} style={{ height: '100%', overflowY: 'scroll' }}>
-          <div style={{ padding: '20px' }}>
-            <h2 style={{ display: 'inline' }}>Exports</h2>
+      <Row style={{ height: "100%" }}>
+        <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
+          <div style={{ padding: "20px" }}>
+            <h2 style={{ display: "inline" }}>Exports</h2>
             <Table>
               <thead>
                 <tr>
@@ -81,8 +84,11 @@ export class ExportList extends Component {
             <Paginator collection={jobs} getPage={getExports} />
           </div>
         </Col>
-        <Col xs={6} style={{ height: '100%' }}>
-          <MapListView features={features} selectedFeatureId={selectedFeatureId} />
+        <Col xs={6} style={{ height: "100%" }}>
+          <MapListView
+            features={features}
+            selectedFeatureId={selectedFeatureId}
+          />
         </Col>
       </Row>
     );

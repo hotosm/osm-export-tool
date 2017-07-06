@@ -1,6 +1,4 @@
-
 var TreeMenuUtils = {
-
   /**
    * //TODO: use immutable API here..this function mutates!
    *
@@ -10,13 +8,12 @@ var TreeMenuUtils = {
    * @param identifier optional
    * @returns {*}
    */
-  getNewTreeState: function (lineage, prevState, mutatedProperty, identifier) {
-
+  getNewTreeState: function(lineage, prevState, mutatedProperty, identifier) {
     function setPropState(node, value) {
       node[mutatedProperty] = value;
       var children = node.children;
       if (children) {
-        node.children.forEach(function (childNode, ci) {
+        node.children.forEach(function(childNode, ci) {
           setPropState(childNode, value);
         });
       }
@@ -25,7 +22,7 @@ var TreeMenuUtils = {
     function getUpdatedTreeState(state) {
       state = state || prevState;
       var id = lineage.shift();
-      state.forEach(function (node, i) {
+      state.forEach(function(node, i) {
         var nodeId = identifier ? state[i][identifier] : i;
         if (nodeId === id) {
           if (!lineage.length) {
@@ -37,13 +34,10 @@ var TreeMenuUtils = {
       });
 
       return state;
-
     }
 
     return getUpdatedTreeState();
-
   }
-
 };
 
 module.exports = TreeMenuUtils;

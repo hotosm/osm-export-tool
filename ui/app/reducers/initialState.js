@@ -1,72 +1,72 @@
 export default {
-    aoiInfo: {
-        geojson: {},
-        geomType: null,
-        title: null,
-        description: null,
-    },
-    mode: 'DRAW_NORMAL',
-    invalidDrawWarning: "",
-    showImportModal: false,
-    zoomToSelection: {
-        click: false
-    },
-    resetMap: {
-        click: false
-    },
-    geonames: {
-        fetching: false,
-        fetched: false,
-        geonames: [],
-        error: null,
-    },
-    hdx: {
-      fetching: false,
-      fetched: false,
-      exportRegions: {},
-      error: null,
-      prevPageUrl:null,
-      nextPageUrl:null,
-      total:null
-    },
-    exportInfo:null,
-    exportRuns:[],
-    importGeom: {
-        processing: false,
-        processed: false,
-        geojson: {},
-        error: null,
-    },
-    toolbarIcons: {
-        box: "DEFAULT",
-        free: "DEFAULT",
-        mapView: "DEFAULT",
-        import: "DEFAULT",
-        search: "DEFAULT",
-    },
-    runsList: {
-        fetching: false,
-        fetched: false,
-        runs: [],
-        error: null,
-    },
-    jobSubmit: {
-        fetching: false,
-        fetched: false,
-        jobuid: '',
-        error: null,
-    },
-    configurations: {
-      nextPageUrl:null,
-      prevPageUrl:null,
-      total:null,
-      items:[]
-    },
-    jobs: {
-      items:[],
-      total:null,
-      nextPageUrl:null,
-      prevPageUrl:null
-    },
-    overpassLastUpdated: null
-}
+  aoiInfo: {
+    geojson: {},
+    geomType: null,
+    title: null,
+    description: null
+  },
+  mode: "DRAW_NORMAL",
+  invalidDrawWarning: "",
+  showImportModal: false,
+  zoomToSelection: {
+    click: false
+  },
+  resetMap: {
+    click: false
+  },
+  geonames: {
+    fetching: false,
+    fetched: false,
+    geonames: [],
+    error: null
+  },
+  hdx: {
+    fetching: false,
+    fetched: false,
+    exportRegions: {},
+    error: null,
+    prevPageUrl: null,
+    nextPageUrl: null,
+    total: null
+  },
+  exportInfo: null,
+  exportRuns: [],
+  importGeom: {
+    processing: false,
+    processed: false,
+    geojson: {},
+    error: null
+  },
+  toolbarIcons: {
+    box: "DEFAULT",
+    free: "DEFAULT",
+    mapView: "DEFAULT",
+    import: "DEFAULT",
+    search: "DEFAULT"
+  },
+  runsList: {
+    fetching: false,
+    fetched: false,
+    runs: [],
+    error: null
+  },
+  jobSubmit: {
+    fetching: false,
+    fetched: false,
+    jobuid: "",
+    error: null
+  },
+  configurations: {
+    nextPageUrl: null,
+    prevPageUrl: null,
+    total: null,
+    items: []
+  },
+  jobs: {
+    items: [],
+    total: null,
+    nextPageUrl: null,
+    prevPageUrl: null
+  },
+  overpassLastUpdated: null
+};

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Button,
   HelpBlock,
@@ -6,20 +6,20 @@ import {
   FormGroup,
   ControlLabel,
   Checkbox
-} from 'react-bootstrap';
-import { Field } from 'redux-form';
-import Select from 'react-select';
-import styles from '../styles/utilsStyles.css';
-import yaml from 'js-yaml';
-import moment from 'moment';
+} from "react-bootstrap";
+import { Field } from "redux-form";
+import Select from "react-select";
+import styles from "../styles/utilsStyles.css";
+import yaml from "js-yaml";
+import moment from "moment";
 
 export const AVAILABLE_EXPORT_FORMATS = {
-  shp: 'ESRI Shapefiles',
-  geopackage: 'GeoPackage',
-  garmin_img: 'Garmin .IMG',
-  kml: 'Google Earth .KMZ',
-  osm_xml: 'OSM .XML',
-  osm_pbf: 'OSM .PBF'
+  shp: "ESRI Shapefiles",
+  geopackage: "GeoPackage",
+  garmin_img: "Garmin .IMG",
+  kml: "Google Earth .KMZ",
+  osm_xml: "OSM .XML",
+  osm_pbf: "OSM .PBF"
 };
 
 export const REQUIRES_FEATURE_SELECTION = {
@@ -33,16 +33,16 @@ export const exportFormatNicename = slug => {
 };
 
 export const formatDate = isodate => {
-  return moment(isodate).format('dddd, MMMM Do YYYY, h:mm a');
+  return moment(isodate).format("dddd, MMMM Do YYYY, h:mm a");
 };
 
 export const formatDuration = seconds => {
-  return moment.duration(seconds, 'seconds').humanize();
+  return moment.duration(seconds, "seconds").humanize();
 };
 
 export const getFormatCheckboxes = exportFormats =>
   <Field
-    name='export_formats'
+    name="export_formats"
     component={props => {
       const ks = Object.keys(exportFormats).map((k, i) =>
         <Checkbox
@@ -79,7 +79,7 @@ export const renderCheckboxes = ({
   description,
   ...props
 }) =>
-  <FormGroup controlId={id || input.name} validationState={error && 'error'}>
+  <FormGroup controlId={id || input.name} validationState={error && "error"}>
     <ControlLabel>
       {label}
     </ControlLabel>
@@ -106,7 +106,7 @@ export const renderInput = ({
   meta: { error },
   ...props
 }) =>
-  <FormGroup controlId={id || props.name} validationState={error && 'error'}>
+  <FormGroup controlId={id || props.name} validationState={error && "error"}>
     <ControlLabel>
       {label}
     </ControlLabel>
@@ -129,11 +129,11 @@ export const renderSelect = ({
   meta: { error },
   ...props
 }) =>
-  <FormGroup controlId={id || input.name} validationState={error && 'error'}>
+  <FormGroup controlId={id || input.name} validationState={error && "error"}>
     <ControlLabel>
       {label}
     </ControlLabel>
-    <FormControl componentClass='select' {...input} {...props} />
+    <FormControl componentClass="select" {...input} {...props} />
     <FormControl.Feedback />
     <HelpBlock>
       {error &&
@@ -151,7 +151,7 @@ export const renderMultiSelect = ({
   meta: { error },
   ...props
 }) =>
-  <FormGroup controlId={id || props.name} validationState={error && 'error'}>
+  <FormGroup controlId={id || props.name} validationState={error && "error"}>
     <ControlLabel>
       {label}
     </ControlLabel>
@@ -174,11 +174,11 @@ export const renderTextArea = ({
   meta: { error },
   ...props
 }) =>
-  <FormGroup controlId={id || input.name} validationState={error && 'error'}>
+  <FormGroup controlId={id || input.name} validationState={error && "error"}>
     <ControlLabel>
       {label}
     </ControlLabel>
-    <FormControl componentClass='textarea' {...input} {...props} />
+    <FormControl componentClass="textarea" {...input} {...props} />
     <FormControl.Feedback />
     <HelpBlock>
       {error &&
@@ -189,23 +189,23 @@ export const renderTextArea = ({
   </FormGroup>;
 
 export const slugify = text => {
-  const a = 'àáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ';
-  const b = 'aaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh';
-  const p = new RegExp(a.split('').join('|'), 'g');
+  const a = "àáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ";
+  const b = "aaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh";
+  const p = new RegExp(a.split("").join("|"), "g");
 
   return text
     .toString()
     .toLowerCase()
-    .replace(/\s+/g, '_') // Replace spaces with -
+    .replace(/\s+/g, "_") // Replace spaces with -
     .replace(p, c => b.charAt(a.indexOf(c))) // Replace special chars
-    .replace(/[^\w_]+/g, '') // Remove all non-word chars
-    .replace(/__+/g, '_') // Replace multiple - with single -
-    .replace(/^_+/, '') // Trim - from start of text
-    .replace(/_+$/, ''); // Trim - from end of text
+    .replace(/[^\w_]+/g, "") // Remove all non-word chars
+    .replace(/__+/g, "_") // Replace multiple - with single -
+    .replace(/^_+/, "") // Trim - from start of text
+    .replace(/_+$/, ""); // Trim - from end of text
 };
 
 export class PresetParser {
-  listForXpath (xpath, root) {
+  listForXpath(xpath, root) {
     const a = this.doc.evaluate(
       xpath,
       root,
@@ -222,31 +222,31 @@ export class PresetParser {
     return l;
   }
 
-  resolver () {
-    return 'http://josm.openstreetmap.de/tagging-preset-1.0';
+  resolver() {
+    return "http://josm.openstreetmap.de/tagging-preset-1.0";
   }
 
-  collectInputs (itemElem, set) {
+  collectInputs(itemElem, set) {
     for (var elemType of [
-      './/ns:key',
-      './/ns:text',
-      './/ns:combo',
-      './/ns:multiselect',
-      './/ns:check'
+      ".//ns:key",
+      ".//ns:text",
+      ".//ns:combo",
+      ".//ns:multiselect",
+      ".//ns:check"
     ]) {
       for (var k of this.listForXpath(elemType, itemElem)) {
-        set.add(k.getAttribute('key'));
+        set.add(k.getAttribute("key"));
       }
     }
   }
 
-  constructor (doc) {
+  constructor(doc) {
     const parser = new DOMParser();
     try {
-      this.doc = parser.parseFromString(doc, 'text/xml');
+      this.doc = parser.parseFromString(doc, "text/xml");
     } catch (err) {
       alert(
-        'Could not parse XML! Please make sure your JOSM Preset is valid and use the Chrome, Firefox, or Safari browser.'
+        "Could not parse XML! Please make sure your JOSM Preset is valid and use the Chrome, Firefox, or Safari browser."
       );
     }
     const collector = {
@@ -254,39 +254,39 @@ export class PresetParser {
       lines: new Set(),
       polygons: new Set()
     };
-    for (var itemElem of this.listForXpath('.//ns:item', this.doc)) {
-      const types = itemElem.getAttribute('type').split(',');
-      if (types.includes('node')) {
+    for (var itemElem of this.listForXpath(".//ns:item", this.doc)) {
+      const types = itemElem.getAttribute("type").split(",");
+      if (types.includes("node")) {
         this.collectInputs(itemElem, collector.points);
       }
-      if (types.includes('closedway') || types.includes('relation')) {
+      if (types.includes("closedway") || types.includes("relation")) {
         // relation?
         this.collectInputs(itemElem, collector.polygons);
       }
-      if (types.includes('way')) {
+      if (types.includes("way")) {
         this.collectInputs(itemElem, collector.lines);
       }
     }
 
     const fs = {};
     fs.planet_osm_point = {};
-    fs.planet_osm_point.types = ['points'];
+    fs.planet_osm_point.types = ["points"];
     fs.planet_osm_point.select = [...collector.points].sort();
     fs.planet_osm_line = {};
-    fs.planet_osm_line.types = ['lines'];
+    fs.planet_osm_line.types = ["lines"];
     fs.planet_osm_line.select = [...collector.lines].sort();
     fs.planet_osm_polygon = {};
-    fs.planet_osm_polygon.types = ['polygons'];
+    fs.planet_osm_polygon.types = ["polygons"];
     fs.planet_osm_polygon.select = [...collector.polygons].sort();
     this.featureSelection = fs;
   }
 
-  asYAML () {
+  asYAML() {
     return yaml.safeDump(this.featureSelection);
   }
 }
 
-const UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+const UNITS = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
 export const prettyBytes = num => {
   if (!Number.isFinite(num)) {
@@ -300,14 +300,14 @@ export const prettyBytes = num => {
   }
 
   if (num < 1) {
-    return (neg ? '-' : '') + num + ' B';
+    return (neg ? "-" : "") + num + " B";
   }
 
   const exponent = Math.min(Math.floor(Math.log10(num) / 3), UNITS.length - 1);
   const numStr = Number((num / Math.pow(1000, exponent)).toPrecision(3));
   const unit = UNITS[exponent];
 
-  return (neg ? '-' : '') + numStr + ' ' + unit;
+  return (neg ? "-" : "") + numStr + " " + unit;
 };
 
 export const Paginator = props => {
@@ -317,19 +317,19 @@ export const Paginator = props => {
       {collection.total} results.
       {collection.nextPageUrl
         ? <Button
-          style={{ float: 'right' }}
-          onClick={() => props.getPage(collection.nextPageUrl)}
-        >
+            style={{ float: "right" }}
+            onClick={() => props.getPage(collection.nextPageUrl)}
+          >
             Next
-        </Button>
+          </Button>
         : null}
       {collection.prevPageUrl
         ? <Button
-          style={{ float: 'right' }}
-          onClick={() => props.getPage(collection.prevPageUrl)}
-        >
+            style={{ float: "right" }}
+            onClick={() => props.getPage(collection.prevPageUrl)}
+          >
             Previous
-        </Button>
+          </Button>
         : null}
     </div>
   );
