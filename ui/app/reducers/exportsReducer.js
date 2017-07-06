@@ -5,6 +5,7 @@ export function exportModeReducer(state = initialState.mode, action) {
   switch (action.type) {
     case types.SET_MODE:
       return action.mode;
+
     default:
       return state;
   }
@@ -20,16 +21,20 @@ export function exportInfoReducer(state = initialState.exportInfo, action) {
           id: action.job.simplified_geom.id || Math.random()
         }
       };
+
+    default:
+      return state;
   }
-  return state;
 }
 
 export function exportRunsReducer(state = initialState.exportRuns, action) {
   switch (action.type) {
     case types.RECEIVED_RUNS:
       return action.runs;
+
+    default:
+      return state;
   }
-  return state;
 }
 
 export function jobListReducer(state = initialState.jobs, action) {
@@ -48,8 +53,10 @@ export function jobListReducer(state = initialState.jobs, action) {
         })),
         total: action.response.count
       };
+
+    default:
+      return state;
   }
-  return state;
 }
 
 export function overpassTimestampReducer(
@@ -59,8 +66,10 @@ export function overpassTimestampReducer(
   switch (action.type) {
     case types.RECEIVED_OVERPASS_TIMESTAMP:
       return action.lastUpdated;
+
+    default:
+      return state;
   }
-  return state;
 }
 
 export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
@@ -72,6 +81,7 @@ export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
         title: action.title,
         description: action.description
       };
+
     case types.CLEAR_AOI_INFO:
       return {
         geojson: null,
@@ -79,6 +89,7 @@ export function exportAoiInfoReducer(state = initialState.aoiInfo, action) {
         title: null,
         description: null
       };
+
     default:
       return state;
   }
