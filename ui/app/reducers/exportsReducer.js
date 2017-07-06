@@ -39,7 +39,13 @@ export function jobListReducer (state = initialState.jobs, action) {
         ...state,
         nextPageUrl: action.response.next,
         prevPageUrl: action.response.previous,
-        items: action.response.results,
+        items: action.response.results.map(job => ({
+          ...job,
+          simplified_geom: {
+            ...job.simplified_geom,
+            id: job.simplified_geom.id || Math.random()
+          }
+        })),
         total: action.response.count
       };
   }

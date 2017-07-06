@@ -4,39 +4,49 @@ import { Col, Row, Table, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import MapListView from './MapListView';
 import { getExports } from '../actions/exportsActions';
+import { zoomToExportRegion } from '../actions/hdxActions';
 import { Paginator } from './utils';
 
-const ExportTable = ({ jobs, selectRegion }) =>
-  <tbody>
-    {jobs.map((job, i) => {
-      return (
-        <tr key={i}>
-          <td>
-            <a href={`#/exports/detail/${job.uid}`}>
-              {job.name}
-            </a>
-          </td>
-          <td>
-            {job.description}
-          </td>
-          <td>
-            {job.project}
-          </td>
-          <td>
-            {job.created_at}
-          </td>
-          <td>
-            {job.user.username}
-          </td>
-          <td>
-            <Button>
-              <i className='fa fa-globe' />
-            </Button>
-          </td>
-        </tr>
-      );
-    })}
-  </tbody>;
+class ExportTable extends Component {
+  selectRegion = id => this.props.selectRegion(id);
+
+  render () {
+    const { jobs } = this.props;
+
+    return (
+      <tbody>
+        {jobs.map((job, i) => {
+          return (
+            <tr key={i}>
+              <td>
+                <a href={`#/exports/detail/${job.uid}`}>
+                  {job.name}
+                </a>
+              </td>
+              <td>
+                {job.description}
+              </td>
+              <td>
+                {job.project}
+              </td>
+              <td>
+                {job.created_at}
+              </td>
+              <td>
+                {job.user.username}
+              </td>
+              <td>
+                <Button title='Show on map' onClick={() => this.selectRegion(job.simplified_geom.id)}>
+                  <i className='fa fa-globe' />
+                </Button>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    );
+  }
+}
 
 export class ExportList extends Component {
   componentWillMount () {
@@ -44,7 +54,8 @@ export class ExportList extends Component {
   }
 
   render () {
-    const { getExports, jobs } = this.props;
+    const { getExports, jobs, selectedFeatureId } = this.props;
+
     const features = {
       features: jobs.items.map(j => j.simplified_geom),
       type: 'FeatureCollection'
@@ -65,13 +76,13 @@ export class ExportList extends Component {
                   <th />
                 </tr>
               </thead>
-              <ExportTable jobs={jobs.items} />
+              <ExportTable jobs={jobs.items} selectRegion={this.props.selectRegion} />
             </Table>
             <Paginator collection={jobs} getPage={this.props.getExports} />
           </div>
         </Col>
         <Col xs={6} style={{ height: '100%' }}>
-          <MapListView features={features} />
+          <MapListView features={features} selectedFeatureId={selectedFeatureId} />
         </Col>
       </Row>
     );
@@ -80,13 +91,16 @@ export class ExportList extends Component {
 
 const mapStateToProps = state => {
   return {
-    jobs: state.jobs
+    jobs: state.jobs,
+    // TODO NOT HDX
+    selectedFeatureId: state.hdx.selectedExportRegion
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    getExports: url => dispatch(getExports(url))
+    getExports: url => dispatch(getExports(url)),
+    selectRegion: id => dispatch(zoomToExportRegion(id))
   };
 };
 
