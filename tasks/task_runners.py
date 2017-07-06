@@ -145,10 +145,6 @@ def run_task_remote(self, run_uid): # noqa
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
         LOG.warn(traceback.format_exc())
 
-        # retry if appropriate; this will raise and prevent error notifications
-        # from being sent unless max_retries has been exceeded
-        self.retry(exc=e)
-
         send_error_notification(run)
         if run.job.hdx_export_region_set.count() > 0:
             send_hdx_error_notification(
