@@ -6,7 +6,7 @@ dj_database_url
 djangorestframework-gis==0.10.1
 djangorestframework==3.3.3
 git+git://github.com/bdon/ckanapi.git@7778ad33c22f20eb2e5a1c5998eedb5f9cbe86ac#egg=ckanapi
-git+git://github.com/bdon/hdx-python-api.git@7a3a96e030d573e15af671bc543526a0d18af09f#egg=hdx-python-api
+git+git://github.com/bdon/hdx-python-api.git@1dc57dd36072593701bd184932df2ef8cf1ae3f6#egg=hdx-python-api
 kombu<4
 psycopg2==2.6.1
 python-openid
