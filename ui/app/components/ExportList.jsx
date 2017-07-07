@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 
 import MapListView from "./MapListView";
 import Paginator from "./Paginator";
-import { getExports } from "../actions/exportsActions";
+import { getExports } from "../actions/exports";
 import { zoomToExportRegion } from "../actions/hdx";
 
 class ExportTable extends Component {
@@ -18,6 +18,7 @@ class ExportTable extends Component {
           return (
             <tr key={i}>
               <td>
+                {/* TODO Link */}
                 <a href={`#/exports/detail/${job.uid}`}>
                   {job.name}
                 </a>
@@ -102,11 +103,7 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getExports: url => dispatch(getExports(url)),
-    selectRegion: id => dispatch(zoomToExportRegion(id))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ExportList);
+export default connect(mapStateToProps, {
+  getExports,
+  selectRegion: zoomToExportRegion
+})(ExportList);

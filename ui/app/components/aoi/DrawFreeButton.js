@@ -5,7 +5,7 @@ import {
   setFreeButtonSelected,
   setAllButtonsDefault
 } from "../../actions/aoi/mapToolActions";
-import { updateMode } from "../../actions/exportsActions";
+import { updateMode } from "../../actions/exports";
 
 export class DrawFreeButton extends Component {
   constructor(props) {

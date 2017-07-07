@@ -15,7 +15,7 @@ import {
   getRuns,
   runExport,
   cloneExport
-} from "../actions/exportsActions";
+} from "../actions/exports";
 import MapListView from "./MapListView";
 import { exportFormatNicename, formatDate, formatDuration } from "./utils";
 

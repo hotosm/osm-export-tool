@@ -26,8 +26,8 @@ import { push } from "react-router-redux";
 import ExportAOIField from "./ExportAOIField";
 import TreeMenu from "./react-tree-menu/TreeMenu";
 import Paginator from "./Paginator";
-import { getConfigurations } from "../actions/configurationActions";
-import { createExport, getOverpassTimestamp } from "../actions/exportsActions";
+import { getConfigurations } from "../actions/configurations";
+import { createExport, getOverpassTimestamp } from "../actions/exports";
 import {
   AVAILABLE_EXPORT_FORMATS,
   getFormatCheckboxes,
@@ -126,7 +126,7 @@ class TreeTagUi extends React.Component {
 }
 
 class StoredConfComponent extends React.Component {
-  componentDidMount() {
+  componentWillMount() {
     this.props.getConfigurations();
   }
 
@@ -136,6 +136,13 @@ class StoredConfComponent extends React.Component {
   };
 
   render() {
+    const { configurations, getConfigurations } = this.props;
+
+    if (configurations.total === 0) {
+      // TODO return something better here
+      return null;
+    }
+
     return (
       <div>
         <InputGroup
@@ -152,8 +159,8 @@ class StoredConfComponent extends React.Component {
           </InputGroup.Button>
         </InputGroup>
         <Paginator
-          collection={this.props.configurations}
-          getPage={this.props.getConfigurations}
+          collection={configurations}
+          getPage={getConfigurations}
         />
         <Table>
           <thead>
@@ -164,7 +171,7 @@ class StoredConfComponent extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.configurations.items.map((configuration, i) => {
+            {configurations.items.map((configuration, i) => {
               return (
                 <tr key={i}>
                   <td>
@@ -229,6 +236,7 @@ const SelectFeatures = ({
       >
         Tag Tree
       </Button>
+      {/* TODO don't display this if no configurations are available */}
       <Button
         href="#"
         active={featuresUi === "stored"}

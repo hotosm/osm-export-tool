@@ -32,7 +32,7 @@ import SearchAOIToolbar from "./SearchAOIToolbar.js";
 import DrawAOIToolbar from "./DrawAOIToolbar.js";
 import InvalidDrawWarning from "./InvalidDrawWarning.js";
 import DropZone from "./DropZone.js";
-import { updateMode } from "../../actions/exportsActions.js";
+import { updateMode } from "../../actions/exports";
 import {
   hideInvalidDrawWarning,
   showInvalidDrawWarning

@@ -98,14 +98,22 @@ export function getExport(id) {
   };
 }
 
-export function getExports(url) {
+export function getExports(page = 1) {
+  const itemsPerPage = 20;
+
   return dispatch => {
     return axios({
-      url: url || "/api/jobs"
-    }).then(rsp => {
+      params: {
+        limit: itemsPerPage,
+        offset: Math.max(0, (page - 1) * itemsPerPage)
+      },
+      url: "/api/jobs"
+    }).then(({ data: response }) => {
       dispatch({
         type: types.RECEIVED_EXPORT_LIST,
-        response: rsp.data
+        activePage: page,
+        itemsPerPage,
+        response
       });
     });
   };

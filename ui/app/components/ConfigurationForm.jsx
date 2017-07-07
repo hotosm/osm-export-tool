@@ -13,7 +13,7 @@ import {
   createConfiguration,
   updateConfiguration,
   deleteConfiguration
-} from "../actions/configurationActions";
+} from "../actions/configurations";
 
 const FORM_NAME = "ConfigurationForm";
 

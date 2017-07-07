@@ -1,26 +1,16 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Pagination } from "react-bootstrap";
 
-export default ({ collection, getPage }) => {
-  return (
-    <div>
-      {collection.total} results.
-      {collection.nextPageUrl
-        ? <Button
-            style={{ float: "right" }}
-            onClick={() => getPage(collection.nextPageUrl)}
-          >
-            Next
-          </Button>
-        : null}
-      {collection.prevPageUrl
-        ? <Button
-            style={{ float: "right" }}
-            onClick={() => getPage(collection.prevPageUrl)}
-          >
-            Previous
-          </Button>
-        : null}
-    </div>
-  );
-};
+export default ({ collection, getPage }) =>
+  collection.pages > 1
+    ? <Pagination
+        prev
+        next
+        ellipsis
+        boundaryLinks
+        items={collection.pages}
+        maxButtons={5}
+        activePage={collection.activePage}
+        onSelect={getPage}
+      />
+    : null;

@@ -4,10 +4,7 @@ const initialState = {
   fetching: false,
   fetched: false,
   exportRegions: {},
-  error: null,
-  prevPageUrl: null,
-  nextPageUrl: null,
-  total: null
+  items: []
 };
 
 export default function hdx(
@@ -18,11 +15,12 @@ export default function hdx(
     exportRegions,
     id,
     statusCode,
-    prevPageUrl,
-    nextPageUrl,
     total,
     type,
-    locationOptions
+    locationOptions,
+    activePage,
+    itemsPerPage,
+    response
   }
 ) {
   switch (type) {
@@ -62,12 +60,12 @@ export default function hdx(
         ...state,
         fetching: false,
         fetched: true,
-        exportRegions,
+        items: response.results,
         error: null,
         status: null,
-        prevPageUrl: prevPageUrl,
-        nextPageUrl: nextPageUrl,
-        total: total
+        total: response.count,
+        activePage,
+        pages: Math.ceil(response.count / itemsPerPage)
       };
 
     case types.FETCH_EXPORT_REGIONS_ERROR:

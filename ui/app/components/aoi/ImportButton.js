@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import styles from "../../styles/aoi/DrawAOIToolbar.css";
-import { updateMode } from "../../actions/exportsActions.js";
+import { updateMode } from "../../actions/exports";
 import {
   setImportButtonSelected,
   setAllButtonsDefault,

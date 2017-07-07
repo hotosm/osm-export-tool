@@ -1,27 +1,24 @@
 import types from "../actions";
 
 const initialState = {
-  items: [],
-  total: null,
-  nextPageUrl: null,
-  prevPageUrl: null
+  items: []
 };
 
-export default function jobs(state = initialState, action) {
-  switch (action.type) {
+export default function jobs(state = initialState, { activePage, itemsPerPage, response, type }) {
+  switch (type) {
     case types.RECEIVED_EXPORT_LIST:
       return {
         ...state,
-        nextPageUrl: action.response.next,
-        prevPageUrl: action.response.previous,
-        items: action.response.results.map(job => ({
+        activePage,
+        items: response.results.map(job => ({
           ...job,
           simplified_geom: {
             ...job.simplified_geom,
             id: job.simplified_geom.id || Math.random()
           }
         })),
-        total: action.response.count
+        total: response.count,
+        pages: Math.ceil(response.count / itemsPerPage)
       };
 
     default:

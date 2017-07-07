@@ -17,7 +17,8 @@ import Paginator from "./Paginator";
 import {
   getConfigurations,
   getConfiguration
-} from "../actions/configurationActions";
+} from "../actions/configurations";
+import { selectConfigurations } from "../selectors";
 
 const ConfigurationTable = ({ configurations }) =>
   <tbody>
@@ -57,6 +58,8 @@ class ConfigurationListPane extends Component {
   };
 
   render() {
+    const { configurations, getConfigurations } = this.props;
+
     return (
       <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
         <div style={{ padding: "20px" }}>
@@ -68,38 +71,43 @@ class ConfigurationListPane extends Component {
           >
             Create New Configuration
           </Link>
-          <InputGroup
-            style={{ width: "100%", marginTop: "20px", marginBottom: "10px" }}
-          >
-            <InputGroup.Button>
-              <Button>Clear</Button>
-            </InputGroup.Button>
-            <FormControl
-              type="text"
-              placeholder="Search for a name or description..."
-            />
-            <InputGroup.Button>
-              <Button>Search</Button>
-            </InputGroup.Button>
-          </InputGroup>
-          <Checkbox>My Configurations</Checkbox>
-          <Table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Tables</th>
-                <th>Owner</th>
-              </tr>
-            </thead>
-            <ConfigurationTable
-              configurations={this.props.configurations.items}
-            />
-          </Table>
-          <Paginator
-            collection={this.props.configurations}
-            getPage={this.props.getConfigurations}
-          />
+          {configurations.length > 0 &&
+            <div>
+              <InputGroup
+                style={{
+                  width: "100%",
+                  marginTop: "20px",
+                  marginBottom: "10px"
+                }}
+              >
+                <InputGroup.Button>
+                  <Button>Clear</Button>
+                </InputGroup.Button>
+                <FormControl
+                  type="text"
+                  placeholder="Search for a name or description..."
+                />
+                <InputGroup.Button>
+                  <Button>Search</Button>
+                </InputGroup.Button>
+              </InputGroup>
+              <Checkbox>My Configurations</Checkbox>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Tables</th>
+                    <th>Owner</th>
+                  </tr>
+                </thead>
+                <ConfigurationTable configurations={configurations.items} />
+              </Table>
+              <Paginator
+                collection={configurations}
+                getPage={getConfigurations}
+              />
+            </div>}
         </div>
       </Col>
     );
@@ -107,15 +115,11 @@ class ConfigurationListPane extends Component {
 }
 
 const ConfigurationListPaneContainer = connect(
-  state => {
-    return {
-      configurations: state.configurations
-    };
-  },
-  dispatch => {
-    return {
-      getConfigurations: url => dispatch(getConfigurations(url))
-    };
+  state => ({
+    configurations: state.configurations
+  }),
+  {
+    getConfigurations
   }
 )(ConfigurationListPane);
 
@@ -135,7 +139,7 @@ export class ConfigurationNew extends Component {
 }
 
 class ConfigurationDetail extends Component {
-  componentDidMount() {
+  componentWillMount() {
     const { match: { params: { uid } }, getConfiguration } = this.props;
 
     getConfiguration(uid);
@@ -162,18 +166,13 @@ class ConfigurationDetail extends Component {
   }
 }
 
-export const ConfigurationDetailContainer = connect(
-  state => {
-    return {
-      configurations: state.configurations
-    };
-  },
-  dispatch => {
-    return {
-      getConfiguration: uid => dispatch(getConfiguration(uid))
-    };
-  }
-)(ConfigurationDetail);
+const mapStateToProps = state => ({
+  configurations: selectConfigurations(state)
+});
+
+export const ConfigurationDetailContainer = connect(mapStateToProps, {
+  getConfiguration
+})(ConfigurationDetail);
 
 export class ConfigurationList extends Component {
   componentDidMount() {}
@@ -188,12 +187,4 @@ export class ConfigurationList extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {};
-};
-
-const mapDispatchToProps = dispatch => {
-  return {};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ConfigurationList);
+export default ConfigurationList;

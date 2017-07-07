@@ -5,7 +5,7 @@ import {
   setBoxButtonSelected,
   setAllButtonsDefault
 } from "../../actions/aoi/mapToolActions";
-import { updateMode } from "../../actions/exportsActions.js";
+import { updateMode } from "../../actions/exports";
 
 export class DrawBoxButton extends Component {
   constructor(props) {

@@ -58,14 +58,22 @@ export function updateConfiguration(uid, data, form_name) {
   };
 }
 
-export function getConfigurations(url) {
+export function getConfigurations(page = 1) {
+  const itemsPerPage = 20;
+
   return dispatch => {
     return axios({
-      url: url || "/api/configurations"
-    }).then(rsp => {
+      params: {
+        limit: itemsPerPage,
+        offset: Math.max(0, (page - 1) * itemsPerPage)
+      },
+      url: "/api/configurations"
+    }).then(({ data: response }) => {
       dispatch({
         type: types.RECEIVED_CONFIGURATIONS_LIST,
-        response: rsp.data
+        activePage: page,
+        itemsPerPage,
+        response
       });
     });
   };

@@ -6,7 +6,6 @@ import {
   setSearchAOIButtonSelected,
   setAllButtonsDefault
 } from "../../actions/aoi/mapToolActions";
-import { updateMode } from "../../actions/exportsActions";
 
 export class SearchAOIButton extends Component {
   constructor(props) {

@@ -19,7 +19,6 @@ class ExportRegionList extends Component {
 
     return (
       <div>
-        <hr />
         {Object.entries(regions).map(([id, region], i) => {
           return (
             <Row key={i}>
@@ -33,28 +32,17 @@ class ExportRegionList extends Component {
 }
 
 export class HDXExportRegionList extends Component {
-  componentDidMount() {
+  componentWillMount() {
     const { getExportRegions } = this.props;
 
     getExportRegions();
   }
 
   render() {
-    const {
-      hdx: {
-        exportRegions,
-        selectedExportRegion,
-        nextPageUrl,
-        prevPageUrl,
-        total
-      },
-      getExportRegions
-    } = this.props;
+    const { hdx, hdx: { selectedExportRegion }, getExportRegions } = this.props;
 
     const regionGeoms = {
-      features: Object.entries(exportRegions).map(
-        ([id, x]) => x.simplified_geom
-      ),
+      features: hdx.items.map(x => x.simplified_geom),
       type: "FeatureCollection"
     };
 
@@ -70,8 +58,10 @@ export class HDXExportRegionList extends Component {
             >
               Create New Export Region
             </Link>
-            <ExportRegionList regions={exportRegions} />
-            <Paginator collection={this.props.hdx} getPage={getExportRegions} />
+            <hr />
+            <Paginator collection={hdx} getPage={getExportRegions} />
+            <ExportRegionList regions={hdx.items} />
+            <Paginator collection={hdx} getPage={getExportRegions} />
           </div>
         </Col>
         <Col xs={6} style={{ height: "100%" }}>
