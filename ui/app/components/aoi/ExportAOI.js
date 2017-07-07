@@ -40,6 +40,7 @@ import {
   hideInvalidDrawWarning,
   showInvalidDrawWarning
 } from "../../actions/aoi/drawToolBarActions.js";
+import { selectAOI } from "../../selectors";
 
 export const MODE_DRAW_BBOX = "MODE_DRAW_BBOX";
 export const MODE_NORMAL = "MODE_NORMAL";
@@ -399,7 +400,7 @@ ExportAOI.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    aoiInfo: state.aoiInfo,
+    aoiInfo: selectAOI(state),
     mode: state.mode,
     zoomToSelection: state.zoomToSelection,
     resetMap: state.resetMap,
