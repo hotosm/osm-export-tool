@@ -78,24 +78,24 @@ const Details = ({ exportInfo }) => {
 
 class ExportRuns extends Component {
   componentWillMount() {
-    this.props.getRuns(this.props.jobUid);
-    this.poller = setInterval(
-      () => this.props.getRuns(this.props.jobUid),
-      15e3
-    );
+    const { getRuns, jobUid } = this.props;
+
+    getRuns(jobUid);
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.jobUid !== this.props.jobUid) {
+    const { getRuns, jobUid, runs } = this.props;
+
+    if (prevProps.jobUid !== jobUid) {
       clearInterval(this.poller);
-      this.props.getRuns(this.props.jobUid);
+      getRuns(jobUid);
     } else {
-      if (
-        this.props.runs.length > 0 &&
-        (this.props.runs[0].status === "FAILED" ||
-          this.props.runs[0].status === "COMPLETE")
-      ) {
-        clearInterval(this.poller);
+      if (runs.length > 0) {
+        if (runs[0].status === "FAILED" || runs[0].status === "COMPLETED") {
+          clearInterval(this.poller);
+        } else {
+          this.poller = setInterval(() => getRuns(jobUid), 15e3);
+        }
       }
     }
   }
