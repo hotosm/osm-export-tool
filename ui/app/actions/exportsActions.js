@@ -49,7 +49,12 @@ export function cloneExport(e) {
         feature_selection: e.feature_selection,
         name: e.name,
         published: e.published,
-        the_geom: e.simplified_geom
+        the_geom: e.simplified_geom,
+        aoi: {
+          description: "Cloned Area",
+          geomType: "Polygon",
+          title: "Custom Polygon"
+        }
       })
     );
   };
@@ -120,22 +125,7 @@ export function getRuns(jobUid) {
   };
 }
 
-export function updateAoiInfo(geojson, geomType, title, description) {
-  return {
-    type: types.UPDATE_AOI_INFO,
-    geojson: geojson,
-    geomType,
-    title,
-    description
-  };
-}
-
-export function clearAoiInfo() {
-  return {
-    type: types.CLEAR_AOI_INFO
-  };
-}
-
+// TODO this should be managed beneath the ExportAOI component
 export function updateMode(mode) {
   return {
     type: types.SET_MODE,

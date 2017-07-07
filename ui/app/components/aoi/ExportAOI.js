@@ -1,3 +1,4 @@
+import bbox from "@turf/bbox";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { connect } from "react-redux";
@@ -31,16 +32,11 @@ import SearchAOIToolbar from "./SearchAOIToolbar.js";
 import DrawAOIToolbar from "./DrawAOIToolbar.js";
 import InvalidDrawWarning from "./InvalidDrawWarning.js";
 import DropZone from "./DropZone.js";
-import {
-  updateMode,
-  updateAoiInfo,
-  clearAoiInfo
-} from "../../actions/exportsActions.js";
+import { updateMode } from "../../actions/exportsActions.js";
 import {
   hideInvalidDrawWarning,
   showInvalidDrawWarning
 } from "../../actions/aoi/drawToolBarActions.js";
-import { selectAOI } from "../../selectors";
 
 export const MODE_DRAW_BBOX = "MODE_DRAW_BBOX";
 export const MODE_NORMAL = "MODE_NORMAL";
@@ -82,6 +78,23 @@ const ZoomExtent = function(options) {
 ol.inherits(ZoomExtent, Control);
 
 export class ExportAOI extends Component {
+  static propTypes = {
+    aoi: PropTypes.shape({
+      description: PropTypes.string,
+      geojson: PropTypes.object,
+      geomType: PropTypes.string,
+      title: PropTypes.string
+    }),
+    errors: PropTypes.array,
+    mode: PropTypes.string,
+    importGeom: PropTypes.object,
+    updateMode: PropTypes.func,
+    hideInvalidDrawWarning: PropTypes.func,
+    showInvalidDrawWarning: PropTypes.func,
+    updateAoiInfo: PropTypes.func,
+    clearAoiInfo: PropTypes.func
+  };
+
   getFeature(geojson) {
     switch (geojson.type) {
       case "FeatureCollection":
@@ -107,7 +120,7 @@ export class ExportAOI extends Component {
   }
 
   componentDidMount() {
-    const { aoiInfo: { geojson } } = this.props;
+    const { aoi: { geojson } } = this.props;
 
     this._initializeOpenLayers();
     this._updateInteractions();
@@ -134,7 +147,7 @@ export class ExportAOI extends Component {
     const MAX = 3000000;
     if (areaSqkm > MAX) {
       this.props.showInvalidDrawWarning(
-        `The bounds of the polygon are too large: ${areaSqkm} sq km, max ${MAX}`
+        `The bounds of this polygon are too large: ${areaSqkm.toLocaleString()} km², max ${MAX.toLocaleString()} km².`
       );
     }
   }
@@ -143,27 +156,15 @@ export class ExportAOI extends Component {
     if (this.props.errors) {
       this.props.showInvalidDrawWarning(this.props.errors);
     }
-    if (!isEqual(prevProps.aoiInfo.geojson, this.props.aoiInfo.geojson)) {
+    if (!isEqual(prevProps.aoi.geojson, this.props.aoi.geojson)) {
       // remove existing features
       this._clearDraw();
-      if (this.props.aoiInfo.geojson) {
-        const feature = this.getFeature(this.props.aoiInfo.geojson);
+      if (this.props.aoi.geojson) {
+        const feature = this.getFeature(this.props.aoi.geojson);
         this._drawLayer.getSource().addFeature(feature);
         const geometry = feature.getGeometry();
         this.checkSize(geometry);
         this.handleZoomToSelection(serialize(geometry.getExtent()));
-
-        if (this.props.aoiInfo.geojson.features) {
-          this.props.setFormGeoJSON(
-            this.props.aoiInfo.geojson.features[0].geometry
-          );
-        } else if (this.props.aoiInfo.geojson.geometry) {
-          this.props.setFormGeoJSON(this.props.aoiInfo.geojson.geometry);
-        } else {
-          this.props.setFormGeoJSON(this.props.aoiInfo.geojson);
-        }
-      } else {
-        this.props.setFormGeoJSON(undefined);
       }
     }
   }
@@ -172,15 +173,6 @@ export class ExportAOI extends Component {
     // Check if the map mode has changed (DRAW or NORMAL)
     if (this.props.mode !== nextProps.mode) {
       this._updateInteractions(nextProps.mode);
-    }
-
-    if (this.props.zoomToSelection.click !== nextProps.zoomToSelection.click) {
-      this.handleZoomToSelection(nextProps.aoiInfo.geojson.features[0].bbox);
-    }
-
-    // Check if the reset map button has been clicked
-    if (this.props.resetMap.click !== nextProps.resetMap.click) {
-      this.handleResetMap();
     }
 
     if (nextProps.importGeom.processed && !this.props.importGeom.processed) {
@@ -341,13 +333,21 @@ export class ExportAOI extends Component {
     this._map.addLayer(this._drawLayer);
   }
 
+  zoomToSelection = () => {
+    const { aoi: { geojson } } = this.props;
+
+    this.handleZoomToSelection(bbox(geojson));
+  };
+
   render() {
+    const { aoi, aoi: { geojson } } = this.props;
     const mapStyle = {};
 
     return (
       <div>
         <div id="map" className={styles.map} style={mapStyle} ref="olmap">
-          <AoiInfobar />
+          {geojson &&
+            <AoiInfobar aoi={aoi} zoomToSelection={this.zoomToSelection} />}
           <SearchAOIToolbar
             handleSearch={this.handleSearch}
             handleCancel={this.handleCancel}
@@ -383,36 +383,17 @@ export class ExportAOI extends Component {
   }
 }
 
-ExportAOI.propTypes = {
-  aoiInfo: PropTypes.object,
-  errors: PropTypes.array,
-  mode: PropTypes.string,
-  zoomToSelection: PropTypes.object,
-  resetMap: PropTypes.object,
-  importGeom: PropTypes.object,
-  updateMode: PropTypes.func,
-  hideInvalidDrawWarning: PropTypes.func,
-  showInvalidDrawWarning: PropTypes.func,
-  updateAoiInfo: PropTypes.func,
-  clearAoiInfo: PropTypes.func,
-  setFormGeoJSON: PropTypes.func
-};
-
 function mapStateToProps(state) {
   return {
-    aoiInfo: selectAOI(state),
     mode: state.mode,
     zoomToSelection: state.zoomToSelection,
-    resetMap: state.resetMap,
     importGeom: state.importGeom
   };
 }
 
 export default connect(mapStateToProps, {
-  clearAoiInfo,
   hideInvalidDrawWarning,
   showInvalidDrawWarning,
-  updateAoiInfo,
   updateMode
 })(ExportAOI);
 

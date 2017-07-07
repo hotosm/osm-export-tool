@@ -2,21 +2,10 @@ import React, { Component } from "react";
 
 import axios from "axios";
 import isEqual from "lodash/isEqual";
-import {
-  FormGroup,
-  ControlLabel,
-  FormControl,
-  HelpBlock,
-  Row,
-  Col,
-  Checkbox,
-  Panel,
-  Button,
-  Table
-} from "react-bootstrap";
+import { Row, Col, Panel, Button, Table } from "react-bootstrap";
 import {
   Field,
-  SubmissionError,
+  Fields,
   formValueSelector,
   propTypes,
   reduxForm
@@ -27,10 +16,9 @@ import { Link } from "react-router-dom";
 import { push } from "react-router-redux";
 import "react-select/dist/react-select.css";
 import yaml from "js-yaml";
-import ExportAOI from "./aoi/ExportAOI";
 
-import { clickResetMap } from "../actions/aoi/AoiInfobarActions";
-import { clearAoiInfo, updateAoiInfo } from "../actions/exportsActions";
+import ExportAOIField from "./ExportAOIField";
+
 import {
   createExportRegion,
   deleteExportRegion,
@@ -242,7 +230,7 @@ export class HDXExportRegionForm extends Component {
       return;
     }
 
-    const { anyTouched, change, getExportRegion, updateAOI } = this.props;
+    const { anyTouched, change, getExportRegion } = this.props;
 
     // NOTE: this also sets some form properties that we don't care about (but that show up in the onSubmit handler)
     if (!anyTouched) {
@@ -250,8 +238,6 @@ export class HDXExportRegionForm extends Component {
       Object.entries(exportRegion).forEach(([k, v]) => change(k, v));
 
       exportRegion.export_formats.forEach(x => change(x, true));
-
-      updateAOI(exportRegion.simplified_geom);
     }
 
     if (
@@ -282,15 +268,12 @@ export class HDXExportRegionForm extends Component {
 
   componentDidMount() {
     const {
-      clearAOI,
       getExportRegion,
       hdx: { exportRegions },
       match: { params: { id } }
     } = this.props;
 
-    if (id == null) {
-      clearAOI();
-    } else {
+    if (id != null) {
       // we're editing
       getExportRegion(id);
 
@@ -322,6 +305,9 @@ export class HDXExportRegionForm extends Component {
           // TODO consider displaying a 404 page instead
           // showAllExportRegions();
           break;
+
+        default:
+          console.warn("Unexpected status code:", statusCode);
       }
     }
 
@@ -390,10 +376,6 @@ export class HDXExportRegionForm extends Component {
     });
 
     this.props.handleRun(this.exportRegion.id, this.exportRegion.job_uid);
-  };
-
-  setFormGeoJSON = geojson => {
-    this.props.change("the_geom", geojson);
   };
 
   render() {
@@ -657,7 +639,10 @@ export class HDXExportRegionForm extends Component {
           </div>
         </Col>
         <Col xs={6} style={{ height: "100%" }}>
-          <ExportAOI setFormGeoJSON={this.setFormGeoJSON} />
+          <Fields
+            names={["the_geom", "aoi.description", "aoi.geomType", "aoi.title"]}
+            component={ExportAOIField}
+          />
         </Col>
       </Row>
     );
@@ -666,7 +651,6 @@ export class HDXExportRegionForm extends Component {
 
 const mapStateToProps = state => {
   return {
-    aoiInfo: state.aoiInfo,
     datasetPrefix: formValueSelector(FORM_NAME)(state, "dataset_prefix"),
     featureSelection: formValueSelector(FORM_NAME)(state, "feature_selection"),
     hdx: state.hdx,
@@ -772,35 +756,11 @@ const flatten = arr =>
 
 const mapDispatchToProps = dispatch => {
   return {
-    clearAOI: () => {
-      dispatch(clearAoiInfo());
-      dispatch(clickResetMap());
-    },
     getExportRegion: id => dispatch(getExportRegion(id)),
     handleDelete: id => dispatch(deleteExportRegion(id)),
     handleRun: (id, jobUid) => dispatch(runExport(id, jobUid)),
-    showAllExportRegions: () => dispatch(push("/")),
-    updateAOI: geometry => {
-      dispatch(
-        updateAoiInfo(
-          {
-            features: [
-              {
-                type: "Feature",
-                geometry,
-                properties: {}
-              }
-            ],
-            type: "FeatureCollection",
-            geomType: "Polygon",
-            title: "Custom Polygon"
-          },
-          "Polygon",
-          "Custom Polygon",
-          "Saved"
-        )
-      );
-    }
+    // TODO this is wrong
+    showAllExportRegions: () => dispatch(push("/"))
   };
 };
 

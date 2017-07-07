@@ -11,17 +11,18 @@ import {
   FormControl,
   Table
 } from "react-bootstrap";
-import { Field, formValueSelector, reduxForm, change } from "redux-form";
+import {
+  Field,
+  Fields,
+  formValueSelector,
+  reduxForm,
+  change
+} from "redux-form";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
 import { push } from "react-router-redux";
-import ExportAOI from "./aoi/ExportAOI";
-import {
-  clearAoiInfo,
-  createExport,
-  getOverpassTimestamp,
-  updateAoiInfo
-} from "../actions/exportsActions";
+import ExportAOIField from "./ExportAOIField";
+import { createExport, getOverpassTimestamp } from "../actions/exportsActions";
 import styles from "../styles/ExportForm.css";
 import {
   AVAILABLE_EXPORT_FORMATS,
@@ -321,12 +322,6 @@ const Summary = ({ handleSubmit, formValues, error }) =>
     </Col>
   </Row>;
 
-const renderExportAOI = ({ input, meta, ...props }) => {
-  return (
-    <ExportAOI errors={meta.error} setFormGeoJSON={props.setFormGeoJSON} />
-  );
-};
-
 export class ExportForm extends Component {
   constructor(props) {
     super(props);
@@ -338,18 +333,7 @@ export class ExportForm extends Component {
   }
 
   componentWillMount() {
-    const {
-      clearAoiInfo,
-      formValues: { the_geom },
-      getOverpassTimestamp,
-      updateAoiInfo
-    } = this.props;
-
-    if (the_geom != null) {
-      updateAoiInfo(the_geom, "Polygon", "Custom Polygon", "Cloned Area");
-    } else {
-      clearAoiInfo();
-    }
+    const { getOverpassTimestamp } = this.props;
 
     getOverpassTimestamp();
   }
@@ -540,10 +524,14 @@ export class ExportForm extends Component {
             </Panel>
           </Col>
           <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
-            <Field
-              name="the_geom"
-              component={renderExportAOI}
-              setFormGeoJSON={this.setFormGeoJSON}
+            <Fields
+              names={[
+                "the_geom",
+                "aoi.description",
+                "aoi.geomType",
+                "aoi.title"
+              ]}
+              component={ExportAOIField}
             />
           </Col>
         </form>
@@ -582,7 +570,5 @@ buildings:
 };
 
 export default connect(mapStateToProps, {
-  clearAoiInfo,
-  getOverpassTimestamp,
-  updateAoiInfo
+  getOverpassTimestamp
 })(form(ExportForm));
