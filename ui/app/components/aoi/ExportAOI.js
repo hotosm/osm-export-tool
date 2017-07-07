@@ -390,27 +390,13 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    updateMode: newMode => {
-      dispatch(updateMode(newMode));
-    },
-    hideInvalidDrawWarning: () => {
-      dispatch(hideInvalidDrawWarning());
-    },
-    showInvalidDrawWarning: msg => {
-      dispatch(showInvalidDrawWarning(msg));
-    },
-    updateAoiInfo: (geojson, geomType, title, description) => {
-      dispatch(updateAoiInfo(geojson, geomType, title, description));
-    },
-    clearAoiInfo: () => {
-      dispatch(clearAoiInfo());
-    }
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ExportAOI);
+export default connect(mapStateToProps, {
+  clearAoiInfo,
+  hideInvalidDrawWarning,
+  showInvalidDrawWarning,
+  updateAoiInfo,
+  updateMode
+})(ExportAOI);
 
 function generateDrawLayer() {
   return new VectorLayer({
