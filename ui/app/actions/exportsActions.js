@@ -2,7 +2,7 @@ import axios from "axios";
 import cookie from "react-cookie";
 import types from ".";
 import { push } from "react-router-redux";
-import { startSubmit, stopSubmit } from "redux-form";
+import { initialize, startSubmit, stopSubmit } from "redux-form";
 import moment from "moment";
 
 export function createExport(data, formName) {
@@ -41,18 +41,7 @@ export function cloneExport(e) {
     // TODO fetch the_geom rather than using simplified_geom
 
     dispatch(
-      updateAoiInfo(
-        e.simplified_geom,
-        "Polygon",
-        "Custom Polygon",
-        "Cloned Area"
-      )
-    );
-
-    dispatch({
-      type: "@@redux-form/INITIALIZE",
-      meta: { form: "ExportForm" },
-      payload: {
+      initialize("ExportForm", {
         buffer_aoi: e.buffer_aoi,
         description: e.description,
         event: e.event,
@@ -61,8 +50,8 @@ export function cloneExport(e) {
         name: e.name,
         published: e.published,
         the_geom: e.simplified_geom
-      }
-    });
+      })
+    );
   };
 }
 

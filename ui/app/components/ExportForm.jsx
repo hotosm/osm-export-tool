@@ -19,7 +19,8 @@ import ExportAOI from "./aoi/ExportAOI";
 import {
   clearAoiInfo,
   createExport,
-  getOverpassTimestamp
+  getOverpassTimestamp,
+  updateAoiInfo
 } from "../actions/exportsActions";
 import styles from "../styles/ExportForm.css";
 import {
@@ -337,8 +338,20 @@ export class ExportForm extends Component {
   }
 
   componentWillMount() {
-    this.props.clearAoiInfo();
-    this.props.getOverpassTimestamp();
+    const {
+      clearAoiInfo,
+      formValues: { the_geom },
+      getOverpassTimestamp,
+      updateAoiInfo
+    } = this.props;
+
+    if (the_geom != null) {
+      updateAoiInfo(the_geom, "Polygon", "Custom Polygon", "Cloned Area");
+    } else {
+      clearAoiInfo();
+    }
+
+    getOverpassTimestamp();
   }
 
   onTreeNodeCollapseChange = node => {
@@ -544,10 +557,11 @@ const mapStateToProps = state => {
     aoiInfo: state.aoiInfo,
     formValues: formValueSelector("ExportForm")(
       state,
-      "name",
       "description",
+      "export_formats",
       "project",
-      "export_formats"
+      "name",
+      "the_geom"
     ),
     overpassLastUpdated: state.overpassLastUpdated,
     initialValues: {
@@ -567,6 +581,8 @@ buildings:
   };
 };
 
-export default connect(mapStateToProps, { clearAoiInfo, getOverpassTimestamp })(
-  form(ExportForm)
-);
+export default connect(mapStateToProps, {
+  clearAoiInfo,
+  getOverpassTimestamp,
+  updateAoiInfo
+})(form(ExportForm));
