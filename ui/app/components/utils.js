@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Button,
   HelpBlock,
   FormControl,
   FormGroup,
@@ -308,29 +307,4 @@ export const prettyBytes = num => {
   const unit = UNITS[exponent];
 
   return (neg ? "-" : "") + numStr + " " + unit;
-};
-
-export const Paginator = props => {
-  const collection = props.collection;
-  return (
-    <div>
-      {collection.total} results.
-      {collection.nextPageUrl
-        ? <Button
-            style={{ float: "right" }}
-            onClick={() => props.getPage(collection.nextPageUrl)}
-          >
-            Next
-          </Button>
-        : null}
-      {collection.prevPageUrl
-        ? <Button
-            style={{ float: "right" }}
-            onClick={() => props.getPage(collection.prevPageUrl)}
-          >
-            Previous
-          </Button>
-        : null}
-    </div>
-  );
 };

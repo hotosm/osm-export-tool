@@ -11,6 +11,9 @@ import {
   FormControl,
   Table
 } from "react-bootstrap";
+import Dropzone from "react-dropzone";
+import { connect } from "react-redux";
+import { Redirect, Route, Switch } from "react-router";
 import {
   Field,
   Fields,
@@ -18,12 +21,13 @@ import {
   reduxForm,
   change
 } from "redux-form";
-import { connect } from "react-redux";
-import { Redirect, Route, Switch } from "react-router";
 import { push } from "react-router-redux";
+
 import ExportAOIField from "./ExportAOIField";
+import TreeMenu from "./react-tree-menu/TreeMenu";
+import Paginator from "./Paginator";
+import { getConfigurations } from "../actions/configurationActions";
 import { createExport, getOverpassTimestamp } from "../actions/exportsActions";
-import styles from "../styles/ExportForm.css";
 import {
   AVAILABLE_EXPORT_FORMATS,
   getFormatCheckboxes,
@@ -32,14 +36,11 @@ import {
   renderInput,
   renderTextArea,
   PresetParser,
-  Paginator,
   REQUIRES_FEATURE_SELECTION
 } from "./utils";
-import Dropzone from "react-dropzone";
-import TreeMenu from "./react-tree-menu/TreeMenu";
 import { TreeTag, TreeTagYAML } from "../utils/TreeTag";
 import { TAGTREE, TAGLOOKUP } from "../utils/TreeTagSettings";
-import { getConfigurations } from "../actions/configurationActions";
+import styles from "../styles/ExportForm.css";
 
 const form = reduxForm({
   form: "ExportForm",

@@ -2,16 +2,15 @@ import React, { Component } from "react";
 
 import { Col, Row, Table, Button } from "react-bootstrap";
 import { connect } from "react-redux";
+
 import MapListView from "./MapListView";
+import Paginator from "./Paginator";
 import { getExports } from "../actions/exportsActions";
 import { zoomToExportRegion } from "../actions/hdx";
-import { Paginator } from "./utils";
 
 class ExportTable extends Component {
-  selectRegion = id => this.props.selectRegion(id);
-
   render() {
-    const { jobs } = this.props;
+    const { jobs, selectRegion } = this.props;
 
     return (
       <tbody>
@@ -38,7 +37,7 @@ class ExportTable extends Component {
               <td>
                 <Button
                   title="Show on map"
-                  onClick={() => this.selectRegion(job.simplified_geom.id)}
+                  onClick={() => selectRegion(job.simplified_geom.id)}
                 >
                   <i className="fa fa-globe" />
                 </Button>

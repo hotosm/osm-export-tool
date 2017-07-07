@@ -5,9 +5,9 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
 import ExportRegionPanel from "./ExportRegionPanel";
-import { getExportRegions } from "../actions/hdx";
 import MapListView from "./MapListView";
-import { Paginator } from "./utils";
+import Paginator from "./Paginator";
+import { getExportRegions } from "../actions/hdx";
 
 class ExportRegionList extends Component {
   render() {

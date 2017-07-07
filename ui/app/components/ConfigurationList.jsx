@@ -7,18 +7,17 @@ import {
   Button,
   InputGroup,
   FormControl,
-  Checkbox,
-  Form,
-  FormGroup
+  Checkbox
 } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+
 import ConfigurationForm from "./ConfigurationForm";
+import Paginator from "./Paginator";
 import {
   getConfigurations,
   getConfiguration
 } from "../actions/configurationActions";
-import { Paginator } from "./utils";
 
 const ConfigurationTable = ({ configurations }) =>
   <tbody>
@@ -138,12 +137,14 @@ export class ConfigurationNew extends Component {
 class ConfigurationDetail extends Component {
   componentDidMount() {
     const { match: { params: { uid } }, getConfiguration } = this.props;
-    this.props.getConfiguration(uid);
+
+    getConfiguration(uid);
   }
 
   componentWillReceiveProps(props) {
     const { match: { params: { uid } }, getConfiguration } = props;
-    this.props.getConfiguration(uid);
+
+    getConfiguration(uid);
   }
 
   render() {
