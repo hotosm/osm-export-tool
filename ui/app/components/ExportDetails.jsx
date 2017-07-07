@@ -10,13 +10,9 @@ import {
   Table
 } from "react-bootstrap";
 import { connect } from "react-redux";
-import {
-  getExport,
-  getRuns,
-  runExport,
-  cloneExport
-} from "../actions/exports";
+
 import MapListView from "./MapListView";
+import { getExport, getRuns, runExport, cloneExport } from "../actions/exports";
 import { exportFormatNicename, formatDate, formatDuration } from "./utils";
 
 const Details = ({ exportInfo }) => {
@@ -81,7 +77,7 @@ const Details = ({ exportInfo }) => {
 };
 
 class ExportRuns extends Component {
-  componentDidMount() {
+  componentWillMount() {
     this.props.getRuns(this.props.jobUid);
     this.poller = setInterval(
       () => this.props.getRuns(this.props.jobUid),
@@ -92,7 +88,7 @@ class ExportRuns extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.jobUid !== this.props.jobUid) {
       clearInterval(this.poller);
-      this.poller.getRuns(this.props.jobUid);
+      this.props.getRuns(this.props.jobUid);
     } else {
       if (
         this.props.runs.length > 0 &&
@@ -182,10 +178,8 @@ const ExportRunsContainer = connect(
       runs: state.exportRuns
     };
   },
-  dispatch => {
-    return {
-      getRuns: jobUid => dispatch(getRuns(jobUid))
-    };
+  {
+    getRuns
   }
 )(ExportRuns);
 
@@ -286,12 +280,8 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getExport: id => dispatch(getExport(id)),
-    handleRun: id => dispatch(runExport(id)),
-    handleClone: exportInfo => dispatch(cloneExport(exportInfo))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ExportDetails);
+export default connect(mapStateToProps, {
+  getExport,
+  handleRun: runExport,
+  handleClone: cloneExport
+})(ExportDetails);
