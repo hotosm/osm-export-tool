@@ -81,18 +81,6 @@ const ZoomExtent = function(options) {
 ol.inherits(ZoomExtent, Control);
 
 export class ExportAOI extends Component {
-  constructor(props) {
-    super(props);
-    this._handleDrawStart = this._handleDrawStart.bind(this);
-    this._handleDrawEnd = this._handleDrawEnd.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.handleZoomToSelection = this.handleZoomToSelection.bind(this);
-    this.handleResetMap = this.handleResetMap.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
-    this.setMapView = this.setMapView.bind(this);
-    this.handleGeoJSONUpload = this.handleGeoJSONUpload.bind(this);
-  }
-
   getFeature(geojson) {
     switch (geojson.type) {
       case "FeatureCollection":
@@ -199,7 +187,7 @@ export class ExportAOI extends Component {
     }
   }
 
-  handleCancel(sender) {
+  handleCancel = sender => {
     this.props.hideInvalidDrawWarning();
 
     if (this.props.mode !== MODE_NORMAL) {
@@ -208,27 +196,26 @@ export class ExportAOI extends Component {
 
     this._clearDraw();
     this.props.clearAoiInfo();
-  }
+  };
 
-  handleZoomToSelection(bbox) {
+  handleZoomToSelection = bbox =>
     this._map
       .getView()
       .fit(
         proj.transformExtent(bbox, WGS84, WEB_MERCATOR),
         this._map.getSize()
       );
-  }
 
-  handleResetMap() {
+  handleResetMap = () => {
     let worldExtent = proj.transformExtent(
       [-180, -90, 180, 90],
       WGS84,
       WEB_MERCATOR
     );
     this._map.getView().fit(worldExtent, this._map.getSize());
-  }
+  };
 
-  handleSearch(result) {
+  handleSearch = result => {
     const unformattedBbox = result.bbox;
     const formattedBbox = [
       unformattedBbox.west,
@@ -253,19 +240,18 @@ export class ExportAOI extends Component {
 
     this.props.updateAoiInfo(geojson, "Polygon", result.name, description);
     this.handleZoomToSelection(bbox);
-  }
+  };
 
-  handleGeoJSONUpload(geojson) {
+  handleGeoJSONUpload = geojson =>
     this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Import");
-  }
 
-  setMapView() {
+  setMapView = () => {
     this._clearDraw();
     const extent = this._map.getView().calculateExtent(this._map.getSize());
     const geom = Polygon.fromExtent(extent);
     const geojson = createGeoJSON(geom);
     this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Map View");
-  }
+  };
 
   _activateDrawInteraction(mode) {
     if (mode === MODE_DRAW_BBOX) {
@@ -286,17 +272,15 @@ export class ExportAOI extends Component {
     this._drawFreeInteraction.setActive(false);
   }
 
-  _handleDrawEnd(event) {
+  _handleDrawEnd = event => {
     // get the drawn bounding box
     const geometry = event.feature.getGeometry();
     const geojson = createGeoJSON(geometry);
     this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Draw");
     this.props.updateMode("MODE_NORMAL");
-  }
+  };
 
-  _handleDrawStart() {
-    this._clearDraw();
-  }
+  _handleDrawStart = () => this._clearDraw();
 
   _initializeOpenLayers() {
     this._drawLayer = generateDrawLayer();
@@ -364,11 +348,11 @@ export class ExportAOI extends Component {
         <div id="map" className={styles.map} style={mapStyle} ref="olmap">
           <AoiInfobar />
           <SearchAOIToolbar
-            handleSearch={result => this.handleSearch(result)}
-            handleCancel={sender => this.handleCancel(sender)}
+            handleSearch={this.handleSearch}
+            handleCancel={this.handleCancel}
           />
           <DrawAOIToolbar
-            handleCancel={sender => this.handleCancel(sender)}
+            handleCancel={this.handleCancel}
             setMapView={this.setMapView}
           />
           <InvalidDrawWarning />
