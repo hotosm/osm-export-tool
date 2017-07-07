@@ -72,7 +72,7 @@ class ExportRegionPanel extends Component {
     }
   }
 
-  selectRegion = () => this.props.selectRegion(this.props.region.id);
+  selectRegion = () => this.props.zoomToExportRegion(this.props.region.id);
 
   render() {
     const { region } = this.props;
@@ -113,14 +113,4 @@ class ExportRegionPanel extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {};
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    selectRegion: id => dispatch(zoomToExportRegion(id))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ExportRegionPanel);
+export default connect(null, { zoomToExportRegion })(ExportRegionPanel);

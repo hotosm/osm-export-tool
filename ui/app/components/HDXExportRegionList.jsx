@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Col, Row, Button } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -91,12 +91,6 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getExportRegions: url => dispatch(getExportRegions(url))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(
+export default connect(mapStateToProps, { getExportRegions })(
   HDXExportRegionList
 );

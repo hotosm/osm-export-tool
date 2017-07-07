@@ -12,7 +12,6 @@ import {
 import { FormattedDate, FormattedRelative, FormattedTime } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { push } from "react-router-redux";
 import "react-select/dist/react-select.css";
 import yaml from "js-yaml";
 
@@ -277,8 +276,7 @@ export class HDXExportRegionForm extends Component {
   componentWillReceiveProps(props) {
     const {
       hdx: { exportRegions, statusCode },
-      match: { params: { id } },
-      showAllExportRegions
+      match: { params: { id } }
     } = props;
 
     if (this.props.hdx.statusCode !== statusCode) {
@@ -300,10 +298,6 @@ export class HDXExportRegionForm extends Component {
 
     if (!isEqual(this.props.hdx.exportRegions[id], exportRegions[id])) {
       this.didReceiveRegion(exportRegions[id]);
-    }
-
-    if (this.props.hdx.exportRegions[id] != null && exportRegions[id] == null) {
-      showAllExportRegions();
     }
 
     // TODO this would be cleaner if using reselect
@@ -354,7 +348,7 @@ export class HDXExportRegionForm extends Component {
       deleting: true
     });
 
-    this.props.handleDelete(this.exportRegion.id);
+    this.props.deleteExportRegion(this.exportRegion.id);
   };
 
   handleRun = () => {
@@ -362,7 +356,7 @@ export class HDXExportRegionForm extends Component {
       running: true
     });
 
-    this.props.handleRun(this.exportRegion.id, this.exportRegion.job_uid);
+    this.props.runExport(this.exportRegion.id, this.exportRegion.job_uid);
   };
 
   render() {
@@ -747,17 +741,9 @@ const flatten = arr =>
     []
   );
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getExportRegion: id => dispatch(getExportRegion(id)),
-    getLocationOptions: () => dispatch(getLocationOptions()),
-    handleDelete: id => dispatch(deleteExportRegion(id)),
-    handleRun: (id, jobUid) => dispatch(runExport(id, jobUid)),
-    // TODO this is wrong
-    showAllExportRegions: () => dispatch(push("/"))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(
-  form(HDXExportRegionForm)
-);
+export default connect(mapStateToProps, {
+  getExportRegion,
+  getLocationOptions,
+  deleteExportRegion,
+  runExport
+})(form(HDXExportRegionForm));
