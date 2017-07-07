@@ -50,6 +50,36 @@ const isEqual = require("lodash/isEqual");
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
 
+const ZoomExtent = function(options) {
+  options = options || {};
+  options.className = options.className != null ? options.className : "";
+
+  let button = document.createElement("button");
+  button.setAttribute("type", "button");
+  let icon = document.createElement("i");
+  icon.className = "fa fa-globe";
+  button.appendChild(icon);
+
+  this.zoomer = () => {
+    const map = this.getMap();
+    const view = map.getView();
+    const size = map.getSize();
+    view.fit(options.extent, size);
+  };
+
+  button.addEventListener("click", this.zoomer, false);
+  button.addEventListener("touchstart", this.zoomer, false);
+  let element = document.createElement("div");
+  element.className = options.className + " ol-unselectable ol-control";
+  element.appendChild(button);
+
+  Control.call(this, {
+    element: element,
+    target: options.target
+  });
+};
+ol.inherits(ZoomExtent, Control);
+
 export class ExportAOI extends Component {
   constructor(props) {
     super(props);
@@ -217,11 +247,9 @@ export class ExportAOI extends Component {
     });
     this._drawLayer.getSource().addFeature(bboxFeature);
     let description = "";
-    description = description + (result.countryName ? result.countryName : "");
-    description =
-      description + (result.adminName1 ? ", " + result.adminName1 : "");
-    description =
-      description + (result.adminName2 ? ", " + result.adminName2 : "");
+    description += result.countryName ? result.countryName : "";
+    description += result.adminName1 ? ", " + result.adminName1 : "";
+    description += result.adminName2 ? ", " + result.adminName2 : "";
 
     this.props.updateAoiInfo(geojson, "Polygon", result.name, description);
     this.handleZoomToSelection(bbox);
@@ -355,12 +383,17 @@ export class ExportAOI extends Component {
       case MODE_DRAW_BBOX:
         this._activateDrawInteraction(MODE_DRAW_BBOX);
         break;
+
       case MODE_DRAW_FREE:
         this._activateDrawInteraction(MODE_DRAW_FREE);
         break;
+
       case MODE_NORMAL:
         this._deactivateDrawInteraction();
         break;
+
+      default:
+        console.warn("Unrecognized interaction mode:", mode);
     }
   }
 }
@@ -518,33 +551,3 @@ function createGeoJSON(ol3Geometry) {
   };
   return geojson;
 }
-
-const ZoomExtent = function(options) {
-  options = options || {};
-  options.className = options.className != null ? options.className : "";
-
-  let button = document.createElement("button");
-  button.setAttribute("type", "button");
-  let icon = document.createElement("i");
-  icon.className = "fa fa-globe";
-  button.appendChild(icon);
-
-  this.zoomer = () => {
-    const map = this.getMap();
-    const view = map.getView();
-    const size = map.getSize();
-    view.fit(options.extent, size);
-  };
-
-  button.addEventListener("click", this.zoomer, false);
-  button.addEventListener("touchstart", this.zoomer, false);
-  let element = document.createElement("div");
-  element.className = options.className + " ol-unselectable ol-control";
-  element.appendChild(button);
-
-  Control.call(this, {
-    element: element,
-    target: options.target
-  });
-};
-ol.inherits(ZoomExtent, Control);
