@@ -642,6 +642,11 @@ const mapStateToProps = state => {
     featureSelection: formValueSelector(FORM_NAME)(state, "feature_selection"),
     hdx: state.hdx,
     initialValues: {
+      aoi: {
+        description: "Draw",
+        geomType: "Polygon",
+        title: "Custom Polygon"
+      },
       feature_selection: `
 Buildings:
   hdx:
