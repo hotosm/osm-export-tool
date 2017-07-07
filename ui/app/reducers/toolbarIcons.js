@@ -1,7 +1,17 @@
-import types from "../../actions/aoi/mapToolActionTypes";
-import initialState from "../initialState";
+import types from "../actions";
 
-export function toolbarIconsReducer(state = initialState.toolbarIcons, action) {
+const initialState = {
+  box: "DEFAULT",
+  free: "DEFAULT",
+  mapView: "DEFAULT",
+  import: "DEFAULT",
+  search: "DEFAULT"
+};
+
+export default function toolbarIcons(
+  state = initialState,
+  action
+) {
   switch (action.type) {
     case types.SET_BOX_SELECTED:
       return {
@@ -11,6 +21,7 @@ export function toolbarIconsReducer(state = initialState.toolbarIcons, action) {
         import: "INACTIVE",
         search: "INACTIVE"
       };
+
     case types.SET_FREE_SELECTED:
       return {
         box: "INACTIVE",
@@ -19,6 +30,7 @@ export function toolbarIconsReducer(state = initialState.toolbarIcons, action) {
         import: "INACTIVE",
         search: "INACTIVE"
       };
+
     case types.SET_VIEW_SELECTED:
       return {
         box: "INACTIVE",
@@ -27,6 +39,7 @@ export function toolbarIconsReducer(state = initialState.toolbarIcons, action) {
         import: "INACTIVE",
         search: "INACTIVE"
       };
+
     case types.SET_IMPORT_SELECTED:
       return {
         box: "INACTIVE",
@@ -35,6 +48,7 @@ export function toolbarIconsReducer(state = initialState.toolbarIcons, action) {
         import: "SELECTED",
         search: "INACTIVE"
       };
+
     case types.SET_SEARCH_SELECTED:
       return {
         box: "INACTIVE",
@@ -43,6 +57,7 @@ export function toolbarIconsReducer(state = initialState.toolbarIcons, action) {
         import: "INACTIVE",
         search: "SELECTED"
       };
+
     case types.SET_BUTTONS_DEFAULT:
       return {
         box: "DEFAULT",
@@ -51,43 +66,7 @@ export function toolbarIconsReducer(state = initialState.toolbarIcons, action) {
         import: "DEFAULT",
         search: "DEFAULT"
       };
-    default:
-      return state;
-  }
-}
 
-export function showImportModalReducer(
-  state = initialState.showImportModal,
-  action
-) {
-  switch (action.type) {
-    case types.SET_IMPORT_MODAL_STATE:
-      return action.showImportModal;
-    default:
-      return state;
-  }
-}
-
-export function importGeomReducer(state = initialState.importGeom, action) {
-  switch (action.type) {
-    case types.FILE_PROCESSING:
-      return { processing: true, processed: false, geojson: {}, error: null };
-    case types.FILE_PROCESSED:
-      return {
-        processing: false,
-        processed: true,
-        geojson: action.geojson,
-        error: null
-      };
-    case types.FILE_ERROR:
-      return {
-        processing: false,
-        processed: false,
-        geojson: {},
-        error: action.error
-      };
-    case types.FILE_RESET:
-      return { processing: false, processed: false, geojson: {}, error: null };
     default:
       return state;
   }

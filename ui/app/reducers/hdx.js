@@ -1,8 +1,17 @@
-import types from "../actions/actionTypes";
-import initialState from "./initialState";
+import types from "../actions";
 
-export function getHdxReducer(
-  state = initialState.hdx,
+const initialState = {
+  fetching: false,
+  fetched: false,
+  exportRegions: {},
+  error: null,
+  prevPageUrl: null,
+  nextPageUrl: null,
+  total: null
+};
+
+export default function hdx(
+  state = initialState,
   {
     error,
     exportRegion,

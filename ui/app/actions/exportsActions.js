@@ -1,6 +1,6 @@
 import axios from "axios";
 import cookie from "react-cookie";
-import types from "./actionTypes";
+import types from ".";
 import { push } from "react-router-redux";
 import { startSubmit, stopSubmit } from "redux-form";
 import moment from "moment";
@@ -78,15 +78,16 @@ export function runExport(jobUid) {
   };
 }
 
-export function getOverpassTimestamp(dispatch) {
-  return axios({
-    url: "/api/overpass_timestamp"
-  }).then(rsp => {
-    dispatch({
-      type: types.RECEIVED_OVERPASS_TIMESTAMP,
-      lastUpdated: moment(rsp.data.timestamp).fromNow()
+export function getOverpassTimestamp() {
+  return dispatch =>
+    axios({
+      url: "/api/overpass_timestamp"
+    }).then(rsp => {
+      dispatch({
+        type: types.RECEIVED_OVERPASS_TIMESTAMP,
+        lastUpdated: moment(rsp.data.timestamp).fromNow()
+      });
     });
-  });
 }
 
 export function getExport(id) {

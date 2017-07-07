@@ -1,6 +1,6 @@
 import axios from "axios";
 import cookie from "react-cookie";
-import types from "./actionTypes";
+import types from ".";
 import { push } from "react-router-redux";
 import { startSubmit, stopSubmit, change } from "redux-form";
 

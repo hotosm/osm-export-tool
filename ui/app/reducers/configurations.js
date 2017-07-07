@@ -1,10 +1,13 @@
-import types from "../actions/actionTypes";
-import initialState from "./initialState";
+import types from "../actions";
 
-export function configurationsReducer(
-  state = initialState.configurations,
-  action
-) {
+const initialState = {
+  nextPageUrl: null,
+  prevPageUrl: null,
+  total: null,
+  items: []
+};
+
+export default function configurations(state = initialState, action) {
   switch (action.type) {
     case types.RECEIVED_CONFIGURATIONS_LIST:
       return {
@@ -14,6 +17,8 @@ export function configurationsReducer(
         items: action.response.results,
         total: action.response.count
       };
+
+    default:
+      return state;
   }
-  return state;
 }

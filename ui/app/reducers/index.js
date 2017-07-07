@@ -1,42 +1,33 @@
-import { reducer as reduxFormReducer } from "redux-form";
-import {
-  exportModeReducer,
-  exportRunsReducer,
-  jobListReducer,
-  exportAoiInfoReducer,
-  exportInfoReducer,
-  overpassTimestampReducer
-} from "./exportsReducer";
-import { invalidDrawWarningReducer } from "./aoi/drawToolBarReducer";
-import {
-  zoomToSelectionReducer,
-  resetMapReducer
-} from "./aoi/AoiInfobarReducer.js";
-import { getGeonamesReducer } from "./aoi/searchToolbarReducer.js";
-import {
-  toolbarIconsReducer,
-  showImportModalReducer,
-  importGeomReducer
-} from "./aoi/mapToolReducer";
-import { configurationsReducer } from "./configurationsReducer";
-import { getHdxReducer } from "./hdxReducer";
+import aoiInfo from "./aoiInfo";
+import configurations from "./configurations";
+import exportInfo from "./exportInfo";
+import exportRuns from "./exportRuns";
+import geonames from "./geonames";
+import hdx from "./hdx";
+import importGeom from "./importGeom";
+import invalidDrawWarning from "./invalidDrawWarning";
+import jobs from "./jobs";
+import overpassLastUpdated from "./overpassLastUpdated";
+import mode from "./mode";
+import resetMap from "./resetMap";
+import showImportModal from "./showImportModal";
+import toolbarIcons from "./toolbarIcons";
+import zoomToSelection from "./zoomToSelection";
 
 export default {
-  // short hand property names
-  mode: exportModeReducer,
-  aoiInfo: exportAoiInfoReducer,
-  zoomToSelection: zoomToSelectionReducer,
-  resetMap: resetMapReducer,
-  geonames: getGeonamesReducer,
-  invalidDrawWarning: invalidDrawWarningReducer,
-  toolbarIcons: toolbarIconsReducer,
-  showImportModal: showImportModalReducer,
-  importGeom: importGeomReducer,
-  form: reduxFormReducer,
-  hdx: getHdxReducer,
-  exportInfo: exportInfoReducer,
-  exportRuns: exportRunsReducer,
-  jobs: jobListReducer,
-  configurations: configurationsReducer,
-  overpassLastUpdated: overpassTimestampReducer
+  aoiInfo,
+  configurations,
+  exportInfo,
+  exportRuns,
+  geonames,
+  hdx,
+  importGeom,
+  invalidDrawWarning,
+  jobs,
+  mode,
+  overpassLastUpdated,
+  resetMap,
+  showImportModal,
+  toolbarIcons,
+  zoomToSelection
 };

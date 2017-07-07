@@ -3,7 +3,7 @@ import cookie from "react-cookie";
 import { push } from "react-router-redux";
 import { startSubmit, stopSubmit } from "redux-form";
 
-import types from "./actionTypes";
+import types from ".";
 
 const launderExportRegion = exportRegion => {
   if (exportRegion.last_run != null) {

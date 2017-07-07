@@ -16,7 +16,11 @@ import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
 import { push } from "react-router-redux";
 import ExportAOI from "./aoi/ExportAOI";
-import { createExport, getOverpassTimestamp } from "../actions/exportsActions";
+import {
+  clearAoiInfo,
+  createExport,
+  getOverpassTimestamp
+} from "../actions/exportsActions";
 import styles from "../styles/ExportForm.css";
 import {
   AVAILABLE_EXPORT_FORMATS,
@@ -332,7 +336,8 @@ export class ExportForm extends Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
+    this.props.clearAoiInfo();
     this.props.getOverpassTimestamp();
   }
 
@@ -562,10 +567,6 @@ buildings:
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getOverpassTimestamp: () => dispatch(getOverpassTimestamp)
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(form(ExportForm));
+export default connect(mapStateToProps, { clearAoiInfo, getOverpassTimestamp })(
+  form(ExportForm)
+);

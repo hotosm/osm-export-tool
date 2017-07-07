@@ -1,4 +1,4 @@
-import actions from "../actionTypes";
+import actions from "..";
 
 export function hideInvalidDrawWarning() {
   return {

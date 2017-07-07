@@ -1,16 +1,11 @@
-import React from "react";
-
 import createHistory from "history/createHashHistory";
+import React from "react";
 import ReactDOM from "react-dom";
 import { Redirect, Route } from "react-router";
 import {
   ConnectedRouter,
-  routerReducer,
-  routerMiddleware
 } from "react-router-redux";
-import { createStore, combineReducers, applyMiddleware } from "redux";
-import { Provider, intlReducer } from "react-intl-redux";
-import thunk from "redux-thunk";
+import { Provider } from "react-intl-redux";
 
 import ExportForm from "./components/ExportForm";
 import ExportDetails from "./components/ExportDetails";
@@ -22,30 +17,9 @@ import {
   ConfigurationNew,
   ConfigurationDetailContainer
 } from "./components/ConfigurationList";
-import reducers from "./reducers/";
+import store from "./config/store"
 
 const history = createHistory();
-
-const middleware = [routerMiddleware(history), thunk];
-
-if (process.env.NODE_ENV !== "production") {
-  const { createLogger } = require("redux-logger");
-
-  middleware.push(
-    createLogger({
-      collapsed: true
-    })
-  );
-}
-
-const store = createStore(
-  combineReducers({
-    ...reducers,
-    intl: intlReducer,
-    router: routerReducer
-  }),
-  applyMiddleware(...middleware)
-);
 
 // TODO 403 API responses should redirect to the login page
 // TODO 404 API responses should either display a 404 page or redirect to the list

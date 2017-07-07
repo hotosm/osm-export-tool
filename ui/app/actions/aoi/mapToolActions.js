@@ -1,6 +1,6 @@
 import GeoJSONFormat from "ol/format/geojson";
 
-import types from "./mapToolActionTypes";
+import types from "..";
 
 export function setBoxButtonSelected() {
   return { type: types.SET_BOX_SELECTED };
