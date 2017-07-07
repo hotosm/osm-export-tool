@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 
-import axios from "axios";
 import isEqual from "lodash/isEqual";
 import { Row, Col, Panel, Button, Table } from "react-bootstrap";
 import {
@@ -23,9 +22,11 @@ import {
   createExportRegion,
   deleteExportRegion,
   getExportRegion,
+  getLocationOptions,
   runExport,
   updateExportRegion
-} from "../actions/hdxActions";
+} from "../actions/hdx";
+import { selectLocationOptions } from "../selectors";
 import styles from "../styles/HDXExportRegionForm.css";
 import {
   prettyBytes,
@@ -210,21 +211,6 @@ export class HDXExportRegionForm extends Component {
     return <FormattedRelative value={exportRegion.next_run} />;
   }
 
-  loadLocationOptions() {
-    return axios(
-      "https://data.humdata.org/api/3/action/group_list?all_fields=true"
-    ).then(rsp =>
-      this.setState({
-        locationOptions: rsp.data.result
-          .filter(x => x.state === "active")
-          .map(x => ({
-            value: x.name,
-            label: x.title
-          }))
-      })
-    );
-  }
-
   didReceiveRegion(exportRegion) {
     if (exportRegion == null) {
       return;
@@ -266,9 +252,10 @@ export class HDXExportRegionForm extends Component {
     console.log("Export region:", exportRegion);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const {
       getExportRegion,
+      getLocationOptions,
       hdx: { exportRegions },
       match: { params: { id } }
     } = this.props;
@@ -282,7 +269,7 @@ export class HDXExportRegionForm extends Component {
       });
     }
 
-    this.loadLocationOptions();
+    getLocationOptions();
 
     this.didReceiveRegion(exportRegions[id]);
   }
@@ -379,14 +366,14 @@ export class HDXExportRegionForm extends Component {
   };
 
   render() {
+    const { deleting, editing, featureSelection, running } = this.state;
     const {
-      deleting,
-      editing,
-      featureSelection,
+      error,
+      handleSubmit,
+      hdx: { status },
       locationOptions,
-      running
-    } = this.state;
-    const { error, handleSubmit, hdx: { status }, submitting } = this.props;
+      submitting
+    } = this.props;
     const exportRegion = this.exportRegion;
     const datasetPrefix = this.props.datasetPrefix || "<prefix>";
     const name = this.props.name || "Untitled";
@@ -744,6 +731,7 @@ Points of Interest:
       export_formats: ["shp", "geopackage", "kml", "garmin_img"],
       buffer_aoi: false
     },
+    locationOptions: selectLocationOptions(state),
     name: formValueSelector(FORM_NAME)(state, "name")
   };
 };
@@ -757,6 +745,7 @@ const flatten = arr =>
 const mapDispatchToProps = dispatch => {
   return {
     getExportRegion: id => dispatch(getExportRegion(id)),
+    getLocationOptions: () => dispatch(getLocationOptions()),
     handleDelete: id => dispatch(deleteExportRegion(id)),
     handleRun: (id, jobUid) => dispatch(runExport(id, jobUid)),
     // TODO this is wrong

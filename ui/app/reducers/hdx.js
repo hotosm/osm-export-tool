@@ -21,7 +21,8 @@ export default function hdx(
     prevPageUrl,
     nextPageUrl,
     total,
-    type
+    type,
+    locationOptions
   }
 ) {
   switch (type) {
@@ -148,6 +149,12 @@ export default function hdx(
           [id]: exportRegion
         },
         status: "Export region saved."
+      };
+
+    case types.RECEIVED_LOCATION_OPTIONS:
+      return {
+        ...state,
+        locationOptions
       };
 
     default:

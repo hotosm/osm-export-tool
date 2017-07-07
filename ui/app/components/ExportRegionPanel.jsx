@@ -5,7 +5,7 @@ import { FormattedRelative } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { zoomToExportRegion } from "../actions/hdxActions";
+import { zoomToExportRegion } from "../actions/hdx";
 
 function DatasetList(props) {
   const listItems = props.datasets.map((dataset, i) =>

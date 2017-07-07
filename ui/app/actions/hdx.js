@@ -4,6 +4,7 @@ import { push } from "react-router-redux";
 import { startSubmit, stopSubmit } from "redux-form";
 
 import types from ".";
+import { selectLocationOptions } from "../selectors";
 
 const launderExportRegion = exportRegion => {
   if (exportRegion.last_run != null) {
@@ -186,7 +187,7 @@ export function createExportRegion(data, form) {
           var msg =
             "Your export region is invalid. Please check the fields above.";
           if ("the_geom" in err.response.data) {
-            msg = msg + " Choose an area to the right.";
+            msg += " Choose an area to the right.";
           }
           return dispatch(
             stopSubmit(form, {
@@ -251,3 +252,34 @@ export function updateExportRegion(id, data, form) {
       });
   };
 }
+
+export const getLocationOptions = () => (dispatch, getState) => {
+  if (selectLocationOptions(getState()) != null) {
+    return;
+  }
+
+  dispatch({
+    type: types.FETCHING_LOCATION_OPTIONS
+  });
+
+  return axios(
+    "https://data.humdata.org/api/3/action/group_list?all_fields=true"
+  )
+    .then(rsp =>
+      dispatch({
+        type: types.RECEIVED_LOCATION_OPTIONS,
+        locationOptions: rsp.data.result
+          .filter(x => x.approval_status === "approved")
+          .map(x => ({
+            value: x.name,
+            label: x.title
+          }))
+      })
+    )
+    .catch(error =>
+      dispatch({
+        type: types.FETCHING_LOCATION_OPTIONS_FAILED,
+        error
+      })
+    );
+};

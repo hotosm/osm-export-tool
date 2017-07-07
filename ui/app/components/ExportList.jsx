@@ -4,7 +4,7 @@ import { Col, Row, Table, Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import MapListView from "./MapListView";
 import { getExports } from "../actions/exportsActions";
-import { zoomToExportRegion } from "../actions/hdxActions";
+import { zoomToExportRegion } from "../actions/hdx";
 import { Paginator } from "./utils";
 
 class ExportTable extends Component {
