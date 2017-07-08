@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 
 import MapListView from "./MapListView";
 import Paginator from "./Paginator";
+import { formatDate } from "./utils";
 import { getExports } from "../actions/exports";
 import { zoomToExportRegion } from "../actions/hdx";
 
@@ -30,7 +31,7 @@ class ExportTable extends Component {
                 {job.project}
               </td>
               <td>
-                {job.created_at}
+                {formatDate(job.created_at)}
               </td>
               <td>
                 {job.user.username}
