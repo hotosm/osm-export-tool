@@ -43,11 +43,14 @@
     "react-hot-loader": "3.0.0-beta.6",
     "redux-logger": "^3.0.6",
     "style-loader": "^0.18.2",
-    "webpack": "^3.1.0"
+    "webpack": "^3.1.0",
+    "webpack-dev-server": "^2.5.1",
+    "write-file-webpack-plugin": "^4.1.0"
   },
   "scripts": {
     "dist": "NODE_ENV=production npm run pack",
     "pack": "webpack -p --progress --display-optimization-bailout --config webpack.config.js",
+    "start": "webpack-dev-server --hot",
     "watch": "webpack --watch --progress --config webpack.config.js"
   },
   "license": "BSD-3-Clause"

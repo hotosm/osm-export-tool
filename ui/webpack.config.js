@@ -1,12 +1,19 @@
 const path = require("path");
 
 const webpack = require("webpack");
+const WriteFilePlugin = require("write-file-webpack-plugin");
 
 const config = {
-  entry: ["babel-polyfill", "./app/index.js"],
+  entry: [
+    "babel-polyfill",
+    "react-hot-loader/patch",
+    "webpack-dev-server/client?http://localhost:8080",
+    "./app/index.js"
+  ],
   output: {
     path: path.resolve(__dirname, "static", "ui", "js"),
-    filename: "bundle.js"
+    filename: "bundle.js",
+    publicPath: "/static/ui/js/"
   },
   devtool: "eval",
   module: {
@@ -16,6 +23,7 @@ const config = {
         exclude: [/node_modules/],
         loader: "babel-loader",
         query: {
+          plugins: ["react-hot-loader/babel"],
           presets: [
             [
               "env",
@@ -53,12 +61,20 @@ const config = {
       }
     ]
   },
+  plugins: [
+    new webpack.NamedModulesPlugin(),
+    new WriteFilePlugin()
+  ],
   resolve: {
     extensions: [".js", ".jsx", ".json", ".css"]
   }
 };
 
 if (process.env.NODE_ENV === "production") {
+  config.entry = [
+    "babel-polyfill",
+    "./app/index.js"
+  ];
   config.devtool = "source-map";
   config.plugins = [
     new webpack.NoEmitOnErrorsPlugin(),

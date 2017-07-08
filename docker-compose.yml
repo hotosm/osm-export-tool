@@ -80,6 +80,8 @@ services:
       driver: none
     ports:
       - "80:80"
+    volumes:
+      - ./ui/static/ui/js:/opt/static/ui/js
     volumes_from:
       - site
   postgresql:
