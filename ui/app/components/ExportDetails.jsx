@@ -194,14 +194,6 @@ export class ExportDetails extends Component {
     getExport(id);
   }
 
-  handleRun = () => {
-    this.props.handleRun(this.props.match.params.id);
-  };
-
-  handleClone = () => {
-    this.props.handleClone(this.props.exportInfo);
-  };
-
   closeModal = () => {
     this.setState({ showModal: false });
   };
@@ -211,7 +203,12 @@ export class ExportDetails extends Component {
   };
 
   render() {
-    const { match: { params: { id } }, exportInfo } = this.props;
+    const {
+      cloneExport,
+      exportInfo,
+      match: { params: { id } },
+      runExport
+    } = this.props;
     const geom = exportInfo
       ? { features: [exportInfo.simplified_geom], type: "FeatureCollection" }
       : null;
@@ -228,13 +225,17 @@ export class ExportDetails extends Component {
               <Button bsSize="large" onClick={this.showModal}>
                 Features
               </Button>
-              <Button bsStyle="success" bsSize="large" onClick={this.handleRun}>
+              <Button
+                bsStyle="success"
+                bsSize="large"
+                onClick={() => runExport(id)}
+              >
                 Re-Run Export
               </Button>
               <Button
                 bsStyle="primary"
                 bsSize="large"
-                onClick={this.handleClone}
+                onClick={() => cloneExport(exportInfo)}
                 {...(exportInfo ? {} : { disabled: true })}
               >
                 Clone Export
@@ -281,7 +282,7 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
+  cloneExport,
   getExport,
-  handleRun: runExport,
-  handleClone: cloneExport
+  runExport
 })(ExportDetails);
