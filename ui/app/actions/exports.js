@@ -62,13 +62,18 @@ export function cloneExport(e) {
 
 export function runExport(jobUid) {
   return dispatch => {
+    dispatch({
+      type: types.RUNNING_EXPORT,
+      id: jobUid
+    });
+
     return axios({
       url: `/api/runs?job_uid=${jobUid}`,
       method: "POST",
       headers: {
         "X-CSRFToken": cookie.load("csrftoken")
       }
-    });
+    }).then(rsp => dispatch(getRuns(jobUid)));
   };
 }
 
