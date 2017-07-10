@@ -84,7 +84,7 @@ export class ExportAOI extends Component {
       geomType: PropTypes.string,
       title: PropTypes.string
     }),
-    errors: PropTypes.string,
+    errors: PropTypes.any,
     mode: PropTypes.string,
     importGeom: PropTypes.object,
     updateMode: PropTypes.func,
@@ -310,11 +310,10 @@ export class ExportAOI extends Component {
 
   render() {
     const { aoi, aoi: { geojson }, errors } = this.props;
-    const mapStyle = {};
 
     return (
       <div>
-        <div id="map" className={styles.map} style={mapStyle} ref="olmap">
+        <div id="map" className={styles.map} ref="olmap">
           {geojson &&
             <AoiInfobar aoi={aoi} zoomToSelection={this.zoomToSelection} />}
           <SearchAOIToolbar

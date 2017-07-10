@@ -22,12 +22,10 @@ export function createExport(data, formName) {
         dispatch(push(`/exports/detail/${rsp.data.uid}`));
       })
       .catch(err => {
-        var msg =
-          "Your export is invalid. Please check each page of the form for errors.";
         return dispatch(
           stopSubmit(formName, {
             ...err.response.data,
-            _error: msg
+            _error: "Your export is invalid. Please check each page of the form for errors."
           })
         );
       });
