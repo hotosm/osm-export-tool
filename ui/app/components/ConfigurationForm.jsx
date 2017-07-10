@@ -1,19 +1,15 @@
 import React, { Component } from "react";
-import { Col, Row, Button } from "react-bootstrap";
+import { Row, Button } from "react-bootstrap";
 import { connect } from "react-redux";
-import {
-  Field,
-  SubmissionError,
-  formValueSelector,
-  propTypes,
-  reduxForm
-} from "redux-form";
-import { renderInput, renderTextArea, renderCheckbox } from "./utils";
+import { Field, propTypes, reduxForm } from "redux-form";
+
 import {
   createConfiguration,
   updateConfiguration,
   deleteConfiguration
 } from "../actions/configurations";
+import styles from "../styles/ConfigurationForm.css";
+import { renderInput, renderTextArea, renderCheckbox } from "./utils";
 
 const FORM_NAME = "ConfigurationForm";
 
@@ -29,6 +25,10 @@ const form = reduxForm({
 });
 
 export class ConfigurationForm extends Component {
+  static propTypes = {
+    ...propTypes
+  };
+
   handleDelete = () => {
     this.props.handleDelete(this.props.configurationUid);
   };
@@ -61,6 +61,7 @@ export class ConfigurationForm extends Component {
           label="Feature Selection"
           component={renderTextArea}
           rows="12"
+          className={styles.featureSelection}
         />
         <Field
           name="public"
