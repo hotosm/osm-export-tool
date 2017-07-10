@@ -10,14 +10,12 @@ import Fill from "ol/style/fill";
 import GeoJSONFormat from "ol/format/geojson";
 import interaction from "ol/interaction";
 import Polygon from "ol/geom/polygon";
-import Projection from "ol/proj/projection";
 import Map from "ol/map";
 import ol from "ol";
 import OSM from "ol/source/osm";
 import proj from "ol/proj";
 import RegularShape from "ol/style/regularshape";
 import ScaleLine from "ol/control/scaleline";
-import Sphere from "ol/sphere";
 import Stroke from "ol/style/stroke";
 import Style from "ol/style/style";
 import Tile from "ol/layer/tile";
@@ -33,10 +31,6 @@ import DrawAOIToolbar from "./DrawAOIToolbar.js";
 import InvalidDrawWarning from "./InvalidDrawWarning.js";
 import DropZone from "./DropZone.js";
 import { updateMode } from "../../actions/exports";
-import {
-  hideInvalidDrawWarning,
-  showInvalidDrawWarning
-} from "../../actions/aoi/drawToolBarActions.js";
 
 export const MODE_DRAW_BBOX = "MODE_DRAW_BBOX";
 export const MODE_NORMAL = "MODE_NORMAL";
@@ -85,12 +79,10 @@ export class ExportAOI extends Component {
       geomType: PropTypes.string,
       title: PropTypes.string
     }),
-    errors: PropTypes.array,
+    errors: PropTypes.string,
     mode: PropTypes.string,
     importGeom: PropTypes.object,
     updateMode: PropTypes.func,
-    hideInvalidDrawWarning: PropTypes.func,
-    showInvalidDrawWarning: PropTypes.func,
     updateAoiInfo: PropTypes.func,
     clearAoiInfo: PropTypes.func
   };
@@ -132,39 +124,14 @@ export class ExportAOI extends Component {
     }
   }
 
-  checkSize(geometry) {
-    var currentProjection = new Projection({ code: "EPSG:3857" });
-    var newProjection = new Projection({ code: "EPSG:4326" });
-    var extentPoly = Polygon.fromExtent(geometry.getExtent());
-    extentPoly.transform(currentProjection, newProjection);
-    var sphere = new Sphere(6378137);
-    var areaSqkm = Math.round(
-      Math.abs(
-        sphere.geodesicArea(extentPoly.getCoordinates()[0]) / 1000 / 1000
-      )
-    );
-
-    const MAX = 3000000;
-    if (areaSqkm > MAX) {
-      this.props.showInvalidDrawWarning(
-        `The bounds of this polygon are too large: ${areaSqkm.toLocaleString()} km², max ${MAX.toLocaleString()} km².`
-      );
-    }
-  }
-
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.errors) {
-      this.props.showInvalidDrawWarning(this.props.errors);
-    }
     if (!isEqual(prevProps.aoi.geojson, this.props.aoi.geojson)) {
       // remove existing features
       this._clearDraw();
       if (this.props.aoi.geojson) {
         const feature = this.getFeature(this.props.aoi.geojson);
         this._drawLayer.getSource().addFeature(feature);
-        const geometry = feature.getGeometry();
-        this.checkSize(geometry);
-        this.handleZoomToSelection(serialize(geometry.getExtent()));
+        this.handleZoomToSelection(bbox(this.props.aoi.geojson));
       }
     }
   }
@@ -181,8 +148,6 @@ export class ExportAOI extends Component {
   }
 
   handleCancel = sender => {
-    this.props.hideInvalidDrawWarning();
-
     if (this.props.mode !== MODE_NORMAL) {
       this.props.updateMode(MODE_NORMAL);
     }
@@ -217,7 +182,6 @@ export class ExportAOI extends Component {
       unformattedBbox.north
     ];
     this._clearDraw();
-    this.props.hideInvalidDrawWarning();
     const bbox = formattedBbox.map(truncate);
     const mercBbox = proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
     const geom = Polygon.fromExtent(mercBbox);
@@ -340,7 +304,7 @@ export class ExportAOI extends Component {
   };
 
   render() {
-    const { aoi, aoi: { geojson } } = this.props;
+    const { aoi, aoi: { geojson }, errors } = this.props;
     const mapStyle = {};
 
     return (
@@ -356,7 +320,7 @@ export class ExportAOI extends Component {
             handleCancel={this.handleCancel}
             setMapView={this.setMapView}
           />
-          <InvalidDrawWarning />
+          <InvalidDrawWarning msg={errors} />
           <DropZone />
         </div>
       </div>
@@ -392,8 +356,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  hideInvalidDrawWarning,
-  showInvalidDrawWarning,
   updateMode
 })(ExportAOI);
 

@@ -4,7 +4,6 @@ import exportRuns from "./exportRuns";
 import geonames from "./geonames";
 import hdx from "./hdx";
 import importGeom from "./importGeom";
-import invalidDrawWarning from "./invalidDrawWarning";
 import jobs from "./jobs";
 import overpassLastUpdated from "./overpassLastUpdated";
 import mode from "./mode";
@@ -18,7 +17,6 @@ export default {
   geonames,
   hdx,
   importGeom,
-  invalidDrawWarning,
   jobs,
   mode,
   overpassLastUpdated,

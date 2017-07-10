@@ -12,11 +12,3 @@
     opacity: .7;
     font-size: 12px;
 }
-
-.visible {
-    visibility: visible;
-}
-
-.hidden {
-    visibility: hidden;
-}

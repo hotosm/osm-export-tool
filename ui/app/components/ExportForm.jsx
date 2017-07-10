@@ -1,3 +1,4 @@
+import area from "@turf/area";
 import React, { Component } from "react";
 import {
   Nav,
@@ -47,6 +48,20 @@ const form = reduxForm({
   onSubmit: (values, dispatch, props) => {
     console.log("Submitting form. Values:", values);
     dispatch(createExport(values, "ExportForm"));
+  },
+  validate: ({ the_geom }) => {
+    const errors = {};
+
+    if (the_geom != null) {
+      const areaSqkm = Math.round(area(the_geom) / (1000 * 1000));
+
+      const MAX = 3000000;
+      if (areaSqkm > MAX) {
+        errors.the_geom = `The bounds of this polygon are too large: ${areaSqkm.toLocaleString()} km², max ${MAX.toLocaleString()} km².`;
+      }
+    }
+
+    return errors;
   }
 });
 
@@ -158,10 +173,7 @@ class StoredConfComponent extends React.Component {
             <Button>Clear</Button>
           </InputGroup.Button>
         </InputGroup>
-        <Paginator
-          collection={configurations}
-          getPage={getConfigurations}
-        />
+        <Paginator collection={configurations} getPage={getConfigurations} />
         <Table>
           <thead>
             <tr>

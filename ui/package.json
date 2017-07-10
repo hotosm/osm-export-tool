@@ -2,6 +2,7 @@
   "name": "osm-export-tool2",
   "version": "0.0.1",
   "dependencies": {
+    "@turf/area": "^4.5.2",
     "@turf/bbox": "^4.5.2",
     "axios": "^0.16.2",
     "babel-polyfill": "^6.23.0",
