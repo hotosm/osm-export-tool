@@ -71,7 +71,7 @@ class ConfigurationListPane extends Component {
           >
             Create New Configuration
           </Link>
-          {configurations.length > 0 &&
+          {configurations.total > 0 &&
             <div>
               <InputGroup
                 style={{
