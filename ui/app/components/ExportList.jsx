@@ -1,11 +1,19 @@
 import React, { Component } from "react";
 
-import { Col, Row, Table, Button } from "react-bootstrap";
+import {
+  Button,
+  Checkbox,
+  Col,
+  FormControl,
+  InputGroup,
+  Row,
+  Table
+} from "react-bootstrap";
 import { connect } from "react-redux";
+import { FormattedDate, FormattedTime } from "react-intl";
 
 import MapListView from "./MapListView";
 import Paginator from "./Paginator";
-import { formatDate } from "./utils";
 import { getExports } from "../actions/exports";
 import { zoomToExportRegion } from "../actions/hdx";
 
@@ -15,38 +23,37 @@ class ExportTable extends Component {
 
     return (
       <tbody>
-        {jobs.map((job, i) => {
-          return (
-            <tr key={i}>
-              <td>
-                {/* TODO Link */}
-                <a href={`#/exports/detail/${job.uid}`}>
-                  {job.name}
-                </a>
-              </td>
-              <td>
-                {job.description}
-              </td>
-              <td>
-                {job.project}
-              </td>
-              <td>
-                {formatDate(job.created_at)}
-              </td>
-              <td>
-                {job.user.username}
-              </td>
-              <td>
-                <Button
-                  title="Show on map"
-                  onClick={() => selectRegion(job.simplified_geom.id)}
-                >
-                  <i className="fa fa-globe" />
-                </Button>
-              </td>
-            </tr>
-          );
-        })}
+        {jobs.map((job, i) =>
+          <tr key={i}>
+            <td>
+              {/* TODO Link */}
+              <a href={`#/exports/detail/${job.uid}`}>
+                {job.name}
+              </a>
+            </td>
+            <td>
+              {job.description}
+            </td>
+            <td>
+              {job.project}
+            </td>
+            <td>
+              <FormattedDate value={job.created_at} />{" "}
+              <FormattedTime value={job.created_at} />
+            </td>
+            <td>
+              {job.user.username}
+            </td>
+            <td>
+              <Button
+                title="Show on map"
+                onClick={() => selectRegion(job.simplified_geom.id)}
+              >
+                <i className="fa fa-globe" />
+              </Button>
+            </td>
+          </tr>
+        )}
       </tbody>
     );
   }
@@ -66,24 +73,44 @@ export class ExportList extends Component {
     };
     return (
       <Row style={{ height: "100%" }}>
-        <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
-          <div style={{ padding: "20px" }}>
-            <h2 style={{ display: "inline" }}>Exports</h2>
-            <Table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Project</th>
-                  <th>Created At</th>
-                  <th>Owner</th>
-                  <th />
-                </tr>
-              </thead>
-              <ExportTable jobs={jobs.items} selectRegion={selectRegion} />
-            </Table>
-            <Paginator collection={jobs} getPage={getExports} />
-          </div>
+        <Col
+          xs={6}
+          style={{ height: "100%", overflowY: "scroll", padding: 20 }}
+        >
+          <h2 style={{ display: "inline" }}>Exports</h2>
+          <InputGroup
+            style={{
+              width: "100%",
+              marginTop: "20px",
+              marginBottom: "10px"
+            }}
+          >
+            <InputGroup.Button>
+              <Button>Clear</Button>
+            </InputGroup.Button>
+            <FormControl
+              type="text"
+              placeholder="Search for a name or description..."
+            />
+            <InputGroup.Button>
+              <Button>Search</Button>
+            </InputGroup.Button>
+          </InputGroup>
+          <Checkbox>My Exports</Checkbox>
+          <Table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Project</th>
+                <th>Created At</th>
+                <th>Owner</th>
+                <th />
+              </tr>
+            </thead>
+            <ExportTable jobs={jobs.items} selectRegion={selectRegion} />
+          </Table>
+          <Paginator collection={jobs} getPage={getExports} />
         </Col>
         <Col xs={6} style={{ height: "100%" }}>
           <MapListView
