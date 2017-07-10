@@ -116,7 +116,7 @@ class ConfigurationListPane extends Component {
 
 const ConfigurationListPaneContainer = connect(
   state => ({
-    configurations: state.configurations
+    configurations: selectConfigurations(state)
   }),
   {
     getConfigurations
@@ -139,16 +139,19 @@ export class ConfigurationNew extends Component {
 }
 
 class ConfigurationDetail extends Component {
-  componentWillMount() {
-    const { match: { params: { uid } }, getConfiguration } = this.props;
+  componentDidMount() {
+    const { configurationId, getConfiguration } = this.props;
 
-    getConfiguration(uid);
+    getConfiguration(configurationId);
   }
 
   componentWillReceiveProps(props) {
-    const { match: { params: { uid } }, getConfiguration } = props;
+    const { configurationId: prevConfigurationId } = this.props;
+    const { configurationId, getConfiguration } = props;
 
-    getConfiguration(uid);
+    if (prevConfigurationId !== configurationId) {
+      getConfiguration(configurationId);
+    }
   }
 
   render() {
@@ -166,8 +169,8 @@ class ConfigurationDetail extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  configurations: selectConfigurations(state)
+const mapStateToProps = (state, ownProps) => ({
+  configurationId: ownProps.match.params.uid
 });
 
 export const ConfigurationDetailContainer = connect(mapStateToProps, {
@@ -175,8 +178,6 @@ export const ConfigurationDetailContainer = connect(mapStateToProps, {
 })(ConfigurationDetail);
 
 export class ConfigurationList extends Component {
-  componentDidMount() {}
-
   render() {
     return (
       <Row style={{ height: "100%" }}>

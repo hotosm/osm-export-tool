@@ -2,7 +2,7 @@ import axios from "axios";
 import cookie from "react-cookie";
 import types from ".";
 import { push } from "react-router-redux";
-import { startSubmit, stopSubmit, change } from "redux-form";
+import { initialize, startSubmit, stopSubmit } from "redux-form";
 
 export function createConfiguration(data, form_name) {
   return dispatch => {
@@ -88,11 +88,8 @@ export function getConfiguration(uid) {
         type: types.RECEIVED_CONFIGURATION,
         configuration: rsp.data
       });
-      dispatch({
-        type: "@@redux-form/INITIALIZE",
-        meta: { form: "ConfigurationForm" },
-        payload: rsp.data
-      });
+
+      dispatch(initialize("ConfigurationForm", rsp.data));
     });
   };
 }
