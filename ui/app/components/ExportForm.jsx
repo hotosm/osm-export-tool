@@ -47,6 +47,10 @@ const form = reduxForm({
   form: "ExportForm",
   onSubmit: (values, dispatch, props) => {
     console.log("Submitting form. Values:", values);
+
+    // coerce to boolean
+    values.published = !!values.published;
+
     dispatch(createExport(values, "ExportForm"));
   },
   validate: ({ the_geom }) => {
