@@ -277,6 +277,13 @@ export class HDXExportRegionForm extends Component {
     getLocationOptions();
   }
 
+  componentWillUnmount() {
+    if (this.runTimeout != null) {
+      clearTimeout(this.runTimeout);
+      this.runTimeout = null;
+    }
+  }
+
   componentWillReceiveProps(props) {
     const {
       exportRegion: prevExportRegion,
@@ -297,8 +304,10 @@ export class HDXExportRegionForm extends Component {
       if (id != null) {
         getExportRegion(id);
 
-        clearTimeout(this.runTimeout);
-        this.runTimeout = null;
+        if (this.runTimeout != null) {
+          clearTimeout(this.runTimeout);
+          this.runTimeout = null;
+        }
 
         this.setState({
           editing: true
