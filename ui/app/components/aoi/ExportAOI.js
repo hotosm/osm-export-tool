@@ -1,4 +1,5 @@
 import bbox from "@turf/bbox";
+import detectIt from "detect-it";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { connect } from "react-redux";
@@ -59,7 +60,11 @@ const ZoomExtent = function(options) {
   };
 
   button.addEventListener("click", this.zoomer, false);
-  button.addEventListener("touchstart", this.zoomer, false);
+  button.addEventListener(
+    "touchstart",
+    this.zoomer,
+    detectIt.passiveEvents ? { passive: true } : false
+  );
   let element = document.createElement("div");
   element.className = options.className + " ol-unselectable ol-control";
   element.appendChild(button);

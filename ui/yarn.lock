@@ -1765,15 +1765,40 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
 
+detect-hover@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/detect-hover/-/detect-hover-1.0.1.tgz#cf8293b91bdc16b35a8dbbe52be06553ad23d3fc"
+
 detect-indent@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-4.0.0.tgz#f76d064352cdf43a1cb6ce619c4ee3a9475de208"
   dependencies:
     repeating "^2.0.0"
 
+detect-it@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/detect-it/-/detect-it-3.0.0.tgz#871e4295d98820c75c11d716181bb47a0dc1f242"
+  dependencies:
+    detect-hover "^1.0.1"
+    detect-passive-events "^1.0.2"
+    detect-pointer "^1.0.1"
+    detect-touch-events "^2.0.0"
+
 detect-node@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/detect-node/-/detect-node-2.0.3.tgz#a2033c09cc8e158d37748fbde7507832bd6ce127"
+
+detect-passive-events@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/detect-passive-events/-/detect-passive-events-1.0.2.tgz#0e39d7b675907eff55b8965f5be3fc0b0f4178b9"
+
+detect-pointer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/detect-pointer/-/detect-pointer-1.0.1.tgz#cc9aa88b2b0f780250e50a81cfefa9393b14369f"
+
+detect-touch-events@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/detect-touch-events/-/detect-touch-events-2.0.0.tgz#d3d09e0b6e9ff00270c044c577087be83617e793"
 
 diffie-hellman@^5.0.0:
   version "5.0.2"
