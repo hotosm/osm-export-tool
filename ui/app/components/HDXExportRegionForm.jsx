@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import isEqual from "lodash/isEqual";
+import PropTypes from "prop-types";
 import { Row, Col, Panel, Button, Table } from "react-bootstrap";
 import {
   Field,
@@ -16,7 +17,7 @@ import "react-select/dist/react-select.css";
 import yaml from "js-yaml";
 
 import ExportAOIField from "./ExportAOIField";
-
+import { getRuns } from "../actions/exports";
 import {
   createExportRegion,
   deleteExportRegion,
@@ -25,7 +26,13 @@ import {
   runExport,
   updateExportRegion
 } from "../actions/hdx";
-import { selectLocationOptions } from "../selectors";
+import {
+  selectExportRegion,
+  selectHDXError,
+  selectHDXStatus,
+  selectLocationOptions,
+  selectRuns
+} from "../selectors";
 import styles from "../styles/HDXExportRegionForm.css";
 import {
   prettyBytes,
@@ -51,7 +58,7 @@ const HDX_EXPORT_FORMATS = {
 
 const form = reduxForm({
   form: FORM_NAME,
-  onSubmit: (values, dispatch, props) => {
+  onSubmit: (values, dispatch, { createExportRegion, updateExportRegion }) => {
     console.log("Submitting form. Values:", values);
 
     const formData = {
@@ -60,9 +67,9 @@ const form = reduxForm({
     };
 
     if (values.id != null) {
-      dispatch(updateExportRegion(values.id, formData, FORM_NAME));
+      updateExportRegion(values.id, formData, FORM_NAME);
     } else {
-      dispatch(createExportRegion(formData, FORM_NAME));
+      createExportRegion(formData, FORM_NAME);
     }
   },
   validate: values => {
@@ -180,7 +187,10 @@ const ExistingDatasetsPanel = ({
 
 export class HDXExportRegionForm extends Component {
   static propTypes = {
-    ...propTypes
+    ...propTypes,
+    exportRegion: PropTypes.object,
+    locationOptions: PropTypes.array,
+    runs: PropTypes.array
   };
 
   state = {
@@ -191,7 +201,7 @@ export class HDXExportRegionForm extends Component {
   };
 
   getLastRun() {
-    const exportRegion = this.exportRegion;
+    const { exportRegion } = this.props;
 
     if (exportRegion.last_run == null) {
       return "Never";
@@ -201,7 +211,7 @@ export class HDXExportRegionForm extends Component {
   }
 
   getNextRun() {
-    const exportRegion = this.exportRegion;
+    const { exportRegion } = this.props;
 
     if (exportRegion.next_run == null) {
       return "Never";
@@ -215,7 +225,9 @@ export class HDXExportRegionForm extends Component {
       return;
     }
 
-    const { anyTouched, change, getExportRegion } = this.props;
+    const { anyTouched, change, getRuns } = this.props;
+
+    getRuns(exportRegion.job_uid);
 
     // NOTE: this also sets some form properties that we don't care about (but that show up in the onSubmit handler)
     if (!anyTouched) {
@@ -224,38 +236,32 @@ export class HDXExportRegionForm extends Component {
 
       exportRegion.export_formats.forEach(x => change(x, true));
     }
+  }
 
+  didReceiveRuns(exportRegion, runs) {
     if (
-      exportRegion.runs[0] != null &&
-      ["SUBMITTED", "RUNNING"].indexOf(exportRegion.runs[0].status) >= 0
+      runs[0] != null &&
+      ["SUBMITTED", "RUNNING"].indexOf(runs[0].status) >= 0
     ) {
       this.setState({
         running: true
       });
 
-      if (this.runPoller == null) {
-        this.runPoller = setInterval(
-          () => getExportRegion(exportRegion.id),
-          15e3
-        );
-      }
+      const { getRuns } = this.props;
+
+      // TODO here's an opportunity for backoff
+      this.runTimeout = setTimeout(() => getRuns(exportRegion.job_uid), 15e3);
     } else {
       this.setState({
         running: false
       });
-
-      clearInterval(this.runPoller);
-      this.runPoller = null;
     }
-
-    console.log("Export region:", exportRegion);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const {
       getExportRegion,
       getLocationOptions,
-      hdx: { exportRegions },
       match: { params: { id } }
     } = this.props;
 
@@ -269,42 +275,54 @@ export class HDXExportRegionForm extends Component {
     }
 
     getLocationOptions();
-
-    this.didReceiveRegion(exportRegions[id]);
   }
 
   componentWillReceiveProps(props) {
     const {
-      hdx: { exportRegions, statusCode },
-      match: { params: { id } }
+      exportRegion: prevExportRegion,
+      featureSelection: prevFeatureSelection,
+      getExportRegion,
+      match: { params: { id: prevId } },
+      runs: prevRuns
+    } = this.props;
+
+    const {
+      exportRegion,
+      featureSelection,
+      match: { params: { id } },
+      runs
     } = props;
 
-    if (this.props.hdx.statusCode !== statusCode) {
-      switch (statusCode) {
-        case 403:
-          // TODO display a modal instead with a link to log in via OSM
-          // window.location = '/';
-          break;
+    if (prevId !== id) {
+      if (id != null) {
+        getExportRegion(id);
 
-        case 404:
-          // TODO consider displaying a 404 page instead
-          // showAllExportRegions();
-          break;
+        clearTimeout(this.runTimeout);
+        this.runTimeout = null;
 
-        default:
-          console.warn("Unexpected status code:", statusCode);
+        this.setState({
+          editing: true
+        });
+      } else {
+        this.setState({
+          editing: false
+        });
       }
     }
 
-    if (!isEqual(this.props.hdx.exportRegions[id], exportRegions[id])) {
-      this.didReceiveRegion(exportRegions[id]);
+    if (!isEqual(prevExportRegion, exportRegion)) {
+      this.didReceiveRegion(exportRegion);
+    }
+
+    if (!isEqual(prevRuns, runs)) {
+      this.didReceiveRuns(exportRegion, runs);
     }
 
     // TODO this would be cleaner if using reselect
-    if (props.featureSelection !== this.props.featureSelection) {
+    if (prevFeatureSelection !== featureSelection) {
       try {
         this.setState({
-          featureSelection: yaml.safeLoad(props.featureSelection) || {}
+          featureSelection: yaml.safeLoad(featureSelection) || {}
         });
       } catch (err) {
         // noop; feature selection may be in the process of being edited
@@ -313,21 +331,15 @@ export class HDXExportRegionForm extends Component {
     }
   }
 
-  get exportRegion() {
-    const { hdx: { exportRegions }, match: { params: { id } } } = this.props;
-    return exportRegions[id];
-  }
-
   getRunRows() {
-    return this.exportRegion.runs.slice(0, 10).map((run, i) =>
+    const { exportRegion, runs } = this.props;
+
+    return runs.slice(0, 10).map((run, i) =>
       <tr key={i}>
         <td>
-          <a
-            href={`/v3/#/exports/detail/${this.exportRegion
-              .job_uid}/${run.uid}`}
-          >
-            <FormattedDate value={run.run_at} />{" "}
-            <FormattedTime value={run.run_at} />
+          <a href={`/v3/#/exports/detail/${exportRegion.job_uid}/${run.uid}`}>
+            <FormattedDate value={run.started_at} />{" "}
+            <FormattedTime value={run.started_at} />
           </a>
         </td>
         <td>
@@ -344,31 +356,36 @@ export class HDXExportRegionForm extends Component {
   }
 
   handleDelete = () => {
+    const { exportRegion } = this.props;
+
     this.setState({
       deleting: true
     });
 
-    this.props.deleteExportRegion(this.exportRegion.id);
+    this.props.deleteExportRegion(exportRegion.id);
   };
 
   handleRun = () => {
+    const { exportRegion, runExport } = this.props;
+
     this.setState({
       running: true
     });
 
-    this.props.runExport(this.exportRegion.id, this.exportRegion.job_uid);
+    runExport(exportRegion.id, exportRegion.job_uid);
   };
 
   render() {
     const { deleting, editing, featureSelection, running } = this.state;
     const {
       error,
+      exportRegion,
       handleSubmit,
-      hdx: { status },
       locationOptions,
+      runs,
+      status,
       submitting
     } = this.props;
-    const exportRegion = this.exportRegion;
     const datasetPrefix = this.props.datasetPrefix || "<prefix>";
     const name = this.props.name || "Untitled";
 
@@ -388,10 +405,10 @@ export class HDXExportRegionForm extends Component {
               <h2>
                 {editing ? "Edit" : "Create"} Export Region
               </h2>
-              {this.props.hdx.error &&
+              {error &&
                 <p>
                   <strong className={styles.error}>
-                    {this.props.hdx.status}
+                    {status}
                   </strong>
                 </p>}
               <Field
@@ -585,7 +602,7 @@ export class HDXExportRegionForm extends Component {
                     </a>
                   </small>
                 </h3>
-                {exportRegion.runs.length > 0
+                {runs.length > 0
                   ? <Table>
                       <thead>
                         <tr>
@@ -630,18 +647,18 @@ export class HDXExportRegionForm extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    datasetPrefix: formValueSelector(FORM_NAME)(state, "dataset_prefix"),
-    featureSelection: formValueSelector(FORM_NAME)(state, "feature_selection"),
-    hdx: state.hdx,
-    initialValues: {
-      aoi: {
-        description: "Draw",
-        geomType: "Polygon",
-        title: "Custom Polygon"
-      },
-      feature_selection: `
+const mapStateToProps = (state, ownProps) => ({
+  datasetPrefix: formValueSelector(FORM_NAME)(state, "dataset_prefix"),
+  error: selectHDXError(state),
+  exportRegion: selectExportRegion(ownProps.match.params.id, state),
+  featureSelection: formValueSelector(FORM_NAME)(state, "feature_selection"),
+  initialValues: {
+    aoi: {
+      description: "Draw",
+      geomType: "Polygon",
+      title: "Custom Polygon"
+    },
+    feature_selection: `
 Buildings:
   hdx:
     tags: building, shelter, osm, openstreetmap
@@ -721,19 +738,20 @@ Points of Interest:
     - addr:city
   where: amenity IS NOT NULL OR man_made IS NOT NULL OR shop IS NOT NULL OR tourism IS NOT NULL
 `.trim(),
-      is_private: true,
-      license: "hdx-odc-by",
-      license_human_readable: "Open Database License (ODC-ODbL)",
-      schedule_period: "daily",
-      schedule_hour: 0,
-      subnational: true,
-      export_formats: ["shp", "geopackage", "kml", "garmin_img"],
-      buffer_aoi: false
-    },
-    locationOptions: selectLocationOptions(state),
-    name: formValueSelector(FORM_NAME)(state, "name")
-  };
-};
+    is_private: true,
+    license: "hdx-odc-by",
+    license_human_readable: "Open Database License (ODC-ODbL)",
+    schedule_period: "daily",
+    schedule_hour: 0,
+    subnational: true,
+    export_formats: ["shp", "geopackage", "kml", "garmin_img"],
+    buffer_aoi: false
+  },
+  locationOptions: selectLocationOptions(state),
+  name: formValueSelector(FORM_NAME)(state, "name"),
+  runs: selectRuns(state),
+  status: selectHDXStatus(state)
+});
 
 const flatten = arr =>
   arr.reduce(
@@ -742,8 +760,11 @@ const flatten = arr =>
   );
 
 export default connect(mapStateToProps, {
+  createExportRegion,
   getExportRegion,
   getLocationOptions,
+  getRuns,
   deleteExportRegion,
-  runExport
+  runExport,
+  updateExportRegion
 })(form(HDXExportRegionForm));

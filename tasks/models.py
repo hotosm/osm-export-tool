@@ -41,6 +41,16 @@ class ExportRun(models.Model):
             return (self.finished_at - self.started_at).seconds
         return None
 
+    @property
+    def elapsed_time(self):
+        return (self.finished_at or timezone.now()) - self.started_at
+
+    @property
+    def size(self):
+        return sum(map(
+            lambda task: task.filesize_bytes or 0, self.tasks.all()))
+
+
 class ExportTask(models.Model):
     """
     Model for an ExportTask.

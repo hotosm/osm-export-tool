@@ -46,8 +46,8 @@ class ExportRunSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportRun
         lookup_field = 'uid'
-        fields = ('uid', 'started_at', 'finished_at', 'duration', 
-                  'user', 'status', 'tasks')
+        fields = ('uid', 'started_at', 'finished_at', 'duration', 'elapsed_time',
+                  'user', 'size', 'status', 'tasks')
 
 class ConfigurationSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
@@ -92,7 +92,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     class Meta: # noqa
         model = HDXExportRegion
         fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
-                  'schedule_period', 'schedule_hour', 'export_formats', 'runs',
+                  'schedule_period', 'schedule_hour', 'export_formats',
                   'locations', 'name', 'last_run', 'next_run', 'simplified_geom',
                   'dataset_prefix', 'job_uid', 'license', 'subnational',
                   'extra_notes', 'is_private', 'buffer_aoi','the_geom')

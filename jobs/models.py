@@ -268,17 +268,6 @@ class HDXExportRegion(models.Model): # noqa
         return self.job.uid
 
     @property
-    def runs(self): # noqa
-        return map(lambda run: {
-            'elapsed_time': (run.finished_at or timezone.now()) - run.started_at,
-            'run_at': run.started_at,
-            'size': sum(map(
-                lambda task: task.filesize_bytes or 0, run.tasks.all())),
-            'status': run.status,
-            'uid': run.uid,
-        }, reversed(self.job.runs.all()))
-
-    @property
     def hdx_dataset(self): # noqa
         """
         Initialize an HDXExportSet corresponding to this Model.
