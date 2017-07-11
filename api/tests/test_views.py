@@ -75,6 +75,9 @@ class TestJobViewSet(APITestCase):
         self.assertTrue('the_geom' not in results[0])
         self.assertTrue('simplified_geom' in results[0])
 
+        url = reverse('api:jobs-geom', args=[job_uid])
+        response = self.client.get(url, format='json')
+        self.assertTrue('the_geom' in response.data)
 
     @patch('api.views.ExportTaskRunner')
     def test_delete_disabled(self, mock):

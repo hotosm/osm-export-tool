@@ -16,6 +16,7 @@ from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
+from rest_framework.decorators import detail_route
 
 import dateutil.parser
 from cachetools.func import ttl_cache
@@ -27,7 +28,8 @@ from jobs.models import (
 from serializers import (
     ExportRunSerializer,
     ExportTaskSerializer, JobSerializer,
-    HDXExportRegionSerializer, ConfigurationSerializer
+    HDXExportRegionSerializer, ConfigurationSerializer,
+    JobGeomSerializer
 )
 from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
@@ -124,6 +126,12 @@ class JobViewSet(viewsets.ModelViewSet):
         job = serializer.save()
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
+
+    @detail_route()
+    def geom(self,request,uid=None):
+        job = Job.objects.get(uid=uid)
+        geom_serializer = JobGeomSerializer(job)
+        return Response(geom_serializer.data)
 
 
 class ConfigurationViewSet(viewsets.ModelViewSet):

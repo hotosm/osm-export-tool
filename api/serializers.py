@@ -56,6 +56,11 @@ class ConfigurationSerializer(serializers.ModelSerializer):
         model = SavedFeatureSelection
         fields = ('uid','name','description','yaml','public','user')
 
+class JobGeomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        fields = ('the_geom',)
+
 class JobSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True,default=serializers.CurrentUserDefault())
 
