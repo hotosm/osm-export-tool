@@ -13,10 +13,10 @@ fs.readFile("tagtree.csv", function(err, data) {
           row["additional search terms"];
       }
       taglookup[row["Checkbox Name"]] = {
-        geom_types: row["geom types"].split(",").map(function(x) {
+        geom_types: row["Geom Types"].split(",").map(function(x) {
           return x.trim();
         }),
-        keys: row["key selections"].split(",").map(function(x) {
+        keys: row["Key Selections (exported when \"Condition\" matches)"].split(",").map(function(x) {
           return x.trim();
         }),
         where: row["Condition"]
