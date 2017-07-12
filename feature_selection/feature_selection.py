@@ -135,7 +135,7 @@ class FeatureSelection(object):
                     for clause in clauses:
                         s = SQLValidator(clause)
                         if not s.valid:
-                            self._errors.append("SQL WHERE Invalid: " + clause + ' ;'.join(s.errors))
+                            self._errors.append("SQL (" + clause + ') is invalid: ' + ' '.join(s.errors))
                             return False
 
                         # also add the keys to keys_from_sql
