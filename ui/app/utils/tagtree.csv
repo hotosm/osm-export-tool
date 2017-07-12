@@ -1,0 +1,53 @@
+Category,Checkbox Name,additional search terms,geom types,key selections,Comments on values/selection,wiki link,Condition
+Commerce,Finance,"bank,atm,money","point, polygon","name, amenity, opening_hours, operator, network",,,"amenity IN ('atm','bank','microfinance','mobile_money_agent','money_transfer')"
+Commerce,Shops & Markets,,"point, polygon","name, opening_hours, shop",,,shop IS NOT NULL or amenity='marketplace'
+Commerce,Tourism,,"point, polygon","name, tourism",,,tourism IS NOT NULL
+Commerce,Accommodation,"hotel,hostel,motel","point, polygon","name, tourism, rooms, beds",,,"tourism IN ('hotel','chalet','guest_house','hostel','motel')"
+"Health, Emergency and Sanitation",Police and Fire Stations,,"point, polygon","name, amenity, building",,,"amenity IN ('police','fire_station')"
+"Health, Emergency and Sanitation",Drinking Water,"water,pump,well",point,"name, amenity, pump, man_made",,,amenity='water_point' or pump is not null or man_made='well'
+"Health, Emergency and Sanitation",Fire Hydrants and Defibrillators,,"point, polygon","name, emergency, fire_hydrant:type",,,"emergency IN ('fire_hydrant','defibrillator')"
+"Health, Emergency and Sanitation",Public Toilets,,"point, polygon","opening_hours,operator,toilets:disposal,toilets:handwashing,access",,,amenity='toilets'
+"Health, Emergency and Sanitation",Health Facilities,"clinic,doctor,pharmacy,hospital,dentist","point, polygon","medical_system:western,operator,health_facility:bed,health_facility:level,health_facility:type,status,staff_count:doctors,staff_count:nurses,opening_hours",,,"amenity IN ('clinic','doctors','hospital','pharmacy','dentist')"
+"Public Institutions, Government and Offices",Educational Facilities,"school,college,university","point, polygon","name, amenity, isced:level, capacity",,,"amenity IN ('college','kindergarten','school','university')"
+"Public Institutions, Government and Offices",Places of Worship,"church,mosque,synagogue,religion,religious","point, polygon","name, building, amenity, religion, denomination",,,amenity='place_of_worship'
+"Public Institutions, Government and Offices",Government,"court,town hall","point, polygon","name, building, amenity, office, government",,,"building='civic' OR amenity IN ('court_house','townhall') OR office='government' OR government IS NOT NULL"
+"Public Institutions, Government and Offices",Offices,,"point, polygon","office, name, operator",,,office IS NOT NULL
+"Public Institutions, Government and Offices",Embassies,embassy,"point, polygon","name, amenity",,,amenity='embassy'
+"Public Institutions, Government and Offices",Military,,"point, polygon","name, military, landuse",,,military IS NOT NULL or landuse='military'
+"Public Institutions, Government and Offices",Community Centres,,"point, polygon","amenity, community_centre, name, opening_hours",,,amenity='community_centre'
+Transportation,Gas Stations,fuel,"point, polygon","name,amenity,opening_hours,operator,fuel",,,amenity='fuel'
+Transportation,All Transit Stations,transport,"point, polygon","name,public_transport,operator,building,amenity",,,public_transport IS NOT NULL
+Transportation,Roads,,line,"highway,name,surface,smoothness,width,oneway,bridge,tunnel,layer",,,highway IS NOT NULL
+Transportation,Footpaths,trail,line,"highway,surface,bridge,tunnel,layer",,,highway='footway'
+Transportation,Bus Stations,,"point, polygon","name, building, amenity, public_transport,operator",,,amenity='bus_station'
+Transportation,Rail Stations,train,"point, polygon","name, building, railway, public_transport,operator",,,railway='station' OR building='train_station'
+Transportation,Rail,train,line,"railway, name, layer",,,railway IS NOT NULL
+Transportation,Ferry,boat,"point, polygon","name, amenity, building",,,amenity='ferry_terminal' OR building='ferry_terminal'
+Transportation,Airports,,"point, line, polygon","name, building, aeroway",,,aeroway IS NOT NULL OR building='aerodome'
+Buildings,All Buildings,,"point, polygon","building, name, building:levels",,,building IS NOT NULL
+Buildings,Building Addresses,,"point, polygon","addr:housenumber,addr:street",,,
+Localities,Administrative Boundaries,border,polygon,"admin_level, boundary, name, is_in", ,Add `population` key?,boundary IS NOT NULL
+Localities,Places,population,"point, polygon","place, name, is_in, population",,https://wiki.openstreetmap.org/wiki/Key:place,place IS NOT NULL
+Infrastructure,Communication,tower,"point, polygon","name, man_made, tower, operator, communication:mobile, communication:radio",,,"man_made='communications_tower' OR ""tower:type""='communication'"
+Infrastructure,Water Supply Systems,pump,"point, line, polygon",man_made,,,"man_made IN ('water_tower', 'pumping_station') OR building='pumping_station' OR landuse='reservoir' or waterway='floodgate'"
+Infrastructure,Solid Waste,"dump,landfill","point, polygon","name, landuse",,,landuse='landfill'
+Infrastructure,Drainage,ditch,line,"waterway,covered,blockage,depth,width,layer,diameter,tunnel",,,"waterway IN ('ditch','drain')"
+Infrastructure,Power Systems,electricity,"point, polygon","name, power",,,power IS NOT NULL OR building='power_plant'
+Infrastructure,Backup Generators,electricity,"point, polygon",backup_generator,,,backup_generator IS NOT NULL
+Infrastructure,Storage Warehouse,,"point, polygon","name,building,industrial",,,building='warehouse' OR industrial='warehouse'
+Sport and Recreation,Stadiums,arena,polygon,"name, building, leisure",,,leisure='stadium'
+Sport and Recreation,Swimming Pools,,polygon,"name, leisure",,,leisure='swimming_pool'
+Sport and Recreation,Pitch,"field,court",polygon,"name, leisure",,,leisure='pitch'
+Sport and Recreation,Sport Centres,,"point, polygon","name, building, leisure",,,leisure='sport_centre'
+Land Use,Cemetaries,graveyard,polygon,"name,amenity",,,amenity='grave_yard'
+Land Use,Brownfields and Greenfields,,polygon,landuse,,,"landuse IN ('brownfield','greenfield')"
+Land Use,Parks,,polygon,"name, leisure",,,leisure='park'
+Natural,Bodies of Water,"lakes,ponds,rivers,streams","line,polygon","water, waterway, natural",,,"waterway IS NOT NULL OR water IS NOT NULL OR natural IN ('water','bay')"
+Natural,Coastlines,,line,natural,,,natural='coastline'
+Natural,Wetlands,,polygon,natural,,,natural='wetland'
+Humanitarian,Refugee Facilities,,"point, polygon","name, social_facility",,,social_facility='shelter'
+Humanitarian,Building Materials and Conditions,,polygon,"building:material,roof:material,access:roof",,,building IS NOT NULL
+Languages,Default,,"point, line, polygon",name,,,
+Languages,English,,"point, line, polygon",name:en,,,
+Languages,Swahili,,"point, line, polygon",name:sw,,,
+Languages,French,,"point, line, polygon",name:fr,,,
