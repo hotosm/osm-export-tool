@@ -142,6 +142,7 @@ class HDXExportSet(object):
             dataset['dataset_source'] = 'OpenStreetMap contributors'
             dataset.set_dataset_date_from_datetime(self._dataset_date)
             dataset['owner_org'] = '225b9f7d-e7cb-4156-96a6-44c9c58d31e3'
+            dataset['maintainer'] = 'osm2hdx'
             dataset['license_id'] = self._license
             dataset['methodology'] = 'Other'
             dataset['methodology_other'] = 'Volunteered geographic information'
@@ -189,7 +190,7 @@ class HDXExportSet(object):
         for dataset in self.datasets.values():
             exists = Dataset.read_from_hdx(dataset['name'])
             if exists:
-                dataset.update_in_hdx()
+                dataset.update_in_hdx(allow_no_resources=True)
             else:
                 dataset.create_in_hdx()
 

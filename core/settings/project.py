@@ -9,7 +9,7 @@ import dj_database_url
 from .base import *
 from .celery import *  # NOQA
 from .utils import ABS_PATH
-from hdx.configuration import Configuration
+from hdx.hdx_configuration import Configuration
 
 # Project apps
 INSTALLED_APPS += (
