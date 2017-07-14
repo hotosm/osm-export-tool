@@ -67,7 +67,7 @@ services:
     volumes:
       - stage:/opt/export_staging
       - downloads:/opt/export_downloads
-    command: gunicorn core.wsgi:application --workers=3 --bind :6080
+    command: python manage.py runserver 0.0.0.0:6080
   nginx:
     build:
       context: .
