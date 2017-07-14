@@ -1,43 +1,30 @@
 """Provides classes for handling API requests."""
 # -*- coding: utf-8 -*-
 import logging
-import os
-from collections import OrderedDict
 
+import dateutil.parser
+import requests
+from cachetools.func import ttl_cache
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import JsonResponse
-from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
-from django.contrib.gis.geos import GEOSGeometry, Polygon
-
-from rest_framework import filters, permissions, status, views, viewsets
+from jobs.models import HDXExportRegion, Job, SavedFeatureSelection
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
-from rest_framework.decorators import detail_route
-
-import dateutil.parser
-from cachetools.func import ttl_cache
-import requests
-
-from jobs.models import (
-    HDXExportRegion, Job, SavedFeatureSelection
-)
-from serializers import (
-    ExportRunSerializer,
-    ExportTaskSerializer, JobSerializer,
-    HDXExportRegionSerializer, HDXExportRegionListSerializer, ConfigurationSerializer,
-    JobGeomSerializer
-)
-from tasks.models import ExportRun, ExportTask
+from serializers import (ConfigurationSerializer, ExportRunSerializer,
+                         HDXExportRegionListSerializer,
+                         HDXExportRegionSerializer, JobGeomSerializer,
+                         JobSerializer)
+from tasks.models import ExportRun
 from tasks.task_runners import ExportTaskRunner
 
 from .permissions import IsHDXAdmin, IsOwnerOrReadOnly
 from .renderers import HOTExportApiRenderer
-from .validators import validate_bbox_params, validate_search_bbox
-from feature_selection.feature_selection import FeatureSelection
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
@@ -45,12 +32,13 @@ LOG = logging.getLogger(__name__)
 # controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
+
 def bbox_to_geom(s):
     try:
         return GEOSGeometry(Polygon.from_bbox(s.split(',')), srid=4326)
-    except:
-        raise ValidationError({'bbox':'Query bounding box is malformed.'})
-        
+    except Exception:
+        raise ValidationError({'bbox': 'Query bounding box is malformed.'})
+
 
 class JobViewSet(viewsets.ModelViewSet):
     """
@@ -98,13 +86,15 @@ class JobViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = JobSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly)
     lookup_field = 'uid'
     http_method_names = ['get', 'post', 'head']
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, )
     search_fields = ('name', 'description', 'event')
 
-    def get_queryset(self,):
+    def get_queryset(
+            self, ):
         user = self.request.user
         queryset = Job.objects
         mineonly = self.request.query_params.get('mineonly', None)
@@ -122,13 +112,13 @@ class JobViewSet(viewsets.ModelViewSet):
             return queryset.filter(Q(user_id=user.id))
         return queryset.filter(Q(user_id=user.id) | Q(published=True))
 
-    def perform_create(self,serializer):
+    def perform_create(self, serializer):
         job = serializer.save()
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
 
     @detail_route()
-    def geom(self,request,uid=None):
+    def geom(self, request, uid=None):
         job = Job.objects.get(uid=uid)
         geom_serializer = JobGeomSerializer(job)
         return Response(geom_serializer.data)
@@ -136,19 +126,21 @@ class JobViewSet(viewsets.ModelViewSet):
 
 class ConfigurationViewSet(viewsets.ModelViewSet):
     serializer_class = ConfigurationSerializer
-    permission_classes = (IsOwnerOrReadOnly,permissions.IsAuthenticatedOrReadOnly)
+    permission_classes = (IsOwnerOrReadOnly,
+                          permissions.IsAuthenticatedOrReadOnly)
     lookup_field = 'uid'
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, )
     search_fields = ('name', 'description')
 
-    def get_queryset(self,):
+    def get_queryset(
+            self, ):
         user = self.request.user
         queryset = SavedFeatureSelection.objects.filter(deleted=False)
         mineonly = self.request.query_params.get('mineonly', None)
         if mineonly is not None:
             return queryset.filter(Q(user_id=user.id))
         return queryset.filter(Q(user_id=user.id) | Q(public=True))
-    
+
 
 class ExportRunViewSet(viewsets.ModelViewSet):
     """
@@ -160,10 +152,10 @@ class ExportRunViewSet(viewsets.ModelViewSet):
     `/api/runs?job_uid=a_job_uid&status=STATUS`
     """
     serializer_class = ExportRunSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny, )
     lookup_field = 'uid'
 
-    def create(self,request,format='json'):
+    def create(self, request, format='json'):
         """
         Re-runs the job.
 
@@ -180,7 +172,7 @@ class ExportRunViewSet(viewsets.ModelViewSet):
         job_uid = request.query_params.get('job_uid', None)
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=job_uid, user=request.user)
-        return Response({'status':'OK'}, status=status.HTTP_201_CREATED)
+        return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         return ExportRun.objects.all().order_by('-started_at')
@@ -200,7 +192,8 @@ class ExportRunViewSet(viewsets.ModelViewSet):
             the serialized run data.
         """
         queryset = ExportRun.objects.filter(uid=uid)
-        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        serializer = self.get_serializer(
+            queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
@@ -217,15 +210,18 @@ class ExportRunViewSet(viewsets.ModelViewSet):
             the serialized run data.
         """
         job_uid = self.request.query_params.get('job_uid', None)
-        queryset = self.filter_queryset(ExportRun.objects.filter(job__uid=job_uid).order_by('-started_at'))
-        serializer = self.get_serializer(queryset, many=True, context={'request': request})
+        queryset = self.filter_queryset(
+            ExportRun.objects.filter(job__uid=job_uid).order_by('-started_at'))
+        serializer = self.get_serializer(
+            queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     ordering_fields = '__all__'
-    permission_classes = (IsHDXAdmin,)
-    queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related('job__runs__tasks').defer('job__the_geom')
+    permission_classes = (IsHDXAdmin, )
+    queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related(
+        'job__runs__tasks').defer('job__the_geom')
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -233,14 +229,14 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
 
         return HDXExportRegionSerializer
 
-    def perform_create(self,serializer):
+    def perform_create(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             serializer.instance.sync_to_hdx()
         else:
             print "Stubbing interaction with HDX API."
 
-    def perform_update(self,serializer):
+    def perform_update(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             serializer.instance.sync_to_hdx()
@@ -262,18 +258,19 @@ def request_geonames(request):
 
     if geonames_url:
         response = requests.get(geonames_url, params=payload).json()
-        assert(isinstance(response, dict))
+        assert (isinstance(response, dict))
         return JsonResponse(response)
     else:
-        return JsonResponse({
+        return JsonResponse(
+            {
                 'error': 'A url was not provided for geonames'
             },
-            status=500,
-        )
+            status=500, )
+
 
 @ttl_cache(ttl=60)
 @require_http_methods(['GET'])
 def get_overpass_timestamp(request):
     # TODO: this sometimes fails, returning a HTTP 200 but empty content.
     r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
-    return JsonResponse({'timestamp':dateutil.parser.parse(r.content)})
+    return JsonResponse({'timestamp': dateutil.parser.parse(r.content)})
