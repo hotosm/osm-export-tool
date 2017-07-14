@@ -25,7 +25,8 @@ export function createExport(data, formName) {
         return dispatch(
           stopSubmit(formName, {
             ...err.response.data,
-            _error: "Your export is invalid. Please check each page of the form for errors."
+            _error:
+              "Your export is invalid. Please check each page of the form for errors."
           })
         );
       });
@@ -36,25 +37,29 @@ export function cloneExport(e) {
   return dispatch => {
     dispatch(push("/exports/new"));
 
-    // TODO fetch the_geom rather than using simplified_geom
-
-    dispatch(
-      initialize("ExportForm", {
-        buffer_aoi: e.buffer_aoi,
-        description: e.description,
-        event: e.event,
-        export_formats: e.export_formats,
-        feature_selection: e.feature_selection,
-        name: e.name,
-        published: e.published,
-        the_geom: e.simplified_geom,
-        aoi: {
-          description: "Cloned Area",
-          geomType: "Polygon",
-          title: "Custom Polygon"
-        }
-      })
-    );
+    axios({
+      url: `/api/jobs/${e.uid}/geom`
+    })
+      .then(rsp =>
+        dispatch(
+          initialize("ExportForm", {
+            buffer_aoi: e.buffer_aoi,
+            description: e.description,
+            event: e.event,
+            export_formats: e.export_formats,
+            feature_selection: e.feature_selection,
+            name: e.name,
+            published: e.published,
+            the_geom: rsp.data.the_geom,
+            aoi: {
+              description: "Cloned Area",
+              geomType: "Polygon",
+              title: "Custom Polygon"
+            }
+          })
+        )
+      )
+      .catch(err => console.warn(err));
   };
 }
 
