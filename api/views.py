@@ -28,7 +28,7 @@ from jobs.models import (
 from serializers import (
     ExportRunSerializer,
     ExportTaskSerializer, JobSerializer,
-    HDXExportRegionSerializer, ConfigurationSerializer,
+    HDXExportRegionSerializer, HDXExportRegionListSerializer, ConfigurationSerializer,
     JobGeomSerializer
 )
 from tasks.models import ExportRun, ExportTask
@@ -223,9 +223,15 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
-    serializer_class = HDXExportRegionSerializer
+    ordering_fields = '__all__'
     permission_classes = (IsHDXAdmin,)
-    queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related('job__runs__tasks')
+    queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related('job__runs__tasks').defer('job__the_geom')
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return HDXExportRegionListSerializer
+
+        return HDXExportRegionSerializer
 
     def perform_create(self,serializer):
         serializer.save()

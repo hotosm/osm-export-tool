@@ -80,6 +80,23 @@ def validate_model(model):
     except django.core.exceptions.ValidationError as e:
         raise serializers.ValidationError(e.message_dict)
 
+class HDXExportRegionListSerializer(serializers.ModelSerializer): # noqa
+    export_formats = serializers.ListField()
+    dataset_prefix = serializers.CharField()
+    feature_selection = serializers.CharField()
+    simplified_geom = geo_serializers.GeometryField(required=False)
+    name = serializers.CharField()
+    buffer_aoi = serializers.BooleanField()
+
+    class Meta: # noqa
+        model = HDXExportRegion
+        fields = ('id', 'dataset_prefix', 'datasets', 'feature_selection',
+                  'schedule_period', 'schedule_hour', 'export_formats',
+                  'locations', 'name', 'last_run', 'next_run', 'simplified_geom',
+                  'dataset_prefix', 'job_uid', 'license', 'subnational',
+                  'extra_notes', 'is_private', 'buffer_aoi')
+
+
 class HDXExportRegionSerializer(serializers.ModelSerializer): # noqa
     # Internally, an export region is a job model + an export region model
     # but to the UI, it appears as a single entity
