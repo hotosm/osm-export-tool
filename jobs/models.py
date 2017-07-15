@@ -275,7 +275,6 @@ class HDXExportRegion(models.Model): # noqa
 #       # TODO make distinction between GOESGeom/GeoJSON better
         return HDXExportSet(
             data_update_frequency=self.update_frequency,
-            dataset_date=timezone.now(),
             dataset_prefix=self.dataset_prefix,
             extent=self.job.the_geom,
             extra_notes=self.extra_notes,

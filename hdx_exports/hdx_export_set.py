@@ -54,7 +54,6 @@ class HDXExportSet(object):
     def __init__(
         self,
         data_update_frequency=None,
-        dataset_date=datetime.now(),
         dataset_prefix='',
         extent=None,
         extra_notes='',
@@ -77,7 +76,6 @@ class HDXExportSet(object):
 
         self._data_update_frequency = data_update_frequency
         self._datasets = None
-        self._dataset_date = dataset_date
         self._dataset_prefix = dataset_prefix
         self._extent = extent
         self._extra_notes = extra_notes + "\n" if extra_notes else ""
@@ -140,7 +138,6 @@ class HDXExportSet(object):
             dataset['private'] = self.is_private
             dataset['notes'] = self.hdx_note(theme)
             dataset['dataset_source'] = 'OpenStreetMap contributors'
-            dataset.set_dataset_date_from_datetime(self._dataset_date)
             dataset['owner_org'] = '225b9f7d-e7cb-4156-96a6-44c9c58d31e3'
             dataset['maintainer'] = 'osm2hdx'
             dataset['license_id'] = self._license
@@ -186,13 +183,16 @@ class HDXExportSet(object):
                 filter_str=filter_str
             )
 
-    def sync_datasets(self): # noqa
+    def sync_datasets(self,update_dataset_date=False): # noqa
         for dataset in self.datasets.values():
             exists = Dataset.read_from_hdx(dataset['name'])
             if exists:
-                dataset.update_in_hdx(allow_no_resources=True)
+                if update_dataset_date:
+                    dataset.set_dataset_date_from_datetime(datetime.now())
+                dataset.update_in_hdx()
             else:
-                dataset.create_in_hdx()
+                dataset.set_dataset_date_from_datetime(datetime.now())
+                dataset.create_in_hdx(allow_no_resources=True)
 
     def sync_resources(self,artifact_list,public_dir):
         HDX_FORMATS = {
@@ -227,7 +227,7 @@ class HDXExportSet(object):
                     'url': os.path.join(public_dir,file_name)
                 })
             self.datasets[theme].add_update_resources(resources)
-        self.sync_datasets()
+        self.sync_datasets(update_dataset_date=True)
 
 F_S = """
 roads:
