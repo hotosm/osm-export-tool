@@ -35,13 +35,6 @@ class TestJob(TestCase):
         self.assertIsNotNone(job.created_at)
         self.assertIsNotNone(job.updated_at)
 
-    def test_missing_aoi(self):
-        del self.fixture['the_geom']
-        job = Job(**self.fixture)
-        with self.assertRaises(ValidationError) as e:
-            job.full_clean()
-        self.assertTrue('the_geom' in e.exception.message_dict)
-
     def test_missing_fields(self):
         job = Job(**self.fixture)
         job.full_clean()
@@ -68,13 +61,6 @@ class TestJob(TestCase):
         with self.assertRaises(ValidationError) as e:
             job.full_clean()
         self.assertTrue('name' in e.exception.message_dict)
-
-    def test_max_aoi_extent(self):
-        self.fixture['the_geom'] = Polygon.from_bbox((0,0,30,30))
-        job = Job(**self.fixture)
-        with self.assertRaises(ValidationError) as e:
-            job.full_clean()
-        self.assertTrue('the_geom' in e.exception.message_dict)
 
     def test_validates_feature_selection(self):
         self.fixture['feature_selection'] = ""

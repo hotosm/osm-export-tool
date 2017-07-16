@@ -95,7 +95,7 @@ class Job(models.Model):
     event = models.CharField(max_length=100, db_index=True, default='', blank=True)
     export_formats = ArrayField(models.CharField(max_length=10),validators=[validate_export_formats],blank=False)
     published = models.BooleanField(default=False, db_index=True)
-    the_geom = models.GeometryField(verbose_name='Uploaded geometry', srid=4326, blank=False,validators=[validate_aoi])
+    the_geom = models.GeometryField(verbose_name='Uploaded geometry', srid=4326, blank=False)
     simplified_geom = models.GeometryField(verbose_name='Simplified geometry', srid=4326, blank=True,null=True)
     objects = models.GeoManager()
     feature_selection = models.TextField(blank=False,validators=[validate_feature_selection])

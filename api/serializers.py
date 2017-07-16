@@ -11,7 +11,7 @@ import logging
 import django.core.exceptions
 from django.contrib.auth.models import User
 from django.db import transaction
-from jobs.models import HDXExportRegion, Job, SavedFeatureSelection
+from jobs.models import HDXExportRegion, Job, SavedFeatureSelection, validate_aoi
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from tasks.models import ExportRun, ExportTask
@@ -59,7 +59,6 @@ class JobGeomSerializer(serializers.ModelSerializer):
         model = Job
         fields = ('the_geom', )
 
-
 class JobSerializer(serializers.ModelSerializer):
     user = UserSerializer(
         read_only=True, default=serializers.CurrentUserDefault())
@@ -79,6 +78,12 @@ class JobSerializer(serializers.ModelSerializer):
             }
         }
 
+    def validate(self,data):
+        try:
+            validate_aoi(data['the_geom'])
+        except django.core.exceptions.ValidationError as e:
+            raise serializers.ValidationError({'the_geom':e.messages[0]})
+        return data
 
 def validate_model(model):
     try:
