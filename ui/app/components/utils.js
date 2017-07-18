@@ -254,6 +254,9 @@ export class PresetParser {
       polygons: new Set()
     };
     for (var itemElem of this.listForXpath(".//ns:item", this.doc)) {
+      if (!itemElem.getAttribute("type")) {
+        continue
+      }
       const types = itemElem.getAttribute("type").split(",");
       if (types.includes("node")) {
         this.collectInputs(itemElem, collector.points);
