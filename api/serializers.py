@@ -106,7 +106,7 @@ class HDXExportRegionListSerializer(serializers.ModelSerializer):  # noqa
                   'schedule_period', 'schedule_hour', 'export_formats',
                   'locations', 'name', 'last_run', 'next_run',
                   'simplified_geom', 'dataset_prefix', 'job_uid', 'license',
-                  'subnational', 'extra_notes', 'is_private', 'buffer_aoi')
+                  'subnational', 'extra_notes', 'is_private', 'buffer_aoi', 'last_size')
 
 
 class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa

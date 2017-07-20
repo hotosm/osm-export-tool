@@ -5,6 +5,7 @@ import { FormattedRelative } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
+import { prettyBytes } from "./utils";
 import { zoomToExportRegion } from "../actions/hdx";
 
 function DatasetList(props) {
@@ -104,6 +105,15 @@ class ExportRegionPanel extends Component {
           Next Run: <strong>{this.getNextRun(region)}</strong>
           <br />
           Schedule: <strong>{this.getSchedule(region)}</strong>
+          {region.last_size &&
+            <span>
+              <br />Size: <strong>{prettyBytes(region.last_size)}</strong>
+            </span>}
+          {region.is_private &&
+            <span>
+              <br />
+              <strong>Private</strong>
+            </span>}
         </Col>
         <Col lg={7}>
           <DatasetList datasets={region.datasets} />

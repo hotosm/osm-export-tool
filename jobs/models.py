@@ -232,6 +232,11 @@ class HDXExportRegion(models.Model): # noqa
             return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
     @property
+    def last_size(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].size
+
+    @property
     def buffer_aoi(self): # noqa
         return self.job.buffer_aoi
 
