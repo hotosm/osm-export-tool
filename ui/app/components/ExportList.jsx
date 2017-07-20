@@ -1,17 +1,10 @@
 import React, { Component } from "react";
 
-import {
-  Button,
-  Checkbox,
-  Col,
-  FormControl,
-  InputGroup,
-  Row,
-  Table
-} from "react-bootstrap";
+import { Button, Col, Row, Table } from "react-bootstrap";
 import { connect } from "react-redux";
 import { FormattedDate, FormattedTime } from "react-intl";
 
+import FilterForm from "./FilterForm";
 import MapListView from "./MapListView";
 import Paginator from "./Paginator";
 import { getExports } from "../actions/exports";
@@ -60,17 +53,40 @@ class ExportTable extends Component {
 }
 
 export class ExportList extends Component {
+  state = {
+    filters: {}
+  };
+
   componentWillMount() {
     this.props.getExports();
   }
 
+  search = ({ search, ...values }) => {
+    const { getExports } = this.props;
+    const { filters } = this.state;
+
+    const newFilters = {
+      ...filters,
+      ...values,
+      search
+    };
+
+    this.setState({
+      filters: newFilters
+    });
+
+    return getExports(newFilters);
+  };
+
   render() {
     const { getExports, jobs, selectedFeatureId, selectRegion } = this.props;
+    const { filters } = this.state;
 
     const features = {
       features: jobs.items.map(j => j.simplified_geom),
       type: "FeatureCollection"
     };
+
     return (
       <Row style={{ height: "100%" }}>
         <Col
@@ -78,25 +94,8 @@ export class ExportList extends Component {
           style={{ height: "100%", overflowY: "scroll", padding: 20 }}
         >
           <h2 style={{ display: "inline" }}>Exports</h2>
-          <InputGroup
-            style={{
-              width: "100%",
-              marginTop: "20px",
-              marginBottom: "10px"
-            }}
-          >
-            <InputGroup.Button>
-              <Button>Clear</Button>
-            </InputGroup.Button>
-            <FormControl
-              type="text"
-              placeholder="Search for a name or description..."
-            />
-            <InputGroup.Button>
-              <Button>Search</Button>
-            </InputGroup.Button>
-          </InputGroup>
-          <Checkbox>My Exports</Checkbox>
+          <FilterForm type="Exports" onSubmit={this.search} />
+          <hr />
           <Table>
             <thead>
               <tr>
@@ -110,7 +109,10 @@ export class ExportList extends Component {
             </thead>
             <ExportTable jobs={jobs.items} selectRegion={selectRegion} />
           </Table>
-          <Paginator collection={jobs} getPage={getExports} />
+          <Paginator
+            collection={jobs}
+            getPage={getExports.bind(null, filters)}
+          />
         </Col>
         <Col xs={6} style={{ height: "100%" }}>
           <MapListView

@@ -25,6 +25,7 @@ import {
 import { push } from "react-router-redux";
 
 import ExportAOIField from "./ExportAOIField";
+import FilterForm from "./FilterForm";
 import TreeMenu from "./react-tree-menu/TreeMenu";
 import Paginator from "./Paginator";
 import { getConfigurations } from "../actions/configurations";
@@ -142,6 +143,10 @@ class TreeTagUi extends React.Component {
 }
 
 class StoredConfComponent extends React.Component {
+  state = {
+    filters: {}
+  }
+
   componentWillMount() {
     this.props.getConfigurations();
   }
@@ -151,30 +156,36 @@ class StoredConfComponent extends React.Component {
     this.props.switchToYaml();
   };
 
+  search = ({ search, ...values }) => {
+    const { getConfigurations } = this.props;
+    const { filters } = this.state;
+
+    const newFilters = {
+      ...filters,
+      ...values,
+      search
+    };
+
+    this.setState({
+      filters: newFilters
+    });
+
+    return getConfigurations(newFilters);
+  };
+
   render() {
     const { configurations, getConfigurations } = this.props;
+    const { filters } = this.state;
 
-    if (configurations.total === 0) {
+    if (configurations.total === 0 && filters === {}) {
       // TODO return something better here
       return null;
     }
 
     return (
       <div>
-        <InputGroup
-          style={{ width: "100%", marginTop: "20px", marginBottom: "10px" }}
-        >
-          <FormControl
-            id="storedConfigSearch"
-            type="text"
-            label="storedConfigSearch"
-            placeholder="Search for a configuration..."
-          />
-          <InputGroup.Button>
-            <Button>Clear</Button>
-          </InputGroup.Button>
-        </InputGroup>
-        <Paginator collection={configurations} getPage={getConfigurations} />
+        <FilterForm type="Configurations" onSubmit={this.search} />
+        <Paginator collection={configurations} getPage={getConfigurations.bind(null, filters)} />
         <Table>
           <thead>
             <tr>

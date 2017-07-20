@@ -1,5 +1,6 @@
 """Provides classes for handling API requests."""
 # -*- coding: utf-8 -*-
+from distutils.util import strtobool
 import logging
 
 import dateutil.parser
@@ -97,7 +98,7 @@ class JobViewSet(viewsets.ModelViewSet):
             self, ):
         user = self.request.user
         queryset = Job.objects
-        mineonly = self.request.query_params.get('mineonly', None)
+        mineonly = strtobool(self.request.query_params.get('mineonly', 'false'))
         bbox = self.request.query_params.get('bbox', None)
         before = self.request.query_params.get('before', None)
         after = self.request.query_params.get('after', None)
@@ -108,8 +109,9 @@ class JobViewSet(viewsets.ModelViewSet):
         if bbox is not None:
             bbox = bbox_to_geom(bbox)
             queryset = queryset.filter(Q(the_geom__within=bbox))
-        if mineonly is not None:
-            return queryset.filter(Q(user_id=user.id))
+        if mineonly:
+            queryset = queryset.filter(Q(user_id=user.id))
+
         return queryset.filter(Q(user_id=user.id) | Q(published=True))
 
     def perform_create(self, serializer):
@@ -136,9 +138,10 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
             self, ):
         user = self.request.user
         queryset = SavedFeatureSelection.objects.filter(deleted=False)
-        mineonly = self.request.query_params.get('mineonly', None)
-        if mineonly is not None:
-            return queryset.filter(Q(user_id=user.id))
+        mineonly = strtobool(self.request.query_params.get('mineonly', 'false'))
+        if mineonly:
+            queryset = queryset.filter(Q(user_id=user.id))
+
         return queryset.filter(Q(user_id=user.id) | Q(public=True))
 
 
@@ -220,8 +223,19 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     ordering_fields = '__all__'
     permission_classes = (IsHDXAdmin, )
-    queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related(
-        'job__runs__tasks').defer('job__the_geom')
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('job__name', 'job__description')
+
+    def get_queryset(
+            self, ):
+        user = self.request.user
+        queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related(
+            'job__runs__tasks').defer('job__the_geom')
+        mineonly = strtobool(self.request.query_params.get('mineonly', 'false'))
+        if mineonly:
+            queryset = queryset.filter(Q(job__user_id=user.id))
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action == "list":

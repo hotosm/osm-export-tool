@@ -106,12 +106,13 @@ export function getExport(id) {
   };
 }
 
-export function getExports(page = 1) {
+export function getExports(filters = {}, page = 1) {
   const itemsPerPage = 20;
 
   return dispatch => {
     return axios({
       params: {
+        ...filters,
         limit: itemsPerPage,
         offset: Math.max(0, (page - 1) * itemsPerPage)
       },

@@ -255,7 +255,7 @@ export class PresetParser {
     };
     for (var itemElem of this.listForXpath(".//ns:item", this.doc)) {
       if (!itemElem.getAttribute("type")) {
-        continue
+        continue;
       }
       const types = itemElem.getAttribute("type").split(",");
       if (types.includes("node")) {

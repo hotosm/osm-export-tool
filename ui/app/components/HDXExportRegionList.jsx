@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
 import ExportRegionPanel from "./ExportRegionPanel";
+import FilterForm from "./FilterForm";
 import MapListView from "./MapListView";
 import Paginator from "./Paginator";
 import { getExportRegions } from "../actions/hdx";
@@ -32,14 +33,40 @@ class ExportRegionList extends Component {
 }
 
 export class HDXExportRegionList extends Component {
+  state = {
+    filters: {}
+  };
+
   componentWillMount() {
     const { getExportRegions } = this.props;
 
     getExportRegions();
   }
 
+  search = ({ search, ...values }) => {
+    const { getExportRegions } = this.props;
+    const { filters } = this.state;
+
+    const newFilters = {
+      ...filters,
+      ...values,
+      search
+    };
+
+    this.setState({
+      filters: newFilters
+    });
+
+    return getExportRegions(newFilters);
+  };
+
   render() {
-    const { hdx, hdx: { selectedExportRegion }, getExportRegions } = this.props;
+    const {
+      hdx,
+      hdx: { selectedExportRegion },
+      getExportRegions
+    } = this.props;
+    const { filters } = this.state;
 
     const regionGeoms = {
       features: hdx.items.map(x => x.simplified_geom),
@@ -58,10 +85,17 @@ export class HDXExportRegionList extends Component {
             >
               Create New Export Region
             </Link>
+            <FilterForm type="Export Regions" onSubmit={this.search} />
             <hr />
-            <Paginator collection={hdx} getPage={getExportRegions} />
+            <Paginator
+              collection={hdx}
+              getPage={getExportRegions.bind(null, filters)}
+            />
             <ExportRegionList regions={hdx.items} />
-            <Paginator collection={hdx} getPage={getExportRegions} />
+            <Paginator
+              collection={hdx}
+              getPage={getExportRegions.bind(null, filters)}
+            />
           </div>
         </Col>
         <Col xs={6} style={{ height: "100%" }}>

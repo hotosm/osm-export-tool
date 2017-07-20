@@ -20,7 +20,7 @@ const launderExportRegion = exportRegion => {
   return exportRegion;
 };
 
-export function getExportRegions(page = 1) {
+export function getExportRegions(filters = {}, page = 1) {
   const itemsPerPage = 5;
 
   return dispatch => {
@@ -30,6 +30,7 @@ export function getExportRegions(page = 1) {
 
     return axios({
       params: {
+        ...filters,
         limit: itemsPerPage,
         offset: Math.max(0, (page - 1) * itemsPerPage)
       },

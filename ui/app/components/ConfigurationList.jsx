@@ -13,11 +13,9 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
 import ConfigurationForm from "./ConfigurationForm";
+import FilterForm from "./FilterForm";
 import Paginator from "./Paginator";
-import {
-  getConfigurations,
-  getConfiguration
-} from "../actions/configurations";
+import { getConfigurations, getConfiguration } from "../actions/configurations";
 import { selectConfigurations } from "../selectors";
 
 const ConfigurationTable = ({ configurations }) =>
@@ -43,22 +41,34 @@ const ConfigurationTable = ({ configurations }) =>
   </tbody>;
 
 class ConfigurationListPane extends Component {
+  state = {
+    filters: {}
+  };
+
   componentDidMount() {
-    this.state = { searchQuery: "", onlyMine: false };
     this.props.getConfigurations();
   }
 
-  onSearchSubmit = e => {
-    console.log("Submit");
-    this.setState({ searchQuery: e.target.value });
-  };
+  search = ({ search, ...values }) => {
+    const { getConfigurations } = this.props;
+    const { filters } = this.state;
 
-  clearSearch = e => {
-    this.setState({ searchQuery: "" });
+    const newFilters = {
+      ...filters,
+      ...values,
+      search
+    };
+
+    this.setState({
+      filters: newFilters
+    });
+
+    return getConfigurations(newFilters);
   };
 
   render() {
     const { configurations, getConfigurations } = this.props;
+    const { filters } = this.props;
 
     return (
       <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>
@@ -71,27 +81,9 @@ class ConfigurationListPane extends Component {
           >
             Create New Configuration
           </Link>
-          {configurations.total > 0 &&
+          {(configurations.total > 0 || filters !== {}) &&
             <div>
-              <InputGroup
-                style={{
-                  width: "100%",
-                  marginTop: "20px",
-                  marginBottom: "10px"
-                }}
-              >
-                <InputGroup.Button>
-                  <Button>Clear</Button>
-                </InputGroup.Button>
-                <FormControl
-                  type="text"
-                  placeholder="Search for a name or description..."
-                />
-                <InputGroup.Button>
-                  <Button>Search</Button>
-                </InputGroup.Button>
-              </InputGroup>
-              <Checkbox>My Configurations</Checkbox>
+              <FilterForm type="Configurations" onSubmit={this.search} />
               <Table>
                 <thead>
                   <tr>
@@ -105,7 +97,7 @@ class ConfigurationListPane extends Component {
               </Table>
               <Paginator
                 collection={configurations}
-                getPage={getConfigurations}
+                getPage={getConfigurations.bind(null, filters)}
               />
             </div>}
         </div>

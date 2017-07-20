@@ -58,12 +58,13 @@ export function updateConfiguration(uid, data, form_name) {
   };
 }
 
-export function getConfigurations(page = 1) {
+export function getConfigurations(filters = {}, page = 1) {
   const itemsPerPage = 20;
 
   return dispatch => {
     return axios({
       params: {
+        ...filters,
         limit: itemsPerPage,
         offset: Math.max(0, (page - 1) * itemsPerPage)
       },
