@@ -115,6 +115,11 @@ class FeatureSelection(object):
                 if 'select' not in theme_dict:
                     self._errors.append("Each theme must have a 'select' key")
                     return False
+                if 'types' in theme_dict:
+                    for typ in theme_dict['types']:
+                        if typ not in ['points','lines','polygons']:
+                            self._errors.append("types must be one or more of points, lines or polygons, got: {0}".format(typ))
+                            return False
                 for key in theme_dict['select']:
                     if not key:
                         self._errors.append("Missing OSM key")

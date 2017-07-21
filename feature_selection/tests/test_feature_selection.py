@@ -213,6 +213,18 @@ class TestFeatureSelection(unittest.TestCase):
         self.assertFalse(f.valid)
         self.assertEqual(f.errors[0],"Each theme must have a 'select' key")
 
+    def test_invalid_type(self):
+        y = '''
+        all: 
+          types:
+            - multilines
+          select:
+            - name
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"types must be one or more of points, lines or polygons, got: multilines")
+
     # refer to https://taginfo.openstreetmap.org/keys
     def test_valid_invalid_key_yaml(self):
         y = '''
