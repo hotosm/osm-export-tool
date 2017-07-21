@@ -13,6 +13,12 @@ import {
   Table
 } from "react-bootstrap";
 import Dropzone from "react-dropzone";
+import {
+  FormattedNumber,
+  FormattedMessage,
+  defineMessages,
+  injectIntl
+} from "react-intl";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
 import {
@@ -59,7 +65,17 @@ const form = reduxForm({
 
       const MAX = 3000000;
       if (areaSqkm > MAX) {
-        errors.the_geom = `The bounds of this polygon are too large: ${areaSqkm.toLocaleString()} km², max ${MAX.toLocaleString()} km².`;
+        errors.the_geom = (
+          <FormattedMessage
+            id="export.errors.the_geom.too_large"
+            defaultMessage="The bounds of this polygon are too large: {areaSqkm} km², max {maxAreaSqkm} km²"
+            description="Error message to display when bounds are too large"
+            values={{
+              areaSqkm: <FormattedNumber value={areaSqkm} />,
+              maxAreaSqkm: <FormattedNumber value={MAX} />
+            }}
+          />
+        );
       }
     }
 
@@ -67,51 +83,111 @@ const form = reduxForm({
   }
 });
 
-const Describe = ({ next }) =>
+const messages = defineMessages({
+  bufferAOIDescription: {
+    id: "export.buffer_aoi.description",
+    defaultMessage: "Buffer AOI"
+  },
+  configurationTitle: {
+    id: "configuration.title",
+    defaultMessage: "Configurations"
+  },
+  descriptionLabel: {
+    id: "export.description.label",
+    defaultMessage: "Description"
+  },
+  featureSelectionLabel: {
+    id: "export.feature_selection.label",
+    defaultMessage: "Feature Selection"
+  },
+  nameLabel: {
+    id: "export.name.label",
+    defaultMessage: "Name"
+  },
+  namePlaceholder: {
+    id: "export.name.placeholder",
+    defaultMessage: "name this export"
+  },
+  projectLabel: {
+    id: "export.project.label",
+    defaultMessage: "Project"
+  },
+  projectPlaceholder: {
+    id: "export.project.placeholder",
+    defaultMessage: "which activation this export is for"
+  },
+  publishedDescription: {
+    id: "export.published.description",
+    defaultMessage: "Publish this export"
+  },
+  tagTreeSearchPlaceholder: {
+    id: "export.tag_tree_search.placeholder",
+    defaultMessage: "Search for a feature type..."
+  }
+});
+
+const Describe = injectIntl(({ intl: { formatMessage }, next }) =>
   <Row>
     <Field
       name="name"
       type="text"
-      label="Name"
-      placeholder="name this export"
+      label={formatMessage(messages.nameLabel)}
+      placeholder={formatMessage(messages.namePlaceholder)}
       component={renderInput}
     />
     <Field
       name="description"
       type="text"
-      label="Description"
+      label={formatMessage(messages.descriptionLabel)}
       component={renderTextArea}
       rows="4"
     />
     <Field
       name="project"
       type="text"
-      label="Project"
-      placeholder="which activation this export is for"
+      label={formatMessage(messages.projectLabel)}
+      placeholder={formatMessage(messages.projectPlaceholder)}
       component={renderInput}
     />
     <Button bsSize="large" style={{ float: "right" }} onClick={next}>
-      Next
+      <FormattedMessage id="nav.next" defaultMessage="Next" />
     </Button>
-  </Row>;
+  </Row>
+);
 
-const YamlUi = ({ onDrop }) =>
+const YamlUi = injectIntl(({ intl: { formatMessage }, onDrop }) =>
   <div>
     <Field
       name="feature_selection"
       type="text"
-      label="Feature Selection"
+      label={formatMessage(messages.featureSelectionLabel)}
       component={renderTextArea}
       className={styles.featureSelection}
       rows="10"
     />
     <Dropzone className="nullClassName" onDrop={onDrop}>
-      <Button>Load from JOSM Preset .XML</Button>
+      <Button>
+        <FormattedMessage
+          id="export.feature_selection.load_from_josm_preset"
+          defaultMessage="Load from JOSM Preset .XML"
+        />
+      </Button>
     </Dropzone>
-  </div>;
+  </div>
+);
 
-class TreeTagUi extends React.Component {
+class _TreeTagUi extends Component {
   render() {
+    const {
+      clearSearch,
+      intl: { formatMessage },
+      labelFilter,
+      onSearchChange,
+      onTreeNodeCheckChange,
+      onTreeNodeCollapseChange,
+      tagTreeData
+    } = this.props;
+
     return (
       <div>
         <InputGroup
@@ -120,32 +196,35 @@ class TreeTagUi extends React.Component {
           <FormControl
             id="treeTagSearch"
             type="text"
-            label="treeTagSearch"
-            placeholder="Search for a feature type..."
-            onChange={this.props.onSearchChange}
+            placeholder={formatMessage(messages.tagTreeSearchPlaceholder)}
+            onChange={onSearchChange}
           />
           <InputGroup.Button>
-            <Button onClick={this.props.clearSearch}>Clear</Button>
+            <Button onClick={clearSearch}>
+              <FormattedMessage id="ui.clear" defaultMessage="Clear" />
+            </Button>
           </InputGroup.Button>
         </InputGroup>
 
         <TreeMenu
-          data={this.props.tagTreeData}
-          onTreeNodeCollapseChange={this.props.onTreeNodeCollapseChange}
-          onTreeNodeCheckChange={this.props.onTreeNodeCheckChange}
+          data={tagTreeData}
+          onTreeNodeCollapseChange={onTreeNodeCollapseChange}
+          onTreeNodeCheckChange={onTreeNodeCheckChange}
           expandIconClass="fa fa-chevron-right"
           collapseIconClass="fa fa-chevron-down"
-          labelFilter={this.props.labelFilter}
+          labelFilter={labelFilter}
         />
       </div>
     );
   }
 }
 
-class StoredConfComponent extends React.Component {
+const TreeTagUi = injectIntl(_TreeTagUi);
+
+class StoredConfComponent extends Component {
   state = {
     filters: {}
-  }
+  };
 
   componentWillMount() {
     this.props.getConfigurations();
@@ -174,7 +253,11 @@ class StoredConfComponent extends React.Component {
   };
 
   render() {
-    const { configurations, getConfigurations } = this.props;
+    const {
+      configurations,
+      getConfigurations,
+      intl: { formatMessage }
+    } = this.props;
     const { filters } = this.state;
 
     if (configurations.total === 0 && filters === {}) {
@@ -184,13 +267,29 @@ class StoredConfComponent extends React.Component {
 
     return (
       <div>
-        <FilterForm type="Configurations" onSubmit={this.search} />
-        <Paginator collection={configurations} getPage={getConfigurations.bind(null, filters)} />
+        <FilterForm
+          type={formatMessage(messages.configurationTitle)}
+          onSubmit={this.search}
+        />
+        <Paginator
+          collection={configurations}
+          getPage={getConfigurations.bind(null, filters)}
+        />
         <Table>
           <thead>
             <tr>
-              <th>name</th>
-              <th>description</th>
+              <th>
+                <FormattedMessage
+                  id="configuration.name.label"
+                  defaultMessage="Name"
+                />
+              </th>
+              <th>
+                <FormattedMessage
+                  id="configuration.description.label"
+                  defaultMessage="Description"
+                />
+              </th>
               <th />
             </tr>
           </thead>
@@ -209,7 +308,10 @@ class StoredConfComponent extends React.Component {
                       bsSize="small"
                       onClick={() => this.onClick(configuration.yaml)}
                     >
-                      Load YAML
+                      <FormattedMessage
+                        id="configuration.load_yaml"
+                        defaultMessage="Load YAML"
+                      />
                     </Button>
                   </td>
                 </tr>
@@ -234,7 +336,7 @@ const StoredConfContainer = connect(
       setYaml: yaml => dispatch(change("ExportForm", "feature_selection", yaml))
     };
   }
-)(StoredConfComponent);
+)(injectIntl(StoredConfComponent));
 
 const SelectFeatures = ({
   next,
@@ -258,7 +360,7 @@ const SelectFeatures = ({
         active={featuresUi === "treetag"}
         onClick={switchToTreeTag}
       >
-        Tag Tree
+        <FormattedMessage id="ui.exports.tag_tree" defaultMessage="Tag Tree" />
       </Button>
       {/* TODO don't display this if no configurations are available */}
       <Button
@@ -266,7 +368,10 @@ const SelectFeatures = ({
         active={featuresUi === "stored"}
         onClick={switchToStoredConf}
       >
-        Stored Configuration
+        <FormattedMessage
+          id="ui.exports.stored_configuration"
+          defaultMessage="Stored Configuration"
+        />
       </Button>
       <Button href="#" active={featuresUi === "yaml"} onClick={switchToYaml}>
         YAML
@@ -301,59 +406,84 @@ const ChooseFormats = ({ next }) =>
       {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
     </Field>
     <Button bsSize="large" style={{ float: "right" }} onClick={next}>
-      Next
+      <FormattedMessage id="nav.next" defaultMessage="Next" />
     </Button>
   </Row>;
 
-const Summary = ({ handleSubmit, formValues, error }) =>
-  <Row>
-    <Col xs={6}>
-      <strong>Name:</strong> {formValues.name}
-      <br />
-      <strong>Description:</strong> {formValues.description}
-      <br />
-      <strong>Activation:</strong> {formValues.project}
-      <br />
-      <strong>Export Formats:</strong>
-      <ul>
-        {formValues.export_formats &&
-          formValues.export_formats.map((format, idx) =>
-            <li key={idx}>
-              {AVAILABLE_EXPORT_FORMATS[format]}
-            </li>
-          )}
-      </ul>
-    </Col>
-    <Col xs={6}>
-      <Field
-        name="buffer_aoi"
-        description="Buffer AOI"
-        component={renderCheckbox}
-        type="checkbox"
-      />
-      <Field
-        name="published"
-        description="Publish this export"
-        component={renderCheckbox}
-        type="checkbox"
-      />
-      <Button
-        bsStyle="success"
-        bsSize="large"
-        type="submit"
-        style={{ width: "100%" }}
-        onClick={handleSubmit}
-      >
-        Create Export
-      </Button>
-      {error &&
-        <p className={styles.error}>
-          <strong>
-            {error}
-          </strong>
-        </p>}
-    </Col>
-  </Row>;
+const Summary = injectIntl(
+  ({ error, formValues, handleSubmit, intl: { formatMessage } }) =>
+    <Row>
+      <Col xs={6}>
+        <strong>
+          <FormattedMessage id="export.name.label" defaultMessage="Name" />:
+        </strong>{" "}
+        {formValues.name}
+        <br />
+        <strong>
+          <FormattedMessage
+            id="export.description.label"
+            defaultMessage="Description"
+          />:
+        </strong>{" "}
+        {formValues.description}
+        <br />
+        <strong>
+          <FormattedMessage
+            id="export.project.label"
+            defaultMessage="Project"
+          />:
+        </strong>{" "}
+        {formValues.project}
+        <br />
+        <strong>
+          <FormattedMessage
+            id="export.export_formats.label"
+            defaultMessage="Export Formats"
+          />:
+        </strong>
+        <ul>
+          {formValues.export_formats &&
+            formValues.export_formats.map((format, idx) =>
+              <li key={idx}>
+                {AVAILABLE_EXPORT_FORMATS[format]}
+              </li>
+            )}
+        </ul>
+      </Col>
+      <Col xs={6}>
+        <Field
+          name="buffer_aoi"
+          description={formatMessage(messages.bufferAOIDescription)}
+          component={renderCheckbox}
+          type="checkbox"
+        />
+        <Field
+          name="published"
+          description={formatMessage(messages.publishedDescription)}
+          component={renderCheckbox}
+          type="checkbox"
+        />
+        <Button
+          bsStyle="success"
+          bsSize="large"
+          type="submit"
+          style={{ width: "100%" }}
+          onClick={handleSubmit}
+        >
+          <FormattedMessage
+            id="ui.exports.create_export"
+            defaultMessage="Create Export"
+          />
+        </Button>
+        {error &&
+          <p className={styles.error}>
+            <strong>
+              {error}
+            </strong>
+          </p>}
+      </Col>
+    </Row>
+);
 
 export class ExportForm extends Component {
   constructor(props) {
@@ -483,17 +613,33 @@ export class ExportForm extends Component {
               style={{ marginBottom: "20px" }}
             >
               <NavItem eventKey="describe" onClick={this.describeExport}>
-                {++idx} Describe Export
+                {++idx}{" "}
+                <FormattedMessage
+                  id="ui.exports.describe_export"
+                  defaultMessage="Describe Export"
+                />
               </NavItem>
               <NavItem eventKey="formats" onClick={this.chooseFormats}>
-                {++idx} Choose Formats
+                {++idx}{" "}
+                <FormattedMessage
+                  id="ui.exports.choose_formats"
+                  defaultMessage="Choose Formats"
+                />
               </NavItem>
               {requiresFeatureSelection &&
                 <NavItem eventKey="select" onClick={this.selectFeatures}>
-                  {++idx} Select Features
+                  {++idx}{" "}
+                  <FormattedMessage
+                    id="ui.exports.select_features"
+                    defaultMessage="Select Features"
+                  />
                 </NavItem>}
               <NavItem eventKey="summary" onClick={this.showSummary}>
-                {++idx} Summary
+                {++idx}{" "}
+                <FormattedMessage
+                  id="ui.exports.summary"
+                  defaultMessage="Summary"
+                />
               </NavItem>
             </Nav>
             <Switch>
@@ -553,7 +699,11 @@ export class ExportForm extends Component {
               />
             </Switch>
             <Panel style={{ marginTop: "20px" }}>
-              OpenStreetMap database last updated {overpassLastUpdated}
+              <FormattedMessage
+                id="ui.overpass_last_updated"
+                defaultMessage="OpenStreetMap database last updated {overpassLastUpdated}"
+                values={{ overpassLastUpdated }}
+              />
             </Panel>
           </Col>
           <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>

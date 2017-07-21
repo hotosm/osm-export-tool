@@ -23,7 +23,15 @@ const config = {
         exclude: [/node_modules/],
         loader: "babel-loader",
         query: {
-          plugins: ["react-hot-loader/babel"],
+          plugins: [
+            "react-hot-loader/babel",
+            [
+              "react-intl",
+              {
+                messagesDir: "./build/messages/"
+              }
+            ]
+          ],
           presets: [
             [
               "env",
@@ -61,20 +69,14 @@ const config = {
       }
     ]
   },
-  plugins: [
-    new webpack.NamedModulesPlugin(),
-    new WriteFilePlugin()
-  ],
+  plugins: [new webpack.NamedModulesPlugin(), new WriteFilePlugin()],
   resolve: {
     extensions: [".js", ".jsx", ".json", ".css"]
   }
 };
 
 if (process.env.NODE_ENV === "production") {
-  config.entry = [
-    "babel-polyfill",
-    "./app/index.js"
-  ];
+  config.entry = ["babel-polyfill", "./app/index.js"];
   config.devtool = "source-map";
   config.plugins = [
     new webpack.NoEmitOnErrorsPlugin(),
