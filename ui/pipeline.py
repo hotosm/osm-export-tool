@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from social import utils
-from social.exceptions import InvalidEmail
-from social.pipeline.partial import partial
+from social_core import utils
+from social_core.exceptions import InvalidEmail
+from social_core.pipeline.partial import partial
 
 from django.conf import settings
 from django.contrib.sessions.models import Session

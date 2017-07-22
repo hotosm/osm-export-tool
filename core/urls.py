@@ -51,7 +51,7 @@ urlpatterns += i18n_patterns(
 
 # OAuth urls
 urlpatterns += i18n_patterns(
-    url('^osm/', include('social.apps.django_app.urls', namespace='osm')),
+    url('^osm/', include('social_django.urls', namespace='osm')),
     url('^osm/email_verify_sent/$', TemplateView.as_view(
         template_name='osm/email_verify_sent.html'), name='email_verify_sent'),
     url('^osm/error$', TemplateView.as_view(template_name='osm/error.html'),

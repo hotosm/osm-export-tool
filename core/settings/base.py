@@ -91,7 +91,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -123,8 +123,8 @@ STATICFILES_FINDERS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.openstreetmap.OpenStreetMapOAuth',
-    'social.backends.email.EmailAuth',
-    'social.backends.username.UsernameAuth',
+    'social_core.backends.openstreetmap.OpenStreetMapOAuth',
+    'social_core.backends.email.EmailAuth',
+    'social_core.backends.username.UsernameAuth',
     'django.contrib.auth.backends.ModelBackend',
 )
