@@ -1,4 +1,3 @@
-import createHistory from "history/createHashHistory";
 import React from "react";
 import { Redirect, Route } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
@@ -14,9 +13,16 @@ import {
   ConfigurationNew,
   ConfigurationDetailContainer
 } from "./components/ConfigurationList";
-import store from "./config/store";
+import Home from "./components/Home";
+import store, { history } from "./config/store";
 
-const history = createHistory();
+import "bootstrap/dist/css/bootstrap.css";
+import "font-awesome/css/font-awesome.css";
+import "./css/style.css";
+import "./css/materialIcons.css";
+import "./css/ol.css";
+
+const requireAuth = (nextState, replace) => {};
 
 // TODO 403 API responses should redirect to the login page
 // TODO 404 API responses should either display a 404 page or redirect to the list
@@ -25,12 +31,13 @@ export default () =>
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
       <div style={{ height: "100%" }}>
+        <Route exact path="/home" component={Home} />
+        <Route path="/" exact render={() => <Redirect to="/exports/new" />} />
         <Route
-          path="/"
-          exact
-          render={props => <Redirect to="/exports/new" />}
+          path="/exports/new/:step?/:featuresUi?"
+          component={ExportForm}
+          onEnter={requireAuth}
         />
-        <Route path="/exports/new/:step?/:featuresUi?" component={ExportForm} />
         <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
         <Route exact path="/exports" component={ExportList} />
         <Route exact path="/configurations" component={ConfigurationList} />

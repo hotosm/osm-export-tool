@@ -9,6 +9,7 @@
     "bootstrap": "~3.3.7",
     "create-react-class": "^15.6.0",
     "detect-it": "^3.0.0",
+    "font-awesome": "^4.7.0",
     "js-yaml": "^3.9.0",
     "lodash": "~4.17.4",
     "moment": "^2.18.1",
@@ -29,6 +30,7 @@
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.7.1",
     "redux-form": "6.6.3",
+    "redux-implicit-oauth2": "^1.0.3",
     "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
@@ -42,10 +44,12 @@
     "csv-parse": "^1.2.0",
     "eslint": "^3.8.1",
     "eslint-plugin-react-app": "^1.0.2",
+    "file-loader": "^0.11.2",
     "prettier": "^1.5.2",
     "react-hot-loader": "3.0.0-beta.6",
     "redux-logger": "^3.0.6",
     "style-loader": "^0.18.2",
+    "url-loader": "^0.5.9",
     "webpack": "^3.1.0",
     "webpack-dev-server": "^2.5.1",
     "write-file-webpack-plugin": "^4.1.0"
@@ -53,7 +57,7 @@
   "scripts": {
     "dist": "NODE_ENV=production npm run pack",
     "pack": "webpack -p --progress --display-optimization-bailout --config webpack.config.js",
-    "start": "webpack-dev-server --hot",
+    "start": "webpack-dev-server --hot --history-api-fallback",
     "watch": "webpack --watch --progress --config webpack.config.js"
   },
   "license": "BSD-3-Clause"
