@@ -30,7 +30,7 @@ def require_email(strategy, request, details, user=None, is_new=False, *args, **
             return redirect('require_email')
 
 
-def email_validation(strategy, backend, code):  # pragma: no cover
+def email_validation(strategy, backend, code, partial_token):  # pragma: no cover
     """
     Send an email with an embedded verification code and the necessary details to restore the required session
     elements to complete the verification and sign-in, regardless of what browser the user completes the

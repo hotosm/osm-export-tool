@@ -35,10 +35,7 @@ def require_email(request):
     """
     View to handle email collection for new user logging in with OSM account.
     """
-    backend = request.session['partial_pipeline']['backend']
-    return render(request, 'osm/email.html', {
-        'backend': backend
-    })
+    return render(request, 'osm/email.html')
 
 
 @require_http_methods(['GET'])
