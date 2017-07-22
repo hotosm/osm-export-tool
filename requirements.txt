@@ -10,7 +10,7 @@ hdx-python-api==2.1.5
 kombu>=3.0.37,<3.1
 psycopg2==2.6.1
 python-openid
-python-social-auth==0.2.19
+python-social-auth==0.2.21
 pytz
 pyyaml==3.12
 raven==6.0.0
