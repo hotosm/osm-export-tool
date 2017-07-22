@@ -1,10 +1,10 @@
-Django==1.9
+Django~=1.11.3
 billiard>=3.3.0.23,<3.4
 cachetools
 celery[librabbitmq]==3.1.24
 dj_database_url
-djangorestframework-gis==0.10.1
-djangorestframework==3.3.3
+djangorestframework-gis~=0.11.2
+djangorestframework~=3.6.3
 git+git://github.com/bdon/ckanapi.git@7778ad33c22f20eb2e5a1c5998eedb5f9cbe86ac#egg=ckanapi
 hdx-python-api==2.1.5
 kombu>=3.0.37,<3.1

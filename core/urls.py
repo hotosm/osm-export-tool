@@ -9,7 +9,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-from django.views.i18n import javascript_catalog
+from django.views.i18n import JavaScriptCatalog
 
 from api.urls import router
 from api.views import request_geonames, get_overpass_timestamp
@@ -72,7 +72,7 @@ js_info_dict = {
 }
 
 urlpatterns += [
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict),
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(packages=['hot_osm']), name='javascript-catalog'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
 
