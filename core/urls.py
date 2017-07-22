@@ -49,7 +49,7 @@ urlpatterns += i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
 )
 
-# OAuth urls
+# OAuth client urls
 urlpatterns += i18n_patterns(
     url('^osm/', include('social_django.urls', namespace='osm')),
     url('^osm/email_verify_sent/$', TemplateView.as_view(
@@ -57,6 +57,11 @@ urlpatterns += i18n_patterns(
     url('^osm/error$', TemplateView.as_view(template_name='osm/error.html'),
         name='login_error')
 )
+
+# OAuth provider urls
+urlpatterns += [
+    url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+]
 
 # don't apply i18n patterns here.. api uses Accept-Language header
 urlpatterns += [

@@ -20,8 +20,9 @@ INSTALLED_APPS += (
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter',
                                 'rest_framework.filters.OrderingFilter'),
-    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.SessionAuthentication',
-                                       'rest_framework.authentication.TokenAuthentication'),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.TokenAuthentication',
+                                       'rest_framework.authentication.SessionAuthentication',
+                                       'oauth2_provider.contrib.rest_framework.OAuth2Authentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',

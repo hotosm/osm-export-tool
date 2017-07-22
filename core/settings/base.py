@@ -92,7 +92,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'core.urls'
 
@@ -109,6 +112,8 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.postgres',
     'raven.contrib.django.raven_compat',
+    'oauth2_provider',
+    'corsheaders',
 )
 
 
