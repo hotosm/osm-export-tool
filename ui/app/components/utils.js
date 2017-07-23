@@ -7,6 +7,8 @@ import {
   Checkbox
 } from "react-bootstrap";
 import { Field } from "redux-form";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
 import Select from "react-select";
 import styles from "../styles/utilsStyles.css";
 import yaml from "js-yaml";
@@ -311,3 +313,9 @@ export const prettyBytes = num => {
 
   return (neg ? "-" : "") + numStr + " " + unit;
 };
+
+export const requireAuth = Component =>
+  connect(state => ({ isLoggedIn: state.auth.isLoggedIn }))(
+    ({ isLoggedIn, ...props }) =>
+      isLoggedIn ? <Component {...props} /> : <Redirect to="/home" />
+  );

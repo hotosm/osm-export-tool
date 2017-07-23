@@ -15,6 +15,7 @@ import {
 } from "./components/ConfigurationList";
 import Home from "./components/Home";
 import NavBar from "./components/NavBar";
+import { requireAuth } from "./components/utils";
 import store, { history } from "./config/store";
 
 import "bootstrap/dist/css/bootstrap.css";
@@ -22,8 +23,6 @@ import "font-awesome/css/font-awesome.css";
 import "./css/style.css";
 import "./css/materialIcons.css";
 import "./css/ol.css";
-
-const requireAuth = (nextState, replace) => {};
 
 // TODO 403 API responses should redirect to the login page
 // TODO 404 API responses should either display a 404 page or redirect to the list
@@ -37,20 +36,30 @@ export default () =>
         <Route path="/" exact render={() => <Redirect to="/exports/new" />} />
         <Route
           path="/exports/new/:step?/:featuresUi?"
-          component={ExportForm}
-          onEnter={requireAuth}
+          component={requireAuth(ExportForm)}
         />
         <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
         <Route exact path="/exports" component={ExportList} />
-        <Route exact path="/configurations" component={ConfigurationList} />
-        <Route exact path="/configurations/new" component={ConfigurationNew} />
+        <Route
+          exact
+          path="/configurations"
+          component={requireAuth(ConfigurationList)}
+        />
+        <Route
+          exact
+          path="/configurations/new"
+          component={requireAuth(ConfigurationNew)}
+        />
         <Route
           path="/configurations/detail/:uid"
-          component={ConfigurationDetailContainer}
+          component={requireAuth(ConfigurationDetailContainer)}
         />
-        <Route exact path="/hdx" component={HDXExportRegionList} />
-        <Route path="/hdx/new" component={HDXExportRegionForm} />
-        <Route path="/hdx/edit/:id" component={HDXExportRegionForm} />
+        <Route exact path="/hdx" component={requireAuth(HDXExportRegionList)} />
+        <Route path="/hdx/new" component={requireAuth(HDXExportRegionForm)} />
+        <Route
+          path="/hdx/edit/:id"
+          component={requireAuth(HDXExportRegionForm)}
+        />
       </div>
     </ConnectedRouter>
   </Provider>;
