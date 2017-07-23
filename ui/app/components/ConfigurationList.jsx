@@ -1,14 +1,6 @@
 import React, { Component } from "react";
 
-import {
-  Col,
-  Row,
-  Table,
-  Button,
-  InputGroup,
-  FormControl,
-  Checkbox
-} from "react-bootstrap";
+import { Col, Row, Table } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -179,5 +171,3 @@ export class ConfigurationList extends Component {
     );
   }
 }
-
-export default ConfigurationList;
