@@ -7,6 +7,7 @@ import { login, logout } from "redux-implicit-oauth2";
 
 import hotLogo from "../images/hot_logo.png";
 
+// TODO move this elsewhere and provide values through environment vars
 const config = {
   url: "http://localhost/o/authorize",
   client: "BAzRvOEMV6yyQflLu0GpN4Qn8sdFdwYbMn0EceAS",
@@ -153,6 +154,7 @@ const mapStateToProps = state => ({
   isLoggedIn: state.auth.isLoggedIn
 });
 
+// TODO fetch a pre-bound login function as an action creator
 export default connect(mapStateToProps, { login: () => login(config), logout })(
   NavBar
 );
