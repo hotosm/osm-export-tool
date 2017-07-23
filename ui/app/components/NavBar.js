@@ -1,10 +1,21 @@
 import React from "react";
+import { Button } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
-import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { Link, NavLink } from "react-router-dom";
+import { login, logout } from "redux-implicit-oauth2";
 
 import hotLogo from "../images/hot_logo.png";
 
-export default () =>
+const config = {
+  url: "http://localhost/o/authorize",
+  client: "BAzRvOEMV6yyQflLu0GpN4Qn8sdFdwYbMn0EceAS",
+  // TODO needs to be on the same host that the React app is served from
+  // TODO can't be attached to react-router (w/ hash history), as the state will get cleared
+  redirect: "http://localhost:8080/foo"
+};
+
+const NavBar = ({ isLoggedIn, login, logout }) =>
   <div>
     <div id="banner" className="container-fluid">
       <div className="row">
@@ -81,50 +92,54 @@ export default () =>
         <div id="navbar" className="collapse navbar-collapse">
           <ul className="nav navbar-nav">
             <li>
-              <Link to="/exports/new">
+              <NavLink to="/exports/new">
                 <FormattedMessage id="ui.create" defaultMessage="Create" />
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="/exports">
+              <NavLink to="/exports" exact>
                 <FormattedMessage id="ui.exports" defaultMessage="Exports" />
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="/configurations">
+              <NavLink to="/configurations">
                 <FormattedMessage
                   id="ui.configurations"
                   defaultMessage="Configurations"
                 />
-              </Link>
+              </NavLink>
             </li>
             <li>
               {/* TODO only link if user has permission */}
-              <Link to="/hdx">
+              <NavLink to="/hdx">
                 <FormattedMessage id="ui.hdx" defaultMessage="HDX" />
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="/help">
+              <NavLink to="/help">
                 <FormattedMessage id="ui.help" defaultMessage="Help" />
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="/about">
+              <NavLink to="/about">
                 <FormattedMessage id="ui.about" defaultMessage="About" />
-              </Link>
+              </NavLink>
             </li>
-            <li id="logout">
-              <Link to="/logout">
-                <span className="glyphicon glyphicon-log-out" />{" "}
-                <FormattedMessage id="ui.log_out" defaultMessage="Log Out" />
-              </Link>
-            </li>
-            <li>
-              <Link to="/login">
-                <FormattedMessage id="ui.log_in" defaultMessage="Log In" />
-              </Link>
-            </li>
+            {isLoggedIn
+              ? <li id="logout">
+                  <Button bsStyle="link" onClick={logout}>
+                    <span className="glyphicon glyphicon-log-out" />{" "}
+                    <FormattedMessage
+                      id="ui.log_out"
+                      defaultMessage="Log Out"
+                    />
+                  </Button>
+                </li>
+              : <li>
+                  <Button bsStyle="link" onClick={login}>
+                    <FormattedMessage id="ui.log_in" defaultMessage="Log In" />
+                  </Button>
+                </li>}
             <li>
               <span className="nav-pad">&nbsp;</span>
             </li>
@@ -133,3 +148,11 @@ export default () =>
       </div>
     </nav>
   </div>;
+
+const mapStateToProps = state => ({
+  isLoggedIn: state.auth.isLoggedIn
+});
+
+export default connect(mapStateToProps, { login: () => login(config), logout })(
+  NavBar
+);
