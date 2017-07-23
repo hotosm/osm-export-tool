@@ -84,12 +84,14 @@ export function getOverpassTimestamp() {
   return dispatch =>
     axios({
       url: "/api/overpass_timestamp"
-    }).then(rsp => {
-      dispatch({
-        type: types.RECEIVED_OVERPASS_TIMESTAMP,
-        lastUpdated: moment(rsp.data.timestamp).fromNow()
-      });
-    });
+    })
+      .then(rsp => {
+        dispatch({
+          type: types.RECEIVED_OVERPASS_TIMESTAMP,
+          lastUpdated: moment(rsp.data.timestamp).fromNow()
+        });
+      })
+      .catch(err => console.warn(err));
 }
 
 export function getExport(id) {
