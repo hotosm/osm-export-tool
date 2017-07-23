@@ -1,30 +1,29 @@
 # -*- coding: utf-8 -*-
 """UI view definitions."""
 
-from django.conf import settings
+import urllib
+
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
+
 def login(request):
-    help_url = reverse('help')
     if not request.user.is_authenticated():
-        return render(request, 'osm/login.html', {
-            'help_url': help_url
-        })
+        # perserve redirects ("next" in request.GET)
+        return redirect(
+            reverse('osm:begin', args=['openstreetmap']) + '?' +
+            urllib.urlencode(request.GET))
     else:
-        return redirect('/v3/#/exports/new')
+        return redirect('/')
 
 
 def logout(request):
     """Logs out user"""
     help_url = reverse('help')
     auth_logout(request)
-    return render(request, 'osm/login.html', {
-        'help_url': help_url
-    })
+    return render(request, 'osm/login.html', {'help_url': help_url})
 
 
 def v3(request):
@@ -41,9 +40,7 @@ def require_email(request):
 @require_http_methods(['GET'])
 def about(request):
     help_url = reverse('help')
-    return render(request, 'ui/about.html', {
-        'help_url': help_url
-    })
+    return render(request, 'ui/about.html', {'help_url': help_url})
 
 
 @require_http_methods(['GET'])
@@ -54,14 +51,14 @@ def help_main(request):
 @require_http_methods(['GET'])
 def help_create(request):
     help_features_url = reverse('help_features')
-    return render(request, 'help/help_create.html', {
-        'help_features_url': help_features_url
-    })
+    return render(request, 'help/help_create.html',
+                  {'help_features_url': help_features_url})
 
 
 @require_http_methods(['GET'])
 def help_features(request):
     return render(request, 'help/help_features.html')
+
 
 @require_http_methods(['GET'])
 def help_feature_selections(request):
@@ -70,7 +67,6 @@ def help_feature_selections(request):
 
 @require_http_methods(['GET'])
 def help_exports(request):
-    help_main_url = reverse('help')
     return render(request, 'help/help_exports.html')
 
 
@@ -82,6 +78,7 @@ def help_formats(request):
 @require_http_methods(['GET'])
 def help_presets(request):
     return render(request, 'help/help_presets.html')
+
 
 # error views
 
