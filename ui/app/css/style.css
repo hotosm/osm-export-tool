@@ -50,6 +50,7 @@ html, body {
 #logotext {
     font-size: large;
     color: black;
+    width: 150px;
 }
 
 /* nav styles */

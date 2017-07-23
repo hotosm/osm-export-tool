@@ -14,6 +14,7 @@ import {
   ConfigurationDetailContainer
 } from "./components/ConfigurationList";
 import Home from "./components/Home";
+import NavBar from "./components/NavBar";
 import store, { history } from "./config/store";
 
 import "bootstrap/dist/css/bootstrap.css";
@@ -31,6 +32,7 @@ export default () =>
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
       <div style={{ height: "100%" }}>
+        <NavBar />
         <Route exact path="/home" component={Home} />
         <Route path="/" exact render={() => <Redirect to="/exports/new" />} />
         <Route
