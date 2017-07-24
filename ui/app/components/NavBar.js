@@ -7,10 +7,10 @@ import { login, logout } from "redux-implicit-oauth2";
 
 import hotLogo from "../images/hot_logo.png";
 
-// TODO move this elsewhere and provide values through environment vars
+// TODO move this elsewhere
 const config = {
-  url: "http://localhost/o/authorize?approval_prompt=auto",
-  client: "BAzRvOEMV6yyQflLu0GpN4Qn8sdFdwYbMn0EceAS",
+  url: process.env.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
+  client: process.env.CLIENT_ID,
   // TODO needs to be on the same host that the React app is served from
   // TODO can't be attached to react-router (w/ hash history), as the state will get cleared
   redirect: "http://localhost:8080/foo",

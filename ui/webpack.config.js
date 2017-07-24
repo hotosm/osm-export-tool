@@ -93,7 +93,12 @@ const config = {
       }
     ]
   },
-  plugins: [new webpack.NamedModulesPlugin(), new WriteFilePlugin()],
+  plugins: [new webpack.DefinePlugin({
+    "process.env": {
+      EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL),
+      CLIENT_ID: JSON.stringify(process.env.CLIENT_ID)
+    }
+  }), new webpack.NamedModulesPlugin(), new WriteFilePlugin()],
   resolve: {
     extensions: [".js", ".jsx", ".json", ".css"]
   }
@@ -106,6 +111,8 @@ if (process.env.NODE_ENV === "production") {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       "process.env": {
+        CLIENT_ID: JSON.stringify(process.env.CLIENT_ID),
+        EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL),
         NODE_ENV: JSON.stringify("production")
       }
     }),
