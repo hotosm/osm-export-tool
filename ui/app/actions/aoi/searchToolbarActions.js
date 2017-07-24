@@ -5,7 +5,7 @@ export function getGeonames(query) {
   return dispatch => {
     dispatch({ type: "FETCHING_GEONAMES" });
     return axios
-      .get("/request_geonames", {
+      .get("/api/request_geonames", {
         params: {
           q: query
         }
