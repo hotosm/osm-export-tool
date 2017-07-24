@@ -1,12 +1,15 @@
 """Provides classes for handling API requests."""
 # -*- coding: utf-8 -*-
 from distutils.util import strtobool
+from itertools import chain
 import logging
 
 import dateutil.parser
 import requests
 from cachetools.func import ttl_cache
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Permission
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import JsonResponse
@@ -259,6 +262,7 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
 
 
 @require_http_methods(['GET'])
+@login_required()
 def request_geonames(request):
     """Geocode with GeoNames."""
     payload = {
@@ -284,7 +288,26 @@ def request_geonames(request):
 
 @ttl_cache(ttl=60)
 @require_http_methods(['GET'])
+@login_required()
 def get_overpass_timestamp(request):
     # TODO: this sometimes fails, returning a HTTP 200 but empty content.
     r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
     return JsonResponse({'timestamp': dateutil.parser.parse(r.content)})
+
+
+@require_http_methods(['GET'])
+@login_required()
+def get_user_permissions(request):
+    user = request.user
+    permissions = []
+
+    if user.is_superuser:
+        permissions = Permission.objects.all().values_list(
+            'codename', flat=True)
+    else:
+        permissions = chain(
+            user.user_permissions.all().values_list('codename', flat=True),
+            Permission.objects.filter(group_user=user).values_list(
+                'codename', flat=True))
+
+    return JsonResponse({"permissions": list(set(permissions))})

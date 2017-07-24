@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """API url configuration."""
 
-from api.views import (ConfigurationViewSet, ExportRunViewSet,
-                       HDXExportRegionViewSet, JobViewSet)
 from django.conf.urls import url
-from django.contrib.auth.decorators import login_required
 from rest_framework.routers import DefaultRouter
 
-from .views import get_overpass_timestamp, request_geonames
+from .views import (ConfigurationViewSet, ExportRunViewSet,
+                    HDXExportRegionViewSet, JobViewSet, get_overpass_timestamp,
+                    get_user_permissions, request_geonames)
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'jobs', JobViewSet, base_name='jobs')
@@ -22,6 +21,7 @@ router.register(
 urlpatterns = router.urls
 
 urlpatterns += [
-    url(r'^request_geonames$', login_required(request_geonames)),
-    url(r'^overpass_timestamp$', login_required(get_overpass_timestamp)),
+    url(r'^request_geonames$', request_geonames),
+    url(r'^overpass_timestamp$', get_overpass_timestamp),
+    url(r'^permissions$', get_user_permissions),
 ]
