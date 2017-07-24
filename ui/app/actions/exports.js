@@ -1,148 +1,171 @@
 import axios from "axios";
-import cookie from "react-cookie";
 import types from ".";
 import { push } from "react-router-redux";
 import { initialize, startSubmit, stopSubmit } from "redux-form";
 import moment from "moment";
 
-export function createExport(data, formName) {
-  return dispatch => {
-    dispatch(startSubmit(formName));
-    return axios({
-      url: "/api/jobs",
-      method: "POST",
-      contentType: "application/json; version=1.0",
-      data,
-      headers: {
-        "X-CSRFToken": cookie.load("csrftoken")
-      }
-    })
-      .then(rsp => {
-        dispatch(stopSubmit(formName));
-        dispatch(push(`/exports/detail/${rsp.data.uid}`));
-      })
-      .catch(err => {
-        return dispatch(
-          stopSubmit(formName, {
-            ...err.response.data,
-            _error:
-              "Your export is invalid. Please check each page of the form for errors."
-          })
-        );
-      });
-  };
-}
+import { selectAuthToken } from "../selectors";
 
-export function cloneExport(e) {
-  return dispatch => {
-    dispatch(push("/exports/new"));
+export const createExport = (data, formName) => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
 
-    axios({
-      url: `/api/jobs/${e.uid}/geom`
+  dispatch(startSubmit(formName));
+
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    method: "POST",
+    contentType: "application/json; version=1.0",
+    data
+  })
+    .then(rsp => {
+      dispatch(stopSubmit(formName));
+      dispatch(push(`/exports/detail/${rsp.data.uid}`));
     })
-      .then(rsp =>
-        dispatch(
-          initialize("ExportForm", {
-            buffer_aoi: e.buffer_aoi,
-            description: e.description,
-            event: e.event,
-            export_formats: e.export_formats,
-            feature_selection: e.feature_selection,
-            name: e.name,
-            published: e.published,
-            the_geom: rsp.data.the_geom,
-            aoi: {
-              description: "Cloned Area",
-              geomType: "Polygon",
-              title: "Custom Polygon"
-            }
-          })
-        )
+    .catch(err =>
+      dispatch(
+        stopSubmit(formName, {
+          ...err.response.data,
+          _error:
+            "Your export is invalid. Please check each page of the form for errors."
+        })
       )
-      .catch(err => console.warn(err));
-  };
-}
+    );
+};
 
-export function runExport(jobUid) {
-  return dispatch => {
+export const cloneExport = e => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  dispatch(push("/exports/new"));
+
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/jobs/${e.uid}/geom`
+  })
+    .then(rsp =>
+      dispatch(
+        initialize("ExportForm", {
+          buffer_aoi: e.buffer_aoi,
+          description: e.description,
+          event: e.event,
+          export_formats: e.export_formats,
+          feature_selection: e.feature_selection,
+          name: e.name,
+          published: e.published,
+          the_geom: rsp.data.the_geom,
+          aoi: {
+            description: "Cloned Area",
+            geomType: "Polygon",
+            title: "Custom Polygon"
+          }
+        })
+      )
+    )
+    .catch(err => console.warn(err));
+};
+
+export const getRuns = jobUid => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/runs?job_uid=${jobUid}`
+  }).then(rsp =>
     dispatch({
-      type: types.RUNNING_EXPORT,
-      id: jobUid
-    });
-
-    return axios({
-      url: `/api/runs?job_uid=${jobUid}`,
-      method: "POST",
-      headers: {
-        "X-CSRFToken": cookie.load("csrftoken")
-      }
-    }).then(rsp => dispatch(getRuns(jobUid)));
-  };
-}
-
-export function getOverpassTimestamp() {
-  return dispatch =>
-    axios({
-      url: "/api/overpass_timestamp"
+      type: types.RECEIVED_RUNS,
+      id: jobUid,
+      runs: rsp.data
     })
-      .then(rsp => {
-        dispatch({
-          type: types.RECEIVED_OVERPASS_TIMESTAMP,
-          lastUpdated: moment(rsp.data.timestamp).fromNow()
-        });
+  );
+};
+
+export const runExport = jobUid => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  dispatch({
+    type: types.RUNNING_EXPORT,
+    id: jobUid
+  });
+
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/runs?job_uid=${jobUid}`,
+    method: "POST"
+  }).then(rsp => dispatch(getRuns(jobUid)));
+};
+
+export const getOverpassTimestamp = () => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: "/api/overpass_timestamp"
+  })
+    .then(rsp =>
+      dispatch({
+        type: types.RECEIVED_OVERPASS_TIMESTAMP,
+        lastUpdated: moment(rsp.data.timestamp).fromNow()
       })
-      .catch(err => console.warn(err));
-}
+    )
+    .catch(err => console.warn(err));
+};
 
-export function getExport(id) {
-  return dispatch => {
-    return axios({
-      url: `/api/jobs/${id}`
-    }).then(rsp => {
-      dispatch({
-        type: types.RECEIVED_EXPORT,
-        id: id,
-        job: rsp.data
-      });
-    });
-  };
-}
+export const getExport = id => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
 
-export function getExports(filters = {}, page = 1) {
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/jobs/${id}`
+  }).then(rsp =>
+    dispatch({
+      type: types.RECEIVED_EXPORT,
+      id: id,
+      job: rsp.data
+    })
+  );
+};
+
+export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {
   const itemsPerPage = 20;
+  const token = selectAuthToken(getState());
 
-  return dispatch => {
-    return axios({
-      params: {
-        ...filters,
-        limit: itemsPerPage,
-        offset: Math.max(0, (page - 1) * itemsPerPage)
-      },
-      url: "/api/jobs"
-    }).then(({ data: response }) => {
-      dispatch({
-        type: types.RECEIVED_EXPORT_LIST,
-        activePage: page,
-        itemsPerPage,
-        response
-      });
-    });
-  };
-}
-
-export function getRuns(jobUid) {
-  return dispatch => {
-    return axios({
-      url: `/api/runs?job_uid=${jobUid}`
-    }).then(rsp => {
-      dispatch({
-        type: types.RECEIVED_RUNS,
-        id: jobUid,
-        runs: rsp.data
-      });
-    });
-  };
-}
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    params: {
+      ...filters,
+      limit: itemsPerPage,
+      offset: Math.max(0, (page - 1) * itemsPerPage)
+    },
+    url: "/api/jobs"
+  }).then(({ data: response }) =>
+    dispatch({
+      type: types.RECEIVED_EXPORT_LIST,
+      activePage: page,
+      itemsPerPage,
+      response
+    })
+  );
+};
 
 // TODO this should be managed beneath the ExportAOI component
 export function updateMode(mode) {

@@ -12,10 +12,11 @@ export const fetchPermissions = () => (dispatch, getState) => {
 
   // TODO export an instance configured with axios.create
   return axios({
+    baseURL: process.env.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
-    url: process.env.EXPORTS_API_URL + "/api/permissions"
+    url: "/api/permissions"
   })
     .then(rsp =>
       dispatch({
