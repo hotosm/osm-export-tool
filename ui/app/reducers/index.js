@@ -6,6 +6,7 @@ import hdx from "./hdx";
 import importGeom from "./importGeom";
 import jobs from "./jobs";
 import overpassLastUpdated from "./overpassLastUpdated";
+import meta from "./meta";
 import mode from "./mode";
 import showImportModal from "./showImportModal";
 import toolbarIcons from "./toolbarIcons";
@@ -18,6 +19,7 @@ export default {
   hdx,
   importGeom,
   jobs,
+  meta,
   mode,
   overpassLastUpdated,
   showImportModal,

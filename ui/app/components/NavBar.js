@@ -6,6 +6,7 @@ import { Link, NavLink } from "react-router-dom";
 import { login, logout } from "redux-implicit-oauth2";
 
 import hotLogo from "../images/hot_logo.png";
+import { selectIsLoggedIn } from "../selectors";
 
 // TODO move this elsewhere
 const config = {
@@ -152,7 +153,7 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
   </div>;
 
 const mapStateToProps = state => ({
-  isLoggedIn: state.auth.isLoggedIn
+  isLoggedIn: selectIsLoggedIn(state)
 });
 
 // TODO fetch a pre-bound login function as an action creator

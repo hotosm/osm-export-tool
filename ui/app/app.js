@@ -3,6 +3,7 @@ import { Redirect, Route } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
 import { Provider } from "react-intl-redux";
 
+import Auth from "./components/Auth";
 import ExportForm from "./components/ExportForm";
 import ExportDetails from "./components/ExportDetails";
 import ExportList from "./components/ExportList";
@@ -31,6 +32,7 @@ export default () =>
     {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
       <div style={{ height: "100%" }}>
+        <Auth />
         <NavBar />
         <Route exact path="/home" component={Home} />
         <Route path="/" exact render={() => <Redirect to="/exports/new" />} />
