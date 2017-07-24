@@ -83,12 +83,12 @@ MIDDLEWARE = [
     # 'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -129,9 +129,9 @@ STATICFILES_FINDERS = (
 )
 
 AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
     'social_core.backends.openstreetmap.OpenStreetMapOAuth',
     'social_core.backends.email.EmailAuth',
     'social_core.backends.username.UsernameAuth',
     'django.contrib.auth.backends.ModelBackend',
-    'oauth2_provider.backends.OAuth2Backend'
 )

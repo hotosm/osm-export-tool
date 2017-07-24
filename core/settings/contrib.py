@@ -26,8 +26,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter',
                                 'rest_framework.filters.OrderingFilter'),
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.TokenAuthentication',
-                                       'rest_framework.authentication.SessionAuthentication',
-                                       'oauth2_provider.contrib.rest_framework.OAuth2Authentication',),
+                                       'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+                                       'rest_framework.authentication.SessionAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
