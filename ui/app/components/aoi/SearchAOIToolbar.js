@@ -93,7 +93,7 @@ export class SearchAOIToolbar extends Component {
             options={this.state.suggestions}
             onChange={this.handleEnter}
             placeholder={
-              "Search admin boundary or location, or paste a minX,minY,maxX,maxY..."
+              "Search for a location or enter minX,minY,maxX,maxY"
             }
             onInputChange={this.debouncer}
             labelKey={"name"}
