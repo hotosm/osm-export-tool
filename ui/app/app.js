@@ -42,7 +42,7 @@ export default ({ history }) =>
         <Route
           exact
           path="/configurations"
-          component={requireAuth(ConfigurationList)}
+          component={ConfigurationList}
         />
         <Route
           exact
@@ -51,7 +51,7 @@ export default ({ history }) =>
         />
         <Route
           path="/configurations/detail/:uid"
-          component={requireAuth(ConfigurationDetailContainer)}
+          component={ConfigurationDetailContainer}
         />
         <Route path="/hdx/new" component={requireAuth(HDXExportRegionForm)} />
         <Route

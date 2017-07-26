@@ -85,11 +85,13 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
         </div>
         <div id="navbar" className="collapse navbar-collapse">
           <ul className="nav navbar-nav">
-            <li>
-              <NavLink to="/exports/new">
-                <FormattedMessage id="ui.create" defaultMessage="Create" />
-              </NavLink>
-            </li>
+            <RequirePermission>
+              <li>
+                <NavLink to="/exports/new">
+                  <FormattedMessage id="ui.create" defaultMessage="Create" />
+                </NavLink>
+              </li>
+            </RequirePermission>
             <li>
               <NavLink to="/exports" exact>
                 <FormattedMessage id="ui.exports" defaultMessage="Exports" />
