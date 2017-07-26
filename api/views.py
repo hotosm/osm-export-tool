@@ -303,11 +303,15 @@ def get_user_permissions(request):
 
     if user.is_superuser:
         permissions = Permission.objects.all().values_list(
-            'codename', flat=True)
+            'content_type__app_label', 'codename')
     else:
         permissions = chain(
-            user.user_permissions.all().values_list('codename', flat=True),
+            user.user_permissions.all().values_list('content_type__app_label',
+                                                    'codename'),
             Permission.objects.filter(group_user=user).values_list(
-                'codename', flat=True))
+                'content_type__app_label', 'codename'))
 
-    return JsonResponse({"permissions": list(set(permissions))})
+    return JsonResponse({
+        "permissions":
+        map(lambda pair: ".".join(pair), (set(permissions)))
+    })
