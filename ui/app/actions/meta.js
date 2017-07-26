@@ -7,9 +7,6 @@ import types from ".";
 const oauthConfig = {
   url: process.env.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
   client: process.env.CLIENT_ID,
-  // TODO needs to be on the same host that the React app is served from
-  // TODO can't be attached to react-router (w/ hash history), as the state will get cleared
-  // TODO can't be on a screen that redirects
   redirect: `${window.location.protocol}//${window.location.hostname}/authorized`,
   scope: "default"
 };
