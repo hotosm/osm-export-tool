@@ -94,8 +94,10 @@ class JobViewSet(viewsets.ModelViewSet):
                           IsOwnerOrReadOnly)
     lookup_field = 'uid'
     http_method_names = ['get', 'post', 'head']
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description', 'event')
+    ordering_fields = ('__all__',)
+    ordering = ('-created_at')
 
     def get_queryset(
             self, ):
@@ -134,8 +136,10 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly,
                           permissions.IsAuthenticatedOrReadOnly)
     lookup_field = 'uid'
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description')
+    ordering_fields = ('__all__')
+    ordering = ('name',)
 
     def get_queryset(
             self, ):
@@ -225,8 +229,9 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     ordering_fields = '__all__'
+    ordering = ('job__name',)
     permission_classes = (IsHDXAdmin, )
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('job__name', 'job__description')
 
     def get_queryset(
