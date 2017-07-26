@@ -97,7 +97,7 @@ class JobViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description', 'event')
     ordering_fields = ('__all__',)
-    ordering = ('-created_at')
+    ordering = ('-updated_at')
 
     def get_queryset(
             self, ):
