@@ -7,8 +7,7 @@ import types from ".";
 const oauthConfig = {
   url: process.env.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
   client: process.env.CLIENT_ID,
-  redirect: `${window.location.protocol}//${window.location.hostname}/authorized`,
-  scope: "default"
+  redirect: `${window.location.protocol}//${window.location.hostname}/authorized`
 };
 
 export const fetchPermissions = () => (dispatch, getState) => {

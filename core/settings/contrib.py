@@ -16,12 +16,6 @@ INSTALLED_APPS += (
 
 # 3rd party specific app settings
 
-OAUTH2_PROVIDER = {
-    'SCOPES': {
-        'default': 'Read / write',
-    },
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter',
                                 'rest_framework.filters.OrderingFilter'),
