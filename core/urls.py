@@ -23,7 +23,7 @@ urlpatterns = []
 
 urlpatterns += i18n_patterns(
     url(r'^$', login, name='index'),
-    url(r'^v3/$', v3, name="v3"),
+    url(r'^v3/', v3, name="v3"),
     url(r'^login/$', login, name="login"),
     url(r'^logout$', logout, name='logout'),
     url(r'^error$', create_error_view, name='error'),

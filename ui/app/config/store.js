@@ -8,7 +8,16 @@ import thunk from "redux-thunk";
 
 import reducers from "../reducers";
 
-export const history = createHistory();
+const match = window.location.pathname.match(/(\/\w{2})?\/v3/);
+let basename = null;
+
+if (match != null) {
+  basename = match[0];
+}
+
+export const history = createHistory({
+  basename
+});
 
 const middleware = [thunk, routerMiddleware(history), authMiddleware];
 

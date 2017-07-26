@@ -16,7 +16,7 @@ def login(request):
             reverse('osm:begin', args=['openstreetmap']) + '?' +
             urllib.urlencode(request.GET))
     else:
-        return redirect('/v3/#/exports/new')
+        return redirect('/v3/')
 
 
 def logout(request):

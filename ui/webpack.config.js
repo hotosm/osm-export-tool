@@ -95,8 +95,8 @@ const config = {
   },
   plugins: [new webpack.DefinePlugin({
     "process.env": {
-      EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL),
-      CLIENT_ID: JSON.stringify(process.env.CLIENT_ID)
+      CLIENT_ID: JSON.stringify(process.env.CLIENT_ID),
+      EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL)
     }
   }), new webpack.NamedModulesPlugin(), new WriteFilePlugin()],
   resolve: {
