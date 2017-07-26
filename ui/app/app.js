@@ -33,11 +33,8 @@ import "./css/style.css";
 import "./css/materialIcons.css";
 import "./css/ol.css";
 
-// TODO 403 API responses should redirect to the login page
-// TODO 404 API responses should either display a 404 page or redirect to the list
 export default () =>
   <Provider store={store}>
-    {/* ConnectedRouter will use the store from Provider automatically */}
     <ConnectedRouter history={history}>
       <div style={{ height: "100%" }}>
         <Auth />
