@@ -50,26 +50,55 @@ const config = {
       },
       {
         test: /app.*\.css$/,
-        loader: "style-loader",
-        exclude: [/node_modules/]
+        loader: "style-loader"
       },
       {
-        test: /app.*\.css$/,
-        loader: "css-loader",
-        query: {
-          modules: true,
-          localIdentName: "[name]__[local]___[hash:base64:5]"
-        },
-        exclude: [/node_modules/]
+        test: /app\/styles\/.*\.css$/,
+        use: [
+          {
+            loader: "css-loader",
+            options: {
+              modules: true
+            }
+          }
+        ]
+      },
+      {
+        test: /app\/css\/.*\.css$/,
+        use: [
+          {
+            loader: "css-loader"
+          }
+        ]
       },
       {
         test: /\.css$/,
-        loaders: ["style-loader", "css-loader"],
+        use: [
+          {
+            loader: "style-loader"
+          },
+          {
+            loader: "css-loader"
+          }
+        ],
         include: [/node_modules/]
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+        use: [
+          {
+            loader: "url-loader?limit=100000"
+          }
+        ]
       }
     ]
   },
-  plugins: [new webpack.NamedModulesPlugin(), new WriteFilePlugin()],
+  plugins: [new webpack.DefinePlugin({
+    "process.env": {
+      CLIENT_ID: JSON.stringify(process.env.CLIENT_ID),
+      EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL)
+    }
+  }), new webpack.NamedModulesPlugin(), new WriteFilePlugin()],
   resolve: {
     extensions: [".js", ".jsx", ".json", ".css"]
   }
@@ -82,6 +111,8 @@ if (process.env.NODE_ENV === "production") {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       "process.env": {
+        CLIENT_ID: JSON.stringify(process.env.CLIENT_ID),
+        EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL),
         NODE_ENV: JSON.stringify("production")
       }
     }),

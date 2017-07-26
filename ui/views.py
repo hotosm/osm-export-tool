@@ -1,30 +1,36 @@
 # -*- coding: utf-8 -*-
 """UI view definitions."""
 
-from django.conf import settings
+import urllib
+
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
+
+def authorized(request):
+    # the user has now authorized a client application; they no longer need to
+    # be logged into the site (and it will be confusing if they are, since
+    # "logging out" of the UI just drops the auth token)
+    auth_logout(request)
+    return render(request, "ui/authorized.html")
+
+
 def login(request):
-    help_url = reverse('help')
     if not request.user.is_authenticated():
-        return render(request, 'osm/login.html', {
-            'help_url': help_url
-        })
+        # perserve redirects ("next" in request.GET)
+        return redirect(
+            reverse('osm:begin', args=['openstreetmap']) + '?' +
+            urllib.urlencode(request.GET))
     else:
-        return redirect('/v3/#/exports/new')
+        return redirect('/v3/')
 
 
 def logout(request):
     """Logs out user"""
-    help_url = reverse('help')
     auth_logout(request)
-    return render(request, 'osm/login.html', {
-        'help_url': help_url
-    })
+    return redirect('/v3/')
 
 
 def v3(request):
@@ -37,51 +43,6 @@ def require_email(request):
     """
     return render(request, 'osm/email.html')
 
-
-@require_http_methods(['GET'])
-def about(request):
-    help_url = reverse('help')
-    return render(request, 'ui/about.html', {
-        'help_url': help_url
-    })
-
-
-@require_http_methods(['GET'])
-def help_main(request):
-    return render(request, 'help/help.html')
-
-
-@require_http_methods(['GET'])
-def help_create(request):
-    help_features_url = reverse('help_features')
-    return render(request, 'help/help_create.html', {
-        'help_features_url': help_features_url
-    })
-
-
-@require_http_methods(['GET'])
-def help_features(request):
-    return render(request, 'help/help_features.html')
-
-@require_http_methods(['GET'])
-def help_feature_selections(request):
-    return render(request, 'help/help_feature_selections.html')
-
-
-@require_http_methods(['GET'])
-def help_exports(request):
-    help_main_url = reverse('help')
-    return render(request, 'help/help_exports.html')
-
-
-@require_http_methods(['GET'])
-def help_formats(request):
-    return render(request, 'help/help_formats.html')
-
-
-@require_http_methods(['GET'])
-def help_presets(request):
-    return render(request, 'help/help_presets.html')
 
 # error views
 

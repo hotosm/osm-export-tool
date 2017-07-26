@@ -1,12 +1,15 @@
 """Provides classes for handling API requests."""
 # -*- coding: utf-8 -*-
 from distutils.util import strtobool
+from itertools import chain
 import logging
 
 import dateutil.parser
 import requests
 from cachetools.func import ttl_cache
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Permission
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import JsonResponse
@@ -91,8 +94,10 @@ class JobViewSet(viewsets.ModelViewSet):
                           IsOwnerOrReadOnly)
     lookup_field = 'uid'
     http_method_names = ['get', 'post', 'head']
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description', 'event')
+    ordering_fields = ('__all__',)
+    ordering = ('-updated_at')
 
     def get_queryset(
             self, ):
@@ -131,8 +136,10 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly,
                           permissions.IsAuthenticatedOrReadOnly)
     lookup_field = 'uid'
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description')
+    ordering_fields = ('__all__')
+    ordering = ('name',)
 
     def get_queryset(
             self, ):
@@ -222,8 +229,9 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
     ordering_fields = '__all__'
+    ordering = ('job__name',)
     permission_classes = (IsHDXAdmin, )
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('job__name', 'job__description')
 
     def get_queryset(
@@ -259,6 +267,7 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
 
 
 @require_http_methods(['GET'])
+@login_required()
 def request_geonames(request):
     """Geocode with GeoNames."""
     payload = {
@@ -284,7 +293,30 @@ def request_geonames(request):
 
 @ttl_cache(ttl=60)
 @require_http_methods(['GET'])
+@login_required()
 def get_overpass_timestamp(request):
     # TODO: this sometimes fails, returning a HTTP 200 but empty content.
     r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
     return JsonResponse({'timestamp': dateutil.parser.parse(r.content)})
+
+
+@require_http_methods(['GET'])
+@login_required()
+def get_user_permissions(request):
+    user = request.user
+    permissions = []
+
+    if user.is_superuser:
+        permissions = Permission.objects.all().values_list(
+            'content_type__app_label', 'codename')
+    else:
+        permissions = chain(
+            user.user_permissions.all().values_list('content_type__app_label',
+                                                    'codename'),
+            Permission.objects.filter(group_user=user).values_list(
+                'content_type__app_label', 'codename'))
+
+    return JsonResponse({
+        "permissions":
+        map(lambda pair: ".".join(pair), (set(permissions)))
+    })

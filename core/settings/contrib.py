@@ -15,14 +15,16 @@ INSTALLED_APPS += (
 )
 
 # 3rd party specific app settings
-
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 10 * 365 * 24 * 60 * 60,
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter',
                                 'rest_framework.filters.OrderingFilter'),
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.TokenAuthentication',
-                                       'rest_framework.authentication.SessionAuthentication',
-                                       'oauth2_provider.contrib.rest_framework.OAuth2Authentication',),
+                                       'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+                                       'rest_framework.authentication.SessionAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -38,7 +40,7 @@ REST_FRAMEWORK = {
 SOCIAL_AUTH_OPENSTREETMAP_LOGIN_URL = '/osm/login/'
 SOCIAL_AUTH_OPENSTREETMAP_KEY = os.getenv('OSM_API_KEY', '56e4WINtKE9BSzIU1JtYZufLRBp0La5zS6qHvei3')
 SOCIAL_AUTH_OPENSTREETMAP_SECRET = os.getenv('OSM_API_SECRET', 'fcwFW11HB3zFDUQonYUTS3QJEQ5IAowWmISu2l93')
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/v3/#/exports/new/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/osm/error'
 SOCIAL_AUTH_URL_NAMESPACE = 'osm'
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']

@@ -1,33 +1,38 @@
 import axios from "axios";
-const isEqual = require("lodash/isEqual");
+import isEqual from "lodash/isEqual";
 
-export function getGeonames(query) {
-  return dispatch => {
-    dispatch({ type: "FETCHING_GEONAMES" });
-    return axios
-      .get("/request_geonames", {
-        params: {
-          q: query
+import { selectAuthToken } from "../../selectors";
+
+export const getGeonames = query => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  dispatch({ type: "FETCHING_GEONAMES" });
+
+  return axios({
+    baseURL: process.env.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    params: {
+      q: query
+    },
+    url: "/api/request_geonames"
+  })
+    .then(response => response.data)
+    .then(responseData => {
+      const data = responseData.geonames;
+      const geonames = [];
+
+      for (var i = 0; i < data.length; i++) {
+        if (
+          (data[i].bbox && !isEqual(data[i].bbox, {})) ||
+          (data.lat && data.lng)
+        ) {
+          geonames.push(data[i]);
         }
-      })
-      .then(response => {
-        return response.data;
-      })
-      .then(responseData => {
-        let data = responseData.geonames;
-        let geonames = [];
-        for (var i = 0; i < data.length; i++) {
-          if (
-            (data[i].bbox && !isEqual(data[i].bbox, {})) ||
-            (data.lat && data.lng)
-          ) {
-            geonames.push(data[i]);
-          }
-        }
-        dispatch({ type: "RECEIVED_GEONAMES", geonames: geonames });
-      })
-      .catch(error => {
-        dispatch({ type: "GEONAMES_ERROR", error: error });
-      });
-  };
-}
+      }
+
+      dispatch({ type: "RECEIVED_GEONAMES", geonames: geonames });
+    })
+    .catch(error => dispatch({ type: "GEONAMES_ERROR", error: error }));
+};

@@ -54,6 +54,7 @@ body {
 #logotext {
   font-size: large;
   color: black;
+  width: 150px;
 }
 
 /* nav styles */
@@ -83,24 +84,24 @@ nav > div.container {
   font-weight: 700;
 }
 
-.navbar-inverse .navbar-nav > .active > a {
+.navbar-inverse .navbar-nav a.active {
   background-color: #b02129;
   color: #fff;
 }
 
-.navbar-inverse .navbar-nav > li > a {
+.navbar-inverse .navbar-nav li button {
+  border: 0px;
+  font-size: large;
+  font-weight: 700;
+  padding: 13px 15px 0px;
+}
+
+.navbar-inverse .navbar-nav li * {
   color: #fff;
-  padding-left: 10px;
 }
 
 #logout {
   margin-right: 2em !important;
-}
-
-.last-update {
-  color: #ccc;
-  margin-top: 17px;
-  float: right;
 }
 
 /* main container / bootstrap styles */

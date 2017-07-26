@@ -1,47 +1,37 @@
-import createHistory from "history/createHashHistory";
 import React from "react";
-import { Redirect, Route } from "react-router";
+import { Route, Switch } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
-import { Provider } from "react-intl-redux";
 
-import ExportForm from "./components/ExportForm";
-import ExportDetails from "./components/ExportDetails";
-import ExportList from "./components/ExportList";
-import HDXExportRegionForm from "./components/HDXExportRegionForm";
-import HDXExportRegionList from "./components/HDXExportRegionList";
-import {
-  ConfigurationList,
-  ConfigurationNew,
-  ConfigurationDetailContainer
-} from "./components/ConfigurationList";
-import store from "./config/store";
+import About from "./components/About";
+import Auth from "./components/Auth";
+import Authorized from "./components/Authorized"
+import Configurations from "./components/Configurations";
+import Exports from "./components/Exports";
+import HDX from "./components/HDX";
+import Help from "./components/Help";
+import Home from "./components/Home";
+import NavBar from "./components/NavBar";
+import { requireAuth } from "./components/utils";
 
-const history = createHistory();
+import "bootstrap/dist/css/bootstrap.css";
+import "font-awesome/css/font-awesome.css";
+import "./css/style.css";
+import "./css/materialIcons.css";
+import "./css/ol.css";
 
-// TODO 403 API responses should redirect to the login page
-// TODO 404 API responses should either display a 404 page or redirect to the list
-export default () =>
-  <Provider store={store}>
-    {/* ConnectedRouter will use the store from Provider automatically */}
-    <ConnectedRouter history={history}>
-      <div style={{ height: "100%" }}>
-        <Route
-          path="/"
-          exact
-          render={props => <Redirect to="/exports/new" />}
-        />
-        <Route path="/exports/new/:step?/:featuresUi?" component={ExportForm} />
-        <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
-        <Route exact path="/exports" component={ExportList} />
-        <Route exact path="/configurations" component={ConfigurationList} />
-        <Route exact path="/configurations/new" component={ConfigurationNew} />
-        <Route
-          path="/configurations/detail/:uid"
-          component={ConfigurationDetailContainer}
-        />
-        <Route exact path="/hdx" component={HDXExportRegionList} />
-        <Route path="/hdx/new" component={HDXExportRegionForm} />
-        <Route path="/hdx/edit/:id" component={HDXExportRegionForm} />
-      </div>
-    </ConnectedRouter>
-  </Provider>;
+export default ({ history }) =>
+  <ConnectedRouter history={history}>
+    <div style={{ height: "100%" }}>
+      <Auth />
+      <NavBar />
+      <Switch>
+        <Route path="/about" component={About} />
+        <Route path="/authorized" component={Authorized} />
+        <Route path="/configurations" component={Configurations} />
+        <Route path="/exports" component={Exports} />
+        <Route path="/hdx" component={requireAuth(HDX)} />
+        <Route path="/help" component={Help} />
+        <Route component={Home} />
+      </Switch>
+    </div>
+  </ConnectedRouter>;
