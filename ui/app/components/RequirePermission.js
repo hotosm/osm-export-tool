@@ -12,7 +12,7 @@ class RequirePermission extends Component {
       required = Array.of(required);
     }
 
-    return permissions == null || required.every(p => permissions.includes(p));
+    return permissions != null && required.every(p => permissions.includes(p));
   }
 
   render() {
