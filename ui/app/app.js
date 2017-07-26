@@ -3,18 +3,11 @@ import { Route, Switch } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
 
 import About from "./components/About";
-import Help from "./components/Help";
 import Auth from "./components/Auth";
-import ExportForm from "./components/ExportForm";
-import ExportDetails from "./components/ExportDetails";
-import ExportList from "./components/ExportList";
-import HDXExportRegionForm from "./components/HDXExportRegionForm";
-import HDXExportRegionList from "./components/HDXExportRegionList";
-import {
-  ConfigurationList,
-  ConfigurationNew,
-  ConfigurationDetailContainer
-} from "./components/ConfigurationList";
+import Configurations from "./components/Configurations";
+import Exports from "./components/Exports";
+import HDX from "./components/HDX";
+import Help from "./components/Help";
 import Home from "./components/Home";
 import NavBar from "./components/NavBar";
 import { requireAuth } from "./components/utils";
@@ -31,35 +24,12 @@ export default ({ history }) =>
       <Auth />
       <NavBar />
       <Switch>
-        <Route
-          path="/exports/new/:step?/:featuresUi?"
-          component={requireAuth(ExportForm)}
-        />
-        <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
-        <Route path="/exports" component={ExportList} />
-        <Route
-          exact
-          path="/configurations"
-          component={ConfigurationList}
-        />
-        <Route
-          exact
-          path="/configurations/new"
-          component={requireAuth(ConfigurationNew)}
-        />
-        <Route
-          path="/configurations/detail/:uid"
-          component={ConfigurationDetailContainer}
-        />
-        <Route path="/hdx/new" component={requireAuth(HDXExportRegionForm)} />
-        <Route
-          path="/hdx/edit/:id"
-          component={requireAuth(HDXExportRegionForm)}
-        />
-        <Route path="/hdx" component={requireAuth(HDXExportRegionList)} />
+        <Route path="/exports" component={Exports} />
+        <Route path="/configurations" component={Configurations} />
+        <Route path="/hdx" component={requireAuth(HDX)} />
         <Route path="/about" component={About} />
         <Route path="/help" component={Help} />
-        <Route path="/" component={Home} />
+        <Route component={Home} />
       </Switch>
     </div>
   </ConnectedRouter>;
