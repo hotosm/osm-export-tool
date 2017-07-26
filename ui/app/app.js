@@ -1,5 +1,5 @@
 import React from "react";
-import { Redirect, Route, Switch } from "react-router";
+import { Route, Switch } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
 
 import About from "./components/About";
@@ -31,8 +31,6 @@ export default ({ history }) =>
       <Auth />
       <NavBar />
       <Switch>
-        <Route exact path="/:lang?/home" component={Home} />
-        <Route path="/" exact render={() => <Redirect to="/exports/new" />} />
         <Route
           path="/exports/new/:step?/:featuresUi?"
           component={requireAuth(ExportForm)}
@@ -61,6 +59,7 @@ export default ({ history }) =>
         <Route path="/hdx" component={requireAuth(HDXExportRegionList)} />
         <Route path="/about" component={About} />
         <Route path="/help" component={Help} />
+        <Route path="/" component={Home} />
       </Switch>
     </div>
   </ConnectedRouter>;

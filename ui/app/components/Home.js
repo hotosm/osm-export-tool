@@ -1,9 +1,13 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
-export default () =>
+import { login } from "../actions/meta";
+import { selectIsLoggedIn } from "../selectors";
+
+const Home = ({ isLoggedIn, login }) =>
   <div className="row">
     <div className="col-md-6">
       <div id="about">
@@ -39,43 +43,51 @@ export default () =>
         </p>
       </div>
     </div>
-    <div className="col-md-6">
-      <div
-        className="panel panel-default"
-        style={{ margin: "2em 3em 0em 3em" }}
-      >
-        <div id="heading-wrap" className="panel-heading">
-          <span className="glyphicon-heading glyphicon glyphicon-log-in pull-left">
-            &nbsp;
-          </span>
-          <div>
-            <h4>
-              <FormattedMessage
-                id="ui.login_to_osm"
-                defaultMessage="Login to OpenStreetMap"
-              />
-            </h4>
+    {!isLoggedIn &&
+      <div className="col-md-6">
+        <div
+          className="panel panel-default"
+          style={{ margin: "2em 3em 0em 3em" }}
+        >
+          <div id="heading-wrap" className="panel-heading">
+            <span className="glyphicon-heading glyphicon glyphicon-log-in pull-left">
+              &nbsp;
+            </span>
+            <div>
+              <h4>
+                <FormattedMessage
+                  id="ui.login_to_osm"
+                  defaultMessage="Login to OpenStreetMap"
+                />
+              </h4>
+            </div>
           </div>
-        </div>
-        <div className="panel-body">
-          <div>
-            <div className="row pull-left">
-              <div style={{ fontSize: "large" }}>
-                If you don't have an OpenStreetMap account you can register for
-                one <a href="http://www.openstreetmap.org/user/new">here</a>.
-              </div>
-              <br />
-              <div className="col-md-6">
-                <Button bsSize="large" bsStyle="success">
-                  <FormattedMessage
-                    id="ui.login_to_osm"
-                    defaultMessage="Login to OpenStreetMap"
-                  />
-                </Button>
+          <div className="panel-body">
+            <div>
+              <div className="row pull-left">
+                <div style={{ fontSize: "large" }}>
+                  If you don't have an OpenStreetMap account you can register
+                  for one{" "}
+                  <a href="http://www.openstreetmap.org/user/new">here</a>.
+                </div>
+                <br />
+                <div className="col-md-6">
+                  <Button bsSize="large" bsStyle="success" onClick={login}>
+                    <FormattedMessage
+                      id="ui.login_to_osm"
+                      defaultMessage="Login to OpenStreetMap"
+                    />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div>}
   </div>;
+
+const mapStateToProps = state => ({
+  isLoggedIn: selectIsLoggedIn(state)
+});
+
+export default connect(mapStateToProps, { login })(Home);
