@@ -3,6 +3,14 @@ import { Redirect, Route } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
 import { Provider } from "react-intl-redux";
 
+import About from "./components/About";
+import Help from "./components/Help";
+import HelpCreate from "./components/help/Create";
+import HelpExports from "./components/help/Exports";
+import HelpPresets from "./components/help/Presets";
+import HelpFeatureSelection from "./components/help/FeatureSelection";
+import HelpFormats from "./components/help/Formats";
+import HelpFeatures from "./components/help/Features";
 import Auth from "./components/Auth";
 import ExportForm from "./components/ExportForm";
 import ExportDetails from "./components/ExportDetails";
@@ -62,6 +70,17 @@ export default () =>
           path="/hdx/edit/:id"
           component={requireAuth(HDXExportRegionForm)}
         />
+        <Route path="/about" component={About} />
+        <Route exact path="/help" component={Help} />
+        <Route path="/help/create" component={HelpCreate} />
+        <Route path="/help/exports" component={HelpExports} />
+        <Route path="/help/presets" component={HelpPresets} />
+        <Route
+          path="/help/feature_selections"
+          component={HelpFeatureSelection}
+        />
+        <Route path="/help/formats" component={HelpFormats} />
+        <Route path="/help/features" component={HelpFeatures} />
       </div>
     </ConnectedRouter>
   </Provider>;
