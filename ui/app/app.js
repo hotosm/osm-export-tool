@@ -1,16 +1,10 @@
 import React from "react";
-import { Redirect, Route } from "react-router";
+import { Redirect, Route, Switch } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
 import { Provider } from "react-intl-redux";
 
 import About from "./components/About";
 import Help from "./components/Help";
-import HelpCreate from "./components/help/Create";
-import HelpExports from "./components/help/Exports";
-import HelpPresets from "./components/help/Presets";
-import HelpFeatureSelection from "./components/help/FeatureSelection";
-import HelpFormats from "./components/help/Formats";
-import HelpFeatures from "./components/help/Features";
 import Auth from "./components/Auth";
 import ExportForm from "./components/ExportForm";
 import ExportDetails from "./components/ExportDetails";
@@ -39,45 +33,38 @@ export default () =>
       <div style={{ height: "100%" }}>
         <Auth />
         <NavBar />
-        <Route exact path="/home" component={Home} />
-        <Route path="/" exact render={() => <Redirect to="/exports/new" />} />
-        <Route
-          path="/exports/new/:step?/:featuresUi?"
-          component={requireAuth(ExportForm)}
-        />
-        <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
-        <Route exact path="/exports" component={ExportList} />
-        <Route
-          exact
-          path="/configurations"
-          component={requireAuth(ConfigurationList)}
-        />
-        <Route
-          exact
-          path="/configurations/new"
-          component={requireAuth(ConfigurationNew)}
-        />
-        <Route
-          path="/configurations/detail/:uid"
-          component={requireAuth(ConfigurationDetailContainer)}
-        />
-        <Route exact path="/hdx" component={requireAuth(HDXExportRegionList)} />
-        <Route path="/hdx/new" component={requireAuth(HDXExportRegionForm)} />
-        <Route
-          path="/hdx/edit/:id"
-          component={requireAuth(HDXExportRegionForm)}
-        />
-        <Route path="/about" component={About} />
-        <Route exact path="/help" component={Help} />
-        <Route path="/help/create" component={HelpCreate} />
-        <Route path="/help/exports" component={HelpExports} />
-        <Route path="/help/presets" component={HelpPresets} />
-        <Route
-          path="/help/feature_selections"
-          component={HelpFeatureSelection}
-        />
-        <Route path="/help/formats" component={HelpFormats} />
-        <Route path="/help/features" component={HelpFeatures} />
+        <Switch>
+          <Route exact path="/:lang?/home" component={Home} />
+          <Route path="/" exact render={() => <Redirect to="/exports/new" />} />
+          <Route
+            path="/exports/new/:step?/:featuresUi?"
+            component={requireAuth(ExportForm)}
+          />
+          <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
+          <Route path="/exports" component={ExportList} />
+          <Route
+            exact
+            path="/configurations"
+            component={requireAuth(ConfigurationList)}
+          />
+          <Route
+            exact
+            path="/configurations/new"
+            component={requireAuth(ConfigurationNew)}
+          />
+          <Route
+            path="/configurations/detail/:uid"
+            component={requireAuth(ConfigurationDetailContainer)}
+          />
+          <Route path="/hdx/new" component={requireAuth(HDXExportRegionForm)} />
+          <Route
+            path="/hdx/edit/:id"
+            component={requireAuth(HDXExportRegionForm)}
+          />
+          <Route path="/hdx" component={requireAuth(HDXExportRegionList)} />
+          <Route path="/about" component={About} />
+          <Route path="/help" component={Help} />
+        </Switch>
       </div>
     </ConnectedRouter>
   </Provider>;
