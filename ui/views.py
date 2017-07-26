@@ -9,6 +9,10 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
 
+def authorized(request):
+    return render(request, "ui/authorized.html")
+
+
 def login(request):
     if not request.user.is_authenticated():
         # perserve redirects ("next" in request.GET)

@@ -10,7 +10,7 @@ const oauthConfig = {
   // TODO needs to be on the same host that the React app is served from
   // TODO can't be attached to react-router (w/ hash history), as the state will get cleared
   // TODO can't be on a screen that redirects
-  redirect: "http://localhost:8080/foo",
+  redirect: `${window.location.protocol}//${window.location.hostname}/authorized`,
   scope: "default"
 };
 

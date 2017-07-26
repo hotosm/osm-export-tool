@@ -4,6 +4,7 @@ import { ConnectedRouter } from "react-router-redux";
 
 import About from "./components/About";
 import Auth from "./components/Auth";
+import Authorized from "./components/Authorized"
 import Configurations from "./components/Configurations";
 import Exports from "./components/Exports";
 import HDX from "./components/HDX";
@@ -24,10 +25,11 @@ export default ({ history }) =>
       <Auth />
       <NavBar />
       <Switch>
-        <Route path="/exports" component={Exports} />
-        <Route path="/configurations" component={Configurations} />
-        <Route path="/hdx" component={requireAuth(HDX)} />
         <Route path="/about" component={About} />
+        <Route path="/authorized" component={Authorized} />
+        <Route path="/configurations" component={Configurations} />
+        <Route path="/exports" component={Exports} />
+        <Route path="/hdx" component={requireAuth(HDX)} />
         <Route path="/help" component={Help} />
         <Route component={Home} />
       </Switch>
