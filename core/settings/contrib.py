@@ -15,6 +15,9 @@ INSTALLED_APPS += (
 )
 
 # 3rd party specific app settings
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 10 * 365 * 24 * 60 * 60,
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter',
