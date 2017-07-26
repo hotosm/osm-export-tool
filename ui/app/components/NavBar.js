@@ -24,7 +24,7 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
             />
           </div>
         </div>
-        <div className="col-md-8">
+        {/* <div className="col-md-8">
           <span className="banner-links">
             <a id="id" href="">
               Bahasa Indonesia
@@ -50,7 +50,7 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
               日本語
             </a>
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
     <nav className="navbar navbar-inverse">
