@@ -1,7 +1,18 @@
 import axios from "axios";
+import { login as _login, logout } from "redux-implicit-oauth2";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
+
+const oauthConfig = {
+  url: process.env.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
+  client: process.env.CLIENT_ID,
+  // TODO needs to be on the same host that the React app is served from
+  // TODO can't be attached to react-router (w/ hash history), as the state will get cleared
+  // TODO can't be on a screen that redirects
+  redirect: "http://localhost:8080/foo",
+  scope: "default"
+};
 
 export const fetchPermissions = () => (dispatch, getState) => {
   const token = selectAuthToken(getState());
@@ -31,3 +42,7 @@ export const fetchPermissions = () => (dispatch, getState) => {
       })
     );
 };
+
+export const login = () => _login(oauthConfig);
+
+export { logout };
