@@ -12,4 +12,6 @@ export const selectIsLoggedIn = state => state.auth.isLoggedIn;
 
 export const selectLocationOptions = state => state.hdx.locationOptions;
 
+export const selectPermissions = state => state.meta.user && state.meta.user.permissions;
+
 export const selectRuns = state => state.exportRuns;

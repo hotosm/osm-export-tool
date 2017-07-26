@@ -7,6 +7,7 @@ import { Link, NavLink } from "react-router-dom";
 import { login, logout } from "../actions/meta";
 import hotLogo from "../images/hot_logo.png";
 import { selectIsLoggedIn } from "../selectors";
+import RequirePermission from "./RequirePermission";
 
 const NavBar = ({ isLoggedIn, login, logout }) =>
   <div>
@@ -102,12 +103,20 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
                 />
               </NavLink>
             </li>
-            <li>
-              {/* TODO only link if user has permission */}
-              <NavLink to="/hdx">
-                <FormattedMessage id="ui.hdx" defaultMessage="HDX" />
-              </NavLink>
-            </li>
+            <RequirePermission
+              required={[
+                "jobs.add_hdxexportregion",
+                "jobs.change_hdxexportregion",
+                "jobs.delete_hdxexportregion"
+              ]}
+            >
+              <li>
+                {/* TODO only link if user has permission */}
+                <NavLink to="/hdx">
+                  <FormattedMessage id="ui.hdx" defaultMessage="HDX" />
+                </NavLink>
+              </li>
+            </RequirePermission>
             <li>
               <NavLink to="/help">
                 <FormattedMessage id="ui.help" defaultMessage="Help" />
@@ -146,6 +155,4 @@ const mapStateToProps = state => ({
   isLoggedIn: selectIsLoggedIn(state)
 });
 
-export default connect(mapStateToProps, { login, logout })(
-  NavBar
-);
+export default connect(mapStateToProps, { login, logout })(NavBar);
