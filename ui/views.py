@@ -21,9 +21,8 @@ def login(request):
 
 def logout(request):
     """Logs out user"""
-    help_url = reverse('help')
     auth_logout(request)
-    return render(request, 'osm/login.html', {'help_url': help_url})
+    return redirect('/v3/')
 
 
 def v3(request):
@@ -35,49 +34,6 @@ def require_email(request):
     View to handle email collection for new user logging in with OSM account.
     """
     return render(request, 'osm/email.html')
-
-
-@require_http_methods(['GET'])
-def about(request):
-    help_url = reverse('help')
-    return render(request, 'ui/about.html', {'help_url': help_url})
-
-
-@require_http_methods(['GET'])
-def help_main(request):
-    return render(request, 'help/help.html')
-
-
-@require_http_methods(['GET'])
-def help_create(request):
-    help_features_url = reverse('help_features')
-    return render(request, 'help/help_create.html',
-                  {'help_features_url': help_features_url})
-
-
-@require_http_methods(['GET'])
-def help_features(request):
-    return render(request, 'help/help_features.html')
-
-
-@require_http_methods(['GET'])
-def help_feature_selections(request):
-    return render(request, 'help/help_feature_selections.html')
-
-
-@require_http_methods(['GET'])
-def help_exports(request):
-    return render(request, 'help/help_exports.html')
-
-
-@require_http_methods(['GET'])
-def help_formats(request):
-    return render(request, 'help/help_formats.html')
-
-
-@require_http_methods(['GET'])
-def help_presets(request):
-    return render(request, 'help/help_presets.html')
 
 
 # error views
