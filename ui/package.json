@@ -56,7 +56,7 @@
   "scripts": {
     "dist": "NODE_ENV=production npm run pack",
     "pack": "webpack -p --progress --display-optimization-bailout --config webpack.config.js",
-    "start": "webpack-dev-server --hot --history-api-fallback",
+    "start": "webpack-dev-server --hot --history-api-fallback --content-base public/",
     "watch": "webpack --watch --progress --config webpack.config.js"
   },
   "license": "BSD-3-Clause"
