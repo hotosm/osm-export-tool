@@ -30,7 +30,8 @@ var TreeNode = createClass({
     onCollapseChange: PropTypes.func,
     labelFilter: PropTypes.func,
     labelFactory: PropTypes.func,
-    checkboxFactory: PropTypes.func
+    checkboxFactory: PropTypes.func,
+    onCheckboxHover: PropTypes.func
   },
 
   getInitialState: function() {
@@ -113,11 +114,12 @@ var TreeNode = createClass({
     return collapseNode;
   },
 
+
   render: function() {
     return (
       <div className={this._getRootCssClass()}>
         {this._getCollapseNode()}
-        <span onClick={this._handleClick}>
+        <span onClick={this._handleClick} onMouseOver={() => { this.props.onCheckboxHover(this.props.label); }}>
           {this._getCheckboxNode()}
           {this._getLabelNode()}
         </span>

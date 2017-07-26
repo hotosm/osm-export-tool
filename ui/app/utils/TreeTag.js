@@ -119,12 +119,18 @@ export class TreeTag {
   };
 
   checkedSubtree = (node, key) => {
+    // special behavior: if all my children are checked, return just myself
+    // and not the list of all my children
+    // this means that each parent or child node must have a unique name
     if (node.children) {
       var retval = [];
       for (var childKey in node.children) {
         retval = retval.concat(
           this.checkedSubtree(node.children[childKey], childKey)
         );
+      }
+      if (Object.keys(node.children).length === retval.length) {
+        return [key];
       }
       return retval;
     } else {

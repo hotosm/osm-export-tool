@@ -29,6 +29,7 @@ var TreeNodeMixin = {
         onCheckChange: rootProps.onTreeNodeCheckChange,
         onSelectChange: rootProps.onTreeNodeSelectChange,
         onCollapseChange: rootProps.onTreeNodeCollapseChange,
+        onCheckboxHover: rootProps.onCheckboxHover,
         id: this.getNodeId(rootProps, props, childIndex),
         key: "tree-node-" + ancestor.join(".") + childIndex
       },

@@ -33,6 +33,7 @@ var TreeMenu = createClass({
     collapseIconClass: PropTypes.string,
     data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     labelFilter: PropTypes.func,
+    onCheckboxHover: PropTypes.func,
     labelFactory: PropTypes.func,
     checkboxFactory: PropTypes.func,
     sort: PropTypes.oneOfType([PropTypes.bool, PropTypes.func])

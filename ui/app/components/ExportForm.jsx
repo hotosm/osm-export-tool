@@ -176,7 +176,35 @@ const YamlUi = injectIntl(({ intl: { formatMessage }, onDrop }) =>
   </div>
 );
 
+const CheckboxHelp = (props) => {
+  if (!props.name) {
+    return <Panel>Hover over a checkbox to see its definition.</Panel>
+  } else {
+    return <Panel>
+      <strong>{props.name}</strong><br/>
+      <strong>Geometry types:</strong> {TAGLOOKUP[props.name]['geom_types'].join(', ')}<br/>
+      <strong>Keys:</strong>
+      <ul>
+        {TAGLOOKUP[props.name]['keys'].map((o,i) => {
+          return <li key={i}>{o}</li>
+        })}
+      </ul>
+      <strong>Where:</strong> {TAGLOOKUP[props.name]['where']}
+    </Panel>
+  }
+}
+
 class _TreeTagUi extends Component {
+
+  constructor(props) {
+    super();
+    this.state = {hoveredCheckboxName:null};
+  }
+  
+  onCheckboxHover = (checkboxName) => {
+    this.setState({hoveredCheckboxName:checkboxName})
+  }
+
   render() {
     const {
       clearSearch,
@@ -205,15 +233,20 @@ class _TreeTagUi extends Component {
             </Button>
           </InputGroup.Button>
         </InputGroup>
-
-        <TreeMenu
-          data={tagTreeData}
-          onTreeNodeCollapseChange={onTreeNodeCollapseChange}
-          onTreeNodeCheckChange={onTreeNodeCheckChange}
-          expandIconClass="fa fa-chevron-right"
-          collapseIconClass="fa fa-chevron-down"
-          labelFilter={labelFilter}
-        />
+        <Col xs={6}>
+          <TreeMenu
+            data={tagTreeData}
+            onTreeNodeCollapseChange={onTreeNodeCollapseChange}
+            onTreeNodeCheckChange={onTreeNodeCheckChange}
+            expandIconClass="fa fa-chevron-right"
+            collapseIconClass="fa fa-chevron-down"
+            labelFilter={labelFilter}
+            onCheckboxHover={this.onCheckboxHover}
+          />
+        </Col>
+        <Col xs={6}>
+          <CheckboxHelp name={this.state.hoveredCheckboxName}/>
+        </Col>
       </div>
     );
   }
@@ -377,6 +410,7 @@ const SelectFeatures = ({
         YAML
       </Button>
     </ButtonGroup>
+    <Row>
     {featuresUi === "treetag"
       ? <TreeTagUi
           onSearchChange={onSearchChange}
@@ -391,9 +425,12 @@ const SelectFeatures = ({
       ? <StoredConfContainer switchToYaml={switchToYaml} />
       : null}
     {featuresUi === "yaml" ? <YamlUi onDrop={onDrop} /> : null}
-    <Button bsSize="large" style={{ float: "right" }} onClick={next}>
-      Next
-    </Button>
+    </Row>
+    <Row>
+      <Button bsSize="large" style={{ float: "right" }} onClick={next}>
+        Next
+      </Button>
+    </Row>
   </Row>;
 
 const ChooseFormats = ({ next }) =>

@@ -1,14 +1,13 @@
 export const TAGTREE = {
-    "Building": {
+    "Buildings": {
         "children": {
-            "Building*": {},
+            "Building Names and Geometries": {},
             "Addresses": {},
             "Materials and Condition": {}
         }
     },
     "Commercial": {
         "children": {
-            "Commercial*": {},
             "Shop": {},
             "Supermarket": {},
             "Restaurant": {},
@@ -18,13 +17,12 @@ export const TAGTREE = {
     },
     "Communication": {
         "children": {
-            "Communication*": {},
+            "Communication Office": {},
             "Communication Tower": {}
         }
     },
     "Education": {
         "children": {
-            "Education*": {},
             "Kindergarten": {},
             "School": {},
             "College": {},
@@ -33,7 +31,6 @@ export const TAGTREE = {
     },
     "Emergency": {
         "children": {
-            "Emergency*": {},
             "Police Station": {},
             "Ambulance Station": {},
             "Fire Station": {}
@@ -41,7 +38,6 @@ export const TAGTREE = {
     },
     "Financial": {
         "children": {
-            "Financial*": {},
             "ATM": {},
             "Bank": {},
             "Bureau de Change": {}
@@ -49,7 +45,6 @@ export const TAGTREE = {
     },
     "Government": {
         "children": {
-            "Government*": {},
             "Government Office": {},
             "Embassy": {},
             "Military": {},
@@ -58,7 +53,6 @@ export const TAGTREE = {
     },
     "Healthcare": {
         "children": {
-            "Healthcare*": {},
             "Doctor": {},
             "Dentist": {},
             "Clinic": {},
@@ -69,7 +63,6 @@ export const TAGTREE = {
     },
     "Humanitarian": {
         "children": {
-            "Humanitarian*": {},
             "Wheelchair Access": {},
             "Refugee Facility": {},
             "Storage Warehouse": {}
@@ -77,7 +70,6 @@ export const TAGTREE = {
     },
     "Land Use": {
         "children": {
-            "All Land Use*": {},
             "Parks": {},
             "Cemetary": {},
             "Residential": {},
@@ -87,7 +79,6 @@ export const TAGTREE = {
     },
     "Localities": {
         "children": {
-            "Localities*": {},
             "Administrative Boundary": {},
             "Place": {},
             "Postcode": {}
@@ -95,7 +86,6 @@ export const TAGTREE = {
     },
     "Natural": {
         "children": {
-            "Natural*": {},
             "Coastline": {},
             "Water Body": {},
             "Forest": {},
@@ -106,7 +96,6 @@ export const TAGTREE = {
     },
     "Power": {
         "children": {
-            "Power*": {},
             "Electricial Tower": {},
             "Substation": {},
             "Power Plant": {},
@@ -116,7 +105,6 @@ export const TAGTREE = {
     },
     "Public": {
         "children": {
-            "Public*": {},
             "Places of Worship": {},
             "Community Centre": {},
             "Library": {},
@@ -126,7 +114,6 @@ export const TAGTREE = {
     },
     "Sport": {
         "children": {
-            "Sport*": {},
             "Stadium": {},
             "Swimming Pool": {},
             "Pitch": {},
@@ -135,7 +122,6 @@ export const TAGTREE = {
     },
     "Transportation": {
         "children": {
-            "Transportation*": {},
             "Airport": {},
             "Ferry Terminal": {},
             "Train Station": {},
@@ -147,7 +133,6 @@ export const TAGTREE = {
     },
     "Water": {
         "children": {
-            "Water*": {},
             "Dam": {},
             "Reservoir": {},
             "Floodgate": {},
@@ -160,7 +145,6 @@ export const TAGTREE = {
     },
     "Language": {
         "children": {
-            "Default": {},
             "English": {},
             "Swahili": {},
             "French": {}
@@ -168,7 +152,23 @@ export const TAGTREE = {
     }
 }
 export const TAGLOOKUP = {
-    "Building*": {
+    "Buildings": {
+        "geom_types": [
+            "point",
+            "polygon"
+        ],
+        "keys": [
+            "name",
+            "building",
+            "addr:housenumber",
+            "addr:street",
+            "building:material",
+            "roof:material",
+            "access:roof"
+        ],
+        "where": "building IS NOT NULL"
+    },
+    "Building Names and Geometries": {
         "geom_types": [
             "point",
             "polygon"
@@ -188,7 +188,7 @@ export const TAGLOOKUP = {
             "addr:housenumber",
             "addr:street"
         ],
-        "where": ""
+        "where": "building IS NOT NULL"
     },
     "Materials and Condition": {
         "geom_types": [
@@ -201,18 +201,21 @@ export const TAGLOOKUP = {
         ],
         "where": "building IS NOT NULL"
     },
-    "Commercial*": {
+    "Commercial": {
         "geom_types": [
             "point",
             "polygon"
         ],
         "keys": [
             "name",
+            "opening_hours",
             "shop",
+            "amenity",
             "tourism",
-            "amenity"
+            "rooms",
+            "beds"
         ],
-        "where": "shop IS NOT NULL OR tourism IS NOT NULL OR amenity IN ('marketplace','restaurant','fast_food','cafe','bar','pub')"
+        "where": "shop IS NOT NULL OR tourism IS NOT NULL OR amenity IN ('marketplace','restaurant','fast_food','cafe','bar','pub') OR office IS NOT NULL"
     },
     "Shop": {
         "geom_types": [
@@ -273,18 +276,32 @@ export const TAGLOOKUP = {
         ],
         "where": "tourism IN ('hotel','chalet','guest_house','hostel','motel')"
     },
-    "Communication*": {
+    "Communication": {
         "geom_types": [
             "point",
             "polygon"
         ],
         "keys": [
             "name",
+            "office",
             "man_made",
-            "tower:type",
+            "tower",
+            "operator",
+            "communication:mobile",
+            "communication:radio"
+        ],
+        "where": "office='telecommunication' OR \"tower:type\"='communication' OR man_made='communications_tower'"
+    },
+    "Communication Office": {
+        "geom_types": [
+            "point",
+            "polygon"
+        ],
+        "keys": [
+            "name",
             "office"
         ],
-        "where": "man_made='communications_tower' OR \"tower:type\"='communication' OR office='telecommunication'"
+        "where": "office='telecommunication'"
     },
     "Communication Tower": {
         "geom_types": [
@@ -301,7 +318,7 @@ export const TAGLOOKUP = {
         ],
         "where": "man_made='communications_tower' OR \"tower:type\"='communication'"
     },
-    "Education*": {
+    "Education": {
         "geom_types": [
             "point",
             "polygon"
@@ -309,7 +326,8 @@ export const TAGLOOKUP = {
         "keys": [
             "name",
             "amenity",
-            "office"
+            "isced:level",
+            "capacity"
         ],
         "where": "amenity IN ('kindergarten', 'school', 'college', 'university','language_school') OR office='educational_institution'"
     },
@@ -365,15 +383,16 @@ export const TAGLOOKUP = {
         ],
         "where": "amenity='university'"
     },
-    "Emergency*": {
+    "Emergency": {
         "geom_types": [
             "point",
             "polygon"
         ],
         "keys": [
             "name",
-            "emergency",
-            "amenity"
+            "amenity",
+            "building",
+            "emergency"
         ],
         "where": "emergency IS NOT NULL OR amenity IN ('police','fire_station')"
     },
@@ -411,14 +430,17 @@ export const TAGLOOKUP = {
         ],
         "where": "amenity='fire_station'"
     },
-    "Financial*": {
+    "Financial": {
         "geom_types": [
             "point",
             "polygon"
         ],
         "keys": [
             "name",
-            "amenity"
+            "amenity",
+            "opening_hours",
+            "operator",
+            "network"
         ],
         "where": "amenity IN ('atm','bank','bureau_de_change','microfinance','mobile_money_agent','money_transfer')"
     },
@@ -458,7 +480,7 @@ export const TAGLOOKUP = {
         ],
         "where": "amenity='bureau_de_change'"
     },
-    "Government*": {
+    "Government": {
         "geom_types": [
             "point",
             "polygon"
@@ -469,8 +491,8 @@ export const TAGLOOKUP = {
             "amenity",
             "office",
             "government",
-            "landuse",
-            "military"
+            "military",
+            "landuse"
         ],
         "where": "building='civic' OR office IN ('government','political_party','notary') OR government IS NOT NULL OR landuse='military' OR military IS NOT NULL OR amenity IN ('court_house','townhall','embassy','post_office')"
     },
@@ -522,14 +544,26 @@ export const TAGLOOKUP = {
         ],
         "where": "amenity='post_office'"
     },
-    "Healthcare*": {
+    "Healthcare": {
         "geom_types": [
             "point",
             "polygon"
         ],
         "keys": [
             "name",
+            "medical_system:western",
             "amenity",
+            "opening_hours",
+            "operator",
+            "toilets:disposal",
+            "toilets:handwashing",
+            "access",
+            "health_facility:bed",
+            "health_facility:level",
+            "health_facility:type",
+            "status",
+            "staff_count:doctors",
+            "staff_count:nurses",
             "healthcare",
             "shop"
         ],
@@ -613,18 +647,21 @@ export const TAGLOOKUP = {
         ],
         "where": "healthcare='alternative' OR shop IN ('herbalist','nutrition_supplements')"
     },
-    "Humanitarian*": {
+    "Humanitarian": {
         "geom_types": [
             "point",
+            "line",
             "polygon"
         ],
         "keys": [
+            "wheelchair",
             "name",
+            "amenity",
+            "social_facility",
             "building",
-            "industrial",
-            "social_facility"
+            "industrial"
         ],
-        "where": "social_facility='shelter' OR  building='warehouse' OR industrial='warehouse'"
+        "where": "social_facility IS NOT NULL or wheelchair IS NOT NULL OR  building='warehouse' OR industrial='warehouse'"
     },
     "Wheelchair Access": {
         "geom_types": [
@@ -661,14 +698,16 @@ export const TAGLOOKUP = {
         ],
         "where": "building='warehouse' OR industrial='warehouse'"
     },
-    "All Land Use*": {
+    "Land Use": {
         "geom_types": [
-            "polygon"
+            "polygon",
+            "point"
         ],
         "keys": [
-            "landuse",
+            "name",
             "leisure",
-            "amenity"
+            "amenity",
+            "landuse"
         ],
         "where": "landuse IS NOT NULL OR leisure='park' OR amenity='grave_yard'"
     },
@@ -721,14 +760,18 @@ export const TAGLOOKUP = {
         ],
         "where": "landuse='landfill'"
     },
-    "Localities*": {
+    "Localities": {
         "geom_types": [
-            "point",
-            "polygon"
+            "polygon",
+            "point"
         ],
         "keys": [
+            "admin_level",
             "boundary",
+            "name",
+            "is_in",
             "place",
+            "population",
             "addr:postcode"
         ],
         "where": "boundary IS NOT NULL OR place IS NOT NULL OR \"addr:postcode\" IS NOT NULL OR boundary='postal_code'"
@@ -769,14 +812,17 @@ export const TAGLOOKUP = {
         ],
         "where": "\"addr:postcode\" IS NOT NULL OR boundary='postal_code'"
     },
-    "Natural*": {
+    "Natural": {
         "geom_types": [
-            "point",
             "line",
-            "polygon"
+            "polygon",
+            "point"
         ],
         "keys": [
-            "natural"
+            "natural",
+            "water",
+            "waterway",
+            "landuse"
         ],
         "where": "natural IS NOT NULL"
     },
@@ -838,15 +884,19 @@ export const TAGLOOKUP = {
         ],
         "where": "natural IN ('peak','volcano','valley','ridge','cliff')"
     },
-    "Power*": {
+    "Power": {
         "geom_types": [
             "point",
-            "tower"
+            "polygon"
         ],
         "keys": [
-            "backup_generator",
             "power",
-            "amenity"
+            "name",
+            "backup_generator",
+            "amenity",
+            "opening_hours",
+            "operator",
+            "fuel"
         ],
         "where": "power IS NOT NULL OR backup_generator IS NOT NULL OR amenity='fuel'"
     },
@@ -904,7 +954,7 @@ export const TAGLOOKUP = {
         ],
         "where": "amenity='fuel'"
     },
-    "Public*": {
+    "Public": {
         "geom_types": [
             "point",
             "polygon"
@@ -913,6 +963,9 @@ export const TAGLOOKUP = {
             "name",
             "building",
             "amenity",
+            "religion",
+            "denomination",
+            "opening_hours",
             "historic"
         ],
         "where": "building='public' OR amenity IN ('place_of_worship','community_centre','library','toilets') OR historic IS NOT NULL"
@@ -976,14 +1029,14 @@ export const TAGLOOKUP = {
         ],
         "where": "amenity='toilets'"
     },
-    "Sport*": {
+    "Sport": {
         "geom_types": [
-            "point",
-            "polygon"
+            "polygon",
+            "point"
         ],
         "keys": [
             "name",
-            "sport",
+            "building",
             "leisure"
         ],
         "where": "sport IS NOT NULL OR leisure IN ('stadium, swimming pool, pitch, sport_centre')"
@@ -1032,18 +1085,28 @@ export const TAGLOOKUP = {
         ],
         "where": "leisure='sport_centre'"
     },
-    "Transportation*": {
+    "Transportation": {
         "geom_types": [
             "point",
             "line",
             "polygon"
         ],
         "keys": [
+            "name",
+            "building",
             "aeroway",
             "amenity",
-            "highway",
             "railway",
-            "building"
+            "layer",
+            "public_transport",
+            "operator",
+            "highway",
+            "surface",
+            "bridge",
+            "tunnel",
+            "smoothness",
+            "width",
+            "oneway"
         ],
         "where": "aeroway IS NOT NULL OR highway IS NOT NULL OR railway IS NOT NULL OR building IN ('aerodome','ferry_terminal','train_station') OR amenity IN ('ferry_terminal','bus_station')"
     },
@@ -1138,21 +1201,31 @@ export const TAGLOOKUP = {
         ],
         "where": "railway IS NOT NULL"
     },
-    "Water*": {
+    "Water": {
         "geom_types": [
-            "point",
             "line",
-            "polygon"
+            "polygon",
+            "point"
         ],
         "keys": [
             "waterway",
             "water",
             "natural",
             "landuse",
+            "covered",
+            "blockage",
+            "depth",
+            "width",
+            "layer",
+            "diameter",
+            "tunnel",
             "man_made",
-            "building"
+            "building",
+            "name",
+            "amenity",
+            "pump"
         ],
-        "where": "waterway IS NOT NULL OR water='reservoir' OR natural='water' OR landuse='reservoir' OR man_made IN ('water_tower','pumping_station') OR building='pumping_station'"
+        "where": "waterway IS NOT NULL OR water='reservoir' OR natural='water' OR landuse='reservoir' OR man_made IN ('water_tower','pumping_station') OR building='pumping_station' OR amenity = 'water_point'"
     },
     "Dam": {
         "geom_types": [
@@ -1219,7 +1292,8 @@ export const TAGLOOKUP = {
             "polygon"
         ],
         "keys": [
-            "man_made"
+            "man_made",
+            "building"
         ],
         "where": "man_made='pumping_station' OR building='pumping_station'"
     },
@@ -1239,18 +1313,22 @@ export const TAGLOOKUP = {
             "polygon"
         ],
         "keys": [
-            "amenity"
+            "amenity",
+            "man_made",
+            "pump"
         ],
         "where": "amenity='water_point'"
     },
-    "Default": {
+    "Language": {
         "geom_types": [
             "point",
             "line",
             "polygon"
         ],
         "keys": [
-            "name"
+            "name:en",
+            "name:sw",
+            "name:fr"
         ],
         "where": ""
     },
