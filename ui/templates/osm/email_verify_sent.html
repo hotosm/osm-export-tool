@@ -4,13 +4,15 @@
 {% block container %}
 
 <center>
-<div class="panel panel-success" style="width: 40%; margin-top: 2em;">
-  <div class="panel-heading"><span class="heading">{% trans   "Validation Email Sent" %}</span></div>
+<div class="panel panel-success" style="width: 90%; margin-top: 2em;">
+  <div class="panel-heading"><span class="heading">{% trans "Validation Email Sent" %}</span></div>
   <div class="panel-body">
-    <p style="font-size: large;">
-        {% trans "An activation email has been sent to your email address."%} <br/>
-        {% trans "Please click the link in the email to activate your account."%}
+    <p style="font-size: large;">{% trans "An activation email has been sent to your email address."%}</p>
+    <p style="font-size: large;">{% trans "Please click the link in the email to activate your account."%}</p>
     </p>
+    <div>
+      <button onClick="window.close()" class="btn btn-lg btn-success">{% trans 'Close' %}</button>
+    </div>
   </div>
 </div>
 </center>

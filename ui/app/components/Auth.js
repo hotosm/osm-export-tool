@@ -1,15 +1,24 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import { fetchPermissions } from "../actions/meta";
-import { selectIsLoggedIn } from "../selectors";
+import { fetchPermissions, loginSuccess } from "../actions/meta";
+import { selectIsLoggedIn, selectLocationHash } from "../selectors";
+import { history } from "../config/store";
 
 class Auth extends Component {
   componentDidMount() {
-    const { fetchPermissions, isLoggedIn } = this.props;
+    const {
+      fetchPermissions,
+      hash: { access_token, expires_in },
+      isLoggedIn,
+      loginSuccess
+    } = this.props;
 
     if (isLoggedIn) {
       fetchPermissions();
+    } else if (access_token != null) {
+      loginSuccess(access_token, expires_in);
+      history.replace("/");
     }
   }
 
@@ -28,7 +37,10 @@ class Auth extends Component {
 }
 
 const mapStateToProps = state => ({
+  hash: selectLocationHash(state),
   isLoggedIn: selectIsLoggedIn(state)
 });
 
-export default connect(mapStateToProps, { fetchPermissions })(Auth);
+export default connect(mapStateToProps, { fetchPermissions, loginSuccess })(
+  Auth
+);

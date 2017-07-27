@@ -11,7 +11,7 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.i18n import JavaScriptCatalog
 from ui.views import (authorized, create_error_view, login, logout,
-                      redirect_to_v3, require_email, v3)
+                      redirect_to_v3, v3)
 
 admin.autodiscover()
 
@@ -24,7 +24,8 @@ urlpatterns += i18n_patterns(
     url(r'^login/$', login, name="login"),
     url(r'^logout$', logout, name='logout'),
     url(r'^error$', create_error_view, name='error'),
-    url(r'^email/$', require_email, name='require_email'),
+    url(r'^email/$', TemplateView.as_view(template_name='osm/email.html'),
+        name='require_email'),
 )
 
 urlpatterns += i18n_patterns(

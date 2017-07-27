@@ -1,6 +1,6 @@
 /* global OAUTH_CLIENT_ID: false */
 import axios from "axios";
-import { login as _login, logout } from "redux-implicit-oauth2";
+import { LOGIN_SUCCESS, login as _login, logout } from "redux-implicit-oauth2";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
@@ -8,7 +8,8 @@ import types from ".";
 const oauthConfig = {
   url: process.env.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
   client: OAUTH_CLIENT_ID || process.env.CLIENT_ID,
-  redirect: `${window.location.protocol}//${window.location.hostname}/authorized`
+  redirect: `${window.location.protocol}//${window.location
+    .hostname}/authorized`
 };
 
 export const fetchPermissions = () => (dispatch, getState) => {
@@ -41,5 +42,12 @@ export const fetchPermissions = () => (dispatch, getState) => {
 };
 
 export const login = () => _login(oauthConfig);
+
+export const loginSuccess = (token, expiresAt) => dispatch =>
+  dispatch({
+    type: LOGIN_SUCCESS,
+    token,
+    expiresAt
+  });
 
 export { logout };

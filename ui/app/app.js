@@ -4,7 +4,7 @@ import { ConnectedRouter } from "react-router-redux";
 
 import About from "./components/About";
 import Auth from "./components/Auth";
-import Authorized from "./components/Authorized"
+import Authorized from "./components/Authorized";
 import Configurations from "./components/Configurations";
 import Exports from "./components/Exports";
 import HDX from "./components/HDX";
