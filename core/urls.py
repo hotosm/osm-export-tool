@@ -11,14 +11,14 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.i18n import JavaScriptCatalog
 from ui.views import (authorized, create_error_view, login, logout,
-                      require_email, v3)
+                      redirect_to_v3, require_email, v3)
 
 admin.autodiscover()
 
 urlpatterns = []
 
 urlpatterns += i18n_patterns(
-    url(r'^$', login, name='index'),
+    url(r'^$', redirect_to_v3, name='index'),
     url(r'^authorized', authorized, name="authorized"),
     url(r'^v3/', v3, name="v3"),
     url(r'^login/$', login, name="login"),

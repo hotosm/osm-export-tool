@@ -42,6 +42,10 @@ def v3(request):
     })
 
 
+def redirect_to_v3(request):
+    return redirect('/v3/')
+
+
 def require_email(request):
     """
     View to handle email collection for new user logging in with OSM account.
