@@ -8,11 +8,14 @@ class RequirePermission extends Component {
     const { permissions } = this.props;
     let { required } = this.props;
 
-    if (!Array.isArray(required)) {
+    if (required != null && !Array.isArray(required)) {
       required = Array.of(required);
     }
 
-    return permissions != null && required.every(p => permissions.includes(p));
+    return (
+      (required == null && permissions != null) ||
+      (permissions != null && required.every(p => permissions.includes(p)))
+    );
   }
 
   render() {
