@@ -10,7 +10,8 @@ class Migration(migrations.Migration):
     def add_default_application(apps, schema_editor):
         Application.objects.create(
             name="OSM Export Tool UI",
-            redirect_uris="http://localhost/authorized",
+            redirect_uris=
+            "http://localhost/authorized http://localhost:8080/authorized",
             client_type=Application.CLIENT_PUBLIC,
             authorization_grant_type=Application.GRANT_IMPLICIT,
             skip_authorization=True)
