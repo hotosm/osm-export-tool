@@ -313,7 +313,7 @@ def get_user_permissions(request):
         permissions = chain(
             user.user_permissions.all().values_list('content_type__app_label',
                                                     'codename'),
-            Permission.objects.filter(group_user=user).values_list(
+            Permission.objects.filter(group__user=user).values_list(
                 'content_type__app_label', 'codename'))
 
     return JsonResponse({
