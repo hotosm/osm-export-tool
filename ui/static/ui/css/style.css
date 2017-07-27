@@ -26,14 +26,16 @@ html,
 body {
   width: 100%;
   height: 100%;
-  font-family: 'Lato', sans-serif;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 300;
+  color: #1f3b45;
 }
 
 /* top banner */
 
 #banner {
   background-color: #fff;
-  color: #b02129;
   padding-left: 10px !important;
   padding-right: 10px !important;
 }
@@ -52,8 +54,8 @@ body {
 }
 
 #logotext {
-  font-size: large;
-  color: black;
+  padding-top: .2em;
+  width: 150px;
 }
 
 /* nav styles */
@@ -73,7 +75,7 @@ a.navbar-brand {
 }
 
 nav > div.container {
-  background-color: #b02129;
+  background-color: #d73f3f;
   border: none !important;
 }
 
@@ -83,24 +85,24 @@ nav > div.container {
   font-weight: 700;
 }
 
-.navbar-inverse .navbar-nav > .active > a {
-  background-color: #b02129;
+.navbar-inverse .navbar-nav a.active {
+  background-color: #d73f3f;
   color: #fff;
 }
 
-.navbar-inverse .navbar-nav > li > a {
+.navbar-inverse .navbar-nav li button {
+  border: 0px;
+  font-size: large;
+  font-weight: 700;
+  padding: 13px 15px 0px;
+}
+
+.navbar-inverse .navbar-nav li * {
   color: #fff;
-  padding-left: 10px;
 }
 
 #logout {
   margin-right: 2em !important;
-}
-
-.last-update {
-  color: #ccc;
-  margin-top: 17px;
-  float: right;
 }
 
 /* main container / bootstrap styles */
@@ -170,7 +172,7 @@ nav > div.container {
 .glyphicon-heading {
   font-size: 2em;
   top: 8px;
-  color: #b02129;
+  color: #d73f3f;
 }
 
 .form-control-feedback {
@@ -738,7 +740,7 @@ span.check {
 }
 
 span.tag.label.label-info {
-  background-color: #b02129;
+  background-color: #d73f3f;
   border-radius: 4px !important;
 }
 
@@ -793,7 +795,6 @@ span#toggle-feature {
   margin-top: 2em;
   margin-left: 3em;
   margin-right: 3em;
-  font-size: large;
 }
 
 /* Configuration Browser */
@@ -832,8 +833,6 @@ span#spinner i {
 
 div.help {
   padding: 1em 10em 3em 8em;
-  font-size: 1.2em;
-  line-height: 1.6em;
 }
 
 .help > ul > li {
@@ -1063,4 +1062,163 @@ The class for the element that wraps a nodes children (if any exist)
 
 .rct-icon-parent-close::before {
   content: "\f114";
+}
+
+.btn {
+  box-shadow: inset 0 -3px 0 0 rgba(31, 59, 69, 0.12),
+    inset 0 0 0 1px rgba(31, 59, 59, .12);
+}
+
+.btn-primary,
+.btn-info {
+  background-color: #439ab4;
+  box-shadow: inset 0 -3px 0 0 rgba(31, 59, 69, 0.24),
+    inset 0 0 0 1px rgba(31, 59, 59, .24);
+}
+
+.btn-success {
+  background-color: #68c39f;
+  box-shadow: inset 0 -3px 0 0 rgba(31, 59, 69, 0.24),
+    inset 0 0 0 1px rgba(31, 59, 59, .24);
+}
+
+.btn-warning {
+  background-color: #f6d55f;
+}
+
+.btn-danger {
+  background-color: #ea4f54;
+  box-shadow: inset 0 -3px 0 0 rgba(31, 59, 69, 0.24),
+    inset 0 0 0 1px rgba(31, 59, 59, .24);
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: rgba(31, 59, 69, .12);
+  width: 80%;
+  max-width: 16rem;
+  margin: 2rem auto;
+}
+
+/* from oam-design-system/assets/styles/oam-design-system/_{code,variables}.scss */
+code,
+kbd,
+pre,
+samp {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 80%;
+}
+
+code,
+pre,
+kbd {
+  border-radius: 0.25rem;
+  background: rgba(31, 59, 69, .04);
+}
+
+code,
+kbd {
+  padding: 0.125rem 0.25rem;
+}
+
+kbd {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  border-radius: 0.25rem;
+  background: rgba(31, 59, 69, 0.64);
+  color: #fff;
+}
+
+kbd kbd {
+  background: none;
+  font-size: 100%;
+  padding: 0;
+}
+
+pre {
+  display: block;
+  padding: 1rem;
+  word-break: break-all;
+  word-wrap: break-word;
+  box-shadow: inset 0 0 0 1px rgba(31, 59, 69, 0.04);
+  overflow: auto;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.8rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  line-height: 1.55rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  line-height: 1.3rem;
+}
+
+h4,
+h5,
+h6 {
+  font-size: 1rem;
+  line-height: 1.05rem;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  border: 0px !important;
+}
+
+.table th,
+.table td {
+  border: 0px !important;
+  padding: 0.75rem 0.5rem;
+  vertical-align: top;
+  text-align: left;
+  box-shadow: inset 0 -1px 0 0 rgba(31, 59, 69, 0.12);
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 1rem;
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 1rem;
+}
+
+.table th {
+  text-transform: uppercase;
+  font-weight: 400;
+  color: rgba(31, 59, 6, .48);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  vertical-align: bottom;
+  box-shadow: inset 0 -2px 0 0 rgba(31, 59, 69, 0.12);
 }

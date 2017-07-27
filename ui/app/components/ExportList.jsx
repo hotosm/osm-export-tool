@@ -102,7 +102,7 @@ export class ExportList extends Component {
                 <th>Name</th>
                 <th>Description</th>
                 <th>Project</th>
-                <th>Created At</th>
+                <th>Created</th>
                 <th>Owner</th>
                 <th />
               </tr>
