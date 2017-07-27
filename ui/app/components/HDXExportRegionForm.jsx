@@ -346,7 +346,7 @@ export class HDXExportRegionForm extends Component {
     return runs.slice(0, 10).map((run, i) =>
       <tr key={i}>
         <td>
-          <a href={`/v3/#/exports/detail/${exportRegion.job_uid}/${run.uid}`}>
+          <a href={`/exports/detail/${exportRegion.job_uid}/${run.uid}`}>
             <FormattedDate value={run.started_at} />{" "}
             <FormattedTime value={run.started_at} />
           </a>
@@ -606,7 +606,7 @@ export class HDXExportRegionForm extends Component {
                 <h3>
                   Run History{" "}
                   <small>
-                    <a href={`/v3/#/exports/detail/${exportRegion.job_uid}`}>
+                    <a href={`/exports/detail/${exportRegion.job_uid}`}>
                       view export details
                     </a>
                   </small>
