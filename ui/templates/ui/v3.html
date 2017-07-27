@@ -11,6 +11,7 @@
   <body>
     <div id="root" class="container-fluid" style="height:calc(100% - 125px)"></div>
     <script>
+      var EXPORTS_API_URL = "{{ request.scheme }}://{{ request.get_host }}";
       var OAUTH_CLIENT_ID = "{{ client_id }}";
     </script>
     <script src="{% static 'ui/js/bundle.js' %}"></script>
