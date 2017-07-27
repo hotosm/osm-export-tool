@@ -8,7 +8,7 @@ import assign from "object-assign";
 import PropTypes from "prop-types";
 import React from "react";
 
-import TreeNode from "./TreeNode.jsx";
+import TreeNode from "./TreeNode";
 import TreeNodeMixin from "./TreeNodeMixin";
 
 const TreeNodeFactory = React.createFactory(TreeNode);
