@@ -19,7 +19,7 @@ def authorized(request):
 
 def login(request):
     if not request.user.is_authenticated():
-        # perserve redirects ("next" in request.GET)
+        # preserve redirects ("next" in request.GET)
         return redirect(
             reverse('osm:begin', args=['openstreetmap']) + '?' +
             urllib.urlencode(request.GET))
