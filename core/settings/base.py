@@ -80,7 +80,6 @@ STATICFILES_DIRS = (
 
 # default middleware classes
 MIDDLEWARE = [
-    # 'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -129,8 +128,8 @@ STATICFILES_FINDERS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'oauth2_provider.backends.OAuth2Backend',
     'social_core.backends.openstreetmap.OpenStreetMapOAuth',
+    'oauth2_provider.backends.OAuth2Backend',
     'social_core.backends.email.EmailAuth',
     'social_core.backends.username.UsernameAuth',
     'django.contrib.auth.backends.ModelBackend',
