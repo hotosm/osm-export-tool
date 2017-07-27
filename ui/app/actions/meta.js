@@ -1,3 +1,4 @@
+/* global OAUTH_CLIENT_ID: false */
 import axios from "axios";
 import { login as _login, logout } from "redux-implicit-oauth2";
 
@@ -6,7 +7,7 @@ import types from ".";
 
 const oauthConfig = {
   url: process.env.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
-  client: process.env.CLIENT_ID,
+  client: OAUTH_CLIENT_ID || process.env.CLIENT_ID,
   redirect: `${window.location.protocol}//${window.location.hostname}/authorized`
 };
 

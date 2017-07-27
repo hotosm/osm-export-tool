@@ -7,6 +7,7 @@ from django.contrib.auth import logout as auth_logout
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
+from oauth2_provider.models import Application
 
 
 def authorized(request):
@@ -34,7 +35,11 @@ def logout(request):
 
 
 def v3(request):
-    return render(request, 'ui/v3.html')
+    ui_app = Application.objects.get(name='OSM Export Tool UI')
+
+    return render(request, 'ui/v3.html', {
+        'client_id': ui_app.client_id
+    })
 
 
 def require_email(request):
