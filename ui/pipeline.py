@@ -18,7 +18,7 @@ LOG = logging.getLogger(__name__)
 
 
 @partial
-def require_email(strategy, request, details, user=None, is_new=False, *args, **kwargs):  # pragma: no cover
+def require_email(strategy, backend, request, details, user=None, is_new=False, *args, **kwargs):  # pragma: no cover
     LOG.debug(user)
     if kwargs.get('ajax') or user and user.email:
         return
@@ -51,6 +51,10 @@ def email_validation(strategy, backend, code, partial_token):  # pragma: no cove
     msg = EmailMultiAlternatives(subject, text, to=[code.email], from_email="HOT Exports <exports@hotosm.org>")
     msg.attach_alternative(html, "text/html")
     msg.send()
+
+    # clear out the redirect URL since it probably doesn't matter (and may have
+    # been an OAuth redirect)
+    strategy.session_pop("next")
 
 
 def partial_pipeline_data(backend, user=None, *args, **kwargs):  # pragma: no cover

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """UI view definitions."""
 
-import urllib
-
 from django.contrib.auth import logout as auth_logout
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
@@ -14,7 +12,8 @@ def authorized(request):
     # the user has now authorized a client application; they no longer need to
     # be logged into the site (and it will be confusing if they are, since
     # "logging out" of the UI just drops the auth token)
-    return redirect('/v3/')
+    auth_logout(request)
+    return render(request, "ui/authorized.html")
 
 
 def login(request):
@@ -22,7 +21,7 @@ def login(request):
         # preserve redirects ("next" in request.GET)
         return redirect(
             reverse('osm:begin', args=['openstreetmap']) + '?' +
-            urllib.urlencode(request.GET))
+            request.GET.urlencode())
     else:
         return redirect('/v3/')
 
