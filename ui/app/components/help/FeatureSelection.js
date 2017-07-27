@@ -5,7 +5,9 @@ export default () =>
   <div className="help">
     <a name="top" />
     <ol className="breadcrumb">
-      <li><Link to="/help">Help</Link></li>
+      <li>
+        <Link to="/help">Help</Link>
+      </li>
       <li className="active">Feature Selections</li>
     </ol>
 
@@ -21,12 +23,26 @@ export default () =>
         <a href="https://imposm.org">imposm</a>.
       </p>
       <p>A basic complete example of a feature selection with 3 themes:</p>
-      <pre>
-        buildings: types: - polygons select: - name - building where: building
-        IS NOT NULL waterways: types: - lines - polygons select: - name -
-        waterway where: natural IN ('waterway') hospitals: select: - name -
-        amenity where: amenity = "hospital"
-      </pre>
+      <pre>{`buildings:
+  types:
+    - polygons
+  select:
+    - name
+    - building
+  where: building IS NOT NULL
+waterways:
+  types:
+    - lines
+    - polygons
+  select:
+    - name
+    - waterway
+  where: natural IN ('waterway')
+hospitals:
+  select:
+    - name
+    - amenity
+  where: amenity = "hospital"`}</pre>
 
       <h4>The YAML format:</h4>
       <ul>
@@ -83,7 +99,9 @@ export default () =>
         List items under the <code>select</code> key determine the columns for
         each theme.
       </p>
-      <pre>select: - name - amenity</pre>
+      <pre>{`select:
+  - name
+  - amenity`}</pre>
       <p>
         Will populate the <code>name</code> and <code>amenity</code> columns
         with their values from OSM.
@@ -127,9 +145,8 @@ export default () =>
         <code>IS NOT NULL, AND, OR, IN, =, !=</code>.
       </p>
       <p>Other examples of filters:</p>
-      <pre>
-        where: natural = 'waterway' where: 'addr:housenumber' IS NOT NULL where:
-        natural IN ('waterway','riverbank')
-      </pre>
+      <pre>{`where: natural = 'waterway'
+where: 'addr:housenumber' IS NOT NULL
+where: natural IN ('waterway','riverbank')`}</pre>
     </div>
   </div>;
