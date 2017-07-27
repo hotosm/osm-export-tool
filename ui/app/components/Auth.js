@@ -14,7 +14,7 @@ class Auth extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    const { isLoggedIn: wasLoggedIn } = this.props;
+    const { fetchPermissions, isLoggedIn: wasLoggedIn } = this.props;
     const { isLoggedIn } = nextProps;
 
     if (!wasLoggedIn && isLoggedIn) {
