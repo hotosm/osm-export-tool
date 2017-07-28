@@ -8,46 +8,27 @@ import ImportButton from "./ImportButton";
 import { setAllButtonsDefault } from "../../actions/aoi/mapToolActions";
 
 export class DrawAOIToolbar extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.setAllButtonsDefault();
   }
 
   render() {
+    const { handleCancel, setMapView } = this.props;
+
     return (
       <div>
         <div className={styles.drawButtonsContainer}>
           <div className={styles.drawButtonsTitle}>
             <strong>TOOLS</strong>
           </div>
-          <DrawBoxButton
-            handleCancel={sender => this.props.handleCancel(sender)}
-          />
-          <DrawFreeButton
-            handleCancel={sender => this.props.handleCancel(sender)}
-          />
-          <MapViewButton
-            handleCancel={sender => this.props.handleCancel(sender)}
-            setMapView={this.props.setMapView}
-          />
-          <ImportButton
-            handleCancel={sender => this.props.handleCancel(sender)}
-          />
+          <DrawBoxButton handleCancel={handleCancel} />
+          <DrawFreeButton handleCancel={handleCancel} />
+          <MapViewButton handleCancel={handleCancel} setMapView={setMapView} />
+          <ImportButton handleCancel={handleCancel} />
         </div>
       </div>
     );
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    setAllButtonsDefault: () => {
-      dispatch(setAllButtonsDefault());
-    }
-  };
-}
-
-export default connect(null, mapDispatchToProps)(DrawAOIToolbar);
+export default connect(null, { setAllButtonsDefault })(DrawAOIToolbar);

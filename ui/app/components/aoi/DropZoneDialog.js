@@ -1,40 +1,33 @@
 import React, { Component } from "react";
+import Dropzone from "react-dropzone";
 import { connect } from "react-redux";
+
 import styles from "../../styles/aoi/DropZone.css";
 import {
-  setImportButtonSelected,
   setAllButtonsDefault,
   setImportModalState,
-  processGeoJSONFile,
-  resetGeoJSONFile
+  processGeoJSONFile
 } from "../../actions/aoi/mapToolActions";
-import { PopupBox } from "./PopupBox.js";
-const Dropzone = require("react-dropzone");
+import { PopupBox } from "./PopupBox";
 
 export class DropZoneDialog extends Component {
-  constructor(props) {
-    super(props);
-    this.onDrop = this.onDrop.bind(this);
-    this.onOpenClick = this.onOpenClick.bind(this);
-    this.handleClear = this.handleClear.bind(this);
-  }
-
-  onDrop(acceptedFiles) {
-    if (acceptedFiles.length == 1) {
+  onDrop = acceptedFiles => {
+    if (acceptedFiles.length === 1) {
       const file = acceptedFiles[0];
       this.props.setImportModalState(false);
       this.props.processGeoJSONFile(file);
     }
-  }
+  };
 
-  onOpenClick() {
+  onOpenClick = () => {
     this.dropzone.open();
-  }
+  };
 
-  handleClear() {
+  handleClear = () => {
     this.props.setImportModalState(false);
     this.props.setAllButtonsDefault();
-  }
+  };
+
   render() {
     return (
       <PopupBox
@@ -77,18 +70,8 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    setAllButtonsDefault: () => {
-      dispatch(setAllButtonsDefault());
-    },
-    setImportModalState: visibility => {
-      dispatch(setImportModalState(visibility));
-    },
-    processGeoJSONFile: file => {
-      dispatch(processGeoJSONFile(file));
-    }
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DropZoneDialog);
+export default connect(mapStateToProps, {
+  processGeoJSONFile,
+  setAllButtonsDefault,
+  setImportModalState
+})(DropZoneDialog);

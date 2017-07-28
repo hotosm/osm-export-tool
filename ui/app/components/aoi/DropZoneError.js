@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+
 import styles from "../../styles/aoi/DropZone.css";
 import {
   setAllButtonsDefault,
@@ -8,17 +9,13 @@ import {
 import { PopupBox } from "./PopupBox";
 
 export class DropZoneError extends Component {
-  constructor(props) {
-    super(props);
-    this.handleErrorClear = this.handleErrorClear.bind(this);
-    this.state = {
-      showErrorMessage: false,
-      errorMessage: null
-    };
-  }
+  state = {
+    showErrorMessage: false,
+    errorMessage: null
+  };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.importGeom.error != this.props.importGeom.error) {
+    if (nextProps.importGeom.error !== this.props.importGeom.error) {
       if (nextProps.importGeom.error) {
         this.props.setAllButtonsDefault();
         this.setState({
@@ -29,10 +26,10 @@ export class DropZoneError extends Component {
     }
   }
 
-  handleErrorClear() {
+  handleErrorClear = () => {
     this.setState({ showErrorMessage: false });
     this.props.resetGeoJSONFile();
-  }
+  };
 
   render() {
     return (
@@ -55,15 +52,7 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    setAllButtonsDefault: () => {
-      dispatch(setAllButtonsDefault());
-    },
-    resetGeoJSONFile: file => {
-      dispatch(resetGeoJSONFile());
-    }
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DropZoneError);
+export default connect(mapStateToProps, {
+  resetGeoJSONFile,
+  setAllButtonsDefault
+})(DropZoneError);

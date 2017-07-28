@@ -1,23 +1,20 @@
+import isEqual from "lodash/isEqual";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-import styles from "../../styles/aoi/TypeaheadMenuItem.css";
 import { MenuItem } from "react-bootstrap-typeahead";
-const isEqual = require("lodash/isEqual");
+
+import styles from "../../styles/aoi/TypeaheadMenuItem.css";
 
 export class TypeaheadMenuItem extends Component {
-  constructor(props) {
-    super(props);
-    this.createDescription = this.createDescription.bind(this);
-  }
+  createDescription = result => {
+    const description = [];
 
-  createDescription(result) {
-    let description = [];
-    result.adminName2 ? description.push(result.adminName2) : null;
-    result.adminName1 ? description.push(result.adminName1) : null;
-    result.countryName ? description.push(result.countryName) : null;
+    result.adminName2 && description.push(result.adminName2);
+    result.adminName1 && description.push(result.adminName1);
+    result.countryName && description.push(result.countryName);
 
     return description.join(", ");
-  }
+  };
 
   render() {
     return (

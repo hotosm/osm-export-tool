@@ -1,12 +1,9 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
+
 import styles from "../../styles/aoi/PopupBox.css";
 
 export class PopupBox extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div>

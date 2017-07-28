@@ -1,6 +1,8 @@
+import debounce from "lodash/debounce";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { connect } from "react-redux";
+
 import styles from "../../styles/aoi/SearchAOIToolbar.css";
 import { Typeahead, Menu } from "react-bootstrap-typeahead";
 import { getGeonames } from "../../actions/aoi/searchToolbarActions";
@@ -11,20 +13,11 @@ import {
   setAllButtonsDefault
 } from "../../actions/aoi/mapToolActions";
 
-const debounce = require("lodash/debounce");
-
 export class SearchAOIToolbar extends Component {
-  constructor(props) {
-    super(props);
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleEnter = this.handleEnter.bind(this);
-
-    this.state = {
-      value: "",
-      suggestions: []
-    };
-  }
+  state = {
+    value: "",
+    suggestions: []
+  };
 
   componentWillMount() {
     this.debouncer = debounce(e => {
@@ -47,7 +40,7 @@ export class SearchAOIToolbar extends Component {
     }
   }
 
-  handleChange(e) {
+  handleChange = e => {
     // if it matches minx,miny,maxx,maxy
     const match = e.split(",").map(Number);
     if (match.length === 4 && match[0] < match[2] && match[1] < match[3]) {
@@ -72,16 +65,16 @@ export class SearchAOIToolbar extends Component {
         this.setState({ suggestions: [] });
       }
     }
-  }
+  };
 
-  handleEnter(e) {
+  handleEnter = e => {
     this.setState({ suggestions: [] });
     if (e.length > 0) {
       this.props.setSearchAOIButtonSelected();
       this.props.handleSearch(e[0]);
       this.refs.typeahead.getInstance().blur();
     }
-  }
+  };
 
   render() {
     return (
@@ -92,9 +85,7 @@ export class SearchAOIToolbar extends Component {
             disabled={this.props.toolbarIcons.search === "INACTIVE"}
             options={this.state.suggestions}
             onChange={this.handleEnter}
-            placeholder={
-              "Search for a location or enter minX,minY,maxX,maxY"
-            }
+            placeholder={"Search for a location or enter minX,minY,maxX,maxY"}
             onInputChange={this.debouncer}
             labelKey={"name"}
             paginate={false}
@@ -139,18 +130,8 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    getGeonames: query => {
-      dispatch(getGeonames(query));
-    },
-    setAllButtonsDefault: () => {
-      dispatch(setAllButtonsDefault());
-    },
-    setSearchAOIButtonSelected: () => {
-      dispatch(setSearchAOIButtonSelected());
-    }
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SearchAOIToolbar);
+export default connect(mapStateToProps, {
+  getGeonames,
+  setAllButtonsDefault,
+  setSearchAOIButtonSelected
+})(SearchAOIToolbar);

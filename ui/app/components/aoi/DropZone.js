@@ -1,12 +1,9 @@
 import React, { Component } from "react";
+
 import DropZoneError from "./DropZoneError";
 import DropZoneDialog from "./DropZoneDialog";
 
-export class DropZone extends Component {
-  constructor(props) {
-    super(props);
-  }
-
+export default class DropZone extends Component {
   render() {
     return (
       <div>
@@ -16,5 +13,3 @@ export class DropZone extends Component {
     );
   }
 }
-
-export default DropZone;
