@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 
 import styles from "../../styles/aoi/DrawAOIToolbar.css";
@@ -12,7 +13,9 @@ import {
 const DEFAULT_ICON = (
   <div>
     <i className={"material-icons " + styles.defaultButton}>file_upload</i>
-    <div className={styles.buttonName}>IMPORT</div>
+    <div className={styles.buttonName}>
+      <FormattedMessage id="ui.draw.import" defaultMessage="IMPORT" />
+    </div>
   </div>
 );
 
@@ -20,7 +23,7 @@ const INACTIVE_ICON = (
   <div>
     <i className={"material-icons " + styles.inactiveButton}>file_upload</i>
     <div className={styles.buttonName + " " + styles.buttonNameInactive}>
-      IMPORT
+      <FormattedMessage id="ui.draw.import" defaultMessage="IMPORT" />
     </div>
   </div>
 );
@@ -28,7 +31,9 @@ const INACTIVE_ICON = (
 const SELECTED_ICON = (
   <div>
     <i className={"material-icons " + styles.selectedButton}>clear</i>
-    <div className={styles.buttonName}>IMPORT</div>
+    <div className={styles.buttonName}>
+      <FormattedMessage id="ui.draw.import" defaultMessage="IMPORT" />
+    </div>
   </div>
 );
 

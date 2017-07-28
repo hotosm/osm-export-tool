@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
+
 import styles from "../../styles/aoi/DrawAOIToolbar.css";
 import DrawBoxButton from "./DrawBoxButton";
 import DrawFreeButton from "./DrawFreeButton";
@@ -19,7 +21,12 @@ export class DrawAOIToolbar extends Component {
       <div>
         <div className={styles.drawButtonsContainer}>
           <div className={styles.drawButtonsTitle}>
-            <strong>TOOLS</strong>
+            <strong>
+              <FormattedMessage
+                id="ui.aoi_toolbar.tools"
+                defaultMessage="TOOLS"
+              />
+            </strong>
           </div>
           <DrawBoxButton handleCancel={handleCancel} />
           <DrawFreeButton handleCancel={handleCancel} />

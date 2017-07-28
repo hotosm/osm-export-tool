@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 
 import styles from "../../styles/aoi/DrawAOIToolbar.css";
@@ -11,7 +12,9 @@ import { updateMode } from "../../actions/exports";
 const DEFAULT_ICON = (
   <div>
     <i className={"material-icons " + styles.defaultButton}>crop_square</i>
-    <div className={styles.buttonName}>BOX</div>
+    <div className={styles.buttonName}>
+      <FormattedMessage id="ui.draw.box" defaultMessage="BOX" />
+    </div>
   </div>
 );
 
@@ -19,7 +22,7 @@ const INACTIVE_ICON = (
   <div>
     <i className={"material-icons " + styles.inactiveButton}>crop_square</i>
     <div className={styles.buttonName + " " + styles.buttonNameInactive}>
-      BOX
+      <FormattedMessage id="ui.draw.box" defaultMessage="BOX" />
     </div>
   </div>
 );
@@ -27,7 +30,9 @@ const INACTIVE_ICON = (
 const SELECTED_ICON = (
   <div>
     <i className={"material-icons " + styles.selectedButton}>clear</i>
-    <div className={styles.buttonName}>BOX</div>
+    <div className={styles.buttonName}>
+      <FormattedMessage id="ui.draw.box" defaultMessage="BOX" />
+    </div>
   </div>
 );
 

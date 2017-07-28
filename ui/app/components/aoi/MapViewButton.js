@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 
 import styles from "../../styles/aoi/DrawAOIToolbar.css";
@@ -12,7 +13,12 @@ const DEFAULT_ICON = (
     <i className={"material-icons " + styles.defaultButton}>
       settings_overscan
     </i>
-    <div className={styles.buttonName}>CURRENT VIEW</div>
+    <div className={styles.buttonName}>
+      <FormattedMessage
+        id="ui.draw.current_view"
+        defaultMessage="CURRENT VIEW"
+      />
+    </div>
   </div>
 );
 
@@ -22,7 +28,10 @@ const INACTIVE_ICON = (
       settings_overscan
     </i>
     <div className={styles.buttonName + " " + styles.buttonNameInactive}>
-      CURRENT VIEW
+      <FormattedMessage
+        id="ui.draw.current_view"
+        defaultMessage="CURRENT VIEW"
+      />
     </div>
   </div>
 );
@@ -30,7 +39,12 @@ const INACTIVE_ICON = (
 const SELECTED_ICON = (
   <div>
     <i className={"material-icons " + styles.selectedButton}>clear</i>
-    <div className={styles.buttonName}>CURRENT VIEW</div>
+    <div className={styles.buttonName}>
+      <FormattedMessage
+        id="ui.draw.current_view"
+        defaultMessage="CURRENT VIEW"
+      />
+    </div>
   </div>
 );
 
