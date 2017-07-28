@@ -19,7 +19,6 @@ urlpatterns = []
 
 urlpatterns += i18n_patterns(
     url(r'^$', redirect_to_v3, name='index'),
-    url(r'^authorized', authorized, name="authorized"),
     url(r'^v3/', v3, name="v3"),
     url(r'^login/$', login, name="login"),
     url(r'^logout$', logout, name='logout'),
@@ -27,6 +26,10 @@ urlpatterns += i18n_patterns(
     url(r'^email/$', TemplateView.as_view(template_name='osm/email.html'),
         name='require_email'),
 )
+
+urlpatterns += [
+    url(r'^authorized', authorized, name="authorized"),
+]
 
 urlpatterns += i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
