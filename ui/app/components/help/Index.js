@@ -1,88 +1,62 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button, Panel } from 'react-bootstrap';
 
 export default () =>
   <div className="help">
-    <h2>Help Documentation</h2>
-
-    <div className="well">
+    <ol className="breadcrumb">
+      <li>
+        <Link to="/help">Help</Link>
+      </li>
+    </ol>
+    <h2>How to Use the Export Tool</h2>
+    <Panel>
+      <h3>Quick Start</h3>
       <p>
-        The Export Tool allows users to create custom OpenStreetMap (OSM)
-        exports for selected HOT regions in various data file formats. The OSM
-        data available for download is updated at one minute intervals. This
-        help documentation will assist users in navigating the site, and use the
-        available functionality effectively to generate OSM exports.
+        First time using the Export Tool? Use the 
+        <Link to="/help/quick_start"> Quick Start Guide</Link>
       </p>
-    </div>
-
-    <h3>Main Pages</h3>
-    <div className="well">
-      <p>
-        The OSM Export Tool has three main sections; an area to create new
-        exports (Create), an area where existing exports are stored and can be
-        re-run (Exports), and an area where preset files are stored and can be
-        accessed (Presets). The following links will take the user step by step
-        through the each section, providing guidance for the available
-        functions:
-      </p>
-      <ul>
-        <li>
-          <Link to="/help/create">Create</Link>
-        </li>
-        <li>
-          <Link to="/help/exports">Exports</Link>
-        </li>
-        <li>
-          <Link to="/help/presets">Presets (2.0)</Link>
-        </li>
-        <li>
-          <Link to="/help/feature_selections">Feature Selections (3.0)</Link>
-        </li>
-      </ul>
-    </div>
-
-    <h3>File Formats</h3>
-    <div className="well">
-      <p>
-        The OSM Export Tool can download data in five different file formats;
-        Esri SHP, Garmin IMG, Google KMZ, OSM PBF and SQlite SQL. The following
-        links will provide users with information regarding each file format:
-      </p>
-      <ul>
-        <li>
-          <Link to="/help/formats#shp">Esri SHP</Link>
-        </li>
-        <li>
-          <Link to="/help/formats#img">Garmin IMG</Link>
-        </li>
-        <li>
-          <Link to="/help/formats#kmz">Google KMZ</Link>
-        </li>
-        <li>
-          <Link to="/help/formats#pbf">OSM PBF</Link>
-        </li>
-        <li>
-          <Link to="/help/formats#sql">SQlite SQL</Link>
-        </li>
-      </ul>
-    </div>
-
-    <h3>Feature Selection</h3>
-    <div className="well">
-      <p>
-        The OSM Export Tool provides two ways a user can specify which feature
-        tags they would like to export from a selected area; either from the
-        built-in interactive 'Tree Tag' or load a customised 'Preset File'
-        created outside of the tool. This section provides the user guidance on
-        how to do both:
-      </p>
-      <ul>
-        <li>
-          <Link to="/help/features#tree">Tree Tag</Link>
-        </li>
-        <li>
-          <Link to="/help/features#presets">Preset File</Link>
-        </li>
-      </ul>
-    </div>
+    </Panel>
+    <h3>Detailed Help Pages</h3>
+    <ul>
+      <li>
+        <Link to="/help/browsing_exports">Browsing, Running and Cloning existing Exports</Link>
+      </li>
+      <li>
+        <Link to="/help/feature_selections">How Features are Selected</Link>
+        <ul>
+          <li>
+            <Link to="/help/feature_selections#tag_tree">Simple feature selection using the Tag Tree</Link>
+          </li>
+          <li>
+            <Link to="/help/feature_selections#configurations">Storing YAML Feature Selections for Sharing and Re-Use</Link>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <Link to="/help/yaml">Feature Selection YAML Specification</Link>
+      </li>
+      <li>
+        <Link to="/help/export_formats">Available File Formats for Export</Link>
+      </li>
+      <li>
+        <ul>
+          <li>
+            <Link to="/help/export_formats#shp">Esri Shapefile (.SHP)</Link>
+          </li>
+          <li>
+            <Link to="/help/export_formats#img">Garmin .IMG</Link>
+          </li>
+          <li>
+            <Link to="/help/export_formats#kmz">Google Earth KML (.KMZ)</Link>
+          </li>
+          <li>
+            <Link to="/help/export_formats#pbf">OpenStreetMap Protobuf (.PBF)</Link>
+          </li>
+          <li>
+            <Link to="/help/export_formats#gpkg">OGC Geopackage (.GPKG)</Link>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>;

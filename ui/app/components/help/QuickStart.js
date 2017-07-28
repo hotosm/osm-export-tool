@@ -3,12 +3,11 @@ import { Link } from "react-router-dom";
 
 export default () =>
   <div className="help">
-    <a name="top" />
     <ol className="breadcrumb">
       <li>
         <Link to="/help">Help</Link>
       </li>
-      <li className="active">Create</li>
+      <li className="active">Quick Start</li>
     </ol>
 
     <a name="create" />

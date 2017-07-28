@@ -5,7 +5,7 @@ export default () =>
   <div className="help">
     <ol className="breadcrumb">
       <li><Link to="/help">Help</Link></li>
-      <li className="active">Formats</li>
+      <li className="active">Export Formats</li>
     </ol>
 
     <h2>File Formats</h2>
@@ -93,7 +93,6 @@ export default () =>
           </a>
         </li>
       </ul>
-      <a href="#top">top</a>
     </div>
 
     <a name="img" />
@@ -144,7 +143,6 @@ export default () =>
           </a>
         </li>
       </ul>
-      <a href="#top">top</a>
     </div>
 
     <a name="kmz" />
@@ -191,7 +189,6 @@ export default () =>
           </a>
         </li>
       </ul>
-      <a href="#top">top</a>
     </div>
 
     <a name="pbf" />
@@ -233,7 +230,6 @@ export default () =>
           </a>
         </li>
       </ul>
-      <a href="#top">top</a>
     </div>
 
     <a name="obf" />
@@ -260,7 +256,6 @@ export default () =>
           </a>
         </li>
       </ul>
-      <a href="#top">top</a>
     </div>
 
     <a name="sql" />
@@ -299,6 +294,5 @@ export default () =>
           </a>
         </li>
       </ul>
-      <a href="#top">top</a>
     </div>
   </div>;

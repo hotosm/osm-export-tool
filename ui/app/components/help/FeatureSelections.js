@@ -5,7 +5,7 @@ export default () =>
   <div className="help">
     <ol className="breadcrumb">
       <li><Link to="/help">Help</Link></li>
-      <li className="active">Features</li>
+      <li className="active">Feature Selections</li>
     </ol>
 
     <h2>Feature Selection</h2>

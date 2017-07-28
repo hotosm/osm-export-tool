@@ -8,7 +8,7 @@ export default () =>
       <li>
         <Link to="/help">Help</Link>
       </li>
-      <li className="active">Exports</li>
+      <li className="active">Browsing Exports</li>
     </ol>
 
     <h2>Exports</h2>
