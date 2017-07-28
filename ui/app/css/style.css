@@ -831,17 +831,61 @@ span#spinner i {
 
 /* HELP Pages */
 
-div.help {
-  padding: 1em 10em 3em 8em;
+.helpItems {
+  background-color:rgb(246, 247, 248);
 }
 
-.help > ul > li {
-  list-style-type: none;
+.helpItems .helpItemsBody {
+  width:1152px;
+  margin-left:auto;
+  margin-right:auto;
+  padding-top:64px;
 }
 
-a.top {
-  padding: 15px !important;
+.help h1 {
+  font-size:40px;
+  font-weight:bold;
 }
+
+.help .hero p {
+  color: rgba(49,75,84,.64);
+  font-size:24px;
+}
+
+.help .hero {
+  text-align:center;
+  background-color:white;
+}
+
+.help .panel {
+  box-shadow: 0 4px 0 0 rgba(31, 59, 69, .08), 0 0 0 1px rgba(31, 59, 69, .12);
+  border:none;
+}
+
+.help .panel .panel-body {
+  padding:24px;
+  line-height:1.5em;
+}
+
+.help .panel .panel-body h2 {
+  font-weight:700;
+}
+
+.help .btn-default {
+  border: none;
+}
+
+.help .itemWrapper:nth-of-type(n) {
+  padding-right:3%;
+  padding-bottom:2rem;
+ 
+}
+
+.help .itemWrapper:nth-of-type(3n) {
+  padding-right:0%;
+ 
+}
+
 
 /* hack in react tree menu */
 /*
