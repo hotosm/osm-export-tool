@@ -12,17 +12,6 @@ from osmand_obf import OsmAndOBF
 from shp import Shapefile
 
 
-def simplify_max_points(input_geom, max_points=500):
-    geom = input_geom
-    num_coords = geom.num_coords
-    param = 0.01
-    while num_coords > 500:
-        geom = geom.simplify(param, preserve_topology=True)
-        param = param * 2
-        num_coords = geom.num_coords
-    return geom
-
-
 # ugly class to handle renaming, zipping and moving
 class Zipper(object):
     def __init__(self, job_name, stage_dir, target_dir, boundary_geom,
@@ -172,6 +161,7 @@ if __name__ == '__main__':
     from feature_selection.feature_selection import FeatureSelection
     import logging
     from django.contrib.gis.geos import GEOSGeometry
+    from simplify import simplify_geom
 
     logging.basicConfig(level=logging.DEBUG)
     feature_selection = FeatureSelection.example('hdx')
@@ -182,7 +172,7 @@ if __name__ == '__main__':
         pass
     aoi_geom = GEOSGeometry(
         open('../hdx_exports/adm0/SEN_adm0.geojson').read())
-    aoi_geom = simplify_max_points(aoi_geom, 500)
+    aoi_geom = simplify_geom(aoi_geom)
 
     # aoi_geom = Polygon.from_bbox((-10.80029,6.3254236,-10.79809,6.32752))
     aoi_geom = GEOSGeometry(

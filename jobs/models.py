@@ -21,6 +21,7 @@ from django.core.exceptions import ValidationError
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
 from utils import FORMAT_NAMES
+from utils.simplify import simplify_geom
 
 LOG = logging.getLogger(__name__)
 
@@ -77,15 +78,6 @@ def validate_aoi(aoi):
             params={'area': area, 'max': MAX_SQKM},
         )
 
-def simplify_geom(geom):
-    num_coords = geom.num_coords
-    param = 0.01
-    while num_coords > 500:
-        geom = geom.simplify(param, preserve_topology=True)
-        param = param * 2
-        num_coords = geom.num_coords
-    return geom
-
 class Job(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
@@ -130,7 +122,7 @@ class Job(models.Model):
         return get_geodesic_area(self.the_geom)
 
     def save(self, *args, **kwargs):
-        self.simplified_geom = simplify_geom(self.the_geom)
+        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi)
         super(Job, self).save(*args, **kwargs)
 
 

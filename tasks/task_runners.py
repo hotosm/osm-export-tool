@@ -18,7 +18,7 @@ from jobs.models import Job, HDXExportRegion
 from tasks.models import ExportRun, ExportTask
 
 from utils import map_names_to_formats
-from utils.manager import RunManager, Zipper, simplify_max_points
+from utils.manager import RunManager, Zipper
 
 from .email import (
     send_completion_notification,
@@ -70,10 +70,7 @@ def run_task_remote(self, run_uid): # noqa
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
 
-        aoi = GEOSGeometry(job.the_geom)
-        if job.buffer_aoi:
-            aoi = aoi.buffer(0.02) # 0.02 degrees is a reasonable amount for an admin 0 boundary
-        aoi = simplify_max_points(aoi)
+        aoi = job.simplified_geom
         feature_selection = job.feature_selection_object
 
         export_formats = map_names_to_formats(job.export_formats)
