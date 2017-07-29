@@ -52,6 +52,7 @@ export class DropZoneDialog extends Component {
               and drop or<br />
             </span>
             <button
+              type="button"
               onClick={this.onOpenClick}
               className={styles.dropZoneImportButton}
             >
