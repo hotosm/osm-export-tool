@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Col, Row, Table } from "react-bootstrap";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, defineMessages, injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -9,6 +9,13 @@ import FilterForm from "./FilterForm";
 import Paginator from "./Paginator";
 import { getConfigurations, getConfiguration } from "../actions/configurations";
 import { selectConfigurations } from "../selectors";
+
+const messages = defineMessages({
+  configurationsType: {
+    id: "ui.configuration.title",
+    defaultMessage: "Configurations"
+  }
+});
 
 const ConfigurationTable = ({ configurations }) =>
   <tbody>
@@ -59,7 +66,11 @@ class ConfigurationListPane extends Component {
   };
 
   render() {
-    const { configurations, getConfigurations } = this.props;
+    const {
+      configurations,
+      getConfigurations,
+      intl: { formatMessage }
+    } = this.props;
     const { filters } = this.props;
 
     return (
@@ -79,12 +90,7 @@ class ConfigurationListPane extends Component {
           {(configurations.total > 0 || filters !== {}) &&
             <div>
               <FilterForm
-                type={
-                  <FormattedMessage
-                    id="ui.configuration.title"
-                    defaultMessage="Configurations"
-                  />
-                }
+                type={formatMessage(messages.configurationsType)}
                 onSubmit={this.search}
               />
               <Table>
@@ -136,7 +142,7 @@ const ConfigurationListPaneContainer = connect(
   {
     getConfigurations
   }
-)(ConfigurationListPane);
+)(injectIntl(ConfigurationListPane));
 
 export class ConfigurationNew extends Component {
   render() {
