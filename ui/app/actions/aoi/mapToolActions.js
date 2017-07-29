@@ -1,4 +1,6 @@
-import GeoJSONFormat from "ol/format/geojson";
+import path from "path";
+
+import { feature, featureCollection } from "@turf/helpers";
 
 import types from "..";
 
@@ -42,43 +44,51 @@ export function resetGeoJSONFile() {
 export function processGeoJSONFile(file) {
   return dispatch => {
     dispatch({ type: types.FILE_PROCESSING });
-    const fileName = file.name;
-    const ext = fileName.split(".").pop();
-    if (!["json", "geojson"].includes(ext)) {
-      dispatch({
+
+    const filename = file.name;
+    const ext = path.extname(filename);
+
+    if (![".json", ".geojson"].includes(ext)) {
+      return dispatch({
         type: types.FILE_ERROR,
         error: "File must be .geojson NOT ." + ext
       });
-      return;
     }
+
     const reader = new FileReader();
+
     reader.onload = () => {
-      const dataURL = reader.result;
-      let geojson = null;
+      let geojson;
+
       try {
-        geojson = JSON.parse(dataURL);
+        geojson = JSON.parse(reader.result);
       } catch (e) {
-        dispatch({ type: types.FILE_ERROR, error: "Could not parse GeoJSON" });
-        return;
-      }
-      const geojsonReader = new GeoJSONFormat();
-      const feature = geojsonReader.readFeatures(geojson)[0];
-      const geom = feature.getGeometry().transform("EPSG:4326", "EPSG:3857");
-      if (geom.getType() === "Polygon" || geom.getType() === "MultiPolygon") {
-        dispatch({ type: types.FILE_PROCESSED, geojson });
-      } else {
-        dispatch({
+        return dispatch({
           type: types.FILE_ERROR,
-          error: "Geometry must be Polygon type, not " + geom.getType()
+          error: "Could not parse GeoJSON"
         });
       }
+
+      if (["Polygon", "MultiPolygon"].includes(geojson.type)) {
+        return dispatch({
+          type: types.FILE_PROCESSED,
+          geojson: featureCollection([feature(geojson)])
+        });
+      }
+
+      dispatch({
+        type: types.FILE_ERROR,
+        error: "Geometry must be Polygon type, not " + geojson.type
+      });
     };
+
     reader.onerror = () => {
       dispatch({
         type: types.FILE_ERROR,
         error: "An error was encountered while reading your file"
       });
     };
+
     reader.readAsText(file);
   };
 }
