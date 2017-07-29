@@ -176,34 +176,42 @@ const YamlUi = injectIntl(({ intl: { formatMessage }, onDrop }) =>
   </div>
 );
 
-const CheckboxHelp = (props) => {
+const CheckboxHelp = props => {
   if (!props.name) {
-    return <Panel>Hover over a checkbox to see its definition.</Panel>
+    return <Panel>Hover over a checkbox to see its definition.</Panel>;
   } else {
-    return <Panel>
-      <strong>{props.name}</strong><br/>
-      <strong>Geometry types:</strong> {TAGLOOKUP[props.name]['geom_types'].join(', ')}<br/>
-      <strong>Keys:</strong>
-      <ul>
-        {TAGLOOKUP[props.name]['keys'].map((o,i) => {
-          return <li key={i}>{o}</li>
-        })}
-      </ul>
-      <strong>Where:</strong> {TAGLOOKUP[props.name]['where']}
-    </Panel>
+    return (
+      <Panel>
+        <strong>{props.name}</strong>
+        <br />
+        <strong>Geometry types:</strong>{" "}
+        {TAGLOOKUP[props.name]["geom_types"].join(", ")}
+        <br />
+        <strong>Keys:</strong>
+        <ul>
+          {TAGLOOKUP[props.name]["keys"].map((o, i) => {
+            return (
+              <li key={i}>
+                {o}
+              </li>
+            );
+          })}
+        </ul>
+        <strong>Where:</strong> {TAGLOOKUP[props.name]["where"]}
+      </Panel>
+    );
   }
-}
+};
 
 class _TreeTagUi extends Component {
-
   constructor(props) {
     super();
-    this.state = {hoveredCheckboxName:null};
+    this.state = { hoveredCheckboxName: null };
   }
-  
-  onCheckboxHover = (checkboxName) => {
-    this.setState({hoveredCheckboxName:checkboxName})
-  }
+
+  onCheckboxHover = checkboxName => {
+    this.setState({ hoveredCheckboxName: checkboxName });
+  };
 
   render() {
     const {
@@ -245,7 +253,7 @@ class _TreeTagUi extends Component {
           />
         </Col>
         <Col xs={6}>
-          <CheckboxHelp name={this.state.hoveredCheckboxName}/>
+          <CheckboxHelp name={this.state.hoveredCheckboxName} />
         </Col>
       </div>
     );
@@ -411,20 +419,20 @@ const SelectFeatures = ({
       </Button>
     </ButtonGroup>
     <Row>
-    {featuresUi === "treetag"
-      ? <TreeTagUi
-          onSearchChange={onSearchChange}
-          clearSearch={clearSearch}
-          onTreeNodeCollapseChange={onTreeNodeCollapseChange}
-          onTreeNodeCheckChange={onTreeNodeCheckChange}
-          labelFilter={labelFilter}
-          tagTreeData={tagTreeData}
-        />
-      : null}
-    {featuresUi === "stored"
-      ? <StoredConfContainer switchToYaml={switchToYaml} />
-      : null}
-    {featuresUi === "yaml" ? <YamlUi onDrop={onDrop} /> : null}
+      {featuresUi === "treetag"
+        ? <TreeTagUi
+            onSearchChange={onSearchChange}
+            clearSearch={clearSearch}
+            onTreeNodeCollapseChange={onTreeNodeCollapseChange}
+            onTreeNodeCheckChange={onTreeNodeCheckChange}
+            labelFilter={labelFilter}
+            tagTreeData={tagTreeData}
+          />
+        : null}
+      {featuresUi === "stored"
+        ? <StoredConfContainer switchToYaml={switchToYaml} />
+        : null}
+      {featuresUi === "yaml" ? <YamlUi onDrop={onDrop} /> : null}
     </Row>
     <Row>
       <Button bsSize="large" style={{ float: "right" }} onClick={next}>
