@@ -4,7 +4,7 @@ import { Jumbotron, Panel, Row, Col } from "react-bootstrap";
 
 export default () =>
   <div className="help">
-    <Jumbotron className="hero">
+    <Jumbotron className="hero center">
       <h1>Welcome</h1>
       <p>
         The Export Tool creates up-to-date OSM extracts in various file formats.
@@ -95,7 +95,7 @@ export default () =>
                   </Link>
                 </li>
               </ul>
-              <Link className="btn btn-default" to="/help/browsing_exports">
+              <Link className="btn btn-default" to="/help/export_formats">
                 View
               </Link>
             </Panel>
