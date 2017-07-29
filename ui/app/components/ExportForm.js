@@ -2,7 +2,6 @@ import area from "@turf/area";
 import React, { Component } from "react";
 import {
   Nav,
-  NavItem,
   InputGroup,
   ButtonGroup,
   Row,
@@ -21,6 +20,8 @@ import {
 } from "react-intl";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
+import { NavLink } from "react-router-dom";
+import { push } from "react-router-redux";
 import {
   Field,
   Fields,
@@ -28,7 +29,6 @@ import {
   reduxForm,
   change
 } from "redux-form";
-import { push } from "react-router-redux";
 
 import ExportAOIField from "./ExportAOIField";
 import FilterForm from "./FilterForm";
@@ -565,30 +565,6 @@ export class ExportForm extends Component {
     this.setState({ searchQuery: "", tagTreeData: this.tagTree.visibleData() });
   };
 
-  describeExport = () => {
-    const { dispatch } = this.props;
-
-    dispatch(push("/exports/new/describe"));
-  };
-
-  selectFeatures = () => {
-    const { dispatch } = this.props;
-
-    dispatch(push("/exports/new/select"));
-  };
-
-  chooseFormats = () => {
-    const { dispatch } = this.props;
-
-    dispatch(push("/exports/new/formats"));
-  };
-
-  showSummary = () => {
-    const { dispatch } = this.props;
-
-    dispatch(push("/exports/new/summary"));
-  };
-
   switchToTreeTag = () => {
     const { dispatch } = this.props;
 
@@ -649,35 +625,43 @@ export class ExportForm extends Component {
               activeKey={step}
               style={{ marginBottom: "20px" }}
             >
-              <NavItem eventKey="describe" onClick={this.describeExport}>
-                {++idx}{" "}
-                <FormattedMessage
-                  id="ui.exports.describe_export"
-                  defaultMessage="Describe Export"
-                />
-              </NavItem>
-              <NavItem eventKey="formats" onClick={this.chooseFormats}>
-                {++idx}{" "}
-                <FormattedMessage
-                  id="ui.exports.choose_formats"
-                  defaultMessage="Choose Formats"
-                />
-              </NavItem>
-              {requiresFeatureSelection &&
-                <NavItem eventKey="select" onClick={this.selectFeatures}>
+              <li>
+                <NavLink to="/exports/new/describe">
                   {++idx}{" "}
                   <FormattedMessage
-                    id="ui.exports.select_features"
-                    defaultMessage="Select Features"
+                    id="ui.exports.describe_export"
+                    defaultMessage="Describe Export"
                   />
-                </NavItem>}
-              <NavItem eventKey="summary" onClick={this.showSummary}>
-                {++idx}{" "}
-                <FormattedMessage
-                  id="ui.exports.summary"
-                  defaultMessage="Summary"
-                />
-              </NavItem>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/exports/new/formats">
+                  {++idx}{" "}
+                  <FormattedMessage
+                    id="ui.exports.choose_formats"
+                    defaultMessage="Choose Formats"
+                  />
+                </NavLink>
+              </li>
+              {requiresFeatureSelection &&
+                <li>
+                  <NavLink to="/exports/new/select">
+                    {++idx}{" "}
+                    <FormattedMessage
+                      id="ui.exports.select_features"
+                      defaultMessage="Select Features"
+                    />
+                  </NavLink>
+                </li>}
+              <li>
+                <NavLink to="/exports/new/summary">
+                  {++idx}{" "}
+                  <FormattedMessage
+                    id="ui.exports.summary"
+                    defaultMessage="Summary"
+                  />
+                </NavLink>
+              </li>
             </Nav>
             <Switch>
               <Route
