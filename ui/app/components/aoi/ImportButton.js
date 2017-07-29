@@ -38,41 +38,38 @@ const SELECTED_ICON = (
 );
 
 export class ImportButton extends Component {
-  state = {
-    icon: DEFAULT_ICON
-  };
-
-  componentWillReceiveProps(nextProps) {
-    // TODO state is totally unnecessary here
-    //If the button has been selected update the button state
-    if (nextProps.toolbarIcons.import === "SELECTED") {
-      this.setState({ icon: SELECTED_ICON });
-    }
-    //If the button has been de-selected update the button state
-    if (nextProps.toolbarIcons.import === "DEFAULT") {
-      this.setState({ icon: DEFAULT_ICON });
-    }
-    //If the button has been set as inactive update the state
-    if (nextProps.toolbarIcons.import === "INACTIVE") {
-      this.setState({ icon: INACTIVE_ICON });
-    }
-  }
-
   handleOnClick = () => {
-    if (this.state.icon === SELECTED_ICON) {
+    if (this.getIcon() === SELECTED_ICON) {
       this.props.setAllButtonsDefault();
       this.props.setImportModalState(false);
       this.props.handleCancel();
-    } else if (this.state.icon === DEFAULT_ICON) {
+    } else if (this.getIcon() === DEFAULT_ICON) {
       this.props.setImportButtonSelected();
       this.props.setImportModalState(true);
     }
   };
 
+  getIcon() {
+    const { toolbarIcons: { import: icon } } = this.props;
+
+    switch (icon) {
+      case "SELECTED":
+        return SELECTED_ICON;
+
+      case "INACTIVE":
+        return INACTIVE_ICON;
+
+      default:
+        return DEFAULT_ICON;
+    }
+  }
+
   render() {
+    const icon = this.getIcon();
+
     return (
       <div className={styles.drawButtonGeneral} onClick={this.handleOnClick}>
-        {this.state.icon}
+        {icon}
       </div>
     );
   }
