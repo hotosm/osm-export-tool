@@ -10,28 +10,25 @@ if (window.location.port) {
   hostname += `:${window.location.port}`;
 }
 
-// eslint-disable-next-line no-use-before-define
-if (typeof EXPORTS_API_URL === "undefined") {
-  // NOTE this is a var so that it can be hoisted
-  var EXPORTS_API_URL = process.env.EXPORTS_API_URL;
+if (window.EXPORTS_API_URL == null) {
+  window.EXPORTS_API_URL = process.env.EXPORTS_API_URL;
 
-  if (EXPORTS_API_URL == null) {
+  if (window.EXPORTS_API_URL == null) {
     console.error("EXPORTS_API_URL is undefined; logging in will not work.")
   }
 }
 
-// eslint-disable-next-line no-use-before-define
-if (typeof OAUTH_CLIENT_ID === "undefined") {
-  var OAUTH_CLIENT_ID = process.env.CLIENT_ID;
+if (window.OAUTH_CLIENT_ID == null) {
+  window.OAUTH_CLIENT_ID = process.env.CLIENT_ID;
 
-  if (OAUTH_CLIENT_ID == null) {
+  if (window.OAUTH_CLIENT_ID == null) {
     console.error("OAUTH_CLIENT_ID is undefined; logging in will not work.")
   }
 }
 
 const oauthConfig = {
-  url: EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
-  client: OAUTH_CLIENT_ID,
+  url: window.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
+  client: window.OAUTH_CLIENT_ID,
   redirect: `${window.location.protocol}//${hostname}/authorized`
 };
 
