@@ -46,11 +46,11 @@ export class DrawFreeButton extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { toolbarIcons: { draw } } = this.props;
-    const { toolbarIcons: { draw: nextDraw } } = nextProps;
+    const { toolbarIcons: { free } } = this.props;
+    const { toolbarIcons: { free: nextFree } } = nextProps;
 
-    if (nextDraw !== draw) {
-      switch (nextDraw) {
+    if (nextFree !== free) {
+      switch (nextFree) {
         case "DEFAULT":
           this.setState({
             icon: DEFAULT_ICON
