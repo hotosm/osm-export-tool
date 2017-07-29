@@ -1,15 +1,38 @@
-/* global EXPORTS_API_URL, OAUTH_CLIENT_ID: false */
 import axios from "axios";
 import { LOGIN_SUCCESS, login as _login, logout } from "redux-implicit-oauth2";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
 
+let hostname = window.location.hostname;
+
+if (window.location.port) {
+  hostname += `:${window.location.port}`;
+}
+
+// eslint-disable-next-line no-use-before-define
+if (typeof EXPORTS_API_URL === "undefined") {
+  // NOTE this is a var so that it can be hoisted
+  var EXPORTS_API_URL = process.env.EXPORTS_API_URL;
+
+  if (EXPORTS_API_URL == null) {
+    console.error("EXPORTS_API_URL is undefined; logging in will not work.")
+  }
+}
+
+// eslint-disable-next-line no-use-before-define
+if (typeof OAUTH_CLIENT_ID === "undefined") {
+  var OAUTH_CLIENT_ID = process.env.CLIENT_ID;
+
+  if (OAUTH_CLIENT_ID == null) {
+    console.error("OAUTH_CLIENT_ID is undefined; logging in will not work.")
+  }
+}
+
 const oauthConfig = {
-  url: (EXPORTS_API_URL || process.env.EXPORTS_API_URL) + "/o/authorize?approval_prompt=auto",
-  client: OAUTH_CLIENT_ID || process.env.CLIENT_ID,
-  redirect: `${window.location.protocol}//${window.location
-    .hostname}/authorized`
+  url: EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
+  client: OAUTH_CLIENT_ID,
+  redirect: `${window.location.protocol}//${hostname}/authorized`
 };
 
 export const fetchPermissions = () => (dispatch, getState) => {
