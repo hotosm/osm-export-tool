@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Row, Button } from "react-bootstrap";
+import { FormattedMessage, defineMessages, injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { Field, propTypes, reduxForm } from "redux-form";
 
@@ -24,6 +25,33 @@ const form = reduxForm({
   }
 });
 
+const messages = defineMessages({
+  descriptionLabel: {
+    id: "configuration.description.label",
+    defaultMessage: "Description"
+  },
+  descriptionPlaceholder: {
+    id: "configuration.description.placeholder",
+    defaultMessage: "Features for Project A in Region B"
+  },
+  featureSelectionLabel: {
+    id: "configuration.feature_selection.label",
+    defaultMessage: "FeatureSelection"
+  },
+  nameLabel: {
+    id: "configuration.name.label",
+    defaultMessage: "Name"
+  },
+  namePlaceholder: {
+    id: "configuration.name.placeholder",
+    defaultMessage: "Health and Sanitation"
+  },
+  publicDescription: {
+    id: "configuration.public.description",
+    defaultMessage: "Public - others can see your configuration"
+  }
+});
+
 export class ConfigurationForm extends Component {
   static propTypes = {
     ...propTypes
@@ -34,7 +62,8 @@ export class ConfigurationForm extends Component {
   };
 
   render() {
-    const editing = this.props.configurationUid !== undefined;
+    const { intl: { formatMessage } } = this.props;
+    const editing = this.props.configurationUid != null;
 
     return (
       <Row style={{ height: "100%" }}>
@@ -42,15 +71,15 @@ export class ConfigurationForm extends Component {
           <Field
             name="name"
             type="text"
-            label="Name"
-            placeholder="Health and Sanitation"
+            label={formatMessage(messages.nameLabel)}
+            placeholder={formatMessage(messages.namePlaceholder)}
             component={renderInput}
           />
           <Field
             name="description"
             type="text"
-            label="Description"
-            placeholder="Features for Project A in Region B"
+            label={formatMessage(messages.descriptionLabel)}
+            placeholder={formatMessage(messages.descriptionPlaceholder)}
             component={renderTextArea}
             rows="4"
           />
@@ -58,14 +87,14 @@ export class ConfigurationForm extends Component {
         <Field
           name="yaml"
           type="text"
-          label="Feature Selection"
+          label={formatMessage((messages.featureSelectionLabel))}
           component={renderTextArea}
           rows="12"
           className={styles.featureSelection}
         />
         <Field
           name="public"
-          description="Public - others can see your configuration"
+          description={formatMessage(messages.publicDescription)}
           type="checkbox"
           component={renderCheckbox}
         />
@@ -75,7 +104,15 @@ export class ConfigurationForm extends Component {
           type="submit"
           onClick={this.props.handleSubmit}
         >
-          {editing ? "Update Configuration" : "Create Configuration"}
+          {editing
+            ? <FormattedMessage
+                id="ui.configuration.update"
+                defaultMessage="Update Configuration"
+              />
+            : <FormattedMessage
+                id="ui.configuration.create"
+                defaultMessage="Create Configuration"
+              />}
         </Button>
         {editing
           ? <Button
@@ -85,7 +122,10 @@ export class ConfigurationForm extends Component {
               style={{ float: "right" }}
               onClick={this.handleDelete}
             >
-              Delete Configuration
+              <FormattedMessage
+                id="ui.configuration.delete"
+                defaultMessage="Delete Configuration"
+              />
             </Button>
           : null}
       </Row>
@@ -101,12 +141,6 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    handleDelete: uid => dispatch(deleteConfiguration(uid))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(
-  form(ConfigurationForm)
+export default connect(mapStateToProps, { handleDelete: deleteConfiguration })(
+  form(injectIntl(ConfigurationForm))
 );

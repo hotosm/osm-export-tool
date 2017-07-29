@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-
 import {
   Button,
   ControlLabel,
@@ -7,12 +6,24 @@ import {
   FormGroup,
   InputGroup
 } from "react-bootstrap";
+import { FormattedMessage, defineMessages, injectIntl } from "react-intl";
 import { Field, propTypes, reduxForm } from "redux-form";
 
 import { renderCheckbox } from "./utils";
 
 const form = reduxForm({
   form: "ExportSearchForm"
+});
+
+const messages = defineMessages({
+  onlyMine: {
+    id: "ui.search.only_mine",
+    defaultMessage: "Only my {type}"
+  },
+  searchPlaceholder: {
+    id: "ui.search.placeholder",
+    defaultMessage: "Name or description"
+  }
 });
 
 class Input extends Component {
@@ -60,7 +71,7 @@ class ExportSearchForm extends Component {
   };
 
   render() {
-    const { handleSubmit, running, type } = this.props;
+    const { handleSubmit, intl: { formatMessage }, running, type } = this.props;
 
     return (
       <form onSubmit={this.search}>
@@ -75,7 +86,7 @@ class ExportSearchForm extends Component {
             component={Input}
             componentClass="input"
             name="search"
-            placeholder="Name or description"
+            placeholder={formatMessage(messages.searchPlaceholder)}
             type="text"
           />
           <InputGroup.Button>
@@ -85,13 +96,15 @@ class ExportSearchForm extends Component {
               type="submit"
               onClick={handleSubmit}
             >
-              Search
+              <FormattedMessage id="ui.search" defaultMessage="Search" />
             </Button>
           </InputGroup.Button>
         </InputGroup>
         <Field
           component={renderCheckbox}
-          description={`Only my ${type}`}
+          description={formatMessage(messages.onlyMine, {
+            type
+          })}
           name="mineonly"
           style={{ paddingLeft: 12 }}
           type="checkbox"
@@ -101,4 +114,4 @@ class ExportSearchForm extends Component {
   }
 }
 
-export default form(ExportSearchForm);
+export default form(injectIntl(ExportSearchForm));

@@ -1,8 +1,14 @@
 import React, { Component } from "react";
-
 import { Button, Col, Row, Table } from "react-bootstrap";
+import {
+  FormattedDate,
+  FormattedMessage,
+  FormattedTime,
+  defineMessages,
+  injectIntl
+} from "react-intl";
 import { connect } from "react-redux";
-import { FormattedDate, FormattedTime } from "react-intl";
+import { Link } from "react-router-dom";
 
 import FilterForm from "./FilterForm";
 import MapListView from "./MapListView";
@@ -10,19 +16,29 @@ import Paginator from "./Paginator";
 import { getExports } from "../actions/exports";
 import { zoomToExportRegion } from "../actions/hdx";
 
-class ExportTable extends Component {
+const messages = defineMessages({
+  exportsType: {
+    id: "ui.exports.title",
+    defaultMessage: "Exports"
+  },
+  showOnMap: {
+    id: "ui.show_on_map",
+    defaultMessage: "Show on map"
+  }
+});
+
+class _ExportTable extends Component {
   render() {
-    const { jobs, selectRegion } = this.props;
+    const { intl: { formatMessage }, jobs, selectRegion } = this.props;
 
     return (
       <tbody>
         {jobs.map((job, i) =>
           <tr key={i}>
             <td>
-              {/* TODO Link */}
-              <a href={`#/exports/detail/${job.uid}`}>
+              <Link to={`/exports/detail/${job.uid}`}>
                 {job.name}
-              </a>
+              </Link>
             </td>
             <td>
               {job.description}
@@ -39,7 +55,7 @@ class ExportTable extends Component {
             </td>
             <td>
               <Button
-                title="Show on map"
+                title={formatMessage(messages.showOnMap)}
                 onClick={() => selectRegion(job.simplified_geom.id)}
               >
                 <i className="fa fa-globe" />
@@ -51,6 +67,8 @@ class ExportTable extends Component {
     );
   }
 }
+
+const ExportTable = injectIntl(_ExportTable);
 
 export class ExportList extends Component {
   state = {
@@ -79,7 +97,13 @@ export class ExportList extends Component {
   };
 
   render() {
-    const { getExports, jobs, selectedFeatureId, selectRegion } = this.props;
+    const {
+      getExports,
+      intl: { formatMessage },
+      jobs,
+      selectedFeatureId,
+      selectRegion
+    } = this.props;
     const { filters } = this.state;
 
     const features = {
@@ -94,16 +118,44 @@ export class ExportList extends Component {
           style={{ height: "100%", overflowY: "scroll", padding: 20 }}
         >
           <h2 style={{ display: "inline" }}>Exports</h2>
-          <FilterForm type="Exports" onSubmit={this.search} />
+          <FilterForm
+            type={formatMessage(messages.exportsType)}
+            onSubmit={this.search}
+          />
           <hr />
           <Table>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Project</th>
-                <th>Created</th>
-                <th>Owner</th>
+                <th>
+                  <FormattedMessage
+                    id="exports.name.label"
+                    defaultMessage="Name"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="exports.description.label"
+                    defaultMessage="Description"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="exports.project.label"
+                    defaultMessage="Project"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="exports.created.label"
+                    defaultMessage="Created"
+                  />
+                </th>
+                <th>
+                  <FormattedMessage
+                    id="exports.owner.label"
+                    defaultMessage="Owner"
+                  />
+                </th>
                 <th />
               </tr>
             </thead>
@@ -136,4 +188,4 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   getExports,
   selectRegion: zoomToExportRegion
-})(ExportList);
+})(injectIntl(ExportList));

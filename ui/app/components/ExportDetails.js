@@ -9,6 +9,7 @@ import {
   Row,
   Table
 } from "react-bootstrap";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 
 import MapListView from "./MapListView";
@@ -20,43 +21,80 @@ const Details = ({ exportInfo }) => {
     <Table responsive>
       <tbody>
         <tr>
-          <td>Description:</td>
-          <td colSpan="3">
-            {exportInfo.description}
-          </td>
+          <td>
+            <FormattedMessage
+              id="export.description.label"
+              defaultMessage="Description"
+            />:
+          </td>{" "}
+          />
+          <td colSpan="3">{exportInfo.description}</td>
         </tr>
         <tr>
-          <td>Project:</td>
+          <td>
+            <FormattedMessage
+              id="export.project.label"
+              defaultMessage="Project"
+            />:
+          </td>
           <td colSpan="3">
             {exportInfo.event}
           </td>
         </tr>
         <tr>
-          <td>Area:</td>
+          <td>
+            <FormattedMessage id="export.area.label" defaultMessage="Area" />:
+          </td>
           <td colSpan="3">
-            {exportInfo.area} sq km
+            <FormattedMessage
+              id="export.area"
+              defaultMessage="{area} sq km"
+              values={{ area: exportInfo.area }}
+            />
           </td>
         </tr>
         <tr>
-          <td>Created at:</td>
+          <td>
+            <FormattedMessage
+              id="export.created_at.label"
+              defaultMessage="Created at"
+            />:
+          </td>
           <td colSpan="3">
             {formatDate(exportInfo.created_at)}
           </td>
         </tr>
         <tr>
-          <td>Created by:</td>
+          <td>
+            <FormattedMessage
+              id="export.created_by.label"
+              defaultMessage="Created by"
+            />:
+          </td>
           <td colSpan="3">
             {exportInfo.user.username}
           </td>
         </tr>
         <tr>
-          <td>Published:</td>
+          <td>
+            <FormattedMessage
+              id="export.published.label"
+              defaultMessage="Published"
+            />:
+          </td>
           <td colSpan="3">
-            {exportInfo.published ? "Yes" : "No"}
+            {exportInfo.published
+              ? <FormattedMessage id="yes" defaultMessage="Yes" />
+              : <FormattedMessage id="no" defaultMessage="No" />}
           </td>
         </tr>
         <tr>
-          <td>Export formats:</td>
+          <td>
+            <FormattedMessage
+              id="export.export_formats.label"
+              defaultMessage="Export formats"
+            />:
+          </td>
           <td colSpan="3">
             {exportInfo.export_formats
               .map(x => exportFormatNicename(x))
@@ -64,10 +102,18 @@ const Details = ({ exportInfo }) => {
           </td>
         </tr>
         <tr>
-          <td>OSM Analytics:</td>
+          <td>
+            <FormattedMessage
+              id="export.osma.label"
+              defaultMessage="OSM Analytics"
+            />:
+          </td>
           <td colSpan="3">
             <a href={exportInfo.osma_link} target="_blank">
-              View this area
+              <FormattedMessage
+                id="ui.view_this_area"
+                defaultMessage="View this area"
+              />
             </a>
           </td>
         </tr>
@@ -114,7 +160,12 @@ class ExportRuns extends Component {
               <Table responsive>
                 <tbody>
                   <tr>
-                    <td>Status:</td>
+                    <td>
+                      <FormattedMessage
+                        id="ui.exports.status"
+                        defaultMessage="Status:"
+                      />
+                    </td>
                     <td colSpan="3">
                       <Alert bsStyle="success" style={{ marginBottom: "0px" }}>
                         {run.status}
@@ -122,19 +173,34 @@ class ExportRuns extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <td>Started:</td>
+                    <td>
+                      <FormattedMessage
+                        id="ui.exports.started"
+                        defaultMessage="Started:"
+                      />
+                    </td>
                     <td colSpan="3">
                       {formatDate(run.started_at)}
                     </td>
                   </tr>
                   <tr>
-                    <td>Finished:</td>
+                    <td>
+                      <FormattedMessage
+                        id="ui.exports.finished"
+                        defaultMessage="Finished:"
+                      />
+                    </td>
                     <td colSpan="3">
                       {run.finished_at ? formatDate(run.finished_at) : ""}
                     </td>
                   </tr>
                   <tr>
-                    <td>Duration:</td>
+                    <td>
+                      <FormattedMessage
+                        id="ui.exports.duration"
+                        defaultMessage="Duration:"
+                      />
+                    </td>
                     <td colSpan="3">
                       {formatDuration(run.duration)}
                     </td>
@@ -223,14 +289,20 @@ export class ExportDetails extends Component {
             {exportInfo ? <Details exportInfo={exportInfo} /> : null}
             <ButtonGroup>
               <Button bsSize="large" onClick={this.showModal}>
-                Features
+                <FormattedMessage
+                  id="ui.exports.features"
+                  defaultMessage="Features"
+                />
               </Button>
               <Button
                 bsStyle="success"
                 bsSize="large"
                 onClick={() => runExport(id)}
               >
-                Re-Run Export
+                <FormattedMessage
+                  id="ui.exports.rerun_export"
+                  defaultMessage="Re-Run Export"
+                />
               </Button>
               <Button
                 bsStyle="primary"
@@ -238,7 +310,10 @@ export class ExportDetails extends Component {
                 onClick={() => cloneExport(exportInfo)}
                 {...(exportInfo ? {} : { disabled: true })}
               >
-                Clone Export
+                <FormattedMessage
+                  id="ui.exports.clone_export"
+                  defaultMessage="Clone Export"
+                />
               </Button>
             </ButtonGroup>
           </Panel>
@@ -259,7 +334,12 @@ export class ExportDetails extends Component {
         </Col>
         <Modal show={this.state.showModal} onHide={this.closeModal}>
           <Modal.Header closeButton>
-            <Modal.Title>Feature Selection</Modal.Title>
+            <Modal.Title>
+              <FormattedMessage
+                id="ui.exports.feature_selection.title"
+                defaultMessage="Feature Selection"
+              />
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <pre>
@@ -267,7 +347,9 @@ export class ExportDetails extends Component {
             </pre>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.closeModal}>Close</Button>
+            <Button onClick={this.closeModal}>
+              <FormattedMessage id="ui.close" defaultMessage="Close" />
+            </Button>
           </Modal.Footer>
         </Modal>
       </Row>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-
 import { Col, Row, Table } from "react-bootstrap";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -71,18 +71,49 @@ class ConfigurationListPane extends Component {
             style={{ float: "right" }}
             className="btn btn-primary btn-lg"
           >
-            Create New Configuration
+            <FormattedMessage
+              id="ui.configuration.create"
+              defaultMessage="Create New Configuration"
+            />
           </Link>
           {(configurations.total > 0 || filters !== {}) &&
             <div>
-              <FilterForm type="Configurations" onSubmit={this.search} />
+              <FilterForm
+                type={
+                  <FormattedMessage
+                    id="ui.configuration.title"
+                    defaultMessage="Configurations"
+                  />
+                }
+                onSubmit={this.search}
+              />
               <Table>
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Tables</th>
-                    <th>Owner</th>
+                    <th>
+                      <FormattedMessage
+                        id="ui.configuration.name.label"
+                        defaultMessage="Name"
+                      />
+                    </th>
+                    <th>
+                      <FormattedMessage
+                        id="ui.configuration.description.label"
+                        defaultMessage="Description"
+                      />
+                    </th>
+                    <th>
+                      <FormattedMessage
+                        id="ui.configuration.tables.label"
+                        defaultMessage="Tables"
+                      />
+                    </th>
+                    <th>
+                      <FormattedMessage
+                        id="ui.configuration.owner.label"
+                        defaultMessage="Owner"
+                      />
+                    </th>
                   </tr>
                 </thead>
                 <ConfigurationTable configurations={configurations.items} />
