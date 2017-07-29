@@ -19,6 +19,8 @@ import "./css/style.css";
 import "./css/materialIcons.css";
 import "./css/ol.css";
 
+const AuthorizedHDX = requireAuth(HDX);
+
 export default ({ history }) =>
   <ConnectedRouter history={history}>
     <div style={{ height: "100%" }}>
@@ -29,7 +31,7 @@ export default ({ history }) =>
         <Route path="/authorized" component={Authorized} />
         <Route path="/configurations" component={Configurations} />
         <Route path="/exports" component={Exports} />
-        <Route path="/hdx" component={requireAuth(HDX)} />
+        <Route path="/hdx" component={AuthorizedHDX} />
         <Route path="/help" component={Help} />
         <Route component={Home} />
       </Switch>

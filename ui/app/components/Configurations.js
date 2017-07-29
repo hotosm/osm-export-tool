@@ -9,22 +9,20 @@ import {
 } from "./ConfigurationList";
 import { requireAuth } from "./utils";
 
+const AuthorizedConfigurationNew = requireAuth(ConfigurationNew);
+
 export default ({ history }) =>
   <ConnectedRouter history={history}>
     <Switch>
-        <Route
-          exact
-          path="/configurations"
-          component={ConfigurationList}
-        />
-        <Route
-          exact
-          path="/configurations/new"
-          component={requireAuth(ConfigurationNew)}
-        />
-        <Route
-          path="/configurations/detail/:uid"
-          component={ConfigurationDetailContainer}
-        />
+      <Route exact path="/configurations" component={ConfigurationList} />
+      <Route
+        exact
+        path="/configurations/new"
+        component={AuthorizedConfigurationNew}
+      />
+      <Route
+        path="/configurations/detail/:uid"
+        component={ConfigurationDetailContainer}
+      />
     </Switch>
   </ConnectedRouter>;

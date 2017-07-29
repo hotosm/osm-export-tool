@@ -14,6 +14,8 @@ import styles from "../styles/utilsStyles.css";
 import yaml from "js-yaml";
 import moment from "moment";
 
+import { selectIsLoggedIn } from "../selectors";
+
 export const AVAILABLE_EXPORT_FORMATS = {
   shp: "ESRI Shapefiles",
   geopackage: "GeoPackage",
@@ -315,7 +317,7 @@ export const prettyBytes = num => {
 };
 
 export const requireAuth = Component =>
-  connect(state => ({ isLoggedIn: state.auth.isLoggedIn }))(
+  connect(state => ({ isLoggedIn: selectIsLoggedIn(state) }))(
     ({ isLoggedIn, ...props }) =>
       isLoggedIn ? <Component {...props} /> : <Redirect to="/home" />
   );

@@ -7,12 +7,14 @@ import ExportForm from "./ExportForm";
 import ExportList from "./ExportList";
 import { requireAuth } from "./utils";
 
+const AuthorizedExportForm = requireAuth(ExportForm);
+
 export default ({ history }) =>
   <ConnectedRouter history={history}>
     <Switch>
       <Route
         path="/exports/new/:step?/:featuresUi?"
-        component={requireAuth(ExportForm)}
+        component={AuthorizedExportForm}
       />
       <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
       <Route component={ExportList} />

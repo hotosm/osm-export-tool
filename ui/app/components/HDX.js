@@ -4,16 +4,21 @@ import { Route, Switch } from "react-router-dom";
 
 import HDXExportRegionForm from "./HDXExportRegionForm";
 import HDXExportRegionList from "./HDXExportRegionList";
-import { requireAuth } from "./utils";
+import RequirePermission from "./RequirePermission";
 
 export default ({ history }) =>
-  <ConnectedRouter history={history}>
-    <Switch>
-      <Route path="/hdx/new" component={requireAuth(HDXExportRegionForm)} />
-      <Route
-        path="/hdx/edit/:id"
-        component={requireAuth(HDXExportRegionForm)}
-      />
-      <Route component={requireAuth(HDXExportRegionList)} />
-    </Switch>
-  </ConnectedRouter>;
+  <RequirePermission
+    required={[
+      "jobs.add_hdxexportregion",
+      "jobs.change_hdxexportregion",
+      "jobs.delete_hdxexportregion"
+    ]}
+  >
+    <ConnectedRouter history={history}>
+      <Switch>
+        <Route path="/hdx/new" component={HDXExportRegionForm} />
+        <Route path="/hdx/edit/:id" component={HDXExportRegionForm} />
+        <Route component={HDXExportRegionList} />
+      </Switch>
+    </ConnectedRouter>
+  </RequirePermission>;
