@@ -175,7 +175,3 @@ For all languages:
 Finally, compile language files
 
 `python manage.py compilemessages`
-
-## Environment Variables
-
-
