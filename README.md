@@ -50,111 +50,76 @@ Instructions on installing Overpass are available at https://github.com/drolbr/O
 
 ## Development Step-By-Step Guide
 
-### Create the database and role
-<pre>
-$ sudo -u postgres createuser -s -P hot
-$ sudo -u postgres createdb -O hot hot_exports_dev
-</pre>
-
-You might need to update the <code>pg_hba.conf</code> file to allow localhost connections via tcp/ip or
-allow trusted connections from localhost.
-
-Create the exports schema
-
-<pre>
-$ psql -U hot -h localhost -d hot_exports_dev -c "CREATE SCHEMA exports AUTHORIZATION hot"
-</pre>
-
-#### Garmin
-
-Download the latest version of the __mkgmap__ utility for making garmin IMG files from [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
-
-Download the latest version of the __splitter__ utility for splitting larger osm files into tiles. [http://www.mkgmap.org.uk/download/splitter.html](http://www.mkgmap.org.uk/download/splitter.html)
-
-Create a directory and unpack the <code>mkgmap</code> and <code>splitter</code> archives into it.
-
-#### OSMAnd OBF
-
-For details on the OSMAnd Map Creator utility see [http://wiki.openstreetmap.org/wiki/OsmAndMapCreator](http://wiki.openstreetmap.org/wiki/OsmAndMapCreator)
-
-Download the OSMAnd MapCreator from [http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip](http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip).
-Unpack this into a directory somewhere.
-
 ### Checkout the HOT Export Tool source
 
-In the hotosm project directory run:
+    git clone git@github.com:hotosm/osm-export-tool2.git
+    cd osm-export-tool2
 
-<code>$ git clone git@github.com:hotosm/osm-export-tool2.git</code>
+### create and install python environment
 
-### Install the project's python dependencies
+    virtualenv myvirtualenv # creates a new environment in myvirtualenv/
+    source myvirtualenv/bin/activate
+    pip install -r requirements-dev.txt
 
-From the project directory, install the dependencies into your virtualenv:
+###  database, database schema and message queue
 
-<code>$ pip install -r requirements-dev.txt</code>
+* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions.
 
-or
+* RabbitMQ should be running and listening on the default port, 5672.
 
-<code>$ pip install -r requirements.txt</code>
+    createdb exports
+    python manage.py migrate
 
+### compile the frontend application
 
-### Project Settings
+    cd ui/
+    yarn install
+    yarn start # will watch for changes and re-compile as necessary
 
-TODO this should be updated to reflect environment variables laid out below.
+### set required environment variables and start the server
 
-Create a copy of <code>core/settings/dev_dodobas.py</code> and update to reflect your development environment. <code>core/settings/dev.py</code> exists for this purpose.
+    DJANGO_ENV=development DEBUG=True python manage.py runserver
+    # in a different shell
+    DJANGO_ENV=development DEBUG=True celery -A core worker
 
-Look at <code>core/settings/project.py</code> and make sure you update or override the following configuration variables in your development settings:
+​    You should now be able to navigate to localhost:8000 and log in via OSM. With DJANGO_ENV set to `development`, emails will not be sent, but the email body will appear in your console from `runserver`. Navigate to this link to verify your account. Creating an export will use the public Overpass API. Successful job creations will write the exports to the filesystem to the `export_downloads` directory, a sibling of the `osm-export-tool2` checkout - since the NGINX file server is not running in development, download links won't be valid.
+### Other dependencies
 
-**EXPORT_STAGING_ROOT** = 'path to a directory for staging export jobs'
+See `core/settings/project.py` for environment variables to configure other optional runtime dependencies.
 
-**EXPORT_DOWNLOAD_ROOT** = 'path to a directory for storing export downloads'
+#### Garmin .IMG
 
-**EXPORT_MEDIA_ROOT** = '/downloads/' (map this url in your webserver to EXPORT_DOWNLOAD_ROOT to serve the exported files)
+Creating .IMG files requires the `mkgmap` and `splitter` tools.
 
-**OSMAND_MAP_CREATOR_DIR** = 'path to directory where OsmAndMapCreator is installed'
+[http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
 
-**GARMIN_CONFIG** = 'absolute path to utils/conf/garmin_config.xml'
+[http://www.mkgmap.org.uk/download/splitter.html](http://www.mkgmap.org.uk/download/splitter.html)
 
-**OVERPASS_API_URL** = 'url of your local overpass api endpoint (see Overpass API below)'
+#### OSMAnd .OBF
 
-Edit <code>core/settings/dev.py</code> to ensure that the database connection information is correct.
+For details and download links to the OSMAnd Map Creator utilities, see [http://wiki.openstreetmap.org/wiki/OsmAndMapCreator](http://wiki.openstreetmap.org/wiki/OsmAndMapCreator)
 
-Update the <code>utils/conf/garmin_config.xml</code> file. Update the <code>garmin</code> and <code>splitter</code> elements to point to the
-absolute location of the <code>mkgmap.jar</code> and <code>splitter.jar</code> utilites.
+### List of environment variables
 
-Set the active configuration (<code>you_settings_module</code> can be <code>dev</code> or the basename of your copy of <code>core/settings/dev_dodobas.py</code>):
+Most of these environment variables have reasonable default settings.
 
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code> (defaults to `core.settings.dev` in `manage.py`)
-
-Once you've got all the dependencies installed, run <code>./manage.py migrate</code> to set up the database tables etc..
-Then run <code>./manage.py runserver</code> to run the server.
-You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
-
-If you're running this in a virtual machine, use <code>./manage.py runserver 0.0.0.0:8000</code> to have Django listen on all interfaces and make it possible to connect from the VM host.
-
-### Celery Workers
-
-HOT Exports depends on the [Celery](http://celery.readthedocs.org/en/latest/index.html) distributed task queue. As export jobs are created
-they are pushed to a Celery Worker for processing. At least two celery workers need to be started as follows:
-
-From a 'hotosm' virtualenv directory (use screen), run:
-
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
-
-<code>$ celery -A core worker --loglevel debug --logfile=celery.log</code>.
-
-This will start a celery worker which will process export tasks. An additional celery worker needs to be started to handle purging of expired unpublished
-export jobs. From another hotosm virtualenv terminal session in the project top-level directory, run:
-
-<code>export DJANGO_SETTINGS_MODULE=core.settings.your_settings_module</code>
-
-<code>$ celery -A core beat --loglevel debug --logfile=celery-beat.log</code>
-
-See the <code>CELERYBEAT_SCHEDULE</code> setting in <code>core/settings/celery.py</code>.
-
-For more detailed information on Celery Workers see [here](http://celery.readthedocs.org/en/latest/userguide/workers.html)
-
-For help with daemonizing Celery workers see [here](http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html)
+* `EXPORT_STAGING_ROOT`  path to a directory for staging export jobs
+* `EXPORT_DOWNLOAD_ROOT`'path to a directory for storing export downloads
+* `EXPORT_MEDIA_ROOT` map this url in your webserver to `EXPORT_DOWNLOAD_ROOT` to serve the exported files
+* `OSMAND_MAP_CREATOR_DIR` path to directory where OsmAndMapCreator is installed
+* `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
+* `OVERPASS_API_URL` url of Overpass api endpoint
+* `BROKER_URL`  Celery broker URL. Defaults to `amqp://guest:guest@localhost:5672/`
+* `DATABASE_URL`  Database URL. Defaults to `postgres:///exports`
+* `DEBUG`  Whether to enable debug mode. Defaults to `False` (production).
+* `DJANGO_ENV`  Django environment. Set to `development` to enable development tools and email logging to console.
+* `EMAIL_HOST`  SMTP host. Optional.
+* `EMAIL_HOST_USER`  SMTP username. Optional.
+* `EMAIL_HOST_PASSWORD` SMTP password. Optional.
+* `EMAIL_PORT` SMTP port. Optional.
+* `EMAIL_USE_TLS`  Whether to use TLS when sending mail. Optional.
+* `HOSTNAME` Publicly-addressable hostname. Defaults to `export.hotosm.org`
+* `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`
 
 ## Using Transifex service
 
@@ -213,27 +178,4 @@ Finally, compile language files
 
 ## Environment Variables
 
-* `BROKER_URL` - Celery broker URL. Defaults to `amqp://guest:guest@localhost:5672/`
-* `DATABASE_URL` - Database URL. Defaults to `postgres:///exports`
-* `DEBUG` - Whether to enable debug mode. Defaults to `False` (production).
-* `DJANGO_ENV` - Django environment. Set to `development` to enable development tools.
-* `EMAIL_HOST` - SMTP host. Optional.
-* `EMAIL_HOST_USER` - SMTP username. Optional.
-* `EMAIL_HOST_PASSWORD` = SMTP password. Optional.
-* `EMAIL_PORT` = SMTP port. Optional.
-* `EMAIL_USE_TLS` = Whether to use TLS when sending mail. Optional.
-* `HOSTNAME` - Publicly-addressable hostname. Defaults to `export.hotosm.org`
-* `OSM_API_KEY` - OSM API key. Optional (a default will be used).
-* `OSM_API_SECRET` - OSM API secret. Optional (a default will be used).
-* `OVERPASS_API_URL` - Overpass API URL. Defaults to `http://overpass-api.de/api/`
-* `TASK_ERROR_EMAIL` - Email address to send task errors to. Defaults to `export-tool@hotosm.org`
-* `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`
 
-## Paths
-
-The following paths are siblings:
-
-* `osm-export-tool2` - This app
-* `export_staging` - Where exports are staged
-* `export_downloads` - Where exports are stored for downloading. Should be mapped to `/downloads/` in the proxying web server
-* `osmandmapcreator` - OsmAnd map creator
