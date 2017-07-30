@@ -16,7 +16,9 @@ export default () =>
         <Row>
           <Col sm={4} className="itemWrapper">
             <Panel>
-              <h2>Quick Start</h2>
+              <h2>
+                <Link to="/help/quick_start">Quick Start</Link>
+              </h2>
               <p>
                 First time using the Export Tool? Use this guide to get started.
               </p>
@@ -27,7 +29,9 @@ export default () =>
           </Col>
           <Col sm={4} className="itemWrapper">
             <Panel>
-              <h2>Browsing Exports</h2>
+              <h2>
+                <Link to="/help/browsing_exports">Browsing Exports</Link>
+              </h2>
               <p>
                 Learn to browse, run and clone exports already created by other
                 users and humanitarian organizations.
@@ -39,7 +43,9 @@ export default () =>
           </Col>
           <Col sm={4} className="itemWrapper">
             <Panel>
-              <h2>Selecting Features</h2>
+              <h2>
+                <Link to="/help/feature_selections">Selecting Features</Link>
+              </h2>
               <p>
                 How to specify what features are selected by the Export Tool.
               </p>
@@ -56,7 +62,9 @@ export default () =>
         <Row>
           <Col sm={4} className="itemWrapper">
             <Panel>
-              <h2>YAML Specification</h2>
+              <h2>
+                <Link to="/help/yaml">YAML Specification</Link>
+              </h2>
               <p>Detailed information on the YAML feature selection format.</p>
               <Link className="btn btn-default" to="/help/yaml">
                 View
@@ -65,32 +73,34 @@ export default () =>
           </Col>
           <Col sm={4} className="itemWrapper">
             <Panel>
-              <h2>File Formats</h2>
+              <h2>
+                <Link to="/help/export_formats">File Formats</Link>
+              </h2>
               <p>
                 Details on file formats available for export from the Export
                 Tool.
               </p>
               <ul>
                 <li>
-                  <Link to="help/export_formats#shp">
+                  <Link to="/help/export_formats#shp">
                     Esri Shapefile (.SHP)
                   </Link>
                 </li>
                 <li>
-                  <Link to="help/export_formats#img">Garmin .IMG</Link>
+                  <Link to="/help/export_formats#img">Garmin .IMG</Link>
                 </li>
                 <li>
-                  <Link to="help/export_formats#kmz">
+                  <Link to="/help/export_formats#kmz">
                     Google Earth KML (.KMZ)
                   </Link>
                 </li>
                 <li>
-                  <Link to="help/export_formats#pbf">
+                  <Link to="/help/export_formats#pbf">
                     OpenStreetMap Protobuf (.PBF)
                   </Link>
                 </li>
                 <li>
-                  <Link to="help/export_formats#gpkg">
+                  <Link to="/help/export_formats#gpkg">
                     OGC Geopackage (.GPKG)
                   </Link>
                 </li>
@@ -102,7 +112,9 @@ export default () =>
           </Col>
           <Col sm={4} className="itemWrapper">
             <Panel>
-              <h2>Export Tool API</h2>
+              <h2>
+                <Link to="/help/api">Export Tool API</Link>
+              </h2>
               <p>Creating Exports programatically via the JSON API.</p>
               <Link className="btn btn-default" to="/help/api">
                 View
