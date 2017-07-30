@@ -16,6 +16,7 @@ export const createExport = (data, formName) => (dispatch, getState) => {
     headers: {
       Authorization: `Bearer ${token}`
     },
+    url: "/api/jobs",
     method: "POST",
     contentType: "application/json; version=1.0",
     data
