@@ -84,17 +84,12 @@ const Home = ({ isLoggedIn, login }) =>
           style={{ margin: "2em 3em 0em 3em" }}
         >
           <div id="heading-wrap" className="panel-heading">
-            <span className="glyphicon-heading glyphicon glyphicon-log-in pull-left">
-              &nbsp;
-            </span>
-            <div>
-              <h4>
-                <FormattedMessage
-                  id="ui.login_to_osm"
-                  defaultMessage="Login to OpenStreetMap"
-                />
-              </h4>
-            </div>
+            <h3>
+              <FormattedMessage
+                id="ui.login_to_osm"
+                defaultMessage="Login to OpenStreetMap"
+              />
+            </h3>
           </div>
           <div className="panel-body">
             <div>
