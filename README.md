@@ -5,36 +5,52 @@ OSM Export Tool
 
 [![CircleCI](https://circleci.com/gh/hotosm/osm-export-tool2.svg?style=svg)](https://circleci.com/gh/hotosm/osm-export-tool2)
 
-**Osm Export Tool** platform allows you to create custom OpenStreetMap exports for various HOT regions. You can specify an area of interest and a list of features (OpenStreetMap tags) for the export. A current OpenStreetMap data extract for that area in various data formats is then created for you within minutes.
+The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile devices. It outputs files in various tabular formats based on an input area of interest polygon and a selection of OpenStreetMap tags. It is synchronized minutely with the main OSM database, so exports can be created to accompany real-time humanitarian mapping efforts. 
 
-This repo contains the newly re-written version 2 of the OSM exports tool. The live site http://export.hotosm.org is now powered by this repo. The older version 1 site is still available at: http://old-export.hotosm.org/ running code from this repo: https://github.com/hotosm/hot-exports
+The latest version of the Export Tool is available at http://exports-prod.hotosm.org . All users are recommended to use this version.
 
-## Installation Instructions
-Some prior experience with Django would be helpful, but not strictly necessary.
+The previous (version 2) iteration of the Export Tool is available at http://export.hotosm.org . This version is slower and less featureful than the newest version.
 
-### Python
-HOT Exports requires Python 2.7.x.
+## Project Structure
+This is a guide to the source code - useful if you'd like to contribute to the Export Tool, deploy the project on your own server, or re-use parts of the project.
 
-### Virtualenv
-Virtualenv (virtual environment) creates self-contained environments to prevent different versions of python libraries/packages from conflicting with each other.
+`utils/`  contains Python classes responsible for downloading and transforming OSM data into each file format based on a GEOS geometry and a `FeatureSelection` object. Many of these are wrappers for GDAL/OGR commands. This module can be used independently of the web application for creating exports from the command line.
 
-To make your life easier install [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/install.html)
+`feature_selection/` contains a parser for YAML feature selections that define how OSM data is mapped to tabular formats. More documentation on the YAML format is available at http://exports-prod.hotosm.org/v3/help/yaml .
 
-<code>$sudo pip install virtualenvwrapper</code>
+`api/` is a Django web application that manages creating, viewing and searching exports, storing feature selections,  scheduling jobs, and user accounts via openstreetmap.org OAuth.
 
-Add the following to <code>.bashrc</code> or <code>.profile</code>
+`ui/` is a React + ES6 frontend that communicates with the Django web application. It handles localization of the user interface, the OpenLayers-based map UI, and the Tag Tree feature selection wizard.
 
-<pre>
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/dev
-source /usr/local/bin/virtualenvwrapper.sh
-</pre>
+## Developing
 
-Run <code>source ~/.bashrc</code>
+The Export Tool has several dependencies. As an alternative, use Docker to manage the project's environment, in which case you will need a Docker runtime. 
 
-Run <code>mkvirtualenv --system-site-packages hotosm</code> to create the hotosm virtual environment.
+* Python 2.7
+* virtualenv and pip
+* PostgreSQL 9+ and PostGIS
+* GDAL/OGR
+* RabbitMQ
 
-Change to the <code>$HOME/dev/hotosm</code> directory and run <code>workon hotosm</code>.
+## Overpass API
+
+The HOT Exports service uses a local instance of [Overpass v07.52](http://overpass-api.de/) for data extraction.
+Detailed instructions for installing Overpass are available [here](http://wiki.openstreetmap.org/w/index.php?title=Overpass_API/Installation&redirect=no).
+
+Download a (latest) planet pbf file from (for example) [http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/](http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/).
+
+If you're doing development you don't need the whole planet so download a continent or country level extract from [http://download.geofabrik.de/](http://download.geofabrik.de/),
+and update the `osmconvert` command below to reflect the filename you've downloaded.
+
+To prime the database we've used `osmconvert` as follows:
+
+<code>osmconvert --out-osm planet-latest.osm.pbf | ./update_database --meta --db-dir=$DBDIR --flush-size=1</code>
+
+If the dispatcher fails to start, check for, and remove <code>osm3s_v0.7.52_osm_base</code> from <code>/dev/shm</code>.
+
+We apply minutely updates as per Overpass installation instructions, however this is not strictly necessary for development purposes.
+
+
 
 ### Create the database and role
 <pre>
@@ -117,24 +133,6 @@ Then run <code>./manage.py runserver</code> to run the server.
 You should then be able to browse to [http://localhost:8000/](http://localhost:8000/)
 
 If you're running this in a virtual machine, use <code>./manage.py runserver 0.0.0.0:8000</code> to have Django listen on all interfaces and make it possible to connect from the VM host.
-
-## Overpass API
-
-The HOT Exports service uses a local instance of [Overpass v07.52](http://overpass-api.de/) for data extraction.
-Detailed instructions for installing Overpass are available [here](http://wiki.openstreetmap.org/w/index.php?title=Overpass_API/Installation&redirect=no).
-
-Download a (latest) planet pbf file from (for example) [http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/](http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/).
-
-If you're doing development you don't need the whole planet so download a continent or country level extract from [http://download.geofabrik.de/](http://download.geofabrik.de/),
-and update the `osmconvert` command below to reflect the filename you've downloaded.
-
-To prime the database we've used `osmconvert` as follows:
-
-<code>osmconvert --out-osm planet-latest.osm.pbf | ./update_database --meta --db-dir=$DBDIR --flush-size=1</code>
-
-If the dispatcher fails to start, check for, and remove <code>osm3s_v0.7.52_osm_base</code> from <code>/dev/shm</code>.
-
-We apply minutely updates as per Overpass installation instructions, however this is not strictly necessary for development purposes.
 
 ## Celery Workers
 
