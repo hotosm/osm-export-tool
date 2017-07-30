@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
         Application.objects.create(
             name="OSM Export Tool UI",
             redirect_uris=
-            "http://localhost/authorized http://localhost:8080/authorized",
+            "http://localhost/authorized http://localhost:8080/authorized http://localhost:8000/authorized",
             client_type=Application.CLIENT_PUBLIC,
             authorization_grant_type=Application.GRANT_IMPLICIT,
             skip_authorization=True)
