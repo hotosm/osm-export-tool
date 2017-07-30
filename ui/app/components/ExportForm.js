@@ -20,7 +20,7 @@ import {
 } from "react-intl";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { push } from "react-router-redux";
 import {
   Field,
@@ -149,9 +149,9 @@ const Describe = injectIntl(({ intl: { formatMessage }, next }) =>
       placeholder={formatMessage(messages.projectPlaceholder)}
       component={renderInput}
     />
-    <Button bsSize="large" style={{ float: "right" }} onClick={next}>
+    <Link className="btn btn-lg btn-default pull-right" to={next}>
       <FormattedMessage id="nav.next" defaultMessage="Next" />
-    </Button>
+    </Link>
   </Row>
 );
 
@@ -435,9 +435,9 @@ const SelectFeatures = ({
       {featuresUi === "yaml" ? <YamlUi onDrop={onDrop} /> : null}
     </Row>
     <Row>
-      <Button bsSize="large" style={{ float: "right" }} onClick={next}>
-        Next
-      </Button>
+      <Link className="btn btn-lg btn-default pull-right" to={next}>
+        <FormattedMessage id="nav.next" defaultMessage="Next" />
+      </Link>
     </Row>
   </Row>;
 
@@ -450,9 +450,9 @@ const ChooseFormats = ({ next }) =>
     >
       {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
     </Field>
-    <Button bsSize="large" style={{ float: "right" }} onClick={next}>
+    <Link className="btn btn-lg btn-default pull-right" to={next}>
       <FormattedMessage id="nav.next" defaultMessage="Next" />
-    </Button>
+    </Link>
   </Row>;
 
 const Summary = injectIntl(
@@ -628,10 +628,7 @@ export class ExportForm extends Component {
             xs={6}
             style={{ height: "100%", overflowY: "scroll", padding: "20px" }}
           >
-            <Nav
-              bsStyle="tabs"
-              style={{ marginBottom: "20px" }}
-            >
+            <Nav bsStyle="tabs" style={{ marginBottom: "20px" }}>
               <li>
                 <NavLink to="/exports/new/describe">
                   {++idx}{" "}
@@ -679,7 +676,7 @@ export class ExportForm extends Component {
               <Route
                 path="/exports/new/describe"
                 render={props =>
-                  <Describe next={this.chooseFormats} {...props} />}
+                  <Describe next="/exports/new/formats" {...props} />}
               />
               <Route
                 path="/exports/new/select"
@@ -690,7 +687,7 @@ export class ExportForm extends Component {
                 path="/exports/new/select/:featuresUi"
                 render={props =>
                   <SelectFeatures
-                    next={this.showSummary}
+                    next="/exports/new/summary"
                     onDrop={this.onDrop}
                     featuresUi={featuresUi}
                     switchToTreeTag={this.switchToTreeTag}
@@ -711,8 +708,8 @@ export class ExportForm extends Component {
                   <ChooseFormats
                     next={
                       requiresFeatureSelection
-                        ? this.selectFeatures
-                        : this.showSummary
+                        ? "/exports/new/select"
+                        : "/exports/new/summary"
                     }
                   />}
               />
