@@ -26,8 +26,7 @@ const Details = ({ exportInfo }) => {
               id="export.description.label"
               defaultMessage="Description"
             />:
-          </td>{" "}
-          />
+          </td>
           <td colSpan="3">{exportInfo.description}</td>
         </tr>
         <tr>

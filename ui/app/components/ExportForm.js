@@ -52,10 +52,10 @@ import styles from "../styles/ExportForm.css";
 
 const form = reduxForm({
   form: "ExportForm",
-  onSubmit: (values, dispatch, props) => {
+  onSubmit: (values, dispatch, { createExport }) => {
     console.log("Submitting form. Values:", values);
 
-    dispatch(createExport(values, "ExportForm"));
+    createExport(values, "ExportForm");
   },
   validate: ({ the_geom }) => {
     const errors = {};
@@ -612,7 +612,7 @@ export class ExportForm extends Component {
       formValues,
       formValues: { export_formats: exportFormats },
       handleSubmit,
-      match: { params: { featuresUi, step } },
+      match: { params: { featuresUi } },
       overpassLastUpdated
     } = this.props;
 
@@ -630,7 +630,6 @@ export class ExportForm extends Component {
           >
             <Nav
               bsStyle="tabs"
-              activeKey={step}
               style={{ marginBottom: "20px" }}
             >
               <li>
@@ -782,5 +781,6 @@ buildings:
 };
 
 export default connect(mapStateToProps, {
+  createExport,
   getOverpassTimestamp
 })(form(ExportForm));
