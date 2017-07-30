@@ -12,7 +12,7 @@ export const createExport = (data, formName) => (dispatch, getState) => {
   dispatch(startSubmit(formName));
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -41,7 +41,7 @@ export const cloneExport = e => (dispatch, getState) => {
   dispatch(push("/exports/new"));
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -73,7 +73,7 @@ export const getRuns = jobUid => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -96,7 +96,7 @@ export const runExport = jobUid => (dispatch, getState) => {
   });
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -109,7 +109,7 @@ export const getOverpassTimestamp = () => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -128,7 +128,7 @@ export const getExport = id => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -147,7 +147,7 @@ export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },

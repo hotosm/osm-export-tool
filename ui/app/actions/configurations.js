@@ -11,7 +11,7 @@ export const createConfiguration = (data, formName) => (dispatch, getState) => {
   dispatch(startSubmit(formName));
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -41,7 +41,7 @@ export const updateConfiguration = (uid, data, formName) => (
   dispatch(startSubmit(formName));
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -72,7 +72,7 @@ export const getConfigurations = (filters = {}, page = 1) => (
   const token = selectAuthToken(getState());
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -96,7 +96,7 @@ export const getConfiguration = uid => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -115,7 +115,7 @@ export const deleteConfiguration = uid => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },

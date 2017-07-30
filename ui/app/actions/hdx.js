@@ -31,7 +31,7 @@ export const getExportRegions = (filters = {}, page = 1) => (
   });
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -73,7 +73,7 @@ export const getExportRegion = id => (dispatch, getState) => {
   });
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -107,7 +107,7 @@ export const runExport = (id, jobUid) => (dispatch, getState) => {
   });
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -140,7 +140,7 @@ export const deleteExportRegion = id => (dispatch, getState) => {
   });
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -175,7 +175,7 @@ export const createExportRegion = (data, form) => (dispatch, getState) => {
   dispatch(startSubmit(form));
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
@@ -231,7 +231,7 @@ export const updateExportRegion = (id, data, form) => (dispatch, getState) => {
   dispatch(startSubmit(form));
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },

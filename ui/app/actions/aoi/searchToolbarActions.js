@@ -9,7 +9,7 @@ export const getGeonames = query => (dispatch, getState) => {
   dispatch({ type: "FETCHING_GEONAMES" });
 
   return axios({
-    baseURL: process.env.EXPORTS_API_URL,
+    baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
