@@ -22,35 +22,33 @@ This is a guide to the source code - useful if you'd like to contribute to the E
 
 `ui/` is a React + ES6 frontend that communicates with the Django web application. It handles localization of the user interface, the OpenLayers-based map UI, and the Tag Tree feature selection wizard.
 
-## Developing
+## Development Prerequisites
 
 The Export Tool has several dependencies. As an alternative, use Docker to manage the project's environment, in which case you will need a Docker runtime. 
 
-* Python 2.7
-* virtualenv and pip
+* Python 2.7, virtualenv, pip
 * PostgreSQL 9+ and PostGIS
 * GDAL/OGR
-* RabbitMQ
+* RabbitMQ, a message queue
+* node.js and yarn
 
 ## Overpass API
 
-The HOT Exports service uses a local instance of [Overpass v07.52](http://overpass-api.de/) for data extraction.
-Detailed instructions for installing Overpass are available [here](http://wiki.openstreetmap.org/w/index.php?title=Overpass_API/Installation&redirect=no).
+The Export tool queries an instance of the Overpass API for source data. Overpass:
 
-Download a (latest) planet pbf file from (for example) [http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/](http://ftp.heanet.ie/mirrors/openstreetmap.org/pbf/).
+* can efficiently perform spatial queries over a large amount of OSM data, including members of ways and relations.
+* Has built in facilities to update OSM from minutely diffs.
+* Can create lossless PBF-format exports, which are necessary for some file formats such as OSMand and Garmin .IMG mobile device maps.
 
-If you're doing development you don't need the whole planet so download a continent or country level extract from [http://download.geofabrik.de/](http://download.geofabrik.de/),
-and update the `osmconvert` command below to reflect the filename you've downloaded.
+Instructions on installing Overpass are available at https://github.com/drolbr/Overpass-API . Alternatively, Overpass can be run via Docker - see `ops/docker-overpass-api`.
 
-To prime the database we've used `osmconvert` as follows:
-
-<code>osmconvert --out-osm planet-latest.osm.pbf | ./update_database --meta --db-dir=$DBDIR --flush-size=1</code>
-
-If the dispatcher fails to start, check for, and remove <code>osm3s_v0.7.52_osm_base</code> from <code>/dev/shm</code>.
-
-We apply minutely updates as per Overpass installation instructions, however this is not strictly necessary for development purposes.
+* The export tool is configured with an Overpass URL via the environment variable `OVERPASS_API_URL`. This can be a public Overpass instance, a remote instance you manage yourself, or a local instance on your own computer. Public instances may have strict rate limits, so please use them lightly.
+* To set up a local Overpass instance, start with a .pbf file. This can be the full planet .pbf from http://planet.openstreetmap.org or a region, e.g. pbfs available from http://download.geofabrik.de/ . 
+* Optionally, configure Overpass to update itself minutely. 
 
 
+
+## Development Step-By-Step Guide
 
 ### Create the database and role
 <pre>
@@ -134,7 +132,7 @@ You should then be able to browse to [http://localhost:8000/](http://localhost:8
 
 If you're running this in a virtual machine, use <code>./manage.py runserver 0.0.0.0:8000</code> to have Django listen on all interfaces and make it possible to connect from the VM host.
 
-## Celery Workers
+### Celery Workers
 
 HOT Exports depends on the [Celery](http://celery.readthedocs.org/en/latest/index.html) distributed task queue. As export jobs are created
 they are pushed to a Celery Worker for processing. At least two celery workers need to be started as follows:
