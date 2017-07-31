@@ -22,6 +22,7 @@ export default () =>
               Registering an account is required to create an export. You can register through your OpenStreetMap account here with a valid email address.
             </Alert>
             <h2>1. Defining an Area of Interest</h2>
+            <img src="/static/ui/images/docs/drawaoi.png" style={{width:"50%"}}></img><br/>
             There are 4 ways to define an Area of Interest for your export:
             <ul>
               <li>
@@ -43,6 +44,7 @@ export default () =>
             </Alert>
               
             <h2>2. Naming and Describing your Export</h2>
+            <img src="/static/ui/images/docs/describeexport.png" style={{width:"50%"}}></img>
             <ul>
               <li>
                 <strong>Name (required):</strong> choose a short, descriptive name.
@@ -55,6 +57,7 @@ export default () =>
               </li>
             </ul>
             <h2>3. Choosing File Formats</h2> 
+            <img src="/static/ui/images/docs/exportformats.png" style={{width:"50%"}}></img>
             <p>
               Check at least one file format to export. To learn more about each individual format,
               read the <Link to="/help/export_formats">Export Formats documentation.</Link>

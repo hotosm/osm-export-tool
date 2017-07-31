@@ -21,100 +21,53 @@ export default () =>
         <Row>
           <Col sm={8}>
             <p>
-              The{" "}
-              <Link to="/exports" target="_blank">
-                Exports
-              </Link>{" "}
-              page is where the user can filter and search existing saved exports, and
-              either rerun or clone it. Please note an account is not needed view or
-              search for existing exports, but is required to rerun.
+              If you're mapping as part of a humanitarian effort, it's possible that someone has already created an export relevant to your project.
+              Browsing and downloading exports doesn't require a user account.
             </p>
 
-            <h3>Filter Options</h3>
-            <p>
-              The Exports page has several filtering options to make it eaiser to find
-              the right export. The following filter options are detailed below:
-            </p>
+            <h3>Exports List</h3>
+            <img src="/static/ui/images/docs/searchexports.png" style={{width:"100%"}}></img>
             <ol>
               <li>
-                <strong>Search Box:</strong> Enter Name/Description/Event/Username
-                keywords to filter.
+                <strong>Search Box:</strong> Enter a query that will be matched against the Name, Description or Project of an export.
               </li>
               <li>
-                <strong>Start Date/End Date:</strong> Filter based on date of
-                creation.
-              </li>
-              <li>
-                <strong>Reset Form:</strong> Reset the filter options.
-              </li>
-              <li>
-                <strong>Interactive Map:</strong> Visually displays location of
-                filtered exports and can also be used to filter geographically by
-                selecting on the map.
-              </li>
-              <li>
-                <strong>Zoom Icon:</strong> Zoom to the location of the export on the
-                interactive map.
-              </li>
-              <li>
-                <strong>Eye Icon:</strong> Toggle the visibility of the export on the
-                interactive map. This will hide an export that might be overlapping
-                another.
-              </li>
-              <li>
-                <strong>My Exports:</strong> Displays private exports if the user is
-                logged in.
-              </li>
-              <li>
-                <strong>Next:</strong> Move on to the next page to display more
-                results.
+                <strong>Only my Exports:</strong> If you're logged in, display only exports created by you.
               </li>
             </ol>
 
 
             <h3>Export Details</h3>
+            <img src="/static/ui/images/docs/exportdetail.png" style={{width:"100%"}}></img>
             <p>
-              The user will be redirected to the 'Export Details' page once they have
-              selected a saved export from the 'Exports' page. The 'Export Details'
-              contains the information and status of the export, including the history
-              of runs.
+              <strong>Left Panel: Export Details.</strong> Shows the date of creation, user who created the export, and the feature selection.
+            </p>
+            <p>
+              <strong>Center Panel: Export Runs.</strong> Each "Run" of the export is associated with a list of file downloads, one for each export file format.
             </p>
 
+            <h3>Re-running an Export</h3>
             <p>
-              The OSM features applied to the export can be viewed by clicking the
-              'Features' button at the bottom of the page. If the features were
-              selected using the 'Tree Tag', this will be replicated in a pop-up
-              window. If a 'Preset File' was used then the features selected will be
-              listed in the XML file.
+                In the time since an Export was created, it's possible information has been added or updated on the main OpenStreetMap database.
+                Any downloaded files since won't contain that improved information. 
+                Re-running an export creates new files with the same area and feature selections, using the latest OSM data.
+                You will need to authenticate with an account to re-run an export.
             </p>
-
+        
+            <h3>Cloning an Export</h3>
             <p>
-              There are several options available on this page to apply to the Export,
-              which include the ability to 'Rerun Export', 'Clone Export', or 'Delete
-              Export'. The functionality of these options are detailed below:
+              "Cloning" an export lets you create a new export based on an existing one, possibly using the same area, description or feature selection,
+              and modifying each setting to suit your needs.
+              For more details on the Create Export form, see the documentation : <Link to="/help/quick_start">Quick Start</Link>.
             </p>
-
-            <ol>
-              <li>
-                <strong>Re-run Export:</strong> This function will rerun the export
-                with the original area of interest and settings for feature tags and
-                file formats.
-              </li>
-              <li>
-                <strong>Clone Export:</strong> This function will clone the export,
-                maintaining the original area of interest but allows the user to
-                modify the settings for feature tags and file formats.
-              </li>
-              <li>
-                <strong>Delete Export:</strong> Delete the saved export. Please note
-                that this function is only available to the user who originally
-                created the export.
-              </li>
-            </ol>
           </Col>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
+              <li>Export List</li>
+              <li>Export Details</li>
+              <li>Re-running an Export</li>
+              <li>Cloning an Export</li>
             </ul>
           </Col>
         </Row>
