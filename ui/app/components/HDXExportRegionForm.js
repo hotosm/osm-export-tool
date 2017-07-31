@@ -606,9 +606,9 @@ export class HDXExportRegionForm extends Component {
                 <h3>
                   Run History{" "}
                   <small>
-                    <a href={`/exports/detail/${exportRegion.job_uid}`}>
+                    <Link to={`/exports/detail/${exportRegion.job_uid}`}>
                       view export details
-                    </a>
+                    </Link>
                   </small>
                 </h3>
                 {runs.length > 0
