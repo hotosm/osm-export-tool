@@ -233,3 +233,25 @@ Finally, compile language files:
 ```
 python manage.py compilemessages
 ```
+
+### UI Translations
+
+To fetch updated translations for the JavaScript front-end, run:
+
+```bash
+cd ui/
+yarn run tx:pull
+```
+
+To push updated strings to Transifex, run:
+
+```bash
+cd ui/
+
+# build the app (to extract new strings)
+yarn run pack
+
+yarn run tx:push
+```
+
+If / when UI translations pass the 5% complete threshold (defined in `ui/.tx/config` as `minimum_perc`), new JSON files will appear in `ui/app/i18n/locales`. To enable these translations for use, add `react-intl` locale data to `ui/app/app.js` (for date / number formatting) and add options to `ui/app/components/LocaleSelector.js`.

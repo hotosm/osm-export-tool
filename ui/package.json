@@ -48,6 +48,7 @@
     "file-loader": "^0.11.2",
     "prettier": "^1.5.2",
     "react-hot-loader": "3.0.0-beta.6",
+    "react-intl-po": "^2.1.1",
     "redux-logger": "^3.0.6",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
@@ -59,7 +60,11 @@
     "dist": "NODE_ENV=production npm run pack",
     "pack": "webpack -p --progress --display-optimization-bailout --config webpack.config.js",
     "start": "webpack-dev-server --hot --history-api-fallback --content-base public/",
-    "watch": "webpack --watch --progress --config webpack.config.js"
+    "watch": "webpack --watch --progress --config webpack.config.js",
+    "json2pot": "rip json2pot 'app/i18n/messages/**/*.json' -o app/i18n/locales/ui.pot",
+    "po2json": "rip po2json app/i18n/locales/${LOCALE}.po -m 'app/i18n/messages/**/*.json' -o app/i18n/locales/${LOCALE}.json",
+    "tx:push": "npm run json2pot && tx push -s",
+    "tx:pull": "tx pull -a && for file in app/i18n/locales/*.po; do LOCALE=$(basename ${file%.po}) npm run po2json; done"
   },
   "license": "BSD-3-Clause"
 }

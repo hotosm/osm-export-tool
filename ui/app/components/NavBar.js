@@ -7,6 +7,7 @@ import { Link, NavLink } from "react-router-dom";
 import { login, logout } from "../actions/meta";
 import hotLogo from "../images/hot_logo.png";
 import { selectIsLoggedIn } from "../selectors";
+import LocaleSelector from "./LocaleSelector";
 import RequirePermission from "./RequirePermission";
 
 const NavBar = ({ isLoggedIn, login, logout }) =>
@@ -24,33 +25,9 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
             />
           </div>
         </div>
-        {/* <div className="col-md-8">
-          <span className="banner-links">
-            <a id="id" href="">
-              Bahasa Indonesia
-            </a>{" "}
-            |{" "}
-            <a id="de" href="">
-              Deutsch
-            </a>{" "}
-            |{" "}
-            <a id="en" href="">
-              English
-            </a>{" "}
-            |{" "}
-            <a id="es" href="">
-              Español
-            </a>{" "}
-            |{" "}
-            <a id="fr" href="">
-              Français
-            </a>{" "}
-            |{" "}
-            <a id="ja" href="">
-              日本語
-            </a>
-          </span>
-        </div> */}
+        <div className="col-md-8">
+          <LocaleSelector />
+        </div>
       </div>
     </div>
     <nav className="navbar navbar-inverse">

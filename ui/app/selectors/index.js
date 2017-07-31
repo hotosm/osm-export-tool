@@ -10,6 +10,8 @@ export const selectHDXError = state => state.hdx.error;
 
 export const selectHDXStatus = state => state.hdx.status;
 
+export const selectIntl = state => state.intl;
+
 export const selectIsLoggedIn = state => state.auth.isLoggedIn;
 
 export const selectLocationHash = state => qs.parse(state.router.location.hash);

@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[osm-export-tool2.ui]
+source_file = app/i18n/locales/ui.pot
+source_lang = en
+type = PO
+file_filter = app/i18n/locales/<lang>.po
+minimum_perc = 5

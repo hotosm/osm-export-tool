@@ -8,6 +8,25 @@ import thunk from "redux-thunk";
 
 import reducers from "../reducers";
 
+const loadMessages = locale => {
+  try {
+    return {
+      locale,
+      messages: require(`../i18n/locales/${locale}.json`)
+    };
+  } catch (err) {
+    const lang = locale.split("-")[0];
+
+    if (lang !== locale) {
+      return loadMessages(lang);
+    }
+  }
+};
+
+const initialState = {
+  intl: loadMessages(navigator.language)
+};
+
 const match = window.location.pathname.match(/(\/\w{2})?\/v3/);
 let basename = null;
 
@@ -39,6 +58,7 @@ const store = createStore(
     intl,
     router
   }),
+  initialState,
   applyMiddleware(...middleware)
 );
 

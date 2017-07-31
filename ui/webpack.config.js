@@ -28,7 +28,7 @@ const config = {
             [
               "react-intl",
               {
-                messagesDir: "./build/messages/"
+                messagesDir: "./app/i18n/messages/"
               }
             ]
           ],
