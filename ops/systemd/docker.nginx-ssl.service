@@ -10,6 +10,7 @@ ExecStart=/usr/bin/docker exec docker.nginx.service dehydrated -c -d exports-sta
 ExecStart=/usr/bin/docker exec docker.nginx.service cp /etc/dehydrated/certs/exports-staging.hotosm.org/chain.pem /etc/nginx/certs/
 ExecStart=/usr/bin/docker exec docker.nginx.service cp /etc/dehydrated/certs/exports-staging.hotosm.org/fullchain.pem /etc/nginx/certs/
 ExecStart=/usr/bin/docker exec docker.nginx.service cp /etc/dehydrated/certs/exports-staging.hotosm.org/privkey.pem /etc/nginx/certs/
+ExecStart=/bin/systemctl try-restart docker.nginx.service
 
 [Install]
 WantedBy=osm-export-tool.target
