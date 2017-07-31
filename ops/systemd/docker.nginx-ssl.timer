@@ -1,0 +1,10 @@
+[Unit]
+Description=Update SSL certificate monthly
+PartOf=docker.nginx.service
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+
+[Install]
+WantedBy=osm-export-tool.target

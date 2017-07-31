@@ -31,3 +31,9 @@ docker.celery`.
 
 `docker.postgresql-backup.{service,timer}` define a unit that runs daily to back the database up to
 S3. To check its schedule, run `systemctl list-timers`.
+
+## SSL Certificates
+
+`docker.nginx-ssl.{service,timer}` define a unit that runs monthly to register
+SSL certificates using [Let's Encrypt](https://letsencrypt.org/). To check its
+schedule, run `systemctl list-timers`.

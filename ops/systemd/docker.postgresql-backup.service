@@ -10,3 +10,6 @@ ExecStart=/bin/sh -c '/usr/bin/docker exec \
   -u postgres \
   docker.postgresql.service \
   pg_dump -Fc -d exports | aws s3 cp - s3://hotosm-backups/exports-prod/exports-$(date "+%%Y%%m%%d%%H%%M%%S").pgdump'
+
+[Install]
+WantedBy=osm-export-tool.target

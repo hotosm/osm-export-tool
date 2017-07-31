@@ -1,0 +1,15 @@
+[Unit]
+Description=SSL certificate registration
+After=docker.service docker.nginx.service
+Requires=docker.service docker.nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=-/usr/bin/docker exec docker.nginx.service dehydrated --register --accept-terms
+ExecStart=/usr/bin/docker exec docker.nginx.service dehydrated -c -d exports-staging.hotosm.org
+ExecStart=/usr/bin/docker exec docker.nginx.service cp /etc/dehydrated/certs/exports-staging.hotosm.org/chain.pem /etc/nginx/certs/
+ExecStart=/usr/bin/docker exec docker.nginx.service cp /etc/dehydrated/certs/exports-staging.hotosm.org/fullchain.pem /etc/nginx/certs/
+ExecStart=/usr/bin/docker exec docker.nginx.service cp /etc/dehydrated/certs/exports-staging.hotosm.org/privkey.pem /etc/nginx/certs/
+
+[Install]
+WantedBy=osm-export-tool.target

@@ -15,7 +15,9 @@ ExecStart=/usr/bin/docker run \
   --name %n \
   --network exports \
   --volumes-from docker.django.service \
+  -v /etc/certificates:/etc/nginx/certs \
   -p 80:80 \
+  -p 443:443 \
   quay.io/hotosm/osm-export-tool2-nginx
 
 [Install]
