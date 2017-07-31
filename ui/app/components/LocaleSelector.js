@@ -9,10 +9,16 @@ class LocaleSelector extends Component {
   selectLocale = locale => {
     const { updateIntl } = this.props;
 
-    updateIntl({
-      locale,
-      messages: require(`../i18n/locales/${locale}.json`)[locale]
-    });
+    try {
+      updateIntl({
+        locale,
+        messages: require(`../i18n/locales/${locale}.json`)[locale]
+      });
+    } catch (err) {
+      updateIntl({
+        locale
+      });
+    }
   };
 
   render() {
