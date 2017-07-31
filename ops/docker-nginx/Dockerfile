@@ -9,7 +9,7 @@ RUN \
   && rm -rf /var/lib/apt/lists/* \
   && curl -L https://github.com/lukas2511/dehydrated/archive/master.tar.gz | \
   tar zxf - --strip-components=1 -C /usr/local/bin \
-  && mkdir -p /usr/share/nginx/html/.wellknown
+  && mkdir -p /usr/share/nginx/html/.well-known
 
 # overwrite Nginx's default config
 COPY ops/exports.conf /etc/nginx/conf.d/default.conf
