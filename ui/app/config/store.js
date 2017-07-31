@@ -12,7 +12,7 @@ const loadMessages = locale => {
   try {
     return {
       locale,
-      messages: require(`../i18n/locales/${locale}.json`)
+      messages: require(`../i18n/locales/${locale}.json`)[locale]
     };
   } catch (err) {
     const lang = locale.split("-")[0];
