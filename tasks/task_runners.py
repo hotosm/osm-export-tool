@@ -131,7 +131,6 @@ def run_task_remote(self, run_uid): # noqa
 
         run.status = 'COMPLETED'
         LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
-        shutil.rmtree(stage_dir)
     except Exception as e:
         client.captureException(
             extra={
@@ -147,5 +146,6 @@ def run_task_remote(self, run_uid): # noqa
             send_hdx_error_notification(
                 run, run.job.hdx_export_region_set.first())
     finally:
+        shutil.rmtree(stage_dir)
         run.finished_at = timezone.now()
         run.save()
