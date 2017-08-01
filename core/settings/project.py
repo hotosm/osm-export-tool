@@ -78,6 +78,7 @@ HOSTNAME = os.getenv('HOSTNAME', 'export.hotosm.org')
 
 # Comment if you are not running behind proxy
 USE_X_FORWARDED_HOST = bool(os.getenv('USE_X_FORWARDED_HOST'))
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
