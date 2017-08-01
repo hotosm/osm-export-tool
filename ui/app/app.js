@@ -12,7 +12,6 @@ import { IntlProvider } from "react-intl";
 import { Route, Switch } from "react-router";
 import { ConnectedRouter } from "react-router-redux";
 
-import About from "./components/About";
 import Auth from "./components/Auth";
 import Authorized from "./components/Authorized";
 import Configurations from "./components/Configurations";
@@ -41,7 +40,7 @@ export default ({ history }) =>
         <Auth />
         <NavBar />
         <Switch>
-          <Route path="/about" component={About} />
+          <Route path="/about" component={Home} />
           <Route path="/authorized" component={Authorized} />
           <Route path="/configurations" component={Configurations} />
           <Route path="/exports" component={Exports} />
