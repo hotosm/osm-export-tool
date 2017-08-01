@@ -20,9 +20,9 @@ export default () =>
       <section className="helpDetailBody">
         <Row>
           <Col sm={8}>
-            <h2>Feature Selections</h2>
+            <h2 id="overview">Overview</h2>
             <p>
-              Feature Selections define how OSM is transformed into other formats,
+              YAML Feature Selections define how OSM is transformed into other formats,
               such as Shapefile, SQLite/Geopackage and KML. Many of these formats are
               tabular, so we need to define a set of columns to fill with OSM data.
               This feature selection format is similar to style files used by programs
@@ -73,7 +73,7 @@ export default () =>
               For more information about the YAML format, see the{" "}
               <a href="http://yaml.org/spec/1.2/spec.html">YAML specification</a>.
             </p>
-            <h3>Themes</h3>
+            <h2 id="themes">Themes</h2>
             <p>
               <code>buildings</code>, <code>waterways</code> and{" "}
               <code>hospitals</code> are examples of themes. In formats that have
@@ -83,13 +83,13 @@ export default () =>
               Themes are always be the top level keys of the YAML document. Valid
               characters for themes are letters, numbers and underscores.
             </p>
-            <h3> Geometry Types</h3>
+            <h2 id="geometrytypes">Geometry Types</h2>
             <p>
               the list values under types can be one or more of <code>- points</code>,{" "}
               <code>- lines</code>, <code>- polygons</code>. if the <code>types</code>{" "}
               key is omitted, all 3 geometry types will be included in the theme.
             </p>
-            <h3>Column selections</h3>
+            <h2 id="columnselections">Column selections</h2>
             <p>
               List items under the <code>select</code> key determine the columns for
               each theme.
@@ -122,7 +122,7 @@ export default () =>
                 their tags.
               </li>
             </ul>
-            <h3>Filters</h3>
+            <h2 id="filters">Filters</h2>
             <p>
               Filters are under the <code>where:</code> key in each theme. They define
               what subset of OSM features belongs to that theme.
@@ -141,6 +141,16 @@ export default () =>
         where: 'addr:housenumber' IS NOT NULL
         where: natural IN ('waterway','riverbank')`}
             </pre>
+          </Col>
+          <Col sm={3} smOffset={1} className="helpToc">
+            <h3>IN THIS AREA</h3>
+            <ul>
+              <li><a href="#overview">Overview</a></li>
+              <li><a href="#themes">Themes</a></li>
+              <li><a href="#geometrytypes">Geometry Types</a></li>
+              <li><a href="#columnselections">Column Selections</a></li>
+              <li><a href="#filters">Filters</a></li>
+            </ul>
           </Col>
         </Row>
       </section>

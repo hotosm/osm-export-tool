@@ -21,7 +21,7 @@ export default () =>
       <section className="helpDetailBody">
         <Row>
           <Col sm={8}>
-            <h3>Authorization</h3>
+            <h2 id="authorization">Authorization</h2>
             <p>User authentication and authorization is a two-step process.</p>
             <p>
               The Export Tool requires that users log into OpenStreetMap using{" "}
@@ -58,8 +58,7 @@ export default () =>
               Client applications can be created and managed using the{" "}
               <a href="/o/applications/">application management console</a>.
             </p>
-
-            <h3>Endpoints</h3>
+            <h2 id="endpoints">Endpoints</h2>
             <p>
               This is an incomplete list of API endpoints. For more information,
               please consult the{" "}
@@ -85,8 +84,8 @@ export default () =>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
-              <li>Authorization</li>
-              <li>Endpoints</li>
+              <li><a href="#authorization">Authorization</a></li>
+              <li><a href="#endpoints">Endpoints</a></li>
             </ul>
           </Col>
         </Row>

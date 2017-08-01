@@ -25,7 +25,7 @@ export default () =>
               Browsing and downloading exports doesn't require a user account.
             </p>
 
-            <h3>Exports List</h3>
+            <h2 id="exportslist">Exports List</h2>
             <img src="/static/ui/images/docs/searchexports.png" style={{width:"100%"}}></img>
             <ol>
               <li>
@@ -37,7 +37,7 @@ export default () =>
             </ol>
 
 
-            <h3>Export Details</h3>
+            <h2 id="exportdetails">Export Details</h2>
             <img src="/static/ui/images/docs/exportdetail.png" style={{width:"100%"}}></img>
             <p>
               <strong>Left Panel: Export Details.</strong> Shows the date of creation, user who created the export, and the feature selection.
@@ -46,7 +46,7 @@ export default () =>
               <strong>Center Panel: Export Runs.</strong> Each "Run" of the export is associated with a list of file downloads, one for each export file format.
             </p>
 
-            <h3>Re-running an Export</h3>
+            <h2 id="rerunexport">Re-running an Export</h2>
             <p>
                 In the time since an Export was created, it's possible information has been added or updated on the main OpenStreetMap database.
                 Any downloaded files since won't contain that improved information. 
@@ -54,7 +54,7 @@ export default () =>
                 You will need to authenticate with an account to re-run an export.
             </p>
         
-            <h3>Cloning an Export</h3>
+            <h2 id="cloneexport">Cloning an Export</h2>
             <p>
               "Cloning" an export lets you create a new export based on an existing one, possibly using the same area, description or feature selection,
               and modifying each setting to suit your needs.
@@ -64,10 +64,10 @@ export default () =>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
-              <li>Export List</li>
-              <li>Export Details</li>
-              <li>Re-running an Export</li>
-              <li>Cloning an Export</li>
+              <li><a href="#exportlist">Export List</a></li>
+              <li><a href="#exportdetails">Export Details</a></li>
+              <li><a href="#rerunexport">Re-running an Export</a></li>
+              <li><a href="#cloneexport">Cloning an Export</a></li>
             </ul>
           </Col>
         </Row>

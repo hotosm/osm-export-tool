@@ -66,11 +66,36 @@ export default () =>
                 </a>
               </li>
             </ul>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={6}>
-            <h2>Garmin .IMG</h2>
+            <h2 id="gpkg">OGC GeoPackage</h2>
+            <p>
+              OGC Geopackages store geospatial data in a single SQLite database. 
+              Geopackages are very similar to Spatialite-enabled SQLite databases.
+              They should be usable in most major GIS applications.
+              Geopackages support practically unlimited file sizes and numbers of columns in tables, and have full support for Unicode.
+              They're especially ideal if you need to run SQL queries over the data.
+            </p>
+            <h4>
+              <strong>Compatible Software</strong>
+            </h4>
+            <ul>
+              <li>PostgreSQL, SQL databases via GDAL/OGR</li>
+              <li>QGIS</li>
+              <li>Microsoft Access</li>
+            </ul>
+            <h4>
+              <strong>Further Information</strong>
+            </h4>
+            <ul>
+              <li>
+                <a
+                  href="http://www.geopackage.org/spec/"
+                  target="_blank"
+                >
+                  OGC® GeoPackage Encoding Standard
+                </a>
+              </li>
+            </ul>
+            <h2 id="img">Garmin .IMG</h2>
             <p>
               A .IMG file contains all information needed to render a map on a
               Garmin GPS mobile device. A .IMG is a disk image containing several files:
@@ -118,16 +143,10 @@ export default () =>
                 </a>
               </li>
             </ul>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={6}>
-            <h2>Google KMZ</h2>
+            <h2 id="kmz">Google KMZ</h2>
             <p>
-              The KMZ file is a compressed version of a KML file. The Keyhole Markup
-              Language (KML) is an Extensible Markup Language (XML) grammar and file
-              format for modeling and storing geographic features such as points,
-              lines, images polygons and models.
+              The KMZ file is a compressed version of a KML file. KML is an XML-based foramt for modeling 
+              points, lines, polygons and associated attributes.
             </p>
             <h4>
               <strong>Compatible Software</strong>
@@ -164,11 +183,7 @@ export default () =>
                 </a>
               </li>
             </ul>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={6}>
-            <h2>OpenStreetMap .PBF</h2>
+            <h2 id="pbf">OpenStreetMap .PBF</h2>
             <p>
               OpenStreetMap's canonical data format is an XML document of nodes, ways and relations.
               The <strong>Protocol Buffer Binary Format (PBF)</strong> is an optimised representation of OSM XML,
@@ -210,15 +225,10 @@ export default () =>
                 </a>
               </li>
             </ul>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={6}>
-            <h2>OSMAnd OBF</h2>
+            <h2 id="obf">OSMAnd OBF</h2>
             <p>
-              OsmAnd is a GPS Navigation and map application that runs on many Android
-              and iOS smartphones and tablets, featuring optional offline maps and
-              turn by turn directions.
+              OsmAnd is a GPS Navigation and map application for Android smartphones and tablets,
+              notably supporting offline mapping and navigation. 
             </p>
             <h4>
               <strong>Compatible Software</strong>
@@ -237,42 +247,15 @@ export default () =>
               </li>
             </ul>
           </Col>
-        </Row>
-        <Row>
-          <Col xs={6}>
-            <h2>OGC GeoPackage</h2>
-            <p>
-              The .sql file is related to the Structured Query Language (SQL) and are
-              used to modify the contents of a relation database. These files written
-              in ASCII may contain instructions and statements for creating or
-              modifying database structure, such as data insertions, updates,
-              deletions and other SQL operations.
-            </p>
-            <h4>
-              <strong>Compatible Software</strong>
-            </h4>
+          <Col sm={3} smOffset={1} className="helpToc">
+            <h3>IN THIS AREA</h3>
             <ul>
-              <li>PostgreSQL</li>
-              <li>MySQL</li>
-              <li>Microsoft Access</li>
-            </ul>
-            <h4>
-              <strong>Further Information</strong>
-            </h4>
-            <ul>
-              <li>
-                <a
-                  href="http://www.postgresql.org/docs/9.4/static/sql.html"
-                  target="_blank"
-                >
-                  PostgreSQL | The SQL Language
-                </a>
-              </li>
-              <li>
-                <a href="https://en.wikipedia.org/wiki/SQL" target="_blank">
-                  Wikipedia | SQL
-                </a>
-              </li>
+              <li><a href="#shp">ESRI Shapefile (.shp)</a></li>
+              <li><a href="#gpkg">OGC Geopackage (.gpkg)</a></li>
+              <li><a href="#img">Garmin IMG (.img)</a></li>
+              <li><a href="#kmz">Google KMZ (.kmz)</a></li>
+              <li><a href="#pbf">OpenStreetMap PBF (.pbf)</a></li>
+              <li><a href="#obf">OSMAnd OBF (.obf)</a></li>
             </ul>
           </Col>
         </Row>
