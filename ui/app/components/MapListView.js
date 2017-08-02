@@ -5,6 +5,7 @@ import Control from "ol/control/control";
 import Fill from "ol/style/fill";
 import GeoJSONFormat from "ol/format/geojson";
 import interaction from "ol/interaction";
+import LayerAttribution from "ol/attribution";
 import Map from "ol/map";
 import ol from "ol";
 import OSM from "ol/source/osm";
@@ -150,7 +151,16 @@ export default class MapListView extends Component {
       layers: [
         // Order matters here
         new Tile({
-          source: new OSM()
+          source: new OSM({
+            attributions: [
+              new LayerAttribution({
+                html: `© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>`
+              }),
+              OSM.ATTRIBUTION
+            ],
+            url:
+              "https://{a-c}.tiles.mapbox.com/styles/v1/openaerialmap/ciyx269by002w2rldex1768f5/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib3BlbmFlcmlhbG1hcCIsImEiOiJjaXl4MjM5c20wMDBmMzNucnZtbnYwZTcxIn0.IKG5flWCS6QfpO3iOdRveg"
+          })
         })
       ],
       target: "map",
