@@ -23,7 +23,7 @@ export const createExport = (data, formName) => (dispatch, getState) => {
   })
     .then(rsp => {
       dispatch(stopSubmit(formName));
-      dispatch(push(`/exports/detail/${rsp.data.uid}`));
+      dispatch(push(`/exports/${rsp.data.uid}`));
     })
     .catch(err =>
       dispatch(

@@ -12,7 +12,7 @@ def send_completion_notification(run):
     from_email = 'OSM Export Tool <exports@hotosm.org>'
 
     ctx = {
-        'url': 'http://{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
+        'url': 'https://{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
         'status': run.status,
     }
 
@@ -40,7 +40,7 @@ def send_hdx_completion_notification(run, region):
             'job': run.job,
             'region': region,
             'status': run.status,
-            'url': 'http://{0}/v3/exports/{1}'.format(
+            'url': 'https://{0}/v3/exports/{1}'.format(
                 settings.HOSTNAME, run.job.uid),
         }
 
@@ -66,7 +66,7 @@ def send_hdx_error_notification(run, region):
             'job': run.job,
             'region': region,
             'status': run.status,
-            'url': 'http://{0}/v3/exports/{1}'.format(
+            'url': 'https://{0}/v3/exports/{1}'.format(
                 settings.HOSTNAME, run.job.uid),
         }
 
@@ -88,7 +88,7 @@ def send_error_notification(run):
     from_email = 'OSM Export Tool <exports@hotosm.org>'
 
     ctx = {
-        'url': 'http://{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
+        'url': 'https://{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
         'status': run.status,
         'task_id': run.uid,
     }

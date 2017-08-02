@@ -36,7 +36,7 @@ class _ExportTable extends Component {
         {jobs.map((job, i) =>
           <tr key={i}>
             <td>
-              <Link to={`/exports/detail/${job.uid}`}>
+              <Link to={`/exports/${job.uid}`}>
                 {job.name}
               </Link>
             </td>

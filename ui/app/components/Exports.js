@@ -16,7 +16,7 @@ export default ({ history }) =>
         path="/exports/new/:step?/:featuresUi?"
         component={AuthorizedExportForm}
       />
-      <Route path="/exports/detail/:id/:run_id?" component={ExportDetails} />
+      <Route path="/exports/:id/:run_id?" component={ExportDetails} />
       <Route component={ExportList} />
     </Switch>
   </ConnectedRouter>;
