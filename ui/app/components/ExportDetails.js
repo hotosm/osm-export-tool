@@ -14,7 +14,12 @@ import { connect } from "react-redux";
 
 import MapListView from "./MapListView";
 import { getExport, getRuns, runExport, cloneExport } from "../actions/exports";
-import { exportFormatNicename, formatDate, formatDuration } from "./utils";
+import {
+  REQUIRES_FEATURE_SELECTION,
+  exportFormatNicename,
+  formatDate,
+  formatDuration
+} from "./utils";
 
 const Details = ({ exportInfo }) => {
   return (
@@ -27,7 +32,9 @@ const Details = ({ exportInfo }) => {
               defaultMessage="Description"
             />:
           </td>
-          <td colSpan="3">{exportInfo.description}</td>
+          <td colSpan="3">
+            {exportInfo.description}
+          </td>
         </tr>
         <tr>
           <td>
@@ -274,10 +281,15 @@ export class ExportDetails extends Component {
       match: { params: { id } },
       runExport
     } = this.props;
+
     const geom = exportInfo
       ? { features: [exportInfo.simplified_geom], type: "FeatureCollection" }
       : null;
     const selectedId = exportInfo ? exportInfo.simplified_geom.id : null;
+
+    const requiresFeatureSelection = (exportInfo.export_formats || [])
+      .some(x => REQUIRES_FEATURE_SELECTION[x]);
+
     return (
       <Row style={{ height: "100%" }}>
         <Col
@@ -287,12 +299,13 @@ export class ExportDetails extends Component {
           <Panel header={exportInfo ? "Export #" + exportInfo.uid : null}>
             {exportInfo ? <Details exportInfo={exportInfo} /> : null}
             <ButtonGroup>
-              <Button bsSize="large" onClick={this.showModal}>
-                <FormattedMessage
-                  id="ui.exports.features"
-                  defaultMessage="Features"
-                />
-              </Button>
+              {requiresFeatureSelection &&
+                <Button bsSize="large" onClick={this.showModal}>
+                  <FormattedMessage
+                    id="ui.exports.features"
+                    defaultMessage="Features"
+                  />
+                </Button>}
               <Button
                 bsStyle="success"
                 bsSize="large"
