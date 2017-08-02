@@ -78,7 +78,12 @@ const Details = ({ exportInfo }) => {
             />:
           </td>
           <td colSpan="3">
-            {exportInfo.user.username}
+            <a
+              href={`http://www.openstreetmap.org/user/${exportInfo.user
+                .username}`}
+            >
+              {exportInfo.user.username}
+            </a>
           </td>
         </tr>
         <tr>
