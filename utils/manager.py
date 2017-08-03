@@ -1,15 +1,18 @@
+from __future__ import absolute_import
+
 import os
 import shutil
 import zipfile
 
-from artifact import Artifact
-from garmin_img import GarminIMG
-from geopackage import Geopackage
-from kml import KML
-from osm_pbf import OSM_PBF
-from osm_xml import OSM_XML
-from osmand_obf import OsmAndOBF
-from shp import Shapefile
+from .artifact import Artifact
+from .garmin_img import GarminIMG
+from .geopackage import Geopackage
+from .kml import KML
+from .mwm import MWM
+from .osm_pbf import OSM_PBF
+from .osm_xml import OSM_XML
+from .osmand_obf import OsmAndOBF
+from .shp import Shapefile
 
 
 # ugly class to handle renaming, zipping and moving
@@ -66,7 +69,8 @@ class RunManager(object):
         Shapefile: Geopackage,
         KML: Geopackage,
         OsmAndOBF: OSM_PBF,
-        GarminIMG: OSM_PBF
+        GarminIMG: OSM_PBF,
+        MWM: OSM_PBF,
     }
 
     def __init__(
@@ -146,6 +150,8 @@ class RunManager(object):
                 self.dir,
                 self.feature_selection,
                 per_theme=self.per_theme)
+        if formatcls == MWM:
+            task = MWM(self.dir + 'export.pbf')
 
         self.on_task_start(formatcls)
         task.run()

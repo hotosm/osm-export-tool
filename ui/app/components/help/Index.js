@@ -104,6 +104,11 @@ export default () =>
                     OGC Geopackage (.GPKG)
                   </Link>
                 </li>
+                <li>
+                  <Link to="/help/export_formats#mwm">
+                    maps.me MWM (.MWM)
+                  </Link>
+                </li>
               </ul>
               <Link className="btn btn-default" to="/help/export_formats">
                 View

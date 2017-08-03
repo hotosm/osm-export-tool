@@ -241,8 +241,38 @@ export default () =>
             </h4>
             <ul>
               <li>
-                <a href="http://wiki.openstreetmap.org/wiki/OsmAnd" target="_blank">
+                <a
+                  href="http://wiki.openstreetmap.org/wiki/OsmAnd"
+                  target="_blank"
+                >
                   OSMAnd | OBF Format
+                </a>
+              </li>
+            </ul>
+            <h2 id="mwm">maps.me MWM</h2>
+            <p>
+              Maps.me is a GPS Navigation and map application for Android and
+              iOS smartphones and tablets, notably supporting offline mapping
+              and navigation.
+            </p>
+            <h4>
+              <strong>Compatible Software</strong>
+            </h4>
+            <ul>
+              <li>maps.me</li>
+            </ul>
+            <h4>
+              <strong>Further Information</strong>
+            </h4>
+            <ul>
+              <li>
+                <a href="http://maps.me/" target="_blank">
+                  maps.me
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/mapsme/omim" target="_blank">
+                  maps.me on GitHub
                 </a>
               </li>
             </ul>
@@ -250,12 +280,27 @@ export default () =>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
-              <li><a href="#shp">ESRI Shapefile (.shp)</a></li>
-              <li><a href="#gpkg">OGC Geopackage (.gpkg)</a></li>
-              <li><a href="#img">Garmin IMG (.img)</a></li>
-              <li><a href="#kmz">Google KMZ (.kmz)</a></li>
-              <li><a href="#pbf">OpenStreetMap PBF (.pbf)</a></li>
-              <li><a href="#obf">OSMAnd OBF (.obf)</a></li>
+              <li>
+                <a href="#shp">ESRI Shapefile (.shp)</a>
+              </li>
+              <li>
+                <a href="#gpkg">OGC Geopackage (.gpkg)</a>
+              </li>
+              <li>
+                <a href="#img">Garmin IMG (.img)</a>
+              </li>
+              <li>
+                <a href="#kmz">Google KMZ (.kmz)</a>
+              </li>
+              <li>
+                <a href="#pbf">OpenStreetMap PBF (.pbf)</a>
+              </li>
+              <li>
+                <a href="#obf">OSMAnd OBF (.obf)</a>
+              </li>
+              <li>
+                <a href="#mwm">maps.me MWM (.mwm)</a>
+              </li>
             </ul>
           </Col>
         </Row>

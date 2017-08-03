@@ -22,7 +22,8 @@ export const AVAILABLE_EXPORT_FORMATS = {
   garmin_img: "Garmin .IMG",
   kml: "Google Earth .KMZ",
   osm_xml: "OSM .XML",
-  osm_pbf: "OSM .PBF"
+  osm_pbf: "OSM .PBF",
+  mwm: "MWM Format (maps.me)"
 };
 
 export const REQUIRES_FEATURE_SELECTION = {
