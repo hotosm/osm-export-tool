@@ -81,6 +81,7 @@ services:
     ports:
       - "80:80"
     volumes:
+      - ./ops/exports-dev.conf:/etc/nginx/conf.d/default.conf
       - ./ui/static/ui/js:/opt/static/ui/js
     volumes_from:
       - site
