@@ -41,7 +41,7 @@ RUN \
     libgdal-dev \
     libmagic1 \
     libpq-dev \
-    libqt5core5a
+    libqt5core5a \
     libsqlite3-mod-spatialite \
     libspatialite7 \
     libspatialite-dev \
