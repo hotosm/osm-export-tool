@@ -51,7 +51,6 @@ planet_osm_line:
     - tunnel
     - waterway
 
-
 planet_osm_polygon:
   types:
     - polygons
