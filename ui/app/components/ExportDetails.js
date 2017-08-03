@@ -287,13 +287,21 @@ export class ExportDetails extends Component {
       runExport
     } = this.props;
 
-    const geom = exportInfo
-      ? { features: [exportInfo.simplified_geom], type: "FeatureCollection" }
-      : null;
-    const selectedId = exportInfo ? exportInfo.simplified_geom.id : null;
+    let geom;
+    let selectedId;
+    let requiresFeatureSelection = false;
 
-    const requiresFeatureSelection = (exportInfo.export_formats || [])
-      .some(x => REQUIRES_FEATURE_SELECTION[x]);
+    if (exportInfo != null) {
+      geom = {
+        features: [exportInfo.simplified_geom],
+        type: "FeatureCollection"
+      };
+
+      selectedId = exportInfo.simplified_geom.id;
+
+      requiresFeatureSelection = (exportInfo.export_formats || [])
+        .some(x => REQUIRES_FEATURE_SELECTION[x]);
+    }
 
     return (
       <Row style={{ height: "100%" }}>
