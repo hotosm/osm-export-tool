@@ -66,6 +66,18 @@ a {
   border-bottom-color: transparent;
 }
 
+footer {
+  padding: 25px 20px 0;
+}
+
+footer .center {
+  text-align: center;
+}
+
+footer .right {
+  text-align: right;
+}
+
 /* main container / bootstrap styles */
 
 .container-fluid {

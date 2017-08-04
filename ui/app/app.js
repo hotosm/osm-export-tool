@@ -16,6 +16,7 @@ import Auth from "./components/Auth";
 import Authorized from "./components/Authorized";
 import Configurations from "./components/Configurations";
 import Exports from "./components/Exports";
+import Footer from "./components/Footer";
 import HDX from "./components/HDX";
 import Help from "./components/Help";
 import Home from "./components/Home";
@@ -48,6 +49,7 @@ export default ({ history }) =>
           <Route path="/help" component={Help} />
           <Route component={Home} />
         </Switch>
+        <Footer />
       </div>
     </ConnectedRouter>
   </IntlProvider>;
