@@ -1,9 +1,23 @@
 import React, { Component } from "react";
-import { Button } from "react-bootstrap";
+import { MenuItem, NavDropdown } from "react-bootstrap";
 import { updateIntl } from "react-intl-redux";
 import { connect } from "react-redux";
 
 import { selectIntl } from "../selectors";
+
+const LOCALES = ["id", "de", "en", "es", "fr", "it", "nl_NL", "pt"];
+const LANGUAGES = {
+  id: "Bahasa Indonesia",
+  de: "Deutsch",
+  en: "English",
+  es: "Español",
+  fr: "Français",
+  it: "Italiano",
+  nl_NL: "Nederlands",
+  pt: "Português"
+};
+
+const getLanguage = locale => LANGUAGES[locale] || "Unknown";
 
 class LocaleSelector extends Component {
   selectLocale = locale => {
@@ -22,81 +36,16 @@ class LocaleSelector extends Component {
   };
 
   render() {
+    const { intl: { locale } } = this.props;
+
     return (
-      <ul className="locales">
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("id")}
-          >
-            Bahasa Indonesia
-          </Button>
-        </li>
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("de")}
-          >
-            Deutsch
-          </Button>
-        </li>
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("en")}
-          >
-            English
-          </Button>
-        </li>
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("es")}
-          >
-            Español
-          </Button>
-        </li>
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("fr")}
-          >
-            Français
-          </Button>
-        </li>
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("it")}
-          >
-            Italiano
-          </Button>
-        </li>
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("nl_NL")}
-          >
-            Nederlands
-          </Button>
-        </li>
-        <li>
-          <Button
-            type="button"
-            bsStyle="link"
-            onClick={() => this.selectLocale("pt")}
-          >
-            Português
-          </Button>
-        </li>
-      </ul>
+      <NavDropdown title={getLanguage(locale)}>
+        {LOCALES.map((locale, idx) =>
+          <MenuItem eventKey={locale} key={idx} onSelect={this.selectLocale}>
+            {getLanguage(locale)}
+          </MenuItem>
+        )}
+      </NavDropdown>
     );
   }
 }
