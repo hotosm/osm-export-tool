@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Button, Col, Jumbotron, Row } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -8,27 +8,39 @@ import { login } from "../actions/meta";
 import { selectIsLoggedIn } from "../selectors";
 
 const Home = ({ isLoggedIn, login }) =>
-  <div className="row">
-    <div className="col-md-6">
-      <div id="about">
-        <h2>
+  <div className="home">
+    <Jumbotron className="hero center">
+      <h1 className="centered">
+        <FormattedMessage id="ui.title" defaultMessage="OSM Export Tool" />
+      </h1>
+      <p className="centered">
+        The Export Tool creates up-to-date OSM extracts in various file formats.
+      </p>
+      <p className="centered">
+        <Link to="/create" className="btn btn-danger btn-lg">
           <FormattedMessage
-            id="ui.about.title.overview"
-            defaultMessage="Fresh Humanitarian Maps"
+            id="ui.home.action"
+            defaultMessage="Start Exporting"
           />
-        </h2>
-        <h3>
+        </Link>
+      </p>
+    </Jumbotron>
+    <Row>
+      <Col md={4}>
+        <h2>
           <FormattedMessage
             id="ui.about.subhead"
             defaultMessage="Download up-to-date humanitarian maps for GIS analysis, GPS devices and Smartphones."
           />
-        </h3>
+        </h2>
         <p>
           <FormattedMessage
             id="ui.about.overview"
             defaultMessage="The Export Tool creates OpenStreetMap-derived files that can be used seamlessly for GIS and mobile mapping applications. OSM data is updated at one minute intervals. OSM data can be extracted for any polygonal area and filtered to only relevant tags and features."
           />
         </p>
+      </Col>
+      <Col md={4}>
         <h2>
           <FormattedMessage
             id="ui.about.title.getting_started"
@@ -58,6 +70,29 @@ const Home = ({ isLoggedIn, login }) =>
             }}
           />
         </p>
+        {!isLoggedIn &&
+          <div>
+            <h3>
+              <FormattedMessage
+                id="ui.login_to_osm"
+                defaultMessage="Login to OpenStreetMap"
+              />
+            </h3>
+            <p>
+              If you don't have an OpenStreetMap account you can register for
+              one <a href="http://www.openstreetmap.org/user/new">here</a>.
+            </p>
+            <div className="text-center">
+              <Button bsSize="large" bsStyle="success" onClick={login}>
+                <FormattedMessage
+                  id="ui.login_to_osm"
+                  defaultMessage="Login to OpenStreetMap"
+                />
+              </Button>
+            </div>
+          </div>}
+      </Col>
+      <Col md={4}>
         <h2>
           <FormattedMessage
             id="ui.about.other_resources"
@@ -71,7 +106,10 @@ const Home = ({ isLoggedIn, login }) =>
             values={{
               hdxLink: (
                 <Link to="https://data.humdata.org/">
-                  <FormattedMessage id="ui.about.other_resources.hdx_link" defaultMessage="Humanitarian Data Exchange (HDX)" />
+                  <FormattedMessage
+                    id="ui.about.other_resources.hdx_link"
+                    defaultMessage="Humanitarian Data Exchange (HDX)"
+                  />
                 </Link>
               )
             }}
@@ -84,7 +122,10 @@ const Home = ({ isLoggedIn, login }) =>
             values={{
               tmLink: (
                 <Link to="http://tasks.hotosm.org/">
-                  <FormattedMessage id="ui.about.other_resources.tm_link" defaultMessage="HOT Tasking Manager" />
+                  <FormattedMessage
+                    id="ui.about.other_resources.tm_link"
+                    defaultMessage="HOT Tasking Manager"
+                  />
                 </Link>
               )
             }}
@@ -107,44 +148,8 @@ const Home = ({ isLoggedIn, login }) =>
             }}
           />
         </p>
-      </div>
-    </div>
-    {!isLoggedIn &&
-      <div className="col-md-6">
-        <div
-          className="panel panel-default"
-          style={{ margin: "2em 3em 0em 3em" }}
-        >
-          <div id="heading-wrap" className="panel-heading">
-            <h3>
-              <FormattedMessage
-                id="ui.login_to_osm"
-                defaultMessage="Login to OpenStreetMap"
-              />
-            </h3>
-          </div>
-          <div className="panel-body">
-            <div>
-              <div className="row pull-left">
-                <div style={{ fontSize: "large" }}>
-                  If you don't have an OpenStreetMap account you can register
-                  for one{" "}
-                  <a href="http://www.openstreetmap.org/user/new">here</a>.
-                </div>
-                <br />
-                <div className="col-md-6">
-                  <Button bsSize="large" bsStyle="success" onClick={login}>
-                    <FormattedMessage
-                      id="ui.login_to_osm"
-                      defaultMessage="Login to OpenStreetMap"
-                    />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>}
+      </Col>
+    </Row>
   </div>;
 
 const mapStateToProps = state => ({

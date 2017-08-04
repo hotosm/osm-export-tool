@@ -67,7 +67,10 @@ a {
 }
 
 footer {
-  padding: 25px 20px 0;
+  background-color: #f8f8f8;
+  border-top: 1px solid #e7e7e7;
+  margin-top: 10px;
+  padding: 25px 20px;
 }
 
 footer .center {
@@ -939,6 +942,45 @@ span#spinner i {
 
 .help .itemWrapper:nth-of-type(3n) {
   padding-right: 0%;
+}
+
+.home h1 {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.home .hero p {
+  color: rgba(49, 75, 84, .64);
+  font-size: 24px;
+}
+
+.home .hero {
+  background-color: white;
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-image: url("../images/pipes.jpg");
+  width: 1152px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.home .centered {
+  text-align: center;
+}
+
+.home .col-md-4 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.home .col-md-4:first-child {
+  padding-left: 30px;
+}
+
+.home .col-md-4:last-child {
+  padding-right: 30px;
 }
 
 /* hack in react tree menu */
