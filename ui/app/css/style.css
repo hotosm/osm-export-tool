@@ -1381,3 +1381,9 @@ p {
   vertical-align: bottom;
   box-shadow: inset 0 -2px 0 0 rgba(31, 59, 69, 0.12);
 }
+
+.ol-filter {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}

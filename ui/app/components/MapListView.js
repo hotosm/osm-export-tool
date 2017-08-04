@@ -18,6 +18,7 @@ import View from "ol/view";
 import Zoom from "ol/control/zoom";
 import bbox from "@turf/bbox";
 
+import FilterControl from "./FilterControl";
 import ZoomExtent from "./ZoomExtent";
 import styles from "../styles/aoi/CreateExport.css";
 
@@ -131,6 +132,9 @@ export default class MapListView extends Component {
             14251787.50789682,
             10584983.780136958
           ]
+        }),
+        new FilterControl({
+          onUpdate: extent => console.log("selected extent:", extent)
         })
       ],
       interactions: interaction.defaults({
