@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Nav, NavItem, Navbar } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import { login, logout } from "../actions/meta";
 import hotLogo from "../images/hot-logo.svg";
@@ -14,9 +14,9 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
   <Navbar>
     <Navbar.Header>
       <Navbar.Brand>
-        <a href="https://www.hotosm.org/">
+        <Link to="/exports/new">
           <img className="logo" src={hotLogo} role="presentation" />
-        </a>
+        </Link>
       </Navbar.Brand>
     </Navbar.Header>
     <Nav className="pull-right">
@@ -46,7 +46,7 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
         <NavLink to="/configurations">
           <FormattedMessage
             id="ui.configurations"
-            defaultMessage="Configurations"
+            defaultMessage="Configs"
           />
         </NavLink>
       </li>
