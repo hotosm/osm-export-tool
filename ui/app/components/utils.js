@@ -8,12 +8,12 @@ import {
 } from "react-bootstrap";
 import { Field } from "redux-form";
 import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
 import Select from "react-select";
 import styles from "../styles/utilsStyles.css";
 import yaml from "js-yaml";
 import moment from "moment";
 
+import { login } from "../actions/meta";
 import { selectIsLoggedIn } from "../selectors";
 
 export const AVAILABLE_EXPORT_FORMATS = {
@@ -318,7 +318,25 @@ export const prettyBytes = num => {
 };
 
 export const requireAuth = Component =>
-  connect(state => ({ isLoggedIn: selectIsLoggedIn(state) }))(
-    ({ isLoggedIn, ...props }) =>
-      isLoggedIn ? <Component {...props} /> : <Redirect to="/home" />
+  connect(state => ({ isLoggedIn: selectIsLoggedIn(state) }), { login })(
+    class extends React.Component {
+      componentDidMount() {
+        const { isLoggedIn, login } = this.props;
+
+        if (!isLoggedIn) {
+          login();
+        }
+      }
+
+      render() {
+        const { isLoggedIn } = this.props;
+
+        if (isLoggedIn) {
+          return <Component {...this.props} />;
+        }
+
+        // TODO display loading screen
+        return null;
+      }
+    }
   );

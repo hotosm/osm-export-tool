@@ -41,7 +41,6 @@ export default ({ history }) =>
         <Auth />
         <NavBar />
         <Switch>
-          <Route path="/about" component={Home} />
           <Route path="/authorized" component={Authorized} />
           <Route path="/configurations" component={Configurations} />
           <Route path="/exports" component={Exports} />

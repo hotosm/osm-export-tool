@@ -17,7 +17,7 @@ const Home = ({ isLoggedIn, login }) =>
         The Export Tool creates up-to-date OSM extracts in various file formats.
       </p>
       <p className="centered">
-        <Link to="/create" className="btn btn-danger btn-lg">
+        <Link to="/exports/new" className="btn btn-danger btn-lg">
           <FormattedMessage
             id="ui.home.action"
             defaultMessage="Start Exporting"
@@ -82,14 +82,6 @@ const Home = ({ isLoggedIn, login }) =>
               If you don't have an OpenStreetMap account you can register for
               one <a href="http://www.openstreetmap.org/user/new">here</a>.
             </p>
-            <div className="text-center">
-              <Button bsSize="large" bsStyle="success" onClick={login}>
-                <FormattedMessage
-                  id="ui.login_to_osm"
-                  defaultMessage="Login to OpenStreetMap"
-                />
-              </Button>
-            </div>
           </div>}
       </Col>
       <Col md={4}>

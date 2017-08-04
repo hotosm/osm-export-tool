@@ -21,7 +21,7 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
     </Navbar.Header>
     <Nav className="pull-right">
       <li>
-        <NavLink to="/about">
+        <NavLink to="/">
           <FormattedMessage id="ui.about" defaultMessage="About" />
         </NavLink>
       </li>
