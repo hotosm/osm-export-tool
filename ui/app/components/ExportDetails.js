@@ -107,9 +107,10 @@ const Details = ({ exportInfo }) => {
             />:
           </td>
           <td colSpan="3">
+            <ul style={{ listStyleType: "none", padding: 0 }}>
             {exportInfo.export_formats
-              .map(x => exportFormatNicename(x))
-              .join(", ")}
+              .map(x => <li>{exportFormatNicename(x)}</li>)}
+            </ul>
           </td>
         </tr>
         <tr>

@@ -17,13 +17,41 @@ import { login } from "../actions/meta";
 import { selectIsLoggedIn } from "../selectors";
 
 export const AVAILABLE_EXPORT_FORMATS = {
-  shp: <span>Shapefile <code>.SHP</code></span>,
-  geopackage: <span>GeoPackage <code>.GPKG</code></span>,
-  garmin_img: <span>Garmin <code>.IMG</code></span>,
-  kml: <span>Google Earth <code>.KMZ</code></span>,
-  osm_xml: <span>OSM <code>.XML</code></span>,
-  osm_pbf: <span>OSM <code>.PBF</code></span>,
-  mwm: <span>Maps.me <code>.MWM</code></span>
+  shp: (
+    <span key="shp">
+      Shapefile <code>.SHP</code>
+    </span>
+  ),
+  geopackage: (
+    <span key="geopackage">
+      GeoPackage <code>.GPKG</code>
+    </span>
+  ),
+  garmin_img: (
+    <span key="garmin_img">
+      Garmin <code>.IMG</code>
+    </span>
+  ),
+  kml: (
+    <span key="kml">
+      Google Earth <code>.KMZ</code>
+    </span>
+  ),
+  osm_xml: (
+    <span key="osm_xml">
+      OSM <code>.XML</code>
+    </span>
+  ),
+  osm_pbf: (
+    <span key="osm_pbf">
+      OSM <code>.PBF</code>
+    </span>
+  ),
+  mwm: (
+    <span key="mwm">
+      Maps.me <code>.MWM</code>
+    </span>
+  )
 };
 
 export const REQUIRES_FEATURE_SELECTION = {
