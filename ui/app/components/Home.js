@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Jumbotron, Row } from "react-bootstrap";
+import { Col, Jumbotron, Row } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -23,6 +23,12 @@ const Home = ({ isLoggedIn, login }) =>
             defaultMessage="Start Exporting"
           />
         </Link>
+      </p>
+      <p className="attribution">
+        <a href="https://www.flickr.com/photos/mementosis/4681191786/">
+          mementosis <i className="fa fa-creative-commons" />{" "}
+          <i className="fa fa-flickr" />
+        </a>
       </p>
     </Jumbotron>
     <Row>

@@ -966,6 +966,14 @@ span#spinner i {
   position: relative;
 }
 
+.home .hero .attribution a {
+  color: #7a8487;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 10px;
+}
+
 .home .centered {
   text-align: center;
 }
