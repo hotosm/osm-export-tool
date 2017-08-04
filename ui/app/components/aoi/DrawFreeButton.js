@@ -37,57 +37,39 @@ const SELECTED_ICON = (
 );
 
 export class DrawFreeButton extends Component {
-  constructor(props) {
-    super(props);
-    this.handleOnClick = this.handleOnClick.bind(this);
-    this.state = {
-      icon: DEFAULT_ICON
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { toolbarIcons: { free } } = this.props;
-    const { toolbarIcons: { free: nextFree } } = nextProps;
-
-    if (nextFree !== free) {
-      switch (nextFree) {
-        case "DEFAULT":
-          this.setState({
-            icon: DEFAULT_ICON
-          });
-          break;
-
-        case "INACTIVE":
-          this.setState({
-            icon: INACTIVE_ICON
-          });
-          break;
-
-        case "SELECTED":
-          this.setState({
-            icon: SELECTED_ICON
-          });
-          break;
-
-        default:
-      }
-    }
-  }
-
   handleOnClick = () => {
-    if (this.state.icon === SELECTED_ICON) {
+    const icon = this.getIcon();
+
+    if (icon === SELECTED_ICON) {
       this.props.setAllButtonsDefault();
       this.props.handleCancel();
-    } else if (this.state.icon === DEFAULT_ICON) {
+    } else if (icon === DEFAULT_ICON) {
       this.props.setFreeButtonSelected();
       this.props.updateMode("MODE_DRAW_FREE");
     }
   };
 
+  getIcon() {
+    const { toolbarIcons: { free: icon } } = this.props;
+
+    switch (icon) {
+      case "SELECTED":
+        return SELECTED_ICON;
+
+      case "INACTIVE":
+        return INACTIVE_ICON;
+
+      default:
+        return DEFAULT_ICON;
+    }
+  }
+
   render() {
+    const icon = this.getIcon();
+
     return (
       <div className={styles.drawButtonGeneral} onClick={this.handleOnClick}>
-        {this.state.icon}
+        {icon}
       </div>
     );
   }

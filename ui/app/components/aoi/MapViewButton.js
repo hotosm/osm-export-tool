@@ -49,40 +49,39 @@ const SELECTED_ICON = (
 );
 
 export class MapViewButton extends Component {
-  state = {
-    icon: DEFAULT_ICON
-  };
-
-  componentWillReceiveProps(nextProps) {
-    // TODO state is wholely unnecessary
-    //If the button has been selected update the button state
-    if (nextProps.toolbarIcons.mapView === "SELECTED") {
-      this.setState({ icon: SELECTED_ICON });
-    }
-    // If the button has been de-selected update the button state
-    if (nextProps.toolbarIcons.mapView === "DEFAULT") {
-      this.setState({ icon: DEFAULT_ICON });
-    }
-    // If the button has been set as inactive update the state
-    if (nextProps.toolbarIcons.mapView === "INACTIVE") {
-      this.setState({ icon: INACTIVE_ICON });
-    }
-  }
-
   handleOnClick = () => {
-    if (this.state.icon === SELECTED_ICON) {
+    const icon = this.getIcon();
+
+    if (icon === SELECTED_ICON) {
       this.props.setAllButtonsDefault();
       this.props.handleCancel();
-    } else if (this.state.icon === DEFAULT_ICON) {
+    } else if (icon === DEFAULT_ICON) {
       this.props.setMapViewButtonSelected();
       this.props.setMapView();
     }
   };
 
+  getIcon() {
+    const { toolbarIcons: { mapView: icon } } = this.props;
+
+    switch (icon) {
+      case "SELECTED":
+        return SELECTED_ICON;
+
+      case "INACTIVE":
+        return INACTIVE_ICON;
+
+      default:
+        return DEFAULT_ICON;
+    }
+  }
+
   render() {
+    const icon = this.getIcon();
+
     return (
       <div className={styles.drawButtonGeneral} onClick={this.handleOnClick}>
-        {this.state.icon}
+        {icon}
       </div>
     );
   }

@@ -37,53 +37,39 @@ const SELECTED_ICON = (
 );
 
 export class DrawBoxButton extends Component {
-  state = {
-    icon: DEFAULT_ICON
-  };
+  getIcon() {
+    const { toolbarIcons: { box: icon } } = this.props;
 
-  componentWillReceiveProps(nextProps) {
-    const { toolbarIcons: { box } } = this.props;
-    const { toolbarIcons: { box: nextBox } } = nextProps;
+    switch (icon) {
+      case "SELECTED":
+        return SELECTED_ICON;
 
-    if (nextBox !== box) {
-      switch (nextBox) {
-        case "DEFAULT":
-          this.setState({
-            icon: DEFAULT_ICON
-          });
-          break;
+      case "INACTIVE":
+        return INACTIVE_ICON;
 
-        case "INACTIVE":
-          this.setState({
-            icon: INACTIVE_ICON
-          });
-          break;
-
-        case "SELECTED":
-          this.setState({
-            icon: SELECTED_ICON
-          });
-          break;
-
-        default:
-      }
+      default:
+        return DEFAULT_ICON;
     }
   }
 
   handleOnClick = () => {
-    if (this.state.icon === SELECTED_ICON) {
+    const icon = this.getIcon();
+
+    if (icon === SELECTED_ICON) {
       this.props.setAllButtonsDefault();
       this.props.handleCancel();
-    } else if (this.state.icon === DEFAULT_ICON) {
+    } else if (icon === DEFAULT_ICON) {
       this.props.setBoxButtonSelected();
       this.props.updateMode("MODE_DRAW_BBOX");
     }
   };
 
   render() {
+    const icon = this.getIcon();
+
     return (
       <div className={styles.drawButtonGeneral} onClick={this.handleOnClick}>
-        {this.state.icon}
+        {icon}
       </div>
     );
   }

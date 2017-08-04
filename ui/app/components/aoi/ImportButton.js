@@ -39,11 +39,13 @@ const SELECTED_ICON = (
 
 export class ImportButton extends Component {
   handleOnClick = () => {
-    if (this.getIcon() === SELECTED_ICON) {
+    const icon = this.getIcon();
+
+    if (icon === SELECTED_ICON) {
       this.props.setAllButtonsDefault();
       this.props.setImportModalState(false);
       this.props.handleCancel();
-    } else if (this.getIcon() === DEFAULT_ICON) {
+    } else if (icon === DEFAULT_ICON) {
       this.props.setImportButtonSelected();
       this.props.setImportModalState(true);
     }
