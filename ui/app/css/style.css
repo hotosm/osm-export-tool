@@ -1008,6 +1008,10 @@ The class for the element that wraps a nodes children (if any exist)
 .tree-view-node-children {
 }
 
+.tree-view-node .tree-view-node label {
+  font-weight: normal;
+}
+
 /* checkbox-tree */
 
 .react-checkbox-tree ol {

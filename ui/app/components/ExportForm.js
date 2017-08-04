@@ -106,7 +106,7 @@ const messages = defineMessages({
   },
   namePlaceholder: {
     id: "export.name.placeholder",
-    defaultMessage: "name this export"
+    defaultMessage: "Name this export"
   },
   projectLabel: {
     id: "export.project.label",
@@ -114,11 +114,11 @@ const messages = defineMessages({
   },
   projectPlaceholder: {
     id: "export.project.placeholder",
-    defaultMessage: "which activation this export is for"
+    defaultMessage: "Which activation this export is for"
   },
   publishedDescription: {
     id: "export.published.description",
-    defaultMessage: "Publish this export"
+    defaultMessage: "Publish this Export"
   },
   tagTreeSearchPlaceholder: {
     id: "export.tag_tree_search.placeholder",
@@ -149,7 +149,7 @@ const Describe = injectIntl(({ intl: { formatMessage }, next }) =>
       placeholder={formatMessage(messages.projectPlaceholder)}
       component={renderInput}
     />
-    <Link className="btn btn-lg btn-default pull-right" to={next}>
+    <Link className="btn btn-lg btn-primary pull-right" to={next}>
       <FormattedMessage id="nav.next" defaultMessage="Next" />
     </Link>
   </Row>
@@ -435,7 +435,7 @@ const SelectFeatures = ({
       {featuresUi === "yaml" ? <YamlUi onDrop={onDrop} /> : null}
     </Row>
     <Row>
-      <Link className="btn btn-lg btn-default pull-right" to={next}>
+      <Link className="btn btn-lg btn-primary pull-right" to={next}>
         <FormattedMessage id="nav.next" defaultMessage="Next" />
       </Link>
     </Row>
@@ -450,7 +450,7 @@ const ChooseFormats = ({ next }) =>
     >
       {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
     </Field>
-    <Link className="btn btn-lg btn-default pull-right" to={next}>
+    <Link className="btn btn-lg btn-primary pull-right" to={next}>
       <FormattedMessage id="nav.next" defaultMessage="Next" />
     </Link>
   </Row>;
@@ -509,7 +509,7 @@ const Summary = injectIntl(
           type="checkbox"
         />
         <Button
-          bsStyle="success"
+          bsStyle="danger"
           bsSize="large"
           type="submit"
           style={{ width: "100%" }}

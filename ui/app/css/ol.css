@@ -89,7 +89,7 @@
   height: 1.375em;
   width: 1.375em;
   line-height: .4em;
-  background-color: rgba(0, 60, 136, .5);
+  background-color: #439ab4;
   border: none;
   border-radius: 2px;
 }
@@ -115,7 +115,7 @@
 .ol-control button:focus,
 .ol-control button:hover {
   text-decoration: none;
-  background-color: rgba(0, 60, 136, .7);
+  background-color: #439ab4;
 }
 .ol-zoom .ol-zoom-in {
   border-radius: 2px 2px 0 0;

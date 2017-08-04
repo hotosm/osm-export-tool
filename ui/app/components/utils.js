@@ -17,13 +17,13 @@ import moment from "moment";
 import { selectIsLoggedIn } from "../selectors";
 
 export const AVAILABLE_EXPORT_FORMATS = {
-  shp: "ESRI Shapefiles",
-  geopackage: "GeoPackage",
-  garmin_img: "Garmin .IMG",
-  kml: "Google Earth .KMZ",
-  osm_xml: "OSM .XML",
-  osm_pbf: "OSM .PBF",
-  mwm: "MWM Format (maps.me)"
+  shp: <span>Shapefile <code>.SHP</code></span>,
+  geopackage: <span>GeoPackage <code>.GPKG</code></span>,
+  garmin_img: <span>Garmin <code>.IMG</code></span>,
+  kml: <span>Google Earth <code>.KMZ</code></span>,
+  osm_xml: <span>OSM <code>.XML</code></span>,
+  osm_pbf: <span>OSM <code>.PBF</code></span>,
+  mwm: <span>Maps.me <code>.MWM</code></span>
 };
 
 export const REQUIRES_FEATURE_SELECTION = {

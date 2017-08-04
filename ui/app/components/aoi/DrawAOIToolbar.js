@@ -24,7 +24,7 @@ export class DrawAOIToolbar extends Component {
             <strong>
               <FormattedMessage
                 id="ui.aoi_toolbar.tools"
-                defaultMessage="TOOLS"
+                defaultMessage="Tools"
               />
             </strong>
           </div>

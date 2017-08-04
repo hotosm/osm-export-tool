@@ -16,7 +16,7 @@ const DEFAULT_ICON = (
     <div className={styles.buttonName}>
       <FormattedMessage
         id="ui.draw.current_view"
-        defaultMessage="CURRENT VIEW"
+        defaultMessage="THIS VIEW"
       />
     </div>
   </div>
@@ -30,7 +30,7 @@ const INACTIVE_ICON = (
     <div className={styles.buttonName + " " + styles.buttonNameInactive}>
       <FormattedMessage
         id="ui.draw.current_view"
-        defaultMessage="CURRENT VIEW"
+        defaultMessage="THIS VIEW"
       />
     </div>
   </div>
@@ -42,7 +42,7 @@ const SELECTED_ICON = (
     <div className={styles.buttonName}>
       <FormattedMessage
         id="ui.draw.current_view"
-        defaultMessage="CURRENT VIEW"
+        defaultMessage="THIS VIEW"
       />
     </div>
   </div>

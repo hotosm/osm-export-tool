@@ -36,7 +36,7 @@ const messages = defineMessages({
   },
   featureSelectionLabel: {
     id: "configuration.feature_selection.label",
-    defaultMessage: "FeatureSelection"
+    defaultMessage: "Feature Selection"
   },
   nameLabel: {
     id: "configuration.name.label",
@@ -48,7 +48,7 @@ const messages = defineMessages({
   },
   publicDescription: {
     id: "configuration.public.description",
-    defaultMessage: "Public - others can see your configuration"
+    defaultMessage: "Publish this Configuration"
   }
 });
 
@@ -99,7 +99,7 @@ export class ConfigurationForm extends Component {
           component={renderCheckbox}
         />
         <Button
-          bsStyle="success"
+          bsStyle="primary"
           bsSize="large"
           type="submit"
           onClick={this.props.handleSubmit}
