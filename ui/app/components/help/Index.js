@@ -5,7 +5,7 @@ import { Jumbotron, Panel, Row, Col } from "react-bootstrap";
 export default () =>
   <div className="help">
     <Jumbotron className="hero center">
-      <h1>Welcome</h1>
+      <h1 className="centered">Welcome</h1>
       <p>
         The Export Tool creates up-to-date OSM extracts in various file formats.
         Learn more about the Export Tool below.
