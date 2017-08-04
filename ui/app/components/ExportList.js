@@ -44,7 +44,7 @@ class _ExportTable extends Component {
               {job.description}
             </td>
             <td>
-              {job.project}
+              {job.event}
             </td>
             <td>
               <FormattedDate value={job.created_at} />{" "}

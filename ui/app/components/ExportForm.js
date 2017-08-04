@@ -108,12 +108,12 @@ const messages = defineMessages({
     id: "export.name.placeholder",
     defaultMessage: "Name this export"
   },
-  projectLabel: {
-    id: "export.project.label",
+  eventLabel: {
+    id: "export.event.label",
     defaultMessage: "Project"
   },
-  projectPlaceholder: {
-    id: "export.project.placeholder",
+  eventPlaceholder: {
+    id: "export.event.placeholder",
     defaultMessage: "Which activation this export is for"
   },
   publishedDescription: {
@@ -143,10 +143,10 @@ const Describe = injectIntl(({ intl: { formatMessage }, next }) =>
       rows="4"
     />
     <Field
-      name="project"
+      name="event"
       type="text"
-      label={formatMessage(messages.projectLabel)}
-      placeholder={formatMessage(messages.projectPlaceholder)}
+      label={formatMessage(messages.eventLabel)}
+      placeholder={formatMessage(messages.eventPlaceholder)}
       component={renderInput}
     />
     <Link className="btn btn-lg btn-primary pull-right" to={next}>
