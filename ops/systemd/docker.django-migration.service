@@ -5,14 +5,15 @@ Requires=docker.service docker.postgresql.service docker.exports-network.service
 
 [Service]
 Type=oneshot
-# TODO this should wait for postgres to be available (not just started)
+ExecStartPre=-/usr/bin/docker kill %n
+ExecStartPre=-/usr/bin/docker rm %n
 ExecStart=/usr/bin/docker run \
   -e DATABASE_URL=postgis://exports:exports@postgresql/exports \
   --env-file /etc/exports.env \
   --rm \
-  --name %n-migration \
+  --name %n \
   --network exports \
   -v /mnt-storage/stage:/opt/export_staging \
   -v /mnt-storage/downloads:/opt/export_downloads \
   quay.io/hotosm/osm-export-tool2 \
-  python manage.py migrate --no-input
+  migrate.sh
