@@ -162,7 +162,7 @@ const ExistingDatasetsPanel = ({
     This will immediately update {datasets.length} dataset{datasets.length === 1 ? "" : "s"}{" "}
     on HDX.
     <Button
-      bsStyle="primary"
+      bsStyle="danger"
       bsSize="large"
       type="submit"
       disabled={submitting}
@@ -260,6 +260,7 @@ export class HDXExportRegionForm extends Component {
 
   componentDidMount() {
     const {
+      exportRegion,
       getExportRegion,
       getLocationOptions,
       match: { params: { id } }
@@ -272,6 +273,10 @@ export class HDXExportRegionForm extends Component {
       this.setState({
         editing: true
       });
+
+      if (exportRegion != null) {
+        this.didReceiveRegion(exportRegion);
+      }
     }
 
     getLocationOptions();
@@ -594,7 +599,7 @@ export class HDXExportRegionForm extends Component {
                         <strong>Next scheduled run:</strong> {this.getNextRun()}
                       </p>
                       <Button
-                        bsStyle="primary"
+                        bsStyle="danger"
                         disabled={running}
                         onClick={this.handleRun}
                       >
