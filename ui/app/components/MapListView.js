@@ -24,11 +24,6 @@ import styles from "../styles/aoi/CreateExport.css";
 const GEOJSON_FORMAT = new GeoJSONFormat();
 const WGS84 = "EPSG:4326";
 const WEB_MERCATOR = "EPSG:3857";
-const WORLD_EXTENT = proj.transformExtent(
-  [-180, -90, 180, 90],
-  WGS84,
-  WEB_MERCATOR
-);
 
 export default class MapListView extends Component {
   static propTypes = {
@@ -65,10 +60,6 @@ export default class MapListView extends Component {
     if (prevProps.selectedFeatureId !== selectedFeatureId) {
       this.zoomToFeatureId(selectedFeatureId);
     }
-  }
-
-  handleResetMap() {
-    this._map.getView().fit(WORLD_EXTENT, this._map.getSize());
   }
 
   updateFeatures(features) {

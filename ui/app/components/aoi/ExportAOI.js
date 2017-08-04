@@ -134,15 +134,6 @@ export class ExportAOI extends Component {
         this._map.getSize()
       );
 
-  handleResetMap = () => {
-    let worldExtent = proj.transformExtent(
-      [-180, -90, 180, 90],
-      WGS84,
-      WEB_MERCATOR
-    );
-    this._map.getView().fit(worldExtent, this._map.getSize());
-  };
-
   handleSearch = result => {
     const unformattedBbox = result.bbox;
     const formattedBbox = [
