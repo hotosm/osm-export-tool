@@ -103,7 +103,7 @@ class JobViewSet(viewsets.ModelViewSet):
             self, ):
         user = self.request.user
         queryset = Job.objects
-        mineonly = strtobool(self.request.query_params.get('mineonly', 'false'))
+        all = strtobool(self.request.query_params.get('all', 'false'))
         bbox = self.request.query_params.get('bbox', None)
         before = self.request.query_params.get('before', None)
         after = self.request.query_params.get('after', None)
@@ -114,7 +114,7 @@ class JobViewSet(viewsets.ModelViewSet):
         if bbox is not None:
             bbox = bbox_to_geom(bbox)
             queryset = queryset.filter(Q(the_geom__within=bbox))
-        if mineonly:
+        if not all:
             queryset = queryset.filter(Q(user_id=user.id))
 
         return queryset.filter(Q(user_id=user.id) | Q(published=True))
@@ -145,8 +145,8 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
             self, ):
         user = self.request.user
         queryset = SavedFeatureSelection.objects.filter(deleted=False)
-        mineonly = strtobool(self.request.query_params.get('mineonly', 'false'))
-        if mineonly:
+        all = strtobool(self.request.query_params.get('all', 'false'))
+        if not all:
             queryset = queryset.filter(Q(user_id=user.id))
 
         return queryset.filter(Q(user_id=user.id) | Q(public=True))
@@ -239,8 +239,8 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         user = self.request.user
         queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related(
             'job__runs__tasks').defer('job__the_geom')
-        mineonly = strtobool(self.request.query_params.get('mineonly', 'false'))
-        if mineonly:
+        all = strtobool(self.request.query_params.get('all', 'false'))
+        if not all:
             queryset = queryset.filter(Q(job__user_id=user.id))
 
         return queryset

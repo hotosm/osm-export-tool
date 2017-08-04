@@ -87,47 +87,52 @@ class ConfigurationListPane extends Component {
               defaultMessage="Create New Configuration"
             />
           </Link>
+        </div>
+        <div style={{ padding: "20px" }}>
           {(configurations.total > 0 || filters !== {}) &&
             <div>
               <FilterForm
                 type={formatMessage(messages.configurationsType)}
                 onSubmit={this.search}
               />
-              <Table>
-                <thead>
-                  <tr>
-                    <th>
-                      <FormattedMessage
-                        id="ui.configuration.name.label"
-                        defaultMessage="Name"
-                      />
-                    </th>
-                    <th>
-                      <FormattedMessage
-                        id="ui.configuration.description.label"
-                        defaultMessage="Description"
-                      />
-                    </th>
-                    <th>
-                      <FormattedMessage
-                        id="ui.configuration.tables.label"
-                        defaultMessage="Tables"
-                      />
-                    </th>
-                    <th>
-                      <FormattedMessage
-                        id="ui.configuration.owner.label"
-                        defaultMessage="Owner"
-                      />
-                    </th>
-                  </tr>
-                </thead>
-                <ConfigurationTable configurations={configurations.items} />
-              </Table>
-              <Paginator
-                collection={configurations}
-                getPage={getConfigurations.bind(null, filters)}
-              />
+              {configurations.total > 0 &&
+                <div>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>
+                          <FormattedMessage
+                            id="ui.configuration.name.label"
+                            defaultMessage="Name"
+                          />
+                        </th>
+                        <th>
+                          <FormattedMessage
+                            id="ui.configuration.description.label"
+                            defaultMessage="Description"
+                          />
+                        </th>
+                        <th>
+                          <FormattedMessage
+                            id="ui.configuration.tables.label"
+                            defaultMessage="Tables"
+                          />
+                        </th>
+                        <th>
+                          <FormattedMessage
+                            id="ui.configuration.owner.label"
+                            defaultMessage="Owner"
+                          />
+                        </th>
+                      </tr>
+                    </thead>
+                    <ConfigurationTable configurations={configurations.items} />
+                  </Table>
+                  <Paginator
+                    collection={configurations}
+                    getPage={getConfigurations.bind(null, filters)}
+                  />
+                </div>}
             </div>}
         </div>
       </Col>

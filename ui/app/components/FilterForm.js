@@ -16,9 +16,9 @@ const form = reduxForm({
 });
 
 const messages = defineMessages({
-  onlyMine: {
-    id: "ui.search.only_mine",
-    defaultMessage: "Only my {type}"
+  showAll: {
+    id: "ui.search.show_all",
+    defaultMessage: "Show all {type}"
   },
   searchPlaceholder: {
     id: "ui.search.placeholder",
@@ -102,10 +102,10 @@ class ExportSearchForm extends Component {
         </InputGroup>
         <Field
           component={renderCheckbox}
-          description={formatMessage(messages.onlyMine, {
+          description={formatMessage(messages.showAll, {
             type
           })}
-          name="mineonly"
+          name="all"
           style={{ paddingLeft: 12 }}
           type="checkbox"
         />
