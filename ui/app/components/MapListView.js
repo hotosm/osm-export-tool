@@ -1,13 +1,11 @@
 import React, { Component, PropTypes } from "react";
 import isEqual from "lodash/isEqual";
 import Attribution from "ol/control/attribution";
-import Control from "ol/control/control";
 import Fill from "ol/style/fill";
 import GeoJSONFormat from "ol/format/geojson";
 import interaction from "ol/interaction";
 import LayerAttribution from "ol/attribution";
 import Map from "ol/map";
-import ol from "ol";
 import OSM from "ol/source/osm";
 import proj from "ol/proj";
 import ScaleLine from "ol/control/scaleline";
@@ -20,11 +18,17 @@ import View from "ol/view";
 import Zoom from "ol/control/zoom";
 import bbox from "@turf/bbox";
 
+import ZoomExtent from "./ZoomExtent";
 import styles from "../styles/aoi/CreateExport.css";
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
 const WGS84 = "EPSG:4326";
 const WEB_MERCATOR = "EPSG:3857";
+const WORLD_EXTENT = proj.transformExtent(
+  [-180, -90, 180, 90],
+  WGS84,
+  WEB_MERCATOR
+);
 
 export default class MapListView extends Component {
   static propTypes = {
@@ -64,12 +68,7 @@ export default class MapListView extends Component {
   }
 
   handleResetMap() {
-    const worldExtent = proj.transformExtent(
-      [-180, -90, 180, 90],
-      WGS84,
-      WEB_MERCATOR
-    );
-    this._map.getView().fit(worldExtent, this._map.getSize());
+    this._map.getView().fit(WORLD_EXTENT, this._map.getSize());
   }
 
   updateFeatures(features) {
@@ -185,35 +184,3 @@ export default class MapListView extends Component {
     );
   }
 }
-
-const ZoomExtent = function(options = {}) {
-  options.className = options.className || "";
-
-  const button = document.createElement("button");
-  const icon = document.createElement("i");
-  icon.className = "fa fa-globe";
-  button.appendChild(icon);
-
-  this.zoomer = () => {
-    const map = this.getMap();
-    const view = map.getView();
-    const extent = options.extent || view.getProjection.getExtent();
-    const size = map.getSize();
-
-    view.fit(extent, size);
-  };
-
-  button.addEventListener("click", this.zoomer, false);
-  button.addEventListener("touchstart", this.zoomer, false);
-
-  const element = document.createElement("div");
-  element.className = options.className + " ol-unselectable ol-control";
-  element.appendChild(button);
-
-  Control.call(this, {
-    element: element,
-    target: options.target
-  });
-};
-
-ol.inherits(ZoomExtent, Control);

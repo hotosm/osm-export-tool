@@ -1,10 +1,8 @@
 import bbox from "@turf/bbox";
-import detectIt from "detect-it";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Attribution from "ol/control/attribution";
-import Control from "ol/control/control";
 import Draw from "ol/interaction/draw";
 import Feature from "ol/feature";
 import Fill from "ol/style/fill";
@@ -12,7 +10,6 @@ import GeoJSONFormat from "ol/format/geojson";
 import interaction from "ol/interaction";
 import LayerAttribution from "ol/attribution";
 import Map from "ol/map";
-import ol from "ol";
 import OSM from "ol/source/osm";
 import Polygon from "ol/geom/polygon";
 import proj from "ol/proj";
@@ -32,6 +29,7 @@ import SearchAOIToolbar from "./SearchAOIToolbar.js";
 import DrawAOIToolbar from "./DrawAOIToolbar.js";
 import InvalidDrawWarning from "./InvalidDrawWarning.js";
 import DropZone from "./DropZone.js";
+import ZoomExtent from "../ZoomExtent";
 import { updateMode } from "../../actions/exports";
 
 export const MODE_DRAW_BBOX = "MODE_DRAW_BBOX";
@@ -42,40 +40,6 @@ const WEB_MERCATOR = "EPSG:3857";
 const isEqual = require("lodash/isEqual");
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
-
-const ZoomExtent = function(options) {
-  options = options || {};
-  options.className = options.className != null ? options.className : "";
-
-  let button = document.createElement("button");
-  button.setAttribute("type", "button");
-  let icon = document.createElement("i");
-  icon.className = "fa fa-globe";
-  button.appendChild(icon);
-
-  this.zoomer = () => {
-    const map = this.getMap();
-    const view = map.getView();
-    const size = map.getSize();
-    view.fit(options.extent, size);
-  };
-
-  button.addEventListener("click", this.zoomer, false);
-  button.addEventListener(
-    "touchstart",
-    this.zoomer,
-    detectIt.passiveEvents ? { passive: true } : false
-  );
-  let element = document.createElement("div");
-  element.className = options.className + " ol-unselectable ol-control";
-  element.appendChild(button);
-
-  Control.call(this, {
-    element: element,
-    target: options.target
-  });
-};
-ol.inherits(ZoomExtent, Control);
 
 export class ExportAOI extends Component {
   static propTypes = {
