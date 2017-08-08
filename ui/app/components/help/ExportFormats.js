@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Jumbotron, Row, Col, Alert } from 'react-bootstrap';
+import { Jumbotron, Row, Col, Alert } from "react-bootstrap";
 
 export default () =>
   <div className="help">
@@ -10,8 +10,7 @@ export default () =>
     </ol>
     <Jumbotron className="hero">
       <h1>Export Formats</h1>
-      <p>
-      </p>
+      <p />
     </Jumbotron>
     <div className="helpDetailContainer">
       <section className="helpDetailBody">
@@ -19,8 +18,9 @@ export default () =>
           <Col sm={8}>
             <h2 id="shp">Esri Shapefile (.SHP)</h2>
             <p>
-              Shapefiles are a tabular format developed by Esri. They are the most popular file format for GIS data.
-              A shapefile is actually 3-4 individual files, commonly bundled together as a ZIP archive:
+              Shapefiles are a tabular format developed by Esri. They are the
+              most popular file format for GIS data. A shapefile is actually 3-4
+              individual files, commonly bundled together as a ZIP archive:
             </p>
             <ul>
               <li><strong>.shp</strong> - shape format; feature geometry</li>
@@ -29,7 +29,10 @@ export default () =>
               <li><strong>.prj</strong> - coordinate format; projection information</li>
             </ul>
 
-            <p>Choose to export Shapefiles if you need the broadest compatibilty among GIS software. </p>
+            <p>
+              Choose to export Shapefiles if you need the broadest compatibilty
+              among GIS software.{" "}
+            </p>
             <ul>
               <li>QGIS</li>
               <li>GRASS GIS</li>
@@ -68,11 +71,12 @@ export default () =>
             </ul>
             <h2 id="gpkg">OGC GeoPackage</h2>
             <p>
-              OGC Geopackages store geospatial data in a single SQLite database. 
-              Geopackages are very similar to Spatialite-enabled SQLite databases.
-              They should be usable in most major GIS applications.
-              Geopackages support practically unlimited file sizes and numbers of columns in tables, and have full support for Unicode.
-              They're especially ideal if you need to run SQL queries over the data.
+              OGC Geopackages store geospatial data in a single SQLite database.
+              Geopackages are very similar to Spatialite-enabled SQLite
+              databases. They should be usable in most major GIS applications.
+              Geopackages support practically unlimited file sizes and numbers
+              of columns in tables, and have full support for Unicode. They're
+              especially ideal if you need to run SQL queries over the data.
             </p>
             <h4>
               <strong>Compatible Software</strong>
@@ -87,10 +91,7 @@ export default () =>
             </h4>
             <ul>
               <li>
-                <a
-                  href="http://www.geopackage.org/spec/"
-                  target="_blank"
-                >
+                <a href="http://www.geopackage.org/spec/" target="_blank">
                   OGC® GeoPackage Encoding Standard
                 </a>
               </li>
@@ -98,7 +99,8 @@ export default () =>
             <h2 id="img">Garmin .IMG</h2>
             <p>
               A .IMG file contains all information needed to render a map on a
-              Garmin GPS mobile device. A .IMG is a disk image containing several files:
+              Garmin GPS mobile device. A .IMG is a disk image containing
+              several files:
             </p>
             <ul>
               <li><strong>.rgn</strong> - map elements; polylines, polygons and points</li>
@@ -109,8 +111,9 @@ export default () =>
               <li><strong>.mdr</strong> - searchable address table for routing desinations</li>
             </ul>
             <Alert bsStyle="warning">
-              <strong>.IMG Styles:</strong> The cartographic style and feature choices of the map are not dependent 
-              on the feature selection submitted to the Export Tool - instead, a default style based on
+              <strong>.IMG Styles:</strong> The cartographic style and feature
+              choices of the map are not dependent on the feature selection
+              submitted to the Export Tool - instead, a default style based on
               all OSM data is used.
             </Alert>
             <h4>
@@ -145,8 +148,9 @@ export default () =>
             </ul>
             <h2 id="kmz">Google KMZ</h2>
             <p>
-              The KMZ file is a compressed version of a KML file. KML is an XML-based foramt for modeling 
-              points, lines, polygons and associated attributes.
+              The KMZ file is a compressed version of a KML file. KML is an
+              XML-based foramt for modeling points, lines, polygons and
+              associated attributes.
             </p>
             <h4>
               <strong>Compatible Software</strong>
@@ -185,11 +189,15 @@ export default () =>
             </ul>
             <h2 id="pbf">OpenStreetMap .PBF</h2>
             <p>
-              OpenStreetMap's canonical data format is an XML document of nodes, ways and relations.
-              The <strong>Protocol Buffer Binary Format (PBF)</strong> is an optimised representation of OSM XML,
-              which is smaller on disk and faster to read. This format is only compatible with OpenStreetMap specific tools,
-              such as OSM editing software. Each .PBF provided by the export tool should be referentially complete - that is,
-              any node, way or relation referenced by a way or relation will appear in the PBF.
+              OpenStreetMap's canonical data format is an XML document of nodes,
+              ways and relations. The{" "}
+              <strong>Protocol Buffer Binary Format (PBF)</strong> is an
+              optimised representation of OSM XML, which is smaller on disk and
+              faster to read. This format is only compatible with OpenStreetMap
+              specific tools, such as OSM editing software. Each .PBF provided
+              by the export tool should be referentially complete - that is, any
+              node, way or relation referenced by a way or relation will appear
+              in the PBF.
             </p>
             <h4>
               <strong>Compatible Software:</strong>
@@ -201,8 +209,10 @@ export default () =>
               <li>ArcMap</li>
             </ul>
             <Alert bsStyle="warning">
-              <strong>Technical Note:</strong> Because .PBFs from the Export Tool are saved directly from Overpass,
-              file boundaries match the rectangular bounds of the selected area and features are not clipped.
+              <strong>Technical Note:</strong> Because .PBFs from the Export
+              Tool are saved directly from Overpass, file boundaries match the
+              rectangular bounds of the selected area and features are not
+              clipped.
             </Alert>
             <h4>
               <strong>Further Information</strong>
@@ -227,8 +237,9 @@ export default () =>
             </ul>
             <h2 id="obf">OSMAnd OBF</h2>
             <p>
-              OsmAnd is a GPS Navigation and map application for Android smartphones and tablets,
-              notably supporting offline mapping and navigation. 
+              OsmAnd is a GPS Navigation and map application for Android
+              smartphones and tablets, notably supporting offline mapping and
+              navigation.
             </p>
             <h4>
               <strong>Compatible Software</strong>
