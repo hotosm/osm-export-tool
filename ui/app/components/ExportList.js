@@ -119,6 +119,7 @@ export class ExportList extends Component {
         >
           <h2 style={{ display: "inline" }}>Exports</h2>
           <FilterForm
+            showDateRange
             type={formatMessage(messages.exportsType)}
             onSubmit={this.search}
           />

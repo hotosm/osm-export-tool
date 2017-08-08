@@ -23,6 +23,8 @@ import Home from "./components/Home";
 import NavBar from "./components/NavBar";
 import { requireAuth } from "./components/utils";
 
+import "@blueprintjs/core/dist/blueprint.css";
+import "@blueprintjs/datetime/dist/blueprint-datetime.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
 import "./css/style.css";

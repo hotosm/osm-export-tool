@@ -1387,3 +1387,8 @@ p {
   top: 15px;
   right: 15px;
 }
+
+.input-group .pt-input:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

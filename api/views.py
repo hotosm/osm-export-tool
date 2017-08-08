@@ -95,25 +95,28 @@ class JobViewSet(viewsets.ModelViewSet):
     lookup_field = 'uid'
     http_method_names = ['get', 'post', 'head']
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
-    search_fields = ('name', 'description', 'event')
+    search_fields = ('name', 'description', 'event', 'user__username')
     ordering_fields = ('__all__',)
     ordering = ('-updated_at')
 
-    def get_queryset(
-            self, ):
+    def get_queryset(self):
         user = self.request.user
         queryset = Job.objects
         all = strtobool(self.request.query_params.get('all', 'false'))
         bbox = self.request.query_params.get('bbox', None)
         before = self.request.query_params.get('before', None)
         after = self.request.query_params.get('after', None)
+
         if before is not None:
             queryset = queryset.filter(Q(created_at__lte=before))
+
         if after is not None:
             queryset = queryset.filter(Q(created_at__gte=after))
+
         if bbox is not None:
             bbox = bbox_to_geom(bbox)
             queryset = queryset.filter(Q(the_geom__within=bbox))
+
         if not all:
             queryset = queryset.filter(Q(user_id=user.id))
 
@@ -141,8 +144,7 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
     ordering_fields = ('__all__')
     ordering = ('name',)
 
-    def get_queryset(
-            self, ):
+    def get_queryset(self):
         user = self.request.user
         queryset = SavedFeatureSelection.objects.filter(deleted=False)
         all = strtobool(self.request.query_params.get('all', 'false'))

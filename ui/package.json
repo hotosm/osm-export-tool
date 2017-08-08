@@ -2,6 +2,7 @@
   "name": "osm-export-tool2",
   "version": "0.0.1",
   "dependencies": {
+    "@blueprintjs/datetime": "^1.19.0",
     "@turf/area": "^4.5.2",
     "@turf/bbox": "^4.5.2",
     "@turf/helpers": "^4.5.2",
@@ -18,6 +19,7 @@
     "prop-types": "^15.5.10",
     "querystring": "^0.2.0",
     "react": "^15.6.1",
+    "react-addons-css-transition-group": "^15.6.0",
     "react-bootstrap": "^0.31.0",
     "react-bootstrap-typeahead": "^1.4.1",
     "react-dom": "^15.6.1",
