@@ -36,7 +36,7 @@ const renderDateRange = fields =>
 
 class Input extends Component {
   render() {
-    const { input, type, ...props } = this.props;
+    const { input, meta, type, ...props } = this.props;
 
     return <FormControl {...input} type={type} {...props} />;
   }

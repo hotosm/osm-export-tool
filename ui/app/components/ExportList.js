@@ -96,6 +96,26 @@ export class ExportList extends Component {
     return getExports(newFilters);
   };
 
+  filterByExtent = bbox => {
+    const { getExports } = this.props;
+    const { filters } = this.state;
+
+    const newFilters = {
+      ...filters,
+      bbox: bbox.join(",")
+    };
+
+    if (bbox.length === 0) {
+      delete newFilters.bbox;
+    }
+
+    this.setState({
+      filters: newFilters
+    });
+
+    return getExports(newFilters);
+  };
+
   render() {
     const {
       getExports,
@@ -170,6 +190,7 @@ export class ExportList extends Component {
         <Col xs={6} style={{ height: "100%" }}>
           <MapListView
             features={features}
+            onUpdate={this.filterByExtent}
             selectedFeatureId={selectedFeatureId}
           />
         </Col>

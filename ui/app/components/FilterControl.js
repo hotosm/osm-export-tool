@@ -24,10 +24,10 @@ function generateDrawLayer() {
     }),
     style: new Style({
       fill: new Fill({
-        color: "hsla(202, 70%, 50%, .35)"
+        color: "rgba(235, 80, 85, .6)"
       }),
       stroke: new Stroke({
-        color: "hsla(202, 70%, 50%, .7)",
+        color: "rgba(235, 80, 85, .7)",
         width: 1,
         lineDash: [5, 5]
       })
@@ -65,10 +65,10 @@ const FilterControl = function({ onUpdate, render, target }) {
         angle: 0
       }),
       fill: new Fill({
-        color: "hsla(202, 70%, 50%, .6)"
+        color: "rgba(235, 80, 85, .6)"
       }),
       stroke: new Stroke({
-        color: "hsl(202, 70%, 50%)",
+        color: "rgba(235, 80, 85, .7)",
         width: 1,
         lineDash: [5, 5]
       })
@@ -107,8 +107,7 @@ const FilterControl = function({ onUpdate, render, target }) {
     source.clear();
 
     onUpdate([]);
-  }
-
+  };
 
   const element = document.createElement("div");
   let filter;
@@ -116,10 +115,20 @@ const FilterControl = function({ onUpdate, render, target }) {
 
   ReactDOM.render(
     <div className="ol-filter">
-    <ButtonGroup>
-      <Button bsStyle="primary" ref={f => filter = f} type="button">Filter Area</Button>
-      <Button bsStyle="primary" onClick={() => console.log("click")} ref={c => clear = c} type="button">Clear Filter</Button>
-    </ButtonGroup></div>,
+      <ButtonGroup>
+        <Button bsStyle="primary" ref={f => (filter = f)} type="button">
+          Filter Area
+        </Button>
+        <Button
+          bsStyle="primary"
+          onClick={() => console.log("click")}
+          ref={c => (clear = c)}
+          type="button"
+        >
+          Clear Filter
+        </Button>
+      </ButtonGroup>
+    </div>,
     element
   );
 

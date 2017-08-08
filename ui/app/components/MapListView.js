@@ -112,6 +112,8 @@ export default class MapListView extends Component {
   }
 
   _initializeOpenLayers() {
+    const { onUpdate } = this.props;
+
     this._map = new Map({
       controls: [
         new ScaleLine({
@@ -134,7 +136,7 @@ export default class MapListView extends Component {
           ]
         }),
         new FilterControl({
-          onUpdate: extent => console.log("selected extent:", extent)
+          onUpdate
         })
       ],
       interactions: interaction.defaults({
