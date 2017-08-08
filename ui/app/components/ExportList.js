@@ -21,6 +21,10 @@ const messages = defineMessages({
     id: "ui.exports.title",
     defaultMessage: "Exports"
   },
+  searchPlaceholder: {
+    id: "ui.search.exports.placeholder",
+    defaultMessage: "Name, description, event, or username"
+  },
   showOnMap: {
     id: "ui.show_on_map",
     defaultMessage: "Show on map"
@@ -139,6 +143,7 @@ export class ExportList extends Component {
         >
           <h2 style={{ display: "inline" }}>Exports</h2>
           <FilterForm
+            searchPlaceholder={messages.searchPlaceholder}
             showDateRange
             type={formatMessage(messages.exportsType)}
             onSubmit={this.search}

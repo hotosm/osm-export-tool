@@ -16,9 +16,8 @@ const messages = defineMessages({
     defaultMessage: "Show all {type}"
   },
   searchPlaceholder: {
-    id: "ui.search.placeholder",
-    // TODO this is a specific placeholder
-    defaultMessage: "Name, description, event, or username"
+    id: "ui.search.default.placeholder",
+    defaultMessage: "Name or description"
   }
 });
 
@@ -54,28 +53,31 @@ class ExportSearchForm extends Component {
       showDateRange,
       type
     } = this.props;
+    let { searchPlaceholder } = this.props;
+
+    if (searchPlaceholder == null) {
+      searchPlaceholder = messages.searchPlaceholder;
+    }
 
     return (
       <form onSubmit={this.search}>
         <Row>
-          <InputGroup
+          <div className="pt-input-group pt-large"
             style={{
               width: "100%",
               marginTop: "20px",
               marginBottom: "10px"
             }}
           >
-            <InputGroup.Addon>
-              <i className="fa fa-search" />
-            </InputGroup.Addon>
+            <i className="pt-icon pt-icon-search" />
             <Field
+              className="pt-input pt-round"
               component={Input}
               componentClass="input"
               name="search"
-              placeholder={formatMessage(messages.searchPlaceholder)}
-              type="text"
+              placeholder={formatMessage(searchPlaceholder)}
             />
-          </InputGroup>
+          </div>
         </Row>
         {showDateRange &&
           <Row>
