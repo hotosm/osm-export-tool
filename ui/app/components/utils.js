@@ -19,22 +19,22 @@ import { selectIsLoggedIn } from "../selectors";
 export const AVAILABLE_EXPORT_FORMATS = {
   shp: (
     <span key="shp">
-      Shapefile <code>.SHP</code>
+      Shapefile (<code>.SHP</code>)
     </span>
   ),
   geopackage: (
     <span key="geopackage">
-      GeoPackage <code>.GPKG</code>
+      GeoPackage (<code>.GPKG</code>)
     </span>
   ),
   garmin_img: (
     <span key="garmin_img">
-      Garmin <code>.IMG</code>
+      Garmin (<code>.IMG</code>)
     </span>
   ),
   kml: (
     <span key="kml">
-      Google Earth <code>.KMZ</code>
+      Google Earth (<code>.KMZ</code>)
     </span>
   ),
   osm_xml: (
@@ -49,7 +49,7 @@ export const AVAILABLE_EXPORT_FORMATS = {
   ),
   mwm: (
     <span key="mwm">
-      Maps.me <code>.MWM</code>
+      Maps.me (<code>.MWM</code>)
     </span>
   )
 };
