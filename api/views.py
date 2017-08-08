@@ -234,8 +234,7 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('job__name', 'job__description')
 
-    def get_queryset(
-            self, ):
+    def get_queryset(self):
         user = self.request.user
         queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related(
             'job__runs__tasks').defer('job__the_geom')
@@ -243,7 +242,7 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         if not all:
             queryset = queryset.filter(Q(job__user_id=user.id))
 
-        return queryset
+        return queryset.filter(Q(job__user_id=user.id) | Q(job__published=True))
 
     def get_serializer_class(self):
         if self.action == "list":
