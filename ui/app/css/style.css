@@ -840,10 +840,10 @@ span#spinner i {
 /* HELP Pages */
 
 .help .breadcrumb {
-  width:1152px;
-  margin-left:auto;
-  margin-right:auto;
-  background-color:white;
+  width: 1152px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
 }
 
 .helpItems {
@@ -858,20 +858,20 @@ span#spinner i {
 }
 
 .helpDetailContainer {
-  background:rgb(246, 247, 248);
+  background: rgb(246, 247, 248);
 }
 
 .helpDetailBody {
-  padding-top:80px;
-  width:1152px;
-  margin-left:auto;
-  margin-right:auto;
-  padding-bottom:160px;
-  line-height:1.5em;
+  padding-top: 80px;
+  width: 1152px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 160px;
+  line-height: 1.5em;
 }
 
 .helpDetailBody h2 {
-  padding-top:40px;
+  padding-top: 40px;
 }
 
 .helpDetailBody img {
@@ -879,27 +879,26 @@ span#spinner i {
 }
 
 .helpToc h3 {
-  font-weight:400;
+  font-weight: 400;
   font-size: .875rem;
-  color:rgba(49,75,84,.48);
+  color: rgba(49, 75, 84, .48);
 }
 
 .helpToc ul {
-  padding-left:0px;
+  padding-left: 0px;
 }
 
 .helpToc li {
   list-style: none;
-  font-weight:bold;
-  line-height:1.5rem;
-  padding:0.5rem 0.5rem;
-  border-radius:0.25rem;
+  font-weight: bold;
+  line-height: 1.5rem;
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.25rem;
 }
 
 .helpToc li:hover {
-  background-color:rgba(31,59,69,.08);
+  background-color: rgba(31, 59, 69, .08);
 }
-
 
 .help h1 {
   font-size: 40px;
