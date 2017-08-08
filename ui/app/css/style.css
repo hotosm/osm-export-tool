@@ -69,8 +69,9 @@ a {
 footer {
   background-color: #f8f8f8;
   border-top: 1px solid #e7e7e7;
-  margin-top: 10px;
-  padding: 25px 20px;
+  font-size: 0.8rem;
+  margin-top: 25px;
+  padding: 10px 20px;
 }
 
 footer .center {
