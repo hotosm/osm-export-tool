@@ -5,7 +5,7 @@ import { Jumbotron, Row, Col, Alert } from 'react-bootstrap';
 export default () =>
   <div className="help">
     <ol className="breadcrumb">
-      <li><Link to="/help">Help</Link></li>
+      <li><Link to="/learn">Learn</Link></li>
       <li className="active">Feature Selections</li>
     </ol>
     <Jumbotron className="hero">
@@ -22,9 +22,9 @@ export default () =>
               OpenStreetMap is a planet-scale database of tagged geographic features.
               There are three types of OpenStreetMap entities:
               <ul>
-                <li>Nodes, which represent a point on the surface of the earth.</li>
-                <li>Ways, which are sets of nodes that can form lines or polygons.</li>
-                <li>Relations, which are sets of nodes, ways or other relations.</li>
+                <li><strong>Nodes,</strong> which represent a point on the surface of the earth.</li>
+                <li><strong>Ways,</strong> which are sets of nodes that can form lines or polygons.</li>
+                <li><strong>Relations,</strong> which are sets of nodes, ways or other relations.</li>
               </ul>
               Each of these three types of entities can have any number of key/value tags.
               For example, a post office may be represented by a way with tags building=yes and amenity=post_office.
@@ -57,7 +57,7 @@ export default () =>
             <h2 id="yaml">Defining YAML when Creating an Export</h2>
             <p>
               YAML can be defined via the "Select Features" tab when creating an export. This can be edited inline or copy-pasted from a local file on your computer.
-              Please note that YAML is whitespace-sensitive. For more information on the YAML format, see the  <Link to="/help/yaml">YAML Documentation</Link>.
+              Please note that YAML is whitespace-sensitive. For more information on the YAML format, see the documentation: <Link to="/learn/yaml">YAML Specification</Link>.
             </p>
             <h2 id="configuration">Saving YAML as a Configuration</h2>
             <p>

@@ -5,7 +5,7 @@ import { Jumbotron, Row, Col, Alert } from 'react-bootstrap';
 export default () =>
   <div className="help">
     <ol className="breadcrumb">
-      <li><Link to="/help">Help</Link></li>
+      <li><Link to="/learn">Learn</Link></li>
       <li className="active">Export Formats</li>
     </ol>
     <Jumbotron className="hero">
@@ -23,10 +23,10 @@ export default () =>
               A shapefile is actually 3-4 individual files, commonly bundled together as a ZIP archive:
             </p>
             <ul>
-              <li>.shp - shape format; feature geometry</li>
-              <li>.shx - index format; positional index</li>
-              <li>.dbf - attribute format; columnar information</li>
-              <li>.prj - coordinate format; projection information</li>
+              <li><strong>.shp</strong> - shape format; feature geometry</li>
+              <li><strong>.shx</strong> - index format; positional index</li>
+              <li><strong>.dbf</strong> - attribute format; columnar information</li>
+              <li><strong>.prj</strong> - coordinate format; projection information</li>
             </ul>
 
             <p>Choose to export Shapefiles if you need the broadest compatibilty among GIS software. </p>
@@ -42,7 +42,7 @@ export default () =>
               <li>Size limit of 2 GB</li>
               <li>column name length limit of 10 characters</li>
             </ul>
-            <Alert bsStyle="success">
+            <Alert bsStyle="warning">
               A Shapefile alternative without these limitations is <a href="#gpkg">Geopackage</a>.
             </Alert>
             <h4>
@@ -54,7 +54,7 @@ export default () =>
                   href="https://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm"
                   target="_blank"
                 >
-                  ArcGIS Online | Shapefiles
+                  ArcGIS Online - Shapefiles
                 </a>
               </li>
               <li>
@@ -62,7 +62,7 @@ export default () =>
                   href="https://wiki.openstreetmap.org/wiki/Shapefiles#About_Shapefiles"
                   target="_blank"
                 >
-                  OpenStreetMap Wiki | Esri SHP File
+                  OpenStreetMap Wiki - Esri SHP File
                 </a>
               </li>
             </ul>
@@ -101,12 +101,12 @@ export default () =>
               Garmin GPS mobile device. A .IMG is a disk image containing several files:
             </p>
             <ul>
-              <li>.rgn - map elements; polylines, polygons and points</li>
-              <li>.lbl - labels; map elements, city names, localities, etc</li>
-              <li>.tre - map structure information; data tree</li>
-              <li>.net - road network information</li>
-              <li>.nod - routing information</li>
-              <li>.mdr - searchable address table for routing desinations</li>
+              <li><strong>.rgn</strong> - map elements; polylines, polygons and points</li>
+              <li><strong>.lbl</strong> - labels; map elements, city names, localities, etc</li>
+              <li><strong>.tre</strong> - map structure information; data tree</li>
+              <li><strong>.net</strong> - road network information</li>
+              <li><strong>.nod</strong> - routing information</li>
+              <li><strong>.mdr</strong> - searchable address table for routing desinations</li>
             </ul>
             <Alert bsStyle="warning">
               <strong>.IMG Styles:</strong> The cartographic style and feature choices of the map are not dependent 
@@ -131,7 +131,7 @@ export default () =>
                   href="http://sourceforge.net/projects/garmin-img/files/IMG%20File%20Format/1.0/imgformat-1.0.pdf/download"
                   target="_blank"
                 >
-                  SourceForge | Garmin IMG Format
+                  SourceForge - Garmin IMG Format
                 </a>
               </li>
               <li>
@@ -139,7 +139,7 @@ export default () =>
                   href="https://wiki.openstreetmap.org/wiki/OSM_Map_On_Garmin/IMG_File_Format"
                   target="_blank"
                 >
-                  OpenStreetMap Wiki | Garmin IMG File
+                  OpenStreetMap Wiki - Garmin IMG File
                 </a>
               </li>
             </ul>
@@ -166,7 +166,7 @@ export default () =>
                   href="https://support.google.com/earth/answer/148118?hl=en"
                   target="_blank"
                 >
-                  Google Earth | KML File
+                  Google Earth - KML File
                 </a>
               </li>
               <li>
@@ -174,12 +174,12 @@ export default () =>
                   href="https://developers.google.com/kml/documentation/kml_tut?hl=en"
                   target="_blank"
                 >
-                  Google Documentation | KML Tutorial
+                  Google Documentation - KML Tutorial
                 </a>
               </li>
               <li>
                 <a href="https://wiki.openstreetmap.org/wiki/KML" target="_blank">
-                  OpenStreetMap Wiki | KML File
+                  OpenStreetMap Wiki - KML File
                 </a>
               </li>
             </ul>
@@ -213,7 +213,7 @@ export default () =>
                   href="https://wiki.openstreetmap.org/wiki/PBF_Format"
                   target="_blank"
                 >
-                  OpenStreetMap Wiki | PBF Format
+                  OpenStreetMap Wiki - PBF Format
                 </a>
               </li>
               <li>
@@ -221,7 +221,7 @@ export default () =>
                   href="http://wiki.openstreetmap.org/wiki/Planet.osm"
                   target="_blank"
                 >
-                  OpenStreetMap Wiki | Planet.osm
+                  OpenStreetMap Wiki - Planet.osm
                 </a>
               </li>
             </ul>

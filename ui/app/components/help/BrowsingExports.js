@@ -6,7 +6,7 @@ export default () =>
   <div className="help">
     <ol className="breadcrumb">
       <li>
-        <Link to="/help">Help</Link>
+        <Link to="/learn">Learn</Link>
       </li>
       <li className="active">Browsing Exports</li>
     </ol>
@@ -20,6 +20,7 @@ export default () =>
       <section className="helpDetailBody">
         <Row>
           <Col sm={8}>
+            <h2 id="overview">Overview</h2>
             <p>
               If you're mapping as part of a humanitarian effort, it's possible that someone has already created an export relevant to your project.
               Browsing and downloading exports doesn't require a user account.
@@ -48,22 +49,23 @@ export default () =>
 
             <h2 id="rerunexport">Re-running an Export</h2>
             <p>
-                In the time since an Export was created, it's possible information has been added or updated on the main OpenStreetMap database.
-                Any downloaded files since won't contain that improved information. 
-                Re-running an export creates new files with the same area and feature selections, using the latest OSM data.
+                “Re-running” an export lets you extract data using the same settings of the area, description, file formats and feature selection. 
+                This function is generally used to obtain updated OSM data, including any added or modified information since the export was last run. 
+                This is important to ensure that the information is current as OSM is constantly changing. 
                 You will need to authenticate with an account to re-run an export.
             </p>
         
             <h2 id="cloneexport">Cloning an Export</h2>
             <p>
               "Cloning" an export lets you create a new export based on an existing one, possibly using the same area, description or feature selection,
-              and modifying each setting to suit your needs.
-              For more details on the Create Export form, see the documentation : <Link to="/help/quick_start">Quick Start</Link>.
+               with the capability to modify each setting to suit your needs.
+              For more details on the Create Export form, see the documentation : <Link to="/learn/quick_start">Quick Start</Link>.
             </p>
           </Col>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
+              <li><a href="#overview">Overview</a></li>
               <li><a href="#exportlist">Export List</a></li>
               <li><a href="#exportdetails">Export Details</a></li>
               <li><a href="#rerunexport">Re-running an Export</a></li>

@@ -873,6 +873,10 @@ span#spinner i {
   padding-top:40px;
 }
 
+.helpDetailBody img {
+  margin-bottom:20px;
+}
+
 .helpToc h3 {
   font-weight:400;
   font-size: .875rem;
@@ -911,9 +915,6 @@ span#spinner i {
   width:1152px;
   margin-left:auto;
   margin-right:auto;
-}
-
-.help .centered {
   text-align:center;
 }
 

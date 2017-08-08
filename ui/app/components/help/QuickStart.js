@@ -6,7 +6,7 @@ export default () =>
   <div className="help">
     <ol className="breadcrumb">
       <li>
-        <Link to="/help">Help</Link>
+        <Link to="/learn">Learn</Link>
       </li>
       <li className="active">Quick Start</li>
     </ol>
@@ -18,25 +18,29 @@ export default () =>
       <section className="helpDetailBody">
         <Row>
           <Col sm={8}>
-            <Alert bsStyle="warning">
-              Registering an account is required to create an export. You can register through your OpenStreetMap account here with a valid email address.
-            </Alert>
+            <h2 id="overview">Overview</h2>
+            <p>
+              Anyone can create a custom OpenStreetMap epxort with the Export Tool - just register an account. You can register with an OpenStreetMap account from <Link to="https://openstreetmap.org">OpenStreetMap.org</Link> and a valid email address.
+            </p>
             <h2 id="step1">1. Defining an Area of Interest</h2>
             <img src="/static/ui/images/docs/drawaoi.png" style={{width:"50%"}}></img><br/>
             There are 4 ways to define an Area of Interest for your export:
             <ul>
               <li>
-                By drawing a bounding box. Use the "Box" tool to the right to click and drag a rectangle,
+                <strong>Search Bar:</strong> input a minX,minY,maxX,maxY string into the search bar. This will define a rectangular area of interest.
+              </li>
+              <li>
+                <strong>Bounding Box: </strong> Use the "Box" tool to the right to click and drag a rectangle,
                 or use the "Current View" tool to match the map's viewport.
               </li>
               <li>
-                By inputting a minX,minY,maxX,maxY string into the search bar. This will define a rectangular area of interest.
+                <strong>Draw Polygon:</strong> Draw a freeform polygon. This must be a simple (not multi-) polygon. 
               </li>
               <li>
-                By drawing a freeform polygon. This must be a simple (not multi-) polygon. 
+                <strong>Current View:</strong> Use "Current View" to match the map's viewport.
               </li>
               <li>
-                By uploading a GeoJSON polygon in WGS84 (geographic) coordinates.
+                <strong>Upload:</strong> By uploading a GeoJSON polygon in WGS84 (geographic) coordinates.
               </li>
             </ul>
             <Alert bsStyle="warning">
@@ -59,8 +63,8 @@ export default () =>
             <h2 id="step3">3. Choosing File Formats</h2> 
             <img src="/static/ui/images/docs/exportformats.png" style={{width:"50%"}}></img>
             <p>
-              Check at least one file format to export. To learn more about each individual format,
-              read the <Link to="/help/export_formats">Export Formats documentation.</Link>
+              Check at least one file format to export. 
+              To learn more about each individual format, read the documentation: <Link to="/learn/export_formats">Export Formats</Link>
             </p>
             <h2 id="step4">4. Choosing Map Features</h2>
             <p>
@@ -68,7 +72,7 @@ export default () =>
               As an example, check the box "Buildings" to create an export of all building geometries, as well as related data such as name and address keys.
             </p>
             <p>
-              For more information about feature selection, see the <Link to="/help/feature_selections">documentation</Link>.
+              For more information about feature selection, see the documentation: <Link to="/learn/feature_selections">Feature Selections</Link>
             </p>
             <h2 id="step5">5. Downloading your Files</h2>
             <p>After you submit your export using <strong>Create Export</strong>,
@@ -86,6 +90,7 @@ export default () =>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
+              <li><a href="#overview">Overview</a></li>
               <li><a href="#step1">1. Defining an Area of Interest</a></li>
               <li><a href="#step2">2. Naming and Describing your Export</a></li>
               <li><a href="#step3">3. Choosing File Formats</a></li>

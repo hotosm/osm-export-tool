@@ -6,7 +6,7 @@ export default () =>
   <div className="help">
     <ol className="breadcrumb">
       <li>
-        <Link to="/help">Help</Link>
+        <Link to="/learn">Learn</Link>
       </li>
       <li className="active">YAML Format Specification</li>
     </ol>

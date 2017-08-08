@@ -6,7 +6,7 @@ export default () =>
   <div className="help">
     <ol className="breadcrumb">
       <li>
-        <Link to="/help">Help</Link>
+        <Link to="/learn">Learn</Link>
       </li>
       <li className="active">Export Tool API</li>
     </ol>
@@ -21,6 +21,11 @@ export default () =>
       <section className="helpDetailBody">
         <Row>
           <Col sm={8}>
+            <h2 id="overview">Overview</h2>
+            <p>
+              The Export Tool has an API that can be called programatically via the web. 
+              For example, you can automatically schedule an export to be run weekly to accompany a humanitarian mapping project.
+            </p>
             <h2 id="authorization">Authorization</h2>
             <p>User authentication and authorization is a two-step process.</p>
             <p>
@@ -84,6 +89,7 @@ export default () =>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
+              <li><a href="#overview">Overview</a></li>
               <li><a href="#authorization">Authorization</a></li>
               <li><a href="#endpoints">Endpoints</a></li>
             </ul>

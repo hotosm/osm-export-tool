@@ -13,12 +13,12 @@ import ExportFormats from "./help/ExportFormats";
 export default ({ history }) =>
   <ConnectedRouter history={history}>
     <Switch>
-      <Route path="/help/api" component={API} />
-      <Route path="/help/quick_start" component={QuickStart} />
-      <Route path="/help/browsing_exports" component={BrowsingExports} />
-      <Route path="/help/feature_selections" component={FeatureSelections} />
-      <Route path="/help/yaml" component={Yaml} />
-      <Route path="/help/export_formats" component={ExportFormats} />
+      <Route path="/learn/api" component={API} />
+      <Route path="/learn/quick_start" component={QuickStart} />
+      <Route path="/learn/browsing_exports" component={BrowsingExports} />
+      <Route path="/learn/feature_selections" component={FeatureSelections} />
+      <Route path="/learn/yaml" component={Yaml} />
+      <Route path="/learn/export_formats" component={ExportFormats} />
       <Route component={Index} />
     </Switch>
   </ConnectedRouter>;

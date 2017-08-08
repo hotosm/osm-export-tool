@@ -45,7 +45,7 @@ export default ({ history }) =>
           <Route path="/configurations" component={Configurations} />
           <Route path="/exports" component={Exports} />
           <Route path="/hdx" component={AuthorizedHDX} />
-          <Route path="/help" component={Help} />
+          <Route path="/learn" component={Help} />
           <Route component={Home} />
         </Switch>
         <Footer />
