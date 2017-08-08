@@ -23,10 +23,25 @@ export default () =>
               individual files, commonly bundled together as a ZIP archive:
             </p>
             <ul>
+<<<<<<< HEAD
               <li><strong>.shp</strong> - shape format; feature geometry</li>
               <li><strong>.shx</strong> - index format; positional index</li>
               <li><strong>.dbf</strong> - attribute format; columnar information</li>
               <li><strong>.prj</strong> - coordinate format; projection information</li>
+=======
+              <li>
+                <code>.shp</code> - shape format; feature geometry
+              </li>
+              <li>
+                <code>.shx</code> - index format; positional index
+              </li>
+              <li>
+                <code>.dbf</code> - attribute format; columnar information
+              </li>
+              <li>
+                <code>.prj</code> - coordinate format; projection information
+              </li>
+>>>>>>> Mark up extensions as code
             </ul>
 
             <p>
