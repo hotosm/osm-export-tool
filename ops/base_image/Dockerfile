@@ -81,6 +81,7 @@ RUN \
 ENV GENERATOR_TOOL /usr/local/bin/generator_tool
 ENV OSMCONVERT /usr/bin/osmconvert
 
+# TODO set DATA= something, as generator_tool looks in __dirname/../../data
 RUN mkdir -p /usr/data
 COPY --from=omim /usr/local/src/omim/data/categories.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/data/classificator.txt /usr/data/
