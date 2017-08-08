@@ -74,7 +74,7 @@
             {% if perms.jobs.add_hdxexportregion and perms.jobs.change_hdxexportregion and perms.jobs.delete_hdxexportregion %}
               <li><a href="/v3/hdx">{% trans 'HDX' %}</a></li>
             {% endif %}
-            <li><a href="/v3/help">{% trans 'Help' %}</a></li>
+            <li><a href="/v3/learn">{% trans 'Learn' %}</a></li>
             <li><a href="/v3/about">{% trans 'About' %}</a></li>
             {% if user.is_authenticated %}
                 <li id="logout"><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> {% trans 'Log Out' %}</a></li>

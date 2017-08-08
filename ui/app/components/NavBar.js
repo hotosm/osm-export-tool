@@ -26,7 +26,7 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
         </NavLink>
       </li>
       <li>
-        <NavLink to="/help">
+        <NavLink to="/learn">
           <FormattedMessage id="ui.help" defaultMessage="Learn" />
         </NavLink>
       </li>
