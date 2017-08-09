@@ -11,10 +11,11 @@ const Home = ({ isLoggedIn, login }) =>
   <div className="home">
     <Jumbotron className="hero center">
       <h1 className="centered">
-        <FormattedMessage id="ui.title" defaultMessage="OSM Export Tool" />
+        <FormattedMessage id="ui.title" defaultMessage="HOT Export Tool" />
       </h1>
       <p className="centered">
-        The Export Tool creates up-to-date OSM extracts in various file formats.
+        The Export Tool creates up-to-date OpenStreetMap extracts in various
+        file formats.
       </p>
       <p className="centered">
         <Link to="/exports/new" className="btn btn-danger btn-lg">
