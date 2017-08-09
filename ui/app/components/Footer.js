@@ -5,7 +5,8 @@ export default () =>
   <footer>
     <Row>
       <Col md={4}>
-        <a href="https://www.hotosm.org/contact-us"><i className="fa fa-envelope-o" /> Contact Us</a>
+        <i className="fa fa-envelope-o" />{" "}
+        <a href="https://www.hotosm.org/contact-us">Contact Us</a>{" "}
       </Col>
       <Col md={4} className="center">
         Made with ❤️ by <a href="https://www.hotosm.org/">HOT</a> and friends
