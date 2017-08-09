@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 import isEqual from "lodash/isEqual";
 import PropTypes from "prop-types";
+import React, { Component } from "react";
 import { Row, Col, Panel, Button, Table } from "react-bootstrap";
 import {
   Field,
@@ -10,7 +10,12 @@ import {
   propTypes,
   reduxForm
 } from "redux-form";
-import { FormattedDate, FormattedRelative, FormattedTime } from "react-intl";
+import {
+  FormattedDate,
+  FormattedMessage,
+  FormattedRelative,
+  FormattedTime
+} from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import "react-select/dist/react-select.css";
@@ -274,7 +279,7 @@ export class HDXExportRegionForm extends Component {
         editing: true
       });
 
-      if (exportRegion != null) {
+      if (exportRegion != null && exportRegion.id === Number(id)) {
         this.didReceiveRegion(exportRegion);
       }
     }
@@ -394,6 +399,7 @@ export class HDXExportRegionForm extends Component {
     const {
       error,
       exportRegion,
+      fetching,
       handleSubmit,
       locationOptions,
       runs,
@@ -402,6 +408,19 @@ export class HDXExportRegionForm extends Component {
     } = this.props;
     const datasetPrefix = this.props.datasetPrefix || "<prefix>";
     const name = this.props.name || "Untitled";
+
+    if (fetching) {
+      return (
+        <NonIdealState
+          action={
+            <strong>
+              <FormattedMessage id="ui.loading" defaultMessage="Loading..." />
+            </strong>
+          }
+          visual={<Spinner />}
+        />
+      );
+    }
 
     return (
       <Row style={{ height: "100%" }}>
@@ -666,6 +685,7 @@ const mapStateToProps = (state, ownProps) => ({
   error: selectHDXError(state),
   exportRegion: selectExportRegion(ownProps.match.params.id, state),
   featureSelection: formValueSelector(FORM_NAME)(state, "feature_selection"),
+  fetching: state.hdx.fetching,
   initialValues: {
     aoi: {
       description: "Draw",
