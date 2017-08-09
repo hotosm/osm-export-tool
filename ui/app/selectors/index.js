@@ -14,6 +14,8 @@ export const selectIntl = state => state.intl;
 
 export const selectIsLoggedIn = state => state.auth.isLoggedIn;
 
+export const selectIsLoggingIn = state => state.auth.isLoggingIn;
+
 export const selectLocationHash = state => qs.parse(state.router.location.hash);
 
 export const selectLocationOptions = state => state.hdx.locationOptions;

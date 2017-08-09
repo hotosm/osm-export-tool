@@ -160,7 +160,7 @@ export class ExportList extends Component {
                     <FormattedMessage
                       id="ui.loading"
                       defaultMessage="Loading..."
-                    />"
+                    />
                   </strong>
                 }
                 visual={<Spinner />}

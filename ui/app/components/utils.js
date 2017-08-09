@@ -1,3 +1,4 @@
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 import React from "react";
 import {
   HelpBlock,
@@ -6,15 +7,16 @@ import {
   ControlLabel,
   Checkbox
 } from "react-bootstrap";
-import { Field } from "redux-form";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import Select from "react-select";
-import styles from "../styles/utilsStyles.css";
-import yaml from "js-yaml";
+import { Field } from "redux-form";
 import moment from "moment";
+import yaml from "js-yaml";
 
 import { login } from "../actions/meta";
-import { selectIsLoggedIn } from "../selectors";
+import { selectIsLoggedIn, selectIsLoggingIn } from "../selectors";
+import styles from "../styles/utilsStyles.css";
 
 export const AVAILABLE_EXPORT_FORMATS = {
   shp: (
@@ -346,7 +348,13 @@ export const prettyBytes = num => {
 };
 
 export const requireAuth = Component =>
-  connect(state => ({ isLoggedIn: selectIsLoggedIn(state) }), { login })(
+  connect(
+    state => ({
+      isLoggedIn: selectIsLoggedIn(state),
+      isLoggingIn: selectIsLoggingIn(state)
+    }),
+    { login }
+  )(
     class extends React.Component {
       componentDidMount() {
         const { isLoggedIn, login } = this.props;
@@ -357,14 +365,31 @@ export const requireAuth = Component =>
       }
 
       render() {
-        const { isLoggedIn } = this.props;
+        const { isLoggedIn, isLoggingIn, login } = this.props;
 
         if (isLoggedIn) {
           return <Component {...this.props} />;
         }
 
-        // TODO display loading screen
-        return null;
+        return (
+          <NonIdealState
+            action={
+              <strong>
+                <FormattedMessage
+                  id="ui.logging_in"
+                  defaultMessage="Logging you in..."
+                />
+              </strong>
+            }
+            description={
+              isLoggingIn ||
+              <button type="button" className="btn btn-link" onClick={login}>
+                Click here to log in
+              </button>
+            }
+            visual={<Spinner />}
+          />
+        );
       }
     }
   );
