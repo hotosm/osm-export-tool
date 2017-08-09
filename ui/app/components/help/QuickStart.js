@@ -67,6 +67,7 @@ export default () =>
               To learn more about each individual format, read the documentation: <Link to="/learn/export_formats">Export Formats</Link>
             </p>
             <h2 id="step4">4. Choosing Map Features</h2>
+            <img src="/static/ui/images/docs/selectfeatures.png" style={{width:"50%"}}></img><br/>
             <p>
               For your first time using the export tool, it's recommended to use the Tag Tree, which curates a set of filters and tags for common map features.
               As an example, check the box "Buildings" to create an export of all building geometries, as well as related data such as name and address keys.
@@ -75,6 +76,7 @@ export default () =>
               For more information about feature selection, see the documentation: <Link to="/learn/feature_selections">Feature Selections</Link>
             </p>
             <h2 id="step5">5. Downloading your Files</h2>
+            <img src="/static/ui/images/docs/downloadfiles.png" style={{width:"100%"}}></img><br/>
             <p>After you submit your export using <strong>Create Export</strong>,
             you will be redirected to the <strong>Export Detail Page</strong>,
             which shows a list of <strong>Export Runs</strong>. You'll see the first run at the top of the page.

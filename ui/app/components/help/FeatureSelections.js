@@ -53,6 +53,7 @@ export default () =>
             <p> The tag tree is the simplest way to get started selecting features.</p>
             <p>Each <strong>Parent Checkbox</strong> filters the data to a category of features, also including relevant tags.</p>
             <p>Each parent checkbox can expanded, and individual <strong>Child Checkboxes</strong> can be selected to further filter down the data.</p>
+            <p>The <strong>Infobox</strong> on the right shows detailed information about the tags and filters specified by the hovered checkbox.</p>
             <p>The Tag Tree generates YAML, so you can preview the YAML document created by switching tabs.</p>
             <h2 id="yaml">Defining YAML when Creating an Export</h2>
             <p>
@@ -73,8 +74,8 @@ export default () =>
             </p>
             <h2 id="moreresources">More Resources</h2>
             <ul>
-              <li><Link to="http://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Tags">OpenStreetMap Wiki | Humanitarian OSM Tags</Link></li>
-              <li><Link to="http://wiki.openstreetmap.org/wiki/Map_Features">OpenstreetMap Wiki | OSM Tags</Link></li>
+              <li><a href="http://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Tags">OpenStreetMap Wiki - Humanitarian OSM Tags</a></li>
+              <li><a href="http://wiki.openstreetmap.org/wiki/Map_Features">OpenstreetMap Wiki - OSM Tags</a></li>
             </ul>
           </Col>
           <Col sm={3} smOffset={1} className="helpToc">
