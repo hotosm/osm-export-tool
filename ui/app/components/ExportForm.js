@@ -272,8 +272,10 @@ class StoredConfComponent extends Component {
   }
 
   onClick = yaml => {
-    this.props.setYaml(yaml);
-    this.props.switchToYaml();
+    const { dispatch, setYaml } = this.props;
+
+    setYaml(yaml);
+    dispatch(push("/exports/new/select/yaml"));
   };
 
   search = ({ search, ...values }) => {
@@ -383,10 +385,7 @@ const SelectFeatures = ({
   next,
   onDrop,
   featuresUi,
-  switchToTreeTag,
   setYaml,
-  switchToYaml,
-  switchToStoredConf,
   onSearchChange,
   clearSearch,
   onTreeNodeCollapseChange,
@@ -396,43 +395,43 @@ const SelectFeatures = ({
 }) =>
   <Row style={{ height: "auto" }}>
     <ButtonGroup justified>
-      <Button
-        href="#"
-        active={featuresUi === "treetag"}
-        onClick={switchToTreeTag}
-      >
+      <NavLink className="btn btn-default" to="/exports/new/select/treetag">
         <FormattedMessage id="ui.exports.tag_tree" defaultMessage="Tag Tree" />
-      </Button>
+      </NavLink>
       {/* TODO don't display this if no configurations are available */}
-      <Button
-        href="#"
-        active={featuresUi === "stored"}
-        onClick={switchToStoredConf}
-      >
+      <NavLink className="btn btn-default" to="/exports/new/select/stored">
         <FormattedMessage
           id="ui.exports.stored_configuration"
           defaultMessage="Stored Configuration"
         />
-      </Button>
-      <Button href="#" active={featuresUi === "yaml"} onClick={switchToYaml}>
-        YAML
-      </Button>
+      </NavLink>
+      <NavLink className="btn btn-default" to="/exports/new/select/yaml">
+        <FormattedMessage id="ui.exports.yaml" defaultMessage="YAML" />
+      </NavLink>
     </ButtonGroup>
     <Row>
-      {featuresUi === "treetag"
-        ? <TreeTagUi
-            onSearchChange={onSearchChange}
-            clearSearch={clearSearch}
-            onTreeNodeCollapseChange={onTreeNodeCollapseChange}
-            onTreeNodeCheckChange={onTreeNodeCheckChange}
-            labelFilter={labelFilter}
-            tagTreeData={tagTreeData}
-          />
-        : null}
-      {featuresUi === "stored"
-        ? <StoredConfContainer switchToYaml={switchToYaml} />
-        : null}
-      {featuresUi === "yaml" ? <YamlUi onDrop={onDrop} /> : null}
+      <Switch>
+        <Route
+          path="/exports/new/select/treetag"
+          render={props =>
+            <TreeTagUi
+              onSearchChange={onSearchChange}
+              clearSearch={clearSearch}
+              onTreeNodeCollapseChange={onTreeNodeCollapseChange}
+              onTreeNodeCheckChange={onTreeNodeCheckChange}
+              labelFilter={labelFilter}
+              tagTreeData={tagTreeData}
+            />}
+        />
+        <Route
+          path="/exports/new/select/stored"
+          render={props => <StoredConfContainer />}
+        />
+        <Route
+          path="/exports/new/select/yaml"
+          render={props => <YamlUi onDrop={onDrop} />}
+        />
+      </Switch>
     </Row>
     <Row>
       <Link className="btn btn-lg btn-primary pull-right" to={next}>
@@ -478,7 +477,7 @@ const Summary = injectIntl(
             defaultMessage="Project"
           />:
         </strong>{" "}
-        {formValues.project}
+        {formValues.event}
         <br />
         <strong>
           <FormattedMessage
@@ -573,24 +572,6 @@ export class ExportForm extends Component {
     this.setState({ searchQuery: "", tagTreeData: this.tagTree.visibleData() });
   };
 
-  switchToTreeTag = () => {
-    const { dispatch } = this.props;
-
-    dispatch(push("/exports/new/select/treetag"));
-  };
-
-  switchToYaml = () => {
-    const { dispatch } = this.props;
-
-    dispatch(push("/exports/new/select/yaml"));
-  };
-
-  switchToStoredConf = () => {
-    const { dispatch } = this.props;
-
-    dispatch(push("/exports/new/select/stored"));
-  };
-
   onDrop = files => {
     const file = files[0];
     const reader = new FileReader();
@@ -610,7 +591,7 @@ export class ExportForm extends Component {
     const {
       error,
       formValues,
-      formValues: { export_formats: exportFormats },
+      formValues: { export_formats: exportFormats, isClone },
       handleSubmit,
       match: { params: { featuresUi } },
       overpassLastUpdated
@@ -681,7 +662,13 @@ export class ExportForm extends Component {
               <Route
                 path="/exports/new/select"
                 exact
-                render={props => <Redirect to="/exports/new/select/treetag" />}
+                render={props => {
+                  if (isClone) {
+                    return <Redirect to="/exports/new/select/yaml" />;
+                  }
+
+                  return <Redirect to="/exports/new/select/treetag" />;
+                }}
               />
               <Route
                 path="/exports/new/select/:featuresUi"
@@ -690,9 +677,6 @@ export class ExportForm extends Component {
                     next="/exports/new/summary"
                     onDrop={this.onDrop}
                     featuresUi={featuresUi}
-                    switchToTreeTag={this.switchToTreeTag}
-                    switchToYaml={this.switchToYaml}
-                    switchToStoredConf={this.switchToStoredConf}
                     tagTreeData={this.state.tagTreeData}
                     onSearchChange={this.onSearchChange}
                     clearSearch={this.clearSearch}
@@ -755,7 +739,8 @@ const mapStateToProps = state => {
       state,
       "description",
       "export_formats",
-      "project",
+      "isClone",
+      "event",
       "name",
       "the_geom"
     ),

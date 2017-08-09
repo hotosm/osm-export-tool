@@ -52,6 +52,7 @@ export const cloneExport = e => (dispatch, getState) => {
       dispatch(
         initialize("ExportForm", {
           buffer_aoi: e.buffer_aoi,
+          isClone: true,
           description: e.description,
           event: e.event,
           export_formats: e.export_formats,
