@@ -85,7 +85,7 @@ export class SearchAOIToolbar extends Component {
             disabled={this.props.toolbarIcons.search === "INACTIVE"}
             options={this.state.suggestions}
             onChange={this.handleEnter}
-            placeholder={"Search for a location or enter minX,minY,maxX,maxY"}
+            placeholder={"Search for a location or enter a bounding box as 'minX, minY, maxX, maxY'"}
             onInputChange={this.debouncer}
             labelKey={"name"}
             paginate={false}
