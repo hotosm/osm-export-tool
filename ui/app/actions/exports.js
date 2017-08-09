@@ -147,6 +147,10 @@ export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {
   const itemsPerPage = 20;
   const token = selectAuthToken(getState());
 
+  dispatch({
+    type: types.FETCHING_EXPORT_LIST
+  });
+
   return axios({
     baseURL: window.EXPORTS_API_URL,
     headers: {
@@ -158,14 +162,22 @@ export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {
       offset: Math.max(0, (page - 1) * itemsPerPage)
     },
     url: "/api/jobs"
-  }).then(({ data: response }) =>
-    dispatch({
-      type: types.RECEIVED_EXPORT_LIST,
-      activePage: page,
-      itemsPerPage,
-      response
-    })
-  );
+  })
+    .then(({ data: response }) =>
+      dispatch({
+        type: types.RECEIVED_EXPORT_LIST,
+        activePage: page,
+        itemsPerPage,
+        response
+      })
+    )
+    .catch(error =>
+      dispatch({
+        type: types.FETCHING_EXPORT_LIST_FAILED,
+        error,
+        statusCode: error.response && error.response.status
+      })
+    );
 };
 
 // TODO this should be managed beneath the ExportAOI component

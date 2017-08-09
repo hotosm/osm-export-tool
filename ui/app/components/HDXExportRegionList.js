@@ -1,6 +1,7 @@
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 import React, { Component } from "react";
-
 import { Col, Row } from "react-bootstrap";
+import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -12,7 +13,7 @@ import { getExportRegions } from "../actions/hdx";
 
 class ExportRegionList extends Component {
   render() {
-    const { regions } = this.props;
+    const { loading, regions } = this.props;
 
     if (regions == null || Object.keys(regions).length === 0) {
       return null;
@@ -20,13 +21,23 @@ class ExportRegionList extends Component {
 
     return (
       <div>
-        {Object.entries(regions).map(([id, region], i) => {
-          return (
-            <Row key={i}>
-              <ExportRegionPanel region={region} />
-            </Row>
-          );
-        })}
+        {loading &&
+          <NonIdealState
+            action={
+              <strong>
+                <FormattedMessage id="ui.loading" defaultMessage="Loading..." />
+              </strong>
+            }
+            visual={<Spinner />}
+          />}
+        {loading ||
+          Object.entries(regions).map(([id, region], i) => {
+            return (
+              <Row key={i}>
+                <ExportRegionPanel region={region} />
+              </Row>
+            );
+          })}
       </div>
     );
   }
@@ -63,7 +74,7 @@ export class HDXExportRegionList extends Component {
   render() {
     const {
       hdx,
-      hdx: { selectedExportRegion },
+      hdx: { fetching, selectedExportRegion },
       getExportRegions
     } = this.props;
     const { filters } = this.state;
@@ -85,13 +96,15 @@ export class HDXExportRegionList extends Component {
             >
               Create New Export Region
             </Link>
+          </div>
+          <div style={{ padding: "20px" }}>
             <FilterForm type="Export Regions" onSubmit={this.search} />
             <hr />
             <Paginator
               collection={hdx}
               getPage={getExportRegions.bind(null, filters)}
             />
-            <ExportRegionList regions={hdx.items} />
+            <ExportRegionList regions={hdx.items} loading={fetching} />
             <Paginator
               collection={hdx}
               getPage={getExportRegions.bind(null, filters)}

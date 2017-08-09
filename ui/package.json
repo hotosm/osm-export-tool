@@ -2,6 +2,7 @@
   "name": "osm-export-tool2",
   "version": "0.0.1",
   "dependencies": {
+    "@blueprintjs/core": "^1.24.0",
     "@blueprintjs/datetime": "^1.19.0",
     "@turf/area": "^4.5.2",
     "@turf/bbox": "^4.5.2",

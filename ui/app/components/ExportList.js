@@ -1,3 +1,4 @@
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 import React, { Component } from "react";
 import { Button, Col, Row, Table } from "react-bootstrap";
 import {
@@ -15,6 +16,7 @@ import MapListView from "./MapListView";
 import Paginator from "./Paginator";
 import { getExports } from "../actions/exports";
 import { zoomToExportRegion } from "../actions/hdx";
+import { selectStatus } from "../selectors";
 
 const messages = defineMessages({
   exportsType: {
@@ -126,7 +128,8 @@ export class ExportList extends Component {
       intl: { formatMessage },
       jobs,
       selectedFeatureId,
-      selectRegion
+      selectRegion,
+      status: { loading }
     } = this.props;
     const { filters } = this.state;
 
@@ -149,48 +152,65 @@ export class ExportList extends Component {
             onSubmit={this.search}
           />
           <hr />
-          <Table>
-            <thead>
-              <tr>
-                <th>
-                  <FormattedMessage
-                    id="exports.name.label"
-                    defaultMessage="Name"
-                  />
-                </th>
-                <th>
-                  <FormattedMessage
-                    id="exports.description.label"
-                    defaultMessage="Description"
-                  />
-                </th>
-                <th>
-                  <FormattedMessage
-                    id="exports.project.label"
-                    defaultMessage="Project"
-                  />
-                </th>
-                <th>
-                  <FormattedMessage
-                    id="exports.created.label"
-                    defaultMessage="Created"
-                  />
-                </th>
-                <th>
-                  <FormattedMessage
-                    id="exports.owner.label"
-                    defaultMessage="Owner"
-                  />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <ExportTable jobs={jobs.items} selectRegion={selectRegion} />
-          </Table>
-          <Paginator
-            collection={jobs}
-            getPage={getExports.bind(null, filters)}
-          />
+          {loading &&
+            <div>
+              <NonIdealState
+                action={
+                  <strong>
+                    <FormattedMessage
+                      id="ui.loading"
+                      defaultMessage="Loading..."
+                    />"
+                  </strong>
+                }
+                visual={<Spinner />}
+              />
+            </div>}
+          {loading ||
+            <div>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>
+                      <FormattedMessage
+                        id="exports.name.label"
+                        defaultMessage="Name"
+                      />
+                    </th>
+                    <th>
+                      <FormattedMessage
+                        id="exports.description.label"
+                        defaultMessage="Description"
+                      />
+                    </th>
+                    <th>
+                      <FormattedMessage
+                        id="exports.project.label"
+                        defaultMessage="Project"
+                      />
+                    </th>
+                    <th>
+                      <FormattedMessage
+                        id="exports.created.label"
+                        defaultMessage="Created"
+                      />
+                    </th>
+                    <th>
+                      <FormattedMessage
+                        id="exports.owner.label"
+                        defaultMessage="Owner"
+                      />
+                    </th>
+                    <th />
+                  </tr>
+                </thead>
+                <ExportTable jobs={jobs.items} selectRegion={selectRegion} />
+              </Table>
+              <Paginator
+                collection={jobs}
+                getPage={getExports.bind(null, filters)}
+              />
+            </div>}
         </Col>
         <Col xs={6} style={{ height: "100%" }}>
           <MapListView
@@ -208,7 +228,8 @@ const mapStateToProps = state => {
   return {
     jobs: state.jobs,
     // TODO NOT HDX
-    selectedFeatureId: state.hdx.selectedExportRegion
+    selectedFeatureId: state.hdx.selectedExportRegion,
+    status: selectStatus(state)
   };
 };
 

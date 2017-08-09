@@ -9,6 +9,7 @@ import overpassLastUpdated from "./overpassLastUpdated";
 import meta from "./meta";
 import mode from "./mode";
 import showImportModal from "./showImportModal";
+import status from "./status";
 import toolbarIcons from "./toolbarIcons";
 
 export default {
@@ -23,5 +24,6 @@ export default {
   mode,
   overpassLastUpdated,
   showImportModal,
+  status,
   toolbarIcons
 };
