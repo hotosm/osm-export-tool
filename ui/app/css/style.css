@@ -43,7 +43,8 @@ a {
 }
 
 .navbar-brand .logo {
-  height: 64px;
+  margin: 12px;
+  height: 40px;
 }
 
 .navbar-default .navbar-nav > li > a {
