@@ -134,9 +134,6 @@ export default class MapListView extends Component {
             14251787.50789682,
             10584983.780136958
           ]
-        }),
-        new FilterControl({
-          onUpdate
         })
       ],
       interactions: interaction.defaults({
@@ -168,6 +165,14 @@ export default class MapListView extends Component {
         maxZoom: 22
       })
     });
+
+    if (onUpdate) {
+      this._map.addControl(
+        new FilterControl({
+          onUpdate
+        })
+      );
+    }
 
     this._drawLayer = this._generateDrawLayer();
     this._map.addLayer(this._drawLayer);
