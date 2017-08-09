@@ -129,19 +129,31 @@ export const getOverpassTimestamp = () => (dispatch, getState) => {
 export const getExport = id => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
+  dispatch({
+    type: types.FETCHING_EXPORT
+  });
+
   return axios({
     baseURL: window.EXPORTS_API_URL,
     headers: {
       Authorization: `Bearer ${token}`
     },
     url: `/api/jobs/${id}`
-  }).then(rsp =>
-    dispatch({
-      type: types.RECEIVED_EXPORT,
-      id: id,
-      job: rsp.data
-    })
-  );
+  })
+    .then(rsp =>
+      dispatch({
+        type: types.RECEIVED_EXPORT,
+        id: id,
+        job: rsp.data
+      })
+    )
+    .catch(error =>
+      dispatch({
+        type: types.FETCHING_EXPORT_FAILED,
+        error,
+        statusCode: error.response && error.response.status
+      })
+    );
 };
 
 export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {

@@ -422,6 +422,19 @@ export class HDXExportRegionForm extends Component {
       );
     }
 
+    if (editing && exportRegion == null) {
+      return (
+        <NonIdealState
+          action={
+            <strong>
+              <FormattedMessage id="ui.hdx.not_found" defaultMessage="Export Region Not Found" />
+            </strong>
+          }
+          visual="warning-sign"
+        />
+      );
+    }
+
     return (
       <Row style={{ height: "100%" }}>
         <Col xs={6} style={{ height: "100%", overflowY: "scroll" }}>

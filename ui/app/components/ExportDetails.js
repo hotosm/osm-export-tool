@@ -1,3 +1,4 @@
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 import React, { Component } from "react";
 import {
   Alert,
@@ -14,6 +15,7 @@ import { connect } from "react-redux";
 
 import MapListView from "./MapListView";
 import { getExport, getRuns, runExport, cloneExport } from "../actions/exports";
+import { selectStatus } from "../selectors";
 import {
   REQUIRES_FEATURE_SELECTION,
   exportFormatNicename,
@@ -108,8 +110,11 @@ const Details = ({ exportInfo }) => {
           </td>
           <td colSpan="3">
             <ul style={{ listStyleType: "none", padding: 0 }}>
-            {exportInfo.export_formats
-              .map(x => <li>{exportFormatNicename(x)}</li>)}
+              {exportInfo.export_formats.map(x =>
+                <li>
+                  {exportFormatNicename(x)}
+                </li>
+              )}
             </ul>
           </td>
         </tr>
@@ -284,6 +289,7 @@ export class ExportDetails extends Component {
     const {
       cloneExport,
       exportInfo,
+      status: { loading },
       match: { params: { id } },
       runExport
     } = this.props;
@@ -302,6 +308,35 @@ export class ExportDetails extends Component {
 
       requiresFeatureSelection = (exportInfo.export_formats || [])
         .some(x => REQUIRES_FEATURE_SELECTION[x]);
+    }
+
+    if (loading) {
+      return (
+        <NonIdealState
+          action={
+            <strong>
+              <FormattedMessage id="ui.loading" defaultMessage="Loading..." />
+            </strong>
+          }
+          visual={<Spinner />}
+        />
+      );
+    }
+
+    if (exportInfo == null) {
+      return (
+        <NonIdealState
+          action={
+            <strong>
+              <FormattedMessage
+                id="ui.export.not_found"
+                defaultMessage="Export Not Found"
+              />
+            </strong>
+          }
+          visual="warning-sign"
+        />
+      );
     }
 
     return (
@@ -385,7 +420,8 @@ export class ExportDetails extends Component {
 
 const mapStateToProps = state => {
   return {
-    exportInfo: state.exportInfo
+    exportInfo: state.exportInfo,
+    status: selectStatus(state)
   };
 };
 
