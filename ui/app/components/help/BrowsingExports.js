@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Jumbotron, Row, Col } from 'react-bootstrap';
 
 import searchExports from "../../images/docs/searchexports.png";
-import exportDetail from "../../images/docs/exportDetail.png";
+import exportDetail from "../../images/docs/exportdetail.png";
 import rerunClone from "../../images/docs/rerunclone.png";
 
 export default () =>
