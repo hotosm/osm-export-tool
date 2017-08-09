@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Jumbotron, Row, Col, Alert } from 'react-bootstrap';
+import { Jumbotron, Row, Col } from 'react-bootstrap';
+
+import tagTree from "../../images/docs/tagtree.png";
 
 export default () =>
   <div className="help">
@@ -36,7 +38,7 @@ export default () =>
               <li>A geographic query area.</li>
               <li>a <strong>Tag Filter</strong>, or a subset of OSM features we are interested in.
                 For example, when mapping buildings we want to limit our exports to only ways and relations that are tagged building=true.</li>
-              <li>a <strong>Key Selection</strong>, or a subset of OSM keys we are interested in. 
+              <li>a <strong>Key Selection</strong>, or a subset of OSM keys we are interested in.
                   At the present, there are tens of thousands of different OSM keys in use, so we only want the relevant ones.
                   Additionally, many useful GIS formats require a fixed tabular schema where each feature has a known set of columns.
                   For example, when mapping buildings we may also want to select the keys name and amenity, as these contain useful information.</li>
@@ -49,7 +51,7 @@ export default () =>
               </ul>
             </p>
             <h2 id="tagtree">Tag Tree</h2>
-            <img src="/static/ui/images/docs/tagtree.png" style={{width:"75%"}}></img>
+            <img src={tagTree} style={{width:"75%"}} />
             <p> The tag tree is the simplest way to get started selecting features.</p>
             <p>Each <strong>Parent Checkbox</strong> filters the data to a category of features, also including relevant tags.</p>
             <p>Each parent checkbox can expanded, and individual <strong>Child Checkboxes</strong> can be selected to further filter down the data.</p>
@@ -63,8 +65,8 @@ export default () =>
             <h2 id="configuration">Saving YAML as a Configuration</h2>
             <p>
               YAML can be defined and saved for future re-use via the Configurations page. It's useful to create one Configuration for a project which is then used
-              on all exports related to that project. Give your Configuration a name and description that will make it discoverable by other mappers. 
-              Unchecking the "Public" checkbox will make your Configuration only visible to yourself. Notably, Configurations can be edited, so this is useful for 
+              on all exports related to that project. Give your Configuration a name and description that will make it discoverable by other mappers.
+              Unchecking the "Public" checkbox will make your Configuration only visible to yourself. Notably, Configurations can be edited, so this is useful for
               evolving a feature selection during the course of a project, e.g. adding additional key selections.
             </p>
             <h2 id="reuse">Re-using a Configuration when Creating an Export</h2>

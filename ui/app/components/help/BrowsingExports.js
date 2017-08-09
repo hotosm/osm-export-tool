@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Jumbotron, Row, Col, Alert } from 'react-bootstrap';
+import { Jumbotron, Row, Col } from 'react-bootstrap';
+
+import searchExports from "../../images/docs/searchexports.png";
+import exportDetail from "../../images/docs/exportDetail.png";
+import rerunClone from "../../images/docs/rerunclone.png";
 
 export default () =>
   <div className="help">
@@ -27,7 +31,7 @@ export default () =>
             </p>
 
             <h2 id="exportslist">Exports List</h2>
-            <img src="/static/ui/images/docs/searchexports.png" style={{width:"100%"}}></img>
+            <img src={searchExports} style={{width:"100%"}} />
             <ol>
               <li>
                 <strong>Search Box:</strong> Enter a query that will be matched against the Name, Description or Project of an export.
@@ -39,7 +43,7 @@ export default () =>
 
 
             <h2 id="exportdetails">Export Details</h2>
-            <img src="/static/ui/images/docs/exportdetail.png" style={{width:"100%"}}></img>
+            <img src={exportDetail} style={{width:"100%"}} />
             <p>
               <strong>Left Panel: Export Details.</strong> Shows the date of creation, user who created the export, and the feature selection.
             </p>
@@ -48,14 +52,14 @@ export default () =>
             </p>
 
             <h2 id="rerunexport">Re-running an Export</h2>
-            <img src="/static/ui/images/docs/rerunclone.png" style={{width:"50%"}}></img>
+            <img src={rerunClone} style={{width:"50%"}} />
             <p>
-                “Re-running” an export lets you extract data using the same settings of the area, description, file formats and feature selection. 
-                This function is generally used to obtain updated OSM data, including any added or modified information since the export was last run. 
-                This is important to ensure that the information is current as OSM is constantly changing. 
+                “Re-running” an export lets you extract data using the same settings of the area, description, file formats and feature selection.
+                This function is generally used to obtain updated OSM data, including any added or modified information since the export was last run.
+                This is important to ensure that the information is current as OSM is constantly changing.
                 You will need to authenticate with an account to re-run an export.
             </p>
-        
+
             <h2 id="cloneexport">Cloning an Export</h2>
             <p>
               "Cloning" an export lets you create a new export based on an existing one, possibly using the same area, description or feature selection,
