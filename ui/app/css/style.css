@@ -931,10 +931,6 @@ span#spinner i {
   font-weight: 700;
 }
 
-.help .btn-default {
-  border: none;
-}
-
 .help .itemWrapper:nth-of-type(n) {
   padding-right: 3%;
   padding-bottom: 2rem;
@@ -1214,6 +1210,10 @@ The class for the element that wraps a nodes children (if any exist)
 
 .rct-icon-parent-close::before {
   content: "\f114";
+}
+
+.btn {
+  border: none;
 }
 
 .btn-default {
