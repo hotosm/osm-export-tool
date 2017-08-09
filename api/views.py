@@ -102,7 +102,7 @@ class JobViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = Job.objects
-        all = strtobool(self.request.query_params.get('all', 'false'))
+        all = strtobool(self.request.query_params.get('all', 'false')) or self.action != "list"
         bbox = self.request.query_params.get('bbox', None)
         before = self.request.query_params.get('before', None)
         after = self.request.query_params.get('after', None)
@@ -147,7 +147,8 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = SavedFeatureSelection.objects.filter(deleted=False)
-        all = strtobool(self.request.query_params.get('all', 'false'))
+        all = strtobool(self.request.query_params.get('all', 'false')) or self.action != "list"
+
         if not all:
             queryset = queryset.filter(Q(user_id=user.id))
 
@@ -240,7 +241,8 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         user = self.request.user
         queryset = HDXExportRegion.objects.filter(deleted=False).prefetch_related(
             'job__runs__tasks').defer('job__the_geom')
-        all = strtobool(self.request.query_params.get('all', 'false'))
+        all = strtobool(self.request.query_params.get('all', 'false')) or self.action != "list"
+
         if not all:
             queryset = queryset.filter(Q(job__user_id=user.id))
 
