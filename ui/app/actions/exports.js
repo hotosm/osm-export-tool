@@ -171,6 +171,7 @@ export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {
     },
     params: {
       ...filters,
+      all: filters.all || (token == null),
       limit: itemsPerPage,
       offset: Math.max(0, (page - 1) * itemsPerPage)
     },
