@@ -6,7 +6,7 @@ export default () =>
     <Row>
       <Col md={4}>
         <i className="fa fa-envelope-o" />{" "}
-        <a href="https://www.hotosm.org/contact-us">Contact Us</a>{" "}
+        <a href="mailto:sysadmin@hotosm.org">Contact Us</a>
       </Col>
       <Col md={4} className="center">
         Made with ❤️ by <a href="https://www.hotosm.org/">HOT</a> and friends
