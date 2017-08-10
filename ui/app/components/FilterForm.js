@@ -2,8 +2,10 @@ import { DateRangeInput } from "@blueprintjs/datetime";
 import React, { Component } from "react";
 import { Button, FormControl, InputGroup, Row } from "react-bootstrap";
 import { FormattedMessage, defineMessages, injectIntl } from "react-intl";
+import { connect } from "react-redux";
 import { Field, Fields, propTypes, reduxForm } from "redux-form";
 
+import { selectIsLoggedIn } from "../selectors";
 import { renderCheckbox } from "./utils";
 
 const form = reduxForm({
@@ -49,6 +51,7 @@ class ExportSearchForm extends Component {
     const {
       handleSubmit,
       intl: { formatMessage },
+      isLoggedIn,
       running,
       showDateRange,
       type
@@ -62,7 +65,8 @@ class ExportSearchForm extends Component {
     return (
       <form onSubmit={this.search}>
         <Row>
-          <div className="pt-input-group pt-large"
+          <div
+            className="pt-input-group pt-large"
             style={{
               width: "100%",
               marginTop: "20px",
@@ -119,18 +123,23 @@ class ExportSearchForm extends Component {
             >
               <FormattedMessage id="ui.search" defaultMessage="Search" />
             </Button>}
-          <Field
-            component={renderCheckbox}
-            description={formatMessage(messages.showAll, {
-              type
-            })}
-            name="all"
-            type="checkbox"
-          />
+          {isLoggedIn &&
+            <Field
+              component={renderCheckbox}
+              description={formatMessage(messages.showAll, {
+                type
+              })}
+              name="all"
+              type="checkbox"
+            />}
         </Row>
       </form>
     );
   }
 }
 
-export default form(injectIntl(ExportSearchForm));
+const mapStateToProps = state => ({
+  isLoggedIn: selectIsLoggedIn(state)
+});
+
+export default connect(mapStateToProps)(form(injectIntl(ExportSearchForm)));
