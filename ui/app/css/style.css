@@ -43,18 +43,23 @@ a {
 }
 
 .navbar-brand .logo {
-  margin: 12px;
-  height: 40px;
+  margin: 4px;
+  margin-left: 8px;
+  height: 54px;
 }
 
 .navbar-default .navbar-nav > li > a {
   color: #1f3b45;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 30px;
 }
 
 .navbar-default .navbar-nav > li button {
   font-weight: 700;
+}
+
+.navbar {
+  margin-bottom: 0;
 }
 
 .nav-tabs > li > a.active,
@@ -946,6 +951,10 @@ span#spinner i {
   font-weight: bold;
 }
 
+.home h2 {
+  font-weight: bold;
+}
+
 .home .hero p {
   color: rgba(49, 75, 84, .64);
   font-size: 24px;
@@ -956,8 +965,8 @@ span#spinner i {
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
-  background-image: url("../images/pipes.jpg");
-  width: 1152px;
+  background-image: url("../images/osm-buildings.png");
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   position: relative;
