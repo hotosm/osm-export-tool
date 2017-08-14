@@ -79,6 +79,10 @@ def validate_aoi(aoi):
         )
 
 class Job(models.Model):
+    """ 
+    Database model for an 'Export'.
+    Immutable, except in the case of HDX Export Regions.
+    """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     user = models.ForeignKey(User, related_name='owner')
@@ -127,6 +131,7 @@ class Job(models.Model):
 
 
 class SavedFeatureSelection(models.Model):
+    """ Mutable database record for a saved YAML configuration."""
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
     user = models.ForeignKey(User)
@@ -138,6 +143,7 @@ class SavedFeatureSelection(models.Model):
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
 
 class HDXExportRegion(models.Model): # noqa
+    """ Mutable database table for hdx - additional attributes on a Job."""
     PERIOD_CHOICES = (
         ('6hrs', 'Every 6 hours'),
         ('daily', 'Every day'),

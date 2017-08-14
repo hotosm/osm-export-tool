@@ -55,6 +55,9 @@ class ConfigurationSerializer(serializers.ModelSerializer):
 
 
 class JobGeomSerializer(serializers.ModelSerializer):
+    """ Since Job Geoms can be large, these are serialized separately,
+    instead of nested within Jobs."""
+
     class Meta:
         model = Job
         fields = ('the_geom', )
@@ -93,6 +96,8 @@ def validate_model(model):
 
 
 class HDXExportRegionListSerializer(serializers.ModelSerializer):  # noqa
+    """ The list serializer does not expose the Geom, as it can be large."""
+
     export_formats = serializers.ListField()
     dataset_prefix = serializers.CharField()
     feature_selection = serializers.CharField()
@@ -110,10 +115,9 @@ class HDXExportRegionListSerializer(serializers.ModelSerializer):  # noqa
 
 
 class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
-    # Internally, an export region is a job model + an export region model
-    # but to the UI, it appears as a single entity
+    """ Internally, an export region is a job model + an export region model
+    but to API users, it appears as a single entity. """
 
-    # hint to DRF these fields on creation
     export_formats = serializers.ListField()
     dataset_prefix = serializers.CharField()
     feature_selection = serializers.CharField()

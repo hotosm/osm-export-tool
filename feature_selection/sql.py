@@ -35,6 +35,9 @@ whereCondition = Group(
 whereExpression << Group(whereCondition + ZeroOrMore( ( and_ | or_ ) + whereExpression ) )('expression')
 
 class SQLValidator(object):
+    """ Parses a subset of SQL to define feature selections.
+        This validates the SQL to make sure the user can't do anything dangerous."""
+
     def __init__(self,s):
         self._s = s
         self._errors = []

@@ -5,7 +5,7 @@ from rest_framework import permissions
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Custom permission which restricts delete and update
+    Custom permission used by Django Rest Framework which restricts delete and update
     operations on models to the owner of the object.
     """
 

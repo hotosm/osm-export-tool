@@ -13,7 +13,7 @@ from jobs.models import Job
 
 class ExportRun(models.Model):
     """
-    Model for export task runs.
+    Model for one execution of an Export - associated with a storage directory on filesystem.
     """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
@@ -53,7 +53,7 @@ class ExportRun(models.Model):
 
 class ExportTask(models.Model):
     """
-    Model for an ExportTask.
+    Model for one export format within one export run.
     """
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)

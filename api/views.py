@@ -53,36 +53,11 @@ class JobViewSet(viewsets.ModelViewSet):
 
     Updates to existing jobs are not supported as exports can be cloned.
 
-    Request data can be posted as either `application/x-www-form-urlencoded` or `application/json`.
-
-    **Request parameters**:
-
-    * name (required): The name of the export.
-    * description (required): A description of the export.
-    * event: The project or event associated with this export, eg Nepal Activation.
-    * formats (required): One of the supported export formats ([html](/api/formats) or [json](/api/formats.json)).
-        * Use the format `slug` as the value of the formats parameter, eg `formats=thematic&formats=shp`.
-    * published: `true` if this export is to be published globally, `false` otherwise.
-        * Unpublished exports will be purged from the system 48 hours after they are created.
-
-
-    <pre>
-        {
-            "name": "Dar es Salaam",
-            "description": "A description of the test export",
-            "event": "A HOT project or activation",
-            "formats": ["thematic", "shp", "kml"],
-            "published": "true"
-        }
-    </pre>
-
-    To create an export with a default set of tags, save the example json request
-    to a local file called **request.json** and run the following command from the
-    directory where the file is saved. You will need an access token.
+    Request data should be posted as `application/json`.
 
     <code>
     curl -v -H "Content-Type: application/json" -H "Authorization: Token [your token]"
-    --data @request.json http://export.hotosm.org/api/jobs
+    --data @request.json http://EXPORT_TOOL_URL/api/jobs
     </code>
 
     To monitor the resulting export run retreive the `uid` value from the returned json
@@ -135,6 +110,9 @@ class JobViewSet(viewsets.ModelViewSet):
 
 
 class ConfigurationViewSet(viewsets.ModelViewSet):
+    """ API endpoints for stored YAML configurations.
+    Note that these are mutable - a configuration can be edited."""
+
     serializer_class = ConfigurationSerializer
     permission_classes = (IsOwnerOrReadOnly,
                           permissions.IsAuthenticatedOrReadOnly)
@@ -157,12 +135,9 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
 
 class ExportRunViewSet(viewsets.ModelViewSet):
     """
-    ###Export Run API Endpoint.
+    Export Run API Endpoint.
 
-    Provides an endpoint for querying export runs.
-    Export runs for a particular job can be filtered by status by appending one of
-    `COMPLETED`, `SUBMITTED`, `INCOMPLETE` or `FAILED` as the value of the `STATUS` parameter:
-    `/api/runs?job_uid=a_job_uid&status=STATUS`
+    Poll this endpoint for querying export runs.
     """
     serializer_class = ExportRunSerializer
     permission_classes = (permissions.AllowAny, )
@@ -170,17 +145,7 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 
     def create(self, request, format='json'):
         """
-        Re-runs the job.
-
-        Gets the job_uid and current user from the request.
-        Creates an instance of the ExportTaskRunner and
-        calls run_task on it, passing the job_uid and user.
-
-        Args:
-            the http request
-
-        Returns:
-            the serialized run data.
+        runs the job.
         """
         job_uid = request.query_params.get('job_uid', None)
         task_runner = ExportTaskRunner()
@@ -192,17 +157,7 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, uid=None, *args, **kwargs):
         """
-        Get an ExportRun.
-
-        Gets the run_uid from the request and returns run data for the
-        associated ExportRun.
-
-        Args:
-            request: the http request.
-            uid: the run uid.
-
-        Returns:
-            the serialized run data.
+        Get a single Export Run.
         """
         queryset = ExportRun.objects.filter(uid=uid)
         serializer = self.get_serializer(
@@ -211,16 +166,7 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        List the ExportRuns for a single Job.
-
-        Gets the job_uid from the request and returns run data for the
-        associated Job.
-
-        Args:
-            the http request.
-
-        Returns:
-            the serialized run data.
+        List the Export Runs for a single Job.
         """
         job_uid = self.request.query_params.get('job_uid', None)
         queryset = self.filter_queryset(
@@ -231,6 +177,9 @@ class ExportRunViewSet(viewsets.ModelViewSet):
 
 
 class HDXExportRegionViewSet(viewsets.ModelViewSet):
+    """ API endpoint for HDX regions.
+    Viewing and editing these is limited to a set of admins."""
+
     ordering_fields = '__all__'
     ordering = ('job__name',)
     permission_classes = (IsHDXAdmin, )
@@ -298,7 +247,10 @@ def request_geonames(request):
 @require_http_methods(['GET'])
 @login_required()
 def get_overpass_timestamp(request):
-    # TODO: this sometimes fails, returning a HTTP 200 but empty content.
+    """
+    Endpoint to show the last OSM update timestamp on the Create page.
+    this sometimes fails, returning a HTTP 200 but empty content.
+    """
     r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
     return JsonResponse({'timestamp': dateutil.parser.parse(r.content)})
 

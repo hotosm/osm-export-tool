@@ -15,8 +15,8 @@ from .osmand_obf import OsmAndOBF
 from .shp import Shapefile
 
 
-# ugly class to handle renaming, zipping and moving
 class Zipper(object):
+    """ Utility class to handle renaming, zipping and moving files to storage in one place."""
     def __init__(self, job_name, stage_dir, target_dir, boundary_geom,
                  feature_selection):
         self.job_name = job_name

@@ -68,8 +68,11 @@ BANNED_THEME_NAMES = [
     'other_relations'
 ]
 
-# adapted from https://github.com/django/django/blob/92053acbb9160862c3e743a99ed8ccff8d4f8fd6/django/utils/text.py#L417
 def slugify(s):
+    """
+    Turn theme names into snake case slugs.
+    adapted from https://github.com/django/django/blob/92053acbb9160862c3e743a99ed8ccff8d4f8fd6/django/utils/text.py#L417
+    """
     slug = unicodedata.normalize('NFKD', unicode(s))
     slug = slug.encode('ascii', 'ignore').lower()
     slug = re.sub(r'[^a-z0-9]+', '_', slug).strip('_')
@@ -77,10 +80,14 @@ def slugify(s):
     return slug
 
 
-# FeatureSelection seralizes as YAML.
-# It describes a set of tables (themes)
-# to create in a Spatialite database.
 class FeatureSelection(object):
+    """ A feature selection object:
+    * filters and selects OSM tags.
+    * is a first-class object in the Export Tool.
+    ( pass this around to other objects )
+    * serializes as YAML.
+    * describes a set of tables to create in a Geopackage database.
+    """
     @staticmethod
     def example_raw(filename):
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -100,6 +107,7 @@ class FeatureSelection(object):
 
     @property
     def doc(self):
+        """ Validate when the YAML doc is accessed."""
 
         def validate_schema(loaded_doc):
             if not isinstance(loaded_doc,dict):
