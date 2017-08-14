@@ -92,26 +92,31 @@ export default () =>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/learn/export_formats#img">Garmin .IMG</Link>
+                  <Link to="/learn/export_formats#img">Garmin (.IMG)</Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#kmz">
-                    Google Earth KML (.KMZ)
+                    Google Earth (.KMZ)
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#xml">
-                    OpenStreetMap XML (.XML)
+                    OpenStreetMap Source (.XML)
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#pbf">
-                    OpenStreetMap Protobuf (.PBF)
+                    OpenStreetMap Source (.PBF)
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/learn/export_formats#obf">
+                    OSMAnd (.OBF)
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#mwm">
-                    maps.me MWM (.MWM)
+                    maps.me (.MWM)
                   </Link>
                 </li>
               </ul>

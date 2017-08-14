@@ -235,31 +235,10 @@ export default () =>
                 </a>
               </li>
             </ul>
-            <h2 id="obf">OSMAnd OBF</h2>
+            <h2 id="xml">OpenStreetMap Source .XML</h2>
             <p>
-              OsmAnd is a GPS Navigation and map application for Android
-              smartphones and tablets, notably supporting offline mapping and
-              navigation.
+              An uncompressed, human-readable version of the OSM .PBF, as described above.
             </p>
-            <h4>
-              <strong>Compatible Software</strong>
-            </h4>
-            <ul>
-              <li>OSMAnd</li>
-            </ul>
-            <h4>
-              <strong>Further Information</strong>
-            </h4>
-            <ul>
-              <li>
-                <a
-                  href="http://wiki.openstreetmap.org/wiki/OsmAnd"
-                  target="_blank"
-                >
-                  OSMAnd | OBF Format
-                </a>
-              </li>
-            </ul>
             <h2 id="mwm">maps.me MWM</h2>
             <p>
               Maps.me is a GPS Navigation and map application for Android and
@@ -298,19 +277,22 @@ export default () =>
                 <a href="#gpkg">OGC Geopackage (.gpkg)</a>
               </li>
               <li>
-                <a href="#img">Garmin IMG (.img)</a>
+                <a href="#img">Garmin (.img)</a>
               </li>
               <li>
-                <a href="#kmz">Google KMZ (.kmz)</a>
+                <a href="#kmz">Google Earth (.kmz)</a>
               </li>
               <li>
-                <a href="#pbf">OpenStreetMap PBF (.pbf)</a>
+                <a href="#pbf">OpenStreetMap Source (.pbf)</a>
               </li>
               <li>
-                <a href="#obf">OSMAnd OBF (.obf)</a>
+                <a href="#xml">OpenStreetMap Source (.xml)</a>
               </li>
               <li>
-                <a href="#mwm">maps.me MWM (.mwm)</a>
+                <a href="#obf">OSMAnd (.obf)</a>
+              </li>
+              <li>
+                <a href="#mwm">maps.me (.mwm)</a>
               </li>
             </ul>
           </Col>
