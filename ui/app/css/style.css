@@ -47,19 +47,15 @@ a {
 }
 
 .navbar-brand .logo {
-  margin: 4px;
-  margin-left: 8px;
-  height: 54px;
+  margin-left:20px;
+  margin-top:10px;
+  height: 42px;
 }
 
 .navbar-default .navbar-nav > li > a {
   color: #1f3b45;
   font-weight: 400;
   line-height: 30px;
-}
-
-.navbar-default .navbar-nav > li button {
-  font-weight: 700;
 }
 
 .navbar {
@@ -878,12 +874,17 @@ span#spinner i {
   line-height: 1.5em;
 }
 
+.helpDetailBody div {
+  margin-bottom:80px;
+}
+
 .helpDetailBody h2 {
-  padding-top: 40px;
+  font-weight:700;
 }
 
 .helpDetailBody img {
-  margin-bottom:20px;
+  margin-bottom:30px;
+  margin-top:30px;
 }
 
 .helpToc h3 {
