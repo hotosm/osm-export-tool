@@ -22,6 +22,10 @@ docker.django-migration`
 To upgrade, run `docker pull` for each image that needs to be upgraded and then run `systemctl
 restart osm-export-tool.target` to restart.
 
+If the only thing that has changed is application code, the quick version is: `docker pull quay.io/hotosm/osm-export-tool2 && systemctl restart docker.django.service`. This will restart only the services with dependencies on changed application code (`celery`, `celery-beat`, `django`, and `nginx` (for static assets)).
+
+Unused / unlinked Docker images should be cleaned up periodically to avoid running out of disk space: `docker image prune -a`
+
 ## Logs
 
 Systemd's `journalctl` should be used to view logs. To tail celery logs, run: `journalctl -fu
