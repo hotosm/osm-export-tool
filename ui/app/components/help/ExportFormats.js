@@ -16,7 +16,7 @@ export default () =>
       <section className="helpDetailBody">
         <Row>
           <Col sm={8}>
-            <h2 id="shp">Esri Shapefile (.SHP)</h2>
+            <h2 id="shp">Shapefile .shp</h2>
             <p>
               Shapefiles are a tabular format developed by Esri. They are the
               most popular file format for GIS data. A shapefile is actually 3-4
@@ -69,7 +69,7 @@ export default () =>
                 </a>
               </li>
             </ul>
-            <h2 id="gpkg">OGC GeoPackage</h2>
+            <h2 id="gpkg">Geopackage .gpkg</h2>
             <p>
               OGC Geopackages store geospatial data in a single SQLite database.
               Geopackages are very similar to Spatialite-enabled SQLite
@@ -96,7 +96,7 @@ export default () =>
                 </a>
               </li>
             </ul>
-            <h2 id="img">Garmin .IMG</h2>
+            <h2 id="img">Garmin .img</h2>
             <p>
               A .IMG file contains all information needed to render a map on a
               Garmin GPS mobile device. A .IMG is a disk image containing
@@ -146,7 +146,7 @@ export default () =>
                 </a>
               </li>
             </ul>
-            <h2 id="kmz">Google KMZ</h2>
+            <h2 id="kmz">.kml</h2>
             <p>
               The KMZ file is a compressed version of a KML file. KML is an
               XML-based foramt for modeling points, lines, polygons and
@@ -187,7 +187,7 @@ export default () =>
                 </a>
               </li>
             </ul>
-            <h2 id="pbf">OpenStreetMap .PBF</h2>
+            <h2 id="pbf">OSM .pbf</h2>
             <p>
               OpenStreetMap's canonical data format is an XML document of nodes,
               ways and relations. The{" "}
@@ -235,11 +235,11 @@ export default () =>
                 </a>
               </li>
             </ul>
-            <h2 id="xml">OpenStreetMap Source .XML</h2>
+            <h2 id="xml">OSM .xml</h2>
             <p>
               An uncompressed, human-readable version of the OSM .PBF, as described above.
             </p>
-            <h2 id="mwm">maps.me MWM</h2>
+            <h2 id="mwm">MAPS.ME .mwm</h2>
             <p>
               Maps.me is a GPS Navigation and map application for Android and
               iOS smartphones and tablets, notably supporting offline mapping
@@ -271,28 +271,28 @@ export default () =>
             <h3>IN THIS AREA</h3>
             <ul>
               <li>
-                <a href="#shp">ESRI Shapefile (.shp)</a>
+                <a href="#shp">Shapefile .shp</a>
               </li>
               <li>
-                <a href="#gpkg">OGC Geopackage (.gpkg)</a>
+                <a href="#gpkg">Geopackage .gpkg</a>
               </li>
               <li>
-                <a href="#img">Garmin (.img)</a>
+                <a href="#img">Garmin .img</a>
               </li>
               <li>
-                <a href="#kmz">Google Earth (.kmz)</a>
+                <a href="#kmz">.kml</a>
               </li>
               <li>
-                <a href="#pbf">OpenStreetMap Source (.pbf)</a>
+                <a href="#pbf">OSM .pbf</a>
               </li>
               <li>
-                <a href="#xml">OpenStreetMap Source (.xml)</a>
+                <a href="#xml">OSM .xml</a>
               </li>
               <li>
-                <a href="#obf">OSMAnd (.obf)</a>
+                <a href="#obf">OSMAnd .obf</a>
               </li>
               <li>
-                <a href="#mwm">maps.me (.mwm)</a>
+                <a href="#mwm">MAPS.ME .mwm</a>
               </li>
             </ul>
           </Col>

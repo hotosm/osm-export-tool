@@ -83,40 +83,42 @@ export default () =>
               <ul>
                 <li>
                   <Link to="/learn/export_formats#shp">
-                    Esri Shapefile (.SHP)
+                    Shapefile .shp
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#gpkg">
-                    OGC Geopackage (.GPKG)
+                    Geopackage .gpkg
                   </Link>
                 </li>
                 <li>
-                  <Link to="/learn/export_formats#img">Garmin (.IMG)</Link>
+                  <Link to="/learn/export_formats#img">
+                    Garmin .img
+                  </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#kmz">
-                    Google Earth (.KMZ)
+                    .kml
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#xml">
-                    OpenStreetMap Source (.XML)
+                    OSM .xml
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#pbf">
-                    OpenStreetMap Source (.PBF)
+                    OSM .pbf
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#obf">
-                    OSMAnd (.OBF)
+                    OSMAnd .obf
                   </Link>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#mwm">
-                    maps.me (.MWM)
+                    MAPS.ME .mwm
                   </Link>
                 </li>
               </ul>
