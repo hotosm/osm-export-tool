@@ -43,12 +43,12 @@ a {
 }
 
 .navbar-default {
-  background-color:white;
+  background-color: white;
 }
 
 .navbar-brand .logo {
-  margin-left:20px;
-  margin-top:10px;
+  margin-left: 20px;
+  margin-top: 10px;
   height: 42px;
 }
 
@@ -875,16 +875,16 @@ span#spinner i {
 }
 
 .helpDetailBody div {
-  margin-bottom:80px;
+  margin-bottom: 80px;
 }
 
 .helpDetailBody h2 {
-  font-weight:700;
+  font-weight: 700;
 }
 
 .helpDetailBody img {
-  margin-bottom:30px;
-  margin-top:30px;
+  margin-bottom: 30px;
+  margin-top: 30px;
 }
 
 .helpToc h3 {
@@ -921,10 +921,10 @@ span#spinner i {
 
 .help .hero {
   background-color: white;
-  width:1152px;
-  margin-left:auto;
-  margin-right:auto;
-  text-align:center;
+  width: 1152px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .help .panel {
@@ -960,7 +960,7 @@ span#spinner i {
 }
 
 .home .hero p {
-  margin-top:40px;
+  margin-top: 40px;
   color: #333;
   font-size: 20px;
 }
@@ -986,11 +986,11 @@ span#spinner i {
 }
 
 .jumbotron {
-  margin-bottom:0px;
+  margin-bottom: 0px;
 }
 
 .jumbotron p {
-  margin-bottom:0px;
+  margin-bottom: 0px;
 }
 
 .home .centered {
