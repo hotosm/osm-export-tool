@@ -42,6 +42,10 @@ a {
   padding: 0;
 }
 
+.navbar-default {
+  background-color:white;
+}
+
 .navbar-brand .logo {
   margin: 4px;
   margin-left: 8px;
@@ -73,7 +77,6 @@ a {
 }
 
 footer {
-  background-color: #f8f8f8;
   border-top: 1px solid #e7e7e7;
   font-size: 0.8rem;
   padding: 10px 20px;
