@@ -149,7 +149,7 @@ const Describe = injectIntl(({ intl: { formatMessage }, next }) =>
       placeholder={formatMessage(messages.eventPlaceholder)}
       component={renderInput}
     />
-    <Link className="btn btn-lg btn-primary pull-right" to={next}>
+    <Link className="btn btn-primary pull-right" to={next}>
       <FormattedMessage id="nav.next" defaultMessage="Next" />
     </Link>
   </Row>
@@ -434,7 +434,7 @@ const SelectFeatures = ({
       </Switch>
     </Row>
     <Row>
-      <Link className="btn btn-lg btn-primary pull-right" to={next}>
+      <Link className="btn btn-primary pull-right" to={next}>
         <FormattedMessage id="nav.next" defaultMessage="Next" />
       </Link>
     </Row>
@@ -449,7 +449,7 @@ const ChooseFormats = ({ next }) =>
     >
       {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
     </Field>
-    <Link className="btn btn-lg btn-primary pull-right" to={next}>
+    <Link className="btn btn-primary pull-right" to={next}>
       <FormattedMessage id="nav.next" defaultMessage="Next" />
     </Link>
   </Row>;
@@ -509,7 +509,6 @@ const Summary = injectIntl(
         />
         <Button
           bsStyle="danger"
-          bsSize="large"
           type="submit"
           style={{ width: "100%" }}
           onClick={handleSubmit}

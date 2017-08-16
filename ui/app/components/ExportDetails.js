@@ -349,7 +349,7 @@ export class ExportDetails extends Component {
             {exportInfo ? <Details exportInfo={exportInfo} /> : null}
             <ButtonGroup>
               {requiresFeatureSelection &&
-                <Button bsSize="large" onClick={this.showModal}>
+                <Button onClick={this.showModal}>
                   <FormattedMessage
                     id="ui.exports.features"
                     defaultMessage="Features"
@@ -357,7 +357,6 @@ export class ExportDetails extends Component {
                 </Button>}
               <Button
                 bsStyle="success"
-                bsSize="large"
                 onClick={() => runExport(id)}
               >
                 <FormattedMessage
@@ -367,7 +366,6 @@ export class ExportDetails extends Component {
               </Button>
               <Button
                 bsStyle="primary"
-                bsSize="large"
                 onClick={() => cloneExport(exportInfo)}
                 {...(exportInfo ? {} : { disabled: true })}
               >

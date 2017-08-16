@@ -100,7 +100,6 @@ export class ConfigurationForm extends Component {
         />
         <Button
           bsStyle="primary"
-          bsSize="large"
           type="submit"
           onClick={this.props.handleSubmit}
         >
@@ -117,7 +116,6 @@ export class ConfigurationForm extends Component {
         {editing
           ? <Button
               bsStyle="danger"
-              bsSize="large"
               type="submit"
               style={{ float: "right" }}
               onClick={this.handleDelete}

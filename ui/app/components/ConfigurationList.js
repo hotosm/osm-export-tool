@@ -80,7 +80,7 @@ class ConfigurationListPane extends Component {
           <Link
             to="/configurations/new"
             style={{ float: "right" }}
-            className="btn btn-primary btn-lg"
+            className="btn btn-primary"
           >
             <FormattedMessage
               id="ui.configuration.create"

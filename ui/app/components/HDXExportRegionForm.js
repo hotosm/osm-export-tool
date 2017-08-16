@@ -133,7 +133,6 @@ const PendingDatasetsPanel = ({
     </ul>
     <Button
       bsStyle="primary"
-      bsSize="large"
       type="submit"
       disabled={submitting}
       onClick={handleSubmit}
@@ -168,7 +167,6 @@ const ExistingDatasetsPanel = ({
     on HDX.
     <Button
       bsStyle="danger"
-      bsSize="large"
       type="submit"
       disabled={submitting}
       onClick={handleSubmit}

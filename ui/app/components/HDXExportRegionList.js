@@ -92,7 +92,7 @@ export class HDXExportRegionList extends Component {
             <Link
               to="/hdx/new"
               style={{ float: "right" }}
-              className="btn btn-primary btn-lg"
+              className="btn btn-primary"
             >
               Create New Export Region
             </Link>
