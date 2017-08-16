@@ -39,7 +39,7 @@ const Home = ({ isLoggedIn, login }) =>
         </Link>
       </p>
     </Jumbotron>
-    <Row style={{padding:"60px"}}>
+    <Row>
       <Col md={6} mdOffset={3} className="centered">
         <h2>
           <FormattedMessage
@@ -70,7 +70,7 @@ const Home = ({ isLoggedIn, login }) =>
         </p>
       </Col>
     </Row>
-    <Row style={{ backgroundColor: "#f8f8f8", padding:"60px" }}>
+    <Row style={{ backgroundColor: "#f8f8f8" }}>
       <h2 className='centered'>
         <FormattedMessage
           id="ui.about.other_resources"
@@ -151,7 +151,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 60 }}>
+      <Col md={6} mdOffset={3} className="centered">
         <h3>
           <FormattedMessage
             id="ui.about.title.license_information"
@@ -177,7 +177,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 60 }}>
+      <Col md={6} mdOffset={3} className="centered">
         <h3>
           <FormattedMessage
             id="ui.about.title.help"
@@ -203,7 +203,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 60 }}>
+      <Col md={6} mdOffset={3} className="centered">
         <h3>
           <FormattedMessage
             id="ui.about.title.partners_and_contributors"
@@ -218,27 +218,27 @@ const Home = ({ isLoggedIn, login }) =>
         </p>
       </Col>
     </Row>
-    <Row style={{ paddingTop: 30, paddingBottom: 30 }}>
+    <Row>
       <Col md={6} mdOffset={3} className="centered">
-        <a href="http://www.pdc.org/" style={{marginRight: 50}}>
-          <img src={pdcLogo} width={300} />
+        <a href="http://www.pdc.org/" style={{marginRight: 90}}>
+          <img src={pdcLogo} width={200} />
         </a>
-        <a href="https://www.usaid.gov/">
-          <img src={usaidLogo} width={300} />
+        <a href="https://www.usaid.gov/" style={{marginLeft: 90}}>
+          <img src={usaidLogo} width={200} />
         </a>
       </Col>
     </Row>
-    <Row style={{ paddingTop: 30, paddingBottom: 30 }}>
+    <Row>
       <Col md={6} mdOffset={3} className="centered">
         <a href="http://www.hewlett.org/">
-          <img src={hewlettLogo} width={300} />
+          <img src={hewlettLogo} width={200} />
         </a>
       </Col>
     </Row>
-    <Row style={{ paddingTop: 30, paddingBottom: 50 }}>
+    <Row>
       <Col md={6} mdOffset={3} className="centered">
         <a href="https://www.geofabrik.de/">
-          <img src={geofabrikLogo} width={300} />
+          <img src={geofabrikLogo} width={200} />
         </a>
       </Col>
     </Row>
