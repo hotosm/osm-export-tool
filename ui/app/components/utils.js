@@ -21,37 +21,42 @@ import styles from "../styles/utilsStyles.css";
 export const AVAILABLE_EXPORT_FORMATS = {
   shp: (
     <span key="shp">
-      Shapefile .shp
+      Shapefile <code>.shp</code>
     </span>
   ),
   geopackage: (
     <span key="geopackage">
-      GeoPackage .gpkg
+      GeoPackage <code>.gpkg</code>
     </span>
   ),
   garmin_img: (
     <span key="garmin_img">
-      Garmin .img
+      Garmin <code>.img</code>
     </span>
   ),
   kml: (
     <span key="kml">
-      .kml
+      Google Earth <code>.kml</code>
     </span>
   ),
   osm_xml: (
-    <span key="osm_xml">
-      OSM .xml
+      <span key="osm_xml">
+        OSM <code>.xml</code>
     </span>
   ),
   osm_pbf: (
     <span key="osm_pbf">
-      OSM .pbf
+      OSM <code>.pbf</code>
     </span>
   ),
   mwm: (
     <span key="mwm">
-      MAPS.ME .mwm
+      MAPS.ME <code>.mwm</code>
+    </span>
+  ),
+  osmand_obf: (
+    <span key="osmand_obf">
+      OsmAnd <code>.obf</code>
     </span>
   )
 };
