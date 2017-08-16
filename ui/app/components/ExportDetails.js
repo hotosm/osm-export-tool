@@ -151,12 +151,14 @@ class ExportRuns extends Component {
 
     if (prevProps.jobUid !== jobUid) {
       clearInterval(this.poller);
+      this.poller = null;
       getRuns(jobUid);
     } else {
       if (runs.length > 0) {
         if (runs[0].status === "FAILED" || runs[0].status === "COMPLETED") {
           clearInterval(this.poller);
-        } else {
+          this.poller = null;
+        } else if (this.poller == null) {
           this.poller = setInterval(() => getRuns(jobUid), 15e3);
         }
       }
@@ -165,6 +167,7 @@ class ExportRuns extends Component {
 
   componentWillUnmount() {
     clearInterval(this.poller);
+    this.poller = null;
   }
 
   render() {
