@@ -960,8 +960,9 @@ span#spinner i {
 }
 
 .home .hero p {
-  color: rgba(49, 75, 84, .64);
-  font-size: 24px;
+  margin-top:40px;
+  color: #333;
+  font-size: 20px;
 }
 
 .home .hero {
@@ -982,6 +983,14 @@ span#spinner i {
   bottom: 5px;
   right: 5px;
   font-size: 10px;
+}
+
+.jumbotron {
+  margin-bottom:0px;
+}
+
+.jumbotron p {
+  margin-bottom:0px;
 }
 
 .home .centered {

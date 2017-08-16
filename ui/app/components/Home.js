@@ -24,9 +24,7 @@ const Home = ({ isLoggedIn, login }) =>
         <FormattedMessage
           id="ui.about.blurb1"
           defaultMessage="The Export Tool is an open service that creates customized extracts of up-to-date OSM data in various file formats."
-        />
-      </p>
-      <p className="centered">
+        /><br/>
         <FormattedMessage
           id="ui.about.blurb2"
           defaultMessage="Download and use the data simply by crediting the OpenStreetMap contributors."
@@ -41,7 +39,7 @@ const Home = ({ isLoggedIn, login }) =>
         </Link>
       </p>
     </Jumbotron>
-    <Row>
+    <Row style={{padding:"60px"}}>
       <Col md={6} mdOffset={3} className="centered">
         <h2>
           <FormattedMessage
@@ -72,17 +70,13 @@ const Home = ({ isLoggedIn, login }) =>
         </p>
       </Col>
     </Row>
-    <Row style={{ backgroundColor: "#f8f8f8", paddingTop: 30 }}>
-      <Col md={6} mdOffset={3} className="centered">
-        <h2>
-          <FormattedMessage
-            id="ui.about.other_resources"
-            defaultMessage="Other Resources"
-          />
-        </h2>
-      </Col>
-    </Row>
-    <Row style={{ backgroundColor: "#f8f8f8", padding: 30 }}>
+    <Row style={{ backgroundColor: "#f8f8f8", padding:"60px" }}>
+      <h2 className='centered'>
+        <FormattedMessage
+          id="ui.about.other_resources"
+          defaultMessage="Other Resources"
+        />
+      </h2>
       <Col md={4} className="centered">
         <h3>
           <FormattedMessage
@@ -157,7 +151,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 30 }}>
+      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 60 }}>
         <h3>
           <FormattedMessage
             id="ui.about.title.license_information"
@@ -183,7 +177,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 30 }}>
+      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 60 }}>
         <h3>
           <FormattedMessage
             id="ui.about.title.help"
@@ -209,7 +203,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 30 }}>
+      <Col md={6} mdOffset={3} className="centered" style={{ paddingTop: 60 }}>
         <h3>
           <FormattedMessage
             id="ui.about.title.partners_and_contributors"
