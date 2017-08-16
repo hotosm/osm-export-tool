@@ -8,7 +8,7 @@ import { login } from "../actions/meta";
 import { selectIsLoggedIn } from "../selectors";
 import geofabrikLogo from "../images/geofabrik-logo.png";
 import usaidLogo from "../images/usaid-logo.png";
-import hewlettLogo from "../images/hewlett-logo.jpg";
+import hewlettLogo from "../images/hewlett-logo.png";
 import pdcLogo from "../images/pdc-txt-logo.png";
 
 const Home = ({ isLoggedIn, login }) =>
@@ -225,28 +225,26 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row style={{ paddingTop: 30, paddingBottom: 30 }}>
-      <Col md={4} mdOffset={2} className="centered">
-        <a href="http://www.pdc.org/">
-          <img src={pdcLogo} width={400} />
+      <Col md={6} mdOffset={3} className="centered">
+        <a href="http://www.pdc.org/" style={{marginRight: 50}}>
+          <img src={pdcLogo} width={300} />
         </a>
-      </Col>
-      <Col md={5}>
         <a href="https://www.usaid.gov/">
-          <img src={usaidLogo} width={400} />
+          <img src={usaidLogo} width={300} />
         </a>
       </Col>
     </Row>
     <Row style={{ paddingTop: 30, paddingBottom: 30 }}>
       <Col md={6} mdOffset={3} className="centered">
         <a href="http://www.hewlett.org/">
-          <img src={hewlettLogo} width={400} />
+          <img src={hewlettLogo} width={300} />
         </a>
       </Col>
     </Row>
     <Row style={{ paddingTop: 30, paddingBottom: 50 }}>
       <Col md={6} mdOffset={3} className="centered">
         <a href="https://www.geofabrik.de/">
-          <img src={geofabrikLogo} width={400} />
+          <img src={geofabrikLogo} width={300} />
         </a>
       </Col>
     </Row>
