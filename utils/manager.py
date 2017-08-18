@@ -166,7 +166,7 @@ class RunManager(object):
 if __name__ == '__main__':
     from feature_selection.feature_selection import FeatureSelection
     import logging
-    from django.contrib.gis.geos import GEOSGeometry
+    from django.contrib.gis.geos import GEOSGeometry, Polygon
     from simplify import simplify_geom
 
     logging.basicConfig(level=logging.DEBUG)

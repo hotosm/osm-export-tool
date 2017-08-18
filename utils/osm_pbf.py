@@ -2,11 +2,14 @@
 
 import logging
 import os
-import subprocess
+from subprocess import Popen, PIPE
 from string import Template
 from artifact import Artifact
 
 LOG = logging.getLogger(__name__)
+
+class InvalidOsmXmlException(Exception):
+    pass
 
 class OSM_PBF(object):
     name = 'osm_pbf'
@@ -30,7 +33,12 @@ class OSM_PBF(object):
             return
         convert_cmd = OSM_PBF.cmd.safe_substitute({'osm': self.input_xml, 'pbf':self.output_pbf})
         LOG.debug('Running: %s' % convert_cmd)
-        subprocess.check_call(convert_cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = Popen(convert_cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = p.communicate()
+        if stderr:
+            with open(self.input_xml,'rb') as fd:
+                sample = fd.readlines(8)
+                raise InvalidOsmXmlException(sample)
         LOG.debug('Osmconvert complete')
 
     @property
