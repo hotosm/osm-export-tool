@@ -43,6 +43,11 @@
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+.ol-viewport canvas {
+  background-color: #cad2d3;
+}
+
 .ol-control {
   background-color: rgba(255, 255, 255, .4);
   border-radius: 4px;
