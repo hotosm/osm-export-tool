@@ -98,7 +98,7 @@ export default () =>
                 </li>
                 <li>
                   <Link to="/learn/export_formats#kmz">
-                    .kml
+                    Google Earth .kml
                   </Link>
                 </li>
                 <li>

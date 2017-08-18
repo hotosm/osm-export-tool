@@ -153,7 +153,7 @@ export default () =>
               </ul>
             </div>
             <div>
-              <h2 id="kmz">.kml</h2>
+              <h2 id="kmz">Google Earth .kml</h2>
               <p>
                 The KMZ file is a compressed version of a KML file. KML is an
                 XML-based foramt for modeling points, lines, polygons and
@@ -294,7 +294,7 @@ export default () =>
                 <a href="#img">Garmin .img</a>
               </li>
               <li>
-                <a href="#kmz">.kml</a>
+                <a href="#kmz">Google Earth .kml</a>
               </li>
               <li>
                 <a href="#pbf">OSM .pbf</a>
