@@ -7,4 +7,4 @@ until psql "${DATABASE_URL/postgis:\/\//postgres:\/\/}" -c '\q'; do
   sleep 1
 done
 
-exec python manage.py migrate --no-input
+exec $*

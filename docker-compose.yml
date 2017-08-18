@@ -49,7 +49,7 @@ services:
       - postgresql
     links:
       - postgresql
-    command: migrate.sh
+    command: wait-for-postgresql.sh python manage.py migrate --no-input
   site:
     extends:
       service: base
@@ -67,11 +67,13 @@ services:
     volumes:
       - stage:/opt/export_staging
       - downloads:/opt/export_downloads
-    command: python manage.py runserver 0.0.0.0:6080
+    command: wait-for-postgresql.sh python manage.py runserver 0.0.0.0:6080
   nginx:
     build:
       context: .
       dockerfile: ops/docker-nginx/Dockerfile
+    depends_on:
+      - site
     env_file:
       - .env
     links:
