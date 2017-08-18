@@ -130,6 +130,8 @@ class ExportSearchForm extends Component {
                 type
               })}
               name="all"
+              // allow the change to propagate before submitting
+              onChange={() => setImmediate(handleSubmit)}
               type="checkbox"
             />}
         </Row>
