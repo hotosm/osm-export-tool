@@ -31,7 +31,7 @@ const Home = ({ isLoggedIn, login }) =>
         />
       </p>
       <p className="centered">
-        <Link to="/exports/new" className="btn btn-primary btn-lg">
+        <Link to="/exports/new" className="btn btn-primary">
           <FormattedMessage
             id="ui.home.action"
             defaultMessage="Start Exporting"
@@ -77,6 +77,8 @@ const Home = ({ isLoggedIn, login }) =>
           defaultMessage="Other Resources"
         />
       </h2>
+    </Row>
+    <Row style={{ backgroundColor: "#f8f8f8", paddingTop: 0 }}>
       <Col md={4} className="centered">
         <h3>
           <FormattedMessage
@@ -219,11 +221,11 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered">
-        <a href="http://www.pdc.org/" style={{marginRight: 90}}>
+      <Col md={12} className="centered">
+        <a href="http://www.pdc.org/" style={{marginRight: 60}}>
           <img src={pdcLogo} width={200} />
         </a>
-        <a href="https://www.usaid.gov/" style={{marginLeft: 90}}>
+        <a href="https://www.usaid.gov/" style={{marginLeft: 60}}>
           <img src={usaidLogo} width={200} />
         </a>
       </Col>

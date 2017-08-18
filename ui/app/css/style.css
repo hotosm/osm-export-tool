@@ -916,7 +916,6 @@ span#spinner i {
 
 .help .hero p {
   color: rgba(49, 75, 84, .64);
-  font-size: 24px;
 }
 
 .help .hero {
@@ -950,9 +949,13 @@ span#spinner i {
   padding-right: 0%;
 }
 
-.home h1 {
-  font-size: 36px;
+.hero h1 {
+  font-size: 34px;
   font-weight: bold;
+}
+
+.hero p {
+  font-size: 14px;
 }
 
 .home h2 {
@@ -962,7 +965,6 @@ span#spinner i {
 .home .hero p {
   margin-top: 40px;
   color: #333;
-  font-size: 16px;
 }
 
 .home .hero {
@@ -992,7 +994,7 @@ span#spinner i {
 }
 
 .home .row {
-  padding: 90px 60px;
+  padding: 60px 60px;
 }
 
 .home .col-md-4 {
