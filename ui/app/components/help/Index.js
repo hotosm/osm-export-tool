@@ -20,7 +20,7 @@ export default () =>
                 <Link to="/learn/quick_start">Quick Start</Link>
               </h2>
               <p>
-                First time using the Export Tool? Use this guide to get started.
+                First time using the Export Tool? Use this guide to start using OSM data in your GIS program.
               </p>
               <Link className="btn btn-default" to="/learn/quick_start">
                 View
@@ -47,12 +47,8 @@ export default () =>
                 <Link to="/learn/feature_selections">Selecting Features</Link>
               </h2>
               <p>
-                How to specify what features are selected by the Export Tool.
+                How to specify what OpenStreetMap features are selected by the Export Tool, and what tags will be present.
               </p>
-              <ul>
-                <li><Link to="/learn/feature_selections/#tagtree">Tag Tree</Link></li>
-                <li><Link to="/learn/feature_selections/#configuration">Config File</Link></li>
-              </ul>
               <Link className="btn btn-default" to="/learn/feature_selections">
                 View
               </Link>
@@ -80,48 +76,6 @@ export default () =>
                 Details on file formats available for export from the Export
                 Tool.
               </p>
-              <ul>
-                <li>
-                  <Link to="/learn/export_formats#shp">
-                    Shapefile .shp
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/learn/export_formats#gpkg">
-                    Geopackage .gpkg
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/learn/export_formats#img">
-                    Garmin .img
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/learn/export_formats#kmz">
-                    Google Earth .kml
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/learn/export_formats#xml">
-                    OSM .xml
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/learn/export_formats#pbf">
-                    OSM .pbf
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/learn/export_formats#obf">
-                    OSMAnd .obf
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/learn/export_formats#mwm">
-                    MAPS.ME .mwm
-                  </Link>
-                </li>
-              </ul>
               <Link className="btn btn-default" to="/learn/export_formats">
                 View
               </Link>
@@ -132,7 +86,7 @@ export default () =>
               <h2>
                 <Link to="/learn/api">Export Tool API</Link>
               </h2>
-              <p>Creating Exports programatically via the JSON API.</p>
+              <p>Create exports programatically via the JSON API.</p>
               <Link className="btn btn-default" to="/learn/api">
                 View
               </Link>
