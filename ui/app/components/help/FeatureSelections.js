@@ -60,6 +60,7 @@ export default () =>
               <p>Each parent checkbox can expanded, and individual <strong>Child Checkboxes</strong> can be selected to further filter down the data.</p>
               <p>The <strong>Infobox</strong> on the right shows detailed information about the tags and filters specified by the hovered checkbox.</p>
               <p>The Tag Tree generates YAML, so you can preview the YAML document created by switching tabs.</p>
+              <p>If you have suggestions for categories to add to the Tag Tree, please comment on this <a href="https://docs.google.com/spreadsheets/d/10e9HrMkAiy0zyLj1l_mfNsAPp0P4Yyh6W7JvnZx6BBA/edit#gid=0">Google Spreadsheet</a>. The HOT Team will update the Tag Tree periodically based on user requests.</p>
             </div>
             <div>
               <h2 id="yaml">Defining YAML when Creating an Export</h2>
