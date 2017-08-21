@@ -50,7 +50,7 @@ const Home = ({ isLoggedIn, login }) =>
         <p>
           <FormattedMessage
             id="ui.about.getting_started.blurb"
-            defaultMessage="Sign up for an OSM account to start creating exports. Our {quickStartLink} guide will get you using the tool straight away, or read about the Export Tool in more detail through the {learnLink} page."
+            defaultMessage="{signupLink} to start creating exports. Our {quickStartLink} guide will get you using the tool straight away, or read about the Export Tool in more detail through the {learnLink} page."
             values={{
               quickStartLink: (
                 <Link to="/learn/quick_start">
@@ -63,6 +63,11 @@ const Home = ({ isLoggedIn, login }) =>
               learnLink: (
                 <Link to="/learn">
                   <FormattedMessage id="ui.learn" defaultMessage="Learn" />
+                </Link>
+              ),
+              signupLink: (
+                <Link to="/exports/new">
+                  <FormattedMessage id="ui.signup" defaultMessage="Sign up for an OSM account" />
                 </Link>
               )
             }}
