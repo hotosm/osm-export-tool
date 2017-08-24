@@ -132,7 +132,7 @@ export class ExportForm extends Component {
                   {++idx}{" "}
                   <FormattedMessage
                     id="ui.exports.describe_export"
-                    defaultMessage="Describe Export"
+                    defaultMessage="Describe"
                   />
                 </NavLink>
               </li>
@@ -141,7 +141,7 @@ export class ExportForm extends Component {
                   {++idx}{" "}
                   <FormattedMessage
                     id="ui.exports.choose_formats"
-                    defaultMessage="Choose Formats"
+                    defaultMessage="Formats"
                   />
                 </NavLink>
               </li>
@@ -151,7 +151,7 @@ export class ExportForm extends Component {
                     {++idx}{" "}
                     <FormattedMessage
                       id="ui.exports.select_features"
-                      defaultMessage="Select Features"
+                      defaultMessage="Features"
                     />
                   </NavLink>
                 </li>}
