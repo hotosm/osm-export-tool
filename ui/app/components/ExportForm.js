@@ -1,54 +1,21 @@
 import area from "@turf/area";
 import React, { Component } from "react";
-import {
-  Nav,
-  InputGroup,
-  ButtonGroup,
-  Row,
-  Col,
-  Panel,
-  Button,
-  FormControl,
-  Table
-} from "react-bootstrap";
-import Dropzone from "react-dropzone";
-import {
-  FormattedNumber,
-  FormattedMessage,
-  defineMessages,
-  injectIntl
-} from "react-intl";
+import { Col, Nav, Panel, Row } from "react-bootstrap";
+import { FormattedNumber, FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
-import { Link, NavLink } from "react-router-dom";
-import { push } from "react-router-redux";
-import {
-  Field,
-  Fields,
-  formValueSelector,
-  reduxForm,
-  change
-} from "redux-form";
+import { NavLink } from "react-router-dom";
+import { Fields, formValueSelector, reduxForm } from "redux-form";
 
+import ChooseFormats from "./ChooseFormats";
+import DescribeExport from "./DescribeExport";
 import ExportAOIField from "./ExportAOIField";
-import FilterForm from "./FilterForm";
-import TreeMenu from "./react-tree-menu/TreeMenu";
-import Paginator from "./Paginator";
-import { getConfigurations } from "../actions/configurations";
+import SelectFeatures from "./SelectFeatures";
+import Summary from "./Summary";
 import { createExport, getOverpassTimestamp } from "../actions/exports";
-import {
-  AVAILABLE_EXPORT_FORMATS,
-  getFormatCheckboxes,
-  renderCheckboxes,
-  renderCheckbox,
-  renderInput,
-  renderTextArea,
-  PresetParser,
-  REQUIRES_FEATURE_SELECTION
-} from "./utils";
+import { PresetParser, REQUIRES_FEATURE_SELECTION } from "./utils";
 import { TreeTag, TreeTagYAML } from "../utils/TreeTag";
 import { TAGTREE, TAGLOOKUP } from "../utils/TreeTagSettings";
-import styles from "../styles/ExportForm.css";
 
 const form = reduxForm({
   form: "ExportForm",
@@ -83,451 +50,6 @@ const form = reduxForm({
   }
 });
 
-const messages = defineMessages({
-  bufferAOIDescription: {
-    id: "export.buffer_aoi.description",
-    defaultMessage: "Buffer AOI"
-  },
-  configurationTitle: {
-    id: "configuration.title",
-    defaultMessage: "Configurations"
-  },
-  descriptionLabel: {
-    id: "export.description.label",
-    defaultMessage: "Description"
-  },
-  featureSelectionLabel: {
-    id: "export.feature_selection.label",
-    defaultMessage: "Feature Selection"
-  },
-  nameLabel: {
-    id: "export.name.label",
-    defaultMessage: "Name"
-  },
-  namePlaceholder: {
-    id: "export.name.placeholder",
-    defaultMessage: "Name this export"
-  },
-  eventLabel: {
-    id: "export.event.label",
-    defaultMessage: "Project"
-  },
-  eventPlaceholder: {
-    id: "export.event.placeholder",
-    defaultMessage: "Which activation this export is for"
-  },
-  publishedDescription: {
-    id: "export.published.description",
-    defaultMessage: "Publish this Export"
-  },
-  tagTreeSearchPlaceholder: {
-    id: "export.tag_tree_search.placeholder",
-    defaultMessage: "Search for a feature type..."
-  }
-});
-
-const Describe = injectIntl(({ intl: { formatMessage }, next }) =>
-  <Row>
-    <Field
-      name="name"
-      type="text"
-      label={formatMessage(messages.nameLabel)}
-      placeholder={formatMessage(messages.namePlaceholder)}
-      component={renderInput}
-    />
-    <Field
-      name="description"
-      type="text"
-      label={formatMessage(messages.descriptionLabel)}
-      component={renderTextArea}
-      rows="4"
-    />
-    <Field
-      name="event"
-      type="text"
-      label={formatMessage(messages.eventLabel)}
-      placeholder={formatMessage(messages.eventPlaceholder)}
-      component={renderInput}
-    />
-    <Link className="btn btn-primary pull-right" to={next}>
-      <FormattedMessage id="nav.next" defaultMessage="Next" />
-    </Link>
-  </Row>
-);
-
-const YamlUi = injectIntl(({ intl: { formatMessage }, onDrop }) =>
-  <div>
-    <Field
-      name="feature_selection"
-      type="text"
-      label={formatMessage(messages.featureSelectionLabel)}
-      component={renderTextArea}
-      className={styles.featureSelection}
-      rows="10"
-    />
-    <Dropzone className="nullClassName" onDrop={onDrop}>
-      <Button>
-        <FormattedMessage
-          id="export.feature_selection.load_from_josm_preset"
-          defaultMessage="Load from JOSM Preset .XML"
-        />
-      </Button>
-    </Dropzone>
-  </div>
-);
-
-const CheckboxHelp = props => {
-  if (!props.name) {
-    return <Panel>Hover over a checkbox to see its definition.</Panel>;
-  } else {
-    return (
-      <Panel>
-        <strong>{props.name}</strong>
-        <br />
-        <strong>Geometry types:</strong>{" "}
-        {TAGLOOKUP[props.name]["geom_types"].join(", ")}
-        <br />
-        <strong>Keys:</strong>
-        <ul>
-          {TAGLOOKUP[props.name]["keys"].map((o, i) => {
-            return (
-              <li key={i}>
-                {o}
-              </li>
-            );
-          })}
-        </ul>
-        <strong>Where:</strong> {TAGLOOKUP[props.name]["where"]}
-      </Panel>
-    );
-  }
-};
-
-class _TreeTagUi extends Component {
-  constructor(props) {
-    super();
-    this.state = { hoveredCheckboxName: null };
-  }
-
-  onCheckboxHover = checkboxName => {
-    this.setState({ hoveredCheckboxName: checkboxName });
-  };
-
-  render() {
-    const {
-      clearSearch,
-      intl: { formatMessage },
-      labelFilter,
-      onSearchChange,
-      onTreeNodeCheckChange,
-      onTreeNodeCollapseChange,
-      tagTreeData
-    } = this.props;
-
-    return (
-      <div>
-        <InputGroup
-          style={{ width: "100%", marginTop: "20px", marginBottom: "10px" }}
-        >
-          <FormControl
-            id="treeTagSearch"
-            type="text"
-            placeholder={formatMessage(messages.tagTreeSearchPlaceholder)}
-            onChange={onSearchChange}
-          />
-          <InputGroup.Button>
-            <Button onClick={clearSearch}>
-              <FormattedMessage id="ui.clear" defaultMessage="Clear" />
-            </Button>
-          </InputGroup.Button>
-        </InputGroup>
-        <Col xs={6}>
-          <TreeMenu
-            data={tagTreeData}
-            onTreeNodeCollapseChange={onTreeNodeCollapseChange}
-            onTreeNodeCheckChange={onTreeNodeCheckChange}
-            expandIconClass="fa fa-chevron-right"
-            collapseIconClass="fa fa-chevron-down"
-            labelFilter={labelFilter}
-            onCheckboxHover={this.onCheckboxHover}
-          />
-        </Col>
-        <Col xs={6}>
-          <CheckboxHelp name={this.state.hoveredCheckboxName} />
-        </Col>
-      </div>
-    );
-  }
-}
-
-const TreeTagUi = injectIntl(_TreeTagUi);
-
-class StoredConfComponent extends Component {
-  state = {
-    filters: {}
-  };
-
-  componentWillMount() {
-    this.props.getConfigurations();
-  }
-
-  onClick = yaml => {
-    const { dispatch, setYaml } = this.props;
-
-    setYaml(yaml);
-    dispatch(push("/exports/new/select/yaml"));
-  };
-
-  search = ({ search, ...values }) => {
-    const { getConfigurations } = this.props;
-    const { filters } = this.state;
-
-    const newFilters = {
-      ...filters,
-      ...values,
-      search
-    };
-
-    this.setState({
-      filters: newFilters
-    });
-
-    return getConfigurations(newFilters);
-  };
-
-  render() {
-    const {
-      configurations,
-      getConfigurations,
-      intl: { formatMessage }
-    } = this.props;
-    const { filters } = this.state;
-
-    if (configurations.total === 0 && filters === {}) {
-      // TODO return something better here
-      return null;
-    }
-
-    return (
-      <div>
-        <FilterForm
-          type={formatMessage(messages.configurationTitle)}
-          onSubmit={this.search}
-        />
-        <Paginator
-          collection={configurations}
-          getPage={getConfigurations.bind(null, filters)}
-        />
-        <Table>
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage
-                  id="configuration.name.label"
-                  defaultMessage="Name"
-                />
-              </th>
-              <th>
-                <FormattedMessage
-                  id="configuration.description.label"
-                  defaultMessage="Description"
-                />
-              </th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {configurations.items.map((configuration, i) => {
-              return (
-                <tr key={i}>
-                  <td>
-                    {configuration.name}
-                  </td>
-                  <td>
-                    {configuration.description}
-                  </td>
-                  <td>
-                    <Button
-                      bsSize="small"
-                      onClick={() => this.onClick(configuration.yaml)}
-                    >
-                      <FormattedMessage
-                        id="configuration.load_yaml"
-                        defaultMessage="Load YAML"
-                      />
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
-}
-
-const StoredConfContainer = connect(
-  state => {
-    return {
-      configurations: state.configurations
-    };
-  },
-  dispatch => {
-    return {
-      getConfigurations: url => dispatch(getConfigurations(url)),
-      setYaml: yaml => dispatch(change("ExportForm", "feature_selection", yaml))
-    };
-  }
-)(injectIntl(StoredConfComponent));
-
-const SelectFeatures = ({
-  next,
-  onDrop,
-  featuresUi,
-  setYaml,
-  onSearchChange,
-  clearSearch,
-  onTreeNodeCollapseChange,
-  onTreeNodeCheckChange,
-  labelFilter,
-  tagTreeData
-}) =>
-  <Row style={{ height: "auto" }}>
-    <ButtonGroup justified>
-      <NavLink className="btn btn-default" to="/exports/new/select/treetag">
-        <FormattedMessage id="ui.exports.tag_tree" defaultMessage="Tag Tree" />
-      </NavLink>
-      {/* TODO don't display this if no configurations are available */}
-      <NavLink className="btn btn-default" to="/exports/new/select/stored">
-        <FormattedMessage
-          id="ui.exports.stored_configuration"
-          defaultMessage="Stored Configuration"
-        />
-      </NavLink>
-      <NavLink className="btn btn-default" to="/exports/new/select/yaml">
-        <FormattedMessage id="ui.exports.yaml" defaultMessage="YAML" />
-      </NavLink>
-    </ButtonGroup>
-    <Row>
-      <Switch>
-        <Route
-          path="/exports/new/select/treetag"
-          render={props =>
-            <TreeTagUi
-              onSearchChange={onSearchChange}
-              clearSearch={clearSearch}
-              onTreeNodeCollapseChange={onTreeNodeCollapseChange}
-              onTreeNodeCheckChange={onTreeNodeCheckChange}
-              labelFilter={labelFilter}
-              tagTreeData={tagTreeData}
-            />}
-        />
-        <Route
-          path="/exports/new/select/stored"
-          render={props => <StoredConfContainer />}
-        />
-        <Route
-          path="/exports/new/select/yaml"
-          render={props => <YamlUi onDrop={onDrop} />}
-        />
-      </Switch>
-    </Row>
-    <Row>
-      <Link className="btn btn-primary pull-right" to={next}>
-        <FormattedMessage id="nav.next" defaultMessage="Next" />
-      </Link>
-    </Row>
-  </Row>;
-
-const ChooseFormats = ({ next }) =>
-  <Row>
-    <Field
-      name="export_formats"
-      label="File Formats"
-      component={renderCheckboxes}
-    >
-      {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
-    </Field>
-    <Link className="btn btn-primary pull-right" to={next}>
-      <FormattedMessage id="nav.next" defaultMessage="Next" />
-    </Link>
-  </Row>;
-
-const Summary = injectIntl(
-  ({ error, formValues, handleSubmit, intl: { formatMessage } }) =>
-    <Row>
-      <Col xs={6}>
-        <strong>
-          <FormattedMessage id="export.name.label" defaultMessage="Name" />:
-        </strong>{" "}
-        {formValues.name}
-        <br />
-        <strong>
-          <FormattedMessage
-            id="export.description.label"
-            defaultMessage="Description"
-          />:
-        </strong>{" "}
-        {formValues.description}
-        <br />
-        <strong>
-          <FormattedMessage
-            id="export.project.label"
-            defaultMessage="Project"
-          />:
-        </strong>{" "}
-        {formValues.event}
-        <br />
-        <strong>
-          <FormattedMessage
-            id="export.export_formats.label"
-            defaultMessage="Export Formats"
-          />:
-        </strong>
-        <ul>
-          {formValues.export_formats &&
-            formValues.export_formats.map((format, idx) =>
-              <li key={idx}>
-                {AVAILABLE_EXPORT_FORMATS[format]}
-              </li>
-            )}
-        </ul>
-      </Col>
-      <Col xs={6}>
-        <Field
-          name="buffer_aoi"
-          description={formatMessage(messages.bufferAOIDescription)}
-          component={renderCheckbox}
-          type="checkbox"
-        />
-        <Field
-          name="published"
-          description={formatMessage(messages.publishedDescription)}
-          component={renderCheckbox}
-          type="checkbox"
-        />
-        <Button
-          bsStyle="danger"
-          type="submit"
-          style={{ width: "100%" }}
-          onClick={handleSubmit}
-        >
-          <FormattedMessage
-            id="ui.exports.create_export"
-            defaultMessage="Create Export"
-          />
-        </Button>
-        {error &&
-          <p className={styles.error}>
-            <strong>
-              {error}
-            </strong>
-          </p>}
-      </Col>
-    </Row>
-);
-
 export class ExportForm extends Component {
   constructor(props) {
     super(props);
@@ -560,16 +82,14 @@ export class ExportForm extends Component {
     });
   };
 
-  onSearchChange = e => {
+  onSearchChange = e =>
     this.setState({
       searchQuery: e.target.value,
       tagTreeData: this.tagTree.visibleData(e.target.value)
     });
-  };
 
-  clearSearch = e => {
+  clearSearch = e =>
     this.setState({ searchQuery: "", tagTreeData: this.tagTree.visibleData() });
-  };
 
   onDrop = files => {
     const file = files[0];
@@ -582,9 +102,7 @@ export class ExportForm extends Component {
     reader.readAsText(file);
   };
 
-  setFormGeoJSON = geojson => {
-    this.props.change("the_geom", geojson);
-  };
+  setFormGeoJSON = geojson => this.props.change("the_geom", geojson);
 
   render() {
     const {
@@ -656,7 +174,7 @@ export class ExportForm extends Component {
               <Route
                 path="/exports/new/describe"
                 render={props =>
-                  <Describe next="/exports/new/formats" {...props} />}
+                  <DescribeExport next="/exports/new/formats" {...props} />}
               />
               <Route
                 path="/exports/new/select"
