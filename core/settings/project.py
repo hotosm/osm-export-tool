@@ -80,10 +80,9 @@ HOSTNAME = os.getenv('HOSTNAME', 'export.hotosm.org')
 USE_X_FORWARDED_HOST = bool(os.getenv('USE_X_FORWARDED_HOST'))
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Hosts/domain names that are valid for this site; required if DEBUG is False
+# Hosts/domain names that are valid for this site
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-if not DEBUG:
-    ALLOWED_HOSTS = [HOSTNAME]
+ALLOWED_HOSTS = [HOSTNAME]
 
 """
 Overpass Element limit
