@@ -241,7 +241,7 @@ export class ExportAOI extends Component {
         // Order matters here
         new Tile({
           source: new OSM({
-            wrapX:false,
+            wrapX: false,
             attributions: [
               new LayerAttribution({
                 html: `© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>`

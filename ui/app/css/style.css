@@ -181,22 +181,22 @@ span.heading {
   background: -moz-linear-gradient(
     top,
     #cad2d3 0%,
-    #cad2d3 50%,
-    #f6f6f4 51%,
+    #cad2d3 33%,
+    #f6f6f4 66%,
     #f6f6f4 100%
   ); /* FF3.6-15 */
   background: -webkit-linear-gradient(
     top,
     #cad2d3 0%,
-    #cad2d3 50%,
-    #f6f6f4 51%,
+    #cad2d3 33%,
+    #f6f6f4 66%,
     #f6f6f4 100%
   ); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(
     to bottom,
     #cad2d3 0%,
-    #cad2d3 50%,
-    #f6f6f4 51%,
+    #cad2d3 33%,
+    #f6f6f4 66%,
     #f6f6f4 100%
   ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient(
