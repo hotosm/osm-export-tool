@@ -1,3 +1,4 @@
+import { FocusStyleManager } from "@blueprintjs/core";
 import React from "react";
 import { addLocaleData } from "react-intl";
 import de from "react-intl/locale-data/de";
@@ -35,6 +36,8 @@ const AuthorizedHDX = requireAuth(HDX);
 
 // add locale data for formatting purposes
 addLocaleData([...de, ...en, ...es, ...fr, ...id, ...it, ...pt, ...nl]);
+
+FocusStyleManager.onlyShowFocusOnTabs();
 
 export default ({ history }) =>
   <IntlProvider>

@@ -6,6 +6,7 @@ import { push } from "react-router-redux";
 import { change } from "redux-form";
 
 import { getConfigurations } from "../actions/configurations";
+import { selectConfigurations } from "../selectors";
 
 import FilterForm from "./FilterForm";
 import Paginator from "./Paginator";
@@ -123,11 +124,9 @@ class StoredConfigurations extends Component {
 }
 
 export default connect(
-  state => {
-    return {
-      configurations: state.configurations
-    };
-  },
+  state => ({
+    configurations: selectConfigurations(state)
+  }),
   dispatch => {
     return {
       getConfigurations: url => dispatch(getConfigurations(url)),

@@ -40,8 +40,8 @@ export const AVAILABLE_EXPORT_FORMATS = {
     </span>
   ),
   osm_xml: (
-      <span key="osm_xml">
-        OSM <code>.xml</code>
+    <span key="osm_xml">
+      OSM <code>.xml</code>
     </span>
   ),
   osm_pbf: (
