@@ -1,4 +1,5 @@
 import area from "@turf/area";
+import bbox from "@turf/bbox";
 import React, { Component } from "react";
 import { Col, Nav, Panel, Row } from "react-bootstrap";
 import { FormattedNumber, FormattedMessage } from "react-intl";
@@ -6,6 +7,7 @@ import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
 import { NavLink } from "react-router-dom";
 import { Fields, formValueSelector, reduxForm } from "redux-form";
+import { pointToTile } from "tilebelt";
 
 import ChooseFormats from "./ChooseFormats";
 import DescribeExport from "./DescribeExport";
@@ -13,9 +15,16 @@ import ExportAOIField from "./ExportAOIField";
 import SelectFeatures from "./SelectFeatures";
 import Summary from "./Summary";
 import { createExport, getOverpassTimestamp } from "../actions/exports";
-import { PresetParser, REQUIRES_FEATURE_SELECTION } from "./utils";
+import {
+  PresetParser,
+  REQUIRES_FEATURE_SELECTION,
+  REQUIRES_TILE_SOURCE
+} from "./utils";
 import { TreeTag, TreeTagYAML } from "../utils/TreeTag";
 import { TAGTREE, TAGLOOKUP } from "../utils/TreeTagSettings";
+
+const MAX_AREA = 3000000;
+const MAX_TILE_COUNT = 5000;
 
 const form = reduxForm({
   form: "ExportForm",
@@ -24,14 +33,18 @@ const form = reduxForm({
 
     createExport(values, "ExportForm");
   },
-  validate: ({ the_geom }) => {
+  validate: ({
+    mbtiles_maxzoom,
+    mbtiles_minzoom,
+    mbtiles_source,
+    the_geom
+  }) => {
     const errors = {};
 
     if (the_geom != null) {
       const areaSqkm = Math.round(area(the_geom) / (1000 * 1000));
 
-      const MAX = 3000000;
-      if (areaSqkm > MAX) {
+      if (areaSqkm > MAX_AREA) {
         errors.the_geom = (
           <FormattedMessage
             id="export.errors.the_geom.too_large"
@@ -39,7 +52,36 @@ const form = reduxForm({
             description="Error message to display when bounds are too large"
             values={{
               areaSqkm: <FormattedNumber value={areaSqkm} />,
-              maxAreaSqkm: <FormattedNumber value={MAX} />
+              maxAreaSqkm: <FormattedNumber value={MAX_AREA} />
+            }}
+          />
+        );
+      }
+    }
+
+    if (mbtiles_source != null && the_geom != null) {
+      const bounds = bbox(the_geom);
+      let tileCount = 0;
+
+      for (let z = mbtiles_minzoom; z <= mbtiles_maxzoom; z++) {
+        const sw = pointToTile(...bounds.slice(0, 2), z);
+        const ne = pointToTile(...bounds.slice(2, 4), z);
+
+        const width = 1 + ne[0] - sw[0];
+        const height = 1 + sw[1] - ne[1];
+
+        tileCount += width * height;
+      }
+
+      if (tileCount > MAX_TILE_COUNT) {
+        errors.mbtiles_source = (
+          <FormattedMessage
+            id="export.errors.mbtiles.too_many"
+            defaultMessage="{tileCount} tiles would be rendered; please reduce the zoom range, the size of your AOI, or split the export into pieces covering specific areas in order to render fewer than {maxTileCount} in each."
+            description="Error message to display when too many tiles will be rendered"
+            values={{
+              tileCount: <FormattedNumber value={tileCount} />,
+              maxTileCount: <FormattedNumber value={MAX_TILE_COUNT} />
             }}
           />
         );
@@ -110,7 +152,6 @@ export class ExportForm extends Component {
       formValues,
       formValues: { export_formats: exportFormats, isClone },
       handleSubmit,
-      match: { params: { featuresUi } },
       overpassLastUpdated
     } = this.props;
 
@@ -118,6 +159,12 @@ export class ExportForm extends Component {
 
     const requiresFeatureSelection = (exportFormats || [])
       .some(x => REQUIRES_FEATURE_SELECTION[x]);
+
+    const requiresTileSource = (exportFormats || [])
+      .some(x => REQUIRES_TILE_SOURCE[x]);
+
+    const requiresDataSelection =
+      requiresFeatureSelection || requiresTileSource;
 
     return (
       <Row style={{ height: "100%" }}>
@@ -145,13 +192,13 @@ export class ExportForm extends Component {
                   />
                 </NavLink>
               </li>
-              {requiresFeatureSelection &&
+              {requiresDataSelection &&
                 <li>
                   <NavLink to="/exports/new/select">
                     {++idx}{" "}
                     <FormattedMessage
-                      id="ui.exports.select_features"
-                      defaultMessage="Features"
+                      id="ui.exports.select_data"
+                      defaultMessage="Data"
                     />
                   </NavLink>
                 </li>}
@@ -193,7 +240,6 @@ export class ExportForm extends Component {
                   <SelectFeatures
                     next="/exports/new/summary"
                     onDrop={this.onDrop}
-                    featuresUi={featuresUi}
                     tagTreeData={this.state.tagTreeData}
                     onSearchChange={this.onSearchChange}
                     clearSearch={this.clearSearch}
@@ -274,7 +320,9 @@ buildings:
         - building
     where: building IS NOT NULL
       `.trim(),
-      export_formats: ["shp"]
+      export_formats: ["shp"],
+      mbtiles_maxzoom: 16,
+      mbtiles_minzoom: 15
     }
   };
 };

@@ -1414,3 +1414,11 @@ p {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+
+.Select,
+.Select div,
+.Select input,
+.Select span {
+  background-color: white;
+  z-index: 100;
+}

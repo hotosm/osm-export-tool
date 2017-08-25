@@ -58,6 +58,11 @@ export const AVAILABLE_EXPORT_FORMATS = {
     <span key="osmand_obf">
       OsmAnd <code>.obf</code>
     </span>
+  ),
+  mbtiles: (
+    <span key="osmand_obf">
+      MBTiles <code>.mbtiles</code>
+    </span>
   )
 };
 
@@ -65,6 +70,10 @@ export const REQUIRES_FEATURE_SELECTION = {
   shp: true,
   geopackage: true,
   kml: true
+};
+
+export const REQUIRES_TILE_SOURCE = {
+  mbtiles: true
 };
 
 export const exportFormatNicename = slug => {
