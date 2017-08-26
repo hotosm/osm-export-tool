@@ -110,7 +110,10 @@ def run_task_remote(self, run_uid): # noqa
                 per_theme=job.per_theme,
                 on_task_start=on_task_start,
                 on_task_success=on_task_success,
-                overpass_api_url=settings.OVERPASS_API_URL
+                overpass_api_url=settings.OVERPASS_API_URL,
+                mbtiles_maxzoom=job.mbtiles_maxzoom,
+                mbtiles_minzoom=job.mbtiles_minzoom,
+                mbtiles_source=job.mbtiles_source,
             )
         r.run()
 

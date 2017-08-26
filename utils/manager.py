@@ -8,6 +8,7 @@ from .artifact import Artifact
 from .garmin_img import GarminIMG
 from .geopackage import Geopackage
 from .kml import KML
+from .mbtiles import MBTiles
 from .mwm import MWM
 from .osm_pbf import OSM_PBF
 from .osm_xml import OSM_XML
@@ -16,7 +17,11 @@ from .shp import Shapefile
 
 
 class Zipper(object):
-    """ Utility class to handle renaming, zipping and moving files to storage in one place."""
+    """
+    Utility class to handle renaming, zipping and moving files to storage in
+    one place.
+    """
+
     def __init__(self, job_name, stage_dir, target_dir, boundary_geom,
                  feature_selection):
         self.job_name = job_name
@@ -33,18 +38,19 @@ class Zipper(object):
             # geopreview to work
             zipfile_name = self.job_name + "_" + os.path.basename(
                 a.basename).replace('.', '_') + ".zip"
-            zipfile_path = os.path.join(self.stage_dir, zipfile_name).encode(
-                'utf-8')
+            zipfile_path = os.path.join(self.stage_dir,
+                                        zipfile_name).encode('utf-8')
             with zipfile.ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED) as z:
                 for filename in a.parts:
-                    z.write(filename, self.job_name + "_" + os.path.basename(
-                        filename))
+                    z.write(filename,
+                            self.job_name + "_" + os.path.basename(filename))
                 if a.theme:
-                    z.writestr("README.txt", self.feature_selection.zip_readme(
-                        a.theme))
-                z.writestr("clipping_boundary.geojson", self.boundary_geom.json)
-            target_path = os.path.join(self.target_dir, zipfile_name).encode(
-                'utf-8')
+                    z.writestr("README.txt",
+                               self.feature_selection.zip_readme(a.theme))
+                z.writestr("clipping_boundary.geojson",
+                           self.boundary_geom.json)
+            target_path = os.path.join(self.target_dir,
+                                       zipfile_name).encode('utf-8')
             shutil.move(zipfile_path, target_path)
             zips.append(target_path)
 
@@ -70,23 +76,25 @@ class RunManager(object):
         KML: Geopackage,
         OsmAndOBF: OSM_PBF,
         GarminIMG: OSM_PBF,
+        MBTiles: None,
         MWM: OSM_PBF,
     }
 
-    def __init__(
-        self,
-        formats,
-        aoi_geom,
-        feature_selection,
-        stage_dir,
-        map_creator_dir=None,
-        garmin_splitter=None,
-        garmin_mkgmap=None,
-        overpass_api_url=None,
-        per_theme=False,
-        on_task_start=lambda formatcls: None,
-        on_task_success=lambda formatcls, results: None
-    ):
+    def __init__(self,
+                 formats,
+                 aoi_geom,
+                 feature_selection,
+                 stage_dir,
+                 map_creator_dir=None,
+                 garmin_splitter=None,
+                 garmin_mkgmap=None,
+                 overpass_api_url=None,
+                 per_theme=False,
+                 on_task_start=lambda formatcls: None,
+                 on_task_success=lambda formatcls, results: None,
+                 mbtiles_maxzoom=None,
+                 mbtiles_minzoom=None,
+                 mbtiles_source=None):
 
         self.formats = formats
         self.aoi_geom = aoi_geom
@@ -99,6 +107,9 @@ class RunManager(object):
         self.per_theme = per_theme
         self.on_task_start = on_task_start
         self.on_task_success = on_task_success
+        self.mbtiles_maxzoom = mbtiles_maxzoom
+        self.mbtiles_minzoom = mbtiles_minzoom
+        self.mbtiles_source = mbtiles_source
         self.results = {}
 
     def run_format(self, formatcls):
@@ -111,47 +122,59 @@ class RunManager(object):
         if formatcls == OSM_XML:
             task = OSM_XML(
                 self.aoi_geom,
-                self.dir + 'export.osm',
+                os.path.join(self.dir, 'export.osm'),
                 url=self.overpass_api_url)
+
         if formatcls == OSM_PBF:
-            task = OSM_PBF(self.dir + 'export.osm', self.dir + 'export.pbf')
+            task = OSM_PBF(
+                os.path.join(self.dir, 'export.osm'),
+                os.path.join(self.dir, 'export.pbf'))
+
         if formatcls == Geopackage:
             task = Geopackage(
-                self.dir + 'export.pbf',
-                self.dir + 'export.gpkg',
+                os.path.join(self.dir, 'export.pbf'),
+                os.path.join(self.dir, 'export.gpkg'),
                 self.dir,
                 self.feature_selection,
                 self.aoi_geom,
-                per_theme=self.per_theme
-            )
+                per_theme=self.per_theme)
+
         if formatcls == GarminIMG:
             assert self.garmin_splitter and self.garmin_mkgmap
             task = GarminIMG(
-                    self.dir + 'export.pbf',
-                    self.dir,
-                    self.garmin_splitter,
-                    self.garmin_mkgmap,
-                    self.aoi_geom)
+                os.path.join(self.dir, 'export.pbf'), self.dir,
+                self.garmin_splitter, self.garmin_mkgmap, self.aoi_geom)
+
         if formatcls == OsmAndOBF:
             assert self.map_creator_dir
             task = OsmAndOBF(
-                self.dir + 'export.pbf',
-                self.dir,
+                os.path.join(self.dir, 'export.pbf'), self.dir,
                 self.map_creator_dir)
+
         if formatcls == KML:
             task = KML(
-                self.dir + 'export.gpkg',
+                os.path.join(self.dir, 'export.gpkg'),
                 self.dir,
                 self.feature_selection,
                 per_theme=self.per_theme)
+
         if formatcls == Shapefile:
             task = Shapefile(
-                self.dir + 'export.gpkg',
+                os.path.join(self.dir, 'export.gpkg'),
                 self.dir,
                 self.feature_selection,
                 per_theme=self.per_theme)
+
         if formatcls == MWM:
-            task = MWM(self.dir + 'export.pbf')
+            task = MWM(os.path.join(self.dir, 'export.pbf'))
+
+        if formatcls == MBTiles:
+            extent = self.aoi_geom.extent
+            west = max(extent[0], -180)
+            south = max(extent[1], -90)
+            east = min(extent[2], 180)
+            north = min(extent[3], 90)
+            task = MBTiles(os.path.join(self.dir, 'export.mbtiles'), (west, south, east, north), self.mbtiles_source, self.mbtiles_minzoom, self.mbtiles_maxzoom)
 
         self.on_task_start(formatcls)
         task.run()
@@ -166,7 +189,7 @@ class RunManager(object):
 if __name__ == '__main__':
     from feature_selection.feature_selection import FeatureSelection
     import logging
-    from django.contrib.gis.geos import GEOSGeometry, Polygon
+    from django.contrib.gis.geos import GEOSGeometry
     from simplify import simplify_geom
 
     logging.basicConfig(level=logging.DEBUG)
@@ -195,8 +218,7 @@ if __name__ == '__main__':
         garmin_splitter='../../splitter-r583/splitter.jar',
         garmin_mkgmap='../../mkgmap-r3890/mkgmap.jar',
         per_theme=False,
-        overpass_api_url=os.environ['OVERPASS_API_URL']
-    )
+        overpass_api_url=os.environ['OVERPASS_API_URL'])
     r.run()
 
     zipper = Zipper("test", stage_dir, "target", aoi_geom, feature_selection)

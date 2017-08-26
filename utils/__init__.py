@@ -7,6 +7,7 @@ from .shp import Shapefile
 from .kml import KML
 from .garmin_img import GarminIMG
 from .osmand_obf import OsmAndOBF
+from .mbtiles import MBTiles
 from .mwm import MWM
 
 
@@ -20,7 +21,8 @@ class ThematicGpkg(object):
 
 FORMAT_NAMES = {}
 for cls in [
-        OSM_XML, OSM_PBF, Geopackage, Shapefile, KML, GarminIMG, OsmAndOBF, MWM
+        OSM_XML, OSM_PBF, Geopackage, Shapefile, KML, GarminIMG, OsmAndOBF,
+        MBTiles, MWM
 ]:
     FORMAT_NAMES[cls.name] = cls
 
