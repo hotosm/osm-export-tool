@@ -225,19 +225,8 @@ export class ExportForm extends Component {
               />
               <Route
                 path="/exports/new/select"
-                exact
                 render={props => {
-                  if (isClone) {
-                    return <Redirect to="/exports/new/select/yaml" />;
-                  }
-
-                  return <Redirect to="/exports/new/select/treetag" />;
-                }}
-              />
-              <Route
-                path="/exports/new/select/:featuresUi"
-                render={props =>
-                  <SelectFeatures
+                  return <SelectFeatures
                     next="/exports/new/summary"
                     onDrop={this.onDrop}
                     tagTreeData={this.state.tagTreeData}
@@ -246,8 +235,11 @@ export class ExportForm extends Component {
                     onTreeNodeCheckChange={this.onTreeNodeCheckChange}
                     onTreeNodeCollapseChange={this.onTreeNodeCollapseChange}
                     labelFilter={this.tagTree.labelFilter}
+                    exportFormats={exportFormats}
+                    isClone={isClone}
                     {...props}
-                  />}
+                  />
+                }}
               />
               <Route
                 path="/exports/new/formats"
@@ -320,9 +312,7 @@ buildings:
         - building
     where: building IS NOT NULL
       `.trim(),
-      export_formats: ["shp"],
-      mbtiles_maxzoom: 16,
-      mbtiles_minzoom: 15
+      export_formats: ["shp"]
     }
   };
 };

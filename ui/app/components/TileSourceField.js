@@ -19,6 +19,18 @@ export default class TileSourceField extends Component {
       mbtiles_source: { input: sourceInput }
     } = this.props;
 
+    let options = TILE_SOURCES;
+
+    if (
+      sourceInput.value &&
+      !TILE_SOURCES.some(({ value }) => value === sourceInput.value)
+    ) {
+      options = options.concat({
+        label: sourceInput.value,
+        value: sourceInput.value
+      });
+    }
+
     return (
       <div>
         <Row>
@@ -36,7 +48,7 @@ export default class TileSourceField extends Component {
             <Creatable
               isValidNewOption={({ label }) =>
                 (label || "").match(/^https?:\/\//)}
-              options={TILE_SOURCES}
+              options={options}
               onChange={val => sourceInput.onChange(val ? val.value : null)}
               value={sourceInput.value || null}
             />
@@ -50,7 +62,7 @@ export default class TileSourceField extends Component {
                 minZoomInput.onChange(min);
                 maxZoomInput.onChange(max);
               }}
-              value={[minZoomInput.value, maxZoomInput.value]}
+              value={[minZoomInput.value || 0, maxZoomInput.value || 10]}
             />
           </Col>
         </Row>
