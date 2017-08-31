@@ -25,7 +25,8 @@ const Home = ({ isLoggedIn, login }) =>
         <FormattedMessage
           id="ui.about.blurb1"
           defaultMessage="The Export Tool is an open service that creates customized extracts of up-to-date OSM data in various file formats."
-        /><br/>
+        />
+        <br />
         <FormattedMessage
           id="ui.about.blurb2"
           defaultMessage="Download and use the data simply by crediting the OpenStreetMap contributors."
@@ -67,9 +68,12 @@ const Home = ({ isLoggedIn, login }) =>
                 </Link>
               ),
               signupLink: (
-                <Link to="/exports/new">
-                  <FormattedMessage id="ui.signup" defaultMessage="Sign up for an OSM account" />
-                </Link>
+                <a href="https://www.openstreetmap.org/user/new">
+                  <FormattedMessage
+                    id="ui.signup"
+                    defaultMessage="Sign up for an OSM account"
+                  />
+                </a>
               )
             }}
           />
@@ -77,7 +81,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row style={{ backgroundColor: "#f8f8f8" }}>
-      <h2 className='centered'>
+      <h2 className="centered">
         <FormattedMessage
           id="ui.about.other_resources"
           defaultMessage="Other Resources"
@@ -228,25 +232,30 @@ const Home = ({ isLoggedIn, login }) =>
     </Row>
     <Row>
       <Col md={12} className="centered">
-        <a href="https://www.usaid.gov/" style={{marginRight: 60}}>
+        <a href="https://www.usaid.gov/" style={{ marginRight: 60 }}>
           <img src={usaidLogo} width={200} />
         </a>
-        <a href="https://www.bnpb.go.id/" style={{marginLeft: 30}}>
+        <a href="https://www.bnpb.go.id/" style={{ marginLeft: 30 }}>
           <img src={bnpbLogo} height={80} />
         </a>
       </Col>
     </Row>
     <Row>
       <Col md={6} mdOffset={3} className="centered">
-        <a href="http://www.pdc.org/" style={{marginRight: 60}}>
+        <a href="http://www.pdc.org/" style={{ marginRight: 60 }}>
           <img src={pdcLogo} width={200} />
         </a>
       </Col>
     </Row>
     <Row>
       <Col md={6} mdOffset={3} className="centered">
-        <p><strong>USAID | BNPB | InAWARE</strong></p>
-        <p>Disaster Management Early Warning and Decision Support Capacity Enhancement Project in Indonesia</p>
+        <p>
+          <strong>USAID | BNPB | InAWARE</strong>
+        </p>
+        <p>
+          Disaster Management Early Warning and Decision Support Capacity
+          Enhancement Project in Indonesia
+        </p>
       </Col>
     </Row>
     <Row>
