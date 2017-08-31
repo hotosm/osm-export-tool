@@ -252,7 +252,7 @@ const Home = ({ isLoggedIn, login }) =>
     <Row>
       <Col md={6} mdOffset={3} className="centered">
         <a href="http://www.hewlett.org/">
-          <img src={hewlettLogo} width={200} />
+          <img src={hewlettLogo} width={300} />
         </a>
       </Col>
     </Row>
