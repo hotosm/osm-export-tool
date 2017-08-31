@@ -9,7 +9,7 @@ export default () =>
         <a href="mailto:sysadmin@hotosm.org">Contact Us</a>
       </Col>
       <Col md={4} className="center">
-        Made with ❤️ by <a href="https://www.hotosm.org/">HOT</a> and <a href="https://github.com/hotosm/osm-export-tool2/graphs/contributors">friends</a>
+        Made with ❤️ &nbsp; by <a href="https://www.hotosm.org/">HOT</a> and <a href="https://github.com/hotosm/osm-export-tool2/graphs/contributors">friends</a>
       </Col>
       <Col md={4} className="right">
         <i className="fa fa-github" />{" "}

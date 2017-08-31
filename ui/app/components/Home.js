@@ -233,17 +233,17 @@ const Home = ({ isLoggedIn, login }) =>
     <Row>
       <Col md={12} className="centered">
         <a href="https://www.usaid.gov/" style={{ marginRight: 60 }}>
-          <img src={usaidLogo} width={200} />
+          <img src={usaidLogo} width={200} height={60} />
         </a>
         <a href="https://www.bnpb.go.id/" style={{ marginLeft: 30 }}>
-          <img src={bnpbLogo} height={80} />
+          <img src={bnpbLogo} width={80} height={80} />
         </a>
       </Col>
     </Row>
     <Row>
       <Col md={6} mdOffset={3} className="centered">
         <a href="http://www.pdc.org/" style={{ marginRight: 60 }}>
-          <img src={pdcLogo} width={200} />
+          <img src={pdcLogo} width={200} height={74} />
         </a>
       </Col>
     </Row>
@@ -261,14 +261,14 @@ const Home = ({ isLoggedIn, login }) =>
     <Row>
       <Col md={6} mdOffset={3} className="centered">
         <a href="http://www.hewlett.org/">
-          <img src={hewlettLogo} width={300} />
+          <img src={hewlettLogo} width={300} height={64} />
         </a>
       </Col>
     </Row>
     <Row>
       <Col md={6} mdOffset={3} className="centered">
         <a href="https://www.geofabrik.de/">
-          <img src={geofabrikLogo} width={200} />
+          <img src={geofabrikLogo} width={200} height={46} />
         </a>
       </Col>
     </Row>
