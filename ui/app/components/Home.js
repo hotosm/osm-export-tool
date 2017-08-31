@@ -10,6 +10,7 @@ import geofabrikLogo from "../images/geofabrik-logo.png";
 import usaidLogo from "../images/usaid-logo.png";
 import hewlettLogo from "../images/hewlett-logo.png";
 import pdcLogo from "../images/pdc-txt-logo.png";
+import bnpbLogo from "../images/bnpb-logo.png";
 
 const Home = ({ isLoggedIn, login }) =>
   <div className="home">
@@ -227,12 +228,25 @@ const Home = ({ isLoggedIn, login }) =>
     </Row>
     <Row>
       <Col md={12} className="centered">
+        <a href="https://www.usaid.gov/" style={{marginRight: 60}}>
+          <img src={usaidLogo} width={200} />
+        </a>
+        <a href="https://www.bnpb.go.id/" style={{marginLeft: 30}}>
+          <img src={bnpbLogo} height={80} />
+        </a>
+      </Col>
+    </Row>
+    <Row>
+      <Col md={6} mdOffset={3} className="centered">
         <a href="http://www.pdc.org/" style={{marginRight: 60}}>
           <img src={pdcLogo} width={200} />
         </a>
-        <a href="https://www.usaid.gov/" style={{marginLeft: 60}}>
-          <img src={usaidLogo} width={200} />
-        </a>
+      </Col>
+    </Row>
+    <Row>
+      <Col md={6} mdOffset={3} className="centered">
+        <p><strong>USAID | BNPB | InAWARE</strong></p>
+        <p>Disaster Management Early Warning and Decision Support Capacity Enhancement Project in Indonesia</p>
       </Col>
     </Row>
     <Row>
