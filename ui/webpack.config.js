@@ -37,9 +37,6 @@ const config = {
               "env",
               {
                 modules: false,
-                targets: {
-                  browsers: ["last 2 versions", "> 5%"]
-                },
                 useBuiltIns: true
               }
             ],
