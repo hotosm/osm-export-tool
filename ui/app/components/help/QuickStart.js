@@ -27,7 +27,7 @@ export default () =>
             <div>
               <h2 id="overview">Overview</h2>
               <p>
-                Anyone can create a custom OpenStreetMap epxort with the Export Tool - just register an account. You can register with an OpenStreetMap account from <Link to="https://openstreetmap.org">OpenStreetMap.org</Link> and a valid email address.
+                Anyone can create a custom OpenStreetMap epxort with the Export Tool - just register an account. You can register with an OpenStreetMap account from <a href="https://openstreetmap.org">OpenStreetMap.org</a> and a valid email address.
               </p>
             </div>
             <div>
