@@ -16,7 +16,15 @@ const render = Component =>
     document.getElementById("root")
   );
 
-render(App);
+if (!global.Intl) {
+  require.ensure(["intl", "intl/locale-data/jsonp/en.js"], require => {
+    require("intl");
+    require("intl/locale-data/jsonp/en.js");
+    render(App);
+  });
+} else {
+  render(App);
+}
 
 if (module.hot) {
   module.hot.accept("./app", () => render(App));

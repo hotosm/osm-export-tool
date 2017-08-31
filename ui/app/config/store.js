@@ -24,7 +24,7 @@ const loadMessages = locale => {
 };
 
 const initialState = {
-  intl: loadMessages(navigator.language)
+  intl: loadMessages(navigator.language || navigator.browserLanguage)
 };
 
 const match = window.location.pathname.match(/(\/\w{2})?\/v3/);
