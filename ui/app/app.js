@@ -29,8 +29,8 @@ import "@blueprintjs/core/dist/blueprint.css";
 import "@blueprintjs/datetime/dist/blueprint-datetime.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
+import "material-design-icons/iconfont/material-icons.css";
 import "./css/style.css";
-import "./css/materialIcons.css";
 import "./css/ol.css";
 
 const AuthorizedHDX = requireAuth(HDX);
