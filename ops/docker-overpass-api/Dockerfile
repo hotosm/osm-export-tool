@@ -6,7 +6,7 @@ FROM ubuntu:trusty
 ARG DEBIAN_FRONTEND=noninteractive
 
 ARG OSM_VER=0.7.54
-ARG FCGI_CHILDREN=10
+ARG FCGI_CHILDREN=20
 ENV EXEC_DIR=/srv/osm3s
 ENV DB_DIR=/srv/osm3s/db
 
