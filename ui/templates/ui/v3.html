@@ -14,6 +14,7 @@
       var EXPORTS_API_URL = "{{ request.scheme }}://{{ request.get_host }}";
       var OAUTH_CLIENT_ID = "{{ client_id }}";
     </script>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"></script>
     <script src="{% static 'ui/js/bundle.js' %}"></script>
   </body>
 </html>
