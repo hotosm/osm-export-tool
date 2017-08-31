@@ -1,4 +1,5 @@
 import { FocusStyleManager } from "@blueprintjs/core";
+import PiwikReactRouter from "piwik-react-router";
 import React from "react";
 import { addLocaleData } from "react-intl";
 import de from "react-intl/locale-data/de";
@@ -39,21 +40,33 @@ addLocaleData([...de, ...en, ...es, ...fr, ...id, ...it, ...pt, ...nl]);
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
-export default ({ history }) =>
-  <IntlProvider>
-    <ConnectedRouter history={history}>
-      <div style={{ height: "100%" }}>
-        <Auth />
-        <NavBar />
-        <Switch>
-          <Route path="/authorized" component={Authorized} />
-          <Route path="/configurations" component={Configurations} />
-          <Route path="/exports" component={Exports} />
-          <Route path="/hdx" component={AuthorizedHDX} />
-          <Route path="/learn" component={Help} />
-          <Route component={Home} />
-        </Switch>
-        <Footer />
-      </div>
-    </ConnectedRouter>
-  </IntlProvider>;
+export default ({ history }) => {
+  if (process.env.NODE_ENV === "production") {
+    const piwik = PiwikReactRouter({
+      url: "piwik.hotosm.org",
+      siteId: 10
+    });
+
+    history = piwik.connectToHistory(history);
+  }
+
+  return (
+    <IntlProvider>
+      <ConnectedRouter history={history}>
+        <div style={{ height: "100%" }}>
+          <Auth />
+          <NavBar />
+          <Switch>
+            <Route path="/authorized" component={Authorized} />
+            <Route path="/configurations" component={Configurations} />
+            <Route path="/exports" component={Exports} />
+            <Route path="/hdx" component={AuthorizedHDX} />
+            <Route path="/learn" component={Help} />
+            <Route component={Home} />
+          </Switch>
+          <Footer />
+        </div>
+      </ConnectedRouter>
+    </IntlProvider>
+  );
+};
