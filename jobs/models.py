@@ -179,6 +179,9 @@ class HDXExportRegion(models.Model): # noqa
     class Meta: # noqa
         db_table = 'hdx_export_regions'
 
+    def __str__(self):
+        return self.name + " (prefix: " + self.dataset_prefix + ")"
+
     def clean(self):
         if self.job and not re.match(r'^[a-z0-9-_]+$',self.job.name):
             raise ValidationError({'dataset_prefix':"Invalid dataset_prefix: {0}".format(self.job.name)})
@@ -328,9 +331,11 @@ class JobAdmin(OSMGeoAdmin):
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid', 'name', 'user']
     exclude = ['the_geom']
+    raw_id_fields = ("user",)
 
 class HDXExportRegionAdmin(admin.ModelAdmin):
     pass
+    raw_id_fields = ("job",)
 
 
 admin.site.register(Job, JobAdmin)

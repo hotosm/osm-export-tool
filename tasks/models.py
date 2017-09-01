@@ -93,8 +93,15 @@ class ExportTask(models.Model):
 
 
 class ExportRunAdmin(admin.ModelAdmin):
+
+    def start(self, request, queryset):
+        from task_runners import run_task_remote
+        for run in queryset:
+            run_task_remote.delay(str(run.uid))
+
     list_display = ['uid','status','user']
     search_fields = ['uid']
+    actions = [start]
 
 class ExportTaskAdmin(admin.ModelAdmin):
     pass
