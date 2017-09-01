@@ -101,9 +101,9 @@ class Job(models.Model):
     feature_selection = models.TextField(blank=False,validators=[validate_feature_selection])
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
-    mbtiles_maxzoom = models.IntegerField(null=True)
-    mbtiles_minzoom = models.IntegerField(null=True)
-    mbtiles_source = models.TextField(null=True)
+    mbtiles_maxzoom = models.IntegerField(null=True,blank=True)
+    mbtiles_minzoom = models.IntegerField(null=True,blank=True)
+    mbtiles_source = models.TextField(null=True,blank=True)
 
     # flags
     buffer_aoi = models.BooleanField(default=False)
