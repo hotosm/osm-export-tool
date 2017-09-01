@@ -6,7 +6,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 from oauth2_provider.models import Application
-
+from django.contrib import admin
+from django.contrib.auth.admin import User, UserAdmin
 
 def authorized(request):
     # the user has now authorized a client application; they no longer need to

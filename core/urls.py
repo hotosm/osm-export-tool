@@ -13,8 +13,6 @@ from django.views.i18n import JavaScriptCatalog
 from ui.views import (authorized, create_error_view, login, logout,
                       redirect_to_v3, v3)
 
-admin.autodiscover()
-
 urlpatterns = []
 
 urlpatterns += i18n_patterns(

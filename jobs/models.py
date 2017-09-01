@@ -23,6 +23,10 @@ from feature_selection.feature_selection import FeatureSelection
 from utils import FORMAT_NAMES
 from utils.simplify import simplify_geom
 
+
+from django.contrib import admin
+from django.contrib.gis.admin import OSMGeoAdmin
+
 LOG = logging.getLogger(__name__)
 
 def get_geodesic_area(geom):
@@ -131,6 +135,9 @@ class Job(models.Model):
     def save(self, *args, **kwargs):
         self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi)
         super(Job, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.uid)
 
 
 class SavedFeatureSelection(models.Model):
@@ -312,3 +319,19 @@ class HDXExportRegion(models.Model): # noqa
     def sync_to_hdx(self): # noqa
         LOG.info("HDXExportRegion.sync_to_hdx called.")
         self.hdx_dataset.sync_datasets()
+
+
+class JobAdmin(OSMGeoAdmin):
+    """
+    Admin model for editing Jobs in the admin interface.
+    """
+    search_fields = ['uid', 'name', 'user__username']
+    list_display = ['uid', 'name', 'user']
+    exclude = ['the_geom']
+
+class HDXExportRegionAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Job, JobAdmin)
+admin.site.register(HDXExportRegion, HDXExportRegionAdmin)

@@ -10,6 +10,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
 from jobs.models import Job
+from django.contrib import admin
 
 class ExportRun(models.Model):
     """
@@ -89,3 +90,14 @@ class ExportTask(models.Model):
             }
         return map(fdownload, self.filenames)
 
+
+
+class ExportRunAdmin(admin.ModelAdmin):
+    list_display = ['uid','status','user']
+    search_fields = ['uid']
+
+class ExportTaskAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(ExportRun, ExportRunAdmin)
+admin.site.register(ExportTask, ExportTaskAdmin)
