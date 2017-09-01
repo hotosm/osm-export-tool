@@ -63,3 +63,8 @@ def not_found_error_view(request):
 
 def not_allowed_error_view(request):
     return render(request, 'ui/403.html', status=403)
+
+class ApplicationAdmin(admin.ModelAdmin):
+    raw_id_fields = ("user", )
+
+admin.site.register(Application, ApplicationAdmin)
