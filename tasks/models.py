@@ -9,8 +9,12 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
-from jobs.models import Job
+from jobs.models import Job, HDXExportRegion
 from django.contrib import admin
+from django.contrib.gis.admin import OSMGeoAdmin
+from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
+
 
 class ExportRun(models.Model):
     """
@@ -100,11 +104,40 @@ class ExportRunAdmin(admin.ModelAdmin):
             run_task_remote.delay(str(run.uid))
 
     list_display = ['uid','status','user']
+    readonly_fields = ('uid','user','created_at','job')
     search_fields = ['uid']
     actions = [start]
 
 class ExportTaskAdmin(admin.ModelAdmin):
     pass
 
+class ExportRunsInline(admin.TabularInline):
+    model = ExportRun
+    readonly_fields = ('uid','user','status','created_at','change_link')
+    extra = 0
+
+    def change_link(self, obj):
+        return mark_safe('<a href="%s">Link</a>' % \
+                        reverse('admin:tasks_exportrun_change',
+                        args=(obj.id,)))
+    
+    
+
+class JobAdmin(OSMGeoAdmin):
+    """
+    Admin model for editing Jobs in the admin interface.
+    """
+    search_fields = ['uid', 'name', 'user__username']
+    list_display = ['uid', 'name', 'user']
+    exclude = ['the_geom']
+    raw_id_fields = ("user",)
+    inlines = [ExportRunsInline]
+
+class HDXExportRegionAdmin(admin.ModelAdmin):
+    raw_id_fields = ("job",)
+
+
+admin.site.register(Job, JobAdmin)
+admin.site.register(HDXExportRegion, HDXExportRegionAdmin)
 admin.site.register(ExportRun, ExportRunAdmin)
 admin.site.register(ExportTask, ExportTaskAdmin)

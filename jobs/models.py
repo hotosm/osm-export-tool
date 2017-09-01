@@ -25,7 +25,6 @@ from utils.simplify import simplify_geom
 
 
 from django.contrib import admin
-from django.contrib.gis.admin import OSMGeoAdmin
 
 LOG = logging.getLogger(__name__)
 
@@ -324,19 +323,5 @@ class HDXExportRegion(models.Model): # noqa
         self.hdx_dataset.sync_datasets()
 
 
-class JobAdmin(OSMGeoAdmin):
-    """
-    Admin model for editing Jobs in the admin interface.
-    """
-    search_fields = ['uid', 'name', 'user__username']
-    list_display = ['uid', 'name', 'user']
-    exclude = ['the_geom']
-    raw_id_fields = ("user",)
-
-class HDXExportRegionAdmin(admin.ModelAdmin):
-    pass
-    raw_id_fields = ("job",)
 
 
-admin.site.register(Job, JobAdmin)
-admin.site.register(HDXExportRegion, HDXExportRegionAdmin)
