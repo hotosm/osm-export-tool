@@ -13,6 +13,9 @@ LOG = logging.getLogger(__name__)
 class EmptyOsmXmlException(Exception):
     pass
 
+class OverpassErrorException(Exception):
+    pass
+
 class OSM_XML(object):
     """
     Wrapper around an Overpass query.
@@ -46,15 +49,17 @@ class OSM_XML(object):
 
         # dump out all osm data for the specified bounding box
 
-    def raise_if_empty(self):
+    def raise_if_bad(self):
         with open(self.output_xml,'rb') as fd:
-            first7 = fd.readlines(8)
-            if len(first7) == 7:
+            sample = fd.readlines(8)
+            if len(sample) == 7:
                 raise EmptyOsmXmlException
+            if "<remark>" in ''.join(sample):
+                raise OverpassErrorException(sample)
 
     def run(self):
         if self.is_complete:
-            self.raise_if_empty()
+            self.raise_if_bad()
             LOG.debug("Skipping OSM_XML, file exists")
             return
         """
