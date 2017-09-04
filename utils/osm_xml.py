@@ -83,7 +83,7 @@ class OSM_XML(object):
         with open(self.output_xml, 'wb') as fd:
             for chunk in req.iter_content(CHUNK):
                 fd.write(chunk)
-        self.raise_if_empty()
+        self.raise_if_bad()
         LOG.debug('Query finished at %s' % datetime.now())
         LOG.debug('Wrote overpass query results to: %s' % self.output_xml)
 
