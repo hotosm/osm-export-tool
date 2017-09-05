@@ -181,7 +181,7 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
     Viewing and editing these is limited to a set of admins."""
 
     ordering_fields = '__all__'
-    ordering = ('job__name',)
+    ordering = ('job__description',)
     permission_classes = (IsHDXAdmin, )
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('job__name', 'job__description')
