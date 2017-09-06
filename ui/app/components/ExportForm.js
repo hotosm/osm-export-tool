@@ -61,12 +61,19 @@ const form = reduxForm({
     }
 
     if (export_formats.includes("mbtiles") && mbtiles_source == null) {
-        errors.mbtiles_source = (
-          <FormattedMessage
-            id="export.errors.mbtiles.source_required"
-            defaultMessage="A source is required when generating an MBTiles archive."
-          />
-        );
+      errors.mbtiles_source = (
+        <FormattedMessage
+          id="export.errors.mbtiles.source_required"
+          defaultMessage="A source is required when generating an MBTiles archive."
+        />
+      );
+    }
+
+    if (mbtiles_source != null && (mbtiles_maxzoom == null || mbtiles_minzoom == null)) {
+      errors.mbtiles_source = <FormattedMessage
+        id="export.errors.mbtiles.maxzoom_required"
+        defaultMessage="A zoom range must be provided when generating an MBTiles archive."
+      />;
     }
 
     if (mbtiles_source != null && the_geom != null) {
