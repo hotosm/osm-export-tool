@@ -246,7 +246,7 @@ export class ExportForm extends Component {
                 render={props =>
                   <ChooseFormats
                     next={
-                      requiresFeatureSelection
+                      requiresDataSelection
                         ? "/exports/new/select"
                         : "/exports/new/summary"
                     }
