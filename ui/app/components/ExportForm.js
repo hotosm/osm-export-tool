@@ -34,6 +34,7 @@ const form = reduxForm({
     createExport(values, "ExportForm");
   },
   validate: ({
+    export_formats,
     mbtiles_maxzoom,
     mbtiles_minzoom,
     mbtiles_source,
@@ -57,6 +58,15 @@ const form = reduxForm({
           />
         );
       }
+    }
+
+    if (export_formats.includes("mbtiles") && mbtiles_source == null) {
+        errors.mbtiles_source = (
+          <FormattedMessage
+            id="export.errors.mbtiles.source_required"
+            defaultMessage="A source is required when generating an MBTiles archive."
+          />
+        );
     }
 
     if (mbtiles_source != null && the_geom != null) {
