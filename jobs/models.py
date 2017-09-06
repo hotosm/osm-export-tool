@@ -17,6 +17,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+import mercantile
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
@@ -27,6 +28,7 @@ from utils.simplify import simplify_geom
 from django.contrib import admin
 
 LOG = logging.getLogger(__name__)
+MAX_TILE_COUNT = 10000
 
 def get_geodesic_area(geom):
     """
@@ -80,6 +82,32 @@ def validate_aoi(aoi):
             "Geometry too large: %(area)s sq km, max %(max)s",
             params={'area': area, 'max': MAX_SQKM},
         )
+
+def validate_mbtiles(job):
+    if "mbtiles" in job["export_formats"]:
+        if job["mbtiles_source"] is None:
+            raise ValidationError("A source is required when generating an MBTiles archive.")
+
+        if job["mbtiles_maxzoom"] is None or job["mbtiles_minzoom"] is None:
+            raise ValidationError("A zoom range must be provided when generating an MBTiles archive.")
+
+        bounds = job["the_geom"].extent
+        tile_count = 0
+
+        for z in xrange(int(job["mbtiles_minzoom"]), int(job["mbtiles_maxzoom"])):
+            sw = mercantile.tile(*bounds[0:2], zoom=z)
+            ne = mercantile.tile(*bounds[2:4], zoom=z)
+
+            width = 1 + ne[0] - sw[0]
+            height = 1 + sw[1] - ne[1]
+
+            tile_count += width * height
+
+        if tile_count > MAX_TILE_COUNT:
+            raise ValidationError(
+                "%(tile_count)s tiles would be rendered; please reduce the zoom range, the size of your AOI, or split the export into pieces covering specific areas in order to render fewer than %(max_tile_count)s in each.",
+                params={'tile_count': tile_count, 'max_tile_count': MAX_TILE_COUNT},
+            )
 
 class Job(models.Model):
     """ 

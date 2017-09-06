@@ -11,7 +11,7 @@ import logging
 import django.core.exceptions
 from django.contrib.auth.models import User
 from django.db import transaction
-from jobs.models import HDXExportRegion, Job, SavedFeatureSelection, validate_aoi
+from jobs.models import HDXExportRegion, Job, SavedFeatureSelection, validate_aoi, validate_mbtiles
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from tasks.models import ExportRun, ExportTask
@@ -86,6 +86,12 @@ class JobSerializer(serializers.ModelSerializer):
             validate_aoi(data['the_geom'])
         except django.core.exceptions.ValidationError as e:
             raise serializers.ValidationError({'the_geom':e.messages[0]})
+
+        try:
+            validate_mbtiles(data)
+        except django.core.exceptions.ValidationError as e:
+            raise serializers.ValidationError({'mbtiles_source': e.messages[0]})
+
         return data
 
 def validate_model(model):

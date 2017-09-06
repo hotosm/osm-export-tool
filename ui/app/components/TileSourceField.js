@@ -11,6 +11,21 @@ const TILE_SOURCES = [
 ];
 
 export default class TileSourceField extends Component {
+  componentDidMount() {
+    const {
+      mbtiles_maxzoom: { input: maxZoomInput },
+      mbtiles_minzoom: { input: minZoomInput },
+    } = this.props;
+
+    if (maxZoomInput.value == null || maxZoomInput.value === "") {
+      maxZoomInput.onChange(10);
+    }
+
+    if (minZoomInput == null || minZoomInput.value === "") {
+      minZoomInput.onChange(0);
+    }
+  }
+
   render() {
     const {
       mbtiles_source: { meta: { error } },
