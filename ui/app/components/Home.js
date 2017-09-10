@@ -242,7 +242,7 @@ const Home = ({ isLoggedIn, login }) =>
     </Row>
     <Row>
       <Col md={6} mdOffset={3} className="centered">
-        <a href="http://www.pdc.org/" style={{ marginRight: 60 }}>
+        <a href="http://www.pdc.org/">
           <img src={pdcLogo} width={200} height={74} />
         </a>
       </Col>
@@ -266,7 +266,7 @@ const Home = ({ isLoggedIn, login }) =>
       </Col>
     </Row>
     <Row>
-      <Col md={6} mdOffset={3} className="centered">
+      <Col md={6} mdOffset={3} className="centered" style={{ marginBottom:80 }}>
         <a href="https://www.geofabrik.de/">
           <img src={geofabrikLogo} width={200} height={46} />
         </a>
