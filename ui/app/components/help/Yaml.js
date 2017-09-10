@@ -149,6 +149,17 @@ export default () =>
           where: natural IN ('waterway','riverbank')`}
               </pre>
             </div>
+            <div>
+              <h2 id="josm_presets">Converting from JOSM Presets</h2>
+              <p>
+                Older versions of the OSM Export Tool used JOSM Preset .XML files to define
+                feature selections. The new YAML format is more flexible in how it transforms OSM data.
+              </p>
+              <p>
+                If you have an existing XML Preset, you can automatically convert it to YAML via the "Load from JOSM Preset .XML" Button.
+                If your Preset is more complex, you may need to write a new YAML based on the "item" elements contained in the XML.
+              </p>
+            </div>
           </Col>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
@@ -158,6 +169,7 @@ export default () =>
               <li><a href="#geometrytypes">Geometry Types</a></li>
               <li><a href="#columnselections">Column Selections</a></li>
               <li><a href="#filters">Filters</a></li>
+              <li><a href="#josm_presets">Converting from JOSM Presets</a></li>
             </ul>
           </Col>
         </Row>
