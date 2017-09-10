@@ -1,5 +1,5 @@
 [Unit]
-Description=Celery
+Description=Celery Scheduled Jobs
 After=docker.service docker.rabbitmq.service docker.postgresql.service docker.django.service docker.exports-network.service
 Requires=docker.service docker.rabbitmq.service docker.postgresql.service docker.django.service docker.exports-network.service
 BindsTo=docker.django.service
