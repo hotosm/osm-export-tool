@@ -19,7 +19,8 @@ ExecStart=/usr/bin/docker run \
   --network exports \
   --volumes-from docker.django.service \
   quay.io/hotosm/osm-export-tool2 \
-  celery -A core worker -c 3
+  celery -A core worker -Q celery-scheduled -c 1
 
 [Install]
 WantedBy=osm-export-tool.target
+

@@ -44,7 +44,7 @@ def queue_periodic_job_runs(): # noqa
                 now.day == 1 and
                 region.schedule_hour == now.hour and
                 delta > timedelta(hours=2)):
-            ExportTaskRunner().run_task(job_uid=region.job.uid)
+            ExportTaskRunner().run_task(job_uid=region.job.uid,queue="celery-scheduled")
 
 
 @app.task(ignore_result=True, name="Remove Old Downloads")

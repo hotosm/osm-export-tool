@@ -32,7 +32,7 @@ client = Client()
 LOG = logging.getLogger(__name__)
 
 class ExportTaskRunner(object):
-    def run_task(self, job_uid=None, user=None): # noqa
+    def run_task(self, job_uid=None, user=None, queue="celery"): # noqa
         LOG.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
         if not user:
@@ -50,7 +50,7 @@ class ExportTaskRunner(object):
             )
             LOG.debug('Saved task: {0}'.format(format_name))
 
-        run_task_remote.delay(run_uid)
+        run_task_remote.apply_async([run_uid],queue=queue)
         return run
 
 @shared_task(bind=True, ignore_result=True)
