@@ -1,10 +1,10 @@
 {% load i18n %}
 <html>
     <head>
-        <title>{% trans 'HOT Exports' %}</title>
+        <title>{% trans 'HOT Export Tool' %}</title>
     </head>
     <body>
-        <p>{% trans 'This is an automated email from HOT Exports.' %}</p>
+        <p>{% trans 'This is an automated email from the HOT Export Tool.' %}</p>
         <p>{% trans 'Unfortunately, your HOT Export has failed.' %}</p>
         <p>{% trans 'Please follow this link' %} <a href="{{ url }}">{{ url }}</a>{% trans ' to see the status of your HOT Export.' %}</p>
         <p>{% trans 'Please quote this Task ID when reporting errors:' %} {{ task_id }}.</p>

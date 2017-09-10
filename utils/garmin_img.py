@@ -63,9 +63,9 @@ class GarminIMG(object):
             --output-dir={work_dir} \
             --description="HOT Export Garmin Map" \
             --mapname=80000111 \
-            --family-name="HOT Exports" \
+            --family-name="HOT Export Tool" \
             --family-id="2" \
-            --series-name="HOT Exports" \
+            --series-name="HOT Export Tool" \
             --index \
             --route \
             --generate-sea=extend-sea-sectors \

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% trans 'This is an automated email from HOT Exports.' %}
+{% trans 'This is an automated email from the HOT Export Tool.' %}
 
 {% trans 'Unfortunately, your HOT Export has failed.' %}
 

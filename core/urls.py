@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-HOT Exports URL Configuration
+HOT Export Tool URL Configuration
 """
 from api.urls import router
 from django.conf import settings
