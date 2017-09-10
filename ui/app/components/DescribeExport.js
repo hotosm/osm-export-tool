@@ -25,7 +25,7 @@ const messages = defineMessages({
   },
   eventPlaceholder: {
     id: "export.event.placeholder",
-    defaultMessage: "Which activation this export is for"
+    defaultMessage: "Which project activation this export relates to"
   }
 });
 
