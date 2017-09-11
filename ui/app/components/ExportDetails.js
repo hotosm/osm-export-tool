@@ -26,7 +26,8 @@ import {
   REQUIRES_FEATURE_SELECTION,
   exportFormatNicename,
   formatDate,
-  formatDuration
+  formatDuration,
+  prettyBytes
 } from "./utils";
 
 const Details = ({ exportInfo }) => {
@@ -241,13 +242,16 @@ class ExportRuns extends Component {
                         <td>
                           {task.download_urls.map((dl, j) => {
                             return (
-                              <a
-                                key={j}
-                                style={{ display: "block" }}
-                                href={dl.download_url}
-                              >
-                                {dl.filename}
-                              </a>
+                              <span>
+                                <a
+                                  key={j}
+                                  style={{ display: "block" }}
+                                  href={dl.download_url}
+                                >
+                                  {dl.filename}
+                                </a>{" "}
+                                ({prettyBytes(dl.filesize_bytes)})
+                              </span>
                             );
                           })}
                         </td>

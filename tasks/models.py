@@ -90,6 +90,7 @@ class ExportTask(models.Model):
         def fdownload(fname):
             return {
                 "filename":fname,
+                "filesize_bytes": os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname)),
                 "download_url":os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
             }
         return map(fdownload, self.filenames)
