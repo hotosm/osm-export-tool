@@ -50,7 +50,8 @@ export const fetchPermissions = () => (dispatch, getState) => {
     .then(rsp =>
       dispatch({
         type: types.RECEIVED_PERMISSIONS,
-        permissions: rsp.data.permissions
+        permissions: rsp.data.permissions,
+        username: rsp.data.username
       })
     )
     .catch(error =>

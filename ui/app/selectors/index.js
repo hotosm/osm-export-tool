@@ -26,3 +26,5 @@ export const selectPermissions = state =>
 export const selectRuns = state => state.exportRuns;
 
 export const selectStatus = state => state.status;
+
+export const selectUsername = state => state.meta.user.username;

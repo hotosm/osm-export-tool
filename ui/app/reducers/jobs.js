@@ -21,6 +21,9 @@ export default function jobs(state = initialState, { activePage, itemsPerPage, r
         pages: Math.ceil(response.count / itemsPerPage)
       };
 
+    case types.EXPORT_DELETED:
+      return initialState;
+
     default:
       return state;
   }

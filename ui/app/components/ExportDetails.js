@@ -14,8 +14,14 @@ import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 
 import MapListView from "./MapListView";
-import { getExport, getRuns, runExport, cloneExport } from "../actions/exports";
-import { selectStatus } from "../selectors";
+import {
+  deleteExport,
+  getExport,
+  getRuns,
+  runExport,
+  cloneExport
+} from "../actions/exports";
+import { selectStatus, selectUsername } from "../selectors";
 import {
   REQUIRES_FEATURE_SELECTION,
   exportFormatNicename,
@@ -291,10 +297,12 @@ export class ExportDetails extends Component {
   render() {
     const {
       cloneExport,
+      deleteExport,
       exportInfo,
       status: { loading },
       match: { params: { id } },
-      runExport
+      runExport,
+      username
     } = this.props;
 
     let geom;
@@ -358,10 +366,7 @@ export class ExportDetails extends Component {
                     defaultMessage="Features"
                   />
                 </Button>}
-              <Button
-                bsStyle="success"
-                onClick={() => runExport(id)}
-              >
+              <Button bsStyle="success" onClick={() => runExport(id)}>
                 <FormattedMessage
                   id="ui.exports.rerun_export"
                   defaultMessage="Re-Run Export"
@@ -377,6 +382,17 @@ export class ExportDetails extends Component {
                   defaultMessage="Clone Export"
                 />
               </Button>
+              {exportInfo.user.username === username &&
+                <Button
+                  bsStyle="danger"
+                  onClick={() => deleteExport(exportInfo)}
+                  {...(exportInfo ? {} : { disabled: true })}
+                >
+                  <FormattedMessage
+                    id="ui.exports.delete_export"
+                    defaultMessage="Delete Export"
+                  />
+                </Button>}
             </ButtonGroup>
           </Panel>
         </Col>
@@ -422,12 +438,14 @@ export class ExportDetails extends Component {
 const mapStateToProps = state => {
   return {
     exportInfo: state.exportInfo,
-    status: selectStatus(state)
+    status: selectStatus(state),
+    username: selectUsername(state)
   };
 };
 
 export default connect(mapStateToProps, {
   cloneExport,
+  deleteExport,
   getExport,
   runExport
 })(ExportDetails);

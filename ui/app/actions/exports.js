@@ -74,6 +74,28 @@ export const cloneExport = e => (dispatch, getState) => {
     .catch(err => console.warn(err));
 };
 
+export const deleteExport = e => async (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  try {
+    await axios({
+      baseURL: window.EXPORTS_API_URL,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      method: "DELETE",
+      url: `/api/jobs/${e.uid}`
+    });
+
+    dispatch({
+      type: types.EXPORT_DELETED,
+      id: e.uid
+    });
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
 export const getRuns = jobUid => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 

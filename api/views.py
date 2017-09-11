@@ -68,7 +68,6 @@ class JobViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly)
     lookup_field = 'uid'
-    http_method_names = ['get', 'post', 'head']
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description', 'event', 'user__username')
     ordering_fields = ('__all__',)
@@ -272,6 +271,7 @@ def get_user_permissions(request):
                 'content_type__app_label', 'codename'))
 
     return JsonResponse({
+        "username": user.username,
         "permissions":
         map(lambda pair: ".".join(pair), (set(permissions)))
     })

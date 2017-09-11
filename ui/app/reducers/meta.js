@@ -4,7 +4,10 @@ import types from "../actions";
 
 const initialState = {};
 
-export default function meta(state = initialState, { permissions, type }) {
+export default function meta(
+  state = initialState,
+  { permissions, type, username }
+) {
   switch (type) {
     case LOGIN_FAILURE:
     case LOGOUT:
@@ -15,7 +18,8 @@ export default function meta(state = initialState, { permissions, type }) {
         ...state,
         user: {
           ...state.user,
-          permissions
+          permissions,
+          username
         }
       };
 
