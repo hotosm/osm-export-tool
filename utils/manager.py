@@ -40,7 +40,7 @@ class Zipper(object):
                 a.basename).replace('.', '_') + ".zip"
             zipfile_path = os.path.join(self.stage_dir,
                                         zipfile_name).encode('utf-8')
-            with zipfile.ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED) as z:
+            with zipfile.ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED, True) as z:
                 for filename in a.parts:
                     z.write(filename,
                             self.job_name + "_" + os.path.basename(filename))
