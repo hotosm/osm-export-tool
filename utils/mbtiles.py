@@ -18,7 +18,7 @@ class MBTiles(object):
     description = 'MBTiles archive'
     cmd = Template('generate_mwm.sh $input')
     cmd = Template(
-        'tl copy -q -b "$bbox" -z $min_zoom -Z $max_zoom $source mbtiles://$output')
+        'timeout 1h tl copy -q -b "$bbox" -z $min_zoom -Z $max_zoom $source mbtiles://$output')
 
     def __init__(self, output, bbox, source, min_zoom, max_zoom):
         """
