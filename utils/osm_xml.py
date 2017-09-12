@@ -26,7 +26,7 @@ class OSM_XML(object):
 
     name = "osm_xml"
     description = 'OSM XML'
-    default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($bbox);<;>>;>;);out meta;')
+    default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($geom);<;>>;>;);out meta;')
 
     def __init__(self, aoi_geom, output_xml,
                 url='http://overpass-api.de/api/',
@@ -65,17 +65,33 @@ class OSM_XML(object):
         """
         Return the export extents in order required by Overpass API.
         """
-        extent = self.aoi_geom.extent  # (w,s,e,n)
-        west = max(extent[0],-180)
-        south = max(extent[1],-90)
-        east = min(extent[2],180)
-        north = min(extent[3],90)
-        
-        # overpass needs extents in order (s,w,n,e) and from -180 to 180, -90 to 90
+        args = {
+            'maxsize': self.overpass_max_size,
+            'timeout': self.timeout,
+        }
 
-        query = OSM_XML.default_template.safe_substitute(
-            {'maxsize': self.overpass_max_size, 'timeout': self.timeout, 'bbox':'{1},{0},{3},{2}'.format(west,south,east,north)}
-        )
+        if self.aoi_geom.geom_type == 'MultiPolygon':
+            extent = self.aoi_geom.extent  # (w,s,e,n)
+            west = max(extent[0], -180)
+            south = max(extent[1], -90)
+            east = min(extent[2], 180)
+            north = min(extent[3], 90)
+
+            # overpass needs extents in order (s,w,n,e) and from -180 to 180,
+            # -90 to 90
+            args.update({
+                'geom': '{1},{0},{3},{2}'.format(west, south, east, north),
+            })
+        else:
+            coords = []
+            [coords.extend((y, x)) for x, y in self.aoi_geom.coords[0]]
+
+            args.update({
+                'geom': 'poly:"{}"'.format(' '.join(map(str, coords))),
+            })
+
+        query = OSM_XML.default_template.safe_substitute(args)
+
         # set up required paths
         LOG.debug("Query started at: %s" % datetime.now())
         req = requests.post('{}interpreter'.format(self.url), data=query, stream=True)
