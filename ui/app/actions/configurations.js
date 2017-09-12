@@ -12,6 +12,10 @@ export const getConfigurations = (filters = {}, page = 1) => (
   const itemsPerPage = 20;
   const token = selectAuthToken(getState());
 
+  dispatch({
+    type: types.FETCHING_CONFIGURATIONS
+  })
+
   return axios({
     baseURL: window.EXPORTS_API_URL,
     headers: {

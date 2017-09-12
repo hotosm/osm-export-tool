@@ -1,3 +1,4 @@
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 import React, { Component } from "react";
 import { Col, Row, Table } from "react-bootstrap";
 import { FormattedMessage, defineMessages, injectIntl } from "react-intl";
@@ -8,7 +9,7 @@ import ConfigurationForm from "./ConfigurationForm";
 import FilterForm from "./FilterForm";
 import Paginator from "./Paginator";
 import { getConfigurations, getConfiguration } from "../actions/configurations";
-import { selectConfigurations } from "../selectors";
+import { selectConfigurations, selectStatus } from "../selectors";
 
 const messages = defineMessages({
   configurationsType: {
@@ -69,7 +70,8 @@ class ConfigurationListPane extends Component {
     const {
       configurations,
       getConfigurations,
-      intl: { formatMessage }
+      intl: { formatMessage },
+      status: { loading }
     } = this.props;
     const { filters } = this.props;
 
@@ -95,7 +97,37 @@ class ConfigurationListPane extends Component {
                 type={formatMessage(messages.configurationsType)}
                 onSubmit={this.search}
               />
-              {configurations.total > 0 &&
+              {loading &&
+                <div>
+                  <NonIdealState
+                    action={
+                      <strong>
+                        <FormattedMessage
+                          id="ui.loading"
+                          defaultMessage="Loading..."
+                        />
+                      </strong>
+                    }
+                    visual={<Spinner />}
+                  />
+                </div>}
+              {!loading &&
+                configurations.total === 0 &&
+                <div>
+                  <NonIdealState
+                    action={
+                      <strong>
+                        <FormattedMessage
+                          id="ui.no_configurations_found"
+                          defaultMessage="No configurations found"
+                        />
+                      </strong>
+                    }
+                    visual="warning-sign"
+                  />
+                </div>}
+              {!loading &&
+                configurations.total > 0 &&
                 <div>
                   <Table>
                     <thead>
@@ -142,7 +174,8 @@ class ConfigurationListPane extends Component {
 
 const ConfigurationListPaneContainer = connect(
   state => ({
-    configurations: selectConfigurations(state)
+    configurations: selectConfigurations(state),
+    status: selectStatus(state)
   }),
   {
     getConfigurations
