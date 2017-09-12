@@ -43,9 +43,9 @@ case "$1" in
 
   stop)
     log_daemon_msg "Stopping Overpass dispatcher daemon" "dispatcher"
-    if $DISPATCHER $DISPATCHER_OPTIONS --terminate; then
+    if start-stop-daemon --stop --quiet --oknodo --pidfile $DISPATCHER_PID_FILE; then
       log_end_msg 0
-      rm -f $DISPATCHER_PID_FILE
+      $DISPATCHER $DISPATCHER_OPTIONS --terminate
     else
       log_end_msg 1
     fi
