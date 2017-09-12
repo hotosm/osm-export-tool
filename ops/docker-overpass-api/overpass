@@ -31,7 +31,8 @@ case "$1" in
       echo "dispatcher already running?"
       exit 1
     fi
-    $DISPATCHER $DISPATCHER_OPTIONS --terminate
+    rm $DB_DIR/osm3s* 2>/dev/null
+    rm /dev/shm/osm3s* 2>/dev/null
     if start-stop-daemon --start --quiet -b --oknodo --make-pidfile -c $RUN_AS_USER --pidfile $DISPATCHER_PID_FILE --exec $DISPATCHER -- $DISPATCHER_OPTIONS >> $LOG_DIR/dispatcher.log 2>&1; then
       mkdir /tmp/translate_xapi 2>/dev/null
       chmod 777 /tmp/translate_xapi
@@ -45,7 +46,9 @@ case "$1" in
     log_daemon_msg "Stopping Overpass dispatcher daemon" "dispatcher"
     if start-stop-daemon --stop --quiet --oknodo --pidfile $DISPATCHER_PID_FILE; then
       log_end_msg 0
-      $DISPATCHER $DISPATCHER_OPTIONS --terminate
+      rm $DB_DIR/osm3s* 2>/dev/null
+      rm /dev/shm/osm3s* 2>/dev/null
+      rm -f $DISPATCHER_PID_FILE
     else
       log_end_msg 1
     fi
