@@ -5,65 +5,6 @@ import { initialize, startSubmit, stopSubmit } from "redux-form";
 import { selectAuthToken } from "../selectors";
 import types from ".";
 
-export const createConfiguration = (data, formName) => (dispatch, getState) => {
-  const token = selectAuthToken(getState());
-
-  dispatch(startSubmit(formName));
-
-  return axios({
-    baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    url: "/api/configurations",
-    method: "POST",
-    contentType: "application/json; version=1.0",
-    data
-  })
-    .then(rsp => console.log("Success"))
-    .catch(err =>
-      dispatch(
-        stopSubmit(formName, {
-          ...err.response.data,
-          _error:
-            "Your configuration is invalid. Please check the fields above."
-        })
-      )
-    );
-};
-
-export const updateConfiguration = (uid, data, formName) => (
-  dispatch,
-  getState
-) => {
-  const token = selectAuthToken(getState());
-
-  dispatch(startSubmit(formName));
-
-  return axios({
-    baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    url: `/api/configurations/${uid}`,
-    method: "PUT",
-    contentType: "application/json; version=1.0",
-    data
-  })
-    .then(rsp => {
-      console.log("Success");
-    })
-    .catch(err => {
-      return dispatch(
-        stopSubmit(formName, {
-          ...err.response.data,
-          _error:
-            "Your configuration is invalid. Please check the fields above."
-        })
-      );
-    });
-};
-
 export const getConfigurations = (filters = {}, page = 1) => (
   dispatch,
   getState
@@ -92,6 +33,77 @@ export const getConfigurations = (filters = {}, page = 1) => (
   );
 };
 
+export const createConfiguration = (data, formName) => async (
+  dispatch,
+  getState
+) => {
+  const token = selectAuthToken(getState());
+
+  dispatch(startSubmit(formName));
+
+  try {
+    await axios({
+      baseURL: window.EXPORTS_API_URL,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      url: "/api/configurations",
+      method: "POST",
+      contentType: "application/json; version=1.0",
+      data
+    });
+
+    dispatch({
+      type: types.CONFIGURATION_CREATED
+    });
+
+    dispatch(getConfigurations());
+  } catch (err) {
+    return dispatch(
+      stopSubmit(formName, {
+        ...err.response.data,
+        _error: "Your configuration is invalid. Please check the fields above."
+      })
+    );
+  }
+};
+
+export const updateConfiguration = (uid, data, formName) => async (
+  dispatch,
+  getState
+) => {
+  const token = selectAuthToken(getState());
+
+  dispatch(startSubmit(formName));
+
+  try {
+    await axios({
+      baseURL: window.EXPORTS_API_URL,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      url: `/api/configurations/${uid}`,
+      method: "PUT",
+      contentType: "application/json; version=1.0",
+      data
+    });
+
+    dispatch({
+      type: types.CONFIGURATION_CREATED,
+      id: uid
+    });
+
+    dispatch(getConfigurations())
+  } catch (err) {
+    return dispatch(
+      stopSubmit(formName, {
+        ...err.response.data,
+        _error: "Your configuration is invalid. Please check the fields above."
+      })
+    );
+  }
+};
+
 export const getConfiguration = uid => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
@@ -111,15 +123,28 @@ export const getConfiguration = uid => (dispatch, getState) => {
   });
 };
 
-export const deleteConfiguration = uid => (dispatch, getState) => {
+export const deleteConfiguration = uid => async (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
-  return axios({
-    baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    url: `/api/configurations/${uid}`,
-    method: "DELETE"
-  }).then(rsp => dispatch(push("/configurations")));
+  try {
+    await axios({
+      baseURL: window.EXPORTS_API_URL,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      url: `/api/configurations/${uid}`,
+      method: "DELETE"
+    });
+
+    dispatch({
+      type: types.CONFIGURATION_DELETED,
+      id: uid
+    });
+
+    dispatch(getConfigurations())
+
+    dispatch(push("/configurations"));
+  } catch (err) {
+    console.warn(err);
+  }
 };
