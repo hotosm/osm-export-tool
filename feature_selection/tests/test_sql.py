@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from feature_selection.sql import SQLValidator, OsmfilterRule
+from feature_selection.sql import SQLValidator, OverpassFilter
 
 class TestSQLValidator(unittest.TestCase):
 
@@ -67,27 +67,27 @@ class TestSQLValidator(unittest.TestCase):
         self.assertEquals(s.column_names,['height','level','admin'])
 
 
-class TestOsmfilterRule(unittest.TestCase):
+class TestOverpassFilter(unittest.TestCase):
     def test_basic(self):
-        s = OsmfilterRule("name = 'somename'")
-        self.assertEqual(s.rule(),"name=somename")
-        s = OsmfilterRule("level > 4")
-        self.assertEqual(s.rule(),"level>4")
+        s = OverpassFilter("name = 'somename'")
+        self.assertEqual(s.filter(),["[name='somename']"])
+        s = OverpassFilter("level > 4")
+        self.assertEqual(s.filter(),["[level]"])
 
     def test_basic_list(self):
-        s = OsmfilterRule("name IN ('val1','val2')")
-        self.assertEqual(s.rule(),"name=val1 =val2")
+        s = OverpassFilter("name IN ('val1','val2')")
+        self.assertEqual(s.filter(),["[name~'val1|val2']"])
 
     def test_whitespace(self):
-        s = OsmfilterRule("name = 'some value'")
-        self.assertEqual(s.rule(),"name=some\\ value")
+        s = OverpassFilter("name = 'some value'")
+        self.assertEqual(s.filter(),["[name='some value']"])
 
     def test_notnull(self):
-        s = OsmfilterRule("name is not null")
-        self.assertEqual(s.rule(),"name=*")
+        s = OverpassFilter("name is not null")
+        self.assertEqual(s.filter(),["[name]"])
 
     def test_and_or(self):
-        s = OsmfilterRule("name1 = 'foo' or name2 = 'bar'")
-        self.assertEqual(s.rule(),"( name1=foo or name2=bar )")
-        s = OsmfilterRule("(name1 = 'foo' and name2 = 'bar') or name3 = 'baz'")
-        self.assertEqual(s.rule(),"( ( name1=foo and name2=bar ) or name3=baz )")
+        s = OverpassFilter("name1 = 'foo' or name2 = 'bar'")
+        self.assertEqual(s.filter(),["[name1='foo']","[name2='bar']"])
+        s = OverpassFilter("(name1 = 'foo' and name2 = 'bar') or name3 = 'baz'")
+        self.assertEqual(s.filter(),["[name1='foo']","[name2='bar']","[name3='baz']"])

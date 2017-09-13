@@ -5,7 +5,7 @@ import unicodedata
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
 from yaml.parser import ParserError
-from sql import SQLValidator
+from sql import SQLValidator, OverpassFilter
 
 CREATE_TEMPLATE = """CREATE TABLE {0}(
 fid INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -199,6 +199,37 @@ class FeatureSelection(object):
 
     def key_selections(self,theme):
         return self.doc[theme]['select']
+
+    def overpass_filter(self):
+        nodes = set()
+        ways = set()
+        relations = set()
+
+        def add_where(filters,key):
+            geom_types = self.geom_types(key)
+            if 'points' in geom_types:
+                for e in filters:
+                    nodes.add(e)
+            if 'lines' in geom_types:
+                for e in filters:
+                    ways.add(e)
+            if 'polygons' in geom_types:
+                for e in filters:
+                    ways.add(e)
+                    relations.add(e)
+
+        for key in self.themes:
+            theme = self.doc[key]
+            if 'where' in theme:
+                if isinstance(theme['where'],list):
+                    for clause in theme['where']:
+                        add_where(OverpassFilter(clause).filter(),key)
+                else:
+                    add_where(OverpassFilter(theme['where']).filter(),key)
+            else:
+                add_where(('[' + x + ']' for x in theme['select']),key)
+
+        return (list(nodes), list(ways), list(relations))
 
     def filter_clause(self,theme):
         theme = self.doc[theme]

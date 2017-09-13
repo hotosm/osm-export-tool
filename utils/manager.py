@@ -122,6 +122,7 @@ class RunManager(object):
         if formatcls == OSM_XML:
             task = OSM_XML(
                 self.aoi_geom,
+                self.feature_selection,
                 os.path.join(self.dir, 'export.osm'),
                 url=self.overpass_api_url)
 

@@ -297,3 +297,33 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         self.assertMultiLineEqual(f.zip_readme('buildings'),ZIP_README)
+
+    def test_overpass_filter(self):
+        y = '''
+        buildings:
+            types:
+                - points
+            select:
+                - column1 
+            where: column2 IS NOT NULL
+
+        other1:
+            types:
+                - points
+                - polygons
+            select:
+                - column1 
+                - irrelevant
+            where: column2 IS NOT NULL AND column3 IN ('foo','bar')
+
+        other2:
+            types:
+                - lines
+            select:
+                - column5
+        '''
+        f = FeatureSelection(y)
+        nodes, ways, relations = f.overpass_filter()
+        self.assertEquals(nodes,["[column3~'foo|bar']","[column2]"])
+        self.assertEquals(ways,["[column3~'foo|bar']","[column5]","[column2]"])
+        self.assertEquals(relations,["[column3~'foo|bar']","[column2]"])

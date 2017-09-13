@@ -79,27 +79,30 @@ def strip_quotes(token):
         token = token[1:-1]
     return token.replace(' ','\\ ')
 
-class OsmfilterRule(object):
+class OverpassFilter(object):
     def __init__(self,s):
         self._parse_result = whereExpression.parseString(s,parseAll=True)
 
-    def _rule(self,t):
+    def _filter(self,t):
         if 'or' in t:
-            return '( ' + self._rule(t['condition']) + ' or ' + self._rule(t['expression']) + ' )'
+            return self._filter(t['condition']) + self._filter(t['expression'])
         if 'and' in t:
-            return '( ' + self._rule(t['condition']) + ' and ' + self._rule(t['expression']) + ' )'
+            return self._filter(t['condition']) + self._filter(t['expression'])
         if 'binop' in t:
-            return t['columnName'] + t['binop'] + strip_quotes(t['rval'][0])
+            if t['binop'] == '=':
+                return ['[' + t['columnName'] + '=' + t['rval'][0] + ']']
+            else:
+                return ['[' + t['columnName'] + ']']
         if 'in' in t:
-            x = t['columnName'] + ' '.join(['=' + strip_quotes(r) for r in t['rval']])
-            return x
+            x = '[' + t['columnName'] + "~'" +  '|'.join([strip_quotes(r) for r in t['rval']]) + "']"
+            return [x]
         if 'notnull' in t:
-            return t['columnName'] + '=*'
+            return ['[' + t['columnName'] + ']']
         if 'expression' in t: 
-            return self._rule(t['expression'])
+            return self._filter(t['expression'])
         if 'condition' in t:
-            return self._rule(t['condition'])
+            return self._filter(t['condition'])
 
 
-    def rule(self):
-        return self._rule(self._parse_result.asDict())
+    def filter(self):
+        return self._filter(self._parse_result.asDict())

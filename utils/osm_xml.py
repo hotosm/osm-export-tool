@@ -24,11 +24,22 @@ class OSM_XML(object):
     and filtered by the provided tags.
     """
 
+
     name = "osm_xml"
     description = 'OSM XML'
-    default_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($geom);<;>>;>;);out meta;')
+    default_template = Template("""[maxsize:$maxsize][timeout:$timeout];(
+            (
+                $nodes
+            );
+            (
+                $ways
+            );>;
+            (
+                $relations
+            );>>;>;
+            );out meta;""")
 
-    def __init__(self, aoi_geom, output_xml,
+    def __init__(self, aoi_geom,feature_selection, output_xml, 
                 url='http://overpass-api.de/api/',
                 overpass_max_size=4294967296,
                 timeout=1600):
@@ -44,10 +55,7 @@ class OSM_XML(object):
         self.aoi_geom = aoi_geom
         self.overpass_max_size = overpass_max_size
         self.timeout = timeout
-        # extract all nodes / ways and relations within the bounding box
-        # see: http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL
-
-        # dump out all osm data for the specified bounding box
+        self.feature_selection = feature_selection
 
     def raise_if_bad(self):
         with open(self.output_xml,'rb') as fd:
@@ -70,6 +78,7 @@ class OSM_XML(object):
             'timeout': self.timeout,
         }
 
+        geom = None
         if self.aoi_geom.geom_type == 'MultiPolygon':
             extent = self.aoi_geom.extent  # (w,s,e,n)
             west = max(extent[0], -180)
@@ -79,17 +88,18 @@ class OSM_XML(object):
 
             # overpass needs extents in order (s,w,n,e) and from -180 to 180,
             # -90 to 90
-            args.update({
-                'geom': '{1},{0},{3},{2}'.format(west, south, east, north),
-            })
+            geom = '{1},{0},{3},{2}'.format(west, south, east, north)
         else:
             coords = []
             [coords.extend((y, x)) for x, y in self.aoi_geom.coords[0]]
+            geom = 'poly:"{}"'.format(' '.join(map(str, coords)))
 
-            args.update({
-                'geom': 'poly:"{}"'.format(' '.join(map(str, coords))),
-            })
-
+        nodes,ways,relations = self.feature_selection.overpass_filter()
+        args.update({
+            'nodes':"\n".join(['node(' + geom + ')' + f + ';' for f in nodes]),
+            'ways':"\n".join(['way(' + geom + ')' + f + ';'  for f in ways]),
+            'relations':"\n".join(['relation(' + geom + ')' + f + ';' for f in relations]),
+        })
         query = OSM_XML.default_template.safe_substitute(args)
 
         # set up required paths
