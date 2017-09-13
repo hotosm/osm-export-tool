@@ -166,7 +166,7 @@ const ExistingDatasetsPanel = ({
     This will immediately update {datasets.length} dataset{datasets.length === 1 ? "" : "s"}{" "}
     on HDX.
     <Button
-      bsStyle="danger"
+      bsStyle="primary"
       type="submit"
       disabled={submitting}
       onClick={handleSubmit}
@@ -629,7 +629,7 @@ export class HDXExportRegionForm extends Component {
                         <strong>Next scheduled run:</strong> {this.getNextRun()}
                       </p>
                       <Button
-                        bsStyle="danger"
+                        bsStyle="primary"
                         disabled={running}
                         onClick={this.handleRun}
                       >
