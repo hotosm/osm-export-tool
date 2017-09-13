@@ -53,7 +53,7 @@ class TestJobViewSet(APITestCase):
 
         # test the response headers
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(response['Content-Type'], 'application/json; version=1.0')
+        self.assertEquals(response['Content-Type'], 'application/json')
         self.assertEquals(response['Content-Language'], 'en')
 
         # test significant response content
@@ -80,13 +80,30 @@ class TestJobViewSet(APITestCase):
         self.assertTrue('the_geom' in response.data)
 
     @patch('api.views.ExportTaskRunner')
-    def test_delete_disabled(self, mock):
+    def test_delete(self, mock):
         url = reverse('api:jobs-list')
         response = self.client.post(url, self.request_data, format='json')
         job_uid = response.data['uid']
         url = reverse('api:jobs-detail', args=[job_uid])
         response = self.client.delete(url)
-        self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    @patch('api.views.ExportTaskRunner')
+    def test_delete_unauthorized(self, mock):
+        url = reverse('api:jobs-list')
+        response = self.client.post(url, self.request_data, format='json')
+        job_uid = response.data['uid']
+        url = reverse('api:jobs-detail', args=[job_uid])
+        self.user = User.objects.create_user(
+            username='anon', email='anon@anon.com', password='anon',is_superuser=False
+        )
+        token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
+                                HTTP_ACCEPT='application/json; version=1.0',
+                                HTTP_ACCEPT_LANGUAGE='en',
+                                HTTP_HOST='testserver')
+        response = self.client.delete(url)
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_missing_the_geom(self, ):
         url = reverse('api:jobs-list')
