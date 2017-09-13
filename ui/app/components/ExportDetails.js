@@ -21,7 +21,7 @@ import {
   runExport,
   cloneExport
 } from "../actions/exports";
-import { selectStatus, selectUsername } from "../selectors";
+import { selectIsLoggedIn, selectStatus, selectUsername } from "../selectors";
 import {
   REQUIRES_FEATURE_SELECTION,
   exportFormatNicename,
@@ -303,6 +303,7 @@ export class ExportDetails extends Component {
       cloneExport,
       deleteExport,
       exportInfo,
+      isLoggedIn,
       status: { loading },
       match: { params: { id } },
       runExport,
@@ -362,42 +363,45 @@ export class ExportDetails extends Component {
         >
           <Panel header={exportInfo ? "Export #" + exportInfo.uid : null}>
             {exportInfo ? <Details exportInfo={exportInfo} /> : null}
-            <ButtonGroup>
-              {requiresFeatureSelection &&
-                <Button onClick={this.showModal}>
-                  <FormattedMessage
-                    id="ui.exports.features"
-                    defaultMessage="Features"
-                  />
-                </Button>}
-              <Button bsStyle="success" onClick={() => runExport(id)}>
-                <FormattedMessage
-                  id="ui.exports.rerun_export"
-                  defaultMessage="Re-Run Export"
-                />
-              </Button>
-              <Button
-                bsStyle="primary"
-                onClick={() => cloneExport(exportInfo)}
-                {...(exportInfo ? {} : { disabled: true })}
-              >
-                <FormattedMessage
-                  id="ui.exports.clone_export"
-                  defaultMessage="Clone Export"
-                />
-              </Button>
-              {exportInfo.user.username === username &&
-                <Button
-                  bsStyle="danger"
-                  onClick={() => deleteExport(exportInfo)}
-                  {...(exportInfo ? {} : { disabled: true })}
-                >
-                  <FormattedMessage
-                    id="ui.exports.delete_export"
-                    defaultMessage="Delete Export"
-                  />
-                </Button>}
-            </ButtonGroup>
+            {(requiresFeatureSelection || isLoggedIn) &&
+              <ButtonGroup>
+                {requiresFeatureSelection &&
+                  <Button onClick={this.showModal}>
+                    <FormattedMessage
+                      id="ui.exports.features"
+                      defaultMessage="Features"
+                    />
+                  </Button>}
+                {isLoggedIn &&
+                  <Button bsStyle="success" onClick={() => runExport(id)}>
+                    <FormattedMessage
+                      id="ui.exports.rerun_export"
+                      defaultMessage="Re-Run Export"
+                    />
+                  </Button>}
+                {isLoggedIn &&
+                  <Button
+                    bsStyle="primary"
+                    onClick={() => cloneExport(exportInfo)}
+                    {...(exportInfo ? {} : { disabled: true })}
+                  >
+                    <FormattedMessage
+                      id="ui.exports.clone_export"
+                      defaultMessage="Clone Export"
+                    />
+                  </Button>}
+                {exportInfo.user.username === username &&
+                  <Button
+                    bsStyle="danger"
+                    onClick={() => deleteExport(exportInfo)}
+                    {...(exportInfo ? {} : { disabled: true })}
+                  >
+                    <FormattedMessage
+                      id="ui.exports.delete_export"
+                      defaultMessage="Delete Export"
+                    />
+                  </Button>}
+              </ButtonGroup>}
           </Panel>
         </Col>
         <Col
@@ -442,6 +446,7 @@ export class ExportDetails extends Component {
 const mapStateToProps = state => {
   return {
     exportInfo: state.exportInfo,
+    isLoggedIn: selectIsLoggedIn(state),
     status: selectStatus(state),
     username: selectUsername(state)
   };
