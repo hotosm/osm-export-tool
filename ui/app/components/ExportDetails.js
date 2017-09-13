@@ -372,7 +372,7 @@ export class ExportDetails extends Component {
                       defaultMessage="Features"
                     />
                   </Button>}
-                {isLoggedIn &&
+                {exportInfo.user.username === username &&
                   <Button bsStyle="success" onClick={() => runExport(id)}>
                     <FormattedMessage
                       id="ui.exports.rerun_export"
