@@ -42,7 +42,7 @@ class OSM_XML(object):
     def __init__(self, aoi_geom,feature_selection, output_xml, 
                 url='http://overpass-api.de/api/',
                 overpass_max_size=4294967296,
-                timeout=1600):
+                timeout=3200):
         """
         Initialize the Overpass utility.
 
