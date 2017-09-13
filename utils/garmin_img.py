@@ -45,11 +45,13 @@ class GarminIMG(object):
 
     def run(self):
         # Run the splitter utility to split large pbf into smaller tiles.
-        polygon_file = self.work_dir + "/bounds.poly"
-        geos_to_poly(self.aoi_geom,polygon_file)
+        #polygon_file = self.work_dir + "/bounds.poly"
+        #geos_to_poly(self.aoi_geom,polygon_file)
 
-        splitter_cmd = "java -Xmx1024m -jar {splitter} --polygon-file={polygon_file} --output-dir={work_dir} {pbffile}"
-        cmd = splitter_cmd.format(splitter=self.splitter,work_dir=self.work_dir,pbffile=self.input_pbf,polygon_file=polygon_file)
+        # NOTE: disabled poly bounds: see https://github.com/hotosm/osm-export-tool2/issues/248
+        # may be superseded by querying Overpass with a polygon
+        splitter_cmd = "java -Xmx1024m -jar {splitter} --output-dir={work_dir} {pbffile}"
+        cmd = splitter_cmd.format(splitter=self.splitter,work_dir=self.work_dir,pbffile=self.input_pbf)
         LOG.debug('Running: %s' % cmd)
         subprocess.check_call(cmd, shell=True, executable='/bin/bash')
         # Generate the IMG file.
