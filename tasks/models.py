@@ -128,10 +128,14 @@ class JobAdmin(OSMGeoAdmin):
     """
     Admin model for editing Jobs in the admin interface.
     """
+    def simplified_geom_raw(self, obj):
+        return obj.simplified_geom.json
+
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid', 'name', 'user']
     exclude = ['the_geom']
     raw_id_fields = ("user",)
+    readonly_fields=('simplified_geom_raw',)
     inlines = [ExportRunsInline]
 
 class HDXExportRegionAdmin(admin.ModelAdmin):
