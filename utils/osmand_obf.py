@@ -32,7 +32,7 @@ BATCH_XML = """<?xml version="1.0" encoding="utf-8"?>
 
 OBF_CMD = """
 java -Djava.util.logging.config.file=logging.properties \
--Xms256M -Xmx1024M -cp "{map_creator_dir}/OsmAndMapCreator.jar:{map_creator_dir}/lib/OsmAnd-core.jar:{map_creator_dir}/lib/*.jar" \
+-Xms256M -Xmx2048M -cp "{map_creator_dir}/OsmAndMapCreator.jar:{map_creator_dir}/lib/OsmAnd-core.jar:{map_creator_dir}/lib/*.jar" \
 net.osmand.data.index.IndexBatchCreator {batch_xml}
 """
 
