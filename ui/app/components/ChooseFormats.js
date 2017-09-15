@@ -17,6 +17,7 @@ export default ({ next }) =>
       label="File Formats"
       component={renderCheckboxes}
     >
+       &nbsp; See <Link to="/learn/export_formats" target="_blank">Learn (Export Formats)</Link> for details on each file format.
       {getFormatCheckboxes(AVAILABLE_EXPORT_FORMATS)}
     </Field>
     <Link className="btn btn-primary pull-right" to={next}>
