@@ -51,16 +51,16 @@ class TestJobFilter(APITestCase):
         self.client.credentials(HTTP_ACCEPT='application/json; version=1.0',
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
-        response = self.client.get(url)
+        response = self.client.get(url + '?all=true')
         self.assertEquals(1, len(response.data['results']))
         self.assertEquals('TheirPublicJob', response.data['results'][0]['name'])
 
     def test_filterset_authenticated_unpublished(self):
         url = reverse('api:jobs-list')
-        response = self.client.get(url)
+        response = self.client.get(url + '?all=true')
         self.assertEquals(2, len(response.data['results']))
-        self.assertEquals('MyPrivateJob', response.data['results'][0]['name'])
-        self.assertEquals('TheirPublicJob', response.data['results'][1]['name'])
+        self.assertEquals('TheirPublicJob', response.data['results'][0]['name'])
+        self.assertEquals('MyPrivateJob', response.data['results'][1]['name'])
 
     def test_filterset_search_ownuser(self):
         url = reverse('api:jobs-list')
@@ -71,10 +71,10 @@ class TestJobFilter(APITestCase):
 
     def test_filterset_search_keyword(self):
         url = reverse('api:jobs-list')
-        response = self.client.get(url + '?search=TheirPub')
+        response = self.client.get(url + '?search=TheirPub&all=true')
         self.assertEquals(1, len(response.data['results']))
         self.assertEquals('TheirPublicJob', response.data['results'][0]['name'])
-        response = self.client.get(url + '?search=nothing')
+        response = self.client.get(url + '?search=nothing&all=true')
         self.assertEquals(0, len(response.data['results']))
 
     def test_search_jobs_by_date(self):
@@ -84,15 +84,15 @@ class TestJobFilter(APITestCase):
         self.job2.save()
 
         url = reverse('api:jobs-list')
-        response = self.client.get(url + '?before=2017-06-07T00:00:00Z')
+        response = self.client.get(url + '?before=2017-06-07T00:00:00Z&all=true')
         self.assertEquals(1, len(response.data['results']))
         self.assertEquals('MyPrivateJob', response.data['results'][0]['name'])
 
-        response = self.client.get(url + '?after=2017-06-09T00:00:00Z')
+        response = self.client.get(url + '?after=2017-06-09T00:00:00Z&all=true')
         self.assertEquals(1, len(response.data['results']))
         self.assertEquals('TheirPublicJob', response.data['results'][0]['name'])
 
-        response = self.client.get(url + '?after=2017-06-07T00:00:00Z&before=2017-06-09T00:00:00Z')
+        response = self.client.get(url + '?after=2017-06-07T00:00:00Z&before=2017-06-09T00:00:00Z&all=true')
         self.assertEquals(0, len(response.data['results']))
 
     def test_search_jobs_by_bbox(self):
@@ -151,13 +151,13 @@ class TestConfigurationFilter(APITestCase):
         self.client.credentials(HTTP_ACCEPT='application/json; version=1.0',
                                 HTTP_ACCEPT_LANGUAGE='en',
                                 HTTP_HOST='testserver')
-        response = self.client.get(url)
+        response = self.client.get(url + '?all=true')
         self.assertEquals(1, len(response.data['results']))
         self.assertEquals('theirPublicConf', response.data['results'][0]['name'])
 
     def test_filterset_authenticated_private(self):
         url = reverse('api:configurations-list')
-        response = self.client.get(url)
+        response = self.client.get(url + '?all=true')
         self.assertEquals(2, len(response.data['results']))
         self.assertEquals('myPrivateConf', response.data['results'][0]['name'])
         self.assertEquals('theirPublicConf', response.data['results'][1]['name'])
@@ -171,7 +171,7 @@ class TestConfigurationFilter(APITestCase):
 
     def test_filterset_search_keyword(self):
         url = reverse('api:configurations-list')
-        response = self.client.get(url + '?search=theirPublic')
+        response = self.client.get(url + '?search=theirPublic&all=true')
         self.assertEquals(1, len(response.data['results']))
         self.assertEquals('theirPublicConf', response.data['results'][0]['name'])
         response = self.client.get(url + '?search=nothing')

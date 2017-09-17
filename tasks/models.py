@@ -88,9 +88,14 @@ class ExportTask(models.Model):
     @property
     def download_urls(self):
         def fdownload(fname):
+            try:
+                filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname)),
+            except Exception:
+                filesize_bytes = 0
+
             return {
                 "filename":fname,
-                "filesize_bytes": os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname)),
+                "filesize_bytes": filesize_bytes,
                 "download_url":os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
             }
         return map(fdownload, self.filenames)
@@ -121,8 +126,8 @@ class ExportRunsInline(admin.TabularInline):
         return mark_safe('<a href="%s">Link</a>' % \
                         reverse('admin:tasks_exportrun_change',
                         args=(obj.id,)))
-    
-    
+
+
 
 class JobAdmin(OSMGeoAdmin):
     """
