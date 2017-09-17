@@ -126,12 +126,12 @@ const Home = ({ isLoggedIn, login }) =>
             defaultMessage="The {osmaLink} looks at how the world is mapped over time by OpenStreetMap contributors."
             values={{
               osmaLink: (
-                <Link to="http://osm-analytics.org/">
+                <a href="http://osm-analytics.org/">
                   <FormattedMessage
                     id="ui.about.other_resources.osma.title"
                     defaultMessage="Analytics Tool"
                   />
-                </Link>
+                </a>
               )
             }}
           />
@@ -150,12 +150,12 @@ const Home = ({ isLoggedIn, login }) =>
             defaultMessage="The {hdxLink} hosts OpenStreetMap exports for select countries, updated at regular intervals."
             values={{
               hdxLink: (
-                <Link to="https://data.humdata.org/">
+                <a href="https://data.humdata.org/">
                   <FormattedMessage
                     id="ui.about.other_resources.hdx_link"
                     defaultMessage="Humanitarian Data Exchange"
                   />
-                </Link>
+                </a>
               )
             }}
           />
