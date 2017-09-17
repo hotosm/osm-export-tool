@@ -85,10 +85,10 @@ def validate_aoi(aoi):
 
 def validate_mbtiles(job):
     if "mbtiles" in job["export_formats"]:
-        if job["mbtiles_source"] is None:
+        if job.get("mbtiles_source") is None:
             raise ValidationError("A source is required when generating an MBTiles archive.")
 
-        if job["mbtiles_maxzoom"] is None or job["mbtiles_minzoom"] is None:
+        if job.get("mbtiles_maxzoom") is None or job.get("mbtiles_minzoom") is None:
             raise ValidationError("A zoom range must be provided when generating an MBTiles archive.")
 
         bounds = job["the_geom"].extent
