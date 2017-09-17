@@ -64,8 +64,8 @@
     "write-file-webpack-plugin": "^4.1.0"
   },
   "scripts": {
-    "dist": "NODE_ENV=production npm run pack",
-    "pack": "webpack -p --progress --display-optimization-bailout --config webpack.config.js",
+    "dist": "NODE_ENV=production webpack -p --progress --display-optimization-bailout --config webpack.config.js",
+    "pack": "webpack --progress --display-optimization-bailout --config webpack.config.js",
     "start": "webpack-dev-server --hot --history-api-fallback --content-base public/",
     "watch": "webpack --watch --progress --config webpack.config.js",
     "json2pot": "rip json2pot 'app/i18n/messages/**/*.json' -o app/i18n/locales/ui.pot",
