@@ -24,7 +24,7 @@ RUN build_deps="g++ make expat libexpat1-dev zlib1g-dev curl" \
   && curl -sfo osm-3s_v$OSM_VER.tar.gz http://dev.overpass-api.de/releases/osm-3s_v$OSM_VER.tar.gz \
   && tar -zxvf osm-3s_v${OSM_VER}.tar.gz \
   && cd osm-3s_v* \
-  && ./configure CXXFLAGS="-O2" --prefix="$EXEC_DIR" \
+  && ./configure CXXFLAGS="-O3" --prefix="$EXEC_DIR" \
   && make -j $(nproc) install \
   && cd .. \
   && rm -rf osm-3s_v* \
