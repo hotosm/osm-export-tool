@@ -280,6 +280,39 @@ export default () =>
                 </li>
               </ul>
             </div>
+            <div>
+              <h2 id="mbtiles">MBTiles .mbtiles</h2>
+              <p>
+                MBTiles is a file format for storing map tiles in a single file.
+                The Export Tool allows users to create MBTiles containing tiles
+                from OpenStreetMap, which can be used as sources of offline
+                context within applications that support them.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li><a href="http://posm.io/">POSM</a></li>
+                <li><a href="https://josm.openstreetmap.de/">JOSM</a> (<a href="http://wiki.openstreetmap.org/wiki/JOSM/Plugins/Mbtiles">plugin</a>)</li>
+                <li><a href="http://openmapkit.org/">OpenMapKit</a></li>
+                <li>Others</li>
+              </ul>
+              <h4>
+                <strong>Further Information</strong>
+              </h4>
+              <ul>
+                <li>
+                  <a href="https://www.mapbox.com/help/define-mbtiles/" target="_blank">
+                    MBTiles on Mapbox
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/mapbox/mbtiles-spec" target="_blank">
+                    MBTiles spec
+                  </a>
+                </li>
+              </ul>
+            </div>
           </Col>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
@@ -307,6 +340,9 @@ export default () =>
               </li>
               <li>
                 <a href="#mwm">MAPS.ME .mwm</a>
+              </li>
+              <li>
+                <a href="#mtiles">MBTiles .mbtiles</a>
               </li>
             </ul>
           </Col>
