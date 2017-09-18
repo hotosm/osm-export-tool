@@ -89,7 +89,7 @@ class ExportTask(models.Model):
     def download_urls(self):
         def fdownload(fname):
             try:
-                filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8')),
+                filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))
             except Exception:
                 filesize_bytes = 0
 
