@@ -19,6 +19,7 @@ from tasks.models import ExportRun, ExportTask
 
 from utils import map_names_to_formats
 from utils.manager import RunManager, Zipper
+from utils.osm_xml import EmptyOsmXmlException
 
 from .email import (
     send_completion_notification,
@@ -134,6 +135,8 @@ def run_task_remote(self, run_uid): # noqa
 
         run.status = 'COMPLETED'
         LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
+    except EmptyOsmXmlException as e:
+        run.status = "EMPTY"
     except Exception as e:
         client.captureException(
             extra={
