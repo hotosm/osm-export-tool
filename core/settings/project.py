@@ -82,7 +82,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Hosts/domain names that are valid for this site
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = [HOSTNAME]
+ALLOWED_HOSTS = ['exports-prod.hotosm.org', HOSTNAME]
 
 """
 Overpass Element limit
