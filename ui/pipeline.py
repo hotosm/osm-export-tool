@@ -48,7 +48,7 @@ def email_validation(strategy, backend, code, partial_token):  # pragma: no cove
     subject = "Please verify your email address"
     text = get_template('osm/verify_osm_email.txt').render(ctx)
     html = get_template('osm/verify_osm_email.html').render(ctx)
-    msg = EmailMultiAlternatives(subject, text, to=[code.email], from_email="HOT Export Tool <exports@hotosm.org>")
+    msg = EmailMultiAlternatives(subject, text, to=[code.email], from_email="HOT Export Tool <exports@hotosmmail.org>")
     msg.attach_alternative(html, "text/html")
     msg.send()
 
