@@ -109,10 +109,17 @@ class ExportRunAdmin(admin.ModelAdmin):
         for run in queryset:
             run_task_remote.delay(str(run.uid))
 
-    list_display = ['uid','status','user']
-    readonly_fields = ('uid','user','created_at','job')
+    list_display = ['uid','status','user','created_at']
+    list_filter = ('status',)
+    readonly_fields = ('uid','user','created_at','job','job_link')
     search_fields = ['uid']
     actions = [start]
+    ordering = ('-created_at',)
+
+    def job_link(self, obj):
+        return mark_safe('<a href="%s">Link to Job</a>' % \
+                        reverse('admin:jobs_job_change',
+                        args=(obj.job.id,)))
 
 class ExportTaskAdmin(admin.ModelAdmin):
     pass
