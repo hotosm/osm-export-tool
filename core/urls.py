@@ -10,7 +10,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.i18n import JavaScriptCatalog
-from ui.views import (authorized, create_error_view, login, logout,
+from ui.views import (authorized, login, logout,
                       redirect_to_v3, v3)
 
 urlpatterns = []
@@ -20,7 +20,6 @@ urlpatterns += i18n_patterns(
     url(r'^v3/', v3, name="v3"),
     url(r'^login/$', login, name="login"),
     url(r'^logout$', logout, name='logout'),
-    url(r'^error$', create_error_view, name='error'),
     url(r'^email/$', TemplateView.as_view(template_name='osm/email.html'),
         name='require_email'),
 )
@@ -62,10 +61,6 @@ urlpatterns += [
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(packages=['hot_osm']), name='javascript-catalog'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
-
-# handler500 = 'ui.views.internal_error_view'
-
-# handler404 = 'ui.views.not_found_error_view'
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,
