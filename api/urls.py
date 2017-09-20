@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (ConfigurationViewSet, ExportRunViewSet,
                     HDXExportRegionViewSet, JobViewSet, get_overpass_timestamp,
-                    get_user_permissions, request_geonames)
+                    get_user_permissions, request_geonames, get_overpass_status)
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'jobs', JobViewSet, base_name='jobs')
@@ -23,5 +23,6 @@ urlpatterns = router.urls
 urlpatterns += [
     url(r'^request_geonames$', request_geonames),
     url(r'^overpass_timestamp$', get_overpass_timestamp),
+    url(r'^overpass_status$', get_overpass_status),
     url(r'^permissions$', get_user_permissions),
 ]

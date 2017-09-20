@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from jobs.models import HDXExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
@@ -252,6 +252,11 @@ def get_overpass_timestamp(request):
     """
     r = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
     return JsonResponse({'timestamp': dateutil.parser.parse(r.content)})
+
+@login_required()
+def get_overpass_status(request):
+    r = requests.get('{}status'.format(settings.OVERPASS_API_URL))
+    return HttpResponse(r.content)
 
 
 @require_http_methods(['GET'])
