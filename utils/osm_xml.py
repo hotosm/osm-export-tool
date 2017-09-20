@@ -104,7 +104,7 @@ class OSM_XML(object):
 
         # set up required paths
         LOG.debug("Query started at: %s" % datetime.now())
-        req = requests.post('{}interpreter'.format(self.url), data=query, stream=True)
+        req = requests.post('{}interpreter'.format(self.url), data=query, stream=True, timeout=20*60)
         CHUNK = 1024 * 1024 * 5  # 5MB chunks
         with open(self.output_xml, 'wb') as fd:
             for chunk in req.iter_content(CHUNK):
