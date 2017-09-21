@@ -98,7 +98,7 @@ export class HDXExportRegionList extends Component {
             </Link>
           </div>
           <div style={{ padding: "20px" }}>
-            <FilterForm type="Export Regions" onSubmit={this.search} />
+            <FilterForm hideAll={true} type="Export Regions" onSubmit={this.search} />
             <hr />
             <Paginator
               collection={hdx}

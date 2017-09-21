@@ -50,6 +50,7 @@ class ExportSearchForm extends Component {
   render() {
     const {
       handleSubmit,
+      hideAll ,
       intl: { formatMessage },
       isLoggedIn,
       running,
@@ -123,7 +124,7 @@ class ExportSearchForm extends Component {
             >
               <FormattedMessage id="ui.search" defaultMessage="Search" />
             </Button>}
-          {isLoggedIn &&
+          {isLoggedIn && !hideAll &&
             <Field
               component={renderCheckbox}
               description={formatMessage(messages.showAll, {
