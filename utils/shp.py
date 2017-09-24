@@ -41,7 +41,7 @@ class Shapefile(object):
             subprocess.check_call('ogr2ogr -f "ESRI Shapefile" {0}/{1}.shp {2} -lco ENCODING=UTF-8 -sql "select * from {1};"'.format(
                 self.output_dir,
                 table,
-                self.gpkg),shell=True,executable='/bin/bash')
+                self.gpkg),shell=True,executable='/bin/bash',stderr=open(os.devnull))
 
     # NOTE: if a theme was empty, it won't have a .shp, just a .cpg and .dbf
     # so can't rely on all tables existing to know if this job was done

@@ -71,7 +71,7 @@ class OsmAndOBF(object):
             batch_xml.write(BATCH_XML.format(work_dir=self.work_dir))
         cmd = OBF_CMD.format(map_creator_dir=self.map_creator_dir,batch_xml=self.work_dir + "/batch.xml")
         LOG.debug('Running: %s' % cmd)
-        proc = subprocess.check_call(cmd, shell=True, executable='/bin/bash')
+        proc = subprocess.check_call(cmd, shell=True, executable='/bin/bash',stdout=open(os.devnull))
 
     @property
     def results(self):

@@ -2,6 +2,7 @@
 import logging
 import subprocess
 import zipfile
+import os
 
 from artifact import Artifact
 
@@ -53,7 +54,7 @@ class GarminIMG(object):
         splitter_cmd = "java -Xmx1024m -jar {splitter} --output-dir={work_dir} {pbffile}"
         cmd = splitter_cmd.format(splitter=self.splitter,work_dir=self.work_dir,pbffile=self.input_pbf)
         LOG.debug('Running: %s' % cmd)
-        subprocess.check_call(cmd, shell=True, executable='/bin/bash')
+        subprocess.check_call(cmd, shell=True, executable='/bin/bash',stdout=open(os.devnull))
         # Generate the IMG file.
         # get the template.args file created by splitter
         # see: http://wiki.openstreetmap.org/wiki/Mkgmap/help/splitter
@@ -76,7 +77,7 @@ class GarminIMG(object):
         """
         cmd = mkgmap_cmd.format(mkgmap=self.mkgmap,work_dir=self.work_dir)
         LOG.debug('Running: %s' % cmd)
-        subprocess.check_call(cmd, shell=True, executable='/bin/bash')
+        subprocess.check_call(cmd, shell=True, executable='/bin/bash',stdout=open(os.devnull))
 
     @property
     def results(self):

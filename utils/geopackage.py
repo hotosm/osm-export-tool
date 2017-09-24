@@ -303,10 +303,8 @@ class Geopackage(object):
         # add themes
         create_sqls, index_sqls = self.feature_selection.sqls
         for query in create_sqls:
-            LOG.debug(query)
             cur.executescript(query)
         for query in index_sqls:
-            LOG.debug(query)
             cur.executescript(query)
         conn.commit()
         conn.close()
