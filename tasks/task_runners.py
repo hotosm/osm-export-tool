@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.utils.text import slugify
+from django.db import IntegrityError
 
 from celery import shared_task
 from raven import Client
@@ -137,6 +138,8 @@ def run_task_remote(self, run_uid): # noqa
         LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
     except EmptyOsmXmlException as e:
         run.status = "EMPTY"
+    except (ExportTask.DoesNotExist, ExportRun.DoesNotExist, Job.DoesNotExist, IntegrityError):
+        LOG.debug('Export run no longer exists. Terminating job run.')
     except Exception as e:
         client.captureException(
             extra={
@@ -153,5 +156,8 @@ def run_task_remote(self, run_uid): # noqa
                 run, run.job.hdx_export_region_set.first())
     finally:
         shutil.rmtree(stage_dir)
-        run.finished_at = timezone.now()
-        run.save()
+        try:
+            run.finished_at = timezone.now()
+            run.save()
+        except IntegrityError:
+            LOG.debug('Export run no longer exists.')
