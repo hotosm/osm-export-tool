@@ -178,6 +178,7 @@ class SavedFeatureSelection(models.Model):
     public = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
+    pinned = models.BooleanField(default=False)
 
 class HDXExportRegion(models.Model): # noqa
     """ Mutable database table for hdx - additional attributes on a Job."""
