@@ -119,11 +119,10 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description')
     ordering_fields = ('__all__')
-    ordering = ('name',)
 
     def get_queryset(self):
         user = self.request.user
-        queryset = SavedFeatureSelection.objects.filter(deleted=False)
+        queryset = SavedFeatureSelection.objects.filter(deleted=False).order_by('-pinned','name')
         all = strtobool(self.request.query_params.get('all', 'false')) or self.action != "list"
 
         if not all:

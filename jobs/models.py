@@ -180,6 +180,9 @@ class SavedFeatureSelection(models.Model):
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
     pinned = models.BooleanField(default=False)
 
+    def __str__(self):
+        return str(self.name)
+
 class HDXExportRegion(models.Model): # noqa
     """ Mutable database table for hdx - additional attributes on a Job."""
     PERIOD_CHOICES = (
