@@ -119,11 +119,20 @@ class RunManager(object):
         if prereq and prereq not in self.results:
             self.run_format(prereq)
 
+        osm_feature_selection = self.feature_selection
+        if (OSM_PBF in self.formats
+                or GarminIMG in self.formats
+                or OsmAndOBF in self.formats
+                or MWM in self.formats):
+            # skip Overpass predicate push-down so intermediate formats can
+            # contain all data
+            osm_feature_selection = None
+
         if formatcls == OSM_XML:
             task = OSM_XML(
                 self.aoi_geom,
-                self.feature_selection,
                 os.path.join(self.dir, 'export.osm'),
+                osm_feature_selection,
                 url=self.overpass_api_url)
 
         if formatcls == OSM_PBF:
