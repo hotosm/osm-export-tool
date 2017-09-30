@@ -68,6 +68,8 @@ class TestIntegration(unittest.TestCase):
         aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
         fmts = [Geopackage,Shapefile,KML]
         r = RunManager(
+            'shp_per_theme',
+            'Shapefiles per theme',
             fmts,
             aoi_geom,
             TEST_FEATURE_SELECTION,
@@ -99,6 +101,8 @@ class TestIntegration(unittest.TestCase):
         aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
         fmts = [Geopackage,Shapefile,KML]
         r = RunManager(
+            'shp',
+            'Shapefiles',
             fmts,
             aoi_geom,
             TEST_FEATURE_SELECTION,
@@ -127,6 +131,8 @@ class TestIntegration(unittest.TestCase):
         self.setup_stage_dir()
         aoi_geom = Polygon.from_bbox((-17.417,14.754,-17.395,14.772))
         r = RunManager(
+            'Garmin IMG',
+            'Garmin maps!',
             [GarminIMG],
             aoi_geom,
             TEST_FEATURE_SELECTION,
@@ -141,4 +147,3 @@ class TestIntegration(unittest.TestCase):
         zipper.run(r.results[GarminIMG].results)
         z = zipper.zipped_resources
         self.assertEqual(len(z),1) # one themeless img
-

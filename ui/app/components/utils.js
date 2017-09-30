@@ -63,6 +63,16 @@ export const AVAILABLE_EXPORT_FORMATS = {
     <span key="osmand_obf">
       MBTiles <code>.mbtiles</code>
     </span>
+  ),
+  full_pbf: (
+    <span key="full_pbf">
+      Unfiltered OSM <code>.pbf</code>
+    </span>
+  ),
+  bundle: (
+    <span key="bundle">
+      <a href="http://posm.io/">POSM</a> bundle
+    </span>
   )
 };
 

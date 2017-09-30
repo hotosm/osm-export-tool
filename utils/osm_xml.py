@@ -128,4 +128,3 @@ class OSM_XML(object):
     @property
     def is_complete(self):
         return os.path.isfile(self.output_xml)
-

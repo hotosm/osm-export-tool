@@ -21,6 +21,7 @@ from tasks.models import ExportRun, ExportTask
 from utils import map_names_to_formats
 from utils.manager import RunManager, Zipper
 from utils.osm_xml import EmptyOsmXmlException
+from utils.posm_bundle import POSMBundle
 
 from .email import (
     send_completion_notification,
@@ -90,18 +91,33 @@ def run_task_remote(self, run_uid): # noqa
                 task.save()
 
 
-        def on_task_success(formatcls,results):
+        def on_task_success(formatcls, results):
             LOG.debug('Task Success: {0} for run: {1}'.format(formatcls.name, run_uid))
             if formatcls in export_formats:
                 task = ExportTask.objects.get(run__uid=run_uid, name=formatcls.name)
-                zipfiles = zipper.run(results)
-                task.filesize_bytes = sum(os.stat(zipfile).st_size for zipfile in zipfiles)
-                task.filenames = [os.path.basename(zipfile) for zipfile in zipfiles]
+                if formatcls == POSMBundle:
+                    filename = os.path.basename(results[0].basename)
+                    bundle_name = "{}-{}".format(
+                        slugify(job.name, allow_unicode=True), filename)
+
+                    task.filesize_bytes = os.stat(
+                        os.path.join(stage_dir, filename)).st_size
+                    task.filenames = [bundle_name]
+
+                    target_path = os.path.join(
+                        download_dir, bundle_name).encode('utf-8')
+                    shutil.move(os.path.join(stage_dir, filename), target_path)
+                else:
+                    zipfiles = zipper.run(results)
+                    task.filesize_bytes = sum(os.stat(zipfile).st_size for zipfile in zipfiles)
+                    task.filenames = [os.path.basename(zipfile) for zipfile in zipfiles]
                 task.status = 'SUCCESS'
                 task.finished_at = timezone.now()
                 task.save()
 
         r = RunManager(
+                job.name,
+                job.description,
                 export_formats,
                 aoi,
                 feature_selection,
