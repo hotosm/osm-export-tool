@@ -91,6 +91,7 @@ export const deleteExport = e => async (dispatch, getState) => {
       type: types.EXPORT_DELETED,
       id: e.uid
     });
+    dispatch(push("/exports"));
   } catch (err) {
     console.warn(err);
   }

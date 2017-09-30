@@ -280,9 +280,9 @@ const ExportRunsContainer = connect(
 )(ExportRuns);
 
 export class ExportDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { showModal: false };
+  state = {
+    showDeleteModal: false,
+    showModal: false
   }
 
   componentWillMount() {
@@ -290,13 +290,17 @@ export class ExportDetails extends Component {
     getExport(id);
   }
 
-  closeModal = () => {
-    this.setState({ showModal: false });
-  };
+  closeDeleteModal = () =>
+    this.setState({ showDeleteModal: false });
 
-  showModal = () => {
+  closeModal = () =>
+    this.setState({ showModal: false });
+
+  showDeleteModal = () =>
+    this.setState({ showDeleteModal: true });
+
+  showModal = () =>
     this.setState({ showModal: true });
-  };
 
   render() {
     const {
@@ -309,6 +313,8 @@ export class ExportDetails extends Component {
       runExport,
       username
     } = this.props;
+
+    const { showDeleteModal, showModal } = this.state;
 
     let geom;
     let selectedId;
@@ -366,7 +372,7 @@ export class ExportDetails extends Component {
             {(requiresFeatureSelection || isLoggedIn) &&
               <ButtonGroup>
                 {requiresFeatureSelection &&
-                  <Button onClick={this.showModal}>
+                  <Button onClick={showModal}>
                     <FormattedMessage
                       id="ui.exports.features"
                       defaultMessage="Features"
@@ -393,7 +399,7 @@ export class ExportDetails extends Component {
                 {exportInfo.user.username === username &&
                   <Button
                     bsStyle="danger"
-                    onClick={() => deleteExport(exportInfo)}
+                    onClick={this.showDeleteModal}
                     {...(exportInfo ? {} : { disabled: true })}
                   >
                     <FormattedMessage
@@ -418,7 +424,31 @@ export class ExportDetails extends Component {
         <Col xs={4} style={{ height: "100%" }}>
           <MapListView features={geom} selectedFeatureId={selectedId} />
         </Col>
-        <Modal show={this.state.showModal} onHide={this.closeModal}>
+        <Modal show={showDeleteModal} onHide={this.closeDeleteModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <FormattedMessage
+                id="ui.exports.confirm_delete.title"
+                defaultMessage="Confirm Delete"
+              />
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <FormattedMessage
+              id="ui.exports.confirm_delete.body"
+              defaultMessage="Are you sure you wish to delete this export?"
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.closeDeleteModal}>
+              <FormattedMessage id="ui.cancel" defaultMessage="Cancel" />
+            </Button>
+            <Button bsStyle="danger" onClick={() => deleteExport(exportInfo)}>
+              <FormattedMessage id="ui.delete" defaultMessage="Delete" />
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showModal} onHide={this.closeModal}>
           <Modal.Header closeButton>
             <Modal.Title>
               <FormattedMessage
