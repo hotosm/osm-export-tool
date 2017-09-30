@@ -69,7 +69,12 @@ export const AVAILABLE_EXPORT_FORMATS = {
 export const REQUIRES_FEATURE_SELECTION = {
   shp: true,
   geopackage: true,
-  kml: true
+  garmin_img: true,
+  kml: true,
+  osm_xml: true,
+  osm_pbf: true,
+  mwm: true,
+  osmand_pbf: true
 };
 
 export const REQUIRES_TILE_SOURCE = {
