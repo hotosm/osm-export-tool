@@ -27,7 +27,8 @@ class OSM_XML(object):
 
     name = "osm_xml"
     description = 'OSM XML'
-    default_template = Template("""[maxsize:$maxsize][timeout:$timeout];(
+    basic_template = Template('[maxsize:$maxsize][timeout:$timeout];(node($geom);<;>>;>;);out meta;')
+    filter_template = Template("""[maxsize:$maxsize][timeout:$timeout];(
             (
                 $nodes
             );
@@ -39,7 +40,7 @@ class OSM_XML(object):
             );>>;>;
             );out meta;""")
 
-    def __init__(self, aoi_geom,feature_selection, output_xml, 
+    def __init__(self, aoi_geom, output_xml, feature_selection=None,
                 url='http://overpass-api.de/api/',
                 overpass_max_size=4294967296,
                 timeout=3200):
@@ -94,13 +95,20 @@ class OSM_XML(object):
             [coords.extend((y, x)) for x, y in self.aoi_geom.coords[0]]
             geom = 'poly:"{}"'.format(' '.join(map(str, coords)))
 
-        nodes,ways,relations = self.feature_selection.overpass_filter()
-        args.update({
-            'nodes':"\n".join(['node(' + geom + ')' + f + ';' for f in nodes]),
-            'ways':"\n".join(['way(' + geom + ')' + f + ';'  for f in ways]),
-            'relations':"\n".join(['relation(' + geom + ')' + f + ';' for f in relations]),
-        })
-        query = OSM_XML.default_template.safe_substitute(args)
+        if self.feature_selection:
+            nodes,ways,relations = self.feature_selection.overpass_filter()
+            args.update({
+                'nodes':"\n".join(['node(' + geom + ')' + f + ';' for f in nodes]),
+                'ways':"\n".join(['way(' + geom + ')' + f + ';'  for f in ways]),
+                'relations':"\n".join(['relation(' + geom + ')' + f + ';' for f in relations]),
+            })
+
+            query = OSM_XML.filter_template.safe_substitute(args)
+        else:
+            args.update({
+                'geom': geom,
+            })
+            query = OSM_XML.basic_template.safe_substitute(args)
 
         # set up required paths
         LOG.debug("Query started at: %s" % datetime.now())
@@ -120,4 +128,3 @@ class OSM_XML(object):
     @property
     def is_complete(self):
         return os.path.isfile(self.output_xml)
-

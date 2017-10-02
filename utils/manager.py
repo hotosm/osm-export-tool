@@ -13,7 +13,9 @@ from .mwm import MWM
 from .osm_pbf import OSM_PBF
 from .osm_xml import OSM_XML
 from .osmand_obf import OsmAndOBF
+from .posm_bundle import POSMBundle
 from .shp import Shapefile
+from .unfiltered_pbf import UnfilteredPBF
 
 
 class Zipper(object):
@@ -78,9 +80,13 @@ class RunManager(object):
         GarminIMG: OSM_PBF,
         MBTiles: None,
         MWM: OSM_PBF,
+        UnfilteredPBF: None,
+        POSMBundle: UnfilteredPBF,
     }
 
     def __init__(self,
+                 name,
+                 description,
                  formats,
                  aoi_geom,
                  feature_selection,
@@ -96,6 +102,8 @@ class RunManager(object):
                  mbtiles_minzoom=None,
                  mbtiles_source=None):
 
+        self.name = name
+        self.description = description
         self.formats = formats
         self.aoi_geom = aoi_geom
         self.dir = stage_dir
@@ -122,8 +130,8 @@ class RunManager(object):
         if formatcls == OSM_XML:
             task = OSM_XML(
                 self.aoi_geom,
-                self.feature_selection,
                 os.path.join(self.dir, 'export.osm'),
+                self.feature_selection,
                 url=self.overpass_api_url)
 
         if formatcls == OSM_PBF:
@@ -177,6 +185,15 @@ class RunManager(object):
             north = min(extent[3], 90)
             task = MBTiles(os.path.join(self.dir, 'export.mbtiles'), (west, south, east, north), self.mbtiles_source, self.mbtiles_minzoom, self.mbtiles_maxzoom)
 
+        if formatcls == POSMBundle:
+            task = POSMBundle(self.name, self.description, self.dir, self.aoi_geom.extent, self.mbtiles_source, self.mbtiles_minzoom, self.mbtiles_maxzoom)
+
+        if formatcls == UnfilteredPBF:
+            task = UnfilteredPBF(
+                self.aoi_geom,
+                os.path.join(self.dir, 'unfiltered.pbf'),
+                url=self.overpass_api_url)
+
         self.on_task_start(formatcls)
         task.run()
         self.on_task_success(formatcls, task.results)
@@ -184,7 +201,13 @@ class RunManager(object):
 
     def run(self):
         for formatcls in self.formats:
-            self.run_format(formatcls)
+            # treat POSM bundles specially; they need to be last
+            # TODO sort formats instead
+            if formatcls != POSMBundle:
+                self.run_format(formatcls)
+
+        if POSMBundle in self.formats:
+            self.run_format(POSMBundle)
 
 
 if __name__ == '__main__':
@@ -211,6 +234,8 @@ if __name__ == '__main__':
         14.7168486569183,-17.4682611807514 14.7168486569183))')
     fmts = [OSM_XML, OSM_PBF, Geopackage, Shapefile, KML, GarminIMG, OsmAndOBF]
     r = RunManager(
+        'Senegal',
+        'Data for Senegal',
         fmts,
         aoi_geom,
         feature_selection,
