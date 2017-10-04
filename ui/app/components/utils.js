@@ -63,13 +63,28 @@ export const AVAILABLE_EXPORT_FORMATS = {
     <span key="osmand_obf">
       MBTiles <code>.mbtiles</code>
     </span>
+  ),
+  full_pbf: (
+    <span key="full_pbf">
+      Unfiltered OSM <code>.pbf</code>
+    </span>
+  ),
+  bundle: (
+    <span key="bundle">
+      <a href="http://posm.io/">POSM</a> bundle
+    </span>
   )
 };
 
 export const REQUIRES_FEATURE_SELECTION = {
   shp: true,
   geopackage: true,
-  kml: true
+  garmin_img: true,
+  kml: true,
+  osm_xml: true,
+  osm_pbf: true,
+  mwm: true,
+  osmand_pbf: true
 };
 
 export const REQUIRES_TILE_SOURCE = {

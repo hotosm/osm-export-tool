@@ -258,6 +258,21 @@ export default () =>
                 iOS smartphones and tablets, notably supporting offline mapping
                 and navigation.
               </p>
+              <p>To use a custom export with Maps.me on Android, follow these steps:</p>
+              <ol>
+                <li>Open Maps.me and navigate to your region of interest</li>
+                <li>Accept Maps.me's prompt and download the proffered region</li>
+                <li>Force close Maps.me</li>
+                <li>Create an MWM export</li>
+                <li>Download the export, unzip it, and copy the <code>.mwm</code> file to your device</li>
+                <li>Using the Android File Manager, navigate to the location containing the <code>.mwm</code> file</li>
+                <li>Long-press to select it and touch the "copy" or "cut" button</li>
+                <li>Navigate to "MapsWithMe" and open the highest numbered folder (e.g. <code>170917</code>)</li>
+                <li>Copy/move your <code>.mwm</code> file into this directory by tapping the "paste" button</li>
+                <li>Delete the existing <code>.mwm</code> file for your region of interest, taking note of its filename</li>
+                <li>Rename your <code>.mwm</code> file to match the region that was downloaded by Maps.me (which you just deleted) by long-pressing (to select) and tapping the "more" button (3 vertical dots)</li>
+                <li>Open Maps.me</li>
+              </ol>
               <h4>
                 <strong>Compatible Software</strong>
               </h4>

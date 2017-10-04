@@ -9,6 +9,8 @@ from .garmin_img import GarminIMG
 from .osmand_obf import OsmAndOBF
 from .mbtiles import MBTiles
 from .mwm import MWM
+from .posm_bundle import POSMBundle
+from .unfiltered_pbf import UnfilteredPBF
 
 
 class ThematicShp(object):
@@ -22,7 +24,7 @@ class ThematicGpkg(object):
 FORMAT_NAMES = {}
 for cls in [
         OSM_XML, OSM_PBF, Geopackage, Shapefile, KML, GarminIMG, OsmAndOBF,
-        MBTiles, MWM
+        MBTiles, MWM, POSMBundle, UnfilteredPBF
 ]:
     FORMAT_NAMES[cls.name] = cls
 
