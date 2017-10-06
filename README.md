@@ -139,6 +139,7 @@ Most of these environment variables have reasonable default settings.
 A `docker-compose.yml` has been provided to facilitate development. To begin, run:
 
 ```bash
+echo "HOSTNAME=localhost" > .env
 docker-compose up
 ```
 
@@ -150,7 +151,8 @@ In a second terminal window, run:
 
 ```bash
 cd ui/
-yarn start
+yarn install
+yarn start  # will watch for changes and re-compile as necessary
 ```
 
 Yarn will watch changes to the React app and rebuild as necessary, writing into appropriate locations within the Docker containers. Live reloading is enabled, so changes should be reflected automatically shortly after they are made.
