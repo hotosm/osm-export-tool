@@ -159,6 +159,12 @@ Yarn will watch changes to the React app and rebuild as necessary, writing into 
 
 To use the Docker-managed development instance, navigate to http://localhost/. If you're using `docker-machine` to manage Docker daemons, the hostname may vary, in which case you'll need to change `HOSTNAME` (in `.env`) to reflect it.
 
+### Update Docker images
+
+After you have changed `base_image/Dockerfile` you need to run `make baseimage` in order to update the baseimage.
+
+After changing any `Dockerfile`s or the baseimage you need to run `docker-compose build` to rebuild the docker images used by `docker-compose up`.
+
 ## Using the Transifex service
 
 (This section is TBD, as we're currently figuring out workflows for [FormatJS](https://formatjs.io/) JSON strings used by `react-intl`.)
