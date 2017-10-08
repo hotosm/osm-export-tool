@@ -1,6 +1,6 @@
 import path from "path";
 
-import { feature, featureCollection } from "@turf/helpers";
+import { feature, featureCollection, polygon } from "@turf/helpers";
 
 import types from "..";
 
@@ -67,6 +67,31 @@ export function processGeoJSONFile(file) {
           type: types.FILE_ERROR,
           error: "Could not parse GeoJSON"
         });
+      }
+
+      // extract single feature geometry from collection
+      if (geojson.type === "FeatureCollection") {
+        if (geojson.features.length === 1) {
+          geojson = geojson.features[0].geometry;
+        }
+        else {
+          return dispatch({
+            type: types.FILE_ERROR,
+            error: "FeatureCollection must only contain a single feature, not " + geojson.features.length
+          });
+        }
+      }
+
+      // convert LineString to Polygon
+      if (geojson.type === "LineString") {
+        try {
+          geojson = polygon([geojson.coordinates]).geometry;
+        } catch (e) {
+          return dispatch({
+            type: types.FILE_ERROR,
+            error: e.message
+          });
+        }
       }
 
       if (["Polygon", "MultiPolygon"].includes(geojson.type)) {
