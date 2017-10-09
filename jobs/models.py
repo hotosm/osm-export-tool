@@ -31,6 +31,7 @@ LOG = logging.getLogger(__name__)
 MAX_TILE_COUNT = 10000
 
 def get_geodesic_area(geom):
+    bbox = geom.bbox
     """
     Uses the algorithm to calculate geodesic area of a polygon from OpenLayers 2.
     See http://bit.ly/1Mite1X.
@@ -42,7 +43,7 @@ def get_geodesic_area(geom):
         area (float): the geodesic area of the provided geometry.
     """
     area = 0.0
-    coords = geom.coords[0]
+    coords = bbox.coords[0]
     length = len(coords)
     if length > 2:
         for x in range(length - 1):
