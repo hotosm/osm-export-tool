@@ -39,11 +39,6 @@ export const AVAILABLE_EXPORT_FORMATS = {
       Google Earth <code>.kml</code>
     </span>
   ),
-  osm_xml: (
-    <span key="osm_xml">
-      OSM <code>.xml</code>
-    </span>
-  ),
   osm_pbf: (
     <span key="osm_pbf">
       OSM <code>.pbf</code>
@@ -76,7 +71,6 @@ export const REQUIRES_FEATURE_SELECTION = {
   geopackage: true,
   garmin_img: true,
   kml: true,
-  osm_xml: true,
   osm_pbf: true,
   mwm: true,
   osmand_pbf: true

@@ -246,12 +246,6 @@ export default () =>
               </ul>
             </div>
             <div>
-              <h2 id="xml">OSM .xml</h2>
-              <p>
-                An uncompressed, human-readable version of the OSM .PBF, as described above.
-              </p>
-            </div>
-            <div>
               <h2 id="mwm">MAPS.ME .mwm</h2>
               <p>
                 Maps.me is a GPS Navigation and map application for Android and
@@ -346,9 +340,6 @@ export default () =>
               </li>
               <li>
                 <a href="#pbf">OSM .pbf</a>
-              </li>
-              <li>
-                <a href="#xml">OSM .xml</a>
               </li>
               <li>
                 <a href="#obf">OSMAnd .obf</a>
