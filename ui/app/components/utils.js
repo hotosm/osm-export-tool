@@ -1,4 +1,4 @@
-import { NonIdealState, Spinner } from "@blueprintjs/core";
+import { NonIdealState } from "@blueprintjs/core";
 import React from "react";
 import {
   HelpBlock,
@@ -7,7 +7,6 @@ import {
   ControlLabel,
   Checkbox
 } from "react-bootstrap";
-import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import Select from "react-select";
 import { Field } from "redux-form";
@@ -401,21 +400,13 @@ export const requireAuth = Component =>
 
         return (
           <NonIdealState
-            action={
-              <strong>
-                <FormattedMessage
-                  id="ui.logging_in"
-                  defaultMessage="Logging you in..."
-                />
-              </strong>
-            }
             description={
               isLoggingIn ||
               <button type="button" className="btn btn-link" onClick={login}>
-                Click here to log in
+                Please click here to log in
               </button>
             }
-            visual={<Spinner />}
+            visual="pt-icon-error"
           />
         );
       }
