@@ -13,6 +13,7 @@
     "create-react-class": "^15.6.0",
     "detect-it": "^3.0.0",
     "font-awesome": "^4.7.0",
+    "history": "^4.7.2",
     "intl": "^1.2.5",
     "js-yaml": "^3.9.1",
     "lodash": "~4.17.4",
