@@ -39,6 +39,11 @@ export const AVAILABLE_EXPORT_FORMATS = {
       Google Earth <code>.kml</code>
     </span>
   ),
+  osm_xml: (
+    <span key="osm_xml">
+      OSM <code>.xml</code>
+    </span>
+  ),
   osm_pbf: (
     <span key="osm_pbf">
       OSM <code>.pbf</code>
@@ -79,6 +84,11 @@ export const REQUIRES_FEATURE_SELECTION = {
 export const REQUIRES_TILE_SOURCE = {
   mbtiles: true
 };
+
+export const OMIT_FROM_FORMAT_OPTIONS = {
+  osm_xml: true,
+  bundle: true
+}
 
 export const exportFormatNicename = slug => {
   return AVAILABLE_EXPORT_FORMATS[slug];

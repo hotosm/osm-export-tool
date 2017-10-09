@@ -11,6 +11,10 @@ const messages = defineMessages({
     id: "export.buffer_aoi.description",
     defaultMessage: "Buffer AOI"
   },
+  bundleForPOSM: {
+    id: "export.bundle_for_posm.description",
+    defaultMessage: "Bundle for POSM"
+  },
   publishedDescription: {
     id: "export.published.description",
     defaultMessage: "Publish this Export"
@@ -67,6 +71,12 @@ export default injectIntl(
         <Field
           name="published"
           description={formatMessage(messages.publishedDescription)}
+          component={renderCheckbox}
+          type="checkbox"
+        />
+        <Field
+          name="bundle"
+          description={formatMessage(messages.bundleForPOSM)}
           component={renderCheckbox}
           type="checkbox"
         />

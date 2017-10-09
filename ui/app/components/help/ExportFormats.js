@@ -322,6 +322,22 @@ export default () =>
                 </li>
               </ul>
             </div>
+            <div>
+              <h2 id="bundle">POSM bundle</h2>
+              <p>
+                POSM bundles are intended for bootstrapping <a
+                href="http://posm.io/" target="_blank">Portable
+                OpenStreetMap</a> instances. Bundles are tarballs containing OSM
+                PBFs (with all features in the area of interest) and any other
+                formats that were selected.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li><a href="http://posm.io/">POSM</a></li>
+              </ul>
+            </div>
           </Col>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
@@ -349,6 +365,9 @@ export default () =>
               </li>
               <li>
                 <a href="#mtiles">MBTiles .mbtiles</a>
+              </li>
+              <li>
+                <a href="#bundle">POSM bundle</a>
               </li>
             </ul>
           </Col>
