@@ -49,7 +49,7 @@ class POSMBundle(object):
                 path = os.path.join(self.input_dir, filename)
 
                 if ext == ".mbtiles":
-                    target_filename = "tiles/{}.mbtiles".format(prefix)
+                    target_filename = u"tiles/{}.mbtiles".format(prefix)
                     contents[target_filename] = {
                         "type": "MBTiles",
                         "minzoom": self.mbtiles_minzoom,
@@ -61,7 +61,7 @@ class POSMBundle(object):
                     bundle.add(path, target_filename)
 
                 if ext == ".obf":
-                    target_filename = "navigation/{}.obf".format(prefix)
+                    target_filename = u"navigation/{}.obf".format(prefix)
                     contents[target_filename] = {
                         "type": "OsmAnd",
                     }
@@ -69,7 +69,7 @@ class POSMBundle(object):
                     bundle.add(path, target_filename)
 
                 if ext == ".mwm":
-                    target_filename = "navigation/{}.mwm".format(prefix)
+                    target_filename = u"navigation/{}.mwm".format(prefix)
                     contents[target_filename] = {
                         "type": "Maps.me",
                     }
@@ -77,7 +77,7 @@ class POSMBundle(object):
                     bundle.add(path, target_filename)
 
                 if filename == "gmapsupp.img":
-                    target_filename = "navigation/{}.img".format(prefix)
+                    target_filename = u"navigation/{}.img".format(prefix)
                     contents[target_filename] = {
                         "type": "Garmin IMG",
                     }
@@ -85,7 +85,7 @@ class POSMBundle(object):
                     bundle.add(path, target_filename)
 
                 if ext == ".gpkg":
-                    target_filename = "data/{}.gpkg".format(prefix)
+                    target_filename = u"data/{}.gpkg".format(prefix)
                     contents[target_filename] = {
                         "type": "Geopackage",
                     }
@@ -93,7 +93,7 @@ class POSMBundle(object):
                     bundle.add(path, target_filename)
 
                 if ext == ".kml":
-                    target_filename = "data/{}.kml".format(prefix)
+                    target_filename = u"data/{}.kml".format(prefix)
                     contents[target_filename] = {
                         "type": "KML",
                     }
@@ -101,7 +101,7 @@ class POSMBundle(object):
                     bundle.add(path, target_filename)
 
                 if filename == "unfiltered.pbf":
-                    target_filename = "osm/{}.pbf".format(prefix)
+                    target_filename = u"osm/{}.pbf".format(prefix)
                     contents[target_filename] = {
                         "type": "OSM/PBF",
                     }
