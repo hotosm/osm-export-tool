@@ -372,7 +372,7 @@ export class ExportDetails extends Component {
             {(requiresFeatureSelection || isLoggedIn) &&
               <ButtonGroup>
                 {requiresFeatureSelection &&
-                  <Button onClick={showModal}>
+                  <Button onClick={this.showModal}>
                     <FormattedMessage
                       id="ui.exports.features"
                       defaultMessage="Features"
