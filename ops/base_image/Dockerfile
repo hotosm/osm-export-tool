@@ -37,6 +37,7 @@ RUN \
     default-jre-headless \
     gdal-bin \
     git \
+    language-pack-en-base \
     libffi-dev \
     libgdal-dev \
     libmagic1 \
