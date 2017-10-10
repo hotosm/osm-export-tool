@@ -62,6 +62,8 @@ RUN \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+ENV LC_ALL en_US.UTF-8
+
 RUN \
   curl -sfL http://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip -o /tmp/osmandmapcreator.zip \
     && unzip /tmp/osmandmapcreator.zip -d /opt/osmandmapcreator \
