@@ -97,7 +97,7 @@ def run_task_remote(self, run_uid): # noqa
                 task = ExportTask.objects.get(run__uid=run_uid, name=formatcls.name)
                 if formatcls == POSMBundle:
                     filename = os.path.basename(results[0].basename)
-                    bundle_name = "{}-{}".format(
+                    bundle_name = u"{}-{}".format(
                         slugify(job.name, allow_unicode=True), filename)
 
                     task.filesize_bytes = os.stat(
