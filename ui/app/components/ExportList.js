@@ -1,4 +1,5 @@
 import { NonIdealState, Spinner } from "@blueprintjs/core";
+import ellipsize from "ellipsize";
 import React, { Component } from "react";
 import { Button, Col, Row, Table } from "react-bootstrap";
 import {
@@ -47,7 +48,7 @@ class _ExportTable extends Component {
               </Link>
             </td>
             <td>
-              {job.description}
+              <span title={job.description}>{ellipsize(job.description, 40)}</span>
             </td>
             <td>
               {job.event}
