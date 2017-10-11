@@ -46,6 +46,7 @@ class UnfilteredPBF(object):
         stdout, stderr = p.communicate()
 
         if stderr:
+            LOG.warn('Failed: %s', stderr)
             with open(self.input_xml, 'rb') as fd:
                 sample = fd.readlines(8)
                 raise InvalidOsmXmlException(sample)
