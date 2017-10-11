@@ -175,7 +175,7 @@ class RunManager(object):
                 per_theme=self.per_theme)
 
         if formatcls == MWM:
-            task = MWM(os.path.join(self.dir, 'export.pbf'))
+            task = MWM(os.path.join(self.dir, 'export.pbf'), self.aoi_geom)
 
         if formatcls == MBTiles:
             extent = self.aoi_geom.extent
