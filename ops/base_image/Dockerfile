@@ -98,3 +98,5 @@ COPY --from=omim /usr/local/src/omim/data/drules_proto_vehicle_dark.bin /usr/dat
 COPY --from=omim /usr/local/src/omim/data/types.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/tools/unix/generate_mwm.sh /usr/local/bin/
 COPY --from=omim /usr/local/src/omim-build-release/out/release/generator_tool /usr/local/bin/
+# used to determine m_writableDir in Platform::Platform
+COPY --from=omim /usr/local/src/omim/data/eula.html /usr/data/

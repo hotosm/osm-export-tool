@@ -41,7 +41,7 @@ class MWM(object):
 
         tmpdir = tempfile.mkdtemp()
         env = os.environ.copy()
-        env.update(HOME=tmpdir, TARGET=os.path.dirname(self.output))
+        env.update(MWM_WRITABLE_DIR=tmpdir, TARGET=os.path.dirname(self.output))
 
         try:
             subprocess.check_call(
