@@ -46,6 +46,7 @@ RUN \
     libsqlite3-mod-spatialite \
     libspatialite7 \
     libspatialite-dev \
+    libproxy1v5 \
     libxslt1-dev \
     nodejs \
     osmctools \
@@ -88,6 +89,7 @@ ENV OSMCONVERT /usr/bin/osmconvert
 RUN mkdir -p /usr/data
 COPY --from=omim /usr/local/src/omim/data/categories.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/data/classificator.txt /usr/data/
+COPY --from=omim /usr/local/src/omim/data/countries.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/data/countries_meta.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/data/editor.config /usr/data/
 COPY --from=omim /usr/local/src/omim/data/drules_proto.bin /usr/data/
@@ -100,3 +102,4 @@ COPY --from=omim /usr/local/src/omim/tools/unix/generate_mwm.sh /usr/local/bin/
 COPY --from=omim /usr/local/src/omim-build-release/out/release/generator_tool /usr/local/bin/
 # used to determine m_writableDir in Platform::Platform
 COPY --from=omim /usr/local/src/omim/data/eula.html /usr/data/
+COPY --from=omim /usr/lib/x86_64-linux-gnu/libQt5Network.so.5 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5
