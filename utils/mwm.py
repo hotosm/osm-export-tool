@@ -41,16 +41,14 @@ class MWM(object):
 
         tmpdir = tempfile.mkdtemp()
         env = os.environ.copy()
-        env.update(MWM_WRITABLE_DIR=tmpdir, TARGET=os.path.dirname(self.output))
+        env.update(HOME=tmpdir, MWM_WRITABLE_DIR=tmpdir, TARGET=os.path.dirname(self.output))
 
         try:
             subprocess.check_call(
                 convert_cmd,
                 env=env,
                 shell=True,
-                executable='/bin/bash',
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                executable='/bin/bash')
 
             LOG.debug('generate_mwm.sh complete')
         finally:
