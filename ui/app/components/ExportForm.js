@@ -31,8 +31,12 @@ const form = reduxForm({
   onSubmit: (values, dispatch, { createExport }) => {
     console.log("Submitting form. Values:", values);
 
-    if (values.bundle) {
+    if (values.bundle && !values.export_formats.includes("bundle")) {
+      // only add bundle format if it wasn't already included
       values.export_formats.push("bundle");
+    } else {
+      // remove bundle format
+      values.export_formats = values.export_formats.filter(x => x !== "bundle");
     }
 
     createExport(values, "ExportForm");
