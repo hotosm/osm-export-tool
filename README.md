@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/hotosm/osm-export-tool2](https://badges.gitter.im/hotosm/osm-export-tool2.svg)](https://gitter.im/hotosm/osm-export-tool2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![CircleCI](https://circleci.com/gh/hotosm/osm-export-tool2.svg?style=svg)](https://circleci.com/gh/hotosm/osm-export-tool2)
+[![CircleCI](https://circleci.com/gh/hotosm/osm-export-tool.svg?style=svg)](https://circleci.com/gh/hotosm/osm-export-tool)
 
 The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile devices. It outputs files in various tabular formats based on an input area of interest polygon and a selection of OpenStreetMap tags. It is synchronized minutely with the main OSM database, so exports can be created to accompany real-time humanitarian mapping efforts.
 
