@@ -14,6 +14,7 @@ import DescribeExport from "./DescribeExport";
 import ExportAOIField from "./ExportAOIField";
 import SelectFeatures from "./SelectFeatures";
 import Summary from "./Summary";
+import { getConfigurations } from "../actions/configurations";
 import { createExport, getOverpassTimestamp } from "../actions/exports";
 import {
   PresetParser,
@@ -128,8 +129,11 @@ export class ExportForm extends Component {
   }
 
   componentWillMount() {
-    const { getOverpassTimestamp } = this.props;
+    const { getConfigurations, getOverpassTimestamp } = this.props;
 
+    getConfigurations({
+      all: true
+    });
     getOverpassTimestamp();
   }
 
@@ -344,5 +348,6 @@ buildings:
 
 export default connect(mapStateToProps, {
   createExport,
+  getConfigurations,
   getOverpassTimestamp
 })(form(ExportForm));
