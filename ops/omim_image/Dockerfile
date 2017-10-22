@@ -1,7 +1,7 @@
 FROM debian:jessie
 
 ENV REPOSITORY=https://github.com/mapsme/omim.git \
-    BRANCH=master \
+    BRANCH=release-76 \
     DIR=/usr/local/src/
 
 RUN apt-get update && \
