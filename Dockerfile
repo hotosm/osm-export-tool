@@ -1,7 +1,31 @@
+FROM quay.io/hotosm/osm-export-tool2-omimimage:latest as omim
+# pull in reference for later COPY
+
 FROM quay.io/hotosm/osm-export-tool2-baseimage:latest
 LABEL maintainer "Seth Fitzsimmons <seth@mojodna.net>"
 
 ENV DEBIAN_FRONTEND noninteractive
+
+ENV GENERATOR_TOOL /usr/local/bin/generator_tool
+
+# TODO set DATA= something, as generator_tool looks in __dirname/../../data
+RUN mkdir -p /usr/data
+COPY --from=omim /usr/local/src/omim/data/categories.txt /usr/data/
+COPY --from=omim /usr/local/src/omim/data/classificator.txt /usr/data/
+COPY --from=omim /usr/local/src/omim/data/countries.txt /usr/data/
+COPY --from=omim /usr/local/src/omim/data/countries_meta.txt /usr/data/
+COPY --from=omim /usr/local/src/omim/data/editor.config /usr/data/
+COPY --from=omim /usr/local/src/omim/data/drules_proto.bin /usr/data/
+COPY --from=omim /usr/local/src/omim/data/drules_proto_clear.bin /usr/data/
+COPY --from=omim /usr/local/src/omim/data/drules_proto_dark.bin /usr/data/
+COPY --from=omim /usr/local/src/omim/data/drules_proto_vehicle_clear.bin /usr/data/
+COPY --from=omim /usr/local/src/omim/data/drules_proto_vehicle_dark.bin /usr/data/
+COPY --from=omim /usr/local/src/omim/data/types.txt /usr/data/
+COPY --from=omim /usr/local/src/omim/tools/unix/generate_mwm.sh /usr/local/bin/
+COPY --from=omim /usr/local/src/omim-build-release/out/release/generator_tool /usr/local/bin/
+# used to determine m_writableDir in Platform::Platform
+COPY --from=omim /usr/local/src/omim/data/eula.html /usr/data/
+COPY --from=omim /usr/lib/x86_64-linux-gnu/libQt5Network.so.5 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5
 
 
 COPY requirements.txt /opt/osm-export-tool2/

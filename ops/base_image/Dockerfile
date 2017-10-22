@@ -1,20 +1,3 @@
-FROM ubuntu:16.04 as omim
-WORKDIR /usr/local/src
-
-RUN \
-  apt update \
-  && apt upgrade -y \
-  && apt install -y build-essential git libsqlite3-dev qt5-default
-
-RUN \
-  git clone --recursive --depth 1 https://github.com/mapsme/omim.git
-
-WORKDIR /usr/local/src/omim
-
-RUN \
-  echo | ./configure.sh \
-  && CONFIG="gtool no-tests" tools/unix/build_omim.sh -cr
-
 FROM ubuntu:16.04
 LABEL maintainer "Seth Fitzsimmons <seth@mojodna.net>"
 
@@ -82,24 +65,4 @@ RUN \
     && mv /opt/splitter-* /opt/splitter \
     && rm /tmp/splitter.zip
 
-ENV GENERATOR_TOOL /usr/local/bin/generator_tool
 ENV OSMCONVERT /usr/bin/osmconvert
-
-# TODO set DATA= something, as generator_tool looks in __dirname/../../data
-RUN mkdir -p /usr/data
-COPY --from=omim /usr/local/src/omim/data/categories.txt /usr/data/
-COPY --from=omim /usr/local/src/omim/data/classificator.txt /usr/data/
-COPY --from=omim /usr/local/src/omim/data/countries.txt /usr/data/
-COPY --from=omim /usr/local/src/omim/data/countries_meta.txt /usr/data/
-COPY --from=omim /usr/local/src/omim/data/editor.config /usr/data/
-COPY --from=omim /usr/local/src/omim/data/drules_proto.bin /usr/data/
-COPY --from=omim /usr/local/src/omim/data/drules_proto_clear.bin /usr/data/
-COPY --from=omim /usr/local/src/omim/data/drules_proto_dark.bin /usr/data/
-COPY --from=omim /usr/local/src/omim/data/drules_proto_vehicle_clear.bin /usr/data/
-COPY --from=omim /usr/local/src/omim/data/drules_proto_vehicle_dark.bin /usr/data/
-COPY --from=omim /usr/local/src/omim/data/types.txt /usr/data/
-COPY --from=omim /usr/local/src/omim/tools/unix/generate_mwm.sh /usr/local/bin/
-COPY --from=omim /usr/local/src/omim-build-release/out/release/generator_tool /usr/local/bin/
-# used to determine m_writableDir in Platform::Platform
-COPY --from=omim /usr/local/src/omim/data/eula.html /usr/data/
-COPY --from=omim /usr/lib/x86_64-linux-gnu/libQt5Network.so.5 /usr/lib/x86_64-linux-gnu/libQt5Network.so.5
