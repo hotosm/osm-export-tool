@@ -13,6 +13,7 @@ RUN mkdir -p /usr/data
 COPY --from=omim /usr/local/src/omim/data/categories.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/data/classificator.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/data/countries.txt /usr/data/
+COPY --from=omim /usr/local/src/omim/data/countries-strings /usr/data/countries-strings
 COPY --from=omim /usr/local/src/omim/data/countries_meta.txt /usr/data/
 COPY --from=omim /usr/local/src/omim/data/editor.config /usr/data/
 COPY --from=omim /usr/local/src/omim/data/drules_proto.bin /usr/data/
