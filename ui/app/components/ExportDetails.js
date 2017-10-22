@@ -382,7 +382,7 @@ export class ExportDetails extends Component {
                   <Button bsStyle="success" onClick={() => runExport(id)}>
                     <FormattedMessage
                       id="ui.exports.rerun_export"
-                      defaultMessage="Re-Run Export"
+                      defaultMessage="Re-Run"
                     />
                   </Button>}
                 {isLoggedIn &&
@@ -393,7 +393,7 @@ export class ExportDetails extends Component {
                   >
                     <FormattedMessage
                       id="ui.exports.clone_export"
-                      defaultMessage="Clone Export"
+                      defaultMessage="Clone"
                     />
                   </Button>}
                 {exportInfo.user.username === username &&
@@ -404,7 +404,7 @@ export class ExportDetails extends Component {
                   >
                     <FormattedMessage
                       id="ui.exports.delete_export"
-                      defaultMessage="Delete Export"
+                      defaultMessage="Delete"
                     />
                   </Button>}
               </ButtonGroup>}
