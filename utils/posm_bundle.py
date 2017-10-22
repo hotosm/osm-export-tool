@@ -115,7 +115,7 @@ class POSMBundle(object):
                     "name": prefix,
                     "description": self.description,
                     "bbox": self.extent,
-                    "content": contents,
+                    "contents": contents,
                 }, m)
 
             bundle.add(manifest, "manifest.json")
