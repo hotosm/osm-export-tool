@@ -49,7 +49,7 @@ class SelectFeatures extends Component {
                 defaultMessage="Tag Tree"
               />
             </NavLink>
-            {configurations.length > 0 &&
+            {configurations.total > 0 &&
               <NavLink
                 className="btn btn-default"
                 to="/exports/new/select/stored"
