@@ -83,6 +83,7 @@ Transportation,Bus Station,,,"point, polygon","name, building, amenity, public_t
 Transportation,Footpath,,trail,line,"highway,surface,bridge,tunnel,layer",highway='footway',,
 Transportation,Road,,,line,"highway,name,surface,smoothness,width,oneway,bridge,tunnel,layer",highway IS NOT NULL,,
 Transportation,Railway,,train,line,"railway, name, layer",railway IS NOT NULL,,
+Transportation,Parking,,,polygon,"amenity, parking, name, capacity, surface",amenity='parking',,
 Water  ,Water,yes,,,,"waterway IS NOT NULL OR water='reservoir' OR natural='water' OR landuse='reservoir' OR man_made IN ('water_tower','pumping_station') OR building='pumping_station' OR amenity = 'water_point'",,http://wiki.openstreetmap.org/wiki/Map_Features#Waterway
 Water  ,Dam,,,"line, polygon",waterway,waterway='dam',,
 Water  ,Reservoir,,,"point, polygon","water, natural, landuse",water='reservoir' OR natural='water' OR landuse='reservoir',,

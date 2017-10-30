@@ -128,7 +128,8 @@ export const TAGTREE = {
             "Bus Station": {},
             "Footpath": {},
             "Road": {},
-            "Railway": {}
+            "Railway": {},
+            "Parking": {}
         }
     },
     "Water": {
@@ -1106,7 +1107,9 @@ export const TAGLOOKUP = {
             "tunnel",
             "smoothness",
             "width",
-            "oneway"
+            "oneway",
+            "parking",
+            "capacity"
         ],
         "where": "aeroway IS NOT NULL OR highway IS NOT NULL OR railway IS NOT NULL OR building IN ('aerodome','ferry_terminal','train_station') OR amenity IN ('ferry_terminal','bus_station')"
     },
@@ -1200,6 +1203,19 @@ export const TAGLOOKUP = {
             "layer"
         ],
         "where": "railway IS NOT NULL"
+    },
+    "Parking": {
+        "geom_types": [
+            "polygon"
+        ],
+        "keys": [
+            "amenity",
+            "parking",
+            "name",
+            "capacity",
+            "surface"
+        ],
+        "where": "amenity='parking'"
     },
     "Water": {
         "geom_types": [
