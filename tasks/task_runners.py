@@ -58,14 +58,14 @@ class ExportTaskRunner(object):
 
 @shared_task(bind=True, ignore_result=True)
 def run_task_remote(self, run_uid): # noqa
-    run = ExportRun.objects.get(uid=run_uid)
-    run.status = 'RUNNING'
-    run.started_at = timezone.now()
-    run.save()
-    LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
-    job = run.job
-
     try:
+        run = ExportRun.objects.get(uid=run_uid)
+        run.status = 'RUNNING'
+        run.started_at = timezone.now()
+        run.save()
+        LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
+        job = run.job
+
         stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
         if not os.path.exists(stage_dir):
             os.makedirs(stage_dir, 6600)
