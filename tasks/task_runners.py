@@ -58,6 +58,7 @@ class ExportTaskRunner(object):
 
 @shared_task(bind=True, ignore_result=True)
 def run_task_remote(self, run_uid): # noqa
+    stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
     try:
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
@@ -66,7 +67,6 @@ def run_task_remote(self, run_uid): # noqa
         LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
         job = run.job
 
-        stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
         if not os.path.exists(stage_dir):
             os.makedirs(stage_dir, 6600)
         run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
@@ -171,7 +171,8 @@ def run_task_remote(self, run_uid): # noqa
             send_hdx_error_notification(
                 run, run.job.hdx_export_region_set.first())
     finally:
-        shutil.rmtree(stage_dir)
+        if os.path.exists(stage_dir):
+            shutil.rmtree(stage_dir)
         try:
             run.finished_at = timezone.now()
             run.save()
