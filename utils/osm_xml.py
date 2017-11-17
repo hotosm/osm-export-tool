@@ -61,8 +61,6 @@ class OSM_XML(object):
     def raise_if_bad(self):
         with open(self.output_xml,'rb') as fd:
             sample = fd.readlines(8)
-            if len(sample) == 7:
-                raise EmptyOsmXmlException
             if "<remark>" in ''.join(sample):
                 raise OverpassErrorException(sample)
 
