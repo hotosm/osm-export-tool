@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='job',
             name='the_geom',
-            field=django.contrib.gis.db.models.fields.GeometryField(srid=4326, validators=[jobs.models.validate_aoi], verbose_name='Extent for export'),
+            field=django.contrib.gis.db.models.fields.GeometryField(srid=4326, validators=[], verbose_name='Extent for export'),
         ),
     ]

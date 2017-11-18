@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from utils.simplify import simplify_geom
+from utils.aoi_utils import simplify_geom
 
 def resimplify(apps, schema_editor):
     Job = apps.get_model('jobs', 'Job')

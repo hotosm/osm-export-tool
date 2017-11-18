@@ -6,13 +6,11 @@ from datetime import timedelta
 import logging
 import json
 import uuid
-import math
 import re
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
 from django.utils import timezone
@@ -22,37 +20,11 @@ import mercantile
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
 from utils import FORMAT_NAMES
-from utils.simplify import simplify_geom
-
-
+from utils.aoi_utils import simplify_geom, get_geodesic_area, check_extent
 from django.contrib import admin
 
 LOG = logging.getLogger(__name__)
 MAX_TILE_COUNT = 10000
-
-def get_geodesic_area(geom):
-    bbox = geom.envelope
-    """
-    Uses the algorithm to calculate geodesic area of a polygon from OpenLayers 2.
-    See http://bit.ly/1Mite1X.
-
-    Args:
-        geom (GEOSGeometry): the export extent as a GEOSGeometry.
-
-    Returns
-        area (float): the geodesic area of the provided geometry.
-    """
-    area = 0.0
-    coords = bbox.coords[0]
-    length = len(coords)
-    if length > 2:
-        for x in range(length - 1):
-            p1 = coords[x]
-            p2 = coords[x+1]
-            area += math.radians(p2[0] - p1[0]) * (2 + math.sin(math.radians(p1[1]))
-                                                   + math.sin(math.radians(p2[1])))
-        area = abs(int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000))
-    return area
 
 def validate_export_formats(value):
     if not value:
@@ -73,17 +45,10 @@ def validate_feature_selection(value):
         raise ValidationError(f.errors)
 
 def validate_aoi(aoi):
-    if not aoi.valid:
-        raise ValidationError(aoi.valid_reason)
-    MAX_SQKM = 3000000
-    # because overpass queries by total extent bbox, check area against extent (example:diagonal shaped area)
-    area = get_geodesic_area(Polygon.from_bbox(aoi.extent))
-    if area >  MAX_SQKM:
-        raise ValidationError(
-            "Geometry too large: %(area)s sq km, max %(max)s",
-            params={'area': area, 'max': MAX_SQKM},
-        )
-
+    result = check_extent(aoi)
+    if not result.valid:
+        raise ValidationError(result.message,params=result.params)
+    
 def validate_mbtiles(job):
     if "mbtiles" in job["export_formats"]:
         if job.get("mbtiles_source") is None:

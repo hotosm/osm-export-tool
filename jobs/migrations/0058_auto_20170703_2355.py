@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='job',
             name='the_geom',
-            field=django.contrib.gis.db.models.fields.GeometryField(srid=4326, validators=[jobs.models.validate_aoi], verbose_name='Uploaded geometry'),
+            field=django.contrib.gis.db.models.fields.GeometryField(srid=4326, validators=[], verbose_name='Uploaded geometry'),
         ),
         migrations.RunSQL(
             "UPDATE jobs SET simplified_geom=ST_SimplifyPreserveTopology(the_geom, 0.01)"
