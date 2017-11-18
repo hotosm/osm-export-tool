@@ -194,6 +194,28 @@ class TestFeatureSelection(unittest.TestCase):
         self.assertTrue(f.valid)
         self.assertEqual(f.geom_types('all'),['points','lines','polygons'])
 
+    def test_duplicated_yaml(self):
+        y = '''
+        all: 
+            select:
+                - name
+                - name
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Duplicate tag: name")
+        y = '''
+        t1: 
+            select:
+                - name
+        t2: 
+            select:
+                - name
+
+        '''
+        f = FeatureSelection(y)
+        self.assertTrue(f.valid)
+
     def test_unspecified_yaml(self):
         # top level is a list and not a dict
         y = '''

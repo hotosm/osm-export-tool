@@ -84,7 +84,6 @@ def check_extent(aoi,url):
                     {},
                     area)
         nodes = int(j['elements'][0]['tags']['nodes'])
-        print nodes
         if nodes > MAX_NODES:
             return ValidateResult(False, "The selected area's bounding box contains %(nodes)s nodes.\
                 The maximum is %(maxnodes)s. Please choose a smaller area.",

@@ -128,6 +128,7 @@ class FeatureSelection(object):
                         if typ not in ['points','lines','polygons']:
                             self._errors.append("types must be one or more of points, lines or polygons, got: {0}".format(typ))
                             return False
+                seen_tags = []
                 for key in theme_dict['select']:
                     if not key:
                         self._errors.append("Missing OSM key")
@@ -135,6 +136,10 @@ class FeatureSelection(object):
                     if not re.match("(?u)[\w\s\:]+$",key):
                         self._errors.append("Invalid OSM key: {0}".format(key))
                         return False
+                    if key in seen_tags:
+                        self._errors.append("Duplicate tag: {0}".format(key))
+                        return False
+                    seen_tags.append(key)
                 if not isinstance(theme_dict['select'],list):
                     self._errors.append("'select' children must be list elements (e.g. '- amenity')")
                     return False
