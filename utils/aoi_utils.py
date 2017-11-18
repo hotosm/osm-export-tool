@@ -63,7 +63,7 @@ def get_geodesic_area(geom):
         area = abs(int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000))
     return area
 
-def check_extent(aoi):
+def check_extent(aoi,url):
     if not aoi.valid:
         return ValidateResult(False,aoi.valid_reason,None,None)
     # because overpass queries by total extent bbox, check area against extent (example:diagonal shaped area)
@@ -77,7 +77,7 @@ def check_extent(aoi):
         north = min(aoi.extent[3], 90)
         geom = '{1},{0},{3},{2}'.format(west, south, east, north)
         query = OVERPASS_COUNT_QUERY.format(geom)
-        req = requests.post('{}interpreter'.format('http://exports-prod.hotosm.org:6080/api/'),data=query,timeout=40)
+        req = requests.post('{}interpreter'.format(url),data=query,timeout=40)
         j = req.json()
         if 'remark' in j:
             return ValidateResult(False,"Could not retrieve # of nodes in this area, it is likely too large. Please choose a smaller area.",

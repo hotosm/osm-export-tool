@@ -45,7 +45,7 @@ def validate_feature_selection(value):
         raise ValidationError(f.errors)
 
 def validate_aoi(aoi):
-    result = check_extent(aoi)
+    result = check_extent(aoi,settings.OVERPASS_API_URL)
     if not result.valid:
         raise ValidationError(result.message,params=result.params)
     
