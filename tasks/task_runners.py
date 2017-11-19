@@ -151,9 +151,9 @@ def run_task_remote(self, run_uid): # noqa
                 run, run.job.hdx_export_region_set.first())
 
         run.status = 'COMPLETED'
+        run.finished_at = timezone.now()
+        run.save()
         LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
-    except EmptyOsmXmlException as e:
-        run.status = "EMPTY"
     except (ExportTask.DoesNotExist, ExportRun.DoesNotExist, Job.DoesNotExist, IntegrityError):
         LOG.debug('Export run no longer exists. Terminating job run.')
     except Exception as e:
@@ -163,9 +163,10 @@ def run_task_remote(self, run_uid): # noqa
             }
         )
         run.status = 'FAILED'
+        run.finished_at = timezone.now()
+        run.save()
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
         LOG.warn(traceback.format_exc())
-
         send_error_notification(run)
         if run.job.hdx_export_region_set.count() > 0:
             send_hdx_error_notification(
@@ -173,8 +174,3 @@ def run_task_remote(self, run_uid): # noqa
     finally:
         if os.path.exists(stage_dir):
             shutil.rmtree(stage_dir)
-        try:
-            run.finished_at = timezone.now()
-            run.save()
-        except IntegrityError:
-            LOG.debug('Export run no longer exists.')
