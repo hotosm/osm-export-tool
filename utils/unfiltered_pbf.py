@@ -5,8 +5,8 @@ import os
 from string import Template
 from subprocess import PIPE, Popen
 
-from .artifact import Artifact
-from .osm_xml import OSM_XML
+from utils.artifact import Artifact
+from utils.osm_xml import OSM_XML
 
 LOG = logging.getLogger(__name__)
 

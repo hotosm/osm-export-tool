@@ -4,7 +4,7 @@ import logging
 import os
 from subprocess import Popen, PIPE
 from string import Template
-from artifact import Artifact
+from utils.artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 

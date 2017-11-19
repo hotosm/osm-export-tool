@@ -4,7 +4,7 @@ import logging
 import os
 import subprocess
 from string import Template
-from artifact import Artifact
+from utils.artifact import Artifact
 
 import sqlite3
 from feature_selection.feature_selection import slugify

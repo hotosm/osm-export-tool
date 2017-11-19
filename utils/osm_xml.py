@@ -6,7 +6,7 @@ import os
 
 import requests
 from requests import exceptions
-from artifact import Artifact
+from utils.artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 

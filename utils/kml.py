@@ -7,7 +7,7 @@ import os
 import subprocess
 import zipfile
 from string import Template
-from artifact import Artifact
+from utils.artifact import Artifact
 from feature_selection.feature_selection import slugify
 
 LOG = logging.getLogger(__name__)

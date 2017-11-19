@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 
-from artifact import Artifact
+from utils.artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 
