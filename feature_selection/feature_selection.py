@@ -149,8 +149,8 @@ class FeatureSelection(object):
 
                 self.keys_from_sql[theme] = set()
                 if 'where' in theme_dict:
-                    if theme_dict['where'] == []:
-                        self._errors.append("if 'where' key is specified, it must not be an empty list")
+                    if not theme_dict['where']:
+                        self._errors.append("if 'where' key is specified, it must not be empty")
                         return False
                     if not isinstance(theme_dict['where'],list):
                         clauses = [theme_dict['where']]

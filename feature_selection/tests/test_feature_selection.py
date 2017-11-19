@@ -133,7 +133,19 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         self.assertFalse(f.valid)
-        self.assertEqual(f.errors[0],"if 'where' key is specified, it must not be an empty list")
+        self.assertEqual(f.errors[0],"if 'where' key is specified, it must not be empty")
+
+        y = '''
+        waterways:
+            types:
+                - polygons
+            select:
+                - name
+            where:
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"if 'where' key is specified, it must not be empty")
 
     def test_sqls(self):
         y = '''
