@@ -1,6 +1,7 @@
 import math
 from collections import namedtuple
 from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.contrib.gis.geos.prototypes.io import wkt_w
 import requests
 
 # goals:
@@ -26,6 +27,11 @@ OVERPASS_COUNT_QUERY = """
 """
 
 ValidateResult = namedtuple('ValidateResult',['valid','message','params','area'])
+
+def force2d(geom):
+    # force geom to be 2d: https://groups.google.com/forum/#!topic/django-users/7c1NZ76UwRU
+    wkt = wkt_w(dim=2).write(geom).decode()
+    return GEOSGeometry(wkt)
 
 def simplify_geom(geom,force_buffer=False):
     if geom.num_coords > 10000:

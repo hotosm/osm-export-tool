@@ -20,7 +20,7 @@ import mercantile
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
 from utils import FORMAT_NAMES
-from utils.aoi_utils import simplify_geom, get_geodesic_area, check_extent
+from utils.aoi_utils import simplify_geom, get_geodesic_area, check_extent, force2d
 from django.contrib import admin
 
 LOG = logging.getLogger(__name__)
@@ -126,6 +126,7 @@ class Job(models.Model):
         return get_geodesic_area(self.the_geom)
 
     def save(self, *args, **kwargs):
+        self.the_geom = force2d(self.the_geom)
         self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi)
         super(Job, self).save(*args, **kwargs)
 
