@@ -238,7 +238,7 @@ class FeatureSelection(object):
                 else:
                     add_where(OverpassFilter(theme['where']).filter(),key)
             else:
-                add_where(('[' + x + ']' for x in theme['select']),key)
+                add_where(("['" + x + "']" for x in theme['select']),key)
 
         return (list(nodes), list(ways), list(relations))
 

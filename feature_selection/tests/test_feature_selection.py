@@ -375,10 +375,11 @@ class TestFeatureSelection(unittest.TestCase):
             types:
                 - lines
             select:
-                - column5
+                - column5:key
         '''
         f = FeatureSelection(y)
         nodes, ways, relations = f.overpass_filter()
         self.assertEquals(nodes,["[column3~'foo|bar']","[column2]"])
-        self.assertEquals(ways,["[column3~'foo|bar']","[column5]","[column2]"])
+        # force quoting of strings to handle keys with colons
+        self.assertEquals(ways,["['column5:key']","[column3~'foo|bar']","[column2]"])
         self.assertEquals(relations,["[column3~'foo|bar']","[column2]"])
