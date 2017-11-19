@@ -9,7 +9,7 @@ import styles from "../styles/ExportForm.css";
 const messages = defineMessages({
   bufferAOIDescription: {
     id: "export.buffer_aoi.description",
-    defaultMessage: "Buffer AOI"
+    defaultMessage: "Buffer AOI - expand an uploaded boundary by 0.02 degrees"
   },
   bundleForPOSM: {
     id: "export.bundle_for_posm.description",
