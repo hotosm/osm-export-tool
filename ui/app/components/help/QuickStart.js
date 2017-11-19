@@ -53,8 +53,15 @@ export default () =>
                 </li>
               </ul>
               <Alert bsStyle="warning">
-                Uploaded geometries will be simplified to be 500 points or less.
+                  Uploaded geometries will be simplified to be 500 points or less.
               </Alert>
+              <p>
+              The maximum extent of an export on the Export Tool is determined by the density of OSM data in the defined area.
+              <strong>The bounding box of the area can contain at most 10,000,000 OSM nodes. </strong>
+              This limitation means that a 10,000 square kilometer box over a heavily mapped area like Western Europe or North America will likely be rejected,
+              but an equal sized box over a sparsely mapped area will be accepted by the Export Tool.
+              If you need larger exports, please <a href="mailto:sysadmin@hotosm.org">Contact Us</a> or use an alternative resource such as downloads from <a href="http://download.geofabrik.de">Geofabrik</a> or <a href="https://mapzen.com/data/metro-extracts/">Mapzen</a>.
+              </p>
             </div>
             <div>
               <h2 id="step2">2. Naming and Describing your Export</h2>
