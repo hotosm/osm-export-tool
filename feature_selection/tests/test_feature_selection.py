@@ -183,6 +183,14 @@ class TestFeatureSelection(unittest.TestCase):
         f = FeatureSelection(y)
         self.assertFalse(f.valid)
 
+    def test_empty_yaml(self):
+        y = '''
+        {}
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"YAML cannot be empty")
+
     def test_minimal_yaml(self):
         # the shortest valid feature selection
         y = '''

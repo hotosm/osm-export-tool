@@ -110,6 +110,9 @@ class FeatureSelection(object):
         """ Validate when the YAML doc is accessed."""
 
         def validate_schema(loaded_doc):
+            if not loaded_doc:
+                self._errors.append("YAML cannot be empty")
+                return False
             if not isinstance(loaded_doc,dict):
                 self._errors.append("YAML must be dict, not list")
                 return False
