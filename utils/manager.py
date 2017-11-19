@@ -4,18 +4,18 @@ import os
 import shutil
 import zipfile
 
-from .artifact import Artifact
-from .garmin_img import GarminIMG
-from .geopackage import Geopackage
-from .kml import KML
-from .mbtiles import MBTiles
-from .mwm import MWM
-from .osm_pbf import OSM_PBF
-from .osm_xml import OSM_XML
-from .osmand_obf import OsmAndOBF
-from .posm_bundle import POSMBundle
-from .shp import Shapefile
-from .unfiltered_pbf import UnfilteredPBF
+from utils.artifact import Artifact
+from utils.garmin_img import GarminIMG
+from utils.geopackage import Geopackage
+from utils.kml import KML
+from utils.mbtiles import MBTiles
+from utils.mwm import MWM
+from utils.osm_pbf import OSM_PBF
+from utils.osm_xml import OSM_XML
+from utils.osmand_obf import OsmAndOBF
+from utils.posm_bundle import POSMBundle
+from utils.shp import Shapefile
+from utils.unfiltered_pbf import UnfilteredPBF
 
 
 class Zipper(object):

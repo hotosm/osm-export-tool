@@ -8,7 +8,7 @@ import tarfile
 
 from django.utils.text import slugify
 
-from .artifact import Artifact
+from utils.artifact import Artifact
 
 LOG = logging.getLogger(__name__)
 
