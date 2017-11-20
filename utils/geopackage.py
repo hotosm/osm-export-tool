@@ -44,10 +44,8 @@ DROP TRIGGER rtree_lines_geom_update2;
 DROP TRIGGER rtree_lines_geom_update3;
 DROP TRIGGER rtree_lines_geom_update4;
 
--- TODO: these are invalid multipolygons that result in GeometryCollections of linear features.
--- see https://github.com/hotosm/osm-export-tool2/issues/155 for discussion.
--- maybe we should log these somewhere.
-DELETE FROM multipolygons where GeometryType(geom) NOT IN ('POLYGON','MULTIPOLYGON');
+DELETE FROM lines WHERE GeometryType(geom) NOT IN ('LINESTRING','MULTILINESTRING');
+DELETE FROM multipolygons WHERE GeometryType(geom) NOT IN ('POLYGON','MULTIPOLYGON');
 
 SELECT gpkgAddSpatialIndex('boundary', 'geom');
 
