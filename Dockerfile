@@ -14,7 +14,7 @@ RUN pip install -U pip \
   && pip install gunicorn \
   && rm -rf /root/.cache
 
-RUN yarn global add tl @mapbox/mbtiles @mapbox/tilejson tilelive-http
+RUN yarn global add tl @mapbox/mbtiles @mapbox/tilelive @mapbox/tilejson tilelive-http
 
 COPY ui/ /opt/osm-export-tool2/ui/
 
