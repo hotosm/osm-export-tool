@@ -181,7 +181,8 @@ export class ExportForm extends Component {
       formValues,
       formValues: { export_formats: exportFormats, isClone },
       handleSubmit,
-      overpassLastUpdated
+      overpassLastUpdated,
+      submitting
     } = this.props;
 
     let idx = 0;
@@ -288,6 +289,7 @@ export class ExportForm extends Component {
                     handleSubmit={handleSubmit}
                     formValues={formValues}
                     error={error}
+                    submitting={submitting}
                   />}
               />
             </Switch>
