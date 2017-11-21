@@ -22,7 +22,7 @@ const messages = defineMessages({
 });
 
 export default injectIntl(
-  ({ error, formValues, handleSubmit, intl: { formatMessage } }) =>
+  ({ error, formValues, handleSubmit, intl: { formatMessage }, submitting }) =>
     <Row>
       <Col xs={6}>
         <strong>
@@ -82,6 +82,7 @@ export default injectIntl(
         />
         <Button
           bsStyle="danger"
+          disabled={submitting}
           type="submit"
           style={{ width: "100%" }}
           onClick={handleSubmit}
