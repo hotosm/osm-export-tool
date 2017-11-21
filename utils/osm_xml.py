@@ -3,10 +3,8 @@ import logging
 from datetime import datetime
 from string import Template
 import os
-
-import requests
-from requests import exceptions
 from utils.artifact import Artifact
+import subprocess
 
 LOG = logging.getLogger(__name__)
 
@@ -40,7 +38,7 @@ class OSM_XML(object):
             );>>;>;
             );out meta;""")
 
-    def __init__(self, aoi_geom, output_xml, feature_selection=None,
+    def __init__(self, aoi_geom, output_xml, query_txt, feature_selection=None,
                 url='http://overpass-api.de/api/',
                 overpass_max_size=4294967296,
                 timeout=3200):
@@ -53,6 +51,7 @@ class OSM_XML(object):
         """
         self.url = url
         self.output_xml = output_xml
+        self.query_txt = query_txt
         self.aoi_geom = aoi_geom
         self.overpass_max_size = overpass_max_size
         self.timeout = timeout
@@ -109,13 +108,12 @@ class OSM_XML(object):
             query = OSM_XML.basic_template.safe_substitute(args)
 
         # set up required paths
+        with open(self.query_txt,'w') as query_txt:
+            query_txt.write(query)
+        cmd = ['curl','-X','POST','-d','@'+self.query_txt,self.url+'interpreter','-o',self.output_xml]
+        LOG.debug("Running: %s" % cmd)
         LOG.debug("Query started at: %s" % datetime.now())
-        LOG.debug("Query: %s", query)
-        req = requests.post('{}interpreter'.format(self.url), data=query, stream=True, timeout=30*60)
-        CHUNK = 1024 * 1024 * 5  # 5MB chunks
-        with open(self.output_xml, 'wb') as fd:
-            for chunk in req.iter_content(CHUNK):
-                fd.write(chunk)
+        subprocess.check_call(cmd)
         self.raise_if_bad()
         LOG.debug('Query finished at %s' % datetime.now())
         LOG.debug('Wrote overpass query results to: %s' % self.output_xml)

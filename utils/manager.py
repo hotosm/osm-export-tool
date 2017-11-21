@@ -131,6 +131,7 @@ class RunManager(object):
             task = OSM_XML(
                 self.aoi_geom,
                 os.path.join(self.dir, 'export.osm'),
+                os.path.join(self.dir, 'query.txt'),
                 self.feature_selection,
                 url=self.overpass_api_url)
 
