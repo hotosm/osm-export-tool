@@ -32,7 +32,11 @@ class UnfilteredPBF(object):
 
         osm_xml = "{}.xml".format(self.output_pbf)
 
-        osm_xml_task = OSM_XML(self.aoi_geom, osm_xml, url=self.url)
+        osm_xml_task = OSM_XML(
+            self.aoi_geom,
+            osm_xml,
+            "{}_query.txt".format(self.output_pbf),
+            url=self.url)
         osm_xml_task.run()
 
         convert_cmd = self.cmd.safe_substitute({
