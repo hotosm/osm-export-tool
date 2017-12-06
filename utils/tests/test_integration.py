@@ -86,15 +86,17 @@ class TestIntegration(unittest.TestCase):
             zipper.run(r.results[f].results)
         z = zipper.zipped_resources
         self.assertEqual(len([x for x in z if x.format_name == 'kml']),3)
-        self.assertEqual(len([x for x in z if x.format_name == 'shp']),2) # no road polygons present
+        self.assertEqual(len([x for x in z if x.format_name == 'shp']),3) # behavior seems to have changed, 
+        # to where GDAL/OGR will create a shapefile with 0 features for roads_polygons
         self.assertEqual(len([x for x in z if x.format_name == 'geopackage']),2)
         self.assertEqual(z[0].parts[0],"test_roads_gpkg.zip")
         self.assertEqual(z[1].parts[0],"test_some_buildings_gpkg.zip")
         self.assertEqual(z[2].parts[0],"test_roads_lines_shp.zip")
-        self.assertEqual(z[3].parts[0],"test_some_buildings_polygons_shp.zip")
-        self.assertEqual(z[4].parts[0],"test_roads_lines_kml.zip")
-        self.assertEqual(z[5].parts[0],"test_roads_polygons_kml.zip")
-        self.assertEqual(z[6].parts[0],"test_some_buildings_polygons_kml.zip")
+        self.assertEqual(z[3].parts[0],"test_roads_polygons_shp.zip")
+        self.assertEqual(z[4].parts[0],"test_some_buildings_polygons_shp.zip")
+        self.assertEqual(z[5].parts[0],"test_roads_lines_kml.zip")
+        self.assertEqual(z[6].parts[0],"test_roads_polygons_kml.zip")
+        self.assertEqual(z[7].parts[0],"test_some_buildings_polygons_kml.zip")
 
     def test_export_shp(self):
         self.setup_stage_dir()
