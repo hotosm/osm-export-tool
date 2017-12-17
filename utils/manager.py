@@ -95,6 +95,7 @@ class RunManager(object):
                  garmin_splitter=None,
                  garmin_mkgmap=None,
                  overpass_api_url=None,
+                 overpass_max_size=None,
                  per_theme=False,
                  on_task_start=lambda formatcls: None,
                  on_task_success=lambda formatcls, results: None,
@@ -112,6 +113,7 @@ class RunManager(object):
         self.garmin_mkgmap = garmin_mkgmap
         self.map_creator_dir = map_creator_dir
         self.overpass_api_url = overpass_api_url
+        self.overpass_max_size = overpass_max_size
         self.per_theme = per_theme
         self.on_task_start = on_task_start
         self.on_task_success = on_task_success
@@ -133,7 +135,8 @@ class RunManager(object):
                 os.path.join(self.dir, 'export.osm'),
                 os.path.join(self.dir, 'query.txt'),
                 self.feature_selection,
-                url=self.overpass_api_url)
+                url=self.overpass_api_url,
+                overpass_max_size=self.overpass_max_size)
 
         if formatcls == OSM_PBF:
             task = OSM_PBF(

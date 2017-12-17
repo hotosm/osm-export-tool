@@ -115,6 +115,10 @@ def run_task_remote(self, run_uid): # noqa
                 task.finished_at = timezone.now()
                 task.save()
 
+        is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
+        overpass_max_size = 2147483648
+        if is_hdx_export:
+            overpass_max_size = overpass_max_size * 2 
         r = RunManager(
                 job.name,
                 job.description,
@@ -129,6 +133,7 @@ def run_task_remote(self, run_uid): # noqa
                 on_task_start=on_task_start,
                 on_task_success=on_task_success,
                 overpass_api_url=settings.OVERPASS_API_URL,
+                overpass_max_size=overpass_max_size,
                 mbtiles_maxzoom=job.mbtiles_maxzoom,
                 mbtiles_minzoom=job.mbtiles_minzoom,
                 mbtiles_source=job.mbtiles_source,
@@ -137,7 +142,7 @@ def run_task_remote(self, run_uid): # noqa
 
         public_dir = settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT, run_uid)
 
-        if settings.SYNC_TO_HDX and HDXExportRegion.objects.filter(job_id=run.job_id).exists():
+        if settings.SYNC_TO_HDX and is_hdx_export:
             LOG.debug("Adding resources to HDX")
             region = HDXExportRegion.objects.get(job_id=run.job_id)
             export_set = region.hdx_dataset
