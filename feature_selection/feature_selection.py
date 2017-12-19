@@ -123,7 +123,7 @@ class FeatureSelection(object):
                 if not re.match('(?u)^[\w\s]+$', theme):
                     self._errors.append("Each theme must be named using only characters, numbers, underscores and spaces")
                     return False
-                if 'select' not in theme_dict:
+                if not theme_dict or 'select' not in theme_dict:
                     self._errors.append("Each theme must have a 'select' key")
                     return False
                 if 'types' in theme_dict:

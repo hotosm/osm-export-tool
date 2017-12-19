@@ -268,6 +268,13 @@ class TestFeatureSelection(unittest.TestCase):
         self.assertFalse(f.valid)
         self.assertEqual(f.errors[0],"Each theme must have a 'select' key")
 
+        y = '''
+        theme_0:
+        '''
+        f = FeatureSelection(y)
+        self.assertFalse(f.valid)
+        self.assertEqual(f.errors[0],"Each theme must have a 'select' key")
+
     def test_invalid_type(self):
         y = '''
         all: 
