@@ -132,6 +132,9 @@ class FeatureSelection(object):
                             self._errors.append("types must be one or more of points, lines or polygons, got: {0}".format(typ))
                             return False
                 seen_tags = []
+                if not theme_dict['select']:
+                    self._errors.append("'select' cannot be empty")
+                    return False
                 for key in theme_dict['select']:
                     if not key:
                         self._errors.append("Missing OSM key")
