@@ -313,8 +313,7 @@ class TestFeatureSelection(unittest.TestCase):
             - na?me
         '''
         f = FeatureSelection(y)
-        self.assertFalse(f.valid)
-        self.assertEqual(f.errors[0],"Invalid OSM key: na?me")
+        self.assertTrue(f.valid)
         y = '''
         all: 
           select:
@@ -323,6 +322,19 @@ class TestFeatureSelection(unittest.TestCase):
         f = FeatureSelection(y)
         self.assertFalse(f.valid)
         self.assertEqual(f.errors[0],"Missing OSM key")
+
+    def test_unicode_osm_key(self):
+        # https://taginfo.openstreetmap.org/reports/characters_in_keys
+        y = '''
+planet_osm_polygon:
+  types:
+    - polygons
+  select:
+    - building￼Buildings
+    '''
+        f = FeatureSelection(y)
+        self.assertTrue(f.valid)
+
 
     def test_passes_sqlvalidator_errors(self):
         y = '''

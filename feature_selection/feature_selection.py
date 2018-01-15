@@ -139,9 +139,6 @@ class FeatureSelection(object):
                     if not key:
                         self._errors.append("Missing OSM key")
                         return False
-                    if not re.match("(?u)[\w\s\:]+$",key):
-                        self._errors.append("Invalid OSM key: {0}".format(key))
-                        return False
                     if key in seen_tags:
                         self._errors.append("Duplicate tag: {0}".format(key))
                         return False
