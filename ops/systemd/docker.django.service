@@ -23,7 +23,7 @@ ExecStart=/usr/bin/docker run \
   -v /mnt-storage/stage:/opt/export_staging \
   -v /mnt-storage/downloads:/opt/export_downloads \
   quay.io/hotosm/osm-export-tool2 \
-  gunicorn core.wsgi:application --workers=3 --bind :6080
+  gunicorn core.wsgi:application --workers=3 --timeout=60 --bind :6080
 
 [Install]
 WantedBy=osm-export-tool.target
