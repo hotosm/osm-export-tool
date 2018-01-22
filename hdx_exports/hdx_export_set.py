@@ -139,7 +139,7 @@ class HDXExportSet(object):
             dataset['notes'] = self.hdx_note(theme)
             dataset['dataset_source'] = 'OpenStreetMap contributors'
             dataset['owner_org'] = '225b9f7d-e7cb-4156-96a6-44c9c58d31e3'
-            dataset['maintainer'] = 'osm2hdx'
+            dataset['maintainer'] = '6a0688ce-8521-46e2-8edd-8e26c0851ebd'
             dataset['license_id'] = self._license
             dataset['methodology'] = 'Other'
             dataset['methodology_other'] = 'Volunteered geographic information'
