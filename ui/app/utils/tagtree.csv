@@ -30,10 +30,10 @@ Government,Government Office,,"court,town hall","point, polygon","name, building
 Government,Embassy,,embassy,"point, polygon","name, amenity",amenity='embassy',,
 Government,Military,,,"point, polygon","name, military, landuse",military IS NOT NULL or landuse='military',,
 Government,Post Office,,,"point, polygon","name, amenity",amenity='post_office',,
-Healthcare,Healthcare,yes,,,,"healthcare IS NOT NULL OR amenity IN ('doctors', 'dentist', 'toilets', 'hospital', 'pharmacy') OR shop IN ('herbalist','nutrition_supplements')",,http://wiki.openstreetmap.org/wiki/Map_Features#Healthcare
+Healthcare,Healthcare,yes,,,,"healthcare IS NOT NULL OR amenity IN ('doctors', 'dentist', 'clinic', 'toilets', 'hospital', 'pharmacy') OR shop IN ('herbalist','nutrition_supplements')",,http://wiki.openstreetmap.org/wiki/Map_Features#Healthcare
 Healthcare,Doctor,,,"point, polygon","name,medical_system:western,amenity",amenity='doctors',,
 Healthcare,Dentist,,,"point, polygon","name,amenity",amenity='dentist',,
-Healthcare,Clinic,,,"point, polygon","opening_hours,operator,toilets:disposal,toilets:handwashing,access",amenity='clinic',,
+Healthcare,Clinic,,,"point, polygon","opening_hours,operator,operator:type,toilets:disposal,toilets:handwashing,access",amenity='clinic',,
 Healthcare,Hospital,,"clinic,doctor,pharmacy,hospital,dentist","point, polygon","medical_system:western,operator,health_facility:bed,health_facility:level,health_facility:type,status,staff_count:doctors,staff_count:nurses,opening_hours",amenity='hospital',,
 Healthcare,Pharmacy,,,"point, polygon","name,amenity",amenity='pharmacy',,
 Healthcare,Alternative ,,,"point, polygon","name, healthcare, shop","healthcare='alternative' OR shop IN ('herbalist','nutrition_supplements')",,

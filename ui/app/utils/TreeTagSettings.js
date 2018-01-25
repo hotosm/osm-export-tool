@@ -556,6 +556,7 @@ export const TAGLOOKUP = {
             "amenity",
             "opening_hours",
             "operator",
+            "operator:type",
             "toilets:disposal",
             "toilets:handwashing",
             "access",
@@ -568,7 +569,7 @@ export const TAGLOOKUP = {
             "healthcare",
             "shop"
         ],
-        "where": "healthcare IS NOT NULL OR amenity IN ('doctors', 'dentist', 'toilets', 'hospital', 'pharmacy') OR shop IN ('herbalist','nutrition_supplements')"
+        "where": "healthcare IS NOT NULL OR amenity IN ('doctors', 'dentist', 'clinic', 'toilets', 'hospital', 'pharmacy') OR shop IN ('herbalist','nutrition_supplements')"
     },
     "Doctor": {
         "geom_types": [
@@ -601,6 +602,7 @@ export const TAGLOOKUP = {
         "keys": [
             "opening_hours",
             "operator",
+            "operator:type",
             "toilets:disposal",
             "toilets:handwashing",
             "access"
