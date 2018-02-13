@@ -109,7 +109,7 @@ class ExportRunAdmin(admin.ModelAdmin):
         for run in queryset:
             run_task_remote.delay(str(run.uid))
 
-    list_display = ['uid','status','user','created_at']
+    list_display = ['uid','job','status','user','created_at']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at','job','job_link')
     search_fields = ['uid']
