@@ -116,9 +116,7 @@ def run_task_remote(self, run_uid): # noqa
                 task.save()
 
         is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
-        overpass_max_size = 3221225472
-        if is_hdx_export:
-            overpass_max_size = 4294967296
+        overpass_max_size = 4294967296
         r = RunManager(
                 job.name,
                 job.description,
