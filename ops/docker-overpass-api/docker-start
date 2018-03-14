@@ -8,7 +8,7 @@ DB_DIR=/srv/osm3s/db
 
 # NOTE: another file exists at /dev/shm/, but this shouldn't be present on container start
 rm -f $DB_DIR/osm3s_v0.7.54_osm_base
-sudo -u www-data nohup $EXEC_DIR/dispatcher --osm-base --attic --rate-limit=5 --space=12000000000 --db-dir=$DB_DIR >> $DB_DIR/dispatcher.out &
+sudo -u www-data nohup $EXEC_DIR/dispatcher --osm-base --attic --rate-limit=5 --space=18000000000 --db-dir=$DB_DIR >> $DB_DIR/dispatcher.out &
 
 sleep 10
 $EXEC_DIR/fetch_osc_and_apply.sh http://planet.osm.org/replication/minute --meta=attic
