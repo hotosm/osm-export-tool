@@ -9,8 +9,7 @@ COPY requirements-dev.txt /opt/osm-export-tool2/
 
 WORKDIR /opt/osm-export-tool2/
 
-RUN pip install -U pip \
-  && pip install -r requirements-dev.txt \
+RUN pip install -r requirements-dev.txt \
   && pip install gunicorn \
   && rm -rf /root/.cache
 
