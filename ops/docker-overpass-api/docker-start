@@ -11,4 +11,4 @@ rm -f $DB_DIR/osm3s_v0.7.54_osm_base
 sudo -u www-data nohup $EXEC_DIR/dispatcher --osm-base --attic --rate-limit=5 --space=18000000000 --db-dir=$DB_DIR >> $DB_DIR/dispatcher.out &
 
 sleep 10
-$EXEC_DIR/fetch_osc_and_apply.sh http://planet.osm.org/replication/minute --meta=attic
+$EXEC_DIR/fetch_osc_and_apply.sh https://planet.osm.org/replication/minute --meta=attic
