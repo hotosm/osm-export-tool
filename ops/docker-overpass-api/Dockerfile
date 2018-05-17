@@ -21,6 +21,7 @@ RUN build_deps="g++ make expat libexpat1-dev zlib1g-dev curl" \
        wget \
        vim \
        osmctools \
+       ca-certificates \
   && rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default \
   && rm -rf /var/lib/apt/lists/* \
   && curl -sfo osm-3s_v$OSM_VER.tar.gz http://dev.overpass-api.de/releases/osm-3s_v$OSM_VER.tar.gz \
