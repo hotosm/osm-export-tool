@@ -4,4 +4,4 @@ Description=Clean up after exports
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/find /mnt-storage/stage -type d -ctime +7 -exec rm -rf {} \;
-ExecStart=/usr/bin/find /mnt-storage/downloads -type d -ctime +180 -exec rm -rf {} \;
+ExecStart=/usr/bin/find /mnt-storage/downloads -type d -ctime +90 -exec rm -rf {} \;
