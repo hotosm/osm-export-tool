@@ -43,9 +43,13 @@ FocusStyleManager.onlyShowFocusOnTabs();
 export default ({ history }) => {
   if (process.env.NODE_ENV === "production") {
     const piwik = PiwikReactRouter({
-      url: "piwik.hotosm.org",
-      siteId: 10
+      url: "matomo.hotosm.org",
+      siteId: 1
     });
+
+    piwik.push(["setCookieDomain", "*.hotosm.org"]);
+    piwik.push(['trackPageView']);
+    piwik.push(['enableLinkTracking']);
 
     history = piwik.connectToHistory(history);
   }
