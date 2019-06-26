@@ -11,7 +11,7 @@ git+git://github.com/bdon/ckanapi.git@7778ad33c22f20eb2e5a1c5998eedb5f9cbe86ac#e
 hdx-python-api==2.1.5
 kombu>=3.0.37,<3.1
 mercantile~=0.10.0
-psycopg2==2.6.1
+psycopg2==2.8.3
 python-openid
 social-auth-app-django
 pytz
