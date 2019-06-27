@@ -17,10 +17,15 @@
     "os_type": "Linux",
     "image_publisher": "Canonical",
     "image_offer": "UbuntuServer",
-    "image_sku": "14.04.4-LTS",
-    "azure_tags": {
-    },
+    "image_sku": "18.04-LTS",
     "location": "{{user `location`}}",
     "vm_size": "Standard_A2"
-  }]
+  }],
+  "provisioners":[
+    {
+        "type": "shell",
+        "script": "./provision.sh",
+        "execute_command": "sudo bash {{.Path}}"
+    }
+  ]
 }
