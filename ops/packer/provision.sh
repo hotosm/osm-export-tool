@@ -23,6 +23,7 @@ libxslt1-dev \
 nodejs \
 osmctools \
 postgresql-client \
+postgis \
 python-dev \
 python-pip \
 python-setuptools \
