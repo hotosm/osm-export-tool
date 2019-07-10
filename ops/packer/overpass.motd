@@ -1,0 +1,9 @@
+To start the overpass server:
+Make sure the data volume is mounted at /data.
+Clear temp files:
+sudo rm /dev/shm/osm3s_v0.7.55_osm_base
+sudo rm /data/osm3s_v0.7.55_osm_base
+sudo chown -R overpass:overpass /data
+sudo su overpass
+nohup /home/overpass/osm-3s_v0.7.55/bin/dispatcher --osm-base --attic --rate-limit=5 --space=18000000000 --db-dir=/data/ >> /home/overpass/dispatcher.out &
+nohup bash /home/overpass/osm-3s_v0.7.55/bin/fetch_osc_and_apply.sh https://planet.osm.org/replication/minute --meta=attic >> /home/overpass/fetch_osc_and_apply.out &

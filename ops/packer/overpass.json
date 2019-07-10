@@ -28,6 +28,11 @@
         "destination": "/tmp/motd"
     },
     {
+        "type":"file",
+        "source": "overpass_cloudwatch_metrics.py",
+        "destination": "/tmp/cloudwatch_metrics.py"
+    },
+    {
         "type": "shell",
         "script": "./overpass_provision.sh",
         "execute_command": "sudo bash {{.Path}}"
