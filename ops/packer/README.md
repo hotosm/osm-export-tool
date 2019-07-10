@@ -1,3 +1,5 @@
-https://packer.io/docs/builders/azure.html
+Use this command to get your azure CLIENT_ID and CLIENT_SECRET for [Packer](https://www.packer.io/docs/builders/azure-setup.html):
 
-Use Azure CLI and follow steps at https://www.packer.io/docs/builders/azure-setup.html to set environment variables CLIENT_ID, CLIENT_SECRET, SUBSCRIPTION_ID
+```
+az ad sp create-for-rbac -n "Packer" --role contributor --scopes /subscriptions/<SUBSCRIPTION_ID>
+```
