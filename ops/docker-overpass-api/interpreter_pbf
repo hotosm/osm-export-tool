@@ -1,7 +1,0 @@
-#!/bin/bash
-
-read query
-echo "Content-type:application/pbf"
-echo ""
-echo $query| /srv/osm3s/cgi-bin/interpreter | sed 1,2d | osmconvert - --out-pbf
-exit 0
