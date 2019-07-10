@@ -24,22 +24,22 @@
   "provisioners":[
     {
         "type":"file",
-        "source": "overpass.motd",
+        "source": "motd",
         "destination": "/tmp/motd"
     },
     {
         "type":"file",
-        "source": "overpass_nginx.conf",
+        "source": "nginx.conf",
         "destination": "/tmp/nginx.conf"
     },
     {
         "type":"file",
-        "source": "overpass_cloudwatch_metrics.py",
+        "source": "cloudwatch_metrics.py",
         "destination": "/tmp/cloudwatch_metrics.py"
     },
     {
         "type": "shell",
-        "script": "./overpass_provision.sh",
+        "script": "./provision.sh",
         "execute_command": "sudo bash {{.Path}}"
     }
   ]
