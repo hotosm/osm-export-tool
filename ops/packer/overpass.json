@@ -29,6 +29,11 @@
     },
     {
         "type":"file",
+        "source": "overpass_nginx.conf",
+        "destination": "/tmp/nginx.conf"
+    },
+    {
+        "type":"file",
         "source": "overpass_cloudwatch_metrics.py",
         "destination": "/tmp/cloudwatch_metrics.py"
     },
