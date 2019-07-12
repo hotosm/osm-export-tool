@@ -1,6 +1,7 @@
-apt update
-apt upgrade -y
-apt install -y nginx fcgiwrap python3-pip
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get upgrade -y
+apt-get install -y nginx fcgiwrap python3-pip
 pip3 install boto3
 
 adduser --disabled-password --gecos "" overpass

@@ -23,6 +23,11 @@
   }],
   "provisioners":[
     {
+        "type":"file",
+        "source": "nginx.conf",
+        "destination": "/tmp/nginx.conf"
+    },
+    {
         "type": "shell",
         "script": "./provision.sh",
         "execute_command": "sudo bash {{.Path}}"

@@ -1,6 +1,0 @@
-[Unit]
-Description=OSM Export Tool
-
-# This collection of apps should be started at boot time.
-[Install]
-WantedBy=multi-user.target

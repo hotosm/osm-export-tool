@@ -1,9 +1,10 @@
-apt update
-apt upgrade -y
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get upgrade -y
 add-apt-repository -y ppa:ubuntugis/ppa
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 add-apt-repository -y "deb https://dl.yarnpkg.com/debian/ stable main"
-apt install -y \
+apt-get install -y \
 build-essential \
 curl \
 default-jre-headless \
@@ -34,8 +35,16 @@ unzip \
 yarn \
 zip \
 nginx \
-qt5-default
-apt clean
+qt5-default \
+postgresql-10-postgis-2.4 \
+rabbitmq-server \
+certbot \
+python-certbot-nginx
+
+pip install virtualenv
+
+# Ubuntu 18.04 fix. see https://github.com/valhalla/valhalla/issues/1437
+ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_spatialite
 
 wget https://hotosm-export-tool.s3.amazonaws.com/mkgmap-r3890.zip
 unzip mkgmap-r3890.zip -d /usr/local
@@ -55,3 +64,13 @@ rm OsmAndMapCreator-main.zip
 wget https://hotosm-export-tool.s3.amazonaws.com/omim-build-release-9ac133b.tgz
 sudo tar -xzf omim-build-release-9ac133b.tgz -C /usr/local/
 sudo mv /usr/local/omim-build-release /usr/local/omim
+
+# Create a db called 'exports' owned by the exports user.
+adduser --disabled-password --gecos "" exports
+su - postgres -c 'createuser exports'
+su - postgres -c 'psql postgres -c "create database exports;"'
+su - postgres -c 'psql postgres -c "alter database exports owner to exports;"'
+su - postgres -c 'psql exports -c "create extension postgis;"'
+su - postgres -c 'psql exports -c "create extension hstore;"'
+
+mv /tmp/nginx.conf /etc/nginx/nginx.conf
