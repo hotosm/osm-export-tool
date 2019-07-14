@@ -3,9 +3,9 @@
     "client_id":"{{env `CLIENT_ID`}}",
     "client_secret":"{{env `CLIENT_SECRET`}}",
     "subscription_id":"{{env `SUBSCRIPTION_ID`}}",
-    "managed_image_name":"HOTExportTool",
-    "managed_image_resource_group_name":"HOT",
-    "location":"East US 2"
+    "managed_image_name":"ExportTool",
+    "managed_image_resource_group_name":"export-tool-production",
+    "location":"West US"
   },
   "builders": [{
     "type": "azure-arm",
