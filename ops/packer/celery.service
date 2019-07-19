@@ -1,0 +1,22 @@
+[Unit]
+Description=Celery task worker
+After=syslog.target
+
+[Service]
+Environment=SENTRY_DSN=
+Environment=EMAIL_HOST=
+Environment=EMAIL_PORT=587
+Environment=EMAIL_HOST_USER=
+Environment=EMAIL_USE_TLS=True
+Environment=EMAIL_HOST_PASSWORD=
+Environment=OVERPASS_API_URL=
+Environment=GARMIN_SPLITTER=/usr/local/splitter/splitter.jar
+Environment=GARMIN_MKGMAP=/usr/local/mkgmap/mkgmap.jar
+Environment=OSMAND_MAP_CREATOR_DIR=/usr/local/OsmAndMapCreator
+User=exports
+WorkingDirectory=/home/exports/osm-export-tool/
+ExecStart=/home/exports/venv/bin/celery -A core worker -c 3
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

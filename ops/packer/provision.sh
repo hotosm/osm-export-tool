@@ -74,3 +74,5 @@ su - postgres -c 'psql exports -c "create extension postgis;"'
 su - postgres -c 'psql exports -c "create extension hstore;"'
 
 mv /tmp/nginx.conf /etc/nginx/nginx.conf
+mv /tmp/django.service /etc/systemd/system/django.service
+mv /tmp/celery.service /etc/systemd/system/celery.service

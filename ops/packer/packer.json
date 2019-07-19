@@ -28,6 +28,16 @@
         "destination": "/tmp/nginx.conf"
     },
     {
+        "type":"file",
+        "source": "celery.service",
+        "destination": "/tmp/celery.service"
+    },
+    {
+        "type":"file",
+        "source": "django.service",
+        "destination": "/tmp/django.service"
+    },
+    {
         "type": "shell",
         "script": "./provision.sh",
         "execute_command": "sudo bash {{.Path}}"
