@@ -61,9 +61,14 @@ mkdir /usr/local/OsmAndMapCreator
 unzip OsmAndMapCreator-main.zip -d /usr/local/OsmAndMapCreator
 rm OsmAndMapCreator-main.zip
 
-wget https://hotosm-export-tool.s3.amazonaws.com/omim-build-release-9ac133b.tgz
-sudo tar -xzf omim-build-release-9ac133b.tgz -C /usr/local/
-sudo mv /usr/local/omim-build-release /usr/local/omim
+wget https://hotosm-export-tool.s3.amazonaws.com/omim-2017.tgz
+tar -xzf omim-2017.tgz
+mv omim/generate_mwm.sh /usr/local/bin/
+mv omim/generator_tool /usr/local/bin/
+mv omim/data /usr/
+chmod 777 /usr/data/
+rm -r omim
+rm omim-2017.tgz
 
 # Create a db called 'exports' owned by the exports user.
 adduser --disabled-password --gecos "" exports

@@ -13,6 +13,8 @@ Environment=OVERPASS_API_URL=
 Environment=GARMIN_SPLITTER=/usr/local/splitter/splitter.jar
 Environment=GARMIN_MKGMAP=/usr/local/mkgmap/mkgmap.jar
 Environment=OSMAND_MAP_CREATOR_DIR=/usr/local/OsmAndMapCreator
+Environment=OSMCONVERT=/usr/bin/osmconvert
+Environment=GENERATOR_TOOL=/usr/local/bin/generator_tool
 User=exports
 WorkingDirectory=/home/exports/osm-export-tool/
 ExecStart=/home/exports/venv/bin/celery -A core worker -c 3
