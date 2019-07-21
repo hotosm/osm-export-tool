@@ -9,4 +9,5 @@ jobs:
           name: Run tests
           command: |
             set -x
+            pip install -r requirements-dev.txt
             make test
