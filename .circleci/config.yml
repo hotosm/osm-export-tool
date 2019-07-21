@@ -9,7 +9,7 @@ jobs:
           name: Run tests
           command: |
             set -x
-            sudo apt-get install libgdal-dev osmctools
+            sudo apt-get install libgdal-dev osmctools gdal-bin
             virtualenv ./venv
             source venv/bin/activate
             pip install -r requirements-dev.txt
