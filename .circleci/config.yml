@@ -9,5 +9,7 @@ jobs:
           name: Run tests
           command: |
             set -x
+            virtualenv ./venv
+            venv/bin/activate
             pip install -r requirements-dev.txt
             make test
