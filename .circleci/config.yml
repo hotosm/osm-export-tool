@@ -2,13 +2,14 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:2.7.15
+      - image: circleci/python:2.7.15-stretch
     steps:
       - checkout
       - run:
           name: Run tests
           command: |
             set -x
+            apt-get install libgdal-dev
             virtualenv ./venv
             source venv/bin/activate
             pip install -r requirements-dev.txt
