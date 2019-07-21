@@ -2,17 +2,11 @@ version: 2
 jobs:
   build:
     docker:
-      - image: mojodna/cci-docker-compose
-    working_directory: /app/osm-export-tool2
+      - image: circleci/python:2.7.15
     steps:
       - checkout
-      - setup_remote_docker
-      - run:
-          name: Initialize environment
-          command: |
-            touch .env
       - run:
           name: Run tests
           command: |
             set -x
-            docker-compose -f docker-compose.test.yml run site make test
+            make test
