@@ -48,6 +48,17 @@ const Details = ({ exportInfo }) => {
         <tr>
           <td>
             <FormattedMessage
+              id="export.description.id"
+              defaultMessage="Id"
+            />:
+          </td>
+          <td colSpan="3">
+            {exportInfo.uid}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <FormattedMessage
               id="export.project.label"
               defaultMessage="Project"
             />:
@@ -183,7 +194,7 @@ class ExportRuns extends Component {
       <div>
         {runs.map((run, i) => {
           return (
-            <Panel header={"Run #" + run.uid} key={i}>
+            <Panel header={formatDate(run.started_at)} key={i}>
               <Table responsive>
                 <tbody>
                   <tr>
@@ -202,12 +213,12 @@ class ExportRuns extends Component {
                   <tr>
                     <td>
                       <FormattedMessage
-                        id="ui.exports.started"
-                        defaultMessage="Started:"
+                        id="ui.exports.id"
+                        defaultMessage="ID:"
                       />
                     </td>
                     <td colSpan="3">
-                      {formatDate(run.started_at)}
+                      {run.uid}
                     </td>
                   </tr>
                   <tr>
@@ -367,7 +378,7 @@ export class ExportDetails extends Component {
           xs={4}
           style={{ height: "100%", padding: "20px", paddingRight: "10px" }}
         >
-          <Panel header={exportInfo ? "Export #" + exportInfo.uid : null}>
+          <Panel header={exportInfo ? exportInfo.name : null}>
             {exportInfo ? <Details exportInfo={exportInfo} /> : null}
             {(requiresFeatureSelection || isLoggedIn) &&
               <ButtonGroup>
