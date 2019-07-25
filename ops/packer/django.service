@@ -6,9 +6,7 @@ After=syslog.target
 Environment=SENTRY_DSN=
 Environment=DEBUG=False
 Environment=EMAIL_HOST=
-Environment=EMAIL_PORT=587
 Environment=EMAIL_HOST_USER=
-Environment=EMAIL_USE_TLS=True
 Environment=EMAIL_HOST_PASSWORD=
 Environment=HOSTNAME=
 Environment=OSM_API_KEY=
