@@ -75,8 +75,8 @@ Sport  ,Stadium,,arena,polygon,"name, building, leisure",leisure='stadium',,
 Sport  ,Swimming Pool,,,"point, polygon","name, leisure",leisure='swimming_pool',,
 Sport  ,Pitch,,"field,court",polygon,"name, leisure",leisure='pitch',,
 Sport  ,Sport Centre,,,"point, polygon","name, building, leisure",leisure='sport_centre',,
-Transportation,Transportation,yes,,,,"aeroway IS NOT NULL OR highway IS NOT NULL OR railway IS NOT NULL OR building IN ('aerodome','ferry_terminal','train_station') OR amenity IN ('ferry_terminal','bus_station')",,http://wiki.openstreetmap.org/wiki/Map_Features#Transportation
-Transportation,Airport,,,"point, line, polygon","name, building, aeroway",aeroway IS NOT NULL OR building='aerodome',,
+Transportation,Transportation,yes,,,,"aeroway IS NOT NULL OR highway IS NOT NULL OR railway IS NOT NULL OR building IN ('aerodrome','ferry_terminal','train_station') OR amenity IN ('ferry_terminal','bus_station')",,http://wiki.openstreetmap.org/wiki/Map_Features#Transportation
+Transportation,Airport,,,"point, line, polygon","name, building, aeroway",aeroway IS NOT NULL OR building='aerodrome',,
 Transportation,Ferry Terminal,,boat,"point, polygon","name, amenity, building",amenity='ferry_terminal' OR building='ferry_terminal',,
 Transportation,Train Station,,train,polygon,"railway, name, layer",building='train_station',,
 Transportation,Bus Station,,,"point, polygon","name, building, amenity, public_transport,operator",amenity='bus_station',,
@@ -84,6 +84,7 @@ Transportation,Footpath,,trail,line,"highway,surface,bridge,tunnel,layer",highwa
 Transportation,Road,,,line,"highway,name,surface,smoothness,width,oneway,bridge,tunnel,layer",highway IS NOT NULL,,
 Transportation,Railway,,train,line,"railway, name, layer",railway IS NOT NULL,,
 Transportation,Parking,,,polygon,"amenity, parking, name, capacity, surface",amenity='parking',,
+Transportation,Barrier,,,"point, line, polygon","name,barrier",barrier IS NOT NULL,,
 Water  ,Water,yes,,,,"waterway IS NOT NULL OR water='reservoir' OR natural='water' OR landuse='reservoir' OR man_made IN ('water_tower','pumping_station') OR building='pumping_station' OR amenity = 'water_point'",,http://wiki.openstreetmap.org/wiki/Map_Features#Waterway
 Water  ,Dam,,,"line, polygon",waterway,waterway='dam',,
 Water  ,Reservoir,,,"point, polygon","water, natural, landuse",water='reservoir' OR natural='water' OR landuse='reservoir',,
