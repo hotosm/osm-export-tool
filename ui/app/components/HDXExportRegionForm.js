@@ -2,7 +2,7 @@ import { NonIdealState, Spinner } from "@blueprintjs/core";
 import isEqual from "lodash/isEqual";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-import { Row, Col, Panel, Button, Table } from "react-bootstrap";
+import { Row, Col, Panel, Button, Table, Modal } from "react-bootstrap";
 import {
   Field,
   Fields,
@@ -200,7 +200,8 @@ export class HDXExportRegionForm extends Component {
     deleting: false,
     editing: false,
     featureSelection: {},
-    running: false
+    running: false,
+    showDeleteModal: false
   };
 
   getLastRun() {
@@ -376,10 +377,9 @@ export class HDXExportRegionForm extends Component {
     const { exportRegion } = this.props;
 
     this.setState({
-      deleting: true
+      deleting: true,
+      showDeleteModal: true
     });
-
-    this.props.deleteExportRegion(exportRegion.id);
   };
 
   handleRun = () => {
@@ -393,7 +393,7 @@ export class HDXExportRegionForm extends Component {
   };
 
   render() {
-    const { deleting, editing, featureSelection, running } = this.state;
+    const { deleting, editing, featureSelection, running, showDeleteModal } = this.state;
     const {
       error,
       exportRegion,
@@ -686,6 +686,30 @@ export class HDXExportRegionForm extends Component {
             component={ExportAOIField}
           />
         </Col>
+        <Modal show={showDeleteModal} onHide={() => this.setState({showDeleteModal:false,deleting:false})}>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <FormattedMessage
+                id="ui.exports.confirm_delete.title"
+                defaultMessage="Confirm Delete"
+              />
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <FormattedMessage
+              id="ui.exports.confirm_delete.body"
+              defaultMessage="Are you sure you wish to delete this export region?"
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={() => this.setState({showDeleteModal:false, deleting:false})}>
+              <FormattedMessage id="ui.cancel" defaultMessage="Cancel" />
+            </Button>
+            <Button bsStyle="danger" onClick={() => this.props.deleteExportRegion(exportRegion.id)}>
+              <FormattedMessage id="ui.delete" defaultMessage="Delete" />
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Row>
     );
   }
