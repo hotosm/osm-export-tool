@@ -5,7 +5,7 @@ import unicodedata
 from yaml.constructor import ConstructorError
 from yaml.scanner import ScannerError
 from yaml.parser import ParserError
-from sql import SQLValidator, OverpassFilter
+from feature_selection.sql import SQLValidator, OverpassFilter
 
 CREATE_TEMPLATE = """CREATE TABLE {0}(
 fid INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,16 +68,21 @@ BANNED_THEME_NAMES = [
     'other_relations'
 ]
 
-def slugify(s):
+def slugify(value):
     """
     Turn theme names into snake case slugs.
-    adapted from https://github.com/django/django/blob/92053acbb9160862c3e743a99ed8ccff8d4f8fd6/django/utils/text.py#L417
+    adapted from https://github.com/django/django/blob/master/django/utils/text.py
     """
-    slug = unicodedata.normalize('NFKD', unicode(s))
-    slug = slug.encode('ascii', 'ignore').lower()
-    slug = re.sub(r'[^a-z0-9]+', '_', slug).strip('_')
-    slug = re.sub(r'[_]+', '_', slug)
-    return slug
+
+    allow_unicode = False
+
+    value = str(value)
+    if allow_unicode:
+        value = unicodedata.normalize('NFKC', value)
+    else:
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value).strip().lower()
+    return re.sub(r'[-\s]+', '-', value)
 
 
 class FeatureSelection(object):
@@ -116,7 +121,7 @@ class FeatureSelection(object):
             if not isinstance(loaded_doc,dict):
                 self._errors.append("YAML must be dict, not list")
                 return False
-            for theme, theme_dict in loaded_doc.iteritems():
+            for theme, theme_dict in loaded_doc.items():
                 if theme in BANNED_THEME_NAMES or theme.startswith("gpkg_") or theme.startswith("rtree_"):
                     self._errors.append("Theme name reserved: {0}".format(theme))
                     return False

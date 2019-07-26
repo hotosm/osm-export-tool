@@ -58,7 +58,7 @@ class OSM_XML(object):
         self.feature_selection = feature_selection
 
     def raise_if_bad(self):
-        with open(self.output_xml,'rb') as fd:
+        with open(self.output_xml,'r') as fd:
             sample = fd.readlines(8)
             if "<remark>" in ''.join(sample):
                 raise OverpassErrorException(sample)

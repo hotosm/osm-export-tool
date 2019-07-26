@@ -1,7 +1,7 @@
 Django~=1.11.3
-billiard>=3.3.0.23,<3.4
+billiard==3.6.0
 cachetools
-celery[librabbitmq]==3.1.24
+celery==4.3.0
 dj_database_url
 django-oauth-toolkit==1.1.2
 django-cors-middleware
@@ -9,7 +9,7 @@ djangorestframework-gis~=0.11.2
 djangorestframework~=3.6.3
 git+git://github.com/bdon/ckanapi.git@7778ad33c22f20eb2e5a1c5998eedb5f9cbe86ac#egg=ckanapi
 hdx-python-api==2.1.5
-kombu>=3.0.37,<3.1
+kombu==4.4.0
 mercantile~=0.10.0
 psycopg2==2.8.3
 python-openid==2.2.5

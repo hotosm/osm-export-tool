@@ -41,7 +41,7 @@ class Zipper(object):
             zipfile_name = self.job_name + "_" + os.path.basename(
                 a.basename).replace('.', '_') + ".zip"
             zipfile_path = os.path.join(self.stage_dir,
-                                        zipfile_name).encode('utf-8')
+                                        zipfile_name)
             with zipfile.ZipFile(zipfile_path, 'w', zipfile.ZIP_DEFLATED, True) as z:
                 for filename in a.parts:
                     z.write(filename,
@@ -52,7 +52,7 @@ class Zipper(object):
                 z.writestr("clipping_boundary.geojson",
                            self.boundary_geom.json)
             target_path = os.path.join(self.target_dir,
-                                       zipfile_name).encode('utf-8')
+                                       zipfile_name)
             shutil.move(zipfile_path, target_path)
             zips.append(target_path)
 
@@ -254,4 +254,4 @@ if __name__ == '__main__':
     zipper = Zipper("test", stage_dir, "target", aoi_geom, feature_selection)
     for f in fmts:
         zipper.run(r.results[f].results)
-    print zipper.zipped_resources
+    print(zipper.zipped_resources)

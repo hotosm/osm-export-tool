@@ -18,7 +18,7 @@ DEBUG = bool(os.getenv('DEBUG'))
 # from django.utils.crypto import get_random_string
 # secret_key = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
 if 'SECRET_KEY' not in os.environ:
-    print "WARNING: secret key not set - setting a default for development."
+    print("WARNING: secret key not set - setting a default for development.")
 SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
 
 

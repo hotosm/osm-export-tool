@@ -159,7 +159,7 @@ class HDXExportRegion(models.Model): # noqa
         ('monthly', 'The 1st of every month'),
         ('disabled', 'Disabled'),
     )
-    HOUR_CHOICES = zip(xrange(0, 24), xrange(0, 24))
+    HOUR_CHOICES = zip(range(0, 24), range(0, 24))
     schedule_period = models.CharField(
         blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
     schedule_hour = models.IntegerField(

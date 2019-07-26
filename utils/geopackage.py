@@ -224,7 +224,7 @@ class OSMConfig(object):
             lines_attributes=','.join(self.lines),
             multipolygons_attributes=','.join(self.polygons)
         )
-        with open(self.output_ini, 'wb') as f:
+        with open(self.output_ini, 'w') as f:
             f.write(result)
         return self.output_ini
 

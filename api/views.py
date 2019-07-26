@@ -20,7 +20,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
-from serializers import (ConfigurationSerializer, ExportRunSerializer,
+from api.serializers import (ConfigurationSerializer, ExportRunSerializer,
                          HDXExportRegionListSerializer,
                          HDXExportRegionSerializer, JobGeomSerializer,
                          JobSerializer)
@@ -199,14 +199,14 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         if settings.SYNC_TO_HDX:
             serializer.instance.sync_to_hdx()
         else:
-            print "Stubbing interaction with HDX API."
+            print("Stubbing interaction with HDX API.")
 
     def perform_update(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             serializer.instance.sync_to_hdx()
         else:
-            print "Stubbing interaction with HDX API."
+            print("Stubbing interaction with HDX API.")
 
 
 @require_http_methods(['GET'])
@@ -270,5 +270,5 @@ def get_user_permissions(request):
     return JsonResponse({
         "username": user.username,
         "permissions":
-        map(lambda pair: ".".join(pair), (set(permissions)))
+        list(map(lambda pair: ".".join(pair), (set(permissions))))
     })
