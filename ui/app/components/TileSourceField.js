@@ -72,7 +72,7 @@ export default class TileSourceField extends Component {
             <label>Zoom Range:</label>{" "}
             <RangeSlider
               labelStepSize={5}
-              max={18}
+              max={20}
               onChange={([min, max]) => {
                 minZoomInput.onChange(min);
                 maxZoomInput.onChange(max);
