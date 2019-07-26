@@ -162,7 +162,9 @@ class ConfigurationListPane extends Component {
                   </Table>
                   <Paginator
                     collection={configurations}
-                    getPage={getConfigurations.bind(null, filters)}
+                    getPage={(p) => {
+                      getConfigurations(this.state.filters,p);
+                    }}
                   />
                 </div>}
             </div>}
