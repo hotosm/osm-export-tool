@@ -66,8 +66,8 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         self.assertTrue(f.valid)
-        self.assertEqual(f.themes,["A Theme Name"])
-        self.assertEqual(f.slug_themes,["a_theme_name"])
+        self.assertEqual(list(f.themes),["A Theme Name"])
+        self.assertEqual(list(f.slug_themes),["a_theme_name"])
 
         u = u'''
         Å Theme Name:
@@ -76,8 +76,8 @@ class TestFeatureSelection(unittest.TestCase):
         '''
         f = FeatureSelection(y)
         self.assertTrue(f.valid)
-        self.assertEqual(f.themes,["A Theme Name"])
-        self.assertEqual(f.slug_themes,["a_theme_name"])
+        self.assertEqual(list(f.themes),["A Theme Name"])
+        self.assertEqual(list(f.slug_themes),["a_theme_name"])
 
 
     def test_key_union_and_filters(self):
@@ -100,7 +100,7 @@ class TestFeatureSelection(unittest.TestCase):
             where: building IS NOT NULL
         '''
         f = FeatureSelection(y)
-        self.assertEquals(f.themes,['buildings','waterways'])
+        self.assertCountEqual(f.themes,['buildings','waterways'])
         self.assertEquals(f.geom_types('waterways'),['lines','polygons'])
         self.assertEquals(f.key_selections('waterways'),['name','waterway'])
         self.assertEquals(f.filter_clause('waterways'),'"name" IS NOT NULL OR "waterway" IS NOT NULL')
@@ -406,7 +406,7 @@ planet_osm_polygon:
         '''
         f = FeatureSelection(y)
         nodes, ways, relations = f.overpass_filter()
-        self.assertEquals(nodes,["[column3~'foo|bar']","[column2]"])
+        self.assertCountEqual(nodes,["[column3~'foo|bar']","[column2]"])
         # force quoting of strings to handle keys with colons
-        self.assertEquals(ways,["['column5:key']","[column3~'foo|bar']","[column2]"])
-        self.assertEquals(relations,["[column3~'foo|bar']","[column2]"])
+        self.assertCountEqual(ways,["['column5:key']","[column3~'foo|bar']","[column2]"])
+        self.assertCountEqual(relations,["[column3~'foo|bar']","[column2]"])

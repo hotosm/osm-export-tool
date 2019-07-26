@@ -64,7 +64,7 @@ class TestSQLValidator(unittest.TestCase):
     def test_column_names(self):
         s = SQLValidator("(admin IS NOT NULL and level > 4) AND height is not null")
         self.assertTrue(s.valid)
-        self.assertEquals(s.column_names,['height','level','admin'])
+        self.assertEquals(s.column_names,['admin','level','height'])
 
 
 class TestOverpassFilter(unittest.TestCase):

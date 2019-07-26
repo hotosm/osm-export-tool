@@ -48,7 +48,7 @@ class SQLValidator(object):
         try:
             self._parse_result = whereExpression.parseString(self._s,parseAll=True)
         except InvalidSQL as e:
-            self._errors.append(e.message)
+            self._errors.append(str(e))
             return False
         except ParseException as e:
             self._errors.append("SQL could not be parsed.")
