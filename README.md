@@ -1,14 +1,12 @@
 # OSM Export Tool
 
+This is the source code for the web service available at [export.hotosm.org](https://export.hotosm.org).
+
 [![Join the chat at https://gitter.im/hotosm/osm-export-tool2](https://badges.gitter.im/hotosm/osm-export-tool2.svg)](https://gitter.im/hotosm/osm-export-tool2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![CircleCI](https://circleci.com/gh/hotosm/osm-export-tool.svg?style=svg)](https://circleci.com/gh/hotosm/osm-export-tool)
 
 The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile devices. It outputs files in various tabular formats based on an input area of interest polygon and a selection of OpenStreetMap tags. It is synchronized minutely with the main OSM database, so exports can be created to accompany real-time humanitarian mapping efforts.
-
-The latest version of the Export Tool is available at http://exports-prod.hotosm.org . All users are recommended to use this version.
-
-The previous (version 2) iteration of the Export Tool is available at http://export.hotosm.org . This version is slower and less featureful than the newest version.
 
 ## Project Structure
 
@@ -23,8 +21,6 @@ This is a guide to the source code - useful if you'd like to contribute to the E
 `ui/` is a React + ES6 frontend that communicates with the Django API. It handles localization of the user interface, the OpenLayers-based map UI, and the Tag Tree feature selection wizard. (For historical reasons, it also includes some Django views to facilitate logging in with OSM credentials.)
 
 ## Development Prerequisites
-
-The Export Tool has several dependencies. As an alternative, use Docker to manage the project's environment, in which case you will need a Docker runtime.
 
 * Python 2.7, `virtualenv`, `pip`
 * PostgreSQL 9+ and PostGIS
@@ -58,14 +54,14 @@ cd osm-export-tool2
 ### Install Python dependencies
 
 ```bash
-virtualenv venv  # creates a new environment in myvirtualenv/
+virtualenv venv  # creates a new environment in venv/
 source venv/bin/activate  # activate the virtualenv
 pip install -r requirements-dev.txt
 ```
 
 ### Database, database schema, and message queue
 
-* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions.
+* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions. On Linux, use your package manager to install PostgreSQL and PostGIS, e.g. through the ubuntugis-stable PPAs on Ubuntu. For Mac we recommend [Postgres.app](https://postgresapp.com) which includes PostGIS. 
 * RabbitMQ should be running and listening on the default port, 5672.
 
 Create and populate a PostgreSQL database named `exports`:
@@ -126,44 +122,11 @@ Most of these environment variables have reasonable default settings.
 * `DATABASE_URL`  Database URL. Defaults to `postgres:///exports`
 * `DEBUG`  Whether to enable debug mode. Defaults to `False` (production).
 * `DJANGO_ENV`  Django environment. Set to `development` to enable development tools and email logging to console.
-* `EMAIL_HOST`  SMTP host. Optional.
-* `EMAIL_HOST_USER`  SMTP username. Optional.
-* `EMAIL_HOST_PASSWORD` SMTP password. Optional.
-* `EMAIL_PORT` SMTP port. Optional.
+* `EMAIL_HOST_USER`  SMTP username. 
+* `EMAIL_HOST_PASSWORD` SMTP password. 
 * `EMAIL_USE_TLS`  Whether to use TLS when sending mail. Optional.
 * `HOSTNAME` Publicly-addressable hostname. Defaults to `export.hotosm.org`
 * `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`
-
-### Development with Docker
-
-A `docker-compose.yml` has been provided to facilitate development. To begin, run:
-
-```bash
-echo "HOSTNAME=localhost" > .env
-docker-compose up
-```
-
-This will download and build a set of containers with appropriate versions of various dependencies. `.` will be mounted into `/opt/osm-export-tool2` within the Docker containers, allowing Django and React components to be edited within the host environment.
-
-When initializing the project, you may need to run this twice in order for the database to be initialized.
-
-In a second terminal window, run:
-
-```bash
-cd ui/
-yarn install
-yarn start  # will watch for changes and re-compile as necessary
-```
-
-Yarn will watch changes to the React app and rebuild as necessary, writing into appropriate locations within the Docker containers. Live reloading is enabled, so changes should be reflected automatically shortly after they are made.
-
-To use the Docker-managed development instance, navigate to http://localhost/. If you're using `docker-machine` to manage Docker daemons, the hostname may vary, in which case you'll need to change `HOSTNAME` (in `.env`) to reflect it.
-
-### Update Docker images
-
-After you have changed `base_image/Dockerfile` you need to run `make baseimage` in order to update the baseimage.
-
-After changing any `Dockerfile`s or the baseimage you need to run `docker-compose build` to rebuild the docker images used by `docker-compose up`.
 
 ## Using the Transifex service
 
