@@ -25,11 +25,11 @@ nodejs \
 osmctools \
 postgresql-client \
 postgis \
-python-dev \
-python-pip \
-python-setuptools \
-python-wheel \
-python-gdal \
+python3-dev \
+python3-pip \
+python3-setuptools \
+python3-wheel \
+python3-gdal \
 spatialite-bin \
 unzip \
 yarn \
@@ -39,7 +39,7 @@ qt5-default \
 postgresql-10-postgis-2.4 \
 rabbitmq-server \
 certbot \
-python-certbot-nginx
+python3-certbot-nginx
 
 pip install virtualenv
 

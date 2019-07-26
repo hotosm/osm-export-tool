@@ -1,6 +1,3 @@
-baseimage:
-	docker build -t quay.io/hotosm/osm-export-tool2-baseimage -f ops/base_image/Dockerfile .
-
 django_test:
 	python manage.py test api.tests jobs.tests tasks.tests
 

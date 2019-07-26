@@ -22,7 +22,7 @@ This is a guide to the source code - useful if you'd like to contribute to the E
 
 ## Development Prerequisites
 
-* Python 2.7, `virtualenv`, `pip`
+* Python 3.6 or later, `virtualenv`, `pip`
 * PostgreSQL 9+ and PostGIS
 * GDAL/OGR
 * RabbitMQ, a message queue
