@@ -90,7 +90,8 @@ information.
 Configuration._create(
     validlocations=[],
     hdx_site='demo',
-    hdx_key=''
+    hdx_key='',
+    user_agent='HOT Export Tool Test'
 )
 
 class TestHDXExportSet(unittest.TestCase):
