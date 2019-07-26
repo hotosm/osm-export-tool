@@ -49,16 +49,15 @@ class SelectFeatures extends Component {
                 defaultMessage="Tag Tree"
               />
             </NavLink>
-            {configurations.total > 0 &&
-              <NavLink
-                className="btn btn-default"
-                to="/exports/new/select/stored"
-              >
-                <FormattedMessage
-                  id="ui.exports.stored_configuration"
-                  defaultMessage="Configs"
-                />
-              </NavLink>}
+            <NavLink
+              className="btn btn-default"
+              to="/exports/new/select/stored"
+            >
+              <FormattedMessage
+                id="ui.exports.stored_configuration"
+                defaultMessage="Configs"
+              />
+            </NavLink>
             <NavLink className="btn btn-default" to="/exports/new/select/yaml">
               <FormattedMessage id="ui.exports.yaml" defaultMessage="YAML" />
             </NavLink>

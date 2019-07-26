@@ -187,15 +187,6 @@ export class ExportForm extends Component {
 
     let idx = 0;
 
-    const requiresFeatureSelection = (exportFormats || [])
-      .some(x => REQUIRES_FEATURE_SELECTION[x]);
-
-    const requiresTileSource = (exportFormats || [])
-      .some(x => REQUIRES_TILE_SOURCE[x]);
-
-    const requiresDataSelection =
-      requiresFeatureSelection || requiresTileSource;
-
     return (
       <Row style={{ height: "100%" }}>
         <form style={{ height: "100%" }}>
@@ -222,16 +213,15 @@ export class ExportForm extends Component {
                   />
                 </NavLink>
               </li>
-              {requiresDataSelection &&
-                <li>
-                  <NavLink to="/exports/new/select">
-                    {++idx}{" "}
-                    <FormattedMessage
-                      id="ui.exports.select_data"
-                      defaultMessage="Data"
-                    />
-                  </NavLink>
-                </li>}
+              <li>
+                <NavLink to="/exports/new/select">
+                  {++idx}{" "}
+                  <FormattedMessage
+                    id="ui.exports.select_data"
+                    defaultMessage="Data"
+                  />
+                </NavLink>
+              </li>
               <li>
                 <NavLink to="/exports/new/summary">
                   {++idx}{" "}
@@ -275,11 +265,7 @@ export class ExportForm extends Component {
                 path="/exports/new/formats"
                 render={props =>
                   <ChooseFormats
-                    next={
-                      requiresDataSelection
-                        ? "/exports/new/select"
-                        : "/exports/new/summary"
-                    }
+                    next="/exports/new/select"
                   />}
               />
               <Route
