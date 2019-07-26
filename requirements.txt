@@ -7,8 +7,7 @@ django-oauth-toolkit==1.1.2
 django-cors-middleware
 djangorestframework-gis~=0.11.2
 djangorestframework~=3.6.3
-git+git://github.com/bdon/ckanapi.git@7778ad33c22f20eb2e5a1c5998eedb5f9cbe86ac#egg=ckanapi
-hdx-python-api==2.1.5
+hdx-python-api==3.7.1
 kombu==4.4.0
 mercantile~=0.10.0
 psycopg2==2.8.3
