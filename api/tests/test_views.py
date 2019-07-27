@@ -15,8 +15,8 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+import unittest
 
-from api.pagination import LinkHeaderPagination
 from jobs.models import Job, HDXExportRegion
 from tasks.models import ExportRun, ExportTask
 from feature_selection.feature_selection import FeatureSelection
@@ -219,6 +219,7 @@ class TestExportRunViewSet(APITestCase):
         task_runner = mock.return_value
         task_runner.run_task.assert_called_once_with(job_uid=str(self.job.uid),user=self.user)
 
+@unittest.skip("HDX Configuration requires network access")
 class TestHDXExportRegionViewSet(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(

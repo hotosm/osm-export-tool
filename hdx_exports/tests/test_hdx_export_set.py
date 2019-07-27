@@ -87,10 +87,10 @@ See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more
 information.
 """
 
+@unittest.skip("HDX Configuration requires network access")
 class TestHDXExportSet(unittest.TestCase):
     maxDiff = None
 
-    @unittest.skip("HDX Configuration requires network access")
     def test_minimal_export_set(self):
 
         h = HDXExportSet(
@@ -104,7 +104,6 @@ class TestHDXExportSet(unittest.TestCase):
         self.assertEquals(datasets['Some Buildings']['name'],'hot_dakar_some_buildings')
         self.assertEquals(datasets['waterways']['name'],'hot_dakar_waterways')
 
-    @unittest.skip("HDX Configuration requires network access")
     def test_extent_not_polygon_or_multipolygon(self):
         with self.assertRaises(AssertionError):
             h = HDXExportSet(
@@ -115,7 +114,6 @@ class TestHDXExportSet(unittest.TestCase):
             )
 
 
-    @unittest.skip("HDX Configuration requires network access")
     def test_single_theme_note(self):
         yaml = '''
         all:
@@ -130,7 +128,6 @@ class TestHDXExportSet(unittest.TestCase):
         )
         self.assertMultiLineEqual(h.hdx_note('all'),SINGLE_THEME_NOTE)
 
-    @unittest.skip("HDX Configuration requires network access")
     def test_filtered_note(self):
         yaml = '''
         some:
