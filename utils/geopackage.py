@@ -79,7 +79,7 @@ INI_TEMPLATE = '''
 
 # put here the name of keys for ways that are assumed to be polygons if they are closed
 # see http://wiki.openstreetmap.org/wiki/Map_Features
-closed_ways_are_polygons=aeroway,amenity,boundary,building,craft,geological,harbour,historic,landuse,leisure,man_made,military,natural,office,place,power,shop,sport,tourism,water,waterway,wetland
+closed_ways_are_polygons=aeroway,amenity,boundary,building,building:part,craft,geological,harbour,historic,landuse,leisure,man_made,military,natural,office,place,power,shop,sport,tourism,water,waterway,wetland,highway=platform,public_transport=platform
 
 # laundering of keys ( ':' turned into '_' )
 attribute_name_laundering=no
