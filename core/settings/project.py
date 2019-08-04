@@ -202,6 +202,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.getenv('EMAIL_PORT',587)
 EMAIL_USE_TLS = bool(os.getenv('EMAIL_USE_TLS',True))
+REPLY_TO_EMAIL = os.getenv('REPLY_TO_EMAIL')
 
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 
