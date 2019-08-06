@@ -19,7 +19,7 @@ const config = {
   module: {
     rules: [
       {
-        test: /app\/.*\.jsx?$/,
+        test: /app[\/\\].*\.jsx?$/,
         exclude: [/node_modules/],
         loader: "babel-loader",
         query: {
@@ -50,7 +50,7 @@ const config = {
         loader: "style-loader"
       },
       {
-        test: /app\/styles\/.*\.css$/,
+        test: /app[\/\\]styles[\/\\].*\.css$/,
         use: [
           {
             loader: "css-loader",
@@ -61,7 +61,7 @@ const config = {
         ]
       },
       {
-        test: /app\/css\/.*\.css$/,
+        test: /app[\/\\]css[\/\\].*\.css$/,
         use: [
           {
             loader: "css-loader"
