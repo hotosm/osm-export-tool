@@ -12,10 +12,6 @@ The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile de
 
 This is a guide to the source code - useful if you'd like to contribute to the Export Tool, deploy the project on your own server, or re-use parts of the project.
 
-`utils/`  contains Python classes responsible for downloading and transforming OSM data into each file format based on a GEOS geometry and a `FeatureSelection` object. Many of these are wrappers for GDAL/OGR commands. This module can be used independently of the web application for creating exports from the command line.
-
-`feature_selection/` contains a parser for YAML feature selections that define how OSM data is mapped to tabular formats. More documentation on the YAML format is available at http://exports-prod.hotosm.org/v3/help/yaml .
-
 `api/` is a Django web application that manages creating, viewing and searching exports, storing feature selections, scheduling jobs, and user accounts via openstreetmap.org OAuth.
 
 `ui/` is a React + ES6 frontend that communicates with the Django API. It handles localization of the user interface, the OpenLayers-based map UI, and the Tag Tree feature selection wizard. (For historical reasons, it also includes some Django views to facilitate logging in with OSM credentials.)
@@ -23,8 +19,10 @@ This is a guide to the source code - useful if you'd like to contribute to the E
 ## Development Prerequisites
 
 * Python 3.6 or later, `virtualenv`, `pip`
-* PostgreSQL 9+ and PostGIS
+* PostgreSQL 10+ and PostGIS
+  * Recommend [Postgres.app](https://postgresapp.com) which includes PostGIS. 
 * GDAL/OGR
+  * Recommend at least version 2.4 - newer versions available in `ubuntugis` PPAs or Homebrew on Mac
 * RabbitMQ, a message queue
 * Node.js and [Yarn](https://yarnpkg.com/)
 
@@ -61,13 +59,15 @@ pip install -r requirements-dev.txt
 
 ### Database, database schema, and message queue
 
-* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions. On Linux, use your package manager to install PostgreSQL and PostGIS, e.g. through the ubuntugis-stable PPAs on Ubuntu. For Mac we recommend [Postgres.app](https://postgresapp.com) which includes PostGIS. 
+* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions. 
 * RabbitMQ should be running and listening on the default port, 5672.
 
 Create and populate a PostgreSQL database named `exports`:
 
 ```
 createdb exports
+psql exports -c "create extension postgis;"
+psql exports -c "create extension hstore;"
 python manage.py migrate
 ```
 
@@ -82,10 +82,10 @@ yarn start  # will watch for changes and re-compile as necessary
 ### Set required environment variables and start the server
 
 ```bash
-DJANGO_ENV=development DEBUG=True python manage.py runserver
+DEBUG=True python manage.py runserver
 
 # in a different shell
-DJANGO_ENV=development DEBUG=True celery -A core worker
+DEBUG=True celery -A core worker
   ```
 
 [`direnv`](https://direnv.net/) is a useful tool for managing environment variables using a `.env` file.
