@@ -25,9 +25,20 @@ timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 timestamp = timestamp.replace(tzinfo=timezone.utc)
 logging.warning("Timestamp is {0}".format(timestamp))
 
-daily = server.ReplicationServer('https://planet.openstreetmap.org/replication/day/')
+daily = server.ReplicationServer('https://planet.openstreetmap.org/replication/day')
 seqnum = daily.timestamp_to_sequence(timestamp)
 logging.warning("Seqnum is {0}".format(seqnum))
-retval = daily.apply_diffs_to_file(planet,os.path.join(workdir,'planet-new.osm.pbf'),seqnum)
 
-print(retval)
+# get the latest
+
+try:
+	os.mkdir(os.path.join(workdir,'tmp'),0755)
+except:
+	pass
+
+for i in range(seqnum+1,daily.get_state_info().sequence):
+	subprocess.call(['wget','-O',os.path.join(workdir,'tmp','{0}.osc.gz'.format(i)),daily.get_diff_url(i)])
+	print(i)
+
+subprocess.call(['osmium','merge-changes','--simplify','work/tmp/*.osc.gz','-o',os.path.join(workdir,'merged-changes.osc.gz')])
+subprocess.call(['osmium','apply-changes',planet,os.path.join(workdir,'merged-changes.osc.gz','-o',os.path.join(workdir,'planet-updated.osm.pbf'))])
