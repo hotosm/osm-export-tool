@@ -39,7 +39,8 @@ qt5-default \
 postgresql-10-postgis-2.4 \
 rabbitmq-server \
 certbot \
-python3-certbot-nginx
+python3-certbot-nginx \
+osmium-tool
 
 pip install virtualenv
 
