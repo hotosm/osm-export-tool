@@ -1,4 +1,6 @@
 import argparse
+import glob
+import shutil
 import json
 import os
 import logging
@@ -42,12 +44,16 @@ try:
 except:
 	pass
 
-for i in range(seqnum+1,latest):
-	subprocess.call(['wget','-O',os.path.join(workdir,'tmp','{0}.osc.gz'.format(i)),daily.get_diff_url(i)])
+try:
+	for i in range(seqnum+1,latest+1):
+		subprocess.call(['wget','-O',os.path.join(workdir,'tmp','{0}.osc.gz'.format(i)),daily.get_diff_url(i)])
 
-g = glob.glob(os.path.join(workdir,'tmp','*.osc.gz'))
-subprocess.call(['osmium','merge-changes','--overwrite','--simplify',*g,'-o',os.path.join(workdir,'merged-changes.osc.gz')])
-subprocess.call(['osmium','apply-changes','--output-header',"'osmosis_replication_sequence_number={0}'".format(latest),planet,os.path.join(workdir,'merged-changes.osc.gz','-o',os.path.join(workdir,'planet-updated.osm.pbf'))])
+	g = glob.glob(os.path.join(workdir,'tmp','*.osc.gz'))
+	subprocess.call(['osmium','merge-changes','--overwrite','--simplify',*g,'-o',os.path.join(workdir,'merged-changes.osc.gz')])
+	subprocess.call(['osmium','apply-changes','--output-header','osmosis_replication_sequence_number={0}'.format(latest),planet,os.path.join(workdir,'merged-changes.osc.gz','-o',os.path.join(workdir,'planet-updated.osm.pbf'))])
+	os.rename(os.path.join(workdir,'planet-updated.osm.pbf'),planet)
+except:
+	pass
+finally:
+	shutil.rmtree(os.path.join(workdir,'tmp'))
 
-# move the old one into the new one
-# remove the tmp directory
