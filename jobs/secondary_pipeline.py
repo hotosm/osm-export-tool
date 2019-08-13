@@ -22,8 +22,8 @@ if not os.path.isfile(planet):
 	subprocess.call(['wget','-O',planet,PLANET_OSM_PBF])
 
 fileinfo = json.loads(subprocess.check_output(['osmium','fileinfo','-j',planet]))
-
 option = fileinfo['header']['option']
+daily = server.ReplicationServer('https://planet.openstreetmap.org/replication/day')
 
 if 'osmosis_replication_sequence_number' in option:
 	seqnum = option['osmosis_replication_sequence_number']
@@ -32,12 +32,13 @@ else:
 	timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 	timestamp = timestamp.replace(tzinfo=timezone.utc)
 	logging.warning("Timestamp is {0}".format(timestamp))
-	daily = server.ReplicationServer('https://planet.openstreetmap.org/replication/day')
 	seqnum = daily.timestamp_to_sequence(timestamp)
 
 logging.warning("Seqnum is {0}".format(seqnum))
-
 latest = daily.get_state_info().sequence
+logging.warning("Latest is {0}".format(latest))
+if seqnum == latest:
+	exit(0)
 
 try:
 	os.mkdir(os.path.join(workdir,'tmp'))
@@ -50,7 +51,7 @@ try:
 
 	g = glob.glob(os.path.join(workdir,'tmp','*.osc.gz'))
 	subprocess.call(['osmium','merge-changes','--overwrite','--simplify',*g,'-o',os.path.join(workdir,'merged-changes.osc.gz')])
-	subprocess.call(['osmium','apply-changes','--output-header','osmosis_replication_sequence_number={0}'.format(latest),planet,os.path.join(workdir,'merged-changes.osc.gz','-o',os.path.join(workdir,'planet-updated.osm.pbf'))])
+	subprocess.call(['osmium','apply-changes','--output-header','osmosis_replication_sequence_number={0}'.format(latest),planet,os.path.join(workdir,'merged-changes.osc.gz'),'-o',os.path.join(workdir,'planet-updated.osm.pbf')])
 	os.rename(os.path.join(workdir,'planet-updated.osm.pbf'),planet)
 except:
 	pass
