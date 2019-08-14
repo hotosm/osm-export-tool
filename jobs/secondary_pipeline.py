@@ -8,6 +8,7 @@ import subprocess
 from osmium.replication import server
 from datetime import datetime,timezone
 
+# 0 3 * * * /home/exports/venv/bin/python /home/exports/osm-export-tool/jobs/secondary_pipeline.py /mnt/data/planet/ >> /home/exports/secondary_pipeline.log 2>&1
 
 parser = argparse.ArgumentParser(description='osmium-tool based pipeline')
 parser.add_argument('directory', help='Working directory - needs a lot of space')
@@ -26,7 +27,7 @@ option = fileinfo['header']['option']
 daily = server.ReplicationServer('https://planet.openstreetmap.org/replication/day')
 
 if 'osmosis_replication_sequence_number' in option:
-	seqnum = option['osmosis_replication_sequence_number']
+	seqnum = int(option['osmosis_replication_sequence_number'])
 else:
 	timestamp = fileinfo['header']['option']['osmosis_replication_timestamp']
 	timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
