@@ -19,6 +19,7 @@ import Configurations from "./components/Configurations";
 import Exports from "./components/Exports";
 import Footer from "./components/Footer";
 import HDX from "./components/HDX";
+import Partner from "./components/Partner.js";
 import Help from "./components/Help";
 import Home from "./components/Home";
 import NavBar from "./components/NavBar";
@@ -52,6 +53,7 @@ export default ({ history }) => {
             <Route path="/configurations" component={Configurations} />
             <Route path="/exports" component={Exports} />
             <Route path="/hdx" component={AuthorizedHDX} />
+            <Route path="/partners" component={Partner} />
             <Route path="/learn" component={Help} />
             <Route component={Home} />
           </Switch>

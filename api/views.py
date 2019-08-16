@@ -14,7 +14,7 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
-from jobs.models import HDXExportRegion, Job, SavedFeatureSelection
+from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer
@@ -23,6 +23,7 @@ from rest_framework.serializers import ValidationError
 from api.serializers import (ConfigurationSerializer, ExportRunSerializer,
                          HDXExportRegionListSerializer,
                          HDXExportRegionSerializer, JobGeomSerializer,
+                         PartnerExportRegionListSerializer, PartnerExportRegionSerializer,
                          JobSerializer)
 from tasks.models import ExportRun
 from tasks.task_runners import ExportTaskRunner
@@ -207,6 +208,24 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
             serializer.instance.sync_to_hdx()
         else:
             print("Stubbing interaction with HDX API.")
+
+
+class PartnerExportRegionViewSet(viewsets.ModelViewSet):
+    # get only Regions that belong to the user's Groups.
+    ordering_fields = '__all__'
+    ordering = ('job__description',)
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
+    search_fields = ('job__name', 'job__description')
+
+    def get_queryset(self):
+        return PartnerExportRegion.objects.filter(deleted=False).prefetch_related(
+            'job__runs__tasks').defer('job__the_geom')
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return PartnerExportRegionListSerializer
+
+        return PartnerExportRegionSerializer
 
 
 @require_http_methods(['GET'])

@@ -11,7 +11,7 @@ import logging
 import django.core.exceptions
 from django.contrib.auth.models import User
 from django.db import transaction
-from jobs.models import HDXExportRegion, Job, SavedFeatureSelection, validate_aoi, validate_mbtiles
+from jobs.models import HDXExportRegion, Job, SavedFeatureSelection, validate_aoi, validate_mbtiles, PartnerExportRegion
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from tasks.models import ExportRun, ExportTask
@@ -100,6 +100,89 @@ def validate_model(model):
     except django.core.exceptions.ValidationError as e:
         raise serializers.ValidationError(e.message_dict)
 
+class PartnerExportRegionListSerializer(serializers.ModelSerializer):
+    export_formats = serializers.ListField()
+    feature_selection = serializers.CharField()
+    simplified_geom = geo_serializers.GeometryField(required=False)
+    name = serializers.CharField()
+
+    class Meta:  # noqa
+        model = PartnerExportRegion
+        fields = ('id', 'feature_selection',
+                  'schedule_period', 'schedule_hour', 'export_formats',
+                  'name', 'last_run', 'next_run',
+                  'simplified_geom', 'job_uid', 'last_size')
+
+class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
+    export_formats = serializers.ListField()
+    feature_selection = serializers.CharField()
+    simplified_geom = geo_serializers.GeometryField(required=False)
+    the_geom = geo_serializers.GeometryField()
+    name = serializers.CharField()
+
+    class Meta:  # noqa
+        model = HDXExportRegion
+        fields = ('id', 'feature_selection',
+                  'schedule_period', 'schedule_hour', 'export_formats',
+                  'name', 'last_run', 'next_run',
+                  'simplified_geom', 'job_uid',
+                  'the_geom')
+        extra_kwargs = {
+            'simplified_geom': {
+                'read_only': True
+            },
+            'the_geom': {
+                'write_only': True
+            }
+        }
+
+    def create(self, validated_data):  # noqa
+        def slice_dict(in_dict, wanted_keys):
+            return dict((k, in_dict[k]) for k in wanted_keys if k in in_dict)
+
+        job_dict = slice_dict(validated_data, [
+            'the_geom', 'export_formats', 'feature_selection',
+        ])
+        job_dict['user'] = self.context['request'].user
+        job_dict['name'] = validated_data.get('name')
+
+        region_dict = slice_dict(validated_data, [
+            'schedule_period', 'schedule_hour'
+        ])
+        job = Job(**job_dict)
+        job.hidden = True
+        job.unlimited_extent = True
+        validate_model(job)
+        with transaction.atomic():
+            job.save()
+            region_dict['job'] = job
+            region = PartnerExportRegion(**region_dict)
+            region.group_id = 2 #TODO don't hardcode this
+            validate_model(region)
+            region.save()
+        return region
+
+    def update(self, instance, validated_data):  # noqa
+        def update_attrs(model, v_data, keys):
+            for key in keys:
+                if key in v_data:
+                    setattr(model, key, v_data[key])
+
+        job = instance.job
+        update_attrs(job, validated_data, [
+            'the_geom', 'export_formats', 'feature_selection'
+        ])
+        job.name = validated_data.get('name')
+
+        validate_model(job)
+        update_attrs(instance, validated_data, [
+            'schedule_period', 'schedule_hour'
+        ])
+        validate_model(instance)
+        with transaction.atomic():
+            instance.save()
+            job.save()
+        return instance
 
 class HDXExportRegionListSerializer(serializers.ModelSerializer):  # noqa
     """ The list serializer does not expose the Geom, as it can be large."""

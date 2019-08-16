@@ -9,7 +9,7 @@ import uuid
 import re
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
@@ -150,16 +150,98 @@ class SavedFeatureSelection(models.Model):
     def __str__(self):
         return str(self.name)
 
+PERIOD_CHOICES = (
+    ('6hrs', 'Every 6 hours'),
+    ('daily', 'Every day'),
+    ('weekly', 'Every Sunday'),
+    ('monthly', 'The 1st of every month'),
+    ('disabled', 'Disabled'),
+)
+HOUR_CHOICES = zip(range(0, 24), range(0, 24))
+
+class PartnerExportRegion(models.Model):
+    schedule_period = models.CharField(
+        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
+    schedule_hour = models.IntegerField(
+        blank=False, choices=HOUR_CHOICES, default=0)
+    job = models.ForeignKey(Job, null=True)
+    # the owning group, which determines access control.
+    group = models.ForeignKey(Group)
+    deleted = models.BooleanField(default=False)
+
+    @property
+    def last_run(self): # noqa
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].finished_at
+
+    @property
+    def last_size(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].size
+
+    @property
+    def next_run(self): # noqa
+        now = timezone.now().replace(minute=0, second=0, microsecond=0)
+
+        if self.schedule_period == '6hrs':
+            delta = 6 - (self.schedule_hour + now.hour % 6)
+
+            return now + timedelta(hours=delta)
+
+        now = now.replace(hour=self.schedule_hour)
+
+        if self.schedule_period == 'daily':
+            anchor = now
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=1)
+
+        if self.schedule_period == 'weekly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=7)
+
+        if self.schedule_period == 'monthly':
+            (_, num_days) = calendar.monthrange(now.year, now.month)
+            anchor = now.replace(day=1)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=num_days)
+
+    @property
+    def job_uid(self):
+        return self.job.uid
+
+    @property
+    def feature_selection(self): # noqa
+        return self.job.feature_selection
+
+    @property
+    def export_formats(self): # noqa
+        return self.job.export_formats
+
+    @property
+    def name(self): # noqa
+        return self.job.name
+
+    @property
+    def the_geom(self):
+        return self.job.the_geom
+
+    @property
+    def simplified_geom(self): # noqa
+        return self.job.simplified_geom
+
 class HDXExportRegion(models.Model): # noqa
     """ Mutable database table for hdx - additional attributes on a Job."""
-    PERIOD_CHOICES = (
-        ('6hrs', 'Every 6 hours'),
-        ('daily', 'Every day'),
-        ('weekly', 'Every Sunday'),
-        ('monthly', 'The 1st of every month'),
-        ('disabled', 'Disabled'),
-    )
-    HOUR_CHOICES = zip(range(0, 24), range(0, 24))
     schedule_period = models.CharField(
         blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
     schedule_hour = models.IntegerField(

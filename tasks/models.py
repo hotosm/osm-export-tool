@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
-from jobs.models import Job, HDXExportRegion, SavedFeatureSelection
+from jobs.models import Job, HDXExportRegion, SavedFeatureSelection, PartnerExportRegion
 from django.contrib import admin
 from django.contrib.gis.admin import OSMGeoAdmin
 from django.utils.safestring import mark_safe
@@ -153,12 +153,16 @@ class JobAdmin(OSMGeoAdmin):
 class HDXExportRegionAdmin(admin.ModelAdmin):
     raw_id_fields = ("job",)
 
+class PartnerExportRegionAdmin(admin.ModelAdmin):
+    pass
+
 class SavedFeatureSelectionAdmin(admin.ModelAdmin):
     pass
 
 
 admin.site.register(Job, JobAdmin)
 admin.site.register(HDXExportRegion, HDXExportRegionAdmin)
+admin.site.register(PartnerExportRegion, PartnerExportRegionAdmin)
 admin.site.register(ExportRun, ExportRunAdmin)
 admin.site.register(ExportTask, ExportTaskAdmin)
 admin.site.register(SavedFeatureSelection, SavedFeatureSelectionAdmin)

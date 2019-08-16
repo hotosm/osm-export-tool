@@ -11,6 +11,7 @@ import mode from "./mode";
 import showImportModal from "./showImportModal";
 import status from "./status";
 import toolbarIcons from "./toolbarIcons";
+import partners from "./partners";
 
 export default {
   configurations,
@@ -25,5 +26,6 @@ export default {
   overpassLastUpdated,
   showImportModal,
   status,
-  toolbarIcons
+  toolbarIcons,
+  partners
 };
