@@ -6,7 +6,7 @@
 
 The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile devices. It outputs files in various tabular formats based on an input area of interest polygon and a selection of OpenStreetMap tags. It is synchronized minutely with the main OSM database, so exports can be created to accompany real-time humanitarian mapping efforts.
 
-[screenshot](docs/screenshot.png)
+![screenshot](doc/screenshot.png)
 
 # Get involved!
 
@@ -29,4 +29,4 @@ The code in this repository powers the export tool web service and includes a nu
 
 If you would like to host the Export Tool yourself, see the `ops` folder, which includes instructions for setting up both an Overpass Instance and the Export tool web app on Ubuntu. 
 
-If you would like to enhance the code of the Export Tool web app, a guide to installing it in a local development environment is at [docs/setup-development.md](docs/setup-development.md).
+If you would like to enhance the code of the Export Tool web app, a guide to installing it in a local development environment is at [docs/setup-development.md](doc/setup-development.md).
