@@ -197,7 +197,7 @@ export const createExportRegion = (data, form) => (dispatch, getState) => {
         exportRegion: rsp.data
       });
 
-      dispatch(push(`/partner/edit/${rsp.data.id}`));
+      dispatch(push(`/partners/edit/${rsp.data.id}`));
     })
     .catch(err => {
       console.warn(err);

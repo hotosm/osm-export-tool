@@ -26,6 +26,8 @@ from django.contrib import admin
 LOG = logging.getLogger(__name__)
 MAX_TILE_COUNT = 10000
 
+Group.add_to_class('is_partner', models.BooleanField(null=False, default=False))
+
 def validate_export_formats(value):
     if not value:
         raise ValidationError(

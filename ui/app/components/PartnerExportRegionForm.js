@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import "react-select/dist/react-select.css";
 import yaml from "js-yaml";
+import { fetchGroups } from "../actions/meta";
 
 import ExportAOIField from "./ExportAOIField";
 import { getRuns } from "../actions/exports";
@@ -51,9 +52,7 @@ const FORM_NAME = "PartnerExportRegionForm";
 
 const EXPORT_FORMATS = {
   shp: AVAILABLE_EXPORT_FORMATS.shp,
-  geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
-  garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
-  kml: AVAILABLE_EXPORT_FORMATS.kml
+  geopackage: AVAILABLE_EXPORT_FORMATS.geopackage
 };
 
 const form = reduxForm({
@@ -244,8 +243,11 @@ export class PartnerExportRegionForm extends Component {
     const {
       exportRegion,
       getExportRegion,
+      fetchGroups,
       match: { params: { id } }
     } = this.props;
+
+    fetchGroups()
 
     if (id != null) {
       // we're editing
@@ -323,6 +325,13 @@ export class PartnerExportRegionForm extends Component {
       }
     }
   }
+
+  getGroupOptions() {
+   const { groups } = this.props;
+   return groups.map(g => 
+    <option value={g.id}>{g.name}</option>)
+  }
+
 
   getRunRows() {
     const { exportRegion, runs } = this.props;
@@ -436,6 +445,15 @@ export class PartnerExportRegionForm extends Component {
                 placeholder="Jakarta"
                 component={renderInput}
               />
+              <hr />
+              <Field
+                name="group"
+                label="Partner Organization"
+                component={renderSelect}
+              >
+                <option value="">Choose an organization</option>
+                {this.getGroupOptions()}
+              </Field>
               <hr />
               <Field
                 id="formControlsTextarea"
@@ -631,11 +649,13 @@ Buildings:
 `.trim(),
     schedule_period: "daily",
     schedule_hour: 0,
-    export_formats: ["shp", "geopackage", "kml", "garmin_img"]
+    export_formats: ["shp", "geopackage"],
+    group: null
   },
   name: formValueSelector(FORM_NAME)(state, "name"),
   runs: selectRuns(state),
-  status: state.partners.status
+  status: state.partners.status,
+  groups: state.meta.groups || []
 });
 
 const flatten = arr =>
@@ -650,5 +670,6 @@ export default connect(mapStateToProps, {
   getRuns,
   deleteExportRegion,
   runExport,
-  updateExportRegion
+  updateExportRegion,
+  fetchGroups
 })(form(PartnerExportRegionForm));

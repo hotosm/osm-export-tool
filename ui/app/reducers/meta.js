@@ -6,7 +6,7 @@ const initialState = {};
 
 export default function meta(
   state = initialState,
-  { permissions, type, username }
+  { permissions, type, username, groups }
 ) {
   switch (type) {
     case LOGIN_FAILURE:
@@ -22,6 +22,12 @@ export default function meta(
           username
         }
       };
+
+    case types.RECEIVED_GROUPS:
+      return {
+        ...state,
+        groups: groups
+      }
 
     default:
       return state;

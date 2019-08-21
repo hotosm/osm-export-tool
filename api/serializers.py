@@ -121,12 +121,12 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
     name = serializers.CharField()
 
     class Meta:  # noqa
-        model = HDXExportRegion
+        model = PartnerExportRegion
         fields = ('id', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats',
                   'name', 'last_run', 'next_run',
                   'simplified_geom', 'job_uid',
-                  'the_geom')
+                  'the_geom','group')
         extra_kwargs = {
             'simplified_geom': {
                 'read_only': True
@@ -147,17 +147,21 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job_dict['name'] = validated_data.get('name')
 
         region_dict = slice_dict(validated_data, [
-            'schedule_period', 'schedule_hour'
+            'schedule_period', 'schedule_hour','group'
         ])
         job = Job(**job_dict)
         job.hidden = True
         job.unlimited_extent = True
         validate_model(job)
+
+        # check on creation that i'm a member of the group
+        if not self.context['request'].user.groups.filter(name=region_dict['group'].name).exists():
+            raise serializers.ValidationError({'group':'You are not a member of this group.'})
+            
         with transaction.atomic():
             job.save()
             region_dict['job'] = job
             region = PartnerExportRegion(**region_dict)
-            region.group_id = 2 #TODO don't hardcode this
             validate_model(region)
             region.save()
         return region
@@ -168,6 +172,10 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
                 if key in v_data:
                     setattr(model, key, v_data[key])
 
+        # if re-assigning, check group membership
+        if not self.context['request'].user.groups.filter(name= validated_data['group'].name).exists():
+            raise serializers.ValidationError({'group':'You are not a member of this group.'})
+
         job = instance.job
         update_attrs(job, validated_data, [
             'the_geom', 'export_formats', 'feature_selection'
@@ -176,7 +184,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
 
         validate_model(job)
         update_attrs(instance, validated_data, [
-            'schedule_period', 'schedule_hour'
+            'schedule_period', 'schedule_hour', 'group'
         ])
         validate_model(instance)
         with transaction.atomic():
