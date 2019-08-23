@@ -10,7 +10,7 @@ The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile de
 
 # Get involved!
 
-This is the source code for the web service available at [export.hotosm.org](https://export.hotosm.org). If you would like to export OSM data offline without using the web site, you can access use the separate command line tool and Python Library. This repository is at [github.com/osm-export-tool-python](https://github.com/hotosm/osm-export-tool-python). *NOTE: as of 8/2019, this project is not integrated into the web service yet.*
+This is the source code for the web service available at [export.hotosm.org](https://export.hotosm.org). If you would like to export OSM data offline without using the web site, you can access the separate command line tool and Python Library. This repository is at [github.com/osm-export-tool-python](https://github.com/hotosm/osm-export-tool-python). *NOTE: as of 8/2019, this project is not integrated into the web service yet.*
 
 ## How to report a problem or bug
 
@@ -22,7 +22,7 @@ This is the source code for the web service available at [export.hotosm.org](htt
 
 The code in this repository powers the export tool web service and includes a number of features beside creating GIS files:
 
-* Periodic exports for HOT's partner humanitarian organizations, such as those that appear on the [Humanitarian Data Exchange](https://data.humdata.org).
+* Periodic exports for HOT's partner humanitarian organizations, such as those that appear on the [Humanitarian Data Exchange](https://data.humdata.org) platform.
 * Authentication via OSM accounts and email notifications for when exports are complete.
 * Storage of YAML feature tag selections.
 * A rich user interface with error reporting and geometry drawing/uploading, built on OpenLayers.
