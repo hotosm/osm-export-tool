@@ -36,8 +36,8 @@ Instructions on installing Overpass are available at https://github.com/drolbr/O
 ### Clone the HOT Export Tool project from GitHub
 
 ```bash
-git clone https://github.com/hotosm/osm-export-tool2.git
-cd osm-export-tool2
+git clone https://github.com/hotosm/osm-export-tool.git
+cd osm-export-tool
 
 ```
 
