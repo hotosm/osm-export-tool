@@ -1,6 +1,6 @@
 import { NonIdealState, Spinner } from "@blueprintjs/core";
 import React, { Component } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Panel } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -34,9 +34,11 @@ class ExportRegionList extends Component {
             console.log(region)
             return (
               <Row key={i}>
-              <Link to={`/partners/edit/${region.id}`}>
-                {region.name}
-              </Link>
+              <Panel>
+                <Link to={`/partners/edit/${region.id}`}>
+                  {region.name}
+                </Link>
+              </Panel>
               </Row>
             );
           })}

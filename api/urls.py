@@ -5,7 +5,7 @@ from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 from .views import (ConfigurationViewSet, ExportRunViewSet,
-                    HDXExportRegionViewSet, PartnerExportRegionViewSet, JobViewSet, get_overpass_timestamp,
+                    HDXExportRegionViewSet, PartnerExportRegionViewSet, JobViewSet, permalink, get_overpass_timestamp,
                     get_user_permissions, request_geonames, get_overpass_status, get_groups)
 
 router = DefaultRouter(trailing_slash=False)
@@ -22,9 +22,11 @@ router.register(
     PartnerExportRegionViewSet,
     base_name='partner_export_regions')
 
+
 urlpatterns = router.urls
 
 urlpatterns += [
+    url(r'^permalink/(?P<partner_name>[\w\-]+)/(?P<region_name>[\w\-]+)$', permalink),
     url(r'^request_geonames$', request_geonames),
     url(r'^overpass_timestamp$', get_overpass_timestamp),
     url(r'^overpass_status$', get_overpass_status),

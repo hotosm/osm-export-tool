@@ -3,6 +3,7 @@
 from distutils.util import strtobool
 from itertools import chain
 import logging
+import json
 
 import dateutil.parser
 import requests
@@ -21,7 +22,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
-from api.serializers import (ConfigurationSerializer, ExportRunSerializer,
+from api.serializers import (ConfigurationSerializer, ExportRunSerializer, ExportTaskSerializer,
                          HDXExportRegionListSerializer,
                          HDXExportRegionSerializer, JobGeomSerializer,
                          PartnerExportRegionListSerializer, PartnerExportRegionSerializer,
@@ -230,6 +231,13 @@ class PartnerExportRegionViewSet(viewsets.ModelViewSet):
 
         return PartnerExportRegionSerializer
 
+
+@require_http_methods(['GET'])
+def permalink(request, partner_name, region_name):
+    region = PartnerExportRegion.objects.filter(group__name=partner_name,job__name=region_name).first()
+    run = region.job.runs.filter(status='COMPLETED').latest('finished_at')
+    serializer = ExportTaskSerializer(run.tasks.all(),many=True)
+    return HttpResponse(JSONRenderer().render(serializer.data))
 
 @require_http_methods(['GET'])
 @login_required()
