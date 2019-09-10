@@ -9,6 +9,8 @@ import FilterForm from "./FilterForm";
 import MapListView from "./MapListView";
 import Paginator from "./Paginator";
 import { getExportRegions } from "../actions/partners";
+import { getRegionInfo } from "./utils";
+
 
 class ExportRegionList extends Component {
   render() {
@@ -31,13 +33,15 @@ class ExportRegionList extends Component {
           />}
         {loading ||
           Object.entries(regions).map(([id, region], i) => {
-            console.log(region)
             return (
               <Row key={i}>
               <Panel>
-                <Link to={`/partners/edit/${region.id}`}>
-                  {region.name}
-                </Link>
+                <h4>
+                  <Link to={`/partners/edit/${region.id}`}>
+                    {region.name} ({region.group_name})
+                  </Link>
+                </h4>
+                { getRegionInfo(region) }
               </Panel>
               </Row>
             );

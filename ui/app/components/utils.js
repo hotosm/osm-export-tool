@@ -13,6 +13,11 @@ import { Field } from "redux-form";
 import moment from "moment";
 import yaml from "js-yaml";
 
+import {
+  FormattedMessage,
+  FormattedRelative
+} from "react-intl";
+
 import { login } from "../actions/meta";
 import { selectIsLoggedIn, selectIsLoggingIn } from "../selectors";
 import styles from "../styles/utilsStyles.css";
@@ -421,3 +426,89 @@ export const requireAuth = Component =>
       }
     }
   );
+
+export const getRegionInfo = (region) => {
+  return <div>
+  <FormattedMessage
+    id="runs.last_run.label"
+    defaultMessage="Last Run:"
+  />{" "}
+  <strong>{getLastRun(region)}</strong>
+  <br />
+  <FormattedMessage
+    id="runs.next_run.label"
+    defaultMessage="Next Run:"
+  />{" "}
+  <strong>{getNextRun(region)}</strong>
+  <br />
+  <FormattedMessage
+    id="runs.schedule.label"
+    defaultMessage="Schedule:"
+  />{" "}
+  <strong>{getSchedule(region)}</strong>
+  </div>
+};
+
+const getLastRun = (region) => {
+  if (region.last_run == null) {
+    return <FormattedMessage id="ui.never" defaultMessage="Never" />;
+  }
+
+  return <FormattedRelative value={region.last_run} />;
+};
+
+const getNextRun = (region) => {
+  if (region.next_run == null) {
+    return <FormattedMessage id="ui.never" defaultMessage="Never" />;
+  }
+
+  return <FormattedRelative value={region.next_run} />;
+};
+
+const getSchedule = (region) => {
+  const scheduleHour = `0${region.schedule_hour}`.slice(-2);
+
+  switch (region.schedule_period) {
+    case "6hrs":
+      return (
+        <FormattedMessage
+          id="exports.schedule.6hrs"
+          defaultMessage="Every 6 hours starting at {time} UTC"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "daily":
+      return (
+        <FormattedMessage
+          id="exports.schedule.daily"
+          defaultMessage="Every day at {time} UTC"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "weekly":
+      return (
+        <FormattedMessage
+          id="exports.schedule.weekly"
+          defaultMessage="Every Sunday at {time} UTC"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "monthly":
+      return (
+        <FormattedMessage
+          id="exports.schedule.monthly"
+          defaultMessage="The 1st of every month at {time} UTC"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "disabled":
+      return <FormattedMessage id="ui.never" defaultMessage="Never" />;
+
+    default:
+      return <FormattedMessage id="ui.unknown" defaultMessage="Unknown" />;
+  }
+};

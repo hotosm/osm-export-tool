@@ -111,7 +111,7 @@ class PartnerExportRegionListSerializer(serializers.ModelSerializer):
         fields = ('id', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats',
                   'name', 'last_run', 'next_run',
-                  'simplified_geom', 'job_uid', 'last_size')
+                  'simplified_geom', 'job_uid', 'last_size','group_name')
 
 class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
     export_formats = serializers.ListField()

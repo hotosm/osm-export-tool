@@ -242,6 +242,10 @@ class PartnerExportRegion(models.Model):
     def simplified_geom(self): # noqa
         return self.job.simplified_geom
 
+    @property
+    def group_name(self):
+        return self.group.name
+
 class HDXExportRegion(models.Model): # noqa
     """ Mutable database table for hdx - additional attributes on a Job."""
     schedule_period = models.CharField(
