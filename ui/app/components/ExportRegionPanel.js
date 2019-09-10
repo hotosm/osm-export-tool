@@ -25,6 +25,7 @@ const messages = defineMessages({
 });
 
 function DatasetList(props) {
+  if (!props.datasets) return <ul></ul>;
   const listItems = props.datasets.map((dataset, i) =>
     <li key={i}>
       <a target="_blank" href={dataset.url}>
