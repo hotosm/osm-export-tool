@@ -87,7 +87,16 @@ export const REQUIRES_TILE_SOURCE = {
 export const OMIT_FROM_FORMAT_OPTIONS = {
   osm_xml: true,
   bundle: true
-}
+};
+
+export const getRootUrl = () => {
+  var defaultPorts = {"http:":80,"https:":443};
+
+  return window.location.protocol + "//" + window.location.hostname
+   + (((window.location.port)
+    && (window.location.port != defaultPorts[window.location.protocol]))
+    ? (":"+window.location.port) : "");
+};
 
 export const exportFormatNicename = slug => {
   return AVAILABLE_EXPORT_FORMATS[slug];

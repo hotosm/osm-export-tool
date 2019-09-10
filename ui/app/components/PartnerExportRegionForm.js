@@ -45,7 +45,8 @@ import {
   renderTextArea,
   renderSelect,
   renderMultiSelect,
-  slugify
+  slugify,
+  getRootUrl
 } from "./utils";
 
 const FORM_NAME = "PartnerExportRegionForm";
@@ -525,7 +526,10 @@ export class PartnerExportRegionForm extends Component {
               <div>
                 <Row>
                   <Col xs={7}>
-                    Permalinks:
+                    <p>Permalinks:</p>
+                    <a target="_blank" href={`${getRootUrl()}/api/permalink/${exportRegion.job_uid}`}>
+                      JSON
+                    </a>
                   </Col>
                   <Col xs={5}>
                     <Panel>

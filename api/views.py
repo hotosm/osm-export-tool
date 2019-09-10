@@ -14,8 +14,9 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ValidationError as DjangoValidationError
 from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import detail_route
@@ -233,11 +234,17 @@ class PartnerExportRegionViewSet(viewsets.ModelViewSet):
 
 
 @require_http_methods(['GET'])
-def permalink(request, partner_name, region_name):
-    region = PartnerExportRegion.objects.filter(group__name=partner_name,job__name=region_name).first()
-    run = region.job.runs.filter(status='COMPLETED').latest('finished_at')
-    serializer = ExportTaskSerializer(run.tasks.all(),many=True)
-    return HttpResponse(JSONRenderer().render(serializer.data))
+def permalink(request, uid):
+    try:
+        job = Job.objects.filter(uid=uid).first()
+        if not job:
+            return HttpResponseNotFound()
+        run = job.runs.filter(status='COMPLETED').latest('finished_at')
+        serializer = ExportTaskSerializer(run.tasks.all(),many=True)
+        return HttpResponse(JSONRenderer().render(serializer.data))
+    except DjangoValidationError:
+        return HttpResponseNotFound()
+
 
 @require_http_methods(['GET'])
 @login_required()

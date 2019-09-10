@@ -26,7 +26,7 @@ router.register(
 urlpatterns = router.urls
 
 urlpatterns += [
-    url(r'^permalink/(?P<partner_name>[\w\-]+)/(?P<region_name>[\w\-]+)$', permalink),
+    url(r'^permalink/(?P<uid>[a-z0-9\-]+)$', permalink),
     url(r'^request_geonames$', request_geonames),
     url(r'^overpass_timestamp$', get_overpass_timestamp),
     url(r'^overpass_status$', get_overpass_status),
