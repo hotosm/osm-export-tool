@@ -13,16 +13,4 @@ CELERY_DISABLE_RATE_LIMITS = True
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TRACK_STARTED = True
 
-# configure periodic task
-CELERYBEAT_SCHEDULE = {
-    'periodic-runs': {
-        'task': 'Queue Periodic Runs',
-        'schedule': crontab(minute='*/15'),
-    },
-    'remove-old-downloads': {
-        'task': 'Remove Old Downloads',
-        'schedule': crontab(minute=0),
-    }
-}
-
 BROKER_URL = os.getenv('BROKER_URL', 'amqp://guest:guest@localhost:5672/')
