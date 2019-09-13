@@ -19,7 +19,6 @@ import mercantile
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
-from utils import FORMAT_NAMES
 from utils.aoi_utils import simplify_geom, get_geodesic_area, check_extent, force2d
 from django.contrib import admin
 
@@ -35,7 +34,7 @@ def validate_export_formats(value):
         )
 
     for format_name in value:
-        if format_name not in FORMAT_NAMES:
+        if format_name not in ['shp','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
             raise ValidationError(
                 "Bad format name: %(format_name)s",
                 params={'format_name': format_name},
