@@ -16,7 +16,7 @@ Environment=OSMCONVERT=/usr/bin/osmconvert
 Environment=GENERATOR_TOOL=/usr/local/bin/generator_tool
 User=exports
 WorkingDirectory=/home/exports/osm-export-tool/
-ExecStart=/home/exports/venv/bin/celery -A core worker -Q celery-scheduled -c 1
+ExecStart=/home/exports/venv/bin/celery -A core worker -Q celery-scheduled -c 1 -n scheduled
 Restart=on-failure
 
 [Install]
