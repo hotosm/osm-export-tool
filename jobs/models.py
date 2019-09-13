@@ -160,16 +160,7 @@ PERIOD_CHOICES = (
 )
 HOUR_CHOICES = zip(range(0, 24), range(0, 24))
 
-class PartnerExportRegion(models.Model):
-    schedule_period = models.CharField(
-        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
-    schedule_hour = models.IntegerField(
-        blank=False, choices=HOUR_CHOICES, default=0)
-    job = models.ForeignKey(Job, null=True)
-    # the owning group, which determines access control.
-    group = models.ForeignKey(Group)
-    deleted = models.BooleanField(default=False)
-
+class RegionMixin:
     @property
     def last_run(self): # noqa
         if self.job.runs.count() > 0:
@@ -218,20 +209,22 @@ class PartnerExportRegion(models.Model):
             return anchor + timedelta(days=num_days)
 
     @property
-    def job_uid(self):
-        return self.job.uid
+    def delta(self): # noqa
+        if self.schedule_period == '6hrs':
+            return timedelta(hours=6)
+
+        if self.schedule_period == 'daily':
+            return timedelta(days=1)
+
+        if self.schedule_period == 'weekly':
+            return timedelta(days=7)
+
+        if self.schedule_period == 'monthly':
+            return timedelta(days=31)
 
     @property
     def feature_selection(self): # noqa
         return self.job.feature_selection
-
-    @property
-    def export_formats(self): # noqa
-        return self.job.export_formats
-
-    @property
-    def name(self): # noqa
-        return self.job.name
 
     @property
     def the_geom(self):
@@ -242,10 +235,36 @@ class PartnerExportRegion(models.Model):
         return self.job.simplified_geom
 
     @property
+    def job_uid(self):
+        return self.job.uid
+
+    @property
+    def export_formats(self): # noqa
+        return self.job.export_formats
+
+class PartnerExportRegion(models.Model, RegionMixin):
+    schedule_period = models.CharField(
+        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
+    schedule_hour = models.IntegerField(
+        blank=False, choices=HOUR_CHOICES, default=0)
+    job = models.ForeignKey(Job, null=True)
+    # the owning group, which determines access control.
+    group = models.ForeignKey(Group)
+    deleted = models.BooleanField(default=False)
+
+    @property
+    def export_formats(self): # noqa
+        return self.job.export_formats
+
+    @property
+    def name(self): # noqa
+        return self.job.name
+
+    @property
     def group_name(self):
         return self.group.name
 
-class HDXExportRegion(models.Model): # noqa
+class HDXExportRegion(models.Model, RegionMixin): # noqa
     """ Mutable database table for hdx - additional attributes on a Job."""
     schedule_period = models.CharField(
         blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
@@ -272,67 +291,6 @@ class HDXExportRegion(models.Model): # noqa
             raise ValidationError({'dataset_prefix':"Invalid dataset_prefix: {0}".format(self.job.name)})
 
     @property
-    def delta(self): # noqa
-        if self.schedule_period == '6hrs':
-            return timedelta(hours=6)
-
-        if self.schedule_period == 'daily':
-            return timedelta(days=1)
-
-        if self.schedule_period == 'weekly':
-            return timedelta(days=7)
-
-        if self.schedule_period == 'monthly':
-            return timedelta(days=31)
-
-    @property
-    def next_run(self): # noqa
-        now = timezone.now().replace(minute=0, second=0, microsecond=0)
-
-        if self.schedule_period == '6hrs':
-            delta = 6 - (self.schedule_hour + now.hour % 6)
-
-            return now + timedelta(hours=delta)
-
-        now = now.replace(hour=self.schedule_hour)
-
-        if self.schedule_period == 'daily':
-            anchor = now
-
-            if timezone.now() < anchor:
-                return anchor
-
-            return anchor + timedelta(days=1)
-
-        if self.schedule_period == 'weekly':
-            # adjust so the week starts on Sunday
-            anchor = now - timedelta((now.weekday() + 1) % 7)
-
-            if timezone.now() < anchor:
-                return anchor
-
-            return anchor + timedelta(days=7)
-
-        if self.schedule_period == 'monthly':
-            (_, num_days) = calendar.monthrange(now.year, now.month)
-            anchor = now.replace(day=1)
-
-            if timezone.now() < anchor:
-                return anchor
-
-            return anchor + timedelta(days=num_days)
-
-    @property
-    def last_run(self): # noqa
-        if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].finished_at
-
-    @property
-    def last_size(self):
-        if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].size
-
-    @property
     def buffer_aoi(self): # noqa
         return self.job.buffer_aoi
 
@@ -345,28 +303,8 @@ class HDXExportRegion(models.Model): # noqa
         return self.job.name
 
     @property
-    def the_geom(self):
-        return self.job.the_geom
-
-    @property
-    def simplified_geom(self): # noqa
-        return self.job.simplified_geom
-
-    @property
-    def feature_selection(self): # noqa
-        return self.job.feature_selection
-
-    @property
-    def export_formats(self): # noqa
-        return self.job.export_formats
-
-    @property
     def datasets(self): # noqa
         return self.hdx_dataset.dataset_links(settings.HDX_URL_PREFIX)
-
-    @property
-    def job_uid(self):
-        return self.job.uid
 
     @property
     def hdx_dataset(self): # noqa
