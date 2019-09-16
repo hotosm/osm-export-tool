@@ -52,6 +52,19 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
       </li>
       <RequirePermission
         required={[
+          "jobs.add_partnerexportregion",
+          "jobs.change_partnerexportregion",
+          "jobs.delete_partnerexportregion"
+        ]}
+      >
+        <li>
+          <NavLink to="/partners">
+            <FormattedMessage id="ui.partners" defaultMessage="Partners" />
+          </NavLink>
+        </li>
+      </RequirePermission>
+      <RequirePermission
+        required={[
           "jobs.add_hdxexportregion",
           "jobs.change_hdxexportregion",
           "jobs.delete_hdxexportregion"

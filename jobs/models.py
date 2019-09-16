@@ -9,7 +9,7 @@ import uuid
 import re
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
@@ -19,12 +19,13 @@ import mercantile
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
-from utils import FORMAT_NAMES
 from utils.aoi_utils import simplify_geom, get_geodesic_area, check_extent, force2d
 from django.contrib import admin
 
 LOG = logging.getLogger(__name__)
 MAX_TILE_COUNT = 10000
+
+Group.add_to_class('is_partner', models.BooleanField(null=False, default=False))
 
 def validate_export_formats(value):
     if not value:
@@ -33,7 +34,7 @@ def validate_export_formats(value):
         )
 
     for format_name in value:
-        if format_name not in FORMAT_NAMES:
+        if format_name not in ['shp','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
             raise ValidationError(
                 "Bad format name: %(format_name)s",
                 params={'format_name': format_name},
@@ -150,53 +151,25 @@ class SavedFeatureSelection(models.Model):
     def __str__(self):
         return str(self.name)
 
-class HDXExportRegion(models.Model): # noqa
-    """ Mutable database table for hdx - additional attributes on a Job."""
-    PERIOD_CHOICES = (
-        ('6hrs', 'Every 6 hours'),
-        ('daily', 'Every day'),
-        ('weekly', 'Every Sunday'),
-        ('monthly', 'The 1st of every month'),
-        ('disabled', 'Disabled'),
-    )
-    HOUR_CHOICES = zip(range(0, 24), range(0, 24))
-    schedule_period = models.CharField(
-        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
-    schedule_hour = models.IntegerField(
-        blank=False, choices=HOUR_CHOICES, default=0)
-    deleted = models.BooleanField(default=False)
-    # a job should really be required, but that interferes with DRF validation lifecycle.
-    job = models.ForeignKey(Job, null=True, related_name='hdx_export_region_set')
-    is_private = models.BooleanField(default=False)
-    locations = ArrayField(
-        models.CharField(blank=False, max_length=32), null=True)
-    license = models.CharField(max_length=32, null=True,blank=True)
-    subnational = models.BooleanField(default=True)
-    extra_notes = models.TextField(null=True,blank=True)
+PERIOD_CHOICES = (
+    ('6hrs', 'Every 6 hours'),
+    ('daily', 'Every day'),
+    ('weekly', 'Every Sunday'),
+    ('monthly', 'The 1st of every month'),
+    ('disabled', 'Disabled'),
+)
+HOUR_CHOICES = zip(range(0, 24), range(0, 24))
 
-    class Meta: # noqa
-        db_table = 'hdx_export_regions'
-
-    def __str__(self):
-        return self.name + " (prefix: " + self.dataset_prefix + ")"
-
-    def clean(self):
-        if self.job and not re.match(r'^[a-z0-9-_]+$',self.job.name):
-            raise ValidationError({'dataset_prefix':"Invalid dataset_prefix: {0}".format(self.job.name)})
+class RegionMixin:
+    @property
+    def last_run(self): # noqa
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
     @property
-    def delta(self): # noqa
-        if self.schedule_period == '6hrs':
-            return timedelta(hours=6)
-
-        if self.schedule_period == 'daily':
-            return timedelta(days=1)
-
-        if self.schedule_period == 'weekly':
-            return timedelta(days=7)
-
-        if self.schedule_period == 'monthly':
-            return timedelta(days=31)
+    def last_size(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].size
 
     @property
     def next_run(self): # noqa
@@ -236,14 +209,86 @@ class HDXExportRegion(models.Model): # noqa
             return anchor + timedelta(days=num_days)
 
     @property
-    def last_run(self): # noqa
-        if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].finished_at
+    def delta(self): # noqa
+        if self.schedule_period == '6hrs':
+            return timedelta(hours=6)
+
+        if self.schedule_period == 'daily':
+            return timedelta(days=1)
+
+        if self.schedule_period == 'weekly':
+            return timedelta(days=7)
+
+        if self.schedule_period == 'monthly':
+            return timedelta(days=31)
 
     @property
-    def last_size(self):
-        if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].size
+    def feature_selection(self): # noqa
+        return self.job.feature_selection
+
+    @property
+    def the_geom(self):
+        return self.job.the_geom
+
+    @property
+    def simplified_geom(self): # noqa
+        return self.job.simplified_geom
+
+    @property
+    def job_uid(self):
+        return self.job.uid
+
+    @property
+    def export_formats(self): # noqa
+        return self.job.export_formats
+
+class PartnerExportRegion(models.Model, RegionMixin):
+    schedule_period = models.CharField(
+        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
+    schedule_hour = models.IntegerField(
+        blank=False, choices=HOUR_CHOICES, default=0)
+    job = models.ForeignKey(Job, null=True)
+    # the owning group, which determines access control.
+    group = models.ForeignKey(Group)
+    deleted = models.BooleanField(default=False)
+
+    @property
+    def export_formats(self): # noqa
+        return self.job.export_formats
+
+    @property
+    def name(self): # noqa
+        return self.job.name
+
+    @property
+    def group_name(self):
+        return self.group.name
+
+class HDXExportRegion(models.Model, RegionMixin): # noqa
+    """ Mutable database table for hdx - additional attributes on a Job."""
+    schedule_period = models.CharField(
+        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
+    schedule_hour = models.IntegerField(
+        blank=False, choices=HOUR_CHOICES, default=0)
+    deleted = models.BooleanField(default=False)
+    # a job should really be required, but that interferes with DRF validation lifecycle.
+    job = models.ForeignKey(Job, null=True, related_name='hdx_export_region_set')
+    is_private = models.BooleanField(default=False)
+    locations = ArrayField(
+        models.CharField(blank=False, max_length=32), null=True)
+    license = models.CharField(max_length=32, null=True,blank=True)
+    subnational = models.BooleanField(default=True)
+    extra_notes = models.TextField(null=True,blank=True)
+
+    class Meta: # noqa
+        db_table = 'hdx_export_regions'
+
+    def __str__(self):
+        return self.name + " (prefix: " + self.dataset_prefix + ")"
+
+    def clean(self):
+        if self.job and not re.match(r'^[a-z0-9-_]+$',self.job.name):
+            raise ValidationError({'dataset_prefix':"Invalid dataset_prefix: {0}".format(self.job.name)})
 
     @property
     def buffer_aoi(self): # noqa
@@ -258,28 +303,8 @@ class HDXExportRegion(models.Model): # noqa
         return self.job.name
 
     @property
-    def the_geom(self):
-        return self.job.the_geom
-
-    @property
-    def simplified_geom(self): # noqa
-        return self.job.simplified_geom
-
-    @property
-    def feature_selection(self): # noqa
-        return self.job.feature_selection
-
-    @property
-    def export_formats(self): # noqa
-        return self.job.export_formats
-
-    @property
     def datasets(self): # noqa
         return self.hdx_dataset.dataset_links(settings.HDX_URL_PREFIX)
-
-    @property
-    def job_uid(self):
-        return self.job.uid
 
     @property
     def hdx_dataset(self): # noqa

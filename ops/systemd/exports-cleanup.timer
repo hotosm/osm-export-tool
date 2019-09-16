@@ -1,9 +1,0 @@
-[Unit]
-Description=Clean up exports daily
-
-[Timer]
-OnCalendar=daily
-Persistent=true
-
-[Install]
-WantedBy=osm-export-tool.target

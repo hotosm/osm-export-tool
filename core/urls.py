@@ -8,7 +8,7 @@ from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from django.views.i18n import JavaScriptCatalog
 from ui.views import (authorized, login, logout,
                       redirect_to_v3, v3)
@@ -29,6 +29,7 @@ urlpatterns += [
 ]
 
 urlpatterns += i18n_patterns(
+    url(r'^admin/login/', RedirectView.as_view(pattern_name='login', permanent=False)),
     url(r'^admin/', include(admin.site.urls)),
 )
 

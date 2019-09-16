@@ -62,6 +62,34 @@ export const fetchPermissions = () => (dispatch, getState) => {
     );
 };
 
+export const fetchGroups = () => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  dispatch({
+    type: types.FETCHING_GROUPS
+  });
+
+  return axios({
+    baseURL: window.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: "/api/groups"
+  })
+    .then(rsp =>
+      dispatch({
+        type: types.RECEIVED_GROUPS,
+        groups: rsp.data.groups
+      })
+    )
+    .catch(error =>
+      dispatch({
+        type: types.FETCHING_GROUPS_FAILED,
+        error
+      })
+    );
+};
+
 export const login = () => _login(oauthConfig);
 
 export const loginSuccess = (token, expiresAt) => dispatch =>

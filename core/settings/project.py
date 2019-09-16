@@ -25,8 +25,7 @@ DATABASES = {}
 DATABASES['default'] = dj_database_url.config(default='postgis:///exports', conn_max_age=500)
 
 CELERY_IMPORTS = (
-    'tasks.scheduled_tasks',
-    'tasks.task_runners',
+    'tasks.task_runners'
 )
 
 TEMPLATES = [

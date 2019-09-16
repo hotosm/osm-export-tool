@@ -3,6 +3,7 @@
 from distutils.util import strtobool
 from itertools import chain
 import logging
+import json
 
 import dateutil.parser
 import requests
@@ -10,24 +11,27 @@ from cachetools.func import ttl_cache
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
 from django.views.decorators.http import require_http_methods
-from jobs.models import HDXExportRegion, Job, SavedFeatureSelection
+from django.core.exceptions import ValidationError as DjangoValidationError
+from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
-from api.serializers import (ConfigurationSerializer, ExportRunSerializer,
+from api.serializers import (ConfigurationSerializer, ExportRunSerializer, ExportTaskSerializer,
                          HDXExportRegionListSerializer,
                          HDXExportRegionSerializer, JobGeomSerializer,
+                         PartnerExportRegionListSerializer, PartnerExportRegionSerializer,
                          JobSerializer)
 from tasks.models import ExportRun
 from tasks.task_runners import ExportTaskRunner
 
-from .permissions import IsHDXAdmin, IsOwnerOrReadOnly
+from .permissions import IsHDXAdmin, IsOwnerOrReadOnly, IsMemberOfGroup
 from .renderers import HOTExportApiRenderer
 
 # Get an instance of a logger
@@ -209,6 +213,39 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
             print("Stubbing interaction with HDX API.")
 
 
+class PartnerExportRegionViewSet(viewsets.ModelViewSet):
+    # get only Regions that belong to the user's Groups.
+    ordering_fields = '__all__'
+    ordering = ('job__description',)
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
+    search_fields = ('job__name', 'job__description')
+    permission_classes = (IsMemberOfGroup,)
+
+    def get_queryset(self):
+        group_ids = self.request.user.groups.values_list('id')
+        return PartnerExportRegion.objects.filter(deleted=False,group_id__in=group_ids).prefetch_related(
+            'job__runs__tasks').defer('job__the_geom')
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return PartnerExportRegionListSerializer
+
+        return PartnerExportRegionSerializer
+
+
+@require_http_methods(['GET'])
+def permalink(request, uid):
+    try:
+        job = Job.objects.filter(uid=uid).first()
+        if not job:
+            return HttpResponseNotFound()
+        run = job.runs.filter(status='COMPLETED').latest('finished_at')
+        serializer = ExportTaskSerializer(run.tasks.all(),many=True)
+        return HttpResponse(JSONRenderer().render(serializer.data))
+    except DjangoValidationError:
+        return HttpResponseNotFound()
+
+
 @require_http_methods(['GET'])
 @login_required()
 def request_geonames(request):
@@ -272,3 +309,11 @@ def get_user_permissions(request):
         "permissions":
         list(map(lambda pair: ".".join(pair), (set(permissions))))
     })
+
+# get a list of partner organizations and their numeric IDs.
+# this can be exposed to the public.
+@require_http_methods(['GET'])
+@login_required()
+def get_groups(request):
+    groups = [{'id':g.id,'name':g.name} for g in Group.objects.filter(is_partner=True)]
+    return JsonResponse({'groups':groups})

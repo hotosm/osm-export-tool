@@ -28,3 +28,7 @@ class IsHDXAdmin(permissions.BasePermission):
             'jobs.change_hdxexportregion',
             'jobs.delete_hdxexportregion',
         ))
+
+class IsMemberOfGroup(permissions.BasePermission):
+    def has_object_permission(self,request,view,obj):
+        return request.user.groups.filter(name=obj.group.name).exists()
