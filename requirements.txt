@@ -7,7 +7,7 @@ django-oauth-toolkit==1.1.2
 django-cors-middleware
 djangorestframework-gis~=0.11.2
 djangorestframework~=3.6.3
-hdx-python-api==3.7.1
+hdx-python-api==2.1.5
 kombu==4.4.0
 mercantile~=0.10.0
 psycopg2==2.8.3
@@ -23,4 +23,3 @@ pyparsing==2.2.0
 oauthlib==2.0.7
 gunicorn==19.9.0
 osmium~=2.15.2
-osm-export-tool==0.0.6
