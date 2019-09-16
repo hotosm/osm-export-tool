@@ -1,0 +1,4 @@
+# the first line should be for a user in the sudoers group
+0 0,12 * * * sudo /usr/bin/certbot renew
+0 2 * * * /home/exports/venv/bin/python /home/exports/osm-export-tool/jobs/secondary_pipeline.py /mnt/data/planet/ >> /home/exports/secondary_pipeline.log 2>&1
+0 * * * * /home/exports/venv/bin/python /home/exports/osm-export-tool/manage.py schedule

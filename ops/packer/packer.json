@@ -34,6 +34,11 @@
     },
     {
         "type":"file",
+        "source": "celery-scheduled.service",
+        "destination": "/tmp/celery-scheduled.service"
+    },
+    {
+        "type":"file",
         "source": "django.service",
         "destination": "/tmp/django.service"
     },

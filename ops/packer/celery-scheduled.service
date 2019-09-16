@@ -3,6 +3,8 @@ Description=Celery task worker
 After=syslog.target
 
 [Service]
+Environment=EXPORT_STAGING_ROOT=/mnt/data/staging
+Environment=EXPORT_DOWNLOAD_ROOT=/mnt/data/downloads
 Environment=SENTRY_DSN=
 Environment=EMAIL_HOST=
 Environment=EMAIL_HOST_USER=

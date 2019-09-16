@@ -82,5 +82,6 @@ su - postgres -c 'psql exports -c "create extension hstore;"'
 mv /tmp/nginx.conf /etc/nginx/nginx.conf
 mv /tmp/django.service /etc/systemd/system/django.service
 mv /tmp/celery.service /etc/systemd/system/celery.service
+mv /tmp/celery-scheduled.service /etc/systemd/system/celery-scheduled.service
 
 yarn global add tl @mapbox/mbtiles @mapbox/tilelive @mapbox/tilejson tilelive-http --prefix /usr/local/

@@ -3,8 +3,9 @@ Description=Django web process
 After=syslog.target
 
 [Service]
+Environment=EXPORT_STAGING_ROOT=/mnt/data/staging
+Environment=EXPORT_DOWNLOAD_ROOT=/mnt/data/downloads
 Environment=SENTRY_DSN=
-Environment=DEBUG=False
 Environment=EMAIL_HOST=
 Environment=EMAIL_HOST_USER=
 Environment=EMAIL_HOST_PASSWORD=
@@ -14,6 +15,9 @@ Environment=OSM_API_KEY=
 Environment=OSM_API_SECRET=
 Environment=OVERPASS_API_URL=
 Environment=USE_X_FORWARDED_HOST=True
+Environment=SYNC_TO_HDX=True
+Environment=HDX_SITE=demo
+Environment=HDX_API_KEY=
 User=exports
 WorkingDirectory=/home/exports/osm-export-tool/
 ExecStart=/home/exports/venv/bin/gunicorn core.wsgi:application --workers=3 --timeout=60 --bind :6080
