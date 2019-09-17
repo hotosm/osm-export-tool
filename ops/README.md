@@ -52,9 +52,28 @@ Attic data is necessary for augmented diff support. This clone can take several 
 5. Compile the JavaScript frontend: `cd /home/exports/osm-export-tool/ui; yarn install; yarn run dist`
 6. Copy static assets: `cd /home/exports/osm-export-tool/ && python manage.py collectstatic`
 7. Either run database migrations on the empty `exports` db: `python manage.py migrate` or restore a database backup.
+Examples of how to backup and restore the database:
+
+
+	pg_dump -U exports exports > backup_091319.pgdump
+	psql exports < backup_091319.pgdump
+
 8. Modify the OAuth2 application with your hostname's `redirect_uris`
 
-### Environment Variables
+### Storage and Environment Variables
+
+Provision a large (>300GB) disk for scratch space and downloads. [Azure Instructions](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/attach-disk-portal)
+
+	sudo fdisk /dev/sdc # assuming disk is /dev/sdc, choose: n,p defaults, w
+	sudo mkfs -t ext4 /dev/sdc1
+	sudo mkdir /mnt/data
+	sudo mount /dev/sdc1 /mnt/data
+	sudo chown exports:exports /mnt/data
+
+Determine the disk UUID with `sudo -i blkid` and add it to fstab to mount on boot:
+
+
+	UUID=33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e   /mnt/data   ext4   defaults,nofail   1   2
 
 ### Logging
 
