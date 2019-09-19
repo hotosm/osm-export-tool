@@ -96,7 +96,7 @@ class ExportTask(models.Model):
             return {
                 "filename":fname,
                 "filesize_bytes": filesize_bytes,
-                "download_url":os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
+                "download_url":settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
             }
         return map(fdownload, self.filenames)
 
