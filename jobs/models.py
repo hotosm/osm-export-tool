@@ -61,7 +61,7 @@ def validate_mbtiles(job):
         bounds = job["the_geom"].extent
         tile_count = 0
 
-        for z in xrange(int(job["mbtiles_minzoom"]), int(job["mbtiles_maxzoom"])):
+        for z in range(int(job["mbtiles_minzoom"]), int(job["mbtiles_maxzoom"])):
             sw = mercantile.tile(*bounds[0:2], zoom=z)
             ne = mercantile.tile(*bounds[2:4], zoom=z)
 
