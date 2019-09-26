@@ -19,7 +19,7 @@ Environment=GENERATOR_TOOL=/usr/local/bin/generator_tool
 Environment=SYNC_TO_HDX=True
 Environment=HDX_SITE=demo
 Environment=HDX_API_KEY=
-DJANGO_SETTINGS_MODULE=core.settings.project
+Environment=DJANGO_SETTINGS_MODULE=core.settings.project
 User=exports
 WorkingDirectory=/home/exports/osm-export-tool/
 ExecStart=/home/exports/venv/bin/dramatiq tasks.task_runners --processes 3 --threads 1 --queues default 

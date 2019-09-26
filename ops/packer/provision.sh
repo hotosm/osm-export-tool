@@ -37,7 +37,7 @@ zip \
 nginx \
 qt5-default \
 postgresql-10-postgis-2.4 \
-rabbitmq-server \
+redis-server \
 certbot \
 python3-certbot-nginx \
 osmium-tool
