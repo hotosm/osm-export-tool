@@ -77,8 +77,8 @@ Determine the disk UUID with `sudo -i blkid` and add it to fstab to mount on boo
 
 ### Logging
 
-Systemd's `journalctl` should be used to view logs. To tail celery logs, run: `journalctl -fu
-docker.celery`.
+Systemd's `journalctl` should be used to view logs. To view worker logs, run: `journalctl -fu
+worker-ondemand` or `worker-scheduled`.
 
 ### Backups
 

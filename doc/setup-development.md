@@ -77,7 +77,7 @@ yarn start  # will watch for changes and re-compile as necessary
 DEBUG=True python manage.py runserver
 
 # in a different shell
-DEBUG=True celery -A core worker
+DEBUG=True DJANGO_SETTINGS_MODULE=core.settings.project dramatiq tasks.task_runners -p 1
   ```
 
 [`direnv`](https://direnv.net/) is a useful tool for managing environment variables using a `.env` file.
@@ -110,7 +110,6 @@ Most of these environment variables have reasonable default settings.
 * `OSMAND_MAP_CREATOR_DIR` path to directory where OsmAndMapCreator is installed
 * `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
 * `OVERPASS_API_URL` url of Overpass api endpoint
-* `BROKER_URL`  Celery broker URL. Defaults to `amqp://guest:guest@localhost:5672/`
 * `DATABASE_URL`  Database URL. Defaults to `postgres:///exports`
 * `DEBUG`  Whether to enable debug mode. Defaults to `False` (production).
 * `DJANGO_ENV`  Django environment. Set to `development` to enable development tools and email logging to console.

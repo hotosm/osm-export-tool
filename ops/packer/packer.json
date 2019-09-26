@@ -29,13 +29,13 @@
     },
     {
         "type":"file",
-        "source": "celery.service",
-        "destination": "/tmp/celery.service"
+        "source": "worker-ondemand.service",
+        "destination": "/tmp/worker-ondemand.service"
     },
     {
         "type":"file",
-        "source": "celery-scheduled.service",
-        "destination": "/tmp/celery-scheduled.service"
+        "source": "worker-scheduled.service",
+        "destination": "/tmp/worker-scheduled.service"
     },
     {
         "type":"file",

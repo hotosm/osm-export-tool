@@ -41,7 +41,7 @@ class Command(BaseCommand):
                         now.day == 1 and
                         region.schedule_hour == now.hour and
                         delta > timedelta(hours=2)):
-                    ExportTaskRunner().run_task(job_uid=region.job.uid,queue="celery-scheduled")
+                    ExportTaskRunner().run_task(job_uid=region.job.uid,ondemand=False)
 
 
 

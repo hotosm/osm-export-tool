@@ -1,14 +1,11 @@
 Django~=1.11.3
-billiard==3.6.0
 cachetools
-celery==4.3.0
 dj_database_url
 django-oauth-toolkit==1.1.2
 django-cors-middleware
 djangorestframework-gis~=0.11.2
 djangorestframework~=3.6.3
 hdx-python-api==2.1.5
-kombu==4.4.0
 mercantile~=0.10.0
 psycopg2==2.8.3
 python-openid==2.2.5
@@ -23,3 +20,4 @@ pyparsing==2.2.0
 oauthlib==2.0.7
 gunicorn==19.9.0
 osmium~=2.15.2
+dramatiq[redis,watch]~=1.7.0

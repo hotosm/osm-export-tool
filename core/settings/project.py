@@ -5,9 +5,11 @@ from __future__ import absolute_import
 import os
 
 import dj_database_url
+import dramatiq
+from dramatiq.brokers.redis import RedisBroker
 
 from .base import *
-from .celery import *  # NOQA
+from .contrib import *
 from .utils import ABS_PATH
 from hdx.hdx_configuration import Configuration
 
@@ -20,13 +22,12 @@ INSTALLED_APPS += (
     'utils',
 )
 
+redis_broker = RedisBroker(host="localhost", port=6379)
+dramatiq.set_broker(redis_broker)
+
 DATABASES = {}
 
 DATABASES['default'] = dj_database_url.config(default='postgis:///exports', conn_max_age=500)
-
-CELERY_IMPORTS = (
-    'tasks.task_runners'
-)
 
 TEMPLATES = [
     {
@@ -154,11 +155,6 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'tasks': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level': 'DEBUG',
-        },
-        'celery.task': {
             'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG',

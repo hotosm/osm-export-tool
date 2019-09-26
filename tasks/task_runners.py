@@ -5,14 +5,19 @@ import logging
 import os
 import shutil
 import traceback
-
+import dramatiq
+import django
+from django.apps import apps
 from django.conf import settings
+
+if not apps.ready and not settings.configured:
+    django.setup()
+
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.utils.text import slugify
 from django.db import IntegrityError
 
-from celery import shared_task
 from raven import Client
 
 from jobs.models import Job, HDXExportRegion
@@ -35,7 +40,7 @@ client = Client()
 LOG = logging.getLogger(__name__)
 
 class ExportTaskRunner(object):
-    def run_task(self, job_uid=None, user=None, queue="celery"): # noqa
+    def run_task(self, job_uid=None, user=None, ondemand=True): # noqa
         LOG.debug('Running Job with id: {0}'.format(job_uid))
         job = Job.objects.get(uid=job_uid)
         if not user:
@@ -53,11 +58,21 @@ class ExportTaskRunner(object):
             )
             LOG.debug('Saved task: {0}'.format(format_name))
 
-        run_task_remote.apply_async([run_uid],queue=queue)
+        if ondemand:
+            run_task_async_ondemand.send(run_uid)
+        else:
+            run_task_async_scheduled.send(run_uid)
         return run
 
-@shared_task(bind=True, ignore_result=True)
-def run_task_remote(self, run_uid): # noqa
+@dramatiq.actor(max_retries=0,queue_name='default')
+def run_task_async_ondemand(run_uid):
+    run_task_remote(run_uid)
+
+@dramatiq.actor(max_retries=0,queue_name='scheduled')
+def run_task_async_scheduled(run_uid):
+    run_task_remote(run_uid)
+
+def run_task_remote(run_uid):
     stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
     try:
         run = ExportRun.objects.get(uid=run_uid)
