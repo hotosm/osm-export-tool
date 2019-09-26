@@ -43,6 +43,11 @@
         "destination": "/tmp/django.service"
     },
     {
+        "type":"file",
+        "source": "cloudwatch_metrics.py",
+        "destination": "/tmp/cloudwatch_metrics.py"
+    },
+    {
         "type": "shell",
         "script": "./provision.sh",
         "execute_command": "sudo bash {{.Path}}"

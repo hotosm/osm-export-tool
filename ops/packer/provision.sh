@@ -83,5 +83,6 @@ mv /tmp/nginx.conf /etc/nginx/nginx.conf
 mv /tmp/django.service /etc/systemd/system/django.service
 mv /tmp/worker-ondemand.service /etc/systemd/system/worker-ondemand.service
 mv /tmp/worker-scheduled.service /etc/systemd/system/worker-scheduled.service
+mv /tmp/cloudwatch_metrics.py /home/exports/cloudwatch_metrics.py
 
 yarn global add tl @mapbox/mbtiles @mapbox/tilelive @mapbox/tilejson tilelive-http --prefix /usr/local/
