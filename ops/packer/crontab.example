@@ -5,4 +5,5 @@
 # as exports user
 0 * * * * /home/exports/venv/bin/python /home/exports/osm-export-tool/manage.py schedule
 */5 * * * * /home/exports/cloudwatch_metrics.py
+0 8 * * * pg_dump -Fc -d exports | aws s3 cp - s3://hotosm-backups/exports-prod/exports-`date "+\%Y\%m\%d\%H\%M\%S"`.pgdump
 

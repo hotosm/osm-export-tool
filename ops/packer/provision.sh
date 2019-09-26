@@ -40,7 +40,8 @@ postgresql-10-postgis-2.4 \
 redis-server \
 certbot \
 python3-certbot-nginx \
-osmium-tool
+osmium-tool \
+awscli
 
 pip install virtualenv
 pip3 install boto3
