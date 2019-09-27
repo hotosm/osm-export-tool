@@ -15,7 +15,6 @@ from django.contrib.gis.admin import OSMGeoAdmin
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
-
 class ExportRun(models.Model):
     """
     Model for one execution of an Export - associated with a storage directory on filesystem.
@@ -107,9 +106,9 @@ class ExportTask(models.Model):
 class ExportRunAdmin(admin.ModelAdmin):
 
     def start(self, request, queryset):
-        from task_runners import run_task_remote
+        from tasks.task_runners import run_task_async_ondemand
         for run in queryset:
-            run_task_remote.delay(str(run.uid))
+            run_task_async_ondemand.send(str(run.uid))
 
     list_display = ['uid','job','status','user','created_at']
     list_filter = ('status',)
