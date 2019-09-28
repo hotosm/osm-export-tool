@@ -23,6 +23,7 @@ import Partner from "./components/Partner.js";
 import Help from "./components/Help";
 import Home from "./components/Home";
 import NavBar from "./components/NavBar";
+import Stats from "./components/Stats";
 import { requireAuth } from "./components/utils";
 
 import "@blueprintjs/core/dist/blueprint.css";
@@ -54,6 +55,7 @@ export default ({ history }) => {
             <Route path="/exports" component={Exports} />
             <Route path="/hdx" component={AuthorizedHDX} />
             <Route path="/partners" component={Partner} />
+            <Route path="/stats" component={Stats} />
             <Route path="/learn" component={Help} />
             <Route component={Home} />
           </Switch>
