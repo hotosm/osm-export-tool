@@ -4,10 +4,13 @@ from distutils.util import strtobool
 from itertools import chain
 import logging
 import json
+from django.utils import timezone
+from datetime import timedelta
 
 import dateutil.parser
 import requests
 from cachetools.func import ttl_cache
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
@@ -245,6 +248,20 @@ def permalink(request, uid):
     except DjangoValidationError:
         return HttpResponseNotFound()
 
+@require_http_methods(['GET'])
+def stats(request):
+    last_100 = Job.objects.order_by('-created_at')[:100]
+    last_100_bboxes = [job.the_geom.extent for job in last_100]
+
+    def users(days):
+        return User.objects.filter(date_joined__gte=timezone.now()-timedelta(days=days)).count()
+
+    def exports(days):
+        return Job.objects.filter(created_at__gte=timezone.now()-timedelta(days=days)).count()
+
+    new_users = [users(1),users(7),users(30)]
+    new_exports = [exports(1),exports(7),exports(30)]
+    return HttpResponse(json.dumps({'new_users':new_users,'new_exports':new_exports,'last_100_bboxes':last_100_bboxes}))
 
 @require_http_methods(['GET'])
 @login_required()
