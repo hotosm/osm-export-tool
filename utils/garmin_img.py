@@ -51,7 +51,7 @@ class GarminIMG(object):
 
         # NOTE: disabled poly bounds: see https://github.com/hotosm/osm-export-tool2/issues/248
         # may be superseded by querying Overpass with a polygon
-        splitter_cmd = "java -Xmx1024m -jar {splitter} --output-dir={work_dir} {pbffile}"
+        splitter_cmd = "java -Xmx2048m -jar {splitter} --output-dir={work_dir} {pbffile}"
         cmd = splitter_cmd.format(splitter=self.splitter,work_dir=self.work_dir,pbffile=self.input_pbf)
         LOG.debug('Running: %s' % cmd)
         subprocess.check_call(cmd, shell=True, executable='/bin/bash',stdout=open(os.devnull))
@@ -60,7 +60,7 @@ class GarminIMG(object):
         # see: http://wiki.openstreetmap.org/wiki/Mkgmap/help/splitter
         mkgmap_cmd = """
             java \
-            -Xmx1024m \
+            -Xmx2048m \
             -jar {mkgmap} \
             --gmapsupp \
             --output-dir={work_dir} \
