@@ -22,3 +22,4 @@ gunicorn==19.9.0
 osmium~=2.15.2
 dramatiq[redis,watch]~=1.7.0
 boto3~=1.9.238 # needed for cloudwatch
+rasterio~=1.0.25
