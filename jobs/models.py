@@ -7,6 +7,8 @@ import logging
 import json
 import uuid
 import re
+import os
+import math
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -15,17 +17,64 @@ from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from collections import namedtuple
 import mercantile
 
 from hdx_exports.hdx_export_set import HDXExportSet
 from feature_selection.feature_selection import FeatureSelection
-from utils.aoi_utils import simplify_geom, get_geodesic_area, check_extent, force2d
+from utils.aoi_utils import simplify_geom, force2d
 from django.contrib import admin
+
+import rasterio
+from rasterio import mask
 
 LOG = logging.getLogger(__name__)
 MAX_TILE_COUNT = 10000
 
+DIR = os.path.dirname(os.path.abspath(__file__))
+RASTER = rasterio.open(os.path.join(DIR,'osm_nodes.tif'))
+
 Group.add_to_class('is_partner', models.BooleanField(null=False, default=False))
+
+def get_geodesic_area(geom):
+    bbox = geom.envelope
+    """
+    Uses the algorithm to calculate geodesic area of a polygon from OpenLayers 2.
+    See http://bit.ly/1Mite1X.
+
+    Args:
+        geom (GEOSGeometry): the export extent as a GEOSGeometry.
+
+    Returns
+        area (float): the geodesic area of the provided geometry.
+    """
+    area = 0.0
+    coords = bbox.coords[0]
+    length = len(coords)
+    if length > 2:
+        for x in range(length - 1):
+            p1 = coords[x]
+            p2 = coords[x+1]
+            area += math.radians(p2[0] - p1[0]) * (2 + math.sin(math.radians(p1[1]))
+                                                   + math.sin(math.radians(p2[1])))
+        area = abs(int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000))
+    return area
+
+MAX_NODES = 10000000
+ValidateResult = namedtuple('ValidateResult',['valid','message','params'])
+
+def check_extent(aoi,url):
+    if not aoi.valid:
+        return ValidateResult(False,aoi.valid_reason,None)
+    aoi.srid = 4326
+    transformed = aoi.transform(3857,clone=True)
+    masked = mask.mask(RASTER,[json.loads(transformed.json)],all_touched=False)
+    nodes = masked[0].sum() * 1000
+    if nodes > MAX_NODES:
+        return ValidateResult(False, "The selected area's bounding box contains about %(nodes)s nodes.\
+            The maximum is %(maxnodes)s. Please choose a smaller area.",
+            {'nodes':nodes,'maxnodes':MAX_NODES})
+    return ValidateResult(True,None,None)
 
 def validate_export_formats(value):
     if not value:
