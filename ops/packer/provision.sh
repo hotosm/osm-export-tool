@@ -44,7 +44,6 @@ osmium-tool \
 awscli
 
 pip install virtualenv
-pip3 install boto3
 
 # Ubuntu 18.04 fix. see https://github.com/valhalla/valhalla/issues/1437
 ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_spatialite
@@ -85,7 +84,5 @@ mv /tmp/nginx.conf /etc/nginx/nginx.conf
 mv /tmp/django.service /etc/systemd/system/django.service
 mv /tmp/worker-ondemand.service /etc/systemd/system/worker-ondemand.service
 mv /tmp/worker-scheduled.service /etc/systemd/system/worker-scheduled.service
-mv /tmp/cloudwatch_metrics.py /home/exports/cloudwatch_metrics.py
-chmod +x /home/exports/cloudwatch_metrics.py
 
 yarn global add tl @mapbox/mbtiles @mapbox/tilelive @mapbox/tilejson tilelive-http --prefix /usr/local/

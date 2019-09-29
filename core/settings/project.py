@@ -22,8 +22,7 @@ INSTALLED_APPS += (
     'utils',
 )
 
-redis_broker = RedisBroker(host="localhost", port=6379)
-dramatiq.set_broker(redis_broker)
+dramatiq.set_broker(RedisBroker(host="localhost", port=6379))
 
 DATABASES = {}
 
