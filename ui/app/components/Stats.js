@@ -12,9 +12,6 @@ export default class Stats extends Component {
   }
 
   componentDidMount() {
-
-    console.log("Fetch stats")
-
     axios({
       baseURL: window.EXPORTS_API_URL,
       url: "/api/stats"
@@ -45,7 +42,6 @@ export default class Stats extends Component {
       })
     })
   }
-
 
   render() {
     return <Row style={{ height: "100%" }}>
