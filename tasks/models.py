@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
 from jobs.models import Job, HDXExportRegion, SavedFeatureSelection, PartnerExportRegion
 from django.contrib import admin
-from django.contrib.gis.admin import OSMGeoAdmin
+from django.contrib.gis.admin import GeoModelAdmin
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
@@ -137,7 +137,7 @@ class ExportRunsInline(admin.TabularInline):
 
 
 
-class JobAdmin(OSMGeoAdmin):
+class JobAdmin(GeoModelAdmin):
     """
     Admin model for editing Jobs in the admin interface.
     """
