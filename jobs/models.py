@@ -90,10 +90,10 @@ def validate_export_formats(value):
             )
 
 def validate_feature_selection(value):
-    pass
-    #f = FeatureSelection(value)
-    #if not f.valid:
-    #    raise ValidationError(f.errors)
+    from osm_export_tool.mapping import Mapping
+    m, errors = Mapping.validate(value)
+    if not m:
+        raise ValidationError(errors)
 
 def validate_aoi(aoi):
     result = check_extent(aoi,settings.OVERPASS_API_URL)

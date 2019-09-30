@@ -3,34 +3,19 @@
 
 import logging
 import os
-import shutil
-import traceback
+from os.path import join, exists
+
+from raven import Client
 import dramatiq
 import django
 from django.apps import apps
 from django.conf import settings
-
+from django.utils import timezone
 if not apps.ready and not settings.configured:
     django.setup()
 
-from django.contrib.gis.geos import GEOSGeometry
-from django.utils import timezone
-from django.utils.text import slugify
-from django.db import IntegrityError
-
-from raven import Client
-
-from jobs.models import Job, HDXExportRegion
+from jobs.models import Job
 from tasks.models import ExportRun, ExportTask
-
-from .email import (
-    send_completion_notification,
-    send_error_notification,
-    send_hdx_completion_notification,
-    send_hdx_error_notification,
-)
-
-import time
 
 import osm_export_tool
 import osm_export_tool.tabular as tabular
@@ -38,6 +23,7 @@ import osm_export_tool.nontabular as nontabular
 from osm_export_tool.mapping import Mapping
 from osm_export_tool.geometry import load_geometry
 from osm_export_tool.sources import Overpass
+from osm_export_tool.package import create_package
 
 client = Client()
 
@@ -77,7 +63,12 @@ def run_task_async_scheduled(run_uid):
     run_task_remote(run_uid)
 
 def run_task_remote(run_uid):
-    stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
+    stage_dir = join(settings.EXPORT_STAGING_ROOT, run_uid)
+    download_dir = join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
+    if not exists(stage_dir):
+        os.makedirs(stage_dir)
+    if not exists(download_dir):
+        os.makedirs(download_dir)
 
     run = ExportRun.objects.get(uid=run_uid)
     run.status = 'RUNNING'
@@ -87,18 +78,8 @@ def run_task_remote(run_uid):
     LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
     job = run.job
 
-    # set up staging and download directories
-    if not os.path.exists(stage_dir):
-        os.makedirs(stage_dir, 6600)
-    run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
-
-    if not os.path.exists(run_dir):
-        os.makedirs(run_dir)
-
-    # prepare to call osm_export_tool
     geom = load_geometry(job.simplified_geom.json)
     export_formats = job.export_formats
-    download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
     mapping = Mapping(job.feature_selection)
 
     def start_task(name):
@@ -115,33 +96,43 @@ def run_task_remote(run_uid):
         task.finished_at = timezone.now()
         task.save()
 
+    geopackage = None
+    shp = None
+    kml = None
+
     tabular_outputs = []
     if 'geopackage' in export_formats:
-        tabular_outputs.append(tabular.Geopackage(os.path.join(stage_dir,'test_gpkg'),mapping))
+        geopackage = tabular.Geopackage(join(stage_dir,'test_gpkg'),mapping)
+        tabular_outputs.append(geopackage)
         start_task('geopackage')
 
-    if 'shapefile' in export_formats:
-        tabular_outputs.append(tabular.Shapefile(os.path.join(stage_dir,'test_shp'),mapping))
-        start_task('shapefile')
+    if 'shp' in export_formats:
+        shp = tabular.Shapefile(join(stage_dir,'test_shp'),mapping)
+        tabular_outputs.append(shp)
+        start_task('shp')
 
     if 'kml' in export_formats:
-        tabular_outputs.append(tabular.Kml(os.path.join(stage_dir,'test_kml'),mapping))
+        kml = tabular.append(tabular.Kml(join(stage_dir,'test_kml'),mapping))
+        tabular_outputs.append(kml)
         start_task('kml')
 
     h = tabular.Handler(tabular_outputs,mapping)
-    source = Overpass('http://overpass.hotosm.org',geom,os.path.join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
+    source = Overpass('http://overpass.hotosm.org',geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
     h.apply_file(source.path(), locations=True, idx='sparse_file_array')
 
-    for output in tabular_outputs:
-        output.finalize()
-
-    if 'geopackage' in export_formats:
+    if geopackage:
+        geopackage.finalize()
+        create_package(join(download_dir,'gpkg.zip'),geopackage.files,boundary_geom=geom)
         finish_task('geopackage')
 
-    if 'shapefile' in export_formats:
-        finish_task('shapefile')
+    if shp:
+        shp.finalize()
+        create_package(join(download_dir,'shp.zip'),shp.files,boundary_geom=geom)
+        finish_task('shp')
 
-    if 'kml' in export_formats:
+    if kml:
+        kml.finalize()
+        create_package(join(download_dir,'kml.zip'),kml.files,boundary_geom=geom)
         finish_task('kml')
 
     run.status = 'COMPLETED'
