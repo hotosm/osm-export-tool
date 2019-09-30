@@ -21,7 +21,7 @@ from collections import namedtuple
 import mercantile
 
 from hdx_exports.hdx_export_set import HDXExportSet
-from feature_selection.feature_selection import FeatureSelection
+#from feature_selection.feature_selection import FeatureSelection
 from utils.aoi_utils import simplify_geom, force2d
 from django.contrib import admin
 
@@ -90,9 +90,10 @@ def validate_export_formats(value):
             )
 
 def validate_feature_selection(value):
-    f = FeatureSelection(value)
-    if not f.valid:
-        raise ValidationError(f.errors)
+    pass
+    #f = FeatureSelection(value)
+    #if not f.valid:
+    #    raise ValidationError(f.errors)
 
 def validate_aoi(aoi):
     result = check_extent(aoi,settings.OVERPASS_API_URL)

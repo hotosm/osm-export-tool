@@ -23,17 +23,21 @@ from raven import Client
 from jobs.models import Job, HDXExportRegion
 from tasks.models import ExportRun, ExportTask
 
-from utils import map_names_to_formats
-from utils.manager import RunManager, Zipper
-from utils.osm_xml import EmptyOsmXmlException
-from utils.posm_bundle import POSMBundle
-
 from .email import (
     send_completion_notification,
     send_error_notification,
     send_hdx_completion_notification,
     send_hdx_error_notification,
 )
+
+import time
+
+import osm_export_tool
+import osm_export_tool.tabular as tabular
+import osm_export_tool.nontabular as nontabular
+from osm_export_tool.mapping import Mapping
+from osm_export_tool.geometry import load_geometry
+from osm_export_tool.sources import Overpass
 
 client = Client()
 
@@ -74,121 +78,73 @@ def run_task_async_scheduled(run_uid):
 
 def run_task_remote(run_uid):
     stage_dir = os.path.join(settings.EXPORT_STAGING_ROOT, str(run_uid)) + '/'
-    try:
-        run = ExportRun.objects.get(uid=run_uid)
-        run.status = 'RUNNING'
-        run.started_at = timezone.now()
-        run.save()
-        LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
-        job = run.job
 
-        if not os.path.exists(stage_dir):
-            os.makedirs(stage_dir, 6600)
-        run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
-        if not os.path.exists(run_dir):
-            os.makedirs(run_dir)
+    run = ExportRun.objects.get(uid=run_uid)
+    run.status = 'RUNNING'
+    run.started_at = timezone.now()
+    run.save()
 
-        aoi = job.simplified_geom
-        feature_selection = job.feature_selection_object
+    LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
+    job = run.job
 
-        export_formats = map_names_to_formats(job.export_formats)
+    # set up staging and download directories
+    if not os.path.exists(stage_dir):
+        os.makedirs(stage_dir, 6600)
+    run_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
 
-        download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
-        zipper = Zipper(
-            slugify(job.name, allow_unicode=True), stage_dir, download_dir, aoi, feature_selection)
+    if not os.path.exists(run_dir):
+        os.makedirs(run_dir)
 
-        def on_task_start(formatcls):
-            LOG.debug('Task Start: {0} for run: {1}'.format(formatcls.name, run_uid))
-            if formatcls in export_formats:
-                task = ExportTask.objects.get(run__uid=run_uid, name=formatcls.name)
-                task.status = 'RUNNING'
-                task.started_at = timezone.now()
-                task.save()
+    # prepare to call osm_export_tool
+    geom = load_geometry(job.simplified_geom.json)
+    export_formats = job.export_formats
+    download_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
+    mapping = Mapping(job.feature_selection)
 
+    def start_task(name):
+        LOG.debug('Task Start: {0} for run: {1}'.format(name, run_uid))
+        task = ExportTask.objects.get(run__uid=run_uid, name=name)
+        task.status = 'RUNNING'
+        task.started_at = timezone.now()
+        task.save()
 
-        def on_task_success(formatcls, results):
-            LOG.debug('Task Success: {0} for run: {1}'.format(formatcls.name, run_uid))
-            if formatcls in export_formats:
-                task = ExportTask.objects.get(run__uid=run_uid, name=formatcls.name)
-                if formatcls == POSMBundle:
-                    filename = os.path.basename(results[0].basename)
-                    bundle_name = u"{}-{}".format(
-                        slugify(job.name, allow_unicode=True), filename)
+    def finish_task(name):
+        LOG.debug('Task Finish: {0} for run: {1}'.format(name, run_uid))
+        task = ExportTask.objects.get(run__uid=run_uid, name=name)
+        task.status = 'SUCCESS'
+        task.finished_at = timezone.now()
+        task.save()
 
-                    task.filesize_bytes = os.stat(
-                        os.path.join(stage_dir, filename)).st_size
-                    task.filenames = [bundle_name]
+    tabular_outputs = []
+    if 'geopackage' in export_formats:
+        tabular_outputs.append(tabular.Geopackage(os.path.join(stage_dir,'test_gpkg'),mapping))
+        start_task('geopackage')
 
-                    target_path = os.path.join(
-                        download_dir, bundle_name).encode('utf-8')
-                    shutil.move(os.path.join(stage_dir, filename), target_path)
-                else:
-                    zipfiles = zipper.run(results)
-                    task.filesize_bytes = sum(os.stat(zipfile).st_size for zipfile in zipfiles)
-                    task.filenames = [os.path.basename(zipfile) for zipfile in zipfiles]
-                task.status = 'SUCCESS'
-                task.finished_at = timezone.now()
-                task.save()
+    if 'shapefile' in export_formats:
+        tabular_outputs.append(tabular.Shapefile(os.path.join(stage_dir,'test_shp'),mapping))
+        start_task('shapefile')
 
-        is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
-        overpass_max_size = 4294967296
-        r = RunManager(
-                job.name,
-                job.description,
-                export_formats,
-                aoi,
-                feature_selection,
-                stage_dir,
-                map_creator_dir=settings.OSMAND_MAP_CREATOR_DIR,
-                garmin_splitter=settings.GARMIN_SPLITTER,
-                garmin_mkgmap=settings.GARMIN_MKGMAP,
-                per_theme=job.per_theme,
-                on_task_start=on_task_start,
-                on_task_success=on_task_success,
-                overpass_api_url=settings.OVERPASS_API_URL,
-                overpass_max_size=overpass_max_size,
-                mbtiles_maxzoom=job.mbtiles_maxzoom,
-                mbtiles_minzoom=job.mbtiles_minzoom,
-                mbtiles_source=job.mbtiles_source,
-            )
-        r.run()
+    if 'kml' in export_formats:
+        tabular_outputs.append(tabular.Kml(os.path.join(stage_dir,'test_kml'),mapping))
+        start_task('kml')
 
-        public_dir = settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT, run_uid)
+    h = tabular.Handler(tabular_outputs,mapping)
+    source = Overpass('http://overpass.hotosm.org',geom,os.path.join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
+    h.apply_file(source.path(), locations=True, idx='sparse_file_array')
 
-        if settings.SYNC_TO_HDX and is_hdx_export:
-            LOG.debug("Adding resources to HDX")
-            region = HDXExportRegion.objects.get(job_id=run.job_id)
-            export_set = region.hdx_dataset
-            export_set.sync_resources(zipper.zipped_resources,public_dir)
+    for output in tabular_outputs:
+        output.finalize()
 
-        if run.job.hdx_export_region_set.count() == 0:
-            # not associated with an HDX Export Regon; send mail
-            send_completion_notification(run)
-        else:
-            send_hdx_completion_notification(
-                run, run.job.hdx_export_region_set.first())
+    if 'geopackage' in export_formats:
+        finish_task('geopackage')
 
-        run.status = 'COMPLETED'
-        run.finished_at = timezone.now()
-        run.save()
-        LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
-    except (ExportTask.DoesNotExist, ExportRun.DoesNotExist, Job.DoesNotExist, IntegrityError):
-        LOG.debug('Export run no longer exists. Terminating job run.')
-    except Exception as e:
-        client.captureException(
-            extra={
-                'run_uid': run_uid,
-            }
-        )
-        run.status = 'FAILED'
-        run.finished_at = timezone.now()
-        run.save()
-        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
-        LOG.warn(traceback.format_exc())
-        send_error_notification(run)
-        if run.job.hdx_export_region_set.count() > 0:
-            send_hdx_error_notification(
-                run, run.job.hdx_export_region_set.first())
-    finally:
-        if os.path.exists(stage_dir):
-            shutil.rmtree(stage_dir)
+    if 'shapefile' in export_formats:
+        finish_task('shapefile')
+
+    if 'kml' in export_formats:
+        finish_task('kml')
+
+    run.status = 'COMPLETED'
+    run.finished_at = timezone.now()
+    run.save()
+    LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))

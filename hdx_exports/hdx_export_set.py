@@ -7,13 +7,13 @@ import subprocess
 import traceback
 import zipfile
 
-from feature_selection.feature_selection import FeatureSelection, slugify
+#from feature_selection.feature_selection import FeatureSelection, slugify
 from hdx.data.dataset import Dataset
 #from hdx.data.galleryitem import GalleryItem
 from raven import Client
 
 from django.contrib.gis.geos import GEOSGeometry
-from utils.artifact import Artifact
+#from utils.artifact import Artifact
 
 client = Client()
 
