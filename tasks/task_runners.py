@@ -3,16 +3,21 @@
 
 import logging
 import os
-from os.path import join, exists
+from os.path import join, exists, basename
+import shutil
 
-from raven import Client
-import dramatiq
 import django
 from django.apps import apps
 from django.conf import settings
-from django.utils import timezone
+
 if not apps.ready and not settings.configured:
     django.setup()
+
+import dramatiq
+from raven import Client
+
+from django.utils import timezone
+from django.utils.text import get_valid_filename
 
 from jobs.models import Job
 from tasks.models import ExportRun, ExportTask
@@ -24,6 +29,7 @@ from osm_export_tool.mapping import Mapping
 from osm_export_tool.geometry import load_geometry
 from osm_export_tool.sources import Overpass
 from osm_export_tool.package import create_package
+
 
 client = Client()
 
@@ -77,6 +83,7 @@ def run_task_remote(run_uid):
 
     LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
     job = run.job
+    valid_name = get_valid_filename(job.name)
 
     geom = load_geometry(job.simplified_geom.json)
     export_formats = job.export_formats
@@ -89,11 +96,13 @@ def run_task_remote(run_uid):
         task.started_at = timezone.now()
         task.save()
 
-    def finish_task(name):
+    def finish_task(name,created_file):
         LOG.debug('Task Finish: {0} for run: {1}'.format(name, run_uid))
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'SUCCESS'
         task.finished_at = timezone.now()
+        task.filenames = [basename(part) for part in created_file.parts]
+        task.filesize_bytes = created_file.size()
         task.save()
 
     geopackage = None
@@ -112,28 +121,61 @@ def run_task_remote(run_uid):
         start_task('shp')
 
     if 'kml' in export_formats:
-        kml = tabular.append(tabular.Kml(join(stage_dir,'test_kml'),mapping))
+        kml = tabular.Kml(join(stage_dir,'test_kml'),mapping)
         tabular_outputs.append(kml)
         start_task('kml')
 
     h = tabular.Handler(tabular_outputs,mapping)
     source = Overpass('http://overpass.hotosm.org',geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
+
+
     h.apply_file(source.path(), locations=True, idx='sparse_file_array')
 
     if geopackage:
         geopackage.finalize()
-        create_package(join(download_dir,'gpkg.zip'),geopackage.files,boundary_geom=geom)
-        finish_task('geopackage')
+        zips = create_package(join(download_dir,valid_name + '_gpkg.zip'),geopackage.files,boundary_geom=geom)
+        finish_task('geopackage',zips)
 
     if shp:
         shp.finalize()
-        create_package(join(download_dir,'shp.zip'),shp.files,boundary_geom=geom)
-        finish_task('shp')
+        zips = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
+        finish_task('shp',zips)
 
     if kml:
         kml.finalize()
-        create_package(join(download_dir,'kml.zip'),kml.files,boundary_geom=geom)
-        finish_task('kml')
+        zips = create_package(join(download_dir,valid_name + '_kml.zip'),kml.files,boundary_geom=geom)
+        finish_task('kml',zips)
+
+    if 'garmin_img' in export_formats:
+        start_task('garmin_img')
+        garmin_files = nontabular.garmin(source.path(),settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
+        zips = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom)
+        finish_task('garmin_img',zips)
+
+    if 'mwm' in export_formats:
+        start_task('mwm')
+        mwm_files = nontabular.mwm(source.path(),join(stage_dir,'mwm'),settings.GENERATE_MWM,settings.GENERATOR_TOOL)
+        zips = create_package(join(download_dir,valid_name + '_mwm.zip'),mwm_files,boundary_geom=geom)
+        finish_task('mwm',zips)
+
+    if 'osmand_obf' in export_formats:
+        start_task('osmand_obf')
+        osmand_files = nontabular.osmand(source.path(),settings.OSMAND_MAP_CREATOR_DIR,tempdir=stage_dir)
+        zips = create_package(join(download_dir,valid_name + '_Osmand2_obf.zip'),osmand_files,boundary_geom=geom)
+        finish_task('osmand_obf',zips)
+
+    if 'mbtiles' in export_formats:
+        start_task('mbtiles')
+        mbtiles_files = nontabular.mbtiles(geom,join(stage_dir,valid_name + '.mbtiles'),job.mbtiles_source,job.mbtiles_minzoom,job.mbtiles_maxzoom)
+        zips = create_package(join(download_dir,valid_name + '_mbtiles.zip'),mbtiles_files,boundary_geom=geom)
+        finish_task('mbtiles',zips)
+
+    # do this last so we can do a mv instead of a copy
+    if 'osm_pbf' in export_formats:
+        start_task('osm_pbf')
+        target = join(download_dir,valid_name + '.osm.pbf')
+        shutil.move(source.path(),target)
+        finish_task('osm_pbf',osm_export_tool.File('pbf',[target],''))
 
     run.status = 'COMPLETED'
     run.finished_at = timezone.now()
