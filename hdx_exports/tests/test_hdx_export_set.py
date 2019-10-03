@@ -50,7 +50,7 @@ waterways:
         - natural
     where: natural in ('waterway')
 '''
-BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
+#BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
 
 SINGLE_THEME_NOTE = """
 OpenStreetMap exports for use in GIS applications.
