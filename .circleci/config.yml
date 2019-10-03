@@ -12,5 +12,7 @@ jobs:
             sudo apt-get install libgdal-dev osmctools gdal-bin
             virtualenv ./venv
             source venv/bin/activate
+            export CPLUS_INCLUDE_PATH=/usr/include/gdal
+            export C_INCLUDE_PATH=/usr/include/gdal
             pip install -r requirements-dev.txt
             make test
