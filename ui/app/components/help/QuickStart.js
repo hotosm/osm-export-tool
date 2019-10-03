@@ -96,6 +96,9 @@ export default () =>
               <p>
                 For more information about feature selection, see the documentation: <Link to="/learn/feature_selections">Feature Selections</Link>
               </p>
+              <p>
+                The export tool exports features for only a selected region. Some complex features that need to be processed globally, such as land and ocean polygons created from OSM coastlines, are available through other sites such as <a href="https://osmdata.openstreetmap.de">osmdata.openstreetmap.de</a>.
+              </p>
             </div>
             <div>
               <h2 id="step5">5. Downloading your Files</h2>
