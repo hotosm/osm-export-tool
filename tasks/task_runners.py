@@ -28,7 +28,7 @@ import osm_export_tool.nontabular as nontabular
 from osm_export_tool.mapping import Mapping
 from osm_export_tool.geometry import load_geometry
 from osm_export_tool.sources import Overpass
-from osm_export_tool.package import create_package
+from osm_export_tool.package import create_package, create_posm_bundle
 
 
 client = Client()
@@ -128,47 +128,60 @@ def run_task_remote(run_uid):
     h = tabular.Handler(tabular_outputs,mapping)
     source = Overpass('http://overpass.hotosm.org',geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
-
     h.apply_file(source.path(), locations=True, idx='sparse_file_array')
+
+    bundle_files = []
 
     if geopackage:
         geopackage.finalize()
         zips = create_package(join(download_dir,valid_name + '_gpkg.zip'),geopackage.files,boundary_geom=geom)
+        bundle_files += geopackage.files
         finish_task('geopackage',zips)
 
     if shp:
         shp.finalize()
         zips = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
+        bundle_files += shp.files
         finish_task('shp',zips)
 
     if kml:
         kml.finalize()
         zips = create_package(join(download_dir,valid_name + '_kml.zip'),kml.files,boundary_geom=geom)
+        bundle_files += kml.files
         finish_task('kml',zips)
 
     if 'garmin_img' in export_formats:
         start_task('garmin_img')
         garmin_files = nontabular.garmin(source.path(),settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
+        bundle_files += garmin_files
         zips = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom)
         finish_task('garmin_img',zips)
 
     if 'mwm' in export_formats:
         start_task('mwm')
         mwm_files = nontabular.mwm(source.path(),join(stage_dir,'mwm'),settings.GENERATE_MWM,settings.GENERATOR_TOOL)
+        bundle_files += mwm_files
         zips = create_package(join(download_dir,valid_name + '_mwm.zip'),mwm_files,boundary_geom=geom)
         finish_task('mwm',zips)
 
     if 'osmand_obf' in export_formats:
         start_task('osmand_obf')
         osmand_files = nontabular.osmand(source.path(),settings.OSMAND_MAP_CREATOR_DIR,tempdir=stage_dir)
+        bundle_files += osmand_files
         zips = create_package(join(download_dir,valid_name + '_Osmand2_obf.zip'),osmand_files,boundary_geom=geom)
         finish_task('osmand_obf',zips)
 
     if 'mbtiles' in export_formats:
         start_task('mbtiles')
         mbtiles_files = nontabular.mbtiles(geom,join(stage_dir,valid_name + '.mbtiles'),job.mbtiles_source,job.mbtiles_minzoom,job.mbtiles_maxzoom)
+        bundle_files += mbtiles_files
         zips = create_package(join(download_dir,valid_name + '_mbtiles.zip'),mbtiles_files,boundary_geom=geom)
         finish_task('mbtiles',zips)
+
+    if 'bundle' in export_formats:
+        start_task('bundle')
+        zips = create_posm_bundle(join(download_dir,valid_name + '-bundle.tar.gz'),bundle_files,job.name,valid_name,job.description,geom)
+        finish_task('bundle',zips)
 
     # do this last so we can do a mv instead of a copy
     if 'osm_pbf' in export_formats:
