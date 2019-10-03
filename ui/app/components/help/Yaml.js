@@ -144,10 +144,14 @@ export default () =>
                 <code>IS NOT NULL, AND, OR, IN, =, !=</code>.
               </p>
               <p>Other examples of filters:</p>
-              <pre>{`where: natural = 'waterway'
-          where: 'addr:housenumber' IS NOT NULL
-          where: natural IN ('waterway','riverbank')`}
+              <pre>{`where: 
+- natural = 'waterway'
+- 'addr:housenumber' IS NOT NULL
+- natural IN ('waterway','riverbank')`}
               </pre>
+
+              If the value of 'where' is a list, the effect is that all clauses are 'OR'ed together - a feature will match if any SQL clause is true.
+              This is meant to help make the YAML tidier.
             </div>
             <div>
               <h2 id="josm_presets">Converting from JOSM Presets</h2>

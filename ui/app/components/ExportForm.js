@@ -329,7 +329,7 @@ buildings:
         - building
     where: building IS NOT NULL
       `.trim(),
-      export_formats: ["shp"]
+      export_formats: ["geopackage"]
     }
   };
 };

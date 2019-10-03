@@ -23,14 +23,14 @@ import { selectIsLoggedIn, selectIsLoggingIn } from "../selectors";
 import styles from "../styles/utilsStyles.css";
 
 export const AVAILABLE_EXPORT_FORMATS = {
-  shp: (
-    <span key="shp">
-      Shapefile <code>.shp</code>
-    </span>
-  ),
   geopackage: (
     <span key="geopackage">
       GeoPackage <code>.gpkg</code>
+    </span>
+  ),
+  shp: (
+    <span key="shp">
+      Shapefile <code>.shp</code>
     </span>
   ),
   garmin_img: (
