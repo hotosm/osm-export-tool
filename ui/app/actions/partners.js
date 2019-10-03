@@ -147,11 +147,13 @@ export const deleteExportRegion = id => (dispatch, getState) => {
     url: `/api/partner_export_regions/${id}`,
     method: "DELETE"
   })
-    .then(rsp =>
-      dispatch({
-        type: types.EXPORT_REGION_DELETED,
-        id
-      })
+    .then(rsp => {
+        dispatch({
+          type: types.EXPORT_REGION_DELETED,
+          id
+        })
+        dispatch(push(`/partners`))
+      }
     )
     .catch(error =>
       dispatch({
