@@ -37,7 +37,7 @@ def sync_datasets(datasets,update_dataset_date=False):
             dataset.set_dataset_date_from_datetime(datetime.now())
             dataset.create_in_hdx(allow_no_resources=True)
 
-def sync_region(region):
+def sync_region(region,files=[]):
     export_set = HDXExportSet(
         Mapping(region.feature_selection),
         region.dataset_prefix,
@@ -48,7 +48,8 @@ def sync_region(region):
         region.is_private,
         region.subnational,
         region.update_frequency,
-        region.locations
+        region.locations,
+        files
     )
     sync_datasets(datasets)
 
@@ -82,7 +83,23 @@ class HDXExportSet(object):
                 filter_str=filter_str
             )
 
-    def datasets(self,is_private,subnational,data_update_frequency,locations):
+    def datasets(self,is_private,subnational,data_update_frequency,locations,files):
+        HDX_FORMATS = {
+            'shp':'zipped shapefile',
+            'geopackage':'zipped geopackage',
+            'garmin_img':'zipped img',
+            'osm_pbf':'pbf',
+            'kml':'zipped kml'
+        }
+
+        HDX_DESCRIPTIONS = {
+            'shp':'ESRI Shapefile',
+            'geopackage':'Geopackage, SQLite compatible',
+            'garmin_img':'.IMG for Garmin GPS Devices (All OSM layers for area)',
+            'osm_pbf':'OpenStreetMap .PBF',
+            'kml':'Google Earth .KML'
+        }
+
         d = []
         for theme in self._mapping.themes:
             dataset = Dataset()
@@ -117,21 +134,6 @@ class HDXExportSet(object):
         return d
 
     # def sync_resources(self,artifact_list,public_dir):
-    #     HDX_FORMATS = {
-    #         'shp':'zipped shapefile',
-    #         'geopackage':'zipped geopackage',
-    #         'garmin_img':'zipped img',
-    #         'osm_pbf':'pbf',
-    #         'kml':'zipped kml'
-    #     }
-
-    #     HDX_DESCRIPTIONS = {
-    #         'shp':'ESRI Shapefile',
-    #         'geopackage':'Geopackage, SQLite compatible',
-    #         'garmin_img':'.IMG for Garmin GPS Devices (All OSM layers for area)',
-    #         'osm_pbf':'OpenStreetMap .PBF',
-    #         'kml':'Google Earth .KML'
-    #     }
 
     #     ".SHP Points", ".SHP Lines", ".SHP Polygons", ".IMG", ".KML"
 
