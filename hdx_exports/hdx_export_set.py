@@ -1,6 +1,7 @@
 from datetime import datetime
 import django.utils.text
 from hdx.data.dataset import Dataset
+from osm_export_tool.mapping import Mapping
 
 FILTER_CRITERIA = """
 This theme includes all OpenStreetMap features in this area matching:
@@ -35,6 +36,21 @@ def sync_datasets(datasets,update_dataset_date=False):
         else:
             dataset.set_dataset_date_from_datetime(datetime.now())
             dataset.create_in_hdx(allow_no_resources=True)
+
+def sync_region(region):
+    export_set = HDXExportSet(
+        Mapping(region.feature_selection),
+        region.dataset_prefix,
+        region.name,
+        region.extra_notes
+    )
+    datasets = export_set.datasets(
+        region.is_private,
+        region.subnational,
+        region.update_frequency,
+        region.locations
+    )
+    sync_datasets(datasets)
 
 class HDXExportSet(object):
     def __init__(self,mapping,dataset_prefix,name,extra_notes=''):
