@@ -10,7 +10,7 @@ The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile de
 
 # Get involved!
 
-This is the source code for the web service available at [export.hotosm.org](https://export.hotosm.org). If you would like to export OSM data offline without using the web site, you can access the separate command line tool and Python Library. This repository is at [github.com/osm-export-tool-python](https://github.com/hotosm/osm-export-tool-python). *NOTE: as of 8/2019, this project is not integrated into the web service yet.*
+This is the source code for the web service available at [export.hotosm.org](https://export.hotosm.org). If you would like to export OSM data offline without using the web site, you can access the separate command line tool and Python Library. This repository is at [github.com/osm-export-tool-python](https://github.com/hotosm/osm-export-tool-python).
 
 ## How to report a problem or bug
 
