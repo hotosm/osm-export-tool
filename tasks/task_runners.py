@@ -183,7 +183,7 @@ def run_task_remote(run_uid):
             start_task('kml')
 
         h = tabular.Handler(tabular_outputs,mapping)
-        source = Overpass('http://overpass.hotosm.org',geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
+        source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         h.apply_file(source.path(), locations=True, idx='sparse_file_array')
 
@@ -241,7 +241,7 @@ def run_task_remote(run_uid):
             start_task('kml')
 
         h = tabular.Handler(tabular_outputs,mapping)
-        source = Overpass('http://overpass.hotosm.org',geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
+        source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         h.apply_file(source.path(), locations=True, idx='sparse_file_array')
 
