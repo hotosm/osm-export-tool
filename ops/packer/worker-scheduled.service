@@ -11,11 +11,6 @@ Environment=EMAIL_HOST_USER=
 Environment=EMAIL_HOST_PASSWORD=
 Environment=REPLY_TO_EMAIL=
 Environment=OVERPASS_API_URL=
-Environment=GARMIN_SPLITTER=/usr/local/splitter/splitter.jar
-Environment=GARMIN_MKGMAP=/usr/local/mkgmap/mkgmap.jar
-Environment=OSMAND_MAP_CREATOR_DIR=/usr/local/OsmAndMapCreator
-Environment=OSMCONVERT=/usr/bin/osmconvert
-Environment=GENERATOR_TOOL=/usr/local/bin/generator_tool
 Environment=DJANGO_SETTINGS_MODULE=core.settings.project
 User=exports
 WorkingDirectory=/home/exports/osm-export-tool/

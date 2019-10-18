@@ -60,12 +60,13 @@ EXPORT_DOWNLOAD_ROOT = os.getenv('EXPORT_DOWNLOAD_ROOT',ABS_PATH('../export_down
 # the root url for export downloads
 EXPORT_MEDIA_ROOT = '/downloads/'
 
-OSMAND_MAP_CREATOR_DIR = os.getenv('OSMAND_MAP_CREATOR_DIR', '/opt/osmandmapcreator/')
-GARMIN_SPLITTER = os.getenv('GARMIN_SPLITTER', '/opt/splitter/splitter.jar')
-GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/opt/mkgmap/mkgmap.jar')
+OSMAND_MAP_CREATOR_DIR = os.getenv('OSMAND_MAP_CREATOR_DIR', '/usr/local/OsmAndMapCreator')
+GARMIN_SPLITTER = os.getenv('GARMIN_SPLITTER', '/usr/local/splitter/splitter.jar')
+GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/usr/local/mkgmap/mkgmap.jar')
 
 # url to overpass api endpoint
 OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/')
+GENERATOR_TOOL = os.getenv('GENERATOR_TOOL','/usr/local/bin/generator_tool')
 
 """
 Maximum extent of a Job

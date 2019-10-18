@@ -1,8 +1,0 @@
-buildings:
-    types:
-        - lines
-        - polygons
-    select:
-        - name
-        - building
-    where: building IS NOT NULL

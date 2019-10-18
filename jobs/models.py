@@ -20,13 +20,13 @@ from django.core.exceptions import ValidationError
 from collections import namedtuple
 import mercantile
 
-from hdx_exports.hdx_export_set import HDXExportSet
-from feature_selection.feature_selection import FeatureSelection
 from utils.aoi_utils import simplify_geom, force2d
 from django.contrib import admin
 
 import rasterio
 from rasterio import mask
+from osm_export_tool.mapping import Mapping
+from hdx_exports.hdx_export_set import HDXExportSet
 
 LOG = logging.getLogger(__name__)
 MAX_TILE_COUNT = 10000
@@ -90,9 +90,10 @@ def validate_export_formats(value):
             )
 
 def validate_feature_selection(value):
-    f = FeatureSelection(value)
-    if not f.valid:
-        raise ValidationError(f.errors)
+    from osm_export_tool.mapping import Mapping
+    m, errors = Mapping.validate(value)
+    if not m:
+        raise ValidationError(errors)
 
 def validate_aoi(aoi):
     result = check_extent(aoi,settings.OVERPASS_API_URL)
@@ -163,13 +164,6 @@ class Job(models.Model):
     def osma_link(self):
         bounds = self.the_geom.extent
         return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/buildings/recency".format(*bounds)
-
-    @property
-    def feature_selection_object(self):
-        """
-        a valid FeatureSelection object based off the feature_selection text column.
-        """
-        return FeatureSelection(self.feature_selection)
 
     @property
     def area(self):
@@ -353,26 +347,13 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
 
     @property
     def datasets(self): # noqa
-        return self.hdx_dataset.dataset_links(settings.HDX_URL_PREFIX)
-
-    @property
-    def hdx_dataset(self): # noqa
-        """
-        Initialize an HDXExportSet corresponding to this Model.
-        """
-#       # TODO make distinction between GOESGeom/GeoJSON better
-        return HDXExportSet(
-            data_update_frequency=self.update_frequency,
-            dataset_prefix=self.dataset_prefix,
-            extent=self.job.the_geom,
-            extra_notes=self.extra_notes,
-            feature_selection=self.job.feature_selection_object,
-            is_private=self.is_private,
-            license=self.license,
-            locations=self.locations,
-            name=self.name,
-            subnational=self.subnational,
+        export_set = HDXExportSet(
+            Mapping(self.feature_selection),
+            self.dataset_prefix,
+            self.name,
+            self.extra_notes
         )
+        return export_set.dataset_links(settings.HDX_URL_PREFIX)
 
     @property
     def update_frequency(self):
@@ -390,11 +371,3 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
             return 30
 
         return 0
-
-    def sync_to_hdx(self): # noqa
-        LOG.info("HDXExportRegion.sync_to_hdx called.")
-        self.hdx_dataset.sync_datasets()
-
-
-
-

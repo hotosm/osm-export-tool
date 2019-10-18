@@ -4,7 +4,6 @@ import json
 import unittest
 from hdx_exports.hdx_export_set import HDXExportSet
 from hdx.hdx_configuration import Configuration
-from feature_selection.feature_selection import FeatureSelection
 from django.contrib.gis.geos import GEOSGeometry
 
 from hdx.data.hdxobject import HDXError
@@ -51,7 +50,7 @@ waterways:
         - natural
     where: natural in ('waterway')
 '''
-BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
+#BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
 
 SINGLE_THEME_NOTE = """
 OpenStreetMap exports for use in GIS applications.

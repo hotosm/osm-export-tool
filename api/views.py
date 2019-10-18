@@ -37,6 +37,8 @@ from tasks.task_runners import ExportTaskRunner
 from .permissions import IsHDXAdmin, IsOwnerOrReadOnly, IsMemberOfGroup
 from .renderers import HOTExportApiRenderer
 
+from hdx_exports.hdx_export_set import sync_region
+
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
@@ -204,14 +206,14 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
-            serializer.instance.sync_to_hdx()
+            sync_region(serializer.instance)
         else:
             print("Stubbing interaction with HDX API.")
 
     def perform_update(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
-            serializer.instance.sync_to_hdx()
+            sync_region(serializer.instance)
         else:
             print("Stubbing interaction with HDX API.")
 

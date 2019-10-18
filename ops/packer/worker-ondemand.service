@@ -3,6 +3,7 @@ Description=On-demand tasks
 After=syslog.target
 
 [Service]
+Environment=HOSTNAME=
 Environment=EXPORT_STAGING_ROOT=/mnt/data/staging
 Environment=EXPORT_DOWNLOAD_ROOT=/mnt/data/downloads
 Environment=SENTRY_DSN=
@@ -11,11 +12,6 @@ Environment=EMAIL_HOST_USER=
 Environment=EMAIL_HOST_PASSWORD=
 Environment=REPLY_TO_EMAIL=
 Environment=OVERPASS_API_URL=
-Environment=GARMIN_SPLITTER=/usr/local/splitter/splitter.jar
-Environment=GARMIN_MKGMAP=/usr/local/mkgmap/mkgmap.jar
-Environment=OSMAND_MAP_CREATOR_DIR=/usr/local/OsmAndMapCreator
-Environment=OSMCONVERT=/usr/bin/osmconvert
-Environment=GENERATOR_TOOL=/usr/local/bin/generator_tool
 Environment=SYNC_TO_HDX=True
 Environment=HDX_SITE=demo
 Environment=HDX_API_KEY=
