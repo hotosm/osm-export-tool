@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import django.utils.text
 from hdx.data.dataset import Dataset
@@ -37,7 +38,7 @@ def sync_datasets(datasets,update_dataset_date=False):
             dataset.set_dataset_date_from_datetime(datetime.now())
             dataset.create_in_hdx(allow_no_resources=True)
 
-def sync_region(region,files=[]):
+def sync_region(region,files=[],public_dir=''):
     export_set = HDXExportSet(
         Mapping(region.feature_selection),
         region.dataset_prefix,
@@ -49,9 +50,10 @@ def sync_region(region,files=[]):
         region.subnational,
         region.update_frequency,
         region.locations,
-        files
+        files,
+        public_dir
     )
-    sync_datasets(datasets)
+    sync_datasets(datasets,len(files) > 0)
 
 class HDXExportSet(object):
     def __init__(self,mapping,dataset_prefix,name,extra_notes=''):
@@ -83,12 +85,11 @@ class HDXExportSet(object):
                 filter_str=filter_str
             )
 
-    def datasets(self,is_private,subnational,data_update_frequency,locations,files):
+    def datasets(self,is_private,subnational,data_update_frequency,locations,files,public_dir):
         HDX_FORMATS = {
             'shp':'zipped shapefile',
             'geopackage':'zipped geopackage',
             'garmin_img':'zipped img',
-            'osm_pbf':'pbf',
             'kml':'zipped kml'
         }
 
@@ -96,7 +97,6 @@ class HDXExportSet(object):
             'shp':'ESRI Shapefile',
             'geopackage':'Geopackage, SQLite compatible',
             'garmin_img':'.IMG for Garmin GPS Devices (All OSM layers for area)',
-            'osm_pbf':'OpenStreetMap .PBF',
             'kml':'Google Earth .KML'
         }
 
@@ -130,25 +130,22 @@ class HDXExportSet(object):
                 # warning: this makes a network call
                 dataset.add_other_location(location)
 
+            resources = []
+            for f in files:
+                if 'theme' not in f.extra or f.extra['theme'] == theme.name:
+                    file_name = os.path.basename(f.parts[0]) # only one part: the zip file
+                    resources.append({
+                       'name': file_name, 
+                       'format': HDX_FORMATS[f.output_name],
+                       'description': HDX_DESCRIPTIONS[f.output_name],
+                       'url': os.path.join(public_dir,file_name)
+                    })
+            dataset.add_update_resources(resources)
             d.append(dataset)
         return d
 
-    # def sync_resources(self,artifact_list,public_dir):
 
     #     ".SHP Points", ".SHP Lines", ".SHP Polygons", ".IMG", ".KML"
 
-    #     for theme in self._feature_selection.themes:
-    #         theme_artifacts = [a for a in artifact_list if (a.theme == theme or a.theme == None)]
     #         # stable sort, but put shapefiles first for Geopreview to pick up correctly
     #         theme_artifacts.sort(key=lambda x: 0 if x.format_name == 'shp' else 1)
-    #         resources = []
-    #         for artifact in theme_artifacts:
-    #             file_name = artifact.parts[0] # only one part: the zip file
-    #             resources.append({
-    #                 'name': file_name,
-    #                 'format': HDX_FORMATS[artifact.format_name],
-    #                 'description': HDX_DESCRIPTIONS[artifact.format_name],
-    #                 'url': os.path.join(public_dir,file_name)
-    #             })
-    #         self.datasets[theme].add_update_resources(resources)
-    #     self.sync_datasets(update_dataset_date=True)

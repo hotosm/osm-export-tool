@@ -97,6 +97,7 @@ def run_task_async_scheduled(run_uid):
 def run_task_remote(run_uid):
     stage_dir = join(settings.EXPORT_STAGING_ROOT, run_uid)
     download_dir = join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
+    public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
     if not exists(stage_dir):
         os.makedirs(stage_dir)
     if not exists(download_dir):
@@ -209,14 +210,14 @@ def run_task_remote(run_uid):
         if 'garmin_img' in export_formats:
             start_task('garmin_img')
             garmin_files = nontabular.garmin(source.path(),settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
-            zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom)
+            zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom,output_name='garmin_img')
             all_zips.append(zipped)
             finish_task('garmin_img',[zipped])
 
         if settings.SYNC_TO_HDX:
             print("Syncing to HDX")
             region = HDXExportRegion.objects.get(job_id=run.job_id)
-            sync_region(region,all_zips)
+            sync_region(region,all_zips,public_dir)
         send_hdx_completion_notification(run, run.job.hdx_export_region_set.first())
     else:
         geopackage = None
