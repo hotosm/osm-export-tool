@@ -136,7 +136,6 @@ def run_task_remote(run_uid):
         task.filesize_bytes = total_bytes
         task.save()
 
-
     is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
 
     if is_hdx_export:
@@ -144,41 +143,19 @@ def run_task_remote(run_uid):
         shp = None
         kml = None
 
-        def create_theme_packages(fmt,ext,files):
-            created = []
-            for theme in mapping.themes:
-                columns = []
-                for key in theme.keys:
-                    columns.append('{0} http://wiki.openstreetmap.org/wiki/Key:{0}'.format(key))
-                columns = '\n'.join(columns)
-                readme = ZIP_README.format(criteria=theme.matcher.to_sql(),columns=columns)
-                matching_files = [f for f in files if 'theme' in f.extra and f.extra['theme'] == theme.name]
-                destination = join(download_dir,valid_name + '_' + slugify(theme.name) + '_' + ext + '.zip')
-
-                # the created zipfile must end with only .zip (not .shp.zip) for the HDX preview to work.
-                with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
-                    z.writestr("clipping_boundary.geojson", json.dumps(shapely.geometry.mapping(geom)))
-                    z.writestr("README.txt", readme)
-                    for file in matching_files:
-                        for part in file.parts:
-                            z.write(part, os.path.basename(part))
-                created.append(osm_export_tool.File(fmt,[destination],{'theme':theme.name}))
-
-            return created
-
         tabular_outputs = []
         if 'geopackage' in export_formats:
-            geopackage = tabular.MultiGeopackage(join(stage_dir,'test_gpkg'),mapping)
+            geopackage = tabular.MultiGeopackage(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(geopackage)
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = tabular.Shapefile(join(stage_dir,'test_shp'),mapping)
+            shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(shp)
             start_task('shp')
 
         if 'kml' in export_formats:
-            kml = tabular.Kml(join(stage_dir,'test_kml'),mapping)
+            kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(kml)
             start_task('kml')
 
@@ -189,23 +166,60 @@ def run_task_remote(run_uid):
 
         all_zips = []
 
+        def add_metadata(z,theme):
+            z.writestr("clipping_boundary.geojson", json.dumps(shapely.geometry.mapping(geom)))
+            columns = []
+            for key in theme.keys:
+                columns.append('{0} http://wiki.openstreetmap.org/wiki/Key:{0}'.format(key))
+            columns = '\n'.join(columns)
+            readme = ZIP_README.format(criteria=theme.matcher.to_sql(),columns=columns)
+            z.writestr("README.txt", readme)
+
         if geopackage:
             geopackage.finalize()
-            zips = create_theme_packages('geopackage','gpkg',geopackage.files)
-            all_zips += zips
+            zips = []
+            for theme in mapping.themes:
+                destination = join(download_dir,valid_name + '_' + slugify(theme.name) + '_gpkg.zip')
+                matching_files = [f for f in geopackage.files if 'theme' in f.extra and f.extra['theme'] == theme.name]
+                with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                    add_metadata(z,theme)
+                    for file in matching_files:
+                        for part in file.parts:
+                            z.write(part, os.path.basename(part))
+                zips.append(osm_export_tool.File('geopackage',[destination],{'theme':theme.name}))
             finish_task('geopackage',zips)
+            all_zips += zips
 
         if shp:
             shp.finalize()
-            zips = create_theme_packages('shp','shp',shp.files)
-            all_zips += zips
+            zips = []
+            for file in shp.files:
+                # for HDX geopreview to work
+                # each file (_polygons, _lines) is a separate zip resource
+                # the zipfile must end with only .zip (not .shp.zip)
+                destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
+                with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                    theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
+                    add_metadata(z,theme)
+                    for part in file.parts:
+                        z.write(part, os.path.basename(part))
+                zips.append(osm_export_tool.File('shp',[destination],{'theme':file.extra['theme']}))
             finish_task('shp',zips)
+            all_zips += zips
 
         if kml:
             kml.finalize()
-            zips = create_theme_packages('kml','kml',kml.files)
-            all_zips += zips
+            zips = []
+            for file in kml.files:
+                destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
+                with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                    theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
+                    add_metadata(z,theme)
+                    for part in file.parts:
+                        z.write(part, os.path.basename(part))
+                zips.append(osm_export_tool.File('kml',[destination],{'theme':file.extra['theme']}))
             finish_task('kml',zips)
+            all_zips += zips
 
         if 'garmin_img' in export_formats:
             start_task('garmin_img')
@@ -226,17 +240,17 @@ def run_task_remote(run_uid):
 
         tabular_outputs = []
         if 'geopackage' in export_formats:
-            geopackage = tabular.Geopackage(join(stage_dir,'test_gpkg'),mapping)
+            geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(geopackage)
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = tabular.Shapefile(join(stage_dir,'test_shp'),mapping)
+            shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(shp)
             start_task('shp')
 
         if 'kml' in export_formats:
-            kml = tabular.Kml(join(stage_dir,'test_kml'),mapping)
+            kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(kml)
             start_task('kml')
 

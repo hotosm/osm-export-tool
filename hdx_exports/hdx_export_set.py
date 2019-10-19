@@ -140,12 +140,11 @@ class HDXExportSet(object):
                        'description': HDX_DESCRIPTIONS[f.output_name],
                        'url': os.path.join(public_dir,file_name)
                     })
+            # stable sort, but put shapefiles first for Geopreview to pick up correctly
+            resources.sort(key=lambda x: 0 if x['format'] == 'zipped shapefile' else 1)
             dataset.add_update_resources(resources)
             d.append(dataset)
         return d
 
 
-    #     ".SHP Points", ".SHP Lines", ".SHP Polygons", ".IMG", ".KML"
 
-    #         # stable sort, but put shapefiles first for Geopreview to pick up correctly
-    #         theme_artifacts.sort(key=lambda x: 0 if x.format_name == 'shp' else 1)
