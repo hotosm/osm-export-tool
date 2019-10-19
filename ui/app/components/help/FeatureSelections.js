@@ -86,6 +86,18 @@ export default () =>
               </p>
             </div>
             <div>
+              <h2 id="examples">Examples</h2>
+              <p>
+                Example YAML configurations are available in the <a href="https://github.com/hotosm/osm-export-tool-python/tree/master/osm_export_tool/mappings">osm-export-tool-python</a> repository.
+              </p>
+              <ul>
+                <li>
+                  <a href="https://github.com/hotosm/osm-export-tool-python/blob/master/osm_export_tool/mappings/default.yml">default.yml</a> is a very broad selection of features, organized into themes, based on the <a href="https://github.com/omniscale/imposm3/blob/master/example-mapping.yml">imposm3 example_mapping.yml</a>.
+                  This is a good choice for cartography if you don't know in advance which features you need to select.
+                </li>
+              </ul>
+            </div>
+            <div>
               <h2 id="moreresources">More Resources</h2>
               <ul>
                 <li><a href="http://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Tags">OpenStreetMap Wiki - Humanitarian OSM Tags</a></li>
@@ -101,6 +113,7 @@ export default () =>
               <li><a href="#yaml">Defining YAML when Creating an Export</a></li>
               <li><a href="#configuration">Saving YAML as a Configuration</a></li>
               <li><a href="#reuse">Re-using a Configuration when Creating an Export</a></li>
+              <li><a href="#examples">Examples</a></li>
               <li><a href="#moreresources">More Resources</a></li>
             </ul>
           </Col>
