@@ -159,7 +159,7 @@ def run_task_remote(run_uid):
             tabular_outputs.append(kml)
             start_task('kml')
 
-        h = tabular.Handler(tabular_outputs,mapping)
+        h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
         source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         h.apply_file(source.path(), locations=True, idx='sparse_file_array')
@@ -254,7 +254,7 @@ def run_task_remote(run_uid):
             tabular_outputs.append(kml)
             start_task('kml')
 
-        h = tabular.Handler(tabular_outputs,mapping)
+        h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
         source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         h.apply_file(source.path(), locations=True, idx='sparse_file_array')
