@@ -466,6 +466,16 @@ export class PartnerExportRegionForm extends Component {
               />
               <hr />
               <Row>
+                <Col xs={12}>
+                  <Field
+                    name="planet_file"
+                    description="Use daily planet file: only for huge regions"
+                    component={renderCheckbox}
+                    type="checkbox"
+                  />
+                </Col>
+              </Row>
+              <Row>
                 <Col xs={6}>
                   <Field
                     name="schedule_period"
@@ -654,7 +664,8 @@ Buildings:
     schedule_period: "daily",
     schedule_hour: 0,
     export_formats: ["shp", "geopackage"],
-    group: null
+    group: null,
+    planet_file: false
   },
   name: formValueSelector(FORM_NAME)(state, "name"),
   runs: selectRuns(state),

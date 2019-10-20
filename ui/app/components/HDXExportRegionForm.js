@@ -513,10 +513,18 @@ export class HDXExportRegionForm extends Component {
                 </Col>
               </Row>
               <Row>
-                <Col xs={12}>
+                <Col xs={6}>
                   <Field
                     name="buffer_aoi"
                     description="AOI is an administrative boundary (and should be buffered)"
+                    component={renderCheckbox}
+                    type="checkbox"
+                  />
+                </Col>
+                <Col xs={6}>
+                  <Field
+                    name="planet_file"
+                    description="Use daily planet file: only for huge regions"
                     component={renderCheckbox}
                     type="checkbox"
                   />
@@ -814,7 +822,8 @@ Points of Interest:
     schedule_hour: 0,
     subnational: true,
     export_formats: ["shp", "geopackage", "kml", "garmin_img"],
-    buffer_aoi: false
+    buffer_aoi: false,
+    planet_file: false
   },
   locationOptions: selectLocationOptions(state),
   name: formValueSelector(FORM_NAME)(state, "name"),

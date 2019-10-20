@@ -294,6 +294,7 @@ class PartnerExportRegion(models.Model, RegionMixin):
     # the owning group, which determines access control.
     group = models.ForeignKey(Group)
     deleted = models.BooleanField(default=False)
+    planet_file = models.BooleanField(default=False)
 
     @property
     def export_formats(self): # noqa
@@ -322,6 +323,7 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
     license = models.CharField(max_length=32, null=True,blank=True)
     subnational = models.BooleanField(default=True)
     extra_notes = models.TextField(null=True,blank=True)
+    planet_file = models.BooleanField(default=False)
 
     class Meta: # noqa
         db_table = 'hdx_export_regions'
