@@ -21,7 +21,7 @@ from raven import Client
 from django.utils import timezone
 from django.utils.text import get_valid_filename
 
-from jobs.models import Job, HDXExportRegion
+from jobs.models import Job, HDXExportRegion, PartnerExportRegion
 from tasks.models import ExportRun, ExportTask
 from hdx_exports.hdx_export_set import slugify, sync_region
 
@@ -137,6 +137,13 @@ def run_task_remote(run_uid):
         task.save()
 
     is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
+    is_partner_export = PartnerExportRegion.objects.filter(job_id=run.job_id).exists()
+
+    planet_file = False
+    if is_hdx_export:
+        planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
+    if is_partner_export:
+        planet_file = PartnerExportRegion.objects.get(job_id=run.job_id).planet_file
 
     if is_hdx_export:
         geopackage = None
@@ -159,8 +166,12 @@ def run_task_remote(run_uid):
             tabular_outputs.append(kml)
             start_task('kml')
 
-        h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
-        source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
+        if planet_file:
+            h = tabular.Handler(tabular_outputs,mapping)
+            source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
+        else:
+            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
+            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         h.apply_file(source.path(), locations=True, idx='sparse_file_array')
 
@@ -254,8 +265,12 @@ def run_task_remote(run_uid):
             tabular_outputs.append(kml)
             start_task('kml')
 
-        h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
-        source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
+        if planet_file:
+            h = tabular.Handler(tabular_outputs,mapping)
+            source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
+        else:
+            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
+            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         h.apply_file(source.path(), locations=True, idx='sparse_file_array')
 
