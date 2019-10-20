@@ -30,7 +30,7 @@ import osm_export_tool.tabular as tabular
 import osm_export_tool.nontabular as nontabular
 from osm_export_tool.mapping import Mapping
 from osm_export_tool.geometry import load_geometry
-from osm_export_tool.sources import Overpass
+from osm_export_tool.sources import Overpass, OsmiumTool
 from osm_export_tool.package import create_package, create_posm_bundle
 
 import shapely.geometry
@@ -86,11 +86,11 @@ class ExportTaskRunner(object):
             run_task_async_scheduled.send(run_uid)
         return run
 
-@dramatiq.actor(max_retries=0,queue_name='default',time_limit=7200000)
+@dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*6)
 def run_task_async_ondemand(run_uid):
     run_task_remote(run_uid)
 
-@dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=7200000)
+@dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=1000*60*60*6)
 def run_task_async_scheduled(run_uid):
     run_task_remote(run_uid)
 
