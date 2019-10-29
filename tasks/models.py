@@ -112,7 +112,8 @@ class ExportRunAdmin(admin.ModelAdmin):
 
     list_display = ['uid','job','status','user','created_at']
     list_filter = ('status',)
-    readonly_fields = ('uid','user','created_at','job','job_link')
+    readonly_fields = ('uid','user','created_at')
+    raw_id_fields = ('job',)
     search_fields = ['uid']
     actions = [start]
     ordering = ('-created_at',)
@@ -155,7 +156,7 @@ class HDXExportRegionAdmin(admin.ModelAdmin):
     raw_id_fields = ("job",)
 
 class PartnerExportRegionAdmin(admin.ModelAdmin):
-    pass
+    raw_id_fields = ('job',)
 
 class SavedFeatureSelectionAdmin(admin.ModelAdmin):
     pass
