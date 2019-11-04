@@ -48,7 +48,7 @@ Attic data is necessary for augmented diff support. This clone can take several 
 1. The export tool runs as the `exports` user. Change to that user: `sudo su exports`
 2. Clone the repository to `/home/exports`
 3. Create a virtualenv: `virtualenv /home/exports/venv --python=python3` and activate it: `source /home/exports/venv/activate`
-4. Install Python dependencies: `pip install -r /home/exports/osm-export-tool/requirements.txt`
+4. Install Python dependencies: `CPLUS_INCLUDE_PATH=/usr/include/gdal C_INCLUDE_PATH=/usr/include/gdal pip install -r /home/exports/osm-export-tool/requirements.txt`
 5. Compile the JavaScript frontend: `cd /home/exports/osm-export-tool/ui; yarn install; yarn run dist`
 6. Copy static assets: `cd /home/exports/osm-export-tool/ && python manage.py collectstatic`
 7. Either run database migrations on the empty `exports` db: `python manage.py migrate` or restore a database backup.

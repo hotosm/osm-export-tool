@@ -43,7 +43,7 @@ python3-certbot-nginx \
 osmium-tool \
 awscli
 
-pip install virtualenv
+pip3 install virtualenv
 
 # Ubuntu 18.04 fix. see https://github.com/valhalla/valhalla/issues/1437
 ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_spatialite
@@ -51,7 +51,7 @@ ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/x86_64-linux-gnu/mod_
 wget https://hotosm-export-tool.s3.amazonaws.com/mkgmap-r3890.zip
 unzip mkgmap-r3890.zip -d /usr/local
 mv /usr/local/mkgmap-r3890 /usr/local/mkgmap
-rm mkgmap-r3980.zip
+rm mkgmap-r3890.zip
 
 wget https://hotosm-export-tool.s3.amazonaws.com/splitter-r583.zip
 unzip splitter-r583.zip -d /usr/local
