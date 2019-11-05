@@ -7,6 +7,7 @@ from os.path import join, exists, basename
 import json
 import shutil
 import zipfile
+import traceback
 
 import django
 from django.apps import apps
@@ -95,19 +96,29 @@ def run_task_async_scheduled(run_uid):
     run_task_remote(run_uid)
 
 def run_task_remote(run_uid):
-    stage_dir = join(settings.EXPORT_STAGING_ROOT, run_uid)
-    download_dir = join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
-    public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
-    if not exists(stage_dir):
-        os.makedirs(stage_dir)
-    if not exists(download_dir):
-        os.makedirs(download_dir)
-
     run = ExportRun.objects.get(uid=run_uid)
     run.status = 'RUNNING'
     run.started_at = timezone.now()
     run.save()
+    stage_dir = join(settings.EXPORT_STAGING_ROOT, run_uid)
+    download_dir = join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
+    try:
+        if not exists(stage_dir):
+            os.makedirs(stage_dir)
+        if not exists(download_dir):
+            os.makedirs(download_dir)
+        run_task(run_uid,run,stage_dir,download_dir)
+    except Exception as e:
+        client.captureException(extra={'run_uid': run_uid})
+        run.status = 'FAILED'
+        run.finished_at = timezone.now()
+        run.save()
+        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+        LOG.warn(traceback.format_exc())
+    finally:
+        shutil.rmtree(stage_dir)
 
+def run_task(run_uid,run,stage_dir,download_dir):
     LOG.debug('Running ExportRun with id: {0}'.format(run_uid))
     job = run.job
     valid_name = get_valid_filename(job.name)
@@ -242,6 +253,7 @@ def run_task_remote(run_uid):
         if settings.SYNC_TO_HDX:
             print("Syncing to HDX")
             region = HDXExportRegion.objects.get(job_id=run.job_id)
+            public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
             sync_region(region,all_zips,public_dir)
         send_hdx_completion_notification(run, run.job.hdx_export_region_set.first())
     else:
