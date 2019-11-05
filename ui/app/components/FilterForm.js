@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { Field, Fields, propTypes, reduxForm } from "redux-form";
 
 import { selectIsLoggedIn } from "../selectors";
-import { renderCheckbox } from "./utils";
+import { renderCheckbox,renderSelect } from "./utils";
 
 const form = reduxForm({
   form: "ExportSearchForm"
@@ -55,6 +55,7 @@ class ExportSearchForm extends Component {
       isLoggedIn,
       running,
       showDateRange,
+      showFrequency,
       type
     } = this.props;
     let { searchPlaceholder } = this.props;
@@ -84,6 +85,23 @@ class ExportSearchForm extends Component {
             />
           </div>
         </Row>
+        { showFrequency && <Row>
+          <Field
+            name="schedule_period"
+            label="Filter by frequency"
+            component={renderSelect}
+          >
+            <option value="any">Any</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly (Sunday)</option>
+            <option value="monthly">Monthly (1st of month)</option>
+            <option value="6hrs">Every 6 hours</option>
+            <option value="disabled">
+              Don't automatically schedule
+            </option>
+          </Field>
+        </Row>
+        }
         {showDateRange &&
           <Row>
             <Button

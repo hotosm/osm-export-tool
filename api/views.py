@@ -192,7 +192,12 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
     search_fields = ('job__name', 'job__description')
 
     def get_queryset(self):
-        return HDXExportRegion.objects.filter(deleted=False).prefetch_related(
+        queryset = HDXExportRegion.objects.filter(deleted=False)
+        schedule_period = self.request.query_params.get('schedule_period', None)
+        if schedule_period not in [None,'any']:
+            queryset = queryset.filter(Q(schedule_period=schedule_period))
+
+        return queryset.prefetch_related(
             'job__runs__tasks').defer('job__the_geom')
 
     def get_serializer_class(self):
