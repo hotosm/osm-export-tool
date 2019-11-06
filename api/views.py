@@ -105,7 +105,7 @@ class JobViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         if Job.objects.filter(created_at__gt=timezone.now()-timedelta(minutes=60),user=self.request.user).count() > 10:
-            raise ValidationError({"the_geom":["You are rate limited to 10 exports per hour."]})
+            raise ValidationError({"the_geom":["You are rate limited to 5 exports per hour."]})
         job = serializer.save()
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
