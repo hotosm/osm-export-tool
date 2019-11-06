@@ -344,6 +344,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('osm_pbf')
             target = join(download_dir,valid_name + '.osm.pbf')
             shutil.move(source.path(),target)
+            os.chmod(target, 0o644)
             finish_task('osm_pbf',[osm_export_tool.File('pbf',[target],'')])
 
         send_completion_notification(run)
