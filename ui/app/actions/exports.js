@@ -130,7 +130,8 @@ export const runExport = jobUid => (dispatch, getState) => {
     },
     url: `/api/runs?job_uid=${jobUid}`,
     method: "POST"
-  }).then(rsp => dispatch(getRuns(jobUid)));
+  }).then(rsp => dispatch(getRuns(jobUid)))
+  .catch(err => alert("Please wait - there is a limit of one run created per minute."));
 };
 
 export const getOverpassTimestamp = () => (dispatch, getState) => {
