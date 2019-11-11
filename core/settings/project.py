@@ -67,6 +67,7 @@ GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/usr/local/mkgmap/mkgmap.jar')
 # url to overpass api endpoint
 OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/')
 GENERATOR_TOOL = os.getenv('GENERATOR_TOOL','/usr/local/bin/generator_tool')
+PLANET_FILE = os.getenv('PLANET_FILE','')
 
 """
 Maximum extent of a Job
