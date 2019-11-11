@@ -189,7 +189,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
         all_zips = []
 
         def add_metadata(z,theme):
-            z.writestr("clipping_boundary.geojson", json.dumps(shapely.geometry.mapping(geom)))
             columns = []
             for key in theme.keys:
                 columns.append('{0} http://wiki.openstreetmap.org/wiki/Key:{0}'.format(key))
