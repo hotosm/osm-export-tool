@@ -184,9 +184,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
             source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
-        LOG.debug('Source start: {0} for run: {1}'.format(name, run_uid))
+        LOG.debug('Source start for run: {0}'.format(run_uid))
         source_path = source.path()
-        LOG.debug('Source end: {0} for run: {1}'.format(name, run_uid))
+        LOG.debug('Source end for run: {0}'.format(run_uid))
         h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         all_zips = []
@@ -286,9 +286,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
             source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
-        LOG.debug('Source start: {0} for run: {1}'.format(name, run_uid))
+        LOG.debug('Source start for run: {0}'.format(run_uid))
         source_path = source.path()
-        LOG.debug('Source end: {0} for run: {1}'.format(name, run_uid))
+        LOG.debug('Source end for run: {0}'.format(run_uid))
 
         h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
