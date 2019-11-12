@@ -128,7 +128,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
     mapping = Mapping(job.feature_selection)
 
     def start_task(name):
-        LOG.debug('Task Start: {0} for run: {1}'.format(name, run_uid))
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'RUNNING'
         task.started_at = timezone.now()
