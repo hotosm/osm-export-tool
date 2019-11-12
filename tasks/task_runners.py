@@ -184,7 +184,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
             source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
-        h.apply_file(source.path(), locations=True, idx='sparse_file_array')
+        LOG.debug('Source start: {0} for run: {1}'.format(name, run_uid))
+        source_path = source.path()
+        LOG.debug('Source end: {0} for run: {1}'.format(name, run_uid))
+        h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         all_zips = []
 
@@ -244,7 +247,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'garmin_img' in export_formats:
             start_task('garmin_img')
-            garmin_files = nontabular.garmin(source.path(),settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
+            garmin_files = nontabular.garmin(source_path,settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
             zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom,output_name='garmin_img')
             all_zips.append(zipped)
             finish_task('garmin_img',[zipped])
@@ -283,7 +286,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
             source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
-        h.apply_file(source.path(), locations=True, idx='sparse_file_array')
+        LOG.debug('Source start: {0} for run: {1}'.format(name, run_uid))
+        source_path = source.path()
+        LOG.debug('Source end: {0} for run: {1}'.format(name, run_uid))
+
+        h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         bundle_files = []
 
@@ -307,21 +314,21 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'garmin_img' in export_formats:
             start_task('garmin_img')
-            garmin_files = nontabular.garmin(source.path(),settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
+            garmin_files = nontabular.garmin(source_path,settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
             bundle_files += garmin_files
             zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom)
             finish_task('garmin_img',[zipped])
 
         if 'mwm' in export_formats:
             start_task('mwm')
-            mwm_files = nontabular.mwm(source.path(),join(stage_dir,'mwm'),settings.GENERATE_MWM,settings.GENERATOR_TOOL)
+            mwm_files = nontabular.mwm(source_path,join(stage_dir,'mwm'),settings.GENERATE_MWM,settings.GENERATOR_TOOL)
             bundle_files += mwm_files
             zipped = create_package(join(download_dir,valid_name + '_mwm.zip'),mwm_files,boundary_geom=geom)
             finish_task('mwm',[zipped])
 
         if 'osmand_obf' in export_formats:
             start_task('osmand_obf')
-            osmand_files = nontabular.osmand(source.path(),settings.OSMAND_MAP_CREATOR_DIR,tempdir=stage_dir)
+            osmand_files = nontabular.osmand(source_path,settings.OSMAND_MAP_CREATOR_DIR,tempdir=stage_dir)
             bundle_files += osmand_files
             zipped = create_package(join(download_dir,valid_name + '_Osmand2_obf.zip'),osmand_files,boundary_geom=geom)
             finish_task('osmand_obf',[zipped])
@@ -342,7 +349,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if 'osm_pbf' in export_formats:
             start_task('osm_pbf')
             target = join(download_dir,valid_name + '.osm.pbf')
-            shutil.move(source.path(),target)
+            shutil.move(source_path,target)
             os.chmod(target, 0o644)
             finish_task('osm_pbf',[osm_export_tool.File('pbf',[target],'')])
 
