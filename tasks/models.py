@@ -159,8 +159,7 @@ class PartnerExportRegionAdmin(admin.ModelAdmin):
     raw_id_fields = ('job',)
 
 class SavedFeatureSelectionAdmin(admin.ModelAdmin):
-    pass
-
+    raw_id_fields = ("user",)
 
 admin.site.register(Job, JobAdmin)
 admin.site.register(HDXExportRegion, HDXExportRegionAdmin)
