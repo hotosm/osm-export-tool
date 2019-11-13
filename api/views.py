@@ -80,7 +80,7 @@ class JobViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description', 'event', 'user__username')
     ordering_fields = ('__all__',)
-    ordering = ('-updated_at')
+    ordering = ('-pinned','-updated_at')
 
     def get_queryset(self):
         user = self.request.user
@@ -130,6 +130,7 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.OrderingFilter, filters.SearchFilter, )
     search_fields = ('name', 'description')
     ordering_fields = ('__all__')
+    ordering = ('-pinned')
 
     def get_queryset(self):
         user = self.request.user

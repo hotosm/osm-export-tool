@@ -44,7 +44,7 @@ class _ExportTable extends Component {
           <tr key={i}>
             <td>
               <Link to={`/exports/${job.uid}`}>
-                {job.name}
+                {job.pinned && <span>★</span> } {job.name}
               </Link>
             </td>
             <td>

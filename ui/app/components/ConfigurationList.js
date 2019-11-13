@@ -25,7 +25,7 @@ const ConfigurationTable = ({ configurations }) =>
         <tr key={i}>
           <td>
             <Link to={`/configurations/detail/${configuration.uid}`}>
-              {configuration.name}
+              {configuration.pinned && <span>★</span>} {configuration.name}
             </Link>
           </td>
           <td>
