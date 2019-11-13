@@ -76,6 +76,28 @@ const NavBar = ({ isLoggedIn, login, logout }) =>
           </NavLink>
         </li>
       </RequirePermission>
+      <RequirePermission
+        required={[
+          "auth.add_user"
+        ]}
+      >
+        <li>
+          <a href="/admin">
+            <FormattedMessage id="ui.admin" defaultMessage="Admin" />
+          </a>
+        </li>
+      </RequirePermission>
+      <RequirePermission
+        required={[
+          "auth.add_user"
+        ]}
+      >
+        <li>
+          <NavLink to="/stats">
+            <FormattedMessage id="ui.stats" defaultMessage="Stats" />
+          </NavLink>
+        </li>
+      </RequirePermission>
       <NavItem>
         <LocaleSelector />
       </NavItem>
