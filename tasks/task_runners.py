@@ -181,7 +181,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
         else:
             h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
-            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,mapping=mapping)
+            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         LOG.debug('Source start for run: {0}'.format(run_uid))
         source_path = source.path()
@@ -283,7 +283,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
         else:
             h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
-            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,mapping=mapping)
+            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir)
 
         LOG.debug('Source start for run: {0}'.format(run_uid))
         source_path = source.path()
