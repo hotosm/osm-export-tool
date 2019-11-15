@@ -322,7 +322,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'mwm' in export_formats:
             start_task('mwm')
-            mwm_files = nontabular.mwm(source_path,join(stage_dir,'mwm'),settings.GENERATE_MWM,settings.GENERATOR_TOOL)
+            mwm_dir = join(stage_dir,'mwm')
+            if not exists(mwm_dir):
+                os.makedirs(mwm_dir)
+            mwm_files = nontabular.mwm(source_path,mwm_dir,settings.GENERATE_MWM,settings.GENERATOR_TOOL)
             bundle_files += mwm_files
             zipped = create_package(join(download_dir,valid_name + '_mwm.zip'),mwm_files,boundary_geom=geom)
             finish_task('mwm',[zipped])
