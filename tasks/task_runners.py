@@ -96,18 +96,20 @@ def run_task_async_scheduled(run_uid):
     run_task_remote(run_uid)
 
 def run_task_remote(run_uid):
-    run = ExportRun.objects.get(uid=run_uid)
-    run.status = 'RUNNING'
-    run.started_at = timezone.now()
-    run.save()
-    stage_dir = join(settings.EXPORT_STAGING_ROOT, run_uid)
-    download_dir = join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
     try:
+        run = ExportRun.objects.get(uid=run_uid)
+        run.status = 'RUNNING'
+        run.started_at = timezone.now()
+        run.save()
+        stage_dir = join(settings.EXPORT_STAGING_ROOT, run_uid)
+        download_dir = join(settings.EXPORT_DOWNLOAD_ROOT,run_uid)
         if not exists(stage_dir):
             os.makedirs(stage_dir)
         if not exists(download_dir):
             os.makedirs(download_dir)
         run_task(run_uid,run,stage_dir,download_dir)
+    except (ExportTask.DoesNotExist,Job.DoesNotExist):
+        LOG.warn('Job was deleted - exiting.')
     except Exception as e:
         client.captureException(extra={'run_uid': run_uid})
         run.status = 'FAILED'
