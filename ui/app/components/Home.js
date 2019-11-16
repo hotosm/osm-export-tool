@@ -87,7 +87,7 @@ export class Home extends Component {
           </p>
         </Col>
       </Row>
-      <Row>
+      { this.props.jobs.length > 0 && <Row>
           <h2 className="centered">
             <FormattedMessage
               id="ui.about.title.featured_exports"
@@ -111,7 +111,7 @@ export class Home extends Component {
               </Panel>
             </div>
           )}
-      </Row>
+      </Row> }
       <Row style={{ backgroundColor: "#f8f8f8" }}>
         <h2 className="centered">
           <FormattedMessage
