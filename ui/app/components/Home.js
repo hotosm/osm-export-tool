@@ -87,7 +87,7 @@ export class Home extends Component {
           </p>
         </Col>
       </Row>
-      { this.props.jobs.length > 0 && <Row>
+      { this.props.jobs.items.length > 0 && <Row>
           <h2 className="centered">
             <FormattedMessage
               id="ui.about.title.featured_exports"

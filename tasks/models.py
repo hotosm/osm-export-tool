@@ -147,6 +147,7 @@ class JobAdmin(GeoModelAdmin):
 
     search_fields = ['uid', 'name', 'user__username']
     list_display = ['uid', 'name', 'user']
+    list_filter = ('pinned',)
     exclude = ['the_geom']
     raw_id_fields = ("user",)
     readonly_fields=('simplified_geom_raw',)
