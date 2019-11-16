@@ -15,7 +15,7 @@ import bnpbLogo from "../images/bnpb-logo.png";
 
 export class Home extends Component {
   componentWillMount() {
-    this.props.getExports({pinned:true});
+    this.props.getExports({pinned:true,all:true});
   }
 
   render() {
