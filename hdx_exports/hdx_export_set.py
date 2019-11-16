@@ -18,7 +18,7 @@ Features may have these attributes:
 {columns}
 
 This dataset is one of many [OpenStreetMap exports on
-HDX](/dataset?tags=openstreetmap).
+HDX](https://data.humdata.org/organization/hot).
 See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more
 information.
 """
