@@ -89,6 +89,7 @@ class JobViewSet(viewsets.ModelViewSet):
         bbox = self.request.query_params.get('bbox', None)
         before = self.request.query_params.get('before', None)
         after = self.request.query_params.get('after', None)
+        pinned = self.request.query_params.get('pinned',None)
 
         if before is not None:
             queryset = queryset.filter(Q(created_at__lte=before))
@@ -99,6 +100,9 @@ class JobViewSet(viewsets.ModelViewSet):
         if bbox is not None:
             bbox = bbox_to_geom(bbox)
             queryset = queryset.filter(Q(the_geom__within=bbox))
+
+        if pinned:
+            queryset = queryset.filter(Q(pinned=True))
 
         if not all:
             queryset = queryset.filter(Q(user_id=user.id))
