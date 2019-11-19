@@ -115,6 +115,9 @@ def run_task_remote(run_uid):
         run.status = 'FAILED'
         run.finished_at = timezone.now()
         run.save()
+
+        if HDXExportRegion.objects.filter(job_id=run.job_id).exists():
+            send_hdx_error_notification(run, run.job.hdx_export_region_set.first())
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
         LOG.warn(traceback.format_exc())
     finally:
