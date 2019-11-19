@@ -107,6 +107,9 @@ class JobViewSet(viewsets.ModelViewSet):
         if not all:
             queryset = queryset.filter(Q(user_id=user.id))
 
+        if user.is_superuser:
+            return queryset
+
         return queryset.filter(Q(user_id=user.id) | Q(published=True))
 
     def perform_create(self, serializer):
