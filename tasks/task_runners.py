@@ -108,7 +108,7 @@ def run_task_remote(run_uid):
         if not exists(download_dir):
             os.makedirs(download_dir)
         run_task(run_uid,run,stage_dir,download_dir)
-    except (ExportTask.DoesNotExist,Job.DoesNotExist):
+    except (Job.DoesNotExist,ExportRun.DoesNotExist,ExportTask.DoesNotExist):
         LOG.warn('Job was deleted - exiting.')
     except Exception as e:
         client.captureException(extra={'run_uid': run_uid})
