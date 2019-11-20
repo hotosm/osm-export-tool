@@ -71,7 +71,7 @@ class JobSerializer(serializers.ModelSerializer):
         fields = ('id', 'uid', 'user', 'name', 'description', 'event',
                   'export_formats', 'published', 'feature_selection',
                   'buffer_aoi', 'osma_link', 'created_at', 'area', 'the_geom',
-                  'simplified_geom', 'mbtiles_source', 'mbtiles_minzoom', 'mbtiles_maxzoom','pinned')
+                  'simplified_geom', 'mbtiles_source', 'mbtiles_minzoom', 'mbtiles_maxzoom','pinned','unfiltered')
         extra_kwargs = {
             'the_geom': {
                 'write_only': True

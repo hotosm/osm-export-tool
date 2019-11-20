@@ -18,6 +18,10 @@ const messages = defineMessages({
   publishedDescription: {
     id: "export.published.description",
     defaultMessage: "Publish this Export"
+  },
+  unfilteredPBF: {
+    id: "export.unfiltered_pbf.description",
+    defaultMessage: "Unfiltered PBF. Affects PBF, MWM, OBF, IMG formats. Use only for small areas."
   }
 });
 
@@ -71,6 +75,12 @@ export default injectIntl(
         <Field
           name="published"
           description={formatMessage(messages.publishedDescription)}
+          component={renderCheckbox}
+          type="checkbox"
+        />
+        <Field
+          name="unfiltered"
+          description={formatMessage(messages.unfilteredPBF)}
           component={renderCheckbox}
           type="checkbox"
         />

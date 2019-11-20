@@ -155,6 +155,7 @@ class Job(models.Model):
     hidden = models.BooleanField(default=False) # hidden from the list page
     expire_old_runs = models.BooleanField(default=True)
     pinned = models.BooleanField(default=False)
+    unfiltered = models.BooleanField(default=False)
 
     class Meta:  # pragma: no cover
         managed = True
