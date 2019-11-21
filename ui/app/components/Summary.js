@@ -21,7 +21,7 @@ const messages = defineMessages({
   },
   unfilteredPBF: {
     id: "export.unfiltered_pbf.description",
-    defaultMessage: "Unfiltered PBF. Affects PBF, MWM, OBF, IMG formats. Use only for small areas."
+    defaultMessage: "Unfiltered files - all OSM data for PBF, MWM, OBF, IMG formats. Use only for small areas."
   }
 });
 
