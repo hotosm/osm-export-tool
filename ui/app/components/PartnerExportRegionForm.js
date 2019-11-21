@@ -53,7 +53,8 @@ const FORM_NAME = "PartnerExportRegionForm";
 
 const EXPORT_FORMATS = {
   shp: AVAILABLE_EXPORT_FORMATS.shp,
-  geopackage: AVAILABLE_EXPORT_FORMATS.geopackage
+  geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
+  osm_pbf: AVAILABLE_EXPORT_FORMATS.osm_pbf
 };
 
 const form = reduxForm({
