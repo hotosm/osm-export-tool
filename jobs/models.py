@@ -306,6 +306,14 @@ class PartnerExportRegion(models.Model, RegionMixin):
         return self.job.name
 
     @property
+    def description(self):
+        return self.job.description
+
+    @property
+    def event(self):
+        return self.job.event
+
+    @property
     def group_name(self):
         return self.group.name
 

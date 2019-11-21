@@ -119,12 +119,14 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
     simplified_geom = geo_serializers.GeometryField(required=False)
     the_geom = geo_serializers.GeometryField()
     name = serializers.CharField()
+    event = serializers.CharField()
+    description = serializers.CharField()
 
     class Meta:  # noqa
         model = PartnerExportRegion
         fields = ('id', 'feature_selection',
                   'schedule_period', 'schedule_hour', 'export_formats',
-                  'name', 'last_run', 'next_run',
+                  'name', 'event', 'description', 'last_run', 'next_run',
                   'simplified_geom', 'job_uid',
                   'the_geom','group','planet_file')
         extra_kwargs = {
@@ -145,6 +147,8 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         ])
         job_dict['user'] = self.context['request'].user
         job_dict['name'] = validated_data.get('name')
+        job_dict['event'] = validated_data.get('event') or ""
+        job_dict['description'] = validated_data.get('description') or ""
 
         region_dict = slice_dict(validated_data, [
             'schedule_period', 'schedule_hour','group','planet_file'
@@ -181,6 +185,8 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
             'the_geom', 'export_formats', 'feature_selection'
         ])
         job.name = validated_data.get('name')
+        job.event = validated_data.get('event') or ""
+        job.description = validated_data.get('description') or ""
 
         validate_model(job)
         update_attrs(instance, validated_data, [

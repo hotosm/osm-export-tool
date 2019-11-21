@@ -442,8 +442,22 @@ export class PartnerExportRegionForm extends Component {
               <Field
                 name="name"
                 type="text"
-                label="Dataset Name"
-                placeholder="Jakarta"
+                label="Name"
+                placeholder="Required"
+                component={renderInput}
+              />
+              <Field
+                name="event"
+                type="text"
+                label="Project"
+                placeholder=""
+                component={renderInput}
+              />
+              <Field
+                name="description"
+                type="text"
+                label="Description"
+                placeholder=""
                 component={renderInput}
               />
               <hr />
@@ -668,6 +682,8 @@ Buildings:
     planet_file: false
   },
   name: formValueSelector(FORM_NAME)(state, "name"),
+  event: formValueSelector(FORM_NAME)(state, "event"),
+  description: formValueSelector(FORM_NAME)(state, "description"),
   runs: selectRuns(state),
   status: state.partners.status,
   groups: state.meta.groups || []

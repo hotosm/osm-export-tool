@@ -264,6 +264,8 @@ def permalink(request, uid):
         run = job.runs.filter(status='COMPLETED').latest('finished_at')
         serializer = ExportTaskSerializer(run.tasks.all(),many=True)
         return HttpResponse(JSONRenderer().render(serializer.data))
+    except ExportRun.DoesNotExist:
+        return HttpResponse(JSONRenderer().render({}))
     except DjangoValidationError:
         return HttpResponseNotFound()
 
