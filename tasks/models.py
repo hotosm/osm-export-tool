@@ -161,6 +161,9 @@ class PartnerExportRegionAdmin(admin.ModelAdmin):
 
 class SavedFeatureSelectionAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
+    search_fields = ['name','description']
+    list_filter = ('pinned',)
+    list_display = [ 'name', 'description']
 
 admin.site.register(Job, JobAdmin)
 admin.site.register(HDXExportRegion, HDXExportRegionAdmin)
