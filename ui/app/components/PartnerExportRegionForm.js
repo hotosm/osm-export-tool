@@ -551,6 +551,9 @@ export class PartnerExportRegionForm extends Component {
                 <Row>
                   <Col xs={7}>
                     <p>Permalinks:</p>
+                    <Link to={`/exports/${exportRegion.job_uid}`}>
+                      Webpage
+                    </Link><br/>
                     <a target="_blank" href={`${getRootUrl()}/api/permalink/${exportRegion.job_uid}`}>
                       JSON
                     </a>
