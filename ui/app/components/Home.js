@@ -103,7 +103,7 @@ export class Home extends Component {
                   </Link>
                 </h2>
                 <p>
-                  {job.description}
+                  {job.event}
                 </p>
                 <Link to={`/exports/${job.uid}`} className="btn btn-default">
                   View
