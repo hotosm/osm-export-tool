@@ -17,7 +17,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError as DjangoValidationError
 from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
@@ -271,18 +271,22 @@ def permalink(request, uid):
 
 @require_http_methods(['GET'])
 def stats(request):
-    last_100 = Job.objects.order_by('-created_at')[:100]
-    last_100_bboxes = [job.the_geom.extent for job in last_100]
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
 
-    def users(days):
-        return User.objects.filter(date_joined__gte=timezone.now()-timedelta(days=days)).count()
+    queryset = Job.objects
+    before = request.GET.get('before',timezone.now())
+    after = request.GET.get('after',timezone.now() - timedelta(days=1))
+    if before:
+        queryset = queryset.filter(Q(created_at__lte=before))
+    if after:
+        queryset = queryset.filter(Q(created_at__gte=after))
 
-    def exports(days):
-        return Job.objects.filter(created_at__gte=timezone.now()-timedelta(days=days)).count()
+    jobs_count = queryset.count()
+    users_count = User.objects.filter(date_joined__gte=after,date_joined__lte=before).count()
+    exports = [{'name':x.name,'geom':x.the_geom.extent} for x in queryset[:1000]]
 
-    new_users = [users(1),users(7),users(30)]
-    new_exports = [exports(1),exports(7),exports(30)]
-    return HttpResponse(json.dumps({'new_users':new_users,'new_exports':new_exports,'last_100_bboxes':last_100_bboxes}))
+    return HttpResponse(json.dumps({'jobs':exports,'jobs_count':jobs_count,'users_count':users_count}))
 
 @require_http_methods(['GET'])
 @login_required()

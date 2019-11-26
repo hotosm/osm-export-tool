@@ -228,3 +228,22 @@ export function updateMode(mode) {
     mode: mode
   };
 }
+
+export const getStats = (filters) => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+
+  return axios({
+    baseURL: window.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/stats`,
+    params: filters
+  }).then(rsp =>
+    dispatch({
+      type: types.RECEIVED_STATS,
+      data: rsp.data
+    })
+
+  );
+};
