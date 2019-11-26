@@ -41,7 +41,8 @@ redis-server \
 certbot \
 python3-certbot-nginx \
 osmium-tool \
-awscli
+awscli \
+libspatialindex-dev
 
 pip3 install virtualenv
 
