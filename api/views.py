@@ -7,6 +7,7 @@ import json
 from django.utils import timezone
 from datetime import timedelta
 
+import os
 import dateutil.parser
 import requests
 from cachetools.func import ttl_cache
@@ -38,6 +39,7 @@ from .permissions import IsHDXAdmin, IsOwnerOrReadOnly, IsMemberOfGroup
 from .renderers import HOTExportApiRenderer
 
 from hdx_exports.hdx_export_set import sync_region
+from rtree import index
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
@@ -269,6 +271,9 @@ def permalink(request, uid):
     except DjangoValidationError:
         return HttpResponseNotFound()
 
+
+
+idx = index.Rtree(os.path.join('jobs','reverse_geocode'))
 @require_http_methods(['GET'])
 def stats(request):
     if not request.user.is_superuser:
@@ -286,7 +291,18 @@ def stats(request):
     users_count = User.objects.filter(date_joined__gte=after,date_joined__lte=before).count()
     exports = [{'name':x.name,'geom':x.the_geom.extent} for x in queryset[:1000]]
 
-    return HttpResponse(json.dumps({'jobs':exports,'jobs_count':jobs_count,'users_count':users_count}))
+    jobs = []
+    for job in queryset[:1000]:
+        centroid = job.the_geom.centroid
+        result = next(idx.nearest((centroid.x,centroid.y),1,objects=True))
+        obj = result.object
+        jobs.append({
+            'name':job.name,
+            'geom':job.the_geom.extent,
+            'loc':[obj[0],obj[1],obj[2]]
+        })
+
+    return HttpResponse(json.dumps({'jobs':jobs,'jobs_count':jobs_count,'users_count':users_count}))
 
 @require_http_methods(['GET'])
 @login_required()

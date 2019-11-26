@@ -24,3 +24,4 @@ dramatiq[redis,watch]~=1.7.0
 boto3~=1.9.238 # needed for cloudwatch
 rasterio~=1.0.25
 osm-export-tool==0.0.21
+rtree==0.9.1
