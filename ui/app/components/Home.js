@@ -95,8 +95,8 @@ export class Home extends Component {
             />
           </h2>
           {this.props.jobs.items.map((job, i) =>
-            <div style={{width:"25%","display":"inline-block","padding":"16px"}}>
-              <Panel>
+            <div key={i} style={{width:"25%",display:"inline-block",padding:"16px",verticalAlign:"top"}}>
+              <Panel style={{minHeight:"150px"}}>
                 <h2>
                   <Link to={`/exports/${job.uid}`}>
                     {job.name}
