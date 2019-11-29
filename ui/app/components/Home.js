@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 import { login } from "../actions/meta";
 import { getExports } from "../actions/exports";
+import { getConfigurations } from "../actions/configurations";
 import { selectIsLoggedIn } from "../selectors";
 import geofabrikLogo from "../images/geofabrik-logo.png";
 import usaidLogo from "../images/usaid-logo.png";
@@ -16,6 +17,7 @@ import bnpbLogo from "../images/bnpb-logo.png";
 export class Home extends Component {
   componentWillMount() {
     this.props.getExports({pinned:true,all:true});
+    this.props.getConfigurations({pinned:true,all:true});
   }
 
   render() {
@@ -108,6 +110,28 @@ export class Home extends Component {
                 <Link to={`/exports/${job.uid}`} className="btn btn-default">
                   View
                 </Link>
+              </Panel>
+            </div>
+          )}
+      </Row> }
+      { this.props.configurations.items.length > 0 && <Row>
+          <h2 className="centered">
+            <FormattedMessage
+              id="ui.about.title.featured_configurations"
+              defaultMessage="Featured Configurations"
+            />
+          </h2>
+          {this.props.configurations.items.map((configuration, i) =>
+            <div key={i} style={{width:"25%",display:"inline-block",padding:"16px",verticalAlign:"top"}}>
+              <Panel style={{minHeight:"150px"}}>
+                <h2>
+                  <Link to={`/configurations/detail/${configuration.uid}`}>
+                    {configuration.name}
+                  </Link>
+                </h2>
+                <p>
+                    {configuration.description}
+                </p>
               </Panel>
             </div>
           )}
@@ -310,7 +334,8 @@ export class Home extends Component {
 
 const mapStateToProps = state => ({
   isLoggedIn: selectIsLoggedIn(state),
-  jobs:state.jobs
+  jobs:state.jobs,
+  configurations:state.configurations
 });
 
-export default connect(mapStateToProps, { getExports, login })(Home);
+export default connect(mapStateToProps, { getConfigurations, getExports, login })(Home);

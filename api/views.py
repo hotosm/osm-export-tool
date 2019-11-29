@@ -144,10 +144,13 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = SavedFeatureSelection.objects.filter(deleted=False).order_by('-pinned','name')
+        pinned = self.request.query_params.get('pinned',None)
         all = strtobool(self.request.query_params.get('all', 'false')) or self.action != "list"
 
         if not all:
             queryset = queryset.filter(Q(user_id=user.id))
+        if pinned:
+            queryset = queryset.filter(Q(pinned=True))
 
         return queryset.filter(Q(user_id=user.id) | Q(public=True))
 
