@@ -72,7 +72,9 @@ class StoredConfigurations extends Component {
         />
         <Paginator
           collection={configurations}
-          getPage={getConfigurations.bind(null, filters)}
+          getPage={(p) => {
+            getConfigurations(filters,p);
+          }}
         />
         <Table>
           <thead>
@@ -129,7 +131,7 @@ export default connect(
   }),
   dispatch => {
     return {
-      getConfigurations: url => dispatch(getConfigurations(url)),
+      getConfigurations: (filters, p) => dispatch(getConfigurations(filters,p)),
       setYaml: yaml => dispatch(change("ExportForm", "feature_selection", yaml))
     };
   }
