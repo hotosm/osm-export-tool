@@ -13,23 +13,19 @@ import { connect } from "react-redux";
 import { DateRangeInput } from "@blueprintjs/datetime";
 import { Field, Fields, propTypes, reduxForm, formValueSelector } from "redux-form";
 import { getStats } from "../actions/exports";
+import { renderSelect } from "./utils";
+import moment from "moment";
 
 const form = reduxForm({
   form: "StatsForm"
 });
 
-const bboxToFeature = b => {
+const pointToFeature = b => {
   return {
     "type":"Feature",
     "geometry":{
-      "type":"Polygon",
-      "coordinates":[[
-          [b[0],b[1]],
-          [b[2],b[1]],
-          [b[2],b[3]],
-          [b[0],b[3]],
-          [b[0],b[1]]
-        ]]
+      "type":"Point",
+      "coordinates":[b[0],b[1]]
     }
   }
 }
@@ -50,11 +46,10 @@ class Stats extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {last_100_geoms: []}
   }
 
   componentDidMount() {
-    this.fetch()
+    return this.props.getStats(this.props.initialValues) 
   }
 
   fetch = () => {
@@ -65,42 +60,57 @@ class Stats extends Component {
     return <Row style={{ height: "100%" }}>
       <Col xs={6} style={{ height: "100%", padding: "20px",'overflowY':'scroll' }}>
         <h1>Stats</h1>
-        <Button
-          bsStyle="primary"
-          className="pull-right"
-          type="submit"
-          onClick={this.fetch}
-        >
-        <FormattedMessage id="ui.search" defaultMessage="Filter" />
-        </Button>
         <InputGroup>
           <InputGroup.Addon>Date Range:</InputGroup.Addon>
           <Fields component={renderDateRange} names={["before", "after"]} />
         </InputGroup>
-        <Panel style={{'marginTop':'20px'}}>
-          <h4>Exports: {this.props.jobs_count}</h4>
-          <p>Top countries: IN (5), US (2) </p>
-          <Button>Download CSV</Button>
-        </Panel>
+        <Field
+          name="breakdown"
+          component={renderSelect}
+        >
+          <option value="daily">By day</option>
+          <option value="weekly">By week</option>
+          <option value="monthly">By month</option>
+        </Field>
+        <Button
+          bsStyle="primary"
+          type="submit"
+          onClick={this.fetch}
+        >
+        <FormattedMessage id="ui.search" defaultMessage="Get stats" />
+        </Button>
+        <Button style={{marginLeft:"16px"}}>Download CSV</Button>
         <Table>
           <thead>
             <tr>
               <th>
-                Name
+                Period
               </th>
               <th>
-                Foo
+                # new users
+              </th>
+              <th>
+                # exports
+              </th>
+              <th>
+                Top Regions
               </th>
             </tr>
           </thead>
           <tbody>
-          {this.props.jobs.map((job, i) =>
+          {this.props.periods.map((period, i) =>
             <tr key={i}>
               <td>
-                {job.name}
+                {period.start_date}
               </td>
               <td>
-                
+                {period.users_count}
+              </td>
+              <td>
+                {period.jobs_count}
+              </td>
+              <td>
+                {period.top_regions}
               </td>
             </tr>
           )}
@@ -108,7 +118,7 @@ class Stats extends Component {
       </Table>
       </Col>
       <Col xs={6} style={{ height: "100%" }}>
-        <MapListView features={{features:this.props.jobs.map(job => bboxToFeature(job.geom)),"type":"FeatureCollection"}} />
+        <MapListView features={{features:this.props.geoms.map(point => pointToFeature(point)),"type":"FeatureCollection"}} />
       </Col>
     </Row>;
   }
@@ -122,10 +132,11 @@ const mapStateToProps = state => {
       "after"
     ),
     initialValues: {
-      "before":new Date(),
-      "after":new Date()
+      before:moment().toDate(),
+      after:moment().subtract(30,'days').toDate()
     },
-    jobs: state.stats.jobs
+    geoms: state.stats.geoms,
+    periods: state.stats.periods
   }
 };
 

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from "react";
 import isEqual from "lodash/isEqual";
 import Attribution from "ol/control/attribution";
 import Fill from "ol/style/fill";
+import Circle from "ol/style/circle";
 import GeoJSONFormat from "ol/format/geojson";
 import interaction from "ol/interaction";
 import LayerAttribution from "ol/attribution";
@@ -94,18 +95,24 @@ export default class MapListView extends Component {
   }
 
   _generateDrawLayer() {
+
+    const fill = new Fill({
+          color: "hsla(202, 70%, 50%, .35)"
+        })
     return new VectorLayer({
       source: new VectorSource({
         wrapX: false
       }),
       style: new Style({
-        fill: new Fill({
-          color: "hsla(202, 70%, 50%, .35)"
-        }),
+        fill: fill,
         stroke: new Stroke({
           color: "hsla(202, 70%, 50%, .7)",
           width: 1,
           lineDash: [5, 5]
+        }),
+        image: new Circle({
+          fill: fill,
+          radius: 5
         })
       })
     });

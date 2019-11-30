@@ -1,7 +1,8 @@
 import types from "../actions";
 
 const initialState = {
-  jobs: []
+  geoms: [],
+  periods: []
 };
 
 export default function stats(state = initialState,{type,data}) {
@@ -9,9 +10,8 @@ export default function stats(state = initialState,{type,data}) {
     case types.RECEIVED_STATS:
       return {
         ...state,
-        jobs:data.jobs,
-        jobs_count:data.jobs_count,
-        users_count:data.users_count
+        geoms:data.geoms,
+        periods:data.periods
       };
 
     default:

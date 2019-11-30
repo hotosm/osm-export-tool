@@ -1,11 +1,13 @@
 """Provides classes for handling API requests."""
 # -*- coding: utf-8 -*-
 from distutils.util import strtobool
+import itertools
 from itertools import chain
 import logging
 import json
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
+from collections import Counter
 
 import os
 import dateutil.parser
@@ -281,31 +283,44 @@ idx = index.Rtree(os.path.join('jobs','reverse_geocode'))
 def stats(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden()
-
-    queryset = Job.objects
     before = request.GET.get('before',timezone.now())
     after = request.GET.get('after',timezone.now() - timedelta(days=1))
+
+    def toWeek(dt):
+        sunday = dt.strftime('%Y-%U-0')
+        return datetime.strptime(sunday, '%Y-%U-%w').strftime('%Y-%m-%d')
+
+    users = User.objects.only('date_joined').filter(date_joined__gte=after,date_joined__lte=before).order_by('date_joined')
+
+    grouped_users_by_period = {}
+    for gu in itertools.groupby(users, lambda u:toWeek(u.date_joined)):
+        grouped_users_by_period[gu[0]] = len(list(gu[1]))
+
+    queryset = Job.objects.only('created_at','the_geom').order_by('created_at')
     if before:
         queryset = queryset.filter(Q(created_at__lte=before))
     if after:
         queryset = queryset.filter(Q(created_at__gte=after))
 
-    jobs_count = queryset.count()
-    users_count = User.objects.filter(date_joined__gte=after,date_joined__lte=before).count()
-    exports = [{'name':x.name,'geom':x.the_geom.extent} for x in queryset[:1000]]
+    grouped_jobs = itertools.groupby(queryset,lambda j:toWeek(j.created_at))
 
-    jobs = []
-    for job in queryset[:1000]:
-        centroid = job.the_geom.centroid
-        result = next(idx.nearest((centroid.x,centroid.y),1,objects=True))
-        obj = result.object
-        jobs.append({
-            'name':job.name,
-            'geom':job.the_geom.extent,
-            'loc':[obj[0],obj[1],obj[2]]
-        })
+    geoms = []
+    periods = []
+    for x in grouped_jobs:
+        top_regions = Counter()
+        jobs_in_group = list(x[1])
+        for j in jobs_in_group:
+            centroid = j.the_geom.centroid
+            geoms.append([centroid.x,centroid.y])
+            result = next(idx.nearest((centroid.x,centroid.y),1,objects=True))
+            top_regions[result.object[2]] += 1
 
-    return HttpResponse(json.dumps({'jobs':jobs,'jobs_count':jobs_count,'users_count':users_count}))
+        users_in_period = grouped_users_by_period.get(x[0],0)
+
+        top_regions_string = ', '.join(["{0}: {1}".format(x[0],x[1]) for x in top_regions.most_common(5)])
+        periods.append({'start_date':x[0],'jobs_count':len(jobs_in_group),'users_count':users_in_period,'top_regions':top_regions_string})
+
+    return HttpResponse(json.dumps({'periods':periods,'geoms':geoms}))
 
 @require_http_methods(['GET'])
 @login_required()
