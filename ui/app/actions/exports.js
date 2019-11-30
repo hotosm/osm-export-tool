@@ -3,6 +3,7 @@ import types from ".";
 import { push } from "react-router-redux";
 import { initialize, startSubmit, stopSubmit } from "redux-form";
 import moment from "moment";
+import fileDownload from "js-file-download";
 
 import { selectAuthToken } from "../selectors";
 
@@ -244,6 +245,21 @@ export const getStats = (filters) => (dispatch, getState) => {
       type: types.RECEIVED_STATS,
       data: rsp.data
     })
-
   );
+};
+
+export const getCsv = (filters) => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+  filters.csv = true;
+  return axios({
+    baseURL: window.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/stats`,
+    params: filters
+  }).then(rsp => {
+    console.log(rsp.data)
+    fileDownload(rsp.data,'exports.csv');
+  });
 };

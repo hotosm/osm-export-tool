@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 from collections import Counter
 
 import os
+import io
+import csv
 import dateutil.parser
 import requests
 from cachetools.func import ttl_cache
@@ -286,6 +288,7 @@ def stats(request):
     before = request.GET.get('before',timezone.now())
     after = request.GET.get('after',timezone.now() - timedelta(days=1))
     period = request.GET.get('period','day')
+    is_csv = (request.GET.get('csv',False) == 'true')
 
     def toWeek(dt):
         sunday = dt.strftime('%Y-%U-0')
@@ -334,7 +337,15 @@ def stats(request):
         top_regions_string = ' '.join(["{0}:{1}".format(x[0],x[1]) for x in top_regions.most_common(5)])
         periods.append({'start_date':x[0],'jobs_count':len(jobs_in_group),'users_count':users_in_period,'top_regions':top_regions_string})
 
-    return HttpResponse(json.dumps({'periods':periods,'geoms':geoms}))
+    if is_csv:
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['start_date','jobs_count','users_count','top_regions'])
+        for period in periods:
+            writer.writerow([period['start_date'],period['jobs_count'],period['users_count'],period['top_regions']])
+        return HttpResponse(output.getvalue())
+    else:
+        return HttpResponse(json.dumps({'periods':periods,'geoms':geoms}))
 
 @require_http_methods(['GET'])
 @login_required()

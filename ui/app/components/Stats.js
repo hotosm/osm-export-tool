@@ -12,7 +12,7 @@ import {
 import { connect } from "react-redux";
 import { DateRangeInput } from "@blueprintjs/datetime";
 import { Field, Fields, propTypes, reduxForm, formValueSelector } from "redux-form";
-import { getStats } from "../actions/exports";
+import { getStats, getCsv } from "../actions/exports";
 import { renderSelect } from "./utils";
 import moment from "moment";
 
@@ -56,6 +56,10 @@ class Stats extends Component {
     return this.props.getStats(this.props.formValues) 
   }
 
+  fetchCsv = () => {
+    return this.props.getCsv(this.props.formValues)
+  }
+
   render() {
     return <Row style={{ height: "100%" }}>
       <Col xs={6} style={{ height: "100%", padding: "20px",'overflowY':'scroll' }}>
@@ -79,7 +83,7 @@ class Stats extends Component {
         >
         <FormattedMessage id="ui.search" defaultMessage="Get stats" />
         </Button>
-        <Button style={{marginLeft:"16px"}}>Download CSV</Button>
+        <Button style={{marginLeft:"16px"}} onClick={this.fetchCsv}>Download CSV</Button>
         <Table>
           <thead>
             <tr>
@@ -142,4 +146,4 @@ const mapStateToProps = state => {
   }
 };
 
-export default connect(mapStateToProps,{getStats})(form(Stats));
+export default connect(mapStateToProps,{getStats,getCsv})(form(Stats));

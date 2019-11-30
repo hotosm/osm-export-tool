@@ -3321,6 +3321,11 @@ js-base64@^2.1.9:
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.1.9.tgz#f0e80ae039a4bd654b5f281fc93f04a914a7fcce"
 
+js-file-download@^0.4.8:
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/js-file-download/-/js-file-download-0.4.8.tgz#f91c532acd685d8b16685672010b99473ca7f606"
+  integrity sha512-8xygX/IkjQbr/2nWqJnyc0IWOMvA1R/78HQVyexB22YZDBAEz2MG59s+ieLFKOkDFzyDDk3bezKXEjyGW5HPCw==
+
 js-tokens@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-3.0.1.tgz#08e9f132484a2c45a30907e9dc4d5567b7f114d7"

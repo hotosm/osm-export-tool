@@ -16,6 +16,7 @@
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "intl": "^1.2.5",
+    "js-file-download": "^0.4.8",
     "js-yaml": "^3.13.1",
     "lodash": "~4.17.4",
     "material-design-icons": "^3.0.1",
