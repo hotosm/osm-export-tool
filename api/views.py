@@ -285,24 +285,38 @@ def stats(request):
         return HttpResponseForbidden()
     before = request.GET.get('before',timezone.now())
     after = request.GET.get('after',timezone.now() - timedelta(days=1))
+    period = request.GET.get('period','day')
 
     def toWeek(dt):
         sunday = dt.strftime('%Y-%U-0')
         return datetime.strptime(sunday, '%Y-%U-%w').strftime('%Y-%m-%d')
 
-    users = User.objects.only('date_joined').filter(date_joined__gte=after,date_joined__lte=before).order_by('date_joined')
+    def toDay(dt):
+        return dt.strftime('%Y-%m-%d')
+
+    def toMonth(dt):
+        return dt.strftime('%Y-%m')
+
+    if period == 'day':
+        period_fn = toDay
+    elif period == 'week':
+        period_fn = toWeek
+    elif period == 'month':
+        period_fn = toMonth
+
+    users = User.objects.only('date_joined').filter(date_joined__gte=after,date_joined__lte=before).order_by('-date_joined')
 
     grouped_users_by_period = {}
-    for gu in itertools.groupby(users, lambda u:toWeek(u.date_joined)):
+    for gu in itertools.groupby(users, lambda u:period_fn(u.date_joined)):
         grouped_users_by_period[gu[0]] = len(list(gu[1]))
 
-    queryset = Job.objects.only('created_at','the_geom').order_by('created_at')
+    queryset = Job.objects.only('created_at','the_geom').order_by('-created_at')
     if before:
         queryset = queryset.filter(Q(created_at__lte=before))
     if after:
         queryset = queryset.filter(Q(created_at__gte=after))
 
-    grouped_jobs = itertools.groupby(queryset,lambda j:toWeek(j.created_at))
+    grouped_jobs = itertools.groupby(queryset,lambda j:period_fn(j.created_at))
 
     geoms = []
     periods = []
@@ -317,7 +331,7 @@ def stats(request):
 
         users_in_period = grouped_users_by_period.get(x[0],0)
 
-        top_regions_string = ', '.join(["{0}: {1}".format(x[0],x[1]) for x in top_regions.most_common(5)])
+        top_regions_string = ' '.join(["{0}:{1}".format(x[0],x[1]) for x in top_regions.most_common(5)])
         periods.append({'start_date':x[0],'jobs_count':len(jobs_in_group),'users_count':users_in_period,'top_regions':top_regions_string})
 
     return HttpResponse(json.dumps({'periods':periods,'geoms':geoms}))

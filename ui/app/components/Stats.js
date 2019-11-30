@@ -65,12 +65,12 @@ class Stats extends Component {
           <Fields component={renderDateRange} names={["before", "after"]} />
         </InputGroup>
         <Field
-          name="breakdown"
+          name="period"
           component={renderSelect}
         >
-          <option value="daily">By day</option>
-          <option value="weekly">By week</option>
-          <option value="monthly">By month</option>
+          <option value="day">By day</option>
+          <option value="week">By week</option>
+          <option value="month">By month</option>
         </Field>
         <Button
           bsStyle="primary"
@@ -129,11 +129,13 @@ const mapStateToProps = state => {
     formValues: formValueSelector("StatsForm")(
       state,
       "before",
-      "after"
+      "after",
+      "period"
     ),
     initialValues: {
       before:moment().toDate(),
-      after:moment().subtract(30,'days').toDate()
+      after:moment().subtract(30,'days').toDate(),
+      period:'day'
     },
     geoms: state.stats.geoms,
     periods: state.stats.periods
