@@ -5,7 +5,7 @@ NEW_YAML = """
 Buildings:
   hdx:
     tags: buildings, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - polygons
   select:
@@ -24,7 +24,7 @@ Buildings:
 Roads:
   hdx:
     tags: roads, transportation, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - lines
     - polygons
@@ -43,8 +43,8 @@ Roads:
 
 Waterways:
   hdx:
-    tags: rivers, water bodies - hydrography, waterbodies, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    tags: rivers, water bodies - hydrography, geodata
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - lines
     - polygons
@@ -65,7 +65,7 @@ Waterways:
 Points of Interest:
   hdx:
     tags: facilities and infrastructure, points of interest - poi, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - points
     - polygons
@@ -88,7 +88,7 @@ Points of Interest:
 Airports:
   hdx:
     tags: airports, helicopter landing zone - hlz, aviation, facilities and infrastructure, transportation, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - points
     - lines
@@ -110,7 +110,7 @@ Airports:
 Sea Ports:
     hdx:
       tags: ports, logistics, facilities and infrastructure, transportation, geodata
-      caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+      caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
     types:
       - points
       - lines
@@ -129,7 +129,7 @@ Sea Ports:
 Education Facilities:
   hdx:
     tags: education facilities - schools, education, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - points
     - polygons
@@ -147,7 +147,7 @@ Education Facilities:
 Health Facilities:
   hdx:
     tags: health facilities, health, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - points
     - polygons
@@ -167,7 +167,7 @@ Health Facilities:
 Populated Places:
   hdx:
     tags: populated places - settlements, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - points
     - polygons
@@ -182,7 +182,7 @@ Populated Places:
 Financial Services:
     hdx:
       tags: financial institutions, services, geodata
-      caveats: “OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive”
+      caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
     types:
       - points
       - polygons
@@ -200,7 +200,7 @@ Financial Services:
 Railways:
   hdx:
     tags: facilities and infrastructure,railways,transportation, geodata
-    caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
+    caveats: OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive
   types:
     - lines
     - points
@@ -215,7 +215,7 @@ Railways:
     - addr:city
     - source
   where: railway IN ('rail','subway','station')
-  """
+"""
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
