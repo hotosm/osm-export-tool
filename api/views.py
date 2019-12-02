@@ -51,6 +51,8 @@ LOG = logging.getLogger(__name__)
 # controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
+DIR = os.path.dirname(os.path.abspath(__file__))
+idx = index.Rtree(os.path.join(DIR,'reverse_geocode'))
 
 def bbox_to_geom(s):
     try:
@@ -280,7 +282,6 @@ def permalink(request, uid):
 
 
 
-idx = index.Rtree(os.path.join('jobs','reverse_geocode'))
 @require_http_methods(['GET'])
 def stats(request):
     if not request.user.is_superuser:
