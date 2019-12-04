@@ -129,9 +129,6 @@ export class Home extends Component {
                     {configuration.name}
                   </Link>
                 </h2>
-                <p>
-                    {configuration.description}
-                </p>
               </Panel>
             </div>
           )}
