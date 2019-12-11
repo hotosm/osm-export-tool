@@ -118,7 +118,7 @@ class JobViewSet(viewsets.ModelViewSet):
         if user.is_superuser:
             return queryset
 
-        return queryset.filter(Q(user_id=user.id) | Q(published=True))
+        return queryset
 
     def perform_create(self, serializer):
         if Job.objects.filter(created_at__gt=timezone.now()-timedelta(minutes=60),user=self.request.user).count() > 5:
