@@ -19,7 +19,8 @@ Environment=DJANGO_SETTINGS_MODULE=core.settings.project
 User=exports
 WorkingDirectory=/home/exports/osm-export-tool/
 ExecStart=/home/exports/venv/bin/dramatiq tasks.task_runners --processes 3 --threads 1 --queues default 
-Restart=on-failure
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
