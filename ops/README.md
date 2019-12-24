@@ -25,7 +25,9 @@ The values in the `variables` section of `packer.json` may need to be modified t
 See [Overpass API/Installation](https://wiki.openstreetmap.org/wiki/Overpass_API/Installation)
 
 1. Format the data disk and mount at `/data`.
-2. Modify `/etc/fstab` to auto-mount this device on boot.
+2. 	* Modify `/etc/fstab` to auto-mount this device on boot.
+	* Change /etc/nginx/nginx.conf to the file overpass/nginx.conf
+	* Make sure all CGI scripts in /home/overpass/osm3s.../cgi_bin are executable.(chmod +x)
 3. Set the owner of `data` to `overpass:overpass`.
 4. Switch to the `overpass` user: `sudo su overpass`
 5. Clone a copy of the Overpass data to `/data`: 
@@ -74,6 +76,13 @@ Determine the disk UUID with `sudo -i blkid` and add it to fstab to mount on boo
 
 
 	UUID=33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e   /mnt/data   ext4   defaults,nofail   1   2
+	
+### Restarting the worker
+
+It's possible that certain jobs or problems with the exporting utilities causes jobs to hang, in which case a CloudWatch alarm will alert about many enqueued jobs. The worker process can be restarted via:
+
+`sudo service worker-ondemand restart`
+or `sudo service worker-scheduled restart`
 
 ### Logging
 
