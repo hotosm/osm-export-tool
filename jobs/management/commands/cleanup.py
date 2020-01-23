@@ -1,31 +1,27 @@
 import os
 import shutil
 from django.core.management.base import BaseCommand
-from tasks.models import ExportRun
+from tasks.models import ExportRun, HDXExportRegion, PartnerExportRegion
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 class Command(BaseCommand):
     help = 'remove old downloads'
 
     def handle(self, *args, **kwargs):
-        for run in ExportRun.objects.raw("""
-    SELECT
-        id,
-        uid
-    FROM (
-        SELECT
-            export_runs.id,
-            export_runs.uid,
-            export_runs.created_at,
-            rank() OVER
-                (PARTITION BY job_id ORDER BY export_runs.created_at DESC) AS rank
-        FROM export_runs
-        LEFT JOIN jobs ON jobs.id = export_runs.job_id
-        WHERE status='COMPLETED'
-            AND expire_old_runs = true
-    ) AS _
-    WHERE rank > 1
-      AND created_at < NOW() - INTERVAL '2 weeks'
-        """):
-            shutil.rmtree(
-                os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(run.uid)), True)
+        def remove_dir(s):
+            shutil.rmtree(os.path.join(settings.EXPORT_DOWNLOAD_ROOT,run_uid),True)
+
+        for run_uid in os.listdir(settings.EXPORT_DOWNLOAD_ROOT):
+            try:
+                run = ExportRun.objects.get(uid=run_uid)
+                old = timezone.now() - run.created_at > timedelta(days=30)
+                if old:
+                    if HDXExportRegion.objects.filter(job_id=run.job_id).count() > 0 or PartnerExportRegion.objects.filter(job_id=run.job_id).count() > 0:
+                        if ExportRun.objects.filter(job_id=run.job_id,status='COMPLETED',created_at__gt=run.created_at).count() > 0:
+                            remove_dir(run_uid)
+                    else:
+                        remove_dir(run_uid)
+            except ExportRun.DoesNotExist:
+                remove_dir(run_uid)
