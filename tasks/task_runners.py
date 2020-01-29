@@ -353,6 +353,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             zipped = create_package(join(download_dir,valid_name + '_mbtiles.zip'),mbtiles_files,boundary_geom=geom)
             finish_task('mbtiles',[zipped])
 
+        if 'osm_pbf' in export_formats:
+            bundle_files += [osm_export_tool.File('osm_pbf',[source_path],'')]
+
         if 'bundle' in export_formats:
             start_task('bundle')
             zipped = create_posm_bundle(join(download_dir,valid_name + '-bundle.tar.gz'),bundle_files,job.name,valid_name,job.description,geom)
