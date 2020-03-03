@@ -12,6 +12,7 @@ import traceback
 import django
 from django.apps import apps
 from django.conf import settings
+from django import db
 
 if not apps.ready and not settings.configured:
     django.setup()
@@ -90,10 +91,12 @@ class ExportTaskRunner(object):
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*6)
 def run_task_async_ondemand(run_uid):
     run_task_remote(run_uid)
+    db.close_old_connections()
 
 @dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=1000*60*60*6)
 def run_task_async_scheduled(run_uid):
     run_task_remote(run_uid)
+    db.close_old_connections()
 
 def run_task_remote(run_uid):
     try:
