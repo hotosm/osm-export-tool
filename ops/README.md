@@ -42,7 +42,7 @@ Attic data is necessary for augmented diff support. This clone can take several 
 
 1. Assign a DNS A record such as `export.example.com` to your instance's IP.
 2. Modify /etc/nginx.conf, changing the 2nd entry of server_name to `export.example.com`
-3. Run `sudo certbot --nginx -d export.example.com` and follow the prompts to create and install an SSL certificate. When prompted, choose to redirect all HTTP traffic to HTTPS.
+3. Run `sudo certbot --nginx -d export.example.com --server https://acme-v02.api.letsencrypt.org/directory` and follow the prompts to create and install an SSL certificate. When prompted, choose to redirect all HTTP traffic to HTTPS.
 4. Add to the crontab `0 0,12 * * * /usr/bin/certbot renew` . This will renew the SSL certificate when it is about to expire. 
 
 ## Web application setup (part 2)

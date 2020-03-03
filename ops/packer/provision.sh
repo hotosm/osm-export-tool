@@ -2,6 +2,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get upgrade -y
 add-apt-repository -y ppa:ubuntugis/ppa
+add-apt-repository -y ppa:certbot/certbot
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 add-apt-repository -y "deb https://dl.yarnpkg.com/debian/ stable main"
 apt-get install -y \
