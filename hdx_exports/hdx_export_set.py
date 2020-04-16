@@ -101,6 +101,7 @@ class HDXExportSet(object):
         }
 
         d = []
+        updated_by_script = f'HOT Export Tool ({datetime.now().strftime("%Y-%m-%dT%H:%M:%S")})'
         for theme in self._mapping.themes:
             dataset = Dataset()
             dataset['owner_org'] = '225b9f7d-e7cb-4156-96a6-44c9c58d31e3'
@@ -109,6 +110,7 @@ class HDXExportSet(object):
             dataset['methodology'] = 'Other'
             dataset['methodology_other'] = 'Volunteered geographic information'
             dataset['license_id'] = 'hdx-odc-odbl'
+            dataset['updated_by_script'] = updated_by_script
             dataset['groups'] = []
 
             dataset['name'] = '{0}_{1}'.format(self._dataset_prefix, slugify(theme.name))
