@@ -16,6 +16,7 @@ chmod +x /home/overpass/cloudwatch_metrics.py
 mv /tmp/motd /etc/motd
 mv /tmp/cloudwatch_metrics.py /home/overpass/cloudwatch_metrics.py
 mv /tmp/nginx.conf /etc/nginx.conf
+mv /tmp/fcgiwrap.service /etc/systemd/system/fcgiwrap.service
 chmod 775 /home/overpass/osm-3s_v0.7.55/cgi-bin/interpreter
 chmod 775 /home/overpass/osm-3s_v0.7.55/cgi-bin/timestamp
 chmod 775 /home/overpass/osm-3s_v0.7.55/cgi-bin/augmented_diff
