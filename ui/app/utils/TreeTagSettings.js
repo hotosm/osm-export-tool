@@ -814,7 +814,7 @@ export const TAGLOOKUP = {
             "is_in",
             "population"
         ],
-        "where": "place IN ('country','state','region','province','district','county','municipality','city','borough','suburb','neighbourhood')"
+        "where": "place IN ('country','state','region','province','district','county','municipality','city','borough','suburb','quarter','neighbourhood','town','village','hamlet','isolated_dwelling')"
     },
     "Postcode": {
         "geom_types": [

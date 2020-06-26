@@ -49,7 +49,7 @@ Land Use,Agriculture,,,polygon,landuse,"landuse IN ('farmland','farmyard','green
 Land Use,Solid Waste,,"dump,landfill","point, polygon","name, landuse",landuse='landfill',,
 Localities,Localities,yes,,,,"boundary IS NOT NULL OR place IS NOT NULL OR ""addr:postcode"" IS NOT NULL OR boundary='postal_code'",,http://wiki.openstreetmap.org/wiki/Map_Features#Historic
 Localities,Administrative Boundary,,border,polygon,"admin_level, boundary, name, is_in",boundary='administrative',,
-Localities,Place,,population,"point, polygon","place, name, is_in, population","place IN ('country','state','region','province','district','county','municipality','city','borough','suburb','neighbourhood')",,
+Localities,Place,,population,"point, polygon","place, name, is_in, population","place IN ('country','state','region','province','district','county','municipality','city','borough','suburb','quarter','neighbourhood','town','village','hamlet','isolated_dwelling')",,
 Localities,Postcode,,,"point, polygon","addr:postcode, boundary","""addr:postcode"" IS NOT NULL OR boundary='postal_code'",,
 Natural,Natural,yes,,,,natural IS NOT NULL,,http://wiki.openstreetmap.org/wiki/Map_Features#Natural
 Natural,Coastline,,,line,natural,natural='coastline',,
