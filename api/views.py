@@ -348,6 +348,73 @@ def stats(request):
     else:
         return HttpResponse(json.dumps({'periods':periods,'geoms':geoms}))
 
+
+@require_http_methods(['GET'])
+@login_required()
+def request_nominatim(request):
+    """Country boundaries using nominatim"""
+
+    nominatim_url = getattr(settings, 'NOMINATIM_API_URL')
+    if nominatim_url is None:
+        error_dict = {
+            'error': 'A url was not provided for nominatim',
+            'status': 500,
+        }
+        return JsonResponse(error_dict)
+
+    country = request.GET.get('country', None)
+    if country is None:
+        error_dict = {
+            'error': 'Missing country request parameter',
+            'status': 400,
+        }
+        return JsonResponse(error_dict)
+
+    country_code = request.GET.get('countryCode', None)
+    if country_code is None:
+        error_dict = {
+            'error': 'Missing countryCode request parameter',
+            'status': 400,
+        }
+        return JsonResponse(error_dict)
+
+    params = {
+        'country': country,
+        'countryCodes': country_code,
+        'polygon_geojson': 1,
+        'format': 'json',
+    }
+
+    response = requests.get(nominatim_url, params=params)
+    if response.status_code != 200:
+        error_dict = {
+            'error': 'Invalid Status code from nominatim url',
+            'status': 400,
+        }
+        return JsonResponse(error_dict)
+
+    try:
+        data = response.json()
+    except json.decoder.JSONDecodeError:
+        error_dict = {
+            'error': 'Response content not serializable to json',
+            'status': 400,
+        }
+        return JsonResponse(error_dict)
+
+    feature = {
+        'type': 'Feature',
+        'geometry': data[0].get('geojson')
+    }
+
+    feature_collection = {
+        'type': 'FeatureCollection',
+        'features': [feature]
+    }
+
+    return JsonResponse(feature_collection)
+
+
 @require_http_methods(['GET'])
 @login_required()
 def request_geonames(request):
