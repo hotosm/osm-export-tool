@@ -210,6 +210,8 @@ HDX_SITE = os.getenv('HDX_SITE', 'demo')
 
 GEONAMES_API_URL = os.getenv('GEONAMES_API_URL', 'http://api.geonames.org/searchJSON')
 
+NOMINATIM_API_URL = os.getenv('NOMINATIM_API_URL', 'https://nominatim.openstreetmap.org/search.php')
+
 HDX_URL_PREFIX = Configuration.create(
     hdx_site=os.getenv('HDX_SITE', 'demo'),
     hdx_key=os.getenv('HDX_API_KEY'),

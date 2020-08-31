@@ -54,7 +54,7 @@ export class ExportAOI extends Component {
     importGeom: PropTypes.object,
     updateMode: PropTypes.func,
     updateAoiInfo: PropTypes.func,
-    clearAoiInfo: PropTypes.func
+    clearAoiInfo: PropTypes.func,
   };
 
   getFeature(geojson) {
@@ -150,7 +150,7 @@ export class ExportAOI extends Component {
     const bboxFeature = new Feature({
       geometry: geom
     });
-    this._drawLayer.getSource().addFeature(bboxFeature);
+    //this._drawLayer.getSource().addFeature(bboxFeature);
     let description = "";
     description += result.countryName ? result.countryName : "";
     description += result.adminName1 ? ", " + result.adminName1 : "";
@@ -159,6 +159,10 @@ export class ExportAOI extends Component {
     this.props.updateAoiInfo(geojson, "Polygon", result.name, description);
     this.handleZoomToSelection(bbox);
   };
+
+  handleSearchNominatim = result => {
+    this.props.updateAoiInfo(result.geojson, "Polygon", result.name, result.description);
+  }
 
   handleGeoJSONUpload = geojson =>
     this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Import");
@@ -284,6 +288,7 @@ export class ExportAOI extends Component {
             <AoiInfobar aoi={aoi} zoomToSelection={this.zoomToSelection} />}
           <SearchAOIToolbar
             handleSearch={this.handleSearch}
+            handleSearchNominatim={this.handleSearchNominatim}
             handleCancel={this.handleCancel}
           />
           <DrawAOIToolbar
@@ -326,7 +331,7 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  updateMode
+  updateMode,
 })(ExportAOI);
 
 function generateDrawLayer() {
