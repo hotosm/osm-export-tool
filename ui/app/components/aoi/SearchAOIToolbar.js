@@ -12,6 +12,7 @@ import {
   setSearchAOIButtonSelected,
   setAllButtonsDefault
 } from "../../actions/aoi/mapToolActions";
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 
 const getCountryISO2 = require("country-iso-3-to-2");
 const isoCountriesLanguages = require("@hotosm/iso-countries-languages");
@@ -19,7 +20,8 @@ const isoCountriesLanguages = require("@hotosm/iso-countries-languages");
 export class SearchAOIToolbar extends Component {
   state = {
     value: "",
-    suggestions: []
+    suggestions: [],
+    loading: false,
   };
 
   componentWillMount() {
@@ -61,6 +63,9 @@ export class SearchAOIToolbar extends Component {
     const matchISO3 = e.split(":")
     if (matchISO3.length === 2 && matchISO3[0] === "code" && matchISO3[1].length === 3) {
       const [_, iso3] = matchISO3;
+      this.setState(p => {
+        return {...p, loading: true}
+      })
 
       // Get iso2 from iso3.
       const iso2 = getCountryISO2(iso3.toUpperCase());
@@ -76,6 +81,11 @@ export class SearchAOIToolbar extends Component {
           geojson: r,
           name: country,
           description: "Nominatim polygon",
+        });
+      })
+      .finally(() => {
+        this.setState(p => {
+          return {...p, loading: false}
         });
       });
     } else if (e.length >= 2) {
@@ -102,6 +112,9 @@ export class SearchAOIToolbar extends Component {
   render() {
     return (
       <div className={styles.searchbarDiv}>
+        <div className={styles.loadingSpinner}>
+          {this.state.loading === true ? <Spinner className={styles.spinnerClass}/>  : null}
+        </div>
         <div className={styles.typeahead}>
           <Typeahead
             ref="typeahead"
