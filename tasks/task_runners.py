@@ -291,7 +291,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if planet_file:
             h = tabular.Handler(tabular_outputs,mapping)
-            source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
+            source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir, mapping=mapping)
         else:
             h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
             mapping_filter = mapping
