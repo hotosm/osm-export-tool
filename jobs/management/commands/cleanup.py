@@ -25,3 +25,12 @@ class Command(BaseCommand):
                         remove_dir(run_uid)
             except ExportRun.DoesNotExist:
                 remove_dir(run_uid)
+
+        # Remove not running folders from staging.
+        staging_folders = os.listdir(settings.EXPORT_STAGING_ROOT)
+        finished_runs = ExportRun.objects.filter(status__in=staging_folders).exclude(status='RUNNING').all()
+        uids = [r.uid for r in finished_runs]
+        for uid in uids:
+            folder_path = os.path.join(settings.EXPORT_STAGING_ROOT, uid)
+            shutil.rmtree(folder_path, True)
+
