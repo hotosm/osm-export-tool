@@ -2,6 +2,7 @@ import configurations from "./configurations";
 import exportInfo from "./exportInfo";
 import exportRuns from "./exportRuns";
 import geonames from "./geonames";
+import nominatim from "./nominatim";
 import hdx from "./hdx";
 import importGeom from "./importGeom";
 import jobs from "./jobs";
@@ -29,5 +30,6 @@ export default {
   status,
   toolbarIcons,
   partners,
-  stats
+  stats,
+  nominatim
 };

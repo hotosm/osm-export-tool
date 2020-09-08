@@ -30,6 +30,18 @@
     }
 }
 
+.loadingSpinner {
+  position: absolute;
+  left: 0;
+  z-index: 9999;
+}
+
+.spinnerClass > div {
+  text-align: center !important;
+  width: 55% !important;
+  margin-left: 0.5em;
+}
+
 .searchbarDiv {
     z-index: 2;
     position: absolute;
@@ -50,7 +62,7 @@
     left: 0px;
     top: 0px;
     height: 50px;
-    width: calc(100% - 70px);
+    width: calc(100% - 60px);
     position: absolute;
 }
 
@@ -72,7 +84,8 @@
     box-shadow: none;
     color: #707274;
     background-color: #fff !important;
-    padding-left: 25px;
+    padding-left: 40px;
+    padding-right: 0;
 }
 
 .typeahead > div > div > input:focus {
