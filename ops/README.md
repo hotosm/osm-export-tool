@@ -34,9 +34,10 @@ See [Overpass API/Installation](https://wiki.openstreetmap.org/wiki/Overpass_API
 ```
 ./download_clone.sh --db-dir=/data --source=http://dev.overpass-api.de/api_drolbr/ --meta=attic
 ```
-Attic data is necessary for augmented diff support. This clone can take several hours.
-5. Start the dispatcher
-6. Start `fetch_osc_and_apply.sh`
+Attic data is necessary for augmented diff support. :warning: This clone can take several hours.
+
+6. Start the dispatcher
+7. Start `fetch_osc_and_apply.sh`
 
 ## Web application Setup (part 1)
 
