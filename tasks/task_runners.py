@@ -141,17 +141,18 @@ def run_task(run_uid,run,stage_dir,download_dir):
         task.started_at = timezone.now()
         task.save()
 
-    def finish_task(name,created_files):
+    def finish_task(name,created_files,planet_file=False):
         LOG.debug('Task Finish: {0} for run: {1}'.format(name, run_uid))
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'SUCCESS'
         task.finished_at = timezone.now()
         # assumes each file only has one part (all are zips or PBFs)
         task.filenames = [basename(file.parts[0]) for file in created_files]
-        total_bytes = 0
-        for file in created_files:
-            total_bytes += file.size()
-        task.filesize_bytes = total_bytes
+        if planet_file is False:
+            total_bytes = 0
+            for file in created_files:
+                total_bytes += file.size()
+            task.filesize_bytes = total_bytes
         task.save()
 
     is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
@@ -303,7 +304,8 @@ def run_task(run_uid,run,stage_dir,download_dir):
         source_path = source.path()
         LOG.debug('Source end for run: {0}'.format(run_uid))
 
-        h.apply_file(source_path, locations=True, idx='sparse_file_array')
+        if planet_file is False:
+            h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         bundle_files = []
 
@@ -370,7 +372,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             target = join(download_dir,valid_name + '.osm.pbf')
             shutil.move(source_path,target)
             os.chmod(target, 0o644)
-            finish_task('osm_pbf',[osm_export_tool.File('pbf',[target],'')])
+            finish_task('osm_pbf',[osm_export_tool.File('pbf',[target],'')], planet_file)
 
         send_completion_notification(run)
 
