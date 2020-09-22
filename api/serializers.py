@@ -128,7 +128,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
                   'schedule_period', 'schedule_hour', 'export_formats',
                   'name', 'event', 'description', 'last_run', 'next_run',
                   'simplified_geom', 'job_uid',
-                  'the_geom','group','planet_file')
+                  'the_geom','group','planet_file', 'polygon_centroid')
         extra_kwargs = {
             'simplified_geom': {
                 'read_only': True
@@ -151,7 +151,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job_dict['description'] = validated_data.get('description') or ""
 
         region_dict = slice_dict(validated_data, [
-            'schedule_period', 'schedule_hour','group','planet_file'
+            'schedule_period', 'schedule_hour','group','planet_file', 'polygon_centroid'
         ])
         job = Job(**job_dict)
         job.hidden = True
@@ -190,7 +190,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
 
         validate_model(job)
         update_attrs(instance, validated_data, [
-            'schedule_period', 'schedule_hour', 'group','planet_file'
+            'schedule_period', 'schedule_hour', 'group','planet_file', 'polygon_centroid'
         ])
         validate_model(instance)
         with transaction.atomic():
