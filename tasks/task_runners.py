@@ -159,10 +159,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
     is_partner_export = PartnerExportRegion.objects.filter(job_id=run.job_id).exists()
 
     planet_file = False
+    polygon_centroid = False
     if is_hdx_export:
         planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
     if is_partner_export:
-        planet_file = PartnerExportRegion.objects.get(job_id=run.job_id).planet_file
+        export_region = PartnerExportRegion.objects.get(job_id=run.job_id)
+        planet_file = export_region.planet_file
+        polygon_centroid = export_region.polygon_centroid
 
     if is_hdx_export:
         geopackage = None
@@ -186,10 +189,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('kml')
 
         if planet_file:
-            h = tabular.Handler(tabular_outputs,mapping)
+            h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
         else:
-            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
+            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
             mapping_filter = mapping
             if job.unfiltered:
                 mapping_filter = None
@@ -291,10 +294,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('kml')
 
         if planet_file:
-            h = tabular.Handler(tabular_outputs,mapping)
+            h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir, mapping=mapping)
         else:
-            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom)
+            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
             mapping_filter = mapping
             if job.unfiltered:
                 mapping_filter = None
