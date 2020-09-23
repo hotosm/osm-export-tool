@@ -491,6 +491,16 @@ export class PartnerExportRegionForm extends Component {
                 </Col>
               </Row>
               <Row>
+                <Col xs={12}>
+                  <Field
+                    name="polygon_centroid"
+                    description="Export polygon centroid"
+                    component={renderCheckbox}
+                    type="checkbox"
+                  />
+                </Col>
+              </Row>
+              <Row>
                 <Col xs={6}>
                   <Field
                     name="schedule_period"
@@ -683,7 +693,8 @@ Buildings:
     schedule_hour: 0,
     export_formats: ["shp", "geopackage"],
     group: null,
-    planet_file: false
+    planet_file: false,
+    polygon_centroid: false
   },
   name: formValueSelector(FORM_NAME)(state, "name"),
   event: formValueSelector(FORM_NAME)(state, "event"),

@@ -296,6 +296,7 @@ class PartnerExportRegion(models.Model, RegionMixin):
     group = models.ForeignKey(Group)
     deleted = models.BooleanField(default=False)
     planet_file = models.BooleanField(default=False)
+    polygon_centroid = models.BooleanField(default=False)
 
     @property
     def export_formats(self): # noqa
