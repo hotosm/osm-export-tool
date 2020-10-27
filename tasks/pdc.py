@@ -8,6 +8,7 @@ from os.path import join, abspath, dirname
 from shutil import rmtree
 from osm_export_tool.mapping import Mapping
 from osm_export_tool.sources import OsmiumTool
+from configparser import ConfigParser
 
 
 logger = logging.getLogger()
@@ -268,11 +269,11 @@ def process_country(k, v, params):
     TEMP = params.get("TEMP")
     OUTPUT_GPKG = params.get("OUTPUT_GPKG")
     PBF_EXTRACT = params.get("PBF_EXTRACT")
+    OSM_CONF = params.get("OSM_CONF")
 
     output_file = f"{join(TEMP, k)}.pbf"
     gpkg = f"{join(TEMP, k)}.gpkg"
 
-    config_file = join(dirname(abspath(__file__)), 'osmconf.ini')
 
     name, bbox = v
     bbox = ",".join([str(b) for b in bbox])
@@ -282,7 +283,7 @@ def process_country(k, v, params):
     os.system(cmd)
 
     # Transform into geopackage.
-    cmd = f"ogr2ogr -f GPKG {gpkg} {output_file} -oo CONFIG_FILE={config_file}"
+    cmd = f"ogr2ogr -f GPKG {gpkg} {output_file} -oo CONFIG_FILE=\"{OSM_CONF}\""
     os.system(cmd)
 
     # Get points.
@@ -290,7 +291,7 @@ def process_country(k, v, params):
     os.system(cmd)
 
     # Get polygon centroids.
-    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select st_centroid(geom) from multipolygons" {gpkg} -nln {layer_name}'
+    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select *,st_centroid(geom) AS geom from multipolygons" {gpkg} -nln {layer_name}'
     os.system(cmd)
 
 
@@ -310,20 +311,40 @@ def generate_planet_extraction(params):
     logging.info(f"Finished planet file extraction: {PBF_EXTRACT}")
 
 
+def create_osm_conf(params):
+    MAPPING = params.get("MAPPING")
+    OSM_CONF = params.get("OSM_CONF")
+
+    config_path = join(dirname(abspath(__file__)), 'osmconf.ini')
+
+    with open(config_path, 'r') as f:
+        config = ''.join(f.readlines())
+
+    # For points and multipolygons.
+    keys = [i for i in MAPPING.themes[0].keys if i != 'name']
+    out = config.format(attrs=",".join(keys))
+
+    with open(OSM_CONF, 'w') as configfile:
+        configfile.write(out)
+
+
 def run_pdc_task(params):
     TEMP = join(params.get('STAGE_DIR'), "temp")
     VALID_NAME = params.get("VALID_NAME")
     PBF_EXTRACT = join(TEMP, f"{VALID_NAME}.osm.pbf")
     OUTPUT_GPKG = join(params.get('STAGE_DIR'), f"{VALID_NAME}.gpkg")
+    OSM_CONF = join(TEMP, "osmconf.ini")
 
     os.makedirs(TEMP)
     params.update({
         "TEMP": TEMP,
         "PBF_EXTRACT": PBF_EXTRACT,
         "OUTPUT_GPKG": OUTPUT_GPKG,
+        "OSM_CONF": OSM_CONF,
     })
 
     logging.info("Running planet file extraction")
+    create_osm_conf(params)
     generate_planet_extraction(params)
     [process_country(k, v, params) for k, v in BBOXES.items()]
 
