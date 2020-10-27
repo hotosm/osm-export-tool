@@ -44,6 +44,8 @@ from .email import (
     send_hdx_error_notification,
 )
 
+from .pdc import run_pdc_task
+
 client = Client()
 
 LOG = logging.getLogger(__name__)
@@ -166,6 +168,37 @@ def run_task(run_uid,run,stage_dir,download_dir):
         export_region = PartnerExportRegion.objects.get(job_id=run.job_id)
         planet_file = export_region.planet_file
         polygon_centroid = export_region.polygon_centroid
+
+        # Run PDC special task.
+        if export_region.group.name == "PDC" and planet_file is True and polygon_centroid is True:
+            params = {
+                "PLANET_FILE": settings.PLANET_FILE,
+                "MAPPING": mapping,
+                "STAGE_DIR": stage_dir,
+                "DOWNLOAD_DIR": download_dir,
+                "VALID_NAME": valid_name
+            }
+
+            if "geopackage" not in export_formats:
+                raise ValueError("geopackage must be the export format")
+
+            paths = run_pdc_task(params)
+
+            start_task("geopackage")
+            target = join(download_dir, "{}.gpkg".format(valid_name))
+            shutil.move(paths["geopackage"], target)
+            os.chmod(target, 0o644)
+
+            finish_task("geopackage",[osm_export_tool.File("gpkg",[target],'')], planet_file)
+
+            send_completion_notification(run)
+
+            run.status = 'COMPLETED'
+            run.finished_at = timezone.now()
+            run.save()
+            LOG.debug('Finished ExportRun with id: {0}'.format(run_uid))
+
+            return
 
     if is_hdx_export:
         geopackage = None
