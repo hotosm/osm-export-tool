@@ -263,7 +263,7 @@ BBOXES = {
 }
 
 
-def process_country(k, v, params):
+def process_country(k, v, params, keys):
     #logger.info(f"Processing country - {k}")
 
     TEMP = params.get("TEMP")
@@ -291,7 +291,7 @@ def process_country(k, v, params):
     os.system(cmd)
 
     # Get polygon centroids.
-    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select *,st_centroid(geom) AS geom from multipolygons" {gpkg} -nln {layer_name}'
+    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select name,type,other_tags,{keys},st_centroid(geom) AS geom from multipolygons" {gpkg} -nln {layer_name}'
     os.system(cmd)
 
 
@@ -321,11 +321,13 @@ def create_osm_conf(params):
         config = ''.join(f.readlines())
 
     # For points and multipolygons.
-    keys = [i for i in MAPPING.themes[0].keys if i != 'name']
-    out = config.format(attrs=",".join(keys))
+    keys = ",".join([i for i in MAPPING.themes[0].keys if i != 'name'])
+    out = config.format(attrs=keys)
 
     with open(OSM_CONF, 'w') as configfile:
         configfile.write(out)
+
+    return keys
 
 
 def run_pdc_task(params):
@@ -344,9 +346,9 @@ def run_pdc_task(params):
     })
 
     logging.info("Running planet file extraction")
-    create_osm_conf(params)
+    keys = create_osm_conf(params)
     generate_planet_extraction(params)
-    [process_country(k, v, params) for k, v in BBOXES.items()]
+    [process_country(k, v, params, keys) for k, v in BBOXES.items()]
 
     return {"geopackage": OUTPUT_GPKG, "osm_pbf": PBF_EXTRACT}
 
