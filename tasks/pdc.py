@@ -291,7 +291,7 @@ def process_country(k, v, params, keys):
     os.system(cmd)
 
     # Get polygon centroids.
-    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select name,type,other_tags,{keys},st_centroid(geom) AS geom from multipolygons" {gpkg} -nln {layer_name}'
+    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select name,type,other_tags,{keys.replace(':', '_')},st_centroid(geom) AS geom from multipolygons" {gpkg} -nln {layer_name}'
     os.system(cmd)
 
 
