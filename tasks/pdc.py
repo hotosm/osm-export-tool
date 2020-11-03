@@ -264,7 +264,7 @@ BBOXES = {
 
 
 def process_country(k, v, params, keys):
-    #logger.info(f"Processing country - {k}")
+    # logger.info(f"Processing country - {k}")
 
     TEMP = params.get("TEMP")
     OUTPUT_GPKG = params.get("OUTPUT_GPKG")
@@ -274,16 +274,15 @@ def process_country(k, v, params, keys):
     output_file = f"{join(TEMP, k)}.pbf"
     gpkg = f"{join(TEMP, k)}.gpkg"
 
-
     name, bbox = v
     bbox = ",".join([str(b) for b in bbox])
     layer_name = name.lower().replace(" ", "_")
 
-    cmd = f"osmium extract -b {bbox} {PBF_EXTRACT} -o  {output_file}"
+    cmd = f"osmium extract -b {bbox} {PBF_EXTRACT} -o  {output_file} --no-progress"
     os.system(cmd)
 
     # Transform into geopackage.
-    cmd = f"ogr2ogr -f GPKG {gpkg} {output_file} -oo CONFIG_FILE=\"{OSM_CONF}\""
+    cmd = f'ogr2ogr -f GPKG {gpkg} {output_file} -oo CONFIG_FILE="{OSM_CONF}"'
     os.system(cmd)
 
     # Get points.
@@ -291,7 +290,8 @@ def process_country(k, v, params, keys):
     os.system(cmd)
 
     # Get polygon centroids.
-    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select name,type,other_tags,{keys.replace(':', '_')},st_centroid(geom) AS geom from multipolygons" {gpkg} -nln {layer_name}'
+    columns = keys.replace(":", "_")
+    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select name,type,other_tags,{columns},st_centroid(geom) AS geom from multipolygons" {gpkg} -nln {layer_name}'
     os.system(cmd)
 
 
@@ -315,35 +315,40 @@ def create_osm_conf(params):
     MAPPING = params.get("MAPPING")
     OSM_CONF = params.get("OSM_CONF")
 
-    config_path = join(dirname(abspath(__file__)), 'osmconf.ini')
+    config_path = join(dirname(abspath(__file__)), "osmconf.ini")
 
-    with open(config_path, 'r') as f:
-        config = ''.join(f.readlines())
+    with open(config_path, "r") as f:
+        config = "".join(f.readlines())
 
     # For points and multipolygons.
-    keys = ",".join([i for i in MAPPING.themes[0].keys if i != 'name'])
+    keys = [m.keys for m in MAPPING.themes]
+    keys = set([item for sublist in keys for item in sublist])
+
+    keys = ",".join([i for i in keys if i not in ("name", "type")])
     out = config.format(attrs=keys)
 
-    with open(OSM_CONF, 'w') as configfile:
+    with open(OSM_CONF, "w") as configfile:
         configfile.write(out)
 
     return keys
 
 
 def run_pdc_task(params):
-    TEMP = join(params.get('STAGE_DIR'), "temp")
+    TEMP = join(params.get("STAGE_DIR"), "temp")
     VALID_NAME = params.get("VALID_NAME")
     PBF_EXTRACT = join(TEMP, f"{VALID_NAME}.osm.pbf")
-    OUTPUT_GPKG = join(params.get('STAGE_DIR'), f"{VALID_NAME}.gpkg")
+    OUTPUT_GPKG = join(params.get("STAGE_DIR"), f"{VALID_NAME}.gpkg")
     OSM_CONF = join(TEMP, "osmconf.ini")
 
     os.makedirs(TEMP)
-    params.update({
-        "TEMP": TEMP,
-        "PBF_EXTRACT": PBF_EXTRACT,
-        "OUTPUT_GPKG": OUTPUT_GPKG,
-        "OSM_CONF": OSM_CONF,
-    })
+    params.update(
+        {
+            "TEMP": TEMP,
+            "PBF_EXTRACT": PBF_EXTRACT,
+            "OUTPUT_GPKG": OUTPUT_GPKG,
+            "OSM_CONF": OSM_CONF,
+        }
+    )
 
     logging.info("Running planet file extraction")
     keys = create_osm_conf(params)
@@ -351,4 +356,3 @@ def run_pdc_task(params):
     [process_country(k, v, params, keys) for k, v in BBOXES.items()]
 
     return {"geopackage": OUTPUT_GPKG, "osm_pbf": PBF_EXTRACT}
-
