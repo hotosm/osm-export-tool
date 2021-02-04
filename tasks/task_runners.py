@@ -340,8 +340,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         source_path = source.path()
         LOG.debug('Source end for run: {0}'.format(run_uid))
 
-        if planet_file is False:
-            h.apply_file(source_path, locations=True, idx='sparse_file_array')
+        h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         bundle_files = []
 

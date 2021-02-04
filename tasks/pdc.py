@@ -353,6 +353,21 @@ def run_pdc_task(params):
     logging.info("Running planet file extraction")
     keys = create_osm_conf(params)
     generate_planet_extraction(params)
-    [process_country(k, v, params, keys) for k, v in BBOXES.items()]
+
+    # Transform into geopackage.
+    TEMP_GPKG = join(TEMP, f"{VALID_NAME}_temp.gpkg")
+    cmd = f'ogr2ogr -f GPKG {TEMP_GPKG} {PBF_EXTRACT} -oo CONFIG_FILE="{OSM_CONF}"'
+    os.system(cmd)
+
+    # Get points.
+    LAYER_NAME = "points"
+    cmd = f"ogr2ogr -append {OUTPUT_GPKG} {TEMP_GPKG} -nln {LAYER_NAME} points"
+    os.system(cmd)
+
+    # Get polygon centroids.
+    columns = keys.replace(":", "_")
+    cmd = f'ogr2ogr -append {OUTPUT_GPKG} -sql "select name,type,other_tags,{columns},st_centroid(geom) AS geom, osm_way_id AS osm_id from multipolygons" {TEMP_GPKG} -nln {LAYER_NAME}'
+    os.system(cmd)
 
     return {"geopackage": OUTPUT_GPKG, "osm_pbf": PBF_EXTRACT}
+
