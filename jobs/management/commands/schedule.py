@@ -37,6 +37,14 @@ class Command(BaseCommand):
                         (now.weekday() + 1) % 7 == 0 and
                         region.schedule_hour == now.hour and
                         delta > timedelta(hours=2)) or \
+                    (region.schedule_period == 'two_weeks' and
+                        now.day in (15, 1) and
+                        region.schedule_hour == now.hour and
+                        delta > timedelta(hours=2)) or \
+                    (region.schedule_period == 'three_weeks' and
+                        now.day == 21 and
+                        region.schedule_hour == now.hour and
+                        delta > timedelta(hours=2)) or \
                     (region.schedule_period == 'monthly' and
                         now.day == 1 and
                         region.schedule_hour == now.hour and
