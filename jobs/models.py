@@ -199,8 +199,8 @@ PERIOD_CHOICES = (
     ('6hrs', 'Every 6 hours'),
     ('daily', 'Every day'),
     ('weekly', 'Every Sunday'),
-    ('two_weeks', 'Every two weeks'),
-    ('three_weeks', 'Every three weeks'),
+    ('2wks', 'Every two weeks'),
+    ('3wks', 'Every three weeks'),
     ('monthly', 'The 1st of every month'),
     ('disabled', 'Disabled'),
 )
