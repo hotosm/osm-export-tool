@@ -562,8 +562,8 @@ export class HDXExportRegionForm extends Component {
                   >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly (Sunday)</option>
-                    <option value="two_weeks">Every two weeks</option>
-                    <option value="three_weeks">Every three weeks</option>
+                    <option value="2wks">Every two weeks</option>
+                    <option value="3wks">Every three weeks</option>
                     <option value="monthly">Monthly (1st of month)</option>
                     <option value="6hrs">Every 6 hours</option>
                     <option value="disabled">
