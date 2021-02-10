@@ -71,7 +71,7 @@ export const TAGTREE = {
     "Land Use": {
         "children": {
             "Parks": {},
-            "Cemetary": {},
+            "Cemetery": {},
             "Residential": {},
             "Agriculture": {},
             "Solid Waste": {}
@@ -736,7 +736,7 @@ export const TAGLOOKUP = {
         ],
         "where": "leisure='park'"
     },
-    "Cemetary": {
+    "Cemetery": {
         "geom_types": [
             "polygon"
         ],
