@@ -43,7 +43,7 @@ Humanitarian,Refugee Facility,,,"point, polygon","name, amenity, social_facility
 Humanitarian,Storage Warehouse,,,"point, polygon","name,building,industrial",building='warehouse' OR industrial='warehouse',,
 Land Use,Land Use,yes,,,,landuse IS NOT NULL OR leisure='park' OR amenity='grave_yard',,http://wiki.openstreetmap.org/wiki/Map_Features#LandUse
 Land Use,Parks,,,polygon,"name, leisure",leisure='park',,
-Land Use,Cemetary,,graveyard,polygon,"name,amenity",amenity='grave_yard' OR landuse='cemetery',,
+Land Use,Cemetery,,graveyard,polygon,"name,amenity",amenity='grave_yard' OR landuse='cemetery',,
 Land Use,Residential,,,polygon,landuse,landuse='residential',,
 Land Use,Agriculture,,,polygon,landuse,"landuse IN ('farmland','farmyard','greenhouse_horticulture')",,
 Land Use,Solid Waste,,"dump,landfill","point, polygon","name, landuse",landuse='landfill',,
