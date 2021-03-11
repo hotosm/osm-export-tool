@@ -16,7 +16,7 @@ def send_completion_notification(run):
     subject = u"Your OSM Export is ready: {}".format(run.job.name)
 
     ctx = {
-        'url': 'https://{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
+        'url': '{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
         'status': run.status,
     }
 
@@ -44,7 +44,7 @@ def send_hdx_completion_notification(run, region):
             'job': run.job,
             'region': region,
             'status': run.status,
-            'url': 'https://{0}/v3/exports/{1}'.format(
+            'url': '{0}/v3/exports/{1}'.format(
                 settings.HOSTNAME, run.job.uid),
         }
 
@@ -70,7 +70,7 @@ def send_hdx_error_notification(run, region):
             'job': run.job,
             'region': region,
             'status': run.status,
-            'url': 'https://{0}/v3/exports/{1}'.format(
+            'url': '{0}/v3/exports/{1}'.format(
                 settings.HOSTNAME, run.job.uid),
         }
 
@@ -92,7 +92,7 @@ def send_error_notification(run):
     subject = u"Your OSM Export has failed: {}".format(run.job.name)
 
     ctx = {
-        'url': 'https://{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
+        'url': '{0}/v3/exports/{1}'.format(settings.HOSTNAME, run.job.uid),
         'status': run.status,
         'task_id': run.uid,
     }
