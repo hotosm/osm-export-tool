@@ -1428,3 +1428,23 @@ p {
   background-color: white;
   z-index: 100;
 }
+
+.banner {
+  width: 100vw;
+  padding: 2rem;
+  text-align: center;
+  position: fixed;
+  z-index: 99;
+  bottom: 0;
+  background-color: #fff;
+  border-top: 1px solid gray;
+}
+
+.banner-wrapper {
+  display: flex;
+  width: 14%;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: space-between;
+}
+
