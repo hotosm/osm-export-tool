@@ -24,6 +24,7 @@ import Help from "./components/Help";
 import Home from "./components/Home";
 import NavBar from "./components/NavBar";
 import Stats from "./components/Stats";
+import Banner from "./components/Banner";
 import { requireAuth } from "./components/utils";
 
 import "@blueprintjs/core/dist/blueprint.css";
@@ -42,13 +43,13 @@ addLocaleData([...de, ...en, ...es, ...fr, ...id, ...it, ...pt, ...nl]);
 FocusStyleManager.onlyShowFocusOnTabs();
 
 export default ({ history }) => {
-
   return (
     <IntlProvider>
       <ConnectedRouter history={history}>
         <div style={{ height: "100%" }}>
           <Auth />
           <NavBar />
+          <Banner />
           <Switch>
             <Route path="/authorized" component={Authorized} />
             <Route path="/configurations" component={Configurations} />

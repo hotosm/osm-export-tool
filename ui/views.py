@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from oauth2_provider.models import Application
 from django.contrib import admin
 from django.contrib.auth.admin import User, UserAdmin
+from django.conf import settings
 
 def authorized(request):
     # the user has now authorized a client application; they no longer need to
@@ -36,9 +37,13 @@ def logout(request):
 def v3(request):
     ui_app = Application.objects.get(name='OSM Export Tool UI')
 
-    return render(request, 'ui/v3.html', {
-        'client_id': ui_app.client_id
-    })
+    context = dict(client_id=ui_app.client_id)
+    if settings.MATOMO_URL is not None and settings.MATOMO_SITEID is not None:
+        context.update({
+            'MATOMO_URL': settings.MATOMO_URL,
+            'MATOMO_SITEID': settings.MATOMO_SITEID
+        })
+    return render(request, 'ui/v3.html', context)
 
 
 def redirect_to_v3(request):
