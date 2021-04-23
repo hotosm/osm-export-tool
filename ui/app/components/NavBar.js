@@ -88,17 +88,15 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
         </NavLink>
       </li>
       <li>
-        <NavLink
-          to={{
-            pathname:
-              "https://hotosm.atlassian.net/servicedesk/customer/portal/4",
-          }}
+        <a
+          href="https://hotosm.atlassian.net/servicedesk/customer/portal/4"
           target="_blank"
+          rel="noopener noreferrer"
         >
           <span title="For technical support click here">
             <FormattedMessage id="ui.support" defaultMessage="Support" />
           </span>
-        </NavLink>
+        </a>
       </li>
       <NavItem>
         <LocaleSelector />
