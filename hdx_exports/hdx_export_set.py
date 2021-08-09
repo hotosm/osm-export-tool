@@ -87,10 +87,10 @@ class HDXExportSet(object):
 
     def datasets(self,is_private,subnational,data_update_frequency,locations,files,public_dir):
         HDX_FORMATS = {
-            'shp':'zipped shapefile',
-            'geopackage':'zipped geopackage',
-            'garmin_img':'zipped img',
-            'kml':'zipped kml'
+            'shp': 'SHP',
+            'geopackage': 'Geopackage',
+            'garmin_img': 'Garmin IMG',
+            'kml': 'KML'
         }
 
         HDX_DESCRIPTIONS = {
