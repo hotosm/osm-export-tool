@@ -38,6 +38,13 @@
     react-day-picker "^5.3.0"
     tslib "^1.5.0"
 
+"@hotosm/iso-countries-languages@^1.0.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-1.1.2.tgz#06d751c36f787dae2e172650657e9bcea3cf6f0f"
+  integrity sha512-BmjgzRGwKt0eaUNTNo3LghX5gaa0jVJUbcA4t8iKesvOotoWJiioGvIcWnFTiNBKeEh+0TibFWqUuJx1kmIo3g==
+  dependencies:
+    prettier "^2.0.5"
+
 "@mapbox/geojson-area@^0.2.2":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@mapbox/geojson-area/-/geojson-area-0.2.2.tgz#18d7814aa36bf23fbbcc379f8e26a22927debf10"
@@ -1629,6 +1636,11 @@ core-js@^2.5.0:
 core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
+
+country-iso-3-to-2@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/country-iso-3-to-2/-/country-iso-3-to-2-1.1.0.tgz#509bc7a4d2de9abfc57ad2d18fd8a40b85940a75"
+  integrity sha512-1+N29RRXHIsNrdxFYz/xqB6eacm592SQBExLBjHpr+nrLsKiikXvrFYM0RgW6uJBJgnvcqQH64ukydPF8ShBEA==
 
 create-ecdh@^4.0.0:
   version "4.0.0"
@@ -4426,6 +4438,11 @@ preserve@^0.2.0:
 prettier@^1.5.3:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.7.4.tgz#5e8624ae9363c80f95ec644584ecdf55d74f93fa"
+
+prettier@^2.0.5:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.2.tgz#e26d71a18a74c3d0f0597f55f01fb6c06c206032"
+  integrity sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==
 
 private@^0.1.6, private@^0.1.7:
   version "0.1.7"

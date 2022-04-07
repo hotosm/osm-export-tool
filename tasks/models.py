@@ -87,17 +87,11 @@ class ExportTask(models.Model):
     @property
     def download_urls(self):
         def fdownload(fname):
-            try:
-                filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))
-            except Exception:
-                filesize_bytes = 0
-
-            download_url = os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
             return {
                 "filename":fname,
-                "filesize_bytes": filesize_bytes,
-                "download_url":download_url,
-                "absolute_download_url":settings.HOSTNAME + download_url
+                "filesize_bytes": self.filesize_bytes,
+                "download_url":self.filenames,
+                "absolute_download_url":self.filenames
             }
         return map(fdownload, self.filenames)
 

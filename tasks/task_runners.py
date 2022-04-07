@@ -16,7 +16,7 @@ from django import db
 
 if not apps.ready and not settings.configured:
     django.setup()
-
+import requests
 import dramatiq
 from raven import Client
 
@@ -34,8 +34,9 @@ from osm_export_tool.mapping import Mapping
 from osm_export_tool.geometry import load_geometry
 from osm_export_tool.sources import Overpass, OsmiumTool
 from osm_export_tool.package import create_package, create_posm_bundle
-
+import json
 import shapely.geometry
+import shapely
 
 from .email import (
     send_completion_notification,
@@ -85,8 +86,12 @@ class ExportTaskRunner(object):
             LOG.debug('Saved task: {0}'.format(format_name))
 
         if ondemand:
-            run_task_async_ondemand.send(run_uid)
+            print(" on demand")
+            run_task_remote(run_uid)
+            db.close_old_connections()
+            # run_task_async_ondemand.send(run_uid)
         else:
+            
             run_task_async_scheduled.send(run_uid)
         return run
 
@@ -101,6 +106,8 @@ def run_task_async_scheduled(run_uid):
     db.close_old_connections()
 
 def run_task_remote(run_uid):
+    print("runtaskondemand")
+    
     try:
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
@@ -143,18 +150,20 @@ def run_task(run_uid,run,stage_dir,download_dir):
         task.started_at = timezone.now()
         task.save()
 
-    def finish_task(name,created_files,planet_file=False):
+    def finish_task(name,response_back,planet_file=False):
         LOG.debug('Task Finish: {0} for run: {1}'.format(name, run_uid))
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'SUCCESS'
         task.finished_at = timezone.now()
         # assumes each file only has one part (all are zips or PBFs)
-        task.filenames = [basename(file.parts[0]) for file in created_files]
+        print("saved file name")
+        # print([basename(file.parts[0]) for file in created_files])
+        task.filenames = [response_back['download_url']]
         if planet_file is False:
-            total_bytes = 0
-            for file in created_files:
-                total_bytes += file.size()
-            task.filesize_bytes = total_bytes
+            # total_bytes = 0
+            # for file in created_files:
+            #     total_bytes += file.size()
+            task.filesize_bytes = response_back['zip_file_size']
         task.save()
 
     is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
@@ -330,17 +339,41 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir, mapping=mapping)
         else:
-            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
-            mapping_filter = mapping
-            if job.unfiltered:
-                mapping_filter = None
-            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
+            # print(mapping)
+            geom_json=shapely.geometry.mapping(geom)
+            
+            
+            # defining the api-endpoint 
+            API_ENDPOINT = "http://18.209.245.110:8000/raw-data/current-snapshot/"
+            
+
+
+            # data to be sent to api
+            data = {"geometry":geom_json}
+           
+            
+            # sending post request and saving response as response object
+            headers = {'Content-type': "text/plain; charset=utf-8"}
+            r = requests.post(url = API_ENDPOINT, data = json.dumps(data) ,headers=headers)
+            
+            # extracting response text 
+            print(r)
+            response_back = r.json()
+            # print("Response is:%s"%response_back)
+            # print(job)
+            # h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
+            # mapping_filter = mapping
+            # if job.unfiltered:
+            #     mapping_filter = None
+            # print("came here ")
+            # source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
 
         LOG.debug('Source start for run: {0}'.format(run_uid))
-        source_path = source.path()
+        # print("again came here")
+        # source_path = source.path()
         LOG.debug('Source end for run: {0}'.format(run_uid))
 
-        h.apply_file(source_path, locations=True, idx='sparse_file_array')
+        # h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         bundle_files = []
 
@@ -351,10 +384,16 @@ def run_task(run_uid,run,stage_dir,download_dir):
             finish_task('geopackage',[zipped])
 
         if shp:
+            
+            start_task('shp')
+            
             shp.finalize()
             zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
             bundle_files += shp.files
-            finish_task('shp',[zipped])
+            print("zippedfinal")
+            print([zipped])
+            print(response_back)
+            finish_task('shp',response_back)
 
         if kml:
             kml.finalize()
