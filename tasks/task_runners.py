@@ -32,7 +32,7 @@ import osm_export_tool.tabular as tabular
 import osm_export_tool.nontabular as nontabular
 from osm_export_tool.mapping import Mapping
 from osm_export_tool.geometry import load_geometry
-from osm_export_tool.sources import Overpass, OsmiumTool
+from osm_export_tool.sources import Overpass, OsmiumTool , Galaxy
 from osm_export_tool.package import create_package, create_posm_bundle
 import json
 import shapely.geometry
@@ -344,7 +344,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             
             
             # defining the api-endpoint 
-            API_ENDPOINT = "http://18.209.245.110:8000/raw-data/current-snapshot/"
+            API_ENDPOINT = settings.GALAXY_API_URL
             
 
 
@@ -362,12 +362,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
             # print("Response is:%s"%response_back)
             # print(job)
             # h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
-            # mapping_filter = mapping
+            mapping_filter = mapping
             # if job.unfiltered:
             #     mapping_filter = None
             # print("came here ")
-            # source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
-
+        source = Galaxy(settings.GALAXY_API_URL,geom,use_curl=True,mapping=mapping_filter)
+        source.fetch()
         LOG.debug('Source start for run: {0}'.format(run_uid))
         # print("again came here")
         # source_path = source.path()

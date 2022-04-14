@@ -110,6 +110,9 @@ Most of these environment variables have reasonable default settings.
 * `OSMAND_MAP_CREATOR_DIR` path to directory where OsmAndMapCreator is installed
 * `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
 * `OVERPASS_API_URL` url of Overpass api endpoint
+
+* `GALAXY_API_URL` url of Galaxy api endpoint
+
 * `DATABASE_URL`  Database URL. Defaults to `postgres:///exports`
 * `DEBUG`  Whether to enable debug mode. Defaults to `False` (production).
 * `DJANGO_ENV`  Django environment. Set to `development` to enable development tools and email logging to console.
