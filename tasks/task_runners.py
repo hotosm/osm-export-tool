@@ -339,35 +339,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir, mapping=mapping)
         else:
-            # print(mapping)
-            geom_json=shapely.geometry.mapping(geom)
-            
-            
-            # defining the api-endpoint 
-            API_ENDPOINT = settings.GALAXY_API_URL
-            
 
-
-            # data to be sent to api
-            data = {"geometry":geom_json}
-           
-            
-            # sending post request and saving response as response object
-            headers = {'Content-type': "text/plain; charset=utf-8"}
-            r = requests.post(url = API_ENDPOINT, data = json.dumps(data) ,headers=headers)
-            
-            # extracting response text 
-            print(r)
-            response_back = r.json()
-            # print("Response is:%s"%response_back)
-            # print(job)
-            # h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
             mapping_filter = mapping
-            # if job.unfiltered:
-            #     mapping_filter = None
-            # print("came here ")
-        source = Galaxy(settings.GALAXY_API_URL,geom,use_curl=True,mapping=mapping_filter)
-        source.fetch()
+            if job.unfiltered:
+                mapping_filter = None
+        source = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping_filter)
+        response_back=source.fetch()
         LOG.debug('Source start for run: {0}'.format(run_uid))
         # print("again came here")
         # source_path = source.path()
@@ -384,14 +361,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
             finish_task('geopackage',[zipped])
 
         if shp:
-            
             start_task('shp')
-            
             shp.finalize()
             zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
             bundle_files += shp.files
-            print("zippedfinal")
-            print([zipped])
             print(response_back)
             finish_task('shp',response_back)
 
