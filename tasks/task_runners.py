@@ -344,7 +344,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             if job.unfiltered:
                 mapping_filter = None
         source = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping_filter)
-        response_back=source.fetch()
+        response_back=source.fetch('shp')
         LOG.debug('Source start for run: {0}'.format(run_uid))
         # print("again came here")
         # source_path = source.path()
