@@ -23,6 +23,11 @@ import { selectIsLoggedIn, selectIsLoggingIn } from "../selectors";
 import styles from "../styles/utilsStyles.css";
 
 export const AVAILABLE_EXPORT_FORMATS = {
+  geojson: (
+    <span key="geojson">
+      Geojson <code>.geojson</code>
+    </span>
+  ),
   geopackage: (
     <span key="geopackage">
       GeoPackage <code>.gpkg</code>
@@ -77,6 +82,7 @@ export const AVAILABLE_EXPORT_FORMATS = {
 
 export const REQUIRES_FEATURE_SELECTION = {
   shp: true,
+  geojson:true,
   geopackage: true,
   garmin_img: true,
   kml: true,
