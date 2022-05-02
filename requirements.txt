@@ -25,3 +25,4 @@ boto3~=1.9.238 # needed for cloudwatch
 rasterio
 osm-export-tool==0.0.25
 rtree
+validators

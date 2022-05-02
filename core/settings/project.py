@@ -68,7 +68,7 @@ GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/usr/local/mkgmap/mkgmap.jar')
 OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/')
 
 #url to galaxy api endpoint
-GALAXY_API_URL = os.getenv('GALAXY_API_URL', 'http://127.0.0.1:8080/raw-data/current-snapshot/')
+GALAXY_API_URL = os.getenv('GALAXY_API_URL', 'http://127.0.0.1:9090/raw-data/current-snapshot/')
 
 GENERATE_MWM = os.getenv('GENERATE_MWM','/usr/local/bin/generate_mwm.sh')
 GENERATOR_TOOL = os.getenv('GENERATOR_TOOL','/usr/local/bin/generator_tool')
