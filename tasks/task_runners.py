@@ -331,7 +331,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('shp')
         
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping)
+            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('geojson')
 
         if 'kml' in export_formats:
