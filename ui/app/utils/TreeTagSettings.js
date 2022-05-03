@@ -6,6 +6,12 @@ export const TAGTREE = {
             "Materials and Condition": {}
         }
     },
+    "Administrative Boundaries":{
+        "children":{
+            "Boundaries":{}
+        }
+
+    },
     "Commercial": {
         "children": {
             "Shop": {},
@@ -180,6 +186,15 @@ export const TAGLOOKUP = {
             "building"
         ],
         "where": "building IS NOT NULL"
+    },
+    "Boundaries": {
+        "geom_types": [
+            "polygon"
+        ],
+        "keys": [
+            "name"
+        ],
+        "where": "boundary='administrative'"
     },
     "Addresses": {
         "geom_types": [
