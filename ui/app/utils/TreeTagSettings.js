@@ -187,6 +187,15 @@ export const TAGLOOKUP = {
         ],
         "where": "building IS NOT NULL"
     },
+    "Administrative Boundaries" :{
+        "geom_types": [
+            "polygon"
+        ],
+        "keys": [
+            "name"
+        ],
+        "where": "boundary='administrative'"
+    },
     "Boundaries": {
         "geom_types": [
             "polygon"
