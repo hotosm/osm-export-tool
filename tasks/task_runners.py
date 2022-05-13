@@ -90,6 +90,8 @@ class ExportTaskRunner(object):
 
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*6)
 def run_task_async_ondemand(run_uid):
+    print("la aaye ta ni ma yeha ")
+
     run_task_remote(run_uid)
     db.close_old_connections()
 
@@ -99,6 +101,7 @@ def run_task_async_scheduled(run_uid):
     db.close_old_connections()
 
 def run_task_remote(run_uid):
+    print("run task vitra ni aaidiye lau ja")
     try:
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
@@ -156,7 +159,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             task.filenames = [basename(file.parts[0]) for file in created_files]
         if planet_file is False:
             if response_back:
-                task.filesize_bytes = int(response_back['zip_file_size'][0])
+                task.filesize_bytes = int(response_back['zip_file_size'][0])*1000000 # converting to bytes since we got response in MB
             else:
                 total_bytes = 0
                 for file in created_files:
@@ -326,12 +329,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(shp)
+            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            # shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
+            # tabular_outputs.append(shp)
             start_task('shp')
         
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping)
+            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('geojson')
 
         if 'kml' in export_formats:
@@ -343,14 +347,14 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir, mapping=mapping)
         else:
-            if geojson is None :
+            if geojson is None or shp is None:
                 h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
                 mapping_filter = mapping
                 if job.unfiltered:
                     mapping_filter = None  
                 source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
 
-        if geojson is None :
+        if geojson is None or shp is None:
             LOG.debug('Source start for run: {0}'.format(run_uid))
             source_path = source.path()
             LOG.debug('Source end for run: {0}'.format(run_uid))
@@ -366,11 +370,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             finish_task('geopackage',[zipped])
 
         if shp:
-            shp.finalize()
-            zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
-            bundle_files += shp.files
-            finish_task('shp',[zipped])
-        
+            response_back=geojson.fetch('shp')
+            finish_task('shp',response_back=response_back)
+
         if geojson :
             response_back=geojson.fetch('GeoJSON')
             finish_task('geojson',response_back=response_back)

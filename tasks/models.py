@@ -94,6 +94,7 @@ class ExportTask(models.Model):
                 download_url = fname
                 filesize_bytes=self.filesize_bytes
                 absolute_download_url=download_url
+                fname=f"""{self.run.job.name}_{self.name}.zip"""
             else:
                 try:
                     filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))
@@ -101,7 +102,7 @@ class ExportTask(models.Model):
                     filesize_bytes = 0
                 download_url = os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
                 absolute_download_url=settings.HOSTNAME + download_url
-            return {
+            return { 
                 "filename":fname,
                 "filesize_bytes": filesize_bytes,
                 "download_url":download_url,
