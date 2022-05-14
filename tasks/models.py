@@ -14,6 +14,8 @@ from django.contrib import admin
 from django.contrib.gis.admin import GeoModelAdmin
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
+import validators
+
 
 class ExportRun(models.Model):
     """
@@ -87,17 +89,24 @@ class ExportTask(models.Model):
     @property
     def download_urls(self):
         def fdownload(fname):
-            try:
-                filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))
-            except Exception:
-                filesize_bytes = 0
-
-            download_url = os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
-            return {
+            valid=validators.url(fname)
+            if valid==True:
+                download_url = fname
+                filesize_bytes=self.filesize_bytes
+                absolute_download_url=download_url
+                fname=f"""{self.run.job.name}_{self.name}.zip"""
+            else:
+                try:
+                    filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))
+                except Exception:
+                    filesize_bytes = 0
+                download_url = os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
+                absolute_download_url=settings.HOSTNAME + download_url
+            return { 
                 "filename":fname,
                 "filesize_bytes": filesize_bytes,
                 "download_url":download_url,
-                "absolute_download_url":settings.HOSTNAME + download_url
+                "absolute_download_url":absolute_download_url
             }
         return map(fdownload, self.filenames)
 
