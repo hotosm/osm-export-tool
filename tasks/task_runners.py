@@ -328,9 +328,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            # shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
-            shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(shp)
+            galaxy=True
+            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            # shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
+            # tabular_outputs.append(shp)
             start_task('shp')
         
         if 'geojson' in export_formats:
@@ -369,7 +370,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             finish_task('geopackage',[zipped])
 
         if shp:
-            response_back=geojson.fetch('shp')
+            response_back=shp.fetch('shp')
             finish_task('shp',response_back=response_back)
 
         if geojson :
