@@ -55,7 +55,8 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 try:
     idx = index.Rtree(os.path.join(DIR,'reverse_geocode'))
 except:
-    raise ImportError("Can not read indexes")
+    pass
+    # raise ImportError("Can not read indexes")
 def bbox_to_geom(s):
     try:
         return GEOSGeometry(Polygon.from_bbox(s.split(',')), srid=4326)
