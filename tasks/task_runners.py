@@ -81,9 +81,9 @@ class ExportTaskRunner(object):
             LOG.debug('Saved task: {0}'.format(format_name))
 
         if ondemand:
-            # run_task_remote(run_uid)
-            # db.close_old_connections()
-            run_task_async_ondemand.send(run_uid)
+            run_task_remote(run_uid)
+            db.close_old_connections()
+            # run_task_async_ondemand.send(run_uid)
         else:
             run_task_async_scheduled.send(run_uid)
         return run
