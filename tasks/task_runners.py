@@ -90,7 +90,6 @@ class ExportTaskRunner(object):
 
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*6)
 def run_task_async_ondemand(run_uid):
-    # print("la aaye ta ni ma yeha ")
     run_task_remote(run_uid)
     db.close_old_connections()
 
@@ -100,7 +99,6 @@ def run_task_async_scheduled(run_uid):
     db.close_old_connections()
 
 def run_task_remote(run_uid):
-    print("run task vitra ni aaidiye lau ja")
     try:
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
@@ -138,6 +136,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
     mapping = Mapping(job.feature_selection)
 
     def start_task(name):
+       
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'RUNNING'
         task.started_at = timezone.now()
@@ -320,17 +319,23 @@ def run_task(run_uid,run,stage_dir,download_dir):
         shp = None
         kml = None
         geojson=None
-
         tabular_outputs = []
+        
+        use_only_galaxy = False
+        galaxy_supported_outputs = ['geojson']
+
+        if galaxy_supported_outputs == list(export_formats):
+            use_only_galaxy=True
+
         if 'geopackage' in export_formats:
             geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(geopackage)
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
-            # shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
-            # tabular_outputs.append(shp)
+            # shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
+            tabular_outputs.append(shp)
             start_task('shp')
         
         if 'geojson' in export_formats:
@@ -341,19 +346,17 @@ def run_task(run_uid,run,stage_dir,download_dir):
             kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(kml)
             start_task('kml')
-
         if planet_file:
             h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir, mapping=mapping)
         else:
-            if geojson is None or shp is None:
+            mapping_filter = mapping
+            if job.unfiltered:
+                mapping_filter = None 
+            if use_only_galaxy == False : 
                 h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
-                mapping_filter = mapping
-                if job.unfiltered:
-                    mapping_filter = None  
                 source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
-
-        if geojson is None or shp is None:
+        if use_only_galaxy == False :        
             LOG.debug('Source start for run: {0}'.format(run_uid))
             source_path = source.path()
             LOG.debug('Source end for run: {0}'.format(run_uid))
@@ -361,6 +364,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         bundle_files = []
+        
 
         if geopackage:
             geopackage.finalize()
@@ -369,8 +373,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
             finish_task('geopackage',[zipped])
 
         if shp:
-            response_back=geojson.fetch('shp')
-            finish_task('shp',response_back=response_back)
+            shp.finalize()
+            zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
+            bundle_files += shp.files
+            finish_task('shp',[zipped])
+            # response_back=shp.fetch('shp')
+            # finish_task('shp',response_back=response_back)
 
         if geojson :
             response_back=geojson.fetch('GeoJSON')
