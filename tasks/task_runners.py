@@ -157,7 +157,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             task.filenames = [basename(file.parts[0]) for file in created_files]
         if planet_file is False:
             if response_back:
-                task.filesize_bytes = int(response_back['zip_file_size'][0])*1000000 # converting to bytes since we got response in MB
+                task.filesize_bytes = int(response_back['zip_file_size_bytes'][0]) #getting filesize bytes
             else:
                 total_bytes = 0
                 for file in created_files:
