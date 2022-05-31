@@ -60,7 +60,7 @@ def get_geodesic_area(geom):
         area = abs(int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000))
     return area
 
-MAX_NODES = 10000000
+MAX_NODES = 20000000
 ValidateResult = namedtuple('ValidateResult',['valid','message','params'])
 
 def check_extent(aoi,url):
