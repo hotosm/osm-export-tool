@@ -324,7 +324,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         use_only_galaxy = False
         galaxy_supported_outputs = ['geojson','shp']
 
-        if galaxy_supported_outputs == list(export_formats):
+        if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
             use_only_galaxy=True
 
         if 'geopackage' in export_formats:
