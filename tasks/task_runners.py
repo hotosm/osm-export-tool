@@ -322,7 +322,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         tabular_outputs = []
         
         use_only_galaxy = False
-        galaxy_supported_outputs = ['geojson']
+        galaxy_supported_outputs = ['geojson','shp']
 
         if galaxy_supported_outputs == list(export_formats):
             use_only_galaxy=True
@@ -333,9 +333,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            # shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
-            shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(shp)
+            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            # shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
+            # tabular_outputs.append(shp)
             start_task('shp')
         
         if 'geojson' in export_formats:
@@ -373,12 +373,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
             finish_task('geopackage',[zipped])
 
         if shp:
-            shp.finalize()
-            zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
-            bundle_files += shp.files
-            finish_task('shp',[zipped])
-            # response_back=shp.fetch('shp')
-            # finish_task('shp',response_back=response_back)
+            # shp.finalize()
+            # zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
+            # bundle_files += shp.files
+            # finish_task('shp',[zipped])
+            response_back=shp.fetch('shp')
+            finish_task('shp',response_back=response_back)
 
         if geojson :
             response_back=geojson.fetch('GeoJSON')
