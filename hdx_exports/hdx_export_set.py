@@ -134,14 +134,24 @@ class HDXExportSet(object):
 
             resources = []
             for f in files:
-                if 'theme' not in f.extra or f.extra['theme'] == theme.name:
-                    file_name = os.path.basename(f.parts[0]) # only one part: the zip file
-                    resources.append({
-                       'name': file_name, 
-                       'format': HDX_FORMATS[f.output_name],
-                       'description': HDX_DESCRIPTIONS[f.output_name],
-                       'url': os.path.join(public_dir,file_name)
-                    })
+                if isinstance(f, dict): # it is coming from galaxy
+                    if f['theme'] == theme.name:
+                        file_name = f['file_name'] # only one part: the zip file
+                        resources.append({
+                        'name': file_name, 
+                        'format': HDX_FORMATS[f['output_name']],
+                        'description': HDX_DESCRIPTIONS[f['output_name']],
+                        'url': f['download_url']
+                        }) 
+                else: 
+                    if 'theme' not in f.extra or f.extra['theme'] == theme.name:
+                        file_name = os.path.basename(f.parts[0]) # only one part: the zip file
+                        resources.append({
+                        'name': file_name, 
+                        'format': HDX_FORMATS[f.output_name],
+                        'description': HDX_DESCRIPTIONS[f.output_name],
+                        'url': os.path.join(public_dir,file_name)
+                        })
             # stable sort, but put shapefiles first for Geopreview to pick up correctly
             resources.sort(key=lambda x: 0 if x['format'] == 'zipped shapefile' else 1)
             dataset.add_update_resources(resources)
