@@ -100,6 +100,7 @@ def run_task_async_scheduled(run_uid):
 
 def run_task_remote(run_uid):
     try:
+        print("inside try block")
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
         run.started_at = timezone.now()
@@ -112,6 +113,8 @@ def run_task_remote(run_uid):
             os.makedirs(download_dir)
         run_task(run_uid,run,stage_dir,download_dir)
     except (Job.DoesNotExist,ExportRun.DoesNotExist,ExportTask.DoesNotExist):
+        print("inside except block")
+        
         LOG.warn('Job was deleted - exiting.')
     except Exception as e:
         client.captureException(extra={'run_uid': run_uid})
@@ -143,21 +146,25 @@ def run_task(run_uid,run,stage_dir,download_dir):
         task.save()
 
     def finish_task(name,created_files=None,response_back=None,planet_file=False):
-        if response_back :
-            print("\nResponse:")
-            print(response_back)
+        # if response_back :
+            # print("\nResponse:")
+            # print(response_back)
         LOG.debug('Task Finish: {0} for run: {1}'.format(name, run_uid))
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'SUCCESS'
         task.finished_at = timezone.now()
         # assumes each file only has one part (all are zips or PBFs)
         if response_back :
-            task.filenames = [response_back['download_url']]
+            # print(response_back)
+            task.filenames = [r['download_url'] for r in response_back]
         else:    
             task.filenames = [basename(file.parts[0]) for file in created_files]
         if planet_file is False:
             if response_back:
-                task.filesize_bytes = int(response_back['zip_file_size_bytes'][0]) #getting filesize bytes
+                total_bytes = 0
+                for r in response_back:
+                    total_bytes += int(r['zip_file_size_bytes'][0]) #getting filesize bytes
+                task.filesize_bytes = total_bytes
             else:
                 total_bytes = 0
                 for file in created_files:
@@ -220,8 +227,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(shp)
+            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            # shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
+            # tabular_outputs.append(shp)
             start_task('shp')
 
         if 'kml' in export_formats:
@@ -271,21 +279,26 @@ def run_task(run_uid,run,stage_dir,download_dir):
             all_zips += zips
 
         if shp:
-            shp.finalize()
-            zips = []
-            for file in shp.files:
-                # for HDX geopreview to work
-                # each file (_polygons, _lines) is a separate zip resource
-                # the zipfile must end with only .zip (not .shp.zip)
-                destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
-                with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
-                    theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
-                    add_metadata(z,theme)
-                    for part in file.parts:
-                        z.write(part, os.path.basename(part))
-                zips.append(osm_export_tool.File('shp',[destination],{'theme':file.extra['theme']}))
-            finish_task('shp',zips)
-            all_zips += zips
+            response_back=shp.fetch('shp',is_hdx_export=True)
+            finish_task('shp',response_back=response_back)
+            # shp.finalize()
+            # zips = []
+            # for file in shp.files:
+            #     # for HDX geopreview to work
+            #     # each file (_polygons, _lines) is a separate zip resource
+            #     # the zipfile must end with only .zip (not .shp.zip)
+            #     destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
+            #     with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+            #         theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
+            #         add_metadata(z,theme)
+            #         for part in file.parts:
+            #             z.write(part, os.path.basename(part))
+            #     # print(file.extra['theme'])
+            #     zips.append(osm_export_tool.File('shp',[destination],{'theme':file.extra['theme']}))
+            # finish_task('shp',zips)
+            # all_zips += zips
+
+            all_zips += response_back
 
         if kml:
             kml.finalize()
