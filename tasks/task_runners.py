@@ -100,7 +100,6 @@ def run_task_async_scheduled(run_uid):
 
 def run_task_remote(run_uid):
     try:
-        print("inside try block")
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
         run.started_at = timezone.now()
@@ -113,7 +112,6 @@ def run_task_remote(run_uid):
             os.makedirs(download_dir)
         run_task(run_uid,run,stage_dir,download_dir)
     except (Job.DoesNotExist,ExportRun.DoesNotExist,ExportTask.DoesNotExist):
-        print("inside except block")
         
         LOG.warn('Job was deleted - exiting.')
     except Exception as e:
@@ -177,6 +175,8 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
     planet_file = False
     polygon_centroid = False
+    galaxy_supported_outputs = ['geojson','shp']
+
     if is_hdx_export:
         planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
     if is_partner_export:
@@ -219,6 +219,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
         geopackage = None
         shp = None
         kml = None
+        use_only_galaxy = False
+
+        if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
+            use_only_galaxy=True
 
         tabular_outputs = []
         if 'geopackage' in export_formats:
@@ -242,16 +246,19 @@ def run_task(run_uid,run,stage_dir,download_dir):
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
         
         else:
-            h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
             mapping_filter = mapping
             if job.unfiltered:
                 mapping_filter = None
-            source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
 
-        LOG.debug('Source start for run: {0}'.format(run_uid))
-        source_path = source.path()
-        LOG.debug('Source end for run: {0}'.format(run_uid))
-        h.apply_file(source_path, locations=True, idx='sparse_file_array')
+            if use_only_galaxy == False : 
+                h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid) 
+                source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
+
+        if use_only_galaxy == False : 
+            LOG.debug('Source start for run: {0}'.format(run_uid))
+            source_path = source.path()
+            LOG.debug('Source end for run: {0}'.format(run_uid))
+            h.apply_file(source_path, locations=True, idx='sparse_file_array')
 
         all_zips = []
 
@@ -335,7 +342,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
         tabular_outputs = []
         
         use_only_galaxy = False
-        galaxy_supported_outputs = ['geojson','shp']
 
         if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
             use_only_galaxy=True
