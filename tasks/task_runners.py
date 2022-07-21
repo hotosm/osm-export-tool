@@ -110,7 +110,13 @@ def run_task_remote(run_uid):
             os.makedirs(stage_dir)
         if not exists(download_dir):
             os.makedirs(download_dir)
-        run_task(run_uid,run,stage_dir,download_dir)
+        try :
+            run_task(run_uid,run,stage_dir,download_dir)
+        except Exception as e: 
+            LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+            run.status = 'FAILED'
+            run.finished_at = timezone.now()
+            run.save()
     except (Job.DoesNotExist,ExportRun.DoesNotExist,ExportTask.DoesNotExist):
         
         LOG.warn('Job was deleted - exiting.')
