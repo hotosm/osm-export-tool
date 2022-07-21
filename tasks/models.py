@@ -15,6 +15,7 @@ from django.contrib.gis.admin import GeoModelAdmin
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 import validators
+import requests
 
 
 class ExportRun(models.Model):
@@ -92,7 +93,9 @@ class ExportTask(models.Model):
             valid=validators.url(fname)
             if valid==True:
                 download_url = fname
-                filesize_bytes=self.filesize_bytes
+                resp = requests.head("https://s3.amazonaws.com/exports-stage.hotosm.org/Hotosm_Pokhara_6de8d0bb-a75b-43d1-8b1a-160a91fc3175_f20a5cdb-11c4-43b6-adb1-5dd3b739f3d0_GeoJSON.zip")
+                filesize_bytes=resp.headers['Content-Length']
+                # filesize_bytes=self.filesize_bytes
                 absolute_download_url=download_url
                 try :
                     value = download_url.split('/')
