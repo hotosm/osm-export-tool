@@ -292,8 +292,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
             all_zips += zips
 
         if shp:
-            response_back=shp.fetch('shp',is_hdx_export=True)
-            finish_task('shp',response_back=response_back)
+            try:
+                response_back=shp.fetch('shp',is_hdx_export=True)
+                finish_task('shp',response_back=response_back)
+            except Exception as ex:
+                raise ex
+
             # shp.finalize()
             # zips = []
             # for file in shp.files:
@@ -402,12 +406,18 @@ def run_task(run_uid,run,stage_dir,download_dir):
             # zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
             # bundle_files += shp.files
             # finish_task('shp',[zipped])
-            response_back=shp.fetch('shp')
-            finish_task('shp',response_back=response_back)
+            try :
+                response_back=shp.fetch('shp')
+                finish_task('shp',response_back=response_back)
+            except Exception as ex :
+                raise ex
 
         if geojson :
-            response_back=geojson.fetch('GeoJSON')
-            finish_task('geojson',response_back=response_back)
+            try:
+                response_back=geojson.fetch('GeoJSON')
+                finish_task('geojson',response_back=response_back)
+            except Exception as ex :
+                raise ex
 
         if kml:
             kml.finalize()
