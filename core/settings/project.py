@@ -218,7 +218,6 @@ NOMINATIM_API_URL = os.getenv('NOMINATIM_API_URL', 'https://nominatim.openstreet
 
 MATOMO_URL = os.getenv('MATOMO_URL')
 MATOMO_SITEID = os.getenv('MATOMO_SITEID')
-print(os.getenv('HDX_SITE', 'demo'))
 HDX_URL_PREFIX = Configuration.create(
     hdx_site=os.getenv('HDX_SITE', 'demo'),
     hdx_key=os.getenv('HDX_API_KEY'),

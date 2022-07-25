@@ -150,16 +150,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
         task.save()
 
     def finish_task(name,created_files=None,response_back=None,planet_file=False):
-        # if response_back :
-            # print("\nResponse:")
-            # print(response_back)
         LOG.debug('Task Finish: {0} for run: {1}'.format(name, run_uid))
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'SUCCESS'
         task.finished_at = timezone.now()
         # assumes each file only has one part (all are zips or PBFs)
         if response_back :
-            # print(response_back)
             task.filenames = [r['download_url'] for r in response_back]
         else:    
             task.filenames = [basename(file.parts[0]) for file in created_files]
@@ -238,8 +234,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'shp' in export_formats:
             shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
-            # shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
-            # tabular_outputs.append(shp)
             start_task('shp')
 
         if 'kml' in export_formats:
@@ -297,24 +291,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 finish_task('shp',response_back=response_back)
             except Exception as ex:
                 raise ex
-
-            # shp.finalize()
-            # zips = []
-            # for file in shp.files:
-            #     # for HDX geopreview to work
-            #     # each file (_polygons, _lines) is a separate zip resource
-            #     # the zipfile must end with only .zip (not .shp.zip)
-            #     destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
-            #     with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
-            #         theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
-            #         add_metadata(z,theme)
-            #         for part in file.parts:
-            #             z.write(part, os.path.basename(part))
-            #     # print(file.extra['theme'])
-            #     zips.append(osm_export_tool.File('shp',[destination],{'theme':file.extra['theme']}))
-            # finish_task('shp',zips)
-            # all_zips += zips
-
             all_zips += response_back
 
         if kml:
@@ -363,8 +339,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'shp' in export_formats:
             shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
-            # shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
-            # tabular_outputs.append(shp)
             start_task('shp')
         
         if 'geojson' in export_formats:
@@ -402,10 +376,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
             finish_task('geopackage',[zipped])
 
         if shp:
-            # shp.finalize()
-            # zipped = create_package(join(download_dir,valid_name + '_shp.zip'),shp.files,boundary_geom=geom)
-            # bundle_files += shp.files
-            # finish_task('shp',[zipped])
             try :
                 response_back=shp.fetch('shp')
                 finish_task('shp',response_back=response_back)

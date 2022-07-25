@@ -8,7 +8,7 @@ djangorestframework~=3.6.3
 hdx-python-api==2.1.5
 mercantile~=0.10.0
 psycopg2==2.8.3
-python-openid
+python-openid==2.2.5
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 pytz
@@ -22,7 +22,7 @@ gunicorn==19.9.0
 osmium~=2.15.2
 dramatiq[redis,watch]~=1.7.0
 boto3~=1.9.238 # needed for cloudwatch
-rasterio
+rasterio~=1.0.25
 osm-export-tool==0.0.25
-rtree
+rtree==0.9.1
 validators
