@@ -87,6 +87,7 @@ class HDXExportSet(object):
 
     def datasets(self,is_private,subnational,data_update_frequency,locations,files,public_dir):
         HDX_FORMATS = {
+            'geojson':'GeoJSON',
             'shp': 'SHP',
             'geopackage': 'Geopackage',
             'garmin_img': 'Garmin IMG',
@@ -94,6 +95,7 @@ class HDXExportSet(object):
         }
 
         HDX_DESCRIPTIONS = {
+            'geojson': 'Geographic JavaScript Object Notation',
             'shp':'ESRI Shapefile',
             'geopackage':'Geopackage, SQLite compatible',
             'garmin_img':'.IMG for Garmin GPS Devices (All OSM layers for area)',
