@@ -85,6 +85,8 @@ class ExportTaskRunner(object):
             # db.close_old_connections()
             run_task_async_ondemand.send(run_uid)
         else:
+            # run_task_remote(run_uid)
+            # db.close_old_connections()
             run_task_async_scheduled.send(run_uid)
         return run
 
@@ -113,6 +115,8 @@ def run_task_remote(run_uid):
         try :
             run_task(run_uid,run,stage_dir,download_dir)
         except Exception as e: 
+            client.captureException(extra={'run_uid': run_uid})
+            LOG.warn(traceback.format_exc())
             LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
             run.status = 'FAILED'
             run.finished_at = timezone.now()
