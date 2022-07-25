@@ -83,6 +83,6 @@ celerybeat-schedule
 core/settings/secret.py
 .env
 node_modules
-ui/static/ui/js/bundle.js
+ui/static/ui/js/*
 *.js.map
 secrets

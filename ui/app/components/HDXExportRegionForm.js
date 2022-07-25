@@ -55,6 +55,7 @@ import {
 const FORM_NAME = "HDXExportRegionForm";
 
 const HDX_EXPORT_FORMATS = {
+  geojson:AVAILABLE_EXPORT_FORMATS.geojson,
   shp: AVAILABLE_EXPORT_FORMATS.shp,
   geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
   garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
@@ -957,7 +958,7 @@ Railways:
     schedule_period: "daily",
     schedule_hour: 0,
     subnational: true,
-    export_formats: ["shp", "geopackage", "kml", "garmin_img"],
+    export_formats: ["geojson","shp"],
     buffer_aoi: false,
     planet_file: false
   },

@@ -68,6 +68,7 @@ python manage.py migrate
 ```bash
 cd ui/
 yarn install
+yarn run dist # for production
 yarn start  # will watch for changes and re-compile as necessary
 ```
 

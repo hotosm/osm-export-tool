@@ -177,10 +177,15 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
     planet_file = False
     polygon_centroid = False
+    use_only_galaxy = False
     galaxy_supported_outputs = ['geojson','shp']
 
+    if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
+        use_only_galaxy=True
+
     if is_hdx_export:
-        planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
+        if use_only_galaxy is False : 
+            planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
     if is_partner_export:
         export_region = PartnerExportRegion.objects.get(job_id=run.job_id)
         planet_file = export_region.planet_file
@@ -221,12 +226,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         geopackage = None
         shp = None
         kml = None
-        use_only_galaxy = False
-
-        if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
-            use_only_galaxy=True
+        geojson=None
 
         tabular_outputs = []
+        if 'geojson' in export_formats:
+            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            start_task('geojson')
+
         if 'geopackage' in export_formats:
             geopackage = tabular.MultiGeopackage(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(geopackage)
@@ -269,6 +275,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
             columns = '\n'.join(columns)
             readme = ZIP_README.format(criteria=theme.matcher.to_sql(),columns=columns)
             z.writestr("README.txt", readme)
+        
+        if geojson :
+            try:
+                response_back=geojson.fetch('GeoJSON')
+                finish_task('geojson',response_back=response_back)
+            except Exception as ex :
+                raise ex
 
         if geopackage:
             geopackage.finalize()
@@ -326,11 +339,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
         kml = None
         geojson=None
         tabular_outputs = []
-        
-        use_only_galaxy = False
 
-        if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
-            use_only_galaxy=True
+        if 'geojson' in export_formats:
+            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            start_task('geojson')
 
         if 'geopackage' in export_formats:
             geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
@@ -341,10 +353,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
             shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('shp')
         
-        if 'geojson' in export_formats:
-            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
-            start_task('geojson')
-
         if 'kml' in export_formats:
             kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             tabular_outputs.append(kml)
@@ -368,6 +376,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         bundle_files = []
         
+        if geojson :
+            try:
+                response_back=geojson.fetch('GeoJSON')
+                finish_task('geojson',response_back=response_back)
+            except Exception as ex :
+                raise ex
 
         if geopackage:
             geopackage.finalize()
@@ -379,13 +393,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
             try :
                 response_back=shp.fetch('shp')
                 finish_task('shp',response_back=response_back)
-            except Exception as ex :
-                raise ex
-
-        if geojson :
-            try:
-                response_back=geojson.fetch('GeoJSON')
-                finish_task('geojson',response_back=response_back)
             except Exception as ex :
                 raise ex
 
