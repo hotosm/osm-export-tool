@@ -282,7 +282,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 finish_task('geojson',response_back=response_back)
             except Exception as ex :
                 raise ex
-
+            all_zips += response_back
         if geopackage:
             geopackage.finalize()
             zips = []
