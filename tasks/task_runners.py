@@ -81,13 +81,13 @@ class ExportTaskRunner(object):
             LOG.debug('Saved task: {0}'.format(format_name))
 
         if ondemand:
-            run_task_remote(run_uid)
-            db.close_old_connections()
-            # run_task_async_ondemand.send(run_uid)
+            # run_task_remote(run_uid)
+            # db.close_old_connections()
+            run_task_async_ondemand.send(run_uid)
         else:
-            run_task_remote(run_uid)
-            db.close_old_connections()
-            # run_task_async_scheduled.send(run_uid)
+            # run_task_remote(run_uid)
+            # db.close_old_connections()
+            run_task_async_scheduled.send(run_uid)
         return run
 
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*6)
