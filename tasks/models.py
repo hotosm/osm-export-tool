@@ -93,18 +93,22 @@ class ExportTask(models.Model):
             valid=validators.url(fname)
             if valid==True:
                 download_url = fname
-                try:
-                    resp = requests.head(download_url)
-                    filesize_bytes=int(resp.headers['Content-Length'])
-                except: 
-                    filesize_bytes=self.filesize_bytes
                 absolute_download_url=download_url
                 try :
                     value = download_url.split('/')
                     name=value[-1]
-                    fname=name
+                    split_name=name.split('_')
+                    download_name=f"{split_name[0]}_{split_name[-1]}"  # getting human redable name ignoring unique id
+                    fname=download_name
                 except:
                     fname=f"""{self.run.job.name}_{self.name}.zip"""
+                try:
+                    with open(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid),f"{name}_size.txt")) as f :
+                        size=f.readline()
+                    filesize_bytes=int(size)
+                except: 
+                    filesize_bytes=0
+
             else:
                 try:
                     filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))

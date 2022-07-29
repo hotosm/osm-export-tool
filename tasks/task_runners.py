@@ -81,13 +81,13 @@ class ExportTaskRunner(object):
             LOG.debug('Saved task: {0}'.format(format_name))
 
         if ondemand:
-            # run_task_remote(run_uid)
-            # db.close_old_connections()
-            run_task_async_ondemand.send(run_uid)
+            run_task_remote(run_uid)
+            db.close_old_connections()
+            # run_task_async_ondemand.send(run_uid)
         else:
-            # run_task_remote(run_uid)
-            # db.close_old_connections()
-            run_task_async_scheduled.send(run_uid)
+            run_task_remote(run_uid)
+            db.close_old_connections()
+            # run_task_async_scheduled.send(run_uid)
         return run
 
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*6)
@@ -283,6 +283,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if geojson :
             try:
                 response_back=geojson.fetch('GeoJSON',is_hdx_export=True)
+                try:
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes'][0]))
+                except:
+                    LOG.error("Can not write filesize to text")
                 finish_task('geojson',response_back=response_back)
             except Exception as ex :
                 raise ex
@@ -305,6 +312,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if shp:
             try:
                 response_back=shp.fetch('shp',is_hdx_export=True)
+                try:
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes'][0]))
+                except:
+                    LOG.error("Can not write filesize to text")
                 finish_task('shp',response_back=response_back)
             except Exception as ex:
                 raise ex
@@ -383,7 +397,15 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if geojson :
             try:
                 response_back=geojson.fetch('GeoJSON')
+                try:
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes'][0]))
+                except:
+                    LOG.error("Can not write filesize to text")
                 finish_task('geojson',response_back=response_back)
+
             except Exception as ex :
                 raise ex
 
@@ -396,6 +418,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if shp:
             try :
                 response_back=shp.fetch('shp')
+                try:
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes'][0]))
+                except:
+                    LOG.error("Can not write filesize to text")
                 finish_task('shp',response_back=response_back)
             except Exception as ex :
                 raise ex
