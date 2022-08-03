@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - feature/galaxy
   pull_request:
     branches:
       - master
