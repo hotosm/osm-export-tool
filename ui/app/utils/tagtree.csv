@@ -3,6 +3,8 @@ Buildings,Buildings,yes,,,,building IS NOT NULL,,
 Buildings,Building Names and Geometries,,,"point, polygon","name, building",building IS NOT NULL,,http://wiki.openstreetmap.org/wiki/Map_Features#Building
 Buildings,Addresses,,,"point, polygon","addr:housenumber,addr:street",building IS NOT NULL,,
 Buildings,Materials and Condition,,,polygon,"building:material,roof:material,access:roof",building IS NOT NULL,,
+Buildings,Materials and Condition,,,polygon,"building:material,roof:material,access:roof",building IS NOT NULL,,
+Administrative Boundaries,Boundaries,,,polygon,"name",boundary='administrative',,
 Commercial,Commercial,yes,,,,"shop IS NOT NULL OR tourism IS NOT NULL OR amenity IN ('marketplace','restaurant','fast_food','cafe','bar','pub') OR office IS NOT NULL",,http://wiki.openstreetmap.org/wiki/Map_Features#Tourism
 Commercial,Shop,,,"point, polygon","name, opening_hours, shop",shop IS NOT NULL,,
 Commercial,Supermarket,,,"point, polygon","name, opening_hours, shop",amenity='marketplace' OR shop='convenience' OR shop='supermarket',,

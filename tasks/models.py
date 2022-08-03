@@ -14,6 +14,9 @@ from django.contrib import admin
 from django.contrib.gis.admin import GeoModelAdmin
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
+import validators
+import requests
+
 
 class ExportRun(models.Model):
     """
@@ -87,17 +90,37 @@ class ExportTask(models.Model):
     @property
     def download_urls(self):
         def fdownload(fname):
-            try:
-                filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))
-            except Exception:
-                filesize_bytes = 0
+            valid=validators.url(fname)
+            if valid==True:
+                download_url = fname
+                absolute_download_url=download_url
+                try :
+                    value = download_url.split('/')
+                    name=value[-1]
+                    split_name=name.split('_')
+                    download_name=f"{split_name[0]}_{split_name[-1]}"  # getting human redable name ignoring unique id
+                    fname=download_name
+                except:
+                    fname=f"""{self.run.job.name}_{self.name}.zip"""
+                try:
+                    with open(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid),f"{name}_size.txt")) as f :
+                        size=f.readline()
+                    filesize_bytes=int(size)
+                except: 
+                    filesize_bytes=0
 
-            download_url = os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
-            return {
+            else:
+                try:
+                    filesize_bytes = os.path.getsize(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid), fname).encode('utf-8'))
+                except Exception:
+                    filesize_bytes = 0
+                download_url = os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
+                absolute_download_url=settings.HOSTNAME + download_url
+            return { 
                 "filename":fname,
                 "filesize_bytes": filesize_bytes,
                 "download_url":download_url,
-                "absolute_download_url":settings.HOSTNAME + download_url
+                "absolute_download_url":absolute_download_url
             }
         return map(fdownload, self.filenames)
 
