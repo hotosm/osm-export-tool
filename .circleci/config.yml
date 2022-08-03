@@ -2,14 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python
+      - image: circleci/python:3.6.8-stretch
     steps:
       - checkout
       - run:
           name: Run tests
           command: |
             set -x
-            sudo apt-get update
             sudo apt-get install libgdal-dev osmctools gdal-bin libspatialindex-dev
             virtualenv ./venv
             source venv/bin/activate
