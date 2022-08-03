@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           export CPLUS_INCLUDE_PATH=/usr/include/gdal
           export C_INCLUDE_PATH=/usr/include/gdal
-          pip install nose
+          pip install nose==1.3.7
           pip install -r requirements.txt
       - name: Run Tests
         run: |
