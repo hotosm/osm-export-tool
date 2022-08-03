@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cimg/python:3.10.5
+      - image: circleci/python:3.8.0-stretch
     steps:
       - checkout
       - run:
