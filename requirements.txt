@@ -25,4 +25,5 @@ boto3~=1.9.238 # needed for cloudwatch
 rasterio~=1.0.25
 osm-export-tool==0.0.25
 rtree==0.9.1
-validators
+validators==0.20.0
+geonamescache==1.5.0
