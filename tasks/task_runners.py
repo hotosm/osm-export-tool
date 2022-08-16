@@ -10,6 +10,7 @@ import zipfile
 import traceback
 
 import django
+from dramatiq.middleware import TimeLimitExceeded
 from django.apps import apps
 from django.conf import settings
 from django import db
@@ -90,14 +91,32 @@ class ExportTaskRunner(object):
             run_task_async_scheduled.send(run_uid)
         return run
 
-@dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*6)
+@dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*2)
 def run_task_async_ondemand(run_uid):
-    run_task_remote(run_uid)
+    try:
+        run_task_remote(run_uid)
+    except TimeLimitExceeded as e:
+        run = ExportRun.objects.get(uid=run_uid)
+        client.captureException(extra={'run_uid': run_uid})
+        LOG.warn(traceback.format_exc())
+        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+        run.status = 'FAILED'
+        run.finished_at = timezone.now()
+        run.save()
     db.close_old_connections()
 
 @dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=1000*60*60*6)
 def run_task_async_scheduled(run_uid):
-    run_task_remote(run_uid)
+    try :
+        run_task_remote(run_uid)
+    except TimeLimitExceeded as e:
+        run = ExportRun.objects.get(uid=run_uid)
+        client.captureException(extra={'run_uid': run_uid})
+        LOG.warn(traceback.format_exc())
+        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+        run.status = 'FAILED'
+        run.finished_at = timezone.now()
+        run.save()
     db.close_old_connections()
 
 def run_task_remote(run_uid):
