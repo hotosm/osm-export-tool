@@ -20,10 +20,10 @@ pyparsing>=2.2.0
 oauthlib==2.0.7
 gunicorn==19.9.0
 osmium~=2.15.2
-dramatiq[redis,watch]~=1.7.0
+dramatiq[redis,watch]~=1.13.0
 boto3~=1.9.238 # needed for cloudwatch
 rasterio~=1.0.25
-osm-export-tool==0.0.25
+osm-export-tool==0.0.25 #manual setup is needed for now
 rtree==0.9.1
 validators==0.20.0
 geonamescache==1.5.0
