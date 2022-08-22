@@ -44,7 +44,7 @@ from .renderers import HOTExportApiRenderer
 
 from hdx_exports.hdx_export_set import sync_region
 from rtree import index
-
+import psutil
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
@@ -489,3 +489,18 @@ def get_user_permissions(request):
 def get_groups(request):
     groups = [{'id':g.id,'name':g.name} for g in Group.objects.filter(is_partner=True)]
     return JsonResponse({'groups':groups})
+
+
+@require_http_methods(['GET'])
+def status(request):
+    # if not request.user.is_superuser:
+    #     return HttpResponseForbidden()
+    l1, l2, l3 = psutil.getloadavg()    
+    CPU_use = (l3/os.cpu_count()) * 100
+    date_from = datetime.now() - timedelta(days=1)
+    submitted_runs_since_day = ExportRun.objects.filter(status="SUBMITTED",created_at__gte=date_from).count()
+    running_runs = ExportRun.objects.filter(status="RUNNING").order_by('-started_at')
+    last_run_timestamp=running_runs[0].started_at
+
+    return HttpResponse(json.dumps({'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'submitted_runs_since_1_day':submitted_runs_since_day,'running_runs':len(running_runs),'last_run_running_from':str(timezone.now()-last_run_timestamp)}))
+
