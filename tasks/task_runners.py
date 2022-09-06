@@ -145,6 +145,7 @@ def run_task_remote(run_uid):
         LOG.warn('Job was deleted - exiting.')
     except Exception as e:
         client.captureException(extra={'run_uid': run_uid})
+        run = ExportRun.objects.get(uid=run_uid)
         run.status = 'FAILED'
         run.finished_at = timezone.now()
         run.save()
