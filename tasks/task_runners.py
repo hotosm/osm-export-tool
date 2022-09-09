@@ -385,7 +385,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         tabular_outputs = []
 
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=f"{valid_name}_{run_uid}")
             start_task('geojson')
 
         if 'geopackage' in export_formats:
@@ -394,7 +394,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=f"{valid_name}_{run_uid}")
             start_task('shp')
         
         if 'kml' in export_formats:
