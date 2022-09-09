@@ -254,7 +254,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         tabular_outputs = []
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=f"{valid_name}_{run_uid}")
             start_task('geojson')
 
         if 'geopackage' in export_formats:
@@ -263,7 +263,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=f"{valid_name}_{run_uid}")
             start_task('shp')
 
         if 'kml' in export_formats:
@@ -303,7 +303,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if geojson :
             try:
                 LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
-                
                 response_back=geojson.fetch('GeoJSON',is_hdx_export=True)
                 try:
                     for r in response_back:
@@ -335,6 +334,8 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if shp:
             try:
+                LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
+
                 response_back=shp.fetch('shp',is_hdx_export=True)
                 try:
                     for r in response_back:
@@ -343,6 +344,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                             f.write(str(r['zip_file_size_bytes'][0]))
                 except:
                     LOG.error("Can not write filesize to text")
+                LOG.debug('Galaxy fetch ended  for run: {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
             except Exception as ex:
                 raise ex
@@ -420,6 +422,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         
         if geojson :
             try:
+                LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
                 response_back=geojson.fetch('GeoJSON')
                 try:
                     for r in response_back:
@@ -428,6 +431,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                             f.write(str(r['zip_file_size_bytes'][0]))
                 except:
                     LOG.error("Can not write filesize to text")
+                LOG.debug('Galaxy fetch ended for run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
 
             except Exception as ex :
@@ -441,6 +445,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if shp:
             try :
+                LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
                 response_back=shp.fetch('shp')
                 try:
                     for r in response_back:
@@ -449,6 +454,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                             f.write(str(r['zip_file_size_bytes'][0]))
                 except:
                     LOG.error("Can not write filesize to text")
+                LOG.debug('Galaxy fetch ended for run: {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
             except Exception as ex :
                 raise ex
