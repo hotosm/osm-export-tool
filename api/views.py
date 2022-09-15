@@ -53,7 +53,7 @@ renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 try:
-    idx = index.Rtree(os.path.join(DIR,'reverse_geocode'))
+    idx = index.Rtree(os.path.join(DIR,'reverse_geocode.idx'))
 except Exception as ex:
     # pass
     raise ex
