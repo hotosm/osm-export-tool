@@ -54,9 +54,9 @@ renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 DIR = os.path.dirname(os.path.abspath(__file__))
 try:
     idx = index.Rtree(os.path.join(DIR,'reverse_geocode'))
-except:
-    pass
-    # raise ImportError("Can not read indexes")
+except Exception as ex:
+    # pass
+    raise ex
 def bbox_to_geom(s):
     try:
         return GEOSGeometry(Polygon.from_bbox(s.split(',')), srid=4326)
