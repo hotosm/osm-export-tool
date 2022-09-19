@@ -498,14 +498,13 @@ def machine_status(request):
     CPU_use = psutil.cpu_percent(3)
     date_from = datetime.now() - timedelta(days=1)
     hdx_jobs=HDXExportRegion.objects.all()
-    all_submitted_runs_since_day = ExportRun.objects.filter(status="SUBMITTED",created_at__gte=date_from)
-    all_submitted_runs_since_day_except_hdx=all_submitted_runs_since_day.objects.exclude(job__in=[i.a_list.job for i in hdx_jobs]).count()
-    running_runs = ExportRun.objects.filter(status="RUNNING",created_at__gte=date_from).order_by('-started_at')
+    Runs_since_day = ExportRun.objects.filter(created_at__gte=date_from)
+    running_runs = Runs_since_day.filter(status="RUNNING").order_by('-started_at')
     if running_runs:
         last_run_timestamp=running_runs[0].started_at
         last_run_running_from=str(timezone.now()-last_run_timestamp)
     else:
         last_run_timestamp="N/A"
         last_run_running_from="N/A"
-    return HttpResponse(json.dumps({'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'all_submitted_runs_since_1_day_except_hdx':all_submitted_runs_since_day_except_hdx,'running_runs_since_1_day':len(running_runs),'last_run_running_from':last_run_running_from}))
+    return HttpResponse(json.dumps({'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'runs':{'submitted':Runs_since_day.filter(status="SUBMITTED").exclude(job__in=[i.job for i in hdx_jobs]).count(),'running':Runs_since_day.filter(status="RUNNING").count(),'last_running_from':last_run_running_from,'failed':Runs_since_day.filter(status="FAILED").count(),'completed':Runs_since_day.filter(status="COMPLETED").count()},"hdx":{'total_jobs':hdx_jobs.count(),'Running_daily':hdx_jobs.filter(schedule_period='daily').count()}}))
 
