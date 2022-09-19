@@ -498,12 +498,12 @@ def machine_status(request):
     CPU_use = psutil.cpu_percent(3)
     date_from = datetime.now() - timedelta(days=1)
     submitted_runs_since_day = ExportRun.objects.filter(status="SUBMITTED",created_at__gte=date_from).count()
-    running_runs = ExportRun.objects.filter(status="RUNNING").order_by('-started_at')
+    running_runs = ExportRun.objects.filter(status="RUNNING",created_at__gte=date_from).order_by('-started_at')
     if running_runs:
         last_run_timestamp=running_runs[0].started_at
         last_run_running_from=str(timezone.now()-last_run_timestamp)
     else:
         last_run_timestamp="N/A"
         last_run_running_from="N/A"
-    return HttpResponse(json.dumps({'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'submitted_runs_since_1_day':submitted_runs_since_day,'running_runs':len(running_runs),'last_run_running_from':last_run_running_from}))
+    return HttpResponse(json.dumps({'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'submitted_runs_since_1_day':submitted_runs_since_day,'running_runs_since_1_day':len(running_runs),'last_run_running_from':last_run_running_from}))
 
