@@ -155,7 +155,7 @@ def run_task_remote(run_uid):
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
         LOG.warn(traceback.format_exc())
     finally:
-        if  exists(stage_dir):
+        if exists(stage_dir):
             shutil.rmtree(stage_dir)
 
 def run_task(run_uid,run,stage_dir,download_dir):
