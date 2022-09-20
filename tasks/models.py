@@ -148,7 +148,7 @@ class ExportRunAdmin(admin.ModelAdmin):
 
 class ExportTaskAdmin(admin.ModelAdmin):
     list_display = ['uid','run','name','status','created_at','filesize_bytes','duration']
-    search_fields = ['uid']
+    search_fields = ['uid','run__uid']
     list_filter = ('name','status')
     ordering = ('-created_at',)
 
