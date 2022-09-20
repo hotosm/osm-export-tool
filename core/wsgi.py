@@ -11,6 +11,11 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+import dramatiq_dashboard
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings.project")
 
 application = get_wsgi_application()
+
+dashboard_middleware = dramatiq_dashboard.make_wsgi_middleware("/worker-dashboard")
+application = dashboard_middleware(application)
