@@ -258,6 +258,7 @@ class ExportRuns extends Component {
                                   key={j}
                                   style={{ display: "block" }}
                                   href={dl.download_url}
+                                  target="_blank"
                                   className="matomo_download piwik_download"
                                 >
                                   {dl.filename}
