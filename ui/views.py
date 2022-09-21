@@ -9,6 +9,8 @@ from oauth2_provider.models import Application
 from django.contrib import admin
 from django.contrib.auth.admin import User, UserAdmin
 from django.conf import settings
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseNotFound, HttpResponseForbidden
+
 
 def authorized(request):
     # the user has now authorized a client application; they no longer need to
@@ -48,6 +50,13 @@ def v3(request):
 
 def redirect_to_v3(request):
     return redirect('/v3/')
+
+@require_http_methods(['GET'])
+def worker_dashboard(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    # return HttpResponse('test')
+    return HttpResponseRedirect(f"/{settings.WORKER_SECRET_KEY}/")
 
 class ApplicationAdmin(admin.ModelAdmin):
     raw_id_fields = ("user", )
