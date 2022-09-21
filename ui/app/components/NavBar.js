@@ -22,7 +22,7 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
     <Nav className="pull-right">
       <RequirePermission>
         <li>
-          <NavLink to="https://status.hotosm.org">
+          <NavLink to="/exports/new">
             <FormattedMessage id="ui.create" defaultMessage="Create" />
           </NavLink>
         </li>
