@@ -461,7 +461,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 LOG.debug('Galaxy fetch ended for shp run:  {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
             except Exception as ex :
-                stop_task('geojson')
+                stop_task('shp')
                 raise ex
 
         if kml:
