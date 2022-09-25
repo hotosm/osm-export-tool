@@ -42,6 +42,9 @@ class ExportRun(models.Model):
     def __str__(self):
         return '{0}'.format(self.uid)
 
+    def export_formats(self):
+        return self.job.export_formats
+
     @property
     def duration(self):
         if self.started_at and self.finished_at:
@@ -81,6 +84,9 @@ class ExportTask(models.Model):
     def __str__(self):
         return 'ExportTask uid: {0}'.format(self.uid)
 
+    def username(self):
+        return self.run.user
+
     @property
     def duration(self):
         if self.started_at and self.finished_at:
@@ -106,7 +112,7 @@ class ExportTask(models.Model):
                     with open(os.path.join(settings.EXPORT_DOWNLOAD_ROOT, str(self.run.uid),f"{name}_size.txt")) as f :
                         size=f.readline()
                     filesize_bytes=int(size)
-                except: 
+                except:
                     filesize_bytes=0
 
             else:
@@ -116,7 +122,7 @@ class ExportTask(models.Model):
                     filesize_bytes = 0
                 download_url = os.path.join(settings.EXPORT_MEDIA_ROOT,str(self.run.uid), fname)
                 absolute_download_url=settings.HOSTNAME + download_url
-            return { 
+            return {
                 "filename":fname,
                 "filesize_bytes": filesize_bytes,
                 "download_url":download_url,
@@ -133,7 +139,7 @@ class ExportRunAdmin(admin.ModelAdmin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job','status','user','created_at']
+    list_display = ['uid','job','status','export_formats','user','created_at','duration']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
@@ -147,7 +153,10 @@ class ExportRunAdmin(admin.ModelAdmin):
                         args=(obj.job.id,)))
 
 class ExportTaskAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['uid','run','name','status','created_at','username','filesize_bytes','duration']
+    search_fields = ['uid','run__uid']
+    list_filter = ('name','status')
+    ordering = ('-created_at',)
 
 class ExportRunsInline(admin.TabularInline):
     model = ExportRun

@@ -10,7 +10,13 @@ https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+from django.conf import settings
+
+import dramatiq_dashboard
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings.project")
 
 application = get_wsgi_application()
+
+dashboard_middleware = dramatiq_dashboard.make_wsgi_middleware(f"/{settings.WORKER_SECRET_KEY}")
+application = dashboard_middleware(application)

@@ -91,29 +91,27 @@ class ExportTaskRunner(object):
             run_task_async_scheduled.send(run_uid)
         return run
 
-@dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*2)
+@dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*2) # 2 hour
 def run_task_async_ondemand(run_uid):
     try:
         run_task_remote(run_uid)
-    except TimeLimitExceeded as e:
+    except TimeLimitExceeded:
         run = ExportRun.objects.get(uid=run_uid)
         client.captureException(extra={'run_uid': run_uid})
-        LOG.warn(traceback.format_exc())
-        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+        LOG.warn('ExportRun {0} failed due to timeout'.format(run_uid))
         run.status = 'FAILED'
         run.finished_at = timezone.now()
         run.save()
     db.close_old_connections()
 
-@dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=1000*60*60*6)
+@dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=1000*60*60*6) #  6 hour
 def run_task_async_scheduled(run_uid):
     try :
         run_task_remote(run_uid)
-    except TimeLimitExceeded as e:
+    except TimeLimitExceeded:
         run = ExportRun.objects.get(uid=run_uid)
         client.captureException(extra={'run_uid': run_uid})
-        LOG.warn(traceback.format_exc())
-        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+        LOG.warn('ExportRun {0} failed due to timeout'.format(run_uid))
         run.status = 'FAILED'
         run.finished_at = timezone.now()
         run.save()
@@ -131,19 +129,13 @@ def run_task_remote(run_uid):
             os.makedirs(stage_dir)
         if not exists(download_dir):
             os.makedirs(download_dir)
-        try :
-            run_task(run_uid,run,stage_dir,download_dir)
-        except Exception as e:
-            client.captureException(extra={'run_uid': run_uid})
-            LOG.warn(traceback.format_exc())
-            LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
-            run.status = 'FAILED'
-            run.finished_at = timezone.now()
-            run.save()
+
+        run_task(run_uid,run,stage_dir,download_dir)
+
     except (Job.DoesNotExist,ExportRun.DoesNotExist,ExportTask.DoesNotExist):
 
         LOG.warn('Job was deleted - exiting.')
-    except Exception as e:
+    except Exception as ex:
         client.captureException(extra={'run_uid': run_uid})
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'FAILED'
@@ -152,7 +144,7 @@ def run_task_remote(run_uid):
 
         if HDXExportRegion.objects.filter(job_id=run.job_id).exists():
             send_hdx_error_notification(run, run.job.hdx_export_region_set.first())
-        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, e))
+        LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, ex))
         LOG.warn(traceback.format_exc())
     finally:
         if exists(stage_dir):
@@ -172,6 +164,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
         task.status = 'RUNNING'
         task.started_at = timezone.now()
+        task.save()
+
+    def stop_task(name):
+        LOG.debug('Task Failed: {0} for run: {1}'.format(name, run_uid))
+        task = ExportTask.objects.get(run__uid=run_uid, name=name)
+        task.status = 'FAILED'
+        task.finished_at = timezone.now()
         task.save()
 
     def finish_task(name,created_files=None,response_back=None,planet_file=False):
@@ -303,74 +302,80 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if geojson :
             try:
-                LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
+                LOG.debug('Galaxy fetch started GeoJSON for run: {0}'.format(run_uid))
                 response_back=geojson.fetch('GeoJSON',is_hdx_export=True)
-                try:
-                    for r in response_back:
-                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
-                        with open(size_path, 'w') as f:
-                            f.write(str(r['zip_file_size_bytes'][0]))
-                except:
-                    LOG.error("Can not write filesize to text")
-                LOG.debug('Galaxy fetch ended for run: {0}'.format(run_uid))
-
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes'][0]))
+                LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
+                all_zips += response_back
             except Exception as ex :
+                stop_task('geojson')
                 raise ex
-            all_zips += response_back
         if geopackage:
-            geopackage.finalize()
-            zips = []
-            for theme in mapping.themes:
-                destination = join(download_dir,valid_name + '_' + slugify(theme.name) + '_gpkg.zip')
-                matching_files = [f for f in geopackage.files if 'theme' in f.extra and f.extra['theme'] == theme.name]
-                with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
-                    add_metadata(z,theme)
-                    for file in matching_files:
-                        for part in file.parts:
-                            z.write(part, os.path.basename(part))
-                zips.append(osm_export_tool.File('geopackage',[destination],{'theme':theme.name}))
-            finish_task('geopackage',zips)
-            all_zips += zips
+            try:
+                geopackage.finalize()
+                zips = []
+                for theme in mapping.themes:
+                    destination = join(download_dir,valid_name + '_' + slugify(theme.name) + '_gpkg.zip')
+                    matching_files = [f for f in geopackage.files if 'theme' in f.extra and f.extra['theme'] == theme.name]
+                    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                        add_metadata(z,theme)
+                        for file in matching_files:
+                            for part in file.parts:
+                                z.write(part, os.path.basename(part))
+                    zips.append(osm_export_tool.File('geopackage',[destination],{'theme':theme.name}))
+                finish_task('geopackage',zips)
+                all_zips += zips
+            except Exception as ex :
+                stop_task('geopackage')
+                raise ex
 
         if shp:
             try:
-                LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
+                LOG.debug('Galaxy fetch started for shp run: {0}'.format(run_uid))
 
                 response_back=shp.fetch('shp',is_hdx_export=True)
-                try:
-                    for r in response_back:
-                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
-                        with open(size_path, 'w') as f:
-                            f.write(str(r['zip_file_size_bytes'][0]))
-                except:
-                    LOG.error("Can not write filesize to text")
-                LOG.debug('Galaxy fetch ended  for run: {0}'.format(run_uid))
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes'][0]))
+                LOG.debug('Galaxy fetch ended  for shp run: {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
+                all_zips += response_back
             except Exception as ex:
+                stop_task('shp')
                 raise ex
-            all_zips += response_back
-
         if kml:
-            kml.finalize()
-            zips = []
-            for file in kml.files:
-                destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
-                with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
-                    theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
-                    add_metadata(z,theme)
-                    for part in file.parts:
-                        z.write(part, os.path.basename(part))
-                zips.append(osm_export_tool.File('kml',[destination],{'theme':file.extra['theme']}))
-            finish_task('kml',zips)
-            all_zips += zips
+            try:
+                kml.finalize()
+                zips = []
+                for file in kml.files:
+                    destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
+                    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                        theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
+                        add_metadata(z,theme)
+                        for part in file.parts:
+                            z.write(part, os.path.basename(part))
+                    zips.append(osm_export_tool.File('kml',[destination],{'theme':file.extra['theme']}))
+                finish_task('kml',zips)
+                all_zips += zips
+            except Exception as ex :
+                stop_task('kml')
+                raise ex
 
         if 'garmin_img' in export_formats:
             start_task('garmin_img')
-            garmin_files = nontabular.garmin(source_path,settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
-            zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom,output_name='garmin_img')
-            all_zips.append(zipped)
-            finish_task('garmin_img',[zipped])
+            try:
+                garmin_files = nontabular.garmin(source_path,settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
+                zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom,output_name='garmin_img')
+                all_zips.append(zipped)
+                finish_task('garmin_img',[zipped])
+            except Exception as ex :
+                stop_task('garmin_img')
+                raise ex
 
         if settings.SYNC_TO_HDX:
             print("Syncing to HDX")
@@ -423,96 +428,123 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if geojson :
             try:
-                LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
+                LOG.debug('Galaxy fetch started for GeoJSON run: {0}'.format(run_uid))
                 response_back=geojson.fetch('GeoJSON')
-                try:
-                    for r in response_back:
-                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
-                        with open(size_path, 'w') as f:
-                            f.write(str(r['zip_file_size_bytes'][0]))
-                except:
-                    LOG.error("Can not write filesize to text")
-                LOG.debug('Galaxy fetch ended for run: {0}'.format(run_uid))
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes'][0]))
+                LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
-
             except Exception as ex :
+                stop_task('geojson')
                 raise ex
 
         if geopackage:
-            geopackage.finalize()
-            zipped = create_package(join(download_dir,valid_name + '_gpkg.zip'),geopackage.files,boundary_geom=geom)
-            bundle_files += geopackage.files
-            finish_task('geopackage',[zipped])
+            try :
+                geopackage.finalize()
+                zipped = create_package(join(download_dir,valid_name + '_gpkg.zip'),geopackage.files,boundary_geom=geom)
+                bundle_files += geopackage.files
+                finish_task('geopackage',[zipped])
+            except Exception as ex :
+                stop_task('geopackage')
+                raise ex
 
         if shp:
             try :
-                LOG.debug('Galaxy fetch started for run: {0}'.format(run_uid))
+                LOG.debug('Galaxy fetch started for shp run:  {0}'.format(run_uid))
                 response_back=shp.fetch('shp')
-                try:
-                    for r in response_back:
-                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
-                        with open(size_path, 'w') as f:
-                            f.write(str(r['zip_file_size_bytes'][0]))
-                except:
-                    LOG.error("Can not write filesize to text")
-                LOG.debug('Galaxy fetch ended for run: {0}'.format(run_uid))
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes'][0]))
+                LOG.debug('Galaxy fetch ended for shp run:  {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
             except Exception as ex :
+                stop_task('shp')
                 raise ex
 
         if kml:
-            kml.finalize()
-            zipped = create_package(join(download_dir,valid_name + '_kml.zip'),kml.files,boundary_geom=geom)
-            bundle_files += kml.files
-            finish_task('kml',[zipped])
+            try :
+                kml.finalize()
+                zipped = create_package(join(download_dir,valid_name + '_kml.zip'),kml.files,boundary_geom=geom)
+                bundle_files += kml.files
+                finish_task('kml',[zipped])
+            except Exception as ex :
+                stop_task('kml')
+                raise ex
 
         if 'garmin_img' in export_formats:
             start_task('garmin_img')
-            garmin_files = nontabular.garmin(source_path,settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
-            bundle_files += garmin_files
-            zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom)
-            finish_task('garmin_img',[zipped])
+            try :
+                garmin_files = nontabular.garmin(source_path,settings.GARMIN_SPLITTER,settings.GARMIN_MKGMAP,tempdir=stage_dir)
+                bundle_files += garmin_files
+                zipped = create_package(join(download_dir,valid_name + '_gmapsupp_img.zip'),garmin_files,boundary_geom=geom)
+                finish_task('garmin_img',[zipped])
+            except Exception as ex :
+                stop_task('garmin_img')
+                raise ex
 
         if 'mwm' in export_formats:
             start_task('mwm')
-            mwm_dir = join(stage_dir,'mwm')
-            if not exists(mwm_dir):
-                os.makedirs(mwm_dir)
-            mwm_files = nontabular.mwm(source_path,mwm_dir,settings.GENERATE_MWM,settings.GENERATOR_TOOL)
-            bundle_files += mwm_files
-            zipped = create_package(join(download_dir,valid_name + '_mwm.zip'),mwm_files,boundary_geom=geom)
-            finish_task('mwm',[zipped])
+            try :
+                mwm_dir = join(stage_dir,'mwm')
+                if not exists(mwm_dir):
+                    os.makedirs(mwm_dir)
+                mwm_files = nontabular.mwm(source_path,mwm_dir,settings.GENERATE_MWM,settings.GENERATOR_TOOL)
+                bundle_files += mwm_files
+                zipped = create_package(join(download_dir,valid_name + '_mwm.zip'),mwm_files,boundary_geom=geom)
+                finish_task('mwm',[zipped])
+            except Exception as ex :
+                stop_task('garmin_img')
+                raise ex
+
 
         if 'osmand_obf' in export_formats:
             start_task('osmand_obf')
-            osmand_files = nontabular.osmand(source_path,settings.OSMAND_MAP_CREATOR_DIR,tempdir=stage_dir)
-            bundle_files += osmand_files
-            zipped = create_package(join(download_dir,valid_name + '_Osmand2_obf.zip'),osmand_files,boundary_geom=geom)
-            finish_task('osmand_obf',[zipped])
+            try:
+                osmand_files = nontabular.osmand(source_path,settings.OSMAND_MAP_CREATOR_DIR,tempdir=stage_dir)
+                bundle_files += osmand_files
+                zipped = create_package(join(download_dir,valid_name + '_Osmand2_obf.zip'),osmand_files,boundary_geom=geom)
+                finish_task('osmand_obf',[zipped])
+            except Exception as ex :
+                stop_task('osmand_obf')
+                raise ex
 
         if 'mbtiles' in export_formats:
             start_task('mbtiles')
-            mbtiles_files = nontabular.mbtiles(geom,join(stage_dir,valid_name + '.mbtiles'),job.mbtiles_source,job.mbtiles_minzoom,job.mbtiles_maxzoom)
-            bundle_files += mbtiles_files
-            zipped = create_package(join(download_dir,valid_name + '_mbtiles.zip'),mbtiles_files,boundary_geom=geom)
-            finish_task('mbtiles',[zipped])
+            try:
+                mbtiles_files = nontabular.mbtiles(geom,join(stage_dir,valid_name + '.mbtiles'),job.mbtiles_source,job.mbtiles_minzoom,job.mbtiles_maxzoom)
+                bundle_files += mbtiles_files
+                zipped = create_package(join(download_dir,valid_name + '_mbtiles.zip'),mbtiles_files,boundary_geom=geom)
+                finish_task('mbtiles',[zipped])
+            except Exception as ex :
+                stop_task('mbtiles')
+                raise ex
 
         if 'osm_pbf' in export_formats:
             bundle_files += [osm_export_tool.File('osm_pbf',[source_path],'')]
 
         if 'bundle' in export_formats:
             start_task('bundle')
-            zipped = create_posm_bundle(join(download_dir,valid_name + '-bundle.tar.gz'),bundle_files,job.name,valid_name,job.description,geom)
-            finish_task('bundle',[zipped])
+            try:
+                zipped = create_posm_bundle(join(download_dir,valid_name + '-bundle.tar.gz'),bundle_files,job.name,valid_name,job.description,geom)
+                finish_task('bundle',[zipped])
+            except Exception as ex :
+                stop_task('bundle')
+                raise ex
 
         # do this last so we can do a mv instead of a copy
         if 'osm_pbf' in export_formats:
             start_task('osm_pbf')
-            target = join(download_dir,valid_name + '.osm.pbf')
-            shutil.move(source_path,target)
-            os.chmod(target, 0o644)
-            finish_task('osm_pbf',[osm_export_tool.File('pbf',[target],'')], planet_file)
-
+            try:
+                target = join(download_dir,valid_name + '.osm.pbf')
+                shutil.move(source_path,target)
+                os.chmod(target, 0o644)
+                finish_task('osm_pbf',[osm_export_tool.File('pbf',[target],'')], planet_file)
+            except Exception as ex :
+                stop_task('osm_pbf')
+                raise ex
         send_completion_notification(run)
 
     run.status = 'COMPLETED'

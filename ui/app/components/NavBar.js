@@ -22,7 +22,7 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
     <Nav className="pull-right">
       <RequirePermission>
         <li>
-          <NavLink to="https://status.hotosm.org">
+          <NavLink to="/exports/new">
             <FormattedMessage id="ui.create" defaultMessage="Create" />
           </NavLink>
         </li>
@@ -67,6 +67,13 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
         <li>
           <a href="/admin">
             <FormattedMessage id="ui.admin" defaultMessage="Admin" />
+          </a>
+        </li>
+      </RequirePermission>
+      <RequirePermission required={["auth.add_user"]}>
+        <li>
+          <a href="/worker-dashboard/">
+            <FormattedMessage id="ui.workers" defaultMessage="Workers" />
           </a>
         </li>
       </RequirePermission>

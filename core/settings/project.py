@@ -73,6 +73,7 @@ GALAXY_API_URL = os.getenv('GALAXY_API_URL', 'https://galaxy-api.hotosm.org/v1/r
 GENERATE_MWM = os.getenv('GENERATE_MWM','/usr/local/bin/generate_mwm.sh')
 GENERATOR_TOOL = os.getenv('GENERATOR_TOOL','/usr/local/bin/generator_tool')
 PLANET_FILE = os.getenv('PLANET_FILE','')
+WORKER_SECRET_KEY = os.getenv('WORKER_SECRET_KEY','nPsOG0vNSEpKdZMjHeQVX910aSoq6Jyp')
 
 """
 Maximum extent of a Job

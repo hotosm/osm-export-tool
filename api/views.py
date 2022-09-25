@@ -283,8 +283,6 @@ def permalink(request, uid):
     except DjangoValidationError:
         return HttpResponseNotFound()
 
-
-
 @require_http_methods(['GET'])
 def stats(request):
     if not request.user.is_superuser:

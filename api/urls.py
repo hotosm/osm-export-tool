@@ -35,5 +35,5 @@ urlpatterns += [
     url(r'^groups$',get_groups),
     url(r'^stats$', stats),
     url(r'^status$', machine_status),
-    
+
 ]
