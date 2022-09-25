@@ -187,7 +187,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             if response_back:
                 total_bytes = 0
                 for r in response_back:
-                    total_bytes += int(r['zip_file_size_bytes'][0]) #getting filesize bytes
+                    total_bytes += int(r['zip_file_size_bytes']) #getting filesize bytes
                 task.filesize_bytes = total_bytes
             else:
                 total_bytes = 0
@@ -307,7 +307,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
                     with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
+                        f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
                 all_zips += response_back
@@ -341,7 +341,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
                     with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
+                        f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended  for shp run: {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
                 all_zips += response_back
@@ -433,7 +433,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
                     with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
+                        f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
             except Exception as ex :
@@ -457,7 +457,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
                     with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
+                        f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for shp run:  {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
             except Exception as ex :
