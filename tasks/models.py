@@ -53,7 +53,7 @@ class ExportRun(models.Model):
 
     @property
     def total_time(self):
-        if  self.finished_at:
+        if  self.finished_at and self.created_at:
             return "{:.1f}".format((self.finished_at - self.created_at).total_seconds()/60)
         return None
 
