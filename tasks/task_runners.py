@@ -118,6 +118,7 @@ def run_task_async_scheduled(run_uid):
     db.close_old_connections()
 
 def run_task_remote(run_uid):
+    stage_dir=None
     try:
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
@@ -147,7 +148,7 @@ def run_task_remote(run_uid):
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, ex))
         LOG.warn(traceback.format_exc())
     finally:
-        if exists(stage_dir):
+        if stage_dir:
             shutil.rmtree(stage_dir)
 
 def run_task(run_uid,run,stage_dir,download_dir):
