@@ -430,7 +430,8 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if geojson :
             try:
                 LOG.debug('Galaxy fetch started for GeoJSON run: {0}'.format(run_uid))
-                response_back=geojson.fetch('GeoJSON')
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=geojson.fetch('GeoJSON',all_feature_filter_json=all_feature_filter_json)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
                     with open(size_path, 'w') as f:
