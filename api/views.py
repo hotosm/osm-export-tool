@@ -488,7 +488,6 @@ def get_groups(request):
     groups = [{'id':g.id,'name':g.name} for g in Group.objects.filter(is_partner=True)]
     return JsonResponse({'groups':groups})
 
-
 @require_http_methods(['GET'])
 def machine_status(request):
     # if not request.user.is_superuser:
@@ -504,5 +503,9 @@ def machine_status(request):
     else:
         last_run_timestamp="N/A"
         last_run_running_from="N/A"
-    return HttpResponse(json.dumps({'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'runs':{'submitted':Runs_since_day.filter(status="SUBMITTED").exclude(job__in=[i.job for i in hdx_jobs]).count(),'running':Runs_since_day.filter(status="RUNNING").count(),'last_running_from':last_run_running_from,'failed':Runs_since_day.filter(status="FAILED").count(),'completed':Runs_since_day.filter(status="COMPLETED").count()},"hdx":{'total_jobs':hdx_jobs.count(),'Running_daily':hdx_jobs.filter(schedule_period='daily').count()}}))
+    overpass = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
+    galaxy = requests.get('{}v1/raw-data/status/'.format(settings.GALAXY_API_URL))
 
+    overpass_timestamp=str(datetime.now(timezone.utc)-dateutil.parser.parse(overpass.content))
+    galaxy_timestamp = galaxy.json()['last_updated']
+    return JsonResponse({'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'overpass_timestamp':overpass_timestamp,'galaxy_timestamp':galaxy_timestamp,'runs':{'submitted':Runs_since_day.filter(status="SUBMITTED").exclude(job__in=[i.job for i in hdx_jobs]).count(),'running':Runs_since_day.filter(status="RUNNING").count(),'last_running_from':last_run_running_from,'failed':Runs_since_day.filter(status="FAILED").count(),'completed':Runs_since_day.filter(status="COMPLETED").count()},"hdx":{'total_jobs':hdx_jobs.count(),'Running_daily':hdx_jobs.filter(schedule_period='daily').count()}})
