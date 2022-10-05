@@ -83,7 +83,7 @@ def validate_export_formats(value):
         )
 
     for format_name in value:
-        if format_name not in ['shp','geojson','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
+        if format_name not in ['shp','geojson','fgb','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
             raise ValidationError(
                 "Bad format name: %(format_name)s",
                 params={'format_name': format_name},
@@ -99,7 +99,7 @@ def validate_aoi(aoi):
     result = check_extent(aoi,settings.OVERPASS_API_URL)
     if not result.valid:
         raise ValidationError(result.message,params=result.params)
-    
+
 def validate_mbtiles(job):
     if "mbtiles" in job["export_formats"]:
         if job.get("mbtiles_source") is None:
@@ -127,7 +127,7 @@ def validate_mbtiles(job):
             )
 
 class Job(models.Model):
-    """ 
+    """
     Database model for an 'Export'.
     Immutable, except in the case of HDX Export Regions.
     """

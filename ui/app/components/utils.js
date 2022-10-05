@@ -38,6 +38,11 @@ export const AVAILABLE_EXPORT_FORMATS = {
       Shapefile <code>.shp</code>
     </span>
   ),
+  fgb: (
+    <span key="fgb">
+      FlatGeobuf <code>.fgb</code>
+    </span>
+  ),
   garmin_img: (
     <span key="garmin_img">
       Garmin <code>.img</code>
@@ -84,6 +89,7 @@ export const REQUIRES_FEATURE_SELECTION = {
   shp: true,
   geojson:true,
   geopackage: true,
+  fgb: true,
   garmin_img: true,
   kml: true,
   osm_pbf: true,

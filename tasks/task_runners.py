@@ -203,7 +203,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
     planet_file = False
     polygon_centroid = False
     use_only_galaxy = False
-    galaxy_supported_outputs = ['geojson','shp']
+    galaxy_supported_outputs = ['geojson','fgb','shp']
 
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
         use_only_galaxy=True
@@ -389,11 +389,16 @@ def run_task(run_uid,run,stage_dir,download_dir):
         shp = None
         kml = None
         geojson=None
+        fgb = None
         tabular_outputs = []
 
         if 'geojson' in export_formats:
             geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('geojson')
+
+        if 'fgb' in export_formats:
+            fgb = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            start_task('fgb')
 
         if 'geopackage' in export_formats:
             geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
@@ -440,6 +445,21 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 finish_task('geojson',response_back=response_back)
             except Exception as ex :
                 stop_task('geojson')
+                raise ex
+
+        if fgb :
+            try:
+                LOG.debug('Galaxy fetch started for FlatGeobuf run: {0}'.format(run_uid))
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=fgb.fetch('fgb',all_feature_filter_json=all_feature_filter_json)
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes']))
+                LOG.debug('Galaxy fetch ended for FlatGeobuf run: {0}'.format(run_uid))
+                finish_task('fgb',response_back=response_back)
+            except Exception as ex :
+                stop_task('fgb')
                 raise ex
 
         if geopackage:
