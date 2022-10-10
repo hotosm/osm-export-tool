@@ -209,6 +209,7 @@ REPLY_TO_EMAIL = os.getenv('REPLY_TO_EMAIL')
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 
 SYNC_TO_HDX = bool(os.getenv('SYNC_TO_HDX'))
+USE_GALAXY_FOR_HDX = bool(os.getenv('USE_GALAXY_FOR_HDX',False))
 HDX_API_KEY = os.getenv('HDX_API_KEY')
 HDX_NOTIFICATION_EMAIL = os.getenv('HDX_NOTIFICATION_EMAIL')
 HDX_SITE = os.getenv('HDX_SITE', 'demo')

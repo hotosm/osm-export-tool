@@ -205,14 +205,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
     planet_file = False
     polygon_centroid = False
     use_only_galaxy = False
-    galaxy_supported_outputs = ['geojson','shp']
 
+    galaxy_supported_outputs = ['geojson','shp']
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
         use_only_galaxy=True
 
     if is_hdx_export:
-        if use_only_galaxy is False :
-            planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
+        planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
     if is_partner_export:
         export_region = PartnerExportRegion.objects.get(job_id=run.job_id)
         planet_file = export_region.planet_file
@@ -255,6 +254,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
         kml = None
         geojson=None
 
+        if settings.USE_GALAXY_FOR_HDX is False:
+            use_only_galaxy=False
+
         tabular_outputs = []
         if 'geojson' in export_formats:
             geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
@@ -266,7 +268,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            if settings.USE_GALAXY_FOR_HDX:
+                shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            else:
+                shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
+                tabular_outputs.append(shp)
             start_task('shp')
 
         if 'kml' in export_formats:
@@ -338,16 +344,33 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if shp:
             try:
-                LOG.debug('Galaxy fetch started for shp run: {0}'.format(run_uid))
+                if settings.USE_GALAXY_FOR_HDX:
+                    LOG.debug('Galaxy fetch started for shp run: {0}'.format(run_uid))
 
-                response_back=shp.fetch('shp',is_hdx_export=True)
-                for r in response_back:
-                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
-                    with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes']))
-                LOG.debug('Galaxy fetch ended  for shp run: {0}'.format(run_uid))
-                finish_task('shp',response_back=response_back)
-                all_zips += response_back
+                    response_back=shp.fetch('shp',is_hdx_export=True)
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes']))
+                    LOG.debug('Galaxy fetch ended  for shp run: {0}'.format(run_uid))
+                    finish_task('shp',response_back=response_back)
+                    all_zips += response_back
+                else:
+                    shp.finalize()
+                    zips = []
+                    for file in shp.files:
+                        # for HDX geopreview to work
+                        # each file (_polygons, _lines) is a separate zip resource
+                        # the zipfile must end with only .zip (not .shp.zip)
+                        destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
+                        with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                            theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
+                            add_metadata(z,theme)
+                            for part in file.parts:
+                                z.write(part, os.path.basename(part))
+                        zips.append(osm_export_tool.File('shp',[destination],{'theme':file.extra['theme']}))
+                    finish_task('shp',zips)
+                    all_zips += zips
             except Exception as ex:
                 stop_task('shp')
                 raise ex
