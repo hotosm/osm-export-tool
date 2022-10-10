@@ -81,6 +81,8 @@ class ExportTaskRunner(object):
             )
             LOG.debug('Saved task: {0}'.format(format_name))
 
+        if HDXExportRegion.objects.get(job=job).exists():
+            ondemand=False # move hdx jobs to scheduled even though triggered from run now , so that they won't block ondemand queue
         if ondemand:
             # run_task_remote(run_uid)
             # db.close_old_connections()
