@@ -206,6 +206,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
     polygon_centroid = False
     use_only_galaxy = False
     use_v2 = False
+    all_feature_filter_json = None
 
     galaxy_supported_outputs = ['geojson','shp']
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
