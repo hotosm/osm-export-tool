@@ -205,6 +205,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
     planet_file = False
     polygon_centroid = False
     use_only_galaxy = False
+    use_v2 = False
 
     galaxy_supported_outputs = ['geojson','shp']
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
@@ -255,7 +256,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
         geojson=None
 
         if settings.USE_GALAXY_FOR_HDX is False:
-            use_only_galaxy=False
+            use_only_galaxy=False # run old format as it as so that galaxy won't interfere
+
+        hdx_supported_galaxy=['geojson']
+        if hdx_supported_galaxy == list(export_formats) or set(export_formats).issubset(set(hdx_supported_galaxy)):
+            use_only_galaxy=True # because for geojson we have no option
 
         tabular_outputs = []
         if 'geojson' in export_formats:
@@ -312,9 +317,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if geojson :
             try:
                 LOG.debug('Galaxy fetch started GeoJSON for run: {0}'.format(run_uid))
-                response_back=geojson.fetch('GeoJSON',is_hdx_export=True)
+                response_back=geojson.fetch('GeoJSON',is_hdx_export=True,use_v2=use_v2)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    if use_v2 == False:
+                        r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
                     with open(size_path, 'w') as f:
                         f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
@@ -347,9 +354,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 if settings.USE_GALAXY_FOR_HDX:
                     LOG.debug('Galaxy fetch started for shp run: {0}'.format(run_uid))
 
-                    response_back=shp.fetch('shp',is_hdx_export=True)
+                    response_back=shp.fetch('shp',is_hdx_export=True,use_v2=use_v2)
                     for r in response_back:
                         size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                        if use_v2 == False:
+                            r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
                         with open(size_path, 'w') as f:
                             f.write(str(r['zip_file_size_bytes']))
                     LOG.debug('Galaxy fetch ended  for shp run: {0}'.format(run_uid))
@@ -456,9 +465,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
             try:
                 LOG.debug('Galaxy fetch started for GeoJSON run: {0}'.format(run_uid))
                 all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
-                response_back=geojson.fetch('GeoJSON',all_feature_filter_json=all_feature_filter_json)
+                response_back=geojson.fetch('GeoJSON',all_feature_filter_json=all_feature_filter_json,use_v2=use_v2)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    if use_v2 == False:
+                        r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
                     with open(size_path, 'w') as f:
                         f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
@@ -480,9 +491,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if shp:
             try :
                 LOG.debug('Galaxy fetch started for shp run:  {0}'.format(run_uid))
-                response_back=shp.fetch('shp')
+                response_back=shp.fetch('shp',all_feature_filter_json=all_feature_filter_json,use_v2=use_v2)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    if use_v2 == False:
+                        r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
                     with open(size_path, 'w') as f:
                         f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for shp run:  {0}'.format(run_uid))
