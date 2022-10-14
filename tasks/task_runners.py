@@ -81,6 +81,8 @@ class ExportTaskRunner(object):
             )
             LOG.debug('Saved task: {0}'.format(format_name))
 
+        if HDXExportRegion.objects.filter(job=job).exists():
+            ondemand=False # move hdx jobs to scheduled even though triggered from run now , so that they won't block ondemand queue
         if ondemand:
             # run_task_remote(run_uid)
             # db.close_old_connections()
@@ -118,6 +120,7 @@ def run_task_async_scheduled(run_uid):
     db.close_old_connections()
 
 def run_task_remote(run_uid):
+    stage_dir=None
     try:
         run = ExportRun.objects.get(uid=run_uid)
         run.status = 'RUNNING'
@@ -147,7 +150,7 @@ def run_task_remote(run_uid):
         LOG.warn('ExportRun {0} failed: {1}'.format(run_uid, ex))
         LOG.warn(traceback.format_exc())
     finally:
-        if exists(stage_dir):
+        if stage_dir:
             shutil.rmtree(stage_dir)
 
 def run_task(run_uid,run,stage_dir,download_dir):
@@ -187,7 +190,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             if response_back:
                 total_bytes = 0
                 for r in response_back:
-                    total_bytes += int(r['zip_file_size_bytes'][0]) #getting filesize bytes
+                    total_bytes += int(r['zip_file_size_bytes']) #getting filesize bytes
                 task.filesize_bytes = total_bytes
             else:
                 total_bytes = 0
@@ -202,14 +205,14 @@ def run_task(run_uid,run,stage_dir,download_dir):
     planet_file = False
     polygon_centroid = False
     use_only_galaxy = False
-    galaxy_supported_outputs = ['geojson','shp']
+    use_v2 = False
 
+    galaxy_supported_outputs = ['geojson','shp']
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
         use_only_galaxy=True
 
     if is_hdx_export:
-        if use_only_galaxy is False :
-            planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
+        planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
     if is_partner_export:
         export_region = PartnerExportRegion.objects.get(job_id=run.job_id)
         planet_file = export_region.planet_file
@@ -252,6 +255,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         kml = None
         geojson=None
 
+        if settings.USE_GALAXY_FOR_HDX is False:
+            use_only_galaxy=False # run old format as it as so that galaxy won't interfere
+
+        hdx_supported_galaxy=['geojson']
+        if hdx_supported_galaxy == list(export_formats) or set(export_formats).issubset(set(hdx_supported_galaxy)):
+            use_only_galaxy=True # because for geojson we have no option
+
         tabular_outputs = []
         if 'geojson' in export_formats:
             geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
@@ -263,7 +273,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            if settings.USE_GALAXY_FOR_HDX:
+                shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            else:
+                shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
+                tabular_outputs.append(shp)
             start_task('shp')
 
         if 'kml' in export_formats:
@@ -303,11 +317,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if geojson :
             try:
                 LOG.debug('Galaxy fetch started GeoJSON for run: {0}'.format(run_uid))
-                response_back=geojson.fetch('GeoJSON',is_hdx_export=True)
+                response_back=geojson.fetch('GeoJSON',is_hdx_export=True,use_v2=use_v2)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    if use_v2 == False:
+                        r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
                     with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
+                        f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
                 all_zips += response_back
@@ -335,16 +351,35 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if shp:
             try:
-                LOG.debug('Galaxy fetch started for shp run: {0}'.format(run_uid))
+                if settings.USE_GALAXY_FOR_HDX:
+                    LOG.debug('Galaxy fetch started for shp run: {0}'.format(run_uid))
 
-                response_back=shp.fetch('shp',is_hdx_export=True)
-                for r in response_back:
-                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
-                    with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
-                LOG.debug('Galaxy fetch ended  for shp run: {0}'.format(run_uid))
-                finish_task('shp',response_back=response_back)
-                all_zips += response_back
+                    response_back=shp.fetch('shp',is_hdx_export=True,use_v2=use_v2)
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                        if use_v2 == False:
+                            r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes']))
+                    LOG.debug('Galaxy fetch ended  for shp run: {0}'.format(run_uid))
+                    finish_task('shp',response_back=response_back)
+                    all_zips += response_back
+                else:
+                    shp.finalize()
+                    zips = []
+                    for file in shp.files:
+                        # for HDX geopreview to work
+                        # each file (_polygons, _lines) is a separate zip resource
+                        # the zipfile must end with only .zip (not .shp.zip)
+                        destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
+                        with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                            theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
+                            add_metadata(z,theme)
+                            for part in file.parts:
+                                z.write(part, os.path.basename(part))
+                        zips.append(osm_export_tool.File('shp',[destination],{'theme':file.extra['theme']}))
+                    finish_task('shp',zips)
+                    all_zips += zips
             except Exception as ex:
                 stop_task('shp')
                 raise ex
@@ -429,11 +464,14 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if geojson :
             try:
                 LOG.debug('Galaxy fetch started for GeoJSON run: {0}'.format(run_uid))
-                response_back=geojson.fetch('GeoJSON')
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=geojson.fetch('GeoJSON',all_feature_filter_json=all_feature_filter_json,use_v2=use_v2)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    if use_v2 == False:
+                        r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
                     with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
+                        f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
             except Exception as ex :
@@ -453,11 +491,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if shp:
             try :
                 LOG.debug('Galaxy fetch started for shp run:  {0}'.format(run_uid))
-                response_back=shp.fetch('shp')
+                response_back=shp.fetch('shp',all_feature_filter_json=all_feature_filter_json,use_v2=use_v2)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+                    if use_v2 == False:
+                        r['zip_file_size_bytes']=r['zip_file_size_bytes'][0]
                     with open(size_path, 'w') as f:
-                        f.write(str(r['zip_file_size_bytes'][0]))
+                        f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for shp run:  {0}'.format(run_uid))
                 finish_task('shp',response_back=response_back)
             except Exception as ex :

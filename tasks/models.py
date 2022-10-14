@@ -48,7 +48,13 @@ class ExportRun(models.Model):
     @property
     def duration(self):
         if self.started_at and self.finished_at:
-            return (self.finished_at - self.started_at).seconds
+            return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
+        return None
+
+    @property
+    def total_time(self):
+        if  self.finished_at and self.created_at:
+            return "{:.1f}".format((self.finished_at - self.created_at).total_seconds()/60)
         return None
 
     @property
@@ -90,7 +96,13 @@ class ExportTask(models.Model):
     @property
     def duration(self):
         if self.started_at and self.finished_at:
-            return (self.finished_at - self.started_at).seconds
+            return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
+        return None
+
+    @property
+    def filesize_mb(self):
+        if self.filesize_bytes:
+            return "{:.1f}".format((self.filesize_bytes)*0.000001)
         return None
 
     @property
@@ -139,7 +151,7 @@ class ExportRunAdmin(admin.ModelAdmin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job','status','export_formats','user','created_at','duration']
+    list_display = ['uid','job','status','export_formats','user','created_at','duration','total_time']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
@@ -153,7 +165,7 @@ class ExportRunAdmin(admin.ModelAdmin):
                         args=(obj.job.id,)))
 
 class ExportTaskAdmin(admin.ModelAdmin):
-    list_display = ['uid','run','name','status','created_at','username','filesize_bytes','duration']
+    list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration']
     search_fields = ['uid','run__uid']
     list_filter = ('name','status')
     ordering = ('-created_at',)

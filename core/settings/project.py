@@ -68,7 +68,7 @@ GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/usr/local/mkgmap/mkgmap.jar')
 OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/')
 
 #url to galaxy api endpoint
-GALAXY_API_URL = os.getenv('GALAXY_API_URL', 'https://galaxy-api.hotosm.org/v1/raw-data/current-snapshot/')
+GALAXY_API_URL = os.getenv('GALAXY_API_URL', 'https://galaxy-api.hotosm.org/')
 
 GENERATE_MWM = os.getenv('GENERATE_MWM','/usr/local/bin/generate_mwm.sh')
 GENERATOR_TOOL = os.getenv('GENERATOR_TOOL','/usr/local/bin/generator_tool')
@@ -209,6 +209,7 @@ REPLY_TO_EMAIL = os.getenv('REPLY_TO_EMAIL')
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 
 SYNC_TO_HDX = bool(os.getenv('SYNC_TO_HDX'))
+USE_GALAXY_FOR_HDX = bool(os.getenv('USE_GALAXY_FOR_HDX',False))
 HDX_API_KEY = os.getenv('HDX_API_KEY')
 HDX_NOTIFICATION_EMAIL = os.getenv('HDX_NOTIFICATION_EMAIL')
 HDX_SITE = os.getenv('HDX_SITE', 'demo')

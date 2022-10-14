@@ -7,6 +7,7 @@ import hdx from "./hdx";
 import importGeom from "./importGeom";
 import jobs from "./jobs";
 import overpassLastUpdated from "./overpassLastUpdated";
+import galaxyLastUpdated from "./galaxyLastUpdated";
 import meta from "./meta";
 import mode from "./mode";
 import showImportModal from "./showImportModal";
@@ -26,6 +27,7 @@ export default {
   meta,
   mode,
   overpassLastUpdated,
+  galaxyLastUpdated,
   showImportModal,
   status,
   toolbarIcons,
