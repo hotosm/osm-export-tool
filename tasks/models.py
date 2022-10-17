@@ -115,8 +115,8 @@ class ExportTask(models.Model):
                 try :
                     value = download_url.split('/')
                     name=value[-1]
-                    split_name=name.split('_')
-                    download_name=f"{split_name[0]}_{split_name[-1]}"  # getting human redable name ignoring unique id
+                    split_name=name.split('_uid_')
+                    download_name=f"{split_name[0]}.zip"  # getting human redable name ignoring unique id
                     fname=download_name
                 except:
                     fname=f"""{self.run.job.name}_{self.name}.zip"""

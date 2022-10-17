@@ -140,16 +140,16 @@ class HDXExportSet(object):
                     if f['theme'] == theme.name:
                         file_name = f['file_name'] # only one part: the zip file
                         resources.append({
-                        'name': file_name, 
+                        'name': f"{file_name}.zip",
                         'format': HDX_FORMATS[f['output_name']],
                         'description': HDX_DESCRIPTIONS[f['output_name']],
                         'url': f['download_url']
-                        }) 
-                else: 
+                        })
+                else:
                     if 'theme' not in f.extra or f.extra['theme'] == theme.name:
                         file_name = os.path.basename(f.parts[0]) # only one part: the zip file
                         resources.append({
-                        'name': file_name, 
+                        'name': file_name,
                         'format': HDX_FORMATS[f.output_name],
                         'description': HDX_DESCRIPTIONS[f.output_name],
                         'url': os.path.join(public_dir,file_name)

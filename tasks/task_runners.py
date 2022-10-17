@@ -205,7 +205,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
     planet_file = False
     polygon_centroid = False
     use_only_galaxy = False
-    use_v2 = False
+    use_v2 = True
     all_feature_filter_json = None
 
     galaxy_supported_outputs = ['geojson','shp']
