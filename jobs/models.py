@@ -99,7 +99,7 @@ def validate_aoi(aoi):
     result = check_extent(aoi,settings.OVERPASS_API_URL)
     if not result.valid:
         raise ValidationError(result.message,params=result.params)
-    
+
 def validate_mbtiles(job):
     if "mbtiles" in job["export_formats"]:
         if job.get("mbtiles_source") is None:
@@ -127,7 +127,7 @@ def validate_mbtiles(job):
             )
 
 class Job(models.Model):
-    """ 
+    """
     Database model for an 'Export'.
     Immutable, except in the case of HDX Export Regions.
     """
@@ -213,9 +213,9 @@ class RegionMixin:
             return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
     @property
-    def last_size(self):
+    def last_size_mb(self):
         if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].size
+            return "{:.1f}".format((self.job.runs.all()[self.job.runs.count() - 1].size)*0.000001)
 
     @property
     def next_run(self): # noqa
