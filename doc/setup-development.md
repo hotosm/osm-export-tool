@@ -11,7 +11,7 @@ This is a guide to the source code - useful if you'd like to contribute to the E
 
 * Python 3.6 or later, `virtualenv`, `pip`
 * PostgreSQL 10+ and PostGIS
-  * Recommend [Postgres.app](https://postgresapp.com) which includes PostGIS. 
+  * Recommend [Postgres.app](https://postgresapp.com) which includes PostGIS.
 * GDAL/OGR
   * Recommend at least version 2.4 - newer versions available in `ubuntugis` PPAs or Homebrew on Mac
 * RabbitMQ, a message queue
@@ -51,7 +51,7 @@ pip install -r requirements-dev.txt
 
 ### Database, database schema, and message queue
 
-* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions. 
+* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions.
 * RabbitMQ should be running and listening on the default port, 5672.
 
 Create and populate a PostgreSQL database named `exports`:
@@ -112,13 +112,13 @@ Most of these environment variables have reasonable default settings.
 * `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
 * `OVERPASS_API_URL` url of Overpass api endpoint
 
-* `GALAXY_API_URL` url of Galaxy api endpoint
+* `EXPORT_TOOL_API_URL` url of Galaxy api endpoint
 
 * `DATABASE_URL`  Database URL. Defaults to `postgres:///exports`
 * `DEBUG`  Whether to enable debug mode. Defaults to `False` (production).
 * `DJANGO_ENV`  Django environment. Set to `development` to enable development tools and email logging to console.
-* `EMAIL_HOST_USER`  SMTP username. 
-* `EMAIL_HOST_PASSWORD` SMTP password. 
+* `EMAIL_HOST_USER`  SMTP username.
+* `EMAIL_HOST_PASSWORD` SMTP password.
 * `EMAIL_USE_TLS`  Whether to use TLS when sending mail. Optional.
 * `HOSTNAME` Publicly-addressable hostname. Defaults to `export.hotosm.org`
 * `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`

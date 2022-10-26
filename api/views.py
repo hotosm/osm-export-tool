@@ -504,8 +504,8 @@ def machine_status(request):
         last_run_timestamp="N/A"
         last_run_running_from="N/A"
     overpass = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
-    galaxy = requests.get('{}v1/raw-data/status/'.format(settings.GALAXY_API_URL))
+    galaxy = requests.get('{}v1/raw-data/status/'.format(settings.EXPORT_TOOL_API_URL))
 
     overpass_timestamp=str(datetime.now(timezone.utc)-dateutil.parser.parse(overpass.content))
-    galaxy_timestamp = galaxy.json()['last_updated']
-    return JsonResponse({'system':{'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'overpass_timestamp':overpass_timestamp,'galaxy_timestamp':galaxy_timestamp},'runs':{'submitted':Runs_since_day.filter(status="SUBMITTED").count(),'running':Runs_since_day.filter(status="RUNNING").count(),'last_running_from':last_run_running_from,'failed':Runs_since_day.filter(status="FAILED").count(),'completed':Runs_since_day.filter(status="COMPLETED").count()},"hdx":{'total_jobs':hdx_jobs.count(),'Running_daily':hdx_jobs.filter(schedule_period='daily').count()}})
+    galaxy_timestamp=str(datetime.now(timezone.utc)-dateutil.parser.parse(galaxy.json()['last_updated']))
+    return JsonResponse({'system':{'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'overpass_timestamp':overpass_timestamp,'galaxy_timestamp':galaxy_timestamp},'runs':{'submitted':Runs_since_day.filter(status="SUBMITTED").count(),'running':Runs_since_day.filter(status="RUNNING").count(),'last_running_from':last_run_running_from,'failed':Runs_since_day.filter(status="FAILED").count(),'completed':Runs_since_day.filter(status="COMPLETED").count()},"hdx":{'total_jobs':hdx_jobs.count(),'Running_daily':hdx_jobs.filter(schedule_period='daily').count(),'Running_weekly':hdx_jobs.filter(schedule_period='weekly').count(),'Running_monthly':hdx_jobs.filter(schedule_period='monthly').count(),'Running_every_2_weeks':hdx_jobs.filter(schedule_period='2wks').count(),'Running_every_3_weeks':hdx_jobs.filter(schedule_period='3wks').count(),'Running_every_6hrs':hdx_jobs.filter(schedule_period='6hrs').count(),'Disabled':hdx_jobs.filter(schedule_period='disabled').count()}})

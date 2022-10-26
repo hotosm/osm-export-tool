@@ -265,7 +265,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         tabular_outputs = []
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('geojson')
 
         if 'geopackage' in export_formats:
@@ -275,7 +275,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'shp' in export_formats:
             if settings.USE_GALAXY_FOR_HDX:
-                shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+                shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             else:
                 shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
                 tabular_outputs.append(shp)
@@ -427,7 +427,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         tabular_outputs = []
 
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('geojson')
 
         if 'geopackage' in export_formats:
@@ -436,7 +436,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = Galaxy(settings.GALAXY_API_URL,geom,mapping=mapping,file_name=valid_name)
+            shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('shp')
 
         if 'kml' in export_formats:
