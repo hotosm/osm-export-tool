@@ -46,6 +46,12 @@ class ExportRun(models.Model):
         return self.job.export_formats
 
     @property
+    def is_hdx(self):
+        if HDXExportRegion.objects.filter(job_id=self.job.id).exists():
+            return True
+        return False
+
+    @property
     def duration(self):
         if self.started_at and self.finished_at:
             return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
@@ -151,7 +157,7 @@ class ExportRunAdmin(admin.ModelAdmin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job','status','export_formats','user','created_at','duration','total_time']
+    list_display = ['uid','job','status','export_formats','is_hdx','user','created_at','duration','total_time']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
