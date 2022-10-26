@@ -218,6 +218,12 @@ class RegionMixin:
             return "{:.1f}".format((self.job.runs.all()[self.job.runs.count() - 1].size)*0.000001)
 
     @property
+    def last_size(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].size
+
+
+    @property
     def next_run(self): # noqa
         now = timezone.now().replace(minute=0, second=0, microsecond=0)
 
