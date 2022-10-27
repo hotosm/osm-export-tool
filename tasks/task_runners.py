@@ -207,9 +207,10 @@ def run_task(run_uid,run,stage_dir,download_dir):
     use_only_galaxy = False
     all_feature_filter_json = None
 
-    galaxy_supported_outputs = ['geojson','shp']
+    galaxy_supported_outputs = ['geojson','geopackage','kml','shp']
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
         use_only_galaxy=True
+        LOG.debug("Using Only galaxy to Perform Request")
 
     if is_hdx_export:
         planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
@@ -316,13 +317,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if geojson :
             try:
-                LOG.debug('Galaxy fetch started GeoJSON for run: {0}'.format(run_uid))
-                response_back=geojson.fetch('GeoJSON',is_hdx_export=True)
+                LOG.debug('Galaxy fetch started geojson for run: {0}'.format(run_uid))
+                response_back=geojson.fetch('geojson',is_hdx_export=True)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
                     with open(size_path, 'w') as f:
                         f.write(str(r['zip_file_size_bytes']))
-                LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
+                LOG.debug('Galaxy fetch ended for geojson run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
                 all_zips += response_back
             except Exception as ex :
@@ -426,8 +427,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geojson')
 
         if 'geopackage' in export_formats:
-            geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(geopackage)
+            geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            # geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
+            # tabular_outputs.append(geopackage)
             start_task('geopackage')
 
         if 'shp' in export_formats:
@@ -435,8 +437,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('shp')
 
         if 'kml' in export_formats:
-            kml = tabular.Kml(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(kml)
+            kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            # kml = tabular.Kml(join(stage_dir,valid_name),mapping)
+            # tabular_outputs.append(kml)
             start_task('kml')
         if planet_file:
             h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
@@ -459,15 +462,15 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if geojson :
             try:
-                LOG.debug('Galaxy fetch started for GeoJSON run: {0}'.format(run_uid))
+                LOG.debug('Galaxy fetch started for geojson run: {0}'.format(run_uid))
                 all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
-                response_back=geojson.fetch('GeoJSON',all_feature_filter_json=all_feature_filter_json)
+                response_back=geojson.fetch('geojson',all_feature_filter_json=all_feature_filter_json)
                 for r in response_back:
                     size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
 
                     with open(size_path, 'w') as f:
                         f.write(str(r['zip_file_size_bytes']))
-                LOG.debug('Galaxy fetch ended for GeoJSON run: {0}'.format(run_uid))
+                LOG.debug('Galaxy fetch ended for geojson run: {0}'.format(run_uid))
                 finish_task('geojson',response_back=response_back)
             except Exception as ex :
                 stop_task('geojson')
@@ -475,10 +478,20 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if geopackage:
             try :
-                geopackage.finalize()
-                zipped = create_package(join(download_dir,valid_name + '_gpkg.zip'),geopackage.files,boundary_geom=geom)
-                bundle_files += geopackage.files
-                finish_task('geopackage',[zipped])
+                LOG.debug('Galaxy fetch started for geopackage run: {0}'.format(run_uid))
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=geopackage.fetch('gpkg',all_feature_filter_json=all_feature_filter_json)
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes']))
+                LOG.debug('Galaxy fetch ended for geopackage run: {0}'.format(run_uid))
+                finish_task('geopackage',response_back=response_back)
+                # geopackage.finalize()
+                # zipped = create_package(join(download_dir,valid_name + '_gpkg.zip'),geopackage.files,boundary_geom=geom)
+                # bundle_files += geopackage.files
+                # finish_task('geopackage',[zipped])
             except Exception as ex :
                 stop_task('geopackage')
                 raise ex
@@ -500,10 +513,20 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if kml:
             try :
-                kml.finalize()
-                zipped = create_package(join(download_dir,valid_name + '_kml.zip'),kml.files,boundary_geom=geom)
-                bundle_files += kml.files
-                finish_task('kml',[zipped])
+                LOG.debug('Galaxy fetch started for kml run: {0}'.format(run_uid))
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=kml.fetch('kml',all_feature_filter_json=all_feature_filter_json)
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes']))
+                LOG.debug('Galaxy fetch ended for kml run: {0}'.format(run_uid))
+                finish_task('kml',response_back=response_back)
+                # kml.finalize()
+                # zipped = create_package(join(download_dir,valid_name + '_kml.zip'),kml.files,boundary_geom=geom)
+                # bundle_files += kml.files
+                # finish_task('kml',[zipped])
             except Exception as ex :
                 stop_task('kml')
                 raise ex
