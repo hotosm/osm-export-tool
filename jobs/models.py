@@ -218,6 +218,12 @@ class RegionMixin:
             return "{:.1f}".format((self.job.runs.all()[self.job.runs.count() - 1].size)*0.000001)
 
     @property
+    def last_run_status(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].status
+
+
+    @property
     def last_size(self):
         if self.job.runs.count() > 0:
             return self.job.runs.all()[self.job.runs.count() - 1].size

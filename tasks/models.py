@@ -204,7 +204,7 @@ class JobAdmin(GeoModelAdmin):
     inlines = [ExportRunsInline]
 
 class HDXExportRegionAdmin(admin.ModelAdmin):
-    list_display = ['name','job','schedule_period','last_run','next_run','last_size_mb','export_formats','schedule_hour','is_private','locations']
+    list_display = ['name','job','schedule_period','last_run','last_run_status','next_run','last_size_mb','export_formats','schedule_hour','is_private','locations']
     list_filter = ('schedule_period','schedule_hour','is_private','locations')
     raw_id_fields = ("job",)
 
