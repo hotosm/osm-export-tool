@@ -207,7 +207,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
     use_only_galaxy = False
     all_feature_filter_json = None
 
-    galaxy_supported_outputs = ['geojson','geopackage','kml','shp']
+    galaxy_supported_outputs = ['geojson','geopackage','kml','shp','fgb','csv','sql']
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(set(galaxy_supported_outputs)):
         use_only_galaxy=True
         LOG.debug("Using Only galaxy to Perform Request")
@@ -420,11 +420,26 @@ def run_task(run_uid,run,stage_dir,download_dir):
         shp = None
         kml = None
         geojson=None
+        fgb=None
+        csv=None
+        sql=None
         tabular_outputs = []
 
         if 'geojson' in export_formats:
             geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             start_task('geojson')
+
+        if 'fgb' in export_formats:
+            fgb = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            start_task('fgb')
+
+        if 'csv' in export_formats:
+            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            start_task('csv')
+
+        if 'sql' in export_formats:
+            sql = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            start_task('sql')
 
         if 'geopackage' in export_formats:
             geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
@@ -476,6 +491,55 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 stop_task('geojson')
                 raise ex
 
+        if fgb :
+            try:
+                LOG.debug('Galaxy fetch started for fgb run: {0}'.format(run_uid))
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=fgb.fetch('fgb',all_feature_filter_json=all_feature_filter_json)
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes']))
+                LOG.debug('Galaxy fetch ended for fgb run: {0}'.format(run_uid))
+                finish_task('fgb',response_back=response_back)
+            except Exception as ex :
+                stop_task('fgb')
+                raise ex
+
+        if csv :
+            try:
+                LOG.debug('Galaxy fetch started for csv run: {0}'.format(run_uid))
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=csv.fetch('csv',all_feature_filter_json=all_feature_filter_json)
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes']))
+                LOG.debug('Galaxy fetch ended for csv run: {0}'.format(run_uid))
+                finish_task('csv',response_back=response_back)
+            except Exception as ex :
+                stop_task('csv')
+                raise ex
+
+        if sql :
+            try:
+                LOG.debug('Galaxy fetch started for sql run: {0}'.format(run_uid))
+                all_feature_filter_json=join(os.getcwd(),'tasks/tests/fixtures/all_features_filters.json')
+                response_back=sql.fetch('sql',all_feature_filter_json=all_feature_filter_json)
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes']))
+                LOG.debug('Galaxy fetch ended for sql run: {0}'.format(run_uid))
+                finish_task('sql',response_back=response_back)
+            except Exception as ex :
+                stop_task('sql')
+                raise ex
+
+
         if geopackage:
             try :
                 LOG.debug('Galaxy fetch started for geopackage run: {0}'.format(run_uid))
@@ -488,10 +552,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
                         f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for geopackage run: {0}'.format(run_uid))
                 finish_task('geopackage',response_back=response_back)
-                # geopackage.finalize()
-                # zipped = create_package(join(download_dir,valid_name + '_gpkg.zip'),geopackage.files,boundary_geom=geom)
-                # bundle_files += geopackage.files
-                # finish_task('geopackage',[zipped])
             except Exception as ex :
                 stop_task('geopackage')
                 raise ex
@@ -523,10 +583,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                         f.write(str(r['zip_file_size_bytes']))
                 LOG.debug('Galaxy fetch ended for kml run: {0}'.format(run_uid))
                 finish_task('kml',response_back=response_back)
-                # kml.finalize()
-                # zipped = create_package(join(download_dir,valid_name + '_kml.zip'),kml.files,boundary_geom=geom)
-                # bundle_files += kml.files
-                # finish_task('kml',[zipped])
+
             except Exception as ex :
                 stop_task('kml')
                 raise ex

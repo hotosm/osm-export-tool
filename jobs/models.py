@@ -83,7 +83,7 @@ def validate_export_formats(value):
         )
 
     for format_name in value:
-        if format_name not in ['shp','geojson','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
+        if format_name not in ['shp','geojson','fgb','csv','sql','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
             raise ValidationError(
                 "Bad format name: %(format_name)s",
                 params={'format_name': format_name},

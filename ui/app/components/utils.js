@@ -28,24 +28,39 @@ export const AVAILABLE_EXPORT_FORMATS = {
       Geojson <code>.geojson</code>
     </span>
   ),
-  geopackage: (
-    <span key="geopackage">
-      GeoPackage <code>.gpkg</code>
-    </span>
-  ),
   shp: (
     <span key="shp">
       Shapefile <code>.shp</code>
     </span>
   ),
-  garmin_img: (
-    <span key="garmin_img">
-      Garmin <code>.img</code>
+  geopackage: (
+    <span key="geopackage">
+      GeoPackage <code>.gpkg</code>
     </span>
   ),
   kml: (
     <span key="kml">
       Google Earth <code>.kml</code>
+    </span>
+  ),
+  fgb: (
+    <span key="fgb">
+      FlatGeobuf <code>.fgb</code>
+    </span>
+  ),
+  csv: (
+    <span key="csv">
+      CSV <code>.csv</code>
+    </span>
+  ),
+  sql: (
+    <span key="sql">
+      SQL <code>.sql</code>
+    </span>
+  ),
+  garmin_img: (
+    <span key="garmin_img">
+      Garmin <code>.img</code>
     </span>
   ),
   osm_xml: (
@@ -83,6 +98,9 @@ export const AVAILABLE_EXPORT_FORMATS = {
 export const REQUIRES_FEATURE_SELECTION = {
   shp: true,
   geojson:true,
+  fgb:true,
+  sql:true,
+  csv:true,
   geopackage: true,
   garmin_img: true,
   kml: true,
