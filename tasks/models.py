@@ -41,7 +41,7 @@ class ExportRun(models.Model):
 
     def __str__(self):
         return '{0}'.format(self.uid)
-
+    @property
     def export_formats(self):
         return self.job.export_formats
 

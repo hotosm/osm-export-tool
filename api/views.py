@@ -35,7 +35,7 @@ from api.serializers import (ConfigurationSerializer, ExportRunSerializer, Expor
                          HDXExportRegionSerializer, JobGeomSerializer,
                          PartnerExportRegionListSerializer, PartnerExportRegionSerializer,
                          JobSerializer)
-from tasks.models import ExportRun
+from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
 
 from .permissions import IsHDXAdmin, IsOwnerOrReadOnly, IsMemberOfGroup
@@ -348,6 +348,70 @@ def stats(request):
     else:
         return HttpResponse(json.dumps({'periods':periods,'geoms':geoms}))
 
+@require_http_methods(['GET'])
+def run_stats(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    before = request.GET.get('before',timezone.now())
+    after = request.GET.get('after',timezone.now() - timedelta(days=1))
+    period = request.GET.get('period','day')
+    is_csv = (request.GET.get('csv',False) == 'true')
+
+    def toWeek(dt):
+        sunday = dt.strftime('%Y-%U-0')
+        return datetime.strptime(sunday, '%Y-%U-%w').strftime('%Y-%m-%d')
+
+    def toDay(dt):
+        return dt.strftime('%Y-%m-%d')
+
+    def toMonth(dt):
+        return dt.strftime('%Y-%m')
+
+    if period == 'day':
+        period_fn = toDay
+    elif period == 'week':
+        period_fn = toWeek
+    elif period == 'month':
+        period_fn = toMonth
+
+    run_queryset=ExportRun.objects.only('started_at','status').order_by('-started_at')
+
+
+    if before:
+        run_queryset = run_queryset.filter(Q(started_at__lte=before))
+    if after:
+        run_queryset = run_queryset.filter(Q(started_at__gte=after))
+
+    grouped_runs = itertools.groupby(run_queryset,lambda j:period_fn(j.started_at))
+
+    periods = []
+    for x in grouped_runs:
+        run_types = Counter()
+        export_formats = Counter()
+        runs_in_group = list(x[1])
+        for j in runs_in_group:
+            result = j.is_hdx
+            if result is True:
+                result='hdx_run'
+            else:
+                result='on_demand'
+            run_types[result] += 1
+            export_format = j.export_formats
+            for f in export_format:
+                export_formats[str(f)] += 1
+        run_types_string = ' '.join(["{0}:{1}".format(x[0],x[1]) for x in run_types.most_common(5)])
+        export_formats_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in export_formats.most_common(10)])
+        periods.append({'start_date':x[0],'runs_count':len(runs_in_group),'run_types':run_types_string, 'export_formats':export_formats_string} )
+
+    if is_csv:
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['start_date','runs_count','run_types','export_formats'])
+        for period in periods:
+            writer.writerow([period['start_date'],period['runs_count'],period['run_types'],period['export_formats']])
+        return HttpResponse(output.getvalue())
+    else:
+        return HttpResponse(json.dumps({'periods':periods}))
 
 @require_http_methods(['GET'])
 @login_required()
