@@ -8,7 +8,6 @@ import json
 from django.utils import timezone
 from datetime import datetime, timedelta
 from collections import Counter
-import geojson
 import os
 import io
 import csv
