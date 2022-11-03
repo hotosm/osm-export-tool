@@ -8,7 +8,7 @@ import json
 from django.utils import timezone
 from datetime import datetime, timedelta
 from collections import Counter
-
+import geojson
 import os
 import io
 import csv
@@ -428,10 +428,59 @@ def request_geonames(request):
     }
 
     geonames_url = getattr(settings, 'GEONAMES_API_URL')
+    tm_url = getattr(settings, 'TASKING_MANAGER_API_URL')
+
 
     if geonames_url:
         response = requests.get(geonames_url, params=payload).json()
         assert (isinstance(response, dict))
+#         res={
+#    "totalResultsCount":275725,
+#    "geonames":[
+#       {
+#          "bbox":{
+#             "east":2.401267535824451,
+#             "south":48.83220635124857,
+#             "north":48.85019364875143,
+#             "west":2.373932464175549,
+#             "accuracyLevel":1
+#          },
+#          "adminName2":"Paris",
+#          "name":"Paris 12 Reuilly",
+#          "countryName":"France",
+#          "adminName1":"Île-de-France"
+#       }
+# ]
+# }
+        print("Print geonames response \n")
+        # print(response)
+        if request.GET.get('q').isdigit():
+            if tm_url:
+                print('making tm request')
+                tm_res = requests.get(f"{tm_url}/{int(request.GET.get('q'))}/").json()
+                print('request came back')
+                if 'areaOfInterest' in tm_res:
+                    print('TM Project found')
+                    bbox=tm_res['aoiBBOX']
+                    print(bbox)
+                    add_resp={
+                        "bbox":{
+                            "east":bbox[2],
+                            "south":bbox[1],
+                            "north":bbox[3],
+                            "west":bbox[0],
+                            "accuracyLevel":1
+                        },
+                        "adminName2":"TM",
+                        "name":request.GET.get('q'),
+                        "countryName":"Boundary",
+                        "adminName1":"Project"
+                    }
+                    print(add_resp)
+                    if 'geonames' in response:
+                        response['geonames'].append(add_resp)
+
+        # print(response)
         return JsonResponse(response)
     else:
         return JsonResponse(
