@@ -279,3 +279,19 @@ export const getCsv = (filters) => (dispatch, getState) => {
     fileDownload(rsp.data,'exports.csv');
   });
 };
+
+export const getrunCsv = (filters) => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+  filters.csv = true;
+  return axios({
+    baseURL: window.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/run_stats`,
+    params: filters
+  }).then(rsp => {
+    console.log(rsp.data)
+    fileDownload(rsp.data,'exports_run.csv');
+  });
+};
