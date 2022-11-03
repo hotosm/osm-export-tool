@@ -388,27 +388,36 @@ def run_stats(request):
     for x in grouped_runs:
         run_types = Counter()
         export_formats = Counter()
+        hdx_run_status = Counter()
+        normal_run_status = Counter()
         runs_in_group = list(x[1])
         for j in runs_in_group:
             result = j.is_hdx
             if result is True:
                 result='hdx_run'
+                hdx_status=j.status
+                hdx_run_status[hdx_status.lower()] += 1
             else:
                 result='on_demand'
+                normal_status=j.status
+                normal_run_status[normal_status.lower()] += 1
             run_types[result] += 1
             export_format = j.export_formats
             for f in export_format:
                 export_formats[str(f)] += 1
-        run_types_string = ' '.join(["{0}:{1}".format(x[0],x[1]) for x in run_types.most_common(5)])
+        run_types_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in run_types.most_common(5)])
         export_formats_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in export_formats.most_common(10)])
-        periods.append({'start_date':x[0],'runs_count':len(runs_in_group),'run_types':run_types_string, 'export_formats':export_formats_string} )
+        hdx_run_status_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in hdx_run_status.most_common(4)])
+        normal_run_status_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in normal_run_status.most_common(4)])
+
+        periods.append({'start_date':x[0],'runs_count':len(runs_in_group),'run_types':run_types_string,'hdx_run_status':hdx_run_status_string,'normal_run_status':normal_run_status_string, 'export_formats':export_formats_string} )
 
     if is_csv:
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(['start_date','runs_count','run_types','export_formats'])
+        writer.writerow(['start_date','runs_count','run_types','hdx_run_status','normal_run_status','export_formats'])
         for period in periods:
-            writer.writerow([period['start_date'],period['runs_count'],period['run_types'],period['export_formats']])
+            writer.writerow([period['start_date'],period['runs_count'],period['run_types'],period['hdx_run_status'],period['normal_run_status'],period['export_formats']])
         return HttpResponse(output.getvalue())
     else:
         return HttpResponse(json.dumps({'periods':periods}))
