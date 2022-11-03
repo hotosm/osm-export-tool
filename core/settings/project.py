@@ -215,6 +215,8 @@ HDX_NOTIFICATION_EMAIL = os.getenv('HDX_NOTIFICATION_EMAIL')
 HDX_SITE = os.getenv('HDX_SITE', 'demo')
 
 GEONAMES_API_URL = os.getenv('GEONAMES_API_URL', 'http://api.geonames.org/searchJSON')
+TASKING_MANAGER_API_URL = os.getenv('TASKING_MANAGER_API_URL', 'https://tasking-manager-tm4-production-api.hotosm.org/api/v2/projects')
+
 
 NOMINATIM_API_URL = os.getenv('NOMINATIM_API_URL', 'https://nominatim.openstreetmap.org/search.php')
 
