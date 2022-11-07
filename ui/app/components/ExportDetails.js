@@ -122,6 +122,19 @@ const Details = ({ exportInfo }) => {
         <tr>
           <td>
             <FormattedMessage
+              id="export.unfiltered.label"
+              defaultMessage="All OSM Data"
+            />:
+          </td>
+          <td colSpan="3">
+            {exportInfo.unfiltered
+              ? <FormattedMessage id="yes" defaultMessage="Yes" />
+              : <FormattedMessage id="no" defaultMessage="No" />}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <FormattedMessage
               id="export.export_formats.label"
               defaultMessage="Export formats"
             />:

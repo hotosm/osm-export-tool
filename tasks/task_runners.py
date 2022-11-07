@@ -424,35 +424,38 @@ def run_task(run_uid,run,stage_dir,download_dir):
         csv=None
         sql=None
         tabular_outputs = []
+        mapping_filter = mapping
+        if job.unfiltered:
+            mapping_filter = None
 
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
             start_task('geojson')
 
         if 'fgb' in export_formats:
-            fgb = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            fgb = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
             start_task('fgb')
 
         if 'csv' in export_formats:
-            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
             start_task('csv')
 
         if 'sql' in export_formats:
-            sql = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            sql = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
             start_task('sql')
 
         if 'geopackage' in export_formats:
-            geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
             # geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(geopackage)
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
             start_task('shp')
 
         if 'kml' in export_formats:
-            kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
             # kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(kml)
             start_task('kml')
@@ -460,9 +463,6 @@ def run_task(run_uid,run,stage_dir,download_dir):
             h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir, mapping=mapping)
         else:
-            mapping_filter = mapping
-            if job.unfiltered:
-                mapping_filter = None
             if use_only_galaxy == False :
                 h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
                 source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
