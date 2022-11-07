@@ -512,15 +512,20 @@ def request_geonames(request):
                 tm_res = requests.get(f"{tm_url}/{int(request.GET.get('q'))}/").json()
                 if 'areaOfInterest' in tm_res:
                     print('TM Project found')
-                    bbox=tm_res['aoiBBOX']
+                    geom=tm_res['areaOfInterest']
+                    geojson ={
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                            "type": "Feature",
+                            "properties": {},
+                            "geometry": geom
+                            }
+                        ]
+                        }
+
                     add_resp={
-                        "bbox":{
-                            "east":bbox[2],
-                            "south":bbox[1],
-                            "north":bbox[3],
-                            "west":bbox[0],
-                            "accuracyLevel":1
-                        },
+                        "bbox":geojson,
                         "adminName2":"TM",
                         "name":request.GET.get('q'),
                         "countryName":"Boundary",
