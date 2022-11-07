@@ -63,6 +63,7 @@ export const cloneExport = e => (dispatch, getState) => {
           mbtiles_source: e.mbtiles_source,
           name: e.name,
           published: e.published,
+          unfiltered: e.unfiltered,
           the_geom: rsp.data.the_geom,
           aoi: {
             description: "Cloned Area",
