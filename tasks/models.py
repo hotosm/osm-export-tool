@@ -58,11 +58,17 @@ class ExportRun(models.Model):
     @property
     def duration(self):
         if self.started_at and self.finished_at:
+            return (self.finished_at - self.started_at).total_seconds()
+        return None
+
+    @property
+    def duration_min(self):
+        if self.started_at and self.finished_at:
             return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
         return None
 
     @property
-    def total_time(self):
+    def total_time_min(self):
         if  self.finished_at and self.created_at:
             return "{:.1f}".format((self.finished_at - self.created_at).total_seconds()/60)
         return None
@@ -76,6 +82,10 @@ class ExportRun(models.Model):
         return sum(map(
             lambda task: task.filesize_bytes or 0, self.tasks.all()))
 
+    @property
+    def size_mb(self):
+        return "{:.1f}".format((sum(map(
+            lambda task: task.filesize_bytes or 0, self.tasks.all())))*0.000001)
 
 class ExportTask(models.Model):
     """
@@ -105,6 +115,13 @@ class ExportTask(models.Model):
 
     @property
     def duration(self):
+        if self.started_at and self.finished_at:
+            return (self.finished_at - self.started_at).total_seconds()
+        return None
+
+
+    @property
+    def duration_min(self):
         if self.started_at and self.finished_at:
             return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
         return None
@@ -161,7 +178,7 @@ class ExportRunAdmin(admin.ModelAdmin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job','name','status','export_formats','is_hdx','user','created_at','duration','total_time']
+    list_display = ['uid','job','name','status','export_formats','is_hdx','user','created_at','duration_min','total_time_min','size_mb']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
@@ -176,7 +193,7 @@ class ExportRunAdmin(admin.ModelAdmin):
                         args=(obj.job.id,)))
 
 class ExportTaskAdmin(admin.ModelAdmin):
-    list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration']
+    list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration_min']
     search_fields = ['uid','run__uid']
     list_filter = ('name','status')
     date_hierarchy = 'created_at'
