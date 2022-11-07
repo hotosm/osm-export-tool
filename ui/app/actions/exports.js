@@ -64,6 +64,7 @@ export const cloneExport = e => (dispatch, getState) => {
           name: e.name,
           published: e.published,
           unfiltered: e.unfiltered,
+          preserve_geom: e.preserve_geom,
           the_geom: rsp.data.the_geom,
           aoi: {
             description: "Cloned Area",

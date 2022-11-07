@@ -157,6 +157,7 @@ class Job(models.Model):
     expire_old_runs = models.BooleanField(default=True)
     pinned = models.BooleanField(default=False)
     unfiltered = models.BooleanField(default=False)
+    preserve_geom = models.BooleanField(default=False)
 
     class Meta:  # pragma: no cover
         managed = True
@@ -173,7 +174,8 @@ class Job(models.Model):
 
     def save(self, *args, **kwargs):
         self.the_geom = force2d(self.the_geom)
-        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi)
+
+        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi,preserve_geom=self.preserve_geom)
         super(Job, self).save(*args, **kwargs)
 
     def __str__(self):

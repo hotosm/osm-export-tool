@@ -71,7 +71,7 @@ class JobSerializer(serializers.ModelSerializer):
         fields = ('id', 'uid', 'user', 'name', 'description', 'event',
                   'export_formats', 'published', 'feature_selection',
                   'buffer_aoi', 'osma_link', 'created_at', 'area', 'the_geom',
-                  'simplified_geom', 'mbtiles_source', 'mbtiles_minzoom', 'mbtiles_maxzoom','pinned','unfiltered')
+                  'simplified_geom', 'mbtiles_source', 'mbtiles_minzoom', 'mbtiles_maxzoom','pinned','unfiltered','preserve_geom')
         extra_kwargs = {
             'the_geom': {
                 'write_only': True
@@ -161,7 +161,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         # check on creation that i'm a member of the group
         if not self.context['request'].user.groups.filter(name=region_dict['group'].name).exists():
             raise serializers.ValidationError({'group':'You are not a member of this group.'})
-            
+
         with transaction.atomic():
             job.save()
             region_dict['job'] = job

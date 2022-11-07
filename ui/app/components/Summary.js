@@ -15,6 +15,10 @@ const messages = defineMessages({
     id: "export.bundle_for_posm.description",
     defaultMessage: "Bundle for POSM"
   },
+  preserveGeometry: {
+    id: "export.preserve_geom.description",
+    defaultMessage: "Preserve Geometry - Don't Simply Geom ( Query could be slower )"
+  },
   publishedDescription: {
     id: "export.published.description",
     defaultMessage: "Publish this Export"
@@ -87,6 +91,12 @@ export default injectIntl(
         <Field
           name="bundle"
           description={formatMessage(messages.bundleForPOSM)}
+          component={renderCheckbox}
+          type="checkbox"
+        />
+        <Field
+          name="preserve_geom"
+          description={formatMessage(messages.preserveGeometry)}
           component={renderCheckbox}
           type="checkbox"
         />
