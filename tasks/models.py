@@ -46,6 +46,10 @@ class ExportRun(models.Model):
         return self.job.export_formats
 
     @property
+    def name(self):
+        return self.job.name
+
+    @property
     def is_hdx(self):
         if HDXExportRegion.objects.filter(job_id=self.job.id).exists():
             return True
@@ -157,12 +161,13 @@ class ExportRunAdmin(admin.ModelAdmin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job','status','export_formats','is_hdx','user','created_at','duration','total_time']
+    list_display = ['uid','job','name','status','export_formats','is_hdx','user','created_at','duration','total_time']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
     search_fields = ['uid']
     actions = [start]
+    date_hierarchy = 'created_at'
     ordering = ('-created_at',)
 
     def job_link(self, obj):
@@ -174,6 +179,7 @@ class ExportTaskAdmin(admin.ModelAdmin):
     list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration']
     search_fields = ['uid','run__uid']
     list_filter = ('name','status')
+    date_hierarchy = 'created_at'
     ordering = ('-created_at',)
 
 class ExportRunsInline(admin.TabularInline):
