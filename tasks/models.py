@@ -100,7 +100,7 @@ class ExportTask(models.Model):
 
     started_at = models.DateTimeField(editable=False, null=True)
     finished_at = models.DateTimeField(editable=False, null=True)
-    filesize_bytes = models.IntegerField(null=True)
+    filesize_bytes = models.BigIntegerField(null=True)
     filenames = ArrayField(models.TextField(null=True),default=list)
 
     class Meta:
