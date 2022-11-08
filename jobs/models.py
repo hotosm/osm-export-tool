@@ -164,6 +164,17 @@ class Job(models.Model):
         db_table = 'jobs'
 
     @property
+    def last_run_status(self):
+        if self.runs.count() > 0:
+            return self.runs.all()[self.runs.count() - 1].status
+
+    @property
+    def is_hdx(self):
+        if HDXExportRegion.objects.filter(job_id=self.id).exists():
+            return True
+        return False
+
+    @property
     def osma_link(self):
         bounds = self.the_geom.extent
         return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/buildings/recency".format(*bounds)

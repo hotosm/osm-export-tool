@@ -17,6 +17,42 @@ from django.core.urlresolvers import reverse
 import validators
 import requests
 
+import csv
+from django.http import HttpResponse
+
+def export_as_csv(self, request, queryset):
+
+    meta = self.model._meta
+    field_names = [field.name for field in meta.fields]
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+    writer = csv.writer(response)
+
+    writer.writerow(field_names)
+    for obj in queryset:
+        row = writer.writerow([getattr(obj, field) for field in field_names])
+
+    return response
+
+class ExportCsvMixin:
+    def export_as_csv(self, request, queryset):
+
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+        property_names = [name for name in dir(self.model) if isinstance(getattr(self.model, name), property)]
+        field_names.extend(property_names)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            row = writer.writerow([getattr(obj, field) for field in field_names])
+
+        return response
+
+    export_as_csv.short_description = "Export Selected"
 
 class ExportRun(models.Model):
     """
@@ -171,7 +207,7 @@ class ExportTask(models.Model):
 
 
 
-class ExportRunAdmin(admin.ModelAdmin):
+class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
 
     def start(self, request, queryset):
         from tasks.task_runners import run_task_async_ondemand
@@ -186,6 +222,8 @@ class ExportRunAdmin(admin.ModelAdmin):
     actions = [start]
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
+    actions = ["export_as_csv"]
+
 
     def job_link(self, obj):
         return mark_safe('<a href="%s">Link to Job</a>' % \
@@ -211,7 +249,7 @@ class ExportRunsInline(admin.TabularInline):
 
 
 
-class JobAdmin(GeoModelAdmin):
+class JobAdmin(GeoModelAdmin,ExportCsvMixin):
     """
     Admin model for editing Jobs in the admin interface.
     """
@@ -219,17 +257,22 @@ class JobAdmin(GeoModelAdmin):
         return obj.simplified_geom.json
 
     search_fields = ['uid', 'name', 'user__username']
-    list_display = ['uid', 'name', 'user']
+    list_display = ['uid', 'name', 'user','is_hdx','export_formats','last_run_status','created_at', 'updated_at','area']
     list_filter = ('pinned',)
     exclude = ['the_geom']
     raw_id_fields = ("user",)
     readonly_fields=('simplified_geom_raw',)
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
     inlines = [ExportRunsInline]
+    actions = ["export_as_csv"]
 
-class HDXExportRegionAdmin(admin.ModelAdmin):
+
+class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ['name','job','schedule_period','last_run','last_run_status','next_run','last_size_mb','export_formats','schedule_hour','is_private','locations']
     list_filter = ('schedule_period','schedule_hour','is_private','locations')
     raw_id_fields = ("job",)
+    actions = ["export_as_csv"]
 
 class PartnerExportRegionAdmin(admin.ModelAdmin):
     raw_id_fields = ('job',)
