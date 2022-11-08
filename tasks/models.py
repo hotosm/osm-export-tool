@@ -42,6 +42,10 @@ class ExportCsvMixin:
         field_names = [field.name for field in meta.fields]
         property_names = [name for name in dir(self.model) if isinstance(getattr(self.model, name), property)]
         field_names.extend(property_names)
+        exclude_fileds=['feature_selection','the_geom','simplified_geom','osma_link']
+        for field in exclude_fileds:
+            if field in field_names:
+                field_names.remove(field)
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
         writer = csv.writer(response)
