@@ -169,6 +169,12 @@ class Job(models.Model):
             return self.runs.all()[self.runs.count() - 1].status
 
     @property
+    def last_run_date(self):
+        if self.runs.count() > 0:
+            return self.runs.all()[self.runs.count() - 1].started_at
+
+
+    @property
     def is_hdx(self):
         if HDXExportRegion.objects.filter(job_id=self.id).exists():
             return True

@@ -261,7 +261,7 @@ class JobAdmin(GeoModelAdmin,ExportCsvMixin):
         return obj.simplified_geom.json
 
     search_fields = ['uid', 'name', 'user__username']
-    list_display = ['uid', 'name', 'user','is_hdx','export_formats','last_run_status','created_at', 'updated_at','area']
+    list_display = ['uid', 'name', 'user','is_hdx','export_formats','last_run_date','last_run_status','created_at', 'updated_at','area']
     list_filter = ('pinned',)
     exclude = ['the_geom']
     raw_id_fields = ("user",)
