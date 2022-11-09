@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import "react-select/dist/react-select.css";
 import yaml from "js-yaml";
+import moment from "moment";
 
 import ExportAOIField from "./ExportAOIField";
 import { getRuns } from "../actions/exports";
@@ -365,7 +366,8 @@ export class HDXExportRegionForm extends Component {
           {run.status}
         </td>
         <td>
-          {`00${Math.floor(run.elapsed_time / 60)}`.slice(-2)}:{`00${Math.round(run.elapsed_time % 60)}`.slice(-2)}
+          {moment.duration(run.duration, "seconds").humanize()}
+
         </td>
         <td>
           {prettyBytes(run.size)}
