@@ -229,7 +229,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
     actions = ["export_as_csv"]
 
     def job_ui_link(self, obj):
-        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}">UI Link</a>""")
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}">UI Job Link</a>""")
 
 
 
