@@ -158,14 +158,14 @@ export const getOverpassTimestamp = () => (dispatch, getState) => {
 
 export const getGalaxyTimestamp = () => (dispatch, getState) => {
   return axios({
-    baseURL: "http://52.203.15.233:8000/v1",
+    baseURL: "https://galaxy-api.hotosm.org/v1",
     url: "/raw-data/status/"
   })
     .then(response =>
       dispatch({
         type: types.RECEIVED_GALAXY_TIMESTAMP,
-        // lastUpdated: response.data.last_updated
-        lastUpdated: moment(response.data.last_updated).fromNow()
+        lastUpdated: response.data.last_updated
+        // lastUpdated: moment(response.data.last_updated).fromNow()
 
       })
     )
