@@ -218,7 +218,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job','name','status','export_formats','is_hdx','user','created_at','duration_min','total_time_min','size_mb']
+    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','duration_min','total_time_min','size_mb']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
@@ -227,6 +227,10 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
     actions = ["export_as_csv"]
+
+    def job_ui_link(self, obj):
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}">UI Link</a>""")
+
 
 
     def job_link(self, obj):
