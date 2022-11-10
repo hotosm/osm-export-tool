@@ -216,12 +216,15 @@ class SavedFeatureSelection(models.Model):
         return str(self.name)
 
 PERIOD_CHOICES = (
-    ('6hrs', 'Every 6 hours'),
+    ('6hrs', 'Every 6 hours check'),
     ('daily', 'Every day'),
     ('weekly', 'Every Sunday'),
     ('2wks', 'Every two weeks'),
     ('3wks', 'Every three weeks'),
     ('monthly', 'The 1st of every month'),
+    ('quarterly', 'Every quarter (90 days)'),
+    ('semiyearly', 'Every 6 months'),
+    ('yearly', 'Every year'),
     ('disabled', 'Disabled'),
 )
 HOUR_CHOICES = zip(range(0, 24), range(0, 24))
@@ -304,6 +307,33 @@ class RegionMixin:
 
             return anchor + timedelta(days=num_days)
 
+        if self.schedule_period == 'quarterly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=90)
+
+        if self.schedule_period == 'semiyearly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=180)
+
+        if self.schedule_period == 'yearly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=365)
+
     @property
     def delta(self): # noqa
         if self.schedule_period == '6hrs':
@@ -323,6 +353,15 @@ class RegionMixin:
 
         if self.schedule_period == 'monthly':
             return timedelta(days=31)
+
+        if self.schedule_period == 'quarterly':
+            return timedelta(days=90)
+
+        if self.schedule_period == 'semiyearly':
+            return timedelta(days=189)
+
+        if self.schedule_period == 'yearly':
+            return timedelta(days=365)
 
     @property
     def feature_selection(self): # noqa
@@ -478,5 +517,14 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
 
         if self.schedule_period == 'monthly':
             return 30
+
+        if self.schedule_period == 'quarterly':
+            return 90
+
+        if self.schedule_period == 'semiyearly':
+            return 180
+
+        if self.schedule_period == 'yearly':
+            return 365
 
         return -2  # returning as needed as default instead of live
