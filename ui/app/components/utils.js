@@ -520,11 +520,56 @@ const getSchedule = (region) => {
         />
       );
 
+    case "2wks":
+      return (
+        <FormattedMessage
+          id="exports.schedule.2wks"
+          defaultMessage="Every two weeks"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "3wks":
+      return (
+        <FormattedMessage
+          id="exports.schedule.3wks"
+          defaultMessage="Every three weeks"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
     case "monthly":
       return (
         <FormattedMessage
           id="exports.schedule.monthly"
           defaultMessage="The 1st of every month at {time} UTC"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "quarterly":
+      return (
+        <FormattedMessage
+          id="exports.schedule.quarterly"
+          defaultMessage="Every Quarter (90 days)"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "semiyearly":
+      return (
+        <FormattedMessage
+          id="exports.schedule.semiyearly"
+          defaultMessage="Every 6 months"
+          values={{ time: `${scheduleHour}:00` }}
+        />
+      );
+
+    case "yearly":
+      return (
+        <FormattedMessage
+          id="exports.schedule.yearly"
+          defaultMessage="Every 1 year"
           values={{ time: `${scheduleHour}:00` }}
         />
       );
