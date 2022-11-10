@@ -229,7 +229,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
     actions = ["export_as_csv"]
 
     def job_ui_link(self, obj):
-        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}">UI Job Link</a>""")
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}" target="_blank">UI Job Link</a>""")
 
 
 
@@ -283,10 +283,10 @@ class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ["export_as_csv"]
 
     def job_ui_link(self, obj):
-        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}">UI Job Link</a>""")
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}" target="_blank">UI Job Link</a>""")
 
     def edit_link(self, obj):
-        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/hdx/edit/{obj.id}">Edit HDX Job</a>""")
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/hdx/edit/{obj.id}" target="_blank">Edit HDX Job</a>""")
 
 
 
