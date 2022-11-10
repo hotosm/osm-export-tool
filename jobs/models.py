@@ -277,6 +277,24 @@ class RegionMixin:
 
             return anchor + timedelta(days=7)
 
+        if self.schedule_period == '2wks':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=14)
+
+        if self.schedule_period == '3wks':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=21)
+
         if self.schedule_period == 'monthly':
             (_, num_days) = calendar.monthrange(now.year, now.month)
             anchor = now.replace(day=1)
@@ -296,6 +314,12 @@ class RegionMixin:
 
         if self.schedule_period == 'weekly':
             return timedelta(days=7)
+
+        if self.schedule_period == '2wks':
+            return timedelta(days=14)
+
+        if self.schedule_period == '3wks':
+            return timedelta(days=21)
 
         if self.schedule_period == 'monthly':
             return timedelta(days=31)
@@ -404,6 +428,39 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
     @property
     def update_frequency(self):
         """Update frequencies in HDX form."""
+        # hdx requirements
+        # "-2": "As needed",
+        # "-1": "Never",
+        # "0": "Live",
+        # "1": "Every day",
+        # "7": "Every week",
+        # "14": "Every two weeks",
+        # "30": "Every month",
+        # "90": "Every three months",
+        # "180": "Every six months",
+        # "365": "Every year",
+        # "as needed": "-2",
+        # "adhoc": "-2",
+        # "never": "-1",
+        # "live": "0",
+        # "every day": "1",
+        # "every week": "7",
+        # "every two weeks": "14",
+        # "every month": "30",
+        # "every three months": "90",
+        # "every quarter": "90",
+        # "every six months": "180",
+        # "every year": "365",
+        # "daily": "1",
+        # "weekly": "7",
+        # "fortnightly": "14",
+        # "every other week": "14",
+        # "monthly": "30",
+        # "quarterly": "90",
+        # "semiannually": "180",
+        # "semiyearly": "180",
+        # "annually": "365",
+        # "yearly": "365",
         if self.schedule_period == '6hrs':
             return 1
 
@@ -413,7 +470,13 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
         if self.schedule_period == 'weekly':
             return 7
 
+        if self.schedule_period == '2wks':
+            return 14
+
+        if self.schedule_period == '3wks':
+            return 30
+
         if self.schedule_period == 'monthly':
             return 30
 
-        return 0
+        return -2  # returning as needed as default instead of live
