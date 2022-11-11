@@ -225,7 +225,7 @@ class ExportRuns extends Component {
                       </Alert>
                     </td>
                   </tr>
-                  { (run.status === "SUBMITTED" || run.stats == "RUNNING") ?(
+                  { (run.status === "SUBMITTED" || run.status == "RUNNING") ?(
                   <RequirePermission required={["auth.add_user"]}>
                     <tr>
                       <td>
