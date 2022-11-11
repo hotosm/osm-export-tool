@@ -72,10 +72,19 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
       </RequirePermission>
       <RequirePermission required={["auth.add_user"]}>
         <li>
-          <a href="/worker-dashboard/">
+          <a href="/worker-dashboard/" target="_blank">
             <FormattedMessage id="ui.workers" defaultMessage="Workers" />
           </a>
         </li>
+
+      </RequirePermission>
+      <RequirePermission required={["auth.add_user"]}>
+        <li>
+          <a href="/api/status" target="_blank">
+            <FormattedMessage id="ui.machine_status" defaultMessage="Status" />
+          </a>
+        </li>
+
       </RequirePermission>
       <RequirePermission required={["auth.add_user"]}>
         <li>
