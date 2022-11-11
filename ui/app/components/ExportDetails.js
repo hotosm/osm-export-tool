@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
-
+import axios from "axios";
 import MapListView from "./MapListView";
 import {
   deleteExport,
@@ -29,6 +29,8 @@ import {
   formatDuration,
   prettyBytes
 } from "./utils";
+import RequirePermission from "./RequirePermission";
+import { selectAuthToken } from "../selectors";
 
 const Details = ({ exportInfo }) => {
   return (
@@ -178,7 +180,7 @@ class ExportRuns extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { getRuns, jobUid, runs } = this.props;
+    const { getRuns, jobUid, runs, state_token} = this.props;
 
     if (prevProps.jobUid !== jobUid) {
       clearInterval(this.poller);
@@ -223,6 +225,39 @@ class ExportRuns extends Component {
                       </Alert>
                     </td>
                   </tr>
+                  <RequirePermission required={["auth.add_user"]}>
+                    <tr>
+                      <td>
+                        <FormattedMessage
+                          id="ui.exports.action"
+                          defaultMessage="Action:"
+                        />
+                      </td>
+                      <td colSpan="3">
+                      <Button bsStyle="danger" onClick={() => {
+                        try {
+                          const token = selectAuthToken(this.props.state_token);
+                           axios({
+                            baseURL: window.EXPORTS_API_URL,
+                            headers: {
+                              Authorization: `Bearer ${token}`
+                            },
+                            method: "PUT",
+                            url: `/api/runs/${run.uid}`,
+                            data: {
+                                status: 'FAILED'
+                            }
+                          });
+                          window.location.reload();
+                        } catch (err) {
+                          console.warn(err);
+                        }
+                      }}>
+                        <FormattedMessage id="ui.stop_run" defaultMessage="Mark Run as Failed" />
+                      </Button>
+                      </td>
+                    </tr>
+                  </RequirePermission>
                   <tr>
                     <td>
                       <FormattedMessage
@@ -297,7 +332,8 @@ class ExportRuns extends Component {
 const ExportRunsContainer = connect(
   state => {
     return {
-      runs: state.exportRuns
+      runs: state.exportRuns,
+      state_token: state,
     };
   },
   {
@@ -337,7 +373,7 @@ export class ExportDetails extends Component {
       status: { loading },
       match: { params: { id } },
       runExport,
-      username
+      username,
     } = this.props;
 
     const { showDeleteModal, showModal } = this.state;
@@ -504,7 +540,7 @@ const mapStateToProps = state => {
     exportInfo: state.exportInfo,
     isLoggedIn: selectIsLoggedIn(state),
     status: selectStatus(state),
-    username: selectUsername(state)
+    username: selectUsername(state),
   };
 };
 
