@@ -90,16 +90,20 @@ class HDXExportSet(object):
             'geojson':'geojson',
             'shp': 'SHP',
             'geopackage': 'Geopackage',
+            'gpkg': 'Geopackage',
             'garmin_img': 'Garmin IMG',
-            'kml': 'KML'
+            'kml': 'KML',
+            'csv': 'CSV'
         }
 
         HDX_DESCRIPTIONS = {
             'geojson': 'geojson',
             'shp':'ESRI Shapefile',
             'geopackage':'Geopackage, SQLite compatible',
+            'gpkg':'Geopackage, SQLite compatible',
             'garmin_img':'.IMG for Garmin GPS Devices (All OSM layers for area)',
-            'kml':'Google Earth .KML'
+            'kml':'Google Earth .KML',
+            'csv' : 'CSV Output along with centroid of feature'
         }
 
         d = []
@@ -137,6 +141,7 @@ class HDXExportSet(object):
             resources = []
             for f in files:
                 if isinstance(f, dict): # it is coming from galaxy
+                    print(HDX_FORMATS[f['output_name']])
                     if f['theme'] == theme.name:
                         file_name = f['file_name'] # only one part: the zip file
                         resources.append({

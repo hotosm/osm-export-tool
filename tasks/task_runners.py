@@ -255,13 +255,17 @@ def run_task(run_uid,run,stage_dir,download_dir):
         shp = None
         kml = None
         geojson=None
+        csv=None
+        mapping_filter = mapping
+        if job.unfiltered:
+            mapping_filter = None
 
         if settings.USE_GALAXY_FOR_HDX is False:
             use_only_galaxy=False # run old format as it as so that galaxy won't interfere
 
-        hdx_supported_galaxy=['geojson']
+        hdx_supported_galaxy=['geojson','shp','kml','geopackage','csv']
         if hdx_supported_galaxy == list(export_formats) or set(export_formats).issubset(set(hdx_supported_galaxy)):
-            use_only_galaxy=True # because for geojson we have no option
+            use_only_galaxy=True # we don't want to run overpass
 
         tabular_outputs = []
         if 'geojson' in export_formats:
@@ -269,8 +273,11 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geojson')
 
         if 'geopackage' in export_formats:
-            geopackage = tabular.MultiGeopackage(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(geopackage)
+            if settings.USE_GALAXY_FOR_HDX:
+                geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            else:
+                geopackage = tabular.MultiGeopackage(join(stage_dir,valid_name),mapping)
+                tabular_outputs.append(geopackage)
             start_task('geopackage')
 
         if 'shp' in export_formats:
@@ -282,19 +289,22 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('shp')
 
         if 'kml' in export_formats:
-            kml = tabular.Kml(join(stage_dir,valid_name),mapping)
-            tabular_outputs.append(kml)
+            if settings.USE_GALAXY_FOR_HDX:
+                kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            else:
+                kml = tabular.Kml(join(stage_dir,valid_name),mapping)
+                tabular_outputs.append(kml)
             start_task('kml')
+
+        if 'csv' in export_formats:
+            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            start_task('csv')
 
         if planet_file:
             h = tabular.Handler(tabular_outputs,mapping,polygon_centroid=polygon_centroid)
             source = OsmiumTool('osmium',settings.PLANET_FILE,geom,join(stage_dir,'extract.osm.pbf'),tempdir=stage_dir)
 
         else:
-            mapping_filter = mapping
-            if job.unfiltered:
-                mapping_filter = None
-
             if use_only_galaxy == False :
                 h = tabular.Handler(tabular_outputs,mapping,clipping_geom=geom,polygon_centroid=polygon_centroid)
                 source = Overpass(settings.OVERPASS_API_URL,geom,join(stage_dir,'overpass.osm.pbf'),tempdir=stage_dir,use_curl=True,mapping=mapping_filter)
@@ -329,21 +339,52 @@ def run_task(run_uid,run,stage_dir,download_dir):
             except Exception as ex :
                 stop_task('geojson')
                 raise ex
+
+        if csv :
+            try:
+                LOG.debug('Galaxy fetch started for csv run: {0}'.format(run_uid))
+                response_back=csv.fetch('csv',is_hdx_export=True)
+                for r in response_back:
+                    size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                    with open(size_path, 'w') as f:
+                        f.write(str(r['zip_file_size_bytes']))
+                LOG.debug('Galaxy fetch ended for csv run: {0}'.format(run_uid))
+                finish_task('csv',response_back=response_back)
+                all_zips += response_back
+
+            except Exception as ex :
+                stop_task('csv')
+                raise ex
+
         if geopackage:
             try:
-                geopackage.finalize()
-                zips = []
-                for theme in mapping.themes:
-                    destination = join(download_dir,valid_name + '_' + slugify(theme.name) + '_gpkg.zip')
-                    matching_files = [f for f in geopackage.files if 'theme' in f.extra and f.extra['theme'] == theme.name]
-                    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
-                        add_metadata(z,theme)
-                        for file in matching_files:
-                            for part in file.parts:
-                                z.write(part, os.path.basename(part))
-                    zips.append(osm_export_tool.File('geopackage',[destination],{'theme':theme.name}))
-                finish_task('geopackage',zips)
-                all_zips += zips
+                if settings.USE_GALAXY_FOR_HDX:
+                    LOG.debug('Galaxy fetch started for geopackage run: {0}'.format(run_uid))
+                    response_back=geopackage.fetch('gpkg',is_hdx_export=True)
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes']))
+                    LOG.debug('Galaxy fetch ended for geopackage run: {0}'.format(run_uid))
+                    finish_task('geopackage',response_back=response_back)
+                    all_zips += response_back
+
+                else:
+                    geopackage.finalize()
+                    zips = []
+                    for theme in mapping.themes:
+                        destination = join(download_dir,valid_name + '_' + slugify(theme.name) + '_gpkg.zip')
+                        matching_files = [f for f in geopackage.files if 'theme' in f.extra and f.extra['theme'] == theme.name]
+                        with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                            add_metadata(z,theme)
+                            for file in matching_files:
+                                for part in file.parts:
+                                    z.write(part, os.path.basename(part))
+                        zips.append(osm_export_tool.File('geopackage',[destination],{'theme':theme.name}))
+                    finish_task('geopackage',zips)
+                    all_zips += zips
             except Exception as ex :
                 stop_task('geopackage')
                 raise ex
@@ -382,18 +423,31 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 raise ex
         if kml:
             try:
-                kml.finalize()
-                zips = []
-                for file in kml.files:
-                    destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
-                    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
-                        theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
-                        add_metadata(z,theme)
-                        for part in file.parts:
-                            z.write(part, os.path.basename(part))
-                    zips.append(osm_export_tool.File('kml',[destination],{'theme':file.extra['theme']}))
-                finish_task('kml',zips)
-                all_zips += zips
+                if settings.USE_GALAXY_FOR_HDX:
+                    LOG.debug('Galaxy fetch started for kml run: {0}'.format(run_uid))
+                    response_back=kml.fetch('kml',is_hdx_export=True)
+                    for r in response_back:
+                        size_path=join(download_dir,f"{r['download_url'].split('/')[-1]}_size.txt")
+
+                        with open(size_path, 'w') as f:
+                            f.write(str(r['zip_file_size_bytes']))
+                    LOG.debug('Galaxy fetch ended for kml run: {0}'.format(run_uid))
+                    finish_task('kml',response_back=response_back)
+                    all_zips += response_back
+
+                else: # use overpass
+                    kml.finalize()
+                    zips = []
+                    for file in kml.files:
+                        destination = join(download_dir,os.path.basename(file.parts[0]).replace('.','_') + '.zip')
+                        with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED, True) as z:
+                            theme = [t for t in mapping.themes if t.name == file.extra['theme']][0]
+                            add_metadata(z,theme)
+                            for part in file.parts:
+                                z.write(part, os.path.basename(part))
+                        zips.append(osm_export_tool.File('kml',[destination],{'theme':file.extra['theme']}))
+                    finish_task('kml',zips)
+                    all_zips += zips
             except Exception as ex :
                 stop_task('kml')
                 raise ex
@@ -410,7 +464,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 raise ex
 
         if settings.SYNC_TO_HDX:
-            print("Syncing to HDX")
+            LOG.debug('Syncing to HDX for run: {0}'.format(run_uid))
             region = HDXExportRegion.objects.get(job_id=run.job_id)
             public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
             sync_region(region,all_zips,public_dir)
