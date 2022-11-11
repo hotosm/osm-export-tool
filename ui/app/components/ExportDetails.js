@@ -225,6 +225,7 @@ class ExportRuns extends Component {
                       </Alert>
                     </td>
                   </tr>
+                  { (run.status === "SUBMITTED" || run.stats == "RUNNING") ?(
                   <RequirePermission required={["auth.add_user"]}>
                     <tr>
                       <td>
@@ -258,6 +259,7 @@ class ExportRuns extends Component {
                       </td>
                     </tr>
                   </RequirePermission>
+                  ):(console.log('Normal'))}
                   <tr>
                     <td>
                       <FormattedMessage
