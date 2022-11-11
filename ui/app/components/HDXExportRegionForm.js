@@ -59,9 +59,9 @@ const HDX_EXPORT_FORMATS = {
   geojson:AVAILABLE_EXPORT_FORMATS.geojson,
   shp: AVAILABLE_EXPORT_FORMATS.shp,
   geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
-  garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
   kml: AVAILABLE_EXPORT_FORMATS.kml,
   csv: AVAILABLE_EXPORT_FORMATS.csv,
+  garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
 
 };
 
