@@ -260,7 +260,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if job.unfiltered:
             mapping_filter = None
 
-        if settings.USE_GALAXY_FOR_HDX is False:
+        if settings.USE_RAW_DATA_API_FOR_HDX is False:
             use_only_galaxy=False # run old format as it as so that galaxy won't interfere
 
         hdx_supported_galaxy=['geojson','shp','kml','geopackage','csv']
@@ -273,7 +273,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geojson')
 
         if 'geopackage' in export_formats:
-            if settings.USE_GALAXY_FOR_HDX:
+            if settings.USE_RAW_DATA_API_FOR_HDX:
                 geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             else:
                 geopackage = tabular.MultiGeopackage(join(stage_dir,valid_name),mapping)
@@ -281,7 +281,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('geopackage')
 
         if 'shp' in export_formats:
-            if settings.USE_GALAXY_FOR_HDX:
+            if settings.USE_RAW_DATA_API_FOR_HDX:
                 shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             else:
                 shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
@@ -289,7 +289,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             start_task('shp')
 
         if 'kml' in export_formats:
-            if settings.USE_GALAXY_FOR_HDX:
+            if settings.USE_RAW_DATA_API_FOR_HDX:
                 kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
             else:
                 kml = tabular.Kml(join(stage_dir,valid_name),mapping)
@@ -359,7 +359,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if geopackage:
             try:
-                if settings.USE_GALAXY_FOR_HDX:
+                if settings.USE_RAW_DATA_API_FOR_HDX:
                     LOG.debug('Galaxy fetch started for geopackage run: {0}'.format(run_uid))
                     response_back=geopackage.fetch('gpkg',is_hdx_export=True)
                     for r in response_back:
@@ -391,7 +391,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if shp:
             try:
-                if settings.USE_GALAXY_FOR_HDX:
+                if settings.USE_RAW_DATA_API_FOR_HDX:
                     LOG.debug('Galaxy fetch started for shp run: {0}'.format(run_uid))
 
                     response_back=shp.fetch('shp',is_hdx_export=True)
@@ -423,7 +423,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
                 raise ex
         if kml:
             try:
-                if settings.USE_GALAXY_FOR_HDX:
+                if settings.USE_RAW_DATA_API_FOR_HDX:
                     LOG.debug('Galaxy fetch started for kml run: {0}'.format(run_uid))
                     response_back=kml.fetch('kml',is_hdx_export=True)
                     for r in response_back:
