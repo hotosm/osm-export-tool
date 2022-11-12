@@ -106,7 +106,7 @@ def run_task_async_ondemand(run_uid):
         run.save()
     db.close_old_connections()
 
-@dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=1000*60*60*8) #  8 hour
+@dramatiq.actor(max_retries=0,queue_name='scheduled',time_limit=1000*60*60*12) #  12 hour
 def run_task_async_scheduled(run_uid):
     try :
         run_task_remote(run_uid)
