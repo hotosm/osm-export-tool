@@ -11,7 +11,7 @@ from dramatiq.brokers.redis import RedisBroker
 from .base import *
 from .contrib import *
 from .utils import ABS_PATH
-from hdx.hdx_configuration import Configuration
+from hdx.api.configuration import Configuration
 
 # Project apps
 INSTALLED_APPS += (
@@ -225,5 +225,5 @@ MATOMO_SITEID = os.getenv('MATOMO_SITEID')
 HDX_URL_PREFIX = Configuration.create(
     hdx_site=os.getenv('HDX_SITE', 'demo'),
     hdx_key=os.getenv('HDX_API_KEY'),
-    user_agent="HOT Export Tool"
+    user_agent="HDXPythonLibrary/5.9.2-HOT Export Tool"
 )

@@ -32,10 +32,10 @@ def sync_datasets(datasets,update_dataset_date=False):
         exists = Dataset.read_from_hdx(dataset['name'])
         if exists:
             if update_dataset_date:
-                dataset.set_dataset_date_from_datetime(datetime.now())
+                dataset.set_date_of_dataset(datetime.now())
             dataset.update_in_hdx()
         else:
-            dataset.set_dataset_date_from_datetime(datetime.now())
+            dataset.set_date_of_dataset(datetime.now())
             dataset.create_in_hdx(allow_no_resources=True)
 
 def sync_region(region,files=[],public_dir=''):
@@ -66,7 +66,7 @@ class HDXExportSet(object):
     def dataset_links(self,hdx_prefix_url):
         return [{
             'name': '{}_{}'.format(self._dataset_prefix, slugify(theme.name)),
-            'url': '{}dataset/{}_{}'.format(
+            'url': '{}/dataset/{}_{}'.format(
                 hdx_prefix_url, self._dataset_prefix, slugify(theme.name)),
         } for theme in self._mapping.themes]
 
