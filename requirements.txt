@@ -5,7 +5,7 @@ django-oauth-toolkit==1.1.2
 django-cors-middleware
 djangorestframework-gis~=0.11.2
 djangorestframework~=3.6.3
-hdx-python-api==2.1.5
+hdx-python-api==5.9.2
 mercantile~=0.10.0
 psycopg2==2.8.3
 python-openid==2.2.5
