@@ -595,11 +595,6 @@ export class HDXExportRegionForm extends Component {
                     name="export_formats"
                     label="File Formats"
                     component={renderCheckboxes}
-                    help={
-                      <div>
-                        Out of them geojson doesn't have any limits. Each export type will be a different task for export tool so avoid using lot of fileformats for large regions . Export only one or two fileformats for large regions like indonesia
-                      </div>
-                    }
                   >
                     {getFormatCheckboxes(HDX_EXPORT_FORMATS)}
                   </Field>
