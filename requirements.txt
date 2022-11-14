@@ -16,7 +16,7 @@ python3-openid
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 pytz
-pyyaml==4.2b1
+pyyaml==5.4
 raven~=6.1.0
 requests==2.22.0
 requests_oauthlib==0.8.0
