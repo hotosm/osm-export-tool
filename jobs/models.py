@@ -10,6 +10,7 @@ import re
 import os
 import math
 import time
+from hurry.filesize import size
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
@@ -236,9 +237,9 @@ class RegionMixin:
             return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
     @property
-    def last_size_mb(self):
+    def last_export_size(self):
         if self.job.runs.count() > 0:
-            return "{:.1f}".format((self.job.runs.all()[self.job.runs.count() - 1].size)*0.000001)
+            return size(self.job.runs.all()[self.job.runs.count() - 1].size)
 
     @property
     def last_run_status(self):
