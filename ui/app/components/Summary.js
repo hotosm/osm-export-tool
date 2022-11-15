@@ -17,7 +17,7 @@ const messages = defineMessages({
   },
   preserveGeometry: {
     id: "export.preserve_geom.description",
-    defaultMessage: "Preserve Geometry - Don't Simply Geom ( Query could be slower )"
+    defaultMessage: "Preserve Geometry - Avoid simplify ( Only supports for geojson )"
   },
   publishedDescription: {
     id: "export.published.description",
@@ -94,12 +94,12 @@ export default injectIntl(
           component={renderCheckbox}
           type="checkbox"
         />
-        {/* <Field
+        <Field
           name="preserve_geom"
           description={formatMessage(messages.preserveGeometry)}
           component={renderCheckbox}
           type="checkbox"
-        /> */}
+        />
         <Button
           bsStyle="danger"
           disabled={submitting}

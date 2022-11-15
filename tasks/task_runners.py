@@ -500,7 +500,9 @@ def run_task(run_uid,run,stage_dir,download_dir):
             mapping_filter = None
 
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping_filter,file_name=valid_name)
+            if job.preserve_geom :
+                preserved_geom = load_geometry(job.the_geom.json)
+            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,preserved_geom,mapping=mapping_filter,file_name=valid_name)
             start_task('geojson')
 
         if 'fgb' in export_formats:
