@@ -94,12 +94,12 @@ export default injectIntl(
           component={renderCheckbox}
           type="checkbox"
         />
-        <Field
+        {/* <Field
           name="preserve_geom"
           description={formatMessage(messages.preserveGeometry)}
           component={renderCheckbox}
           type="checkbox"
-        />
+        /> */}
         <Button
           bsStyle="danger"
           disabled={submitting}
