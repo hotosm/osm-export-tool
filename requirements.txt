@@ -34,3 +34,4 @@ psutil==5.9.1
 dramatiq-dashboard==0.4.0
 deepdiff==5.7.0
 hurry.filesize==0.9
+dramatiq-abort==1.0

@@ -11,6 +11,11 @@ import traceback
 
 import django
 from dramatiq.middleware import TimeLimitExceeded
+
+from dramatiq import get_broker
+from dramatiq_abort import Abortable, backends
+import redis
+
 from django.apps import apps
 from django.conf import settings
 from django import db
@@ -61,6 +66,11 @@ This theme includes the following OpenStreetMap keys:
 (c) OpenStreetMap contributors.
 This file is made available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in individual contents of the database are licensed under the Database Contents License: http://opendatacommons.org/licenses/dbcl/1.0/
 """
+redis_client = redis.Redis.from_url("redis://localhost:6379/0")
+abortable = Abortable(
+    backend=backends.RedisBackend(client=redis_client)
+)
+dramatiq.get_broker().add_middleware(abortable)
 
 class ExportTaskRunner(object):
     def run_task(self, job_uid=None, user=None, ondemand=True): # noqa
@@ -86,11 +96,18 @@ class ExportTaskRunner(object):
         if ondemand:
             # run_task_remote(run_uid)
             # db.close_old_connections()
-            run_task_async_ondemand.send(run_uid)
+            send_task=run_task_async_ondemand.send(run_uid)
+            run.worker_message_id=send_task.message_id
+            run.save()
+            LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
         else:
             # run_task_remote(run_uid)
             # db.close_old_connections()
             run_task_async_scheduled.send(run_uid)
+            run.worker_message_id=send_task.message_id
+            run.save()
+            LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
+
         return run
 
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*4) # 4 hour

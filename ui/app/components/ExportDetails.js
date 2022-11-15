@@ -243,10 +243,10 @@ class ExportRuns extends Component {
                             headers: {
                               Authorization: `Bearer ${token}`
                             },
-                            method: "PUT",
-                            url: `/api/runs/${run.uid}`,
-                            data: {
-                                status: 'FAILED'
+                            method: "GET",
+                            url: `/api/cancel_run`,
+                            params: {
+                              run_uid: run.uid
                             }
                           });
                           window.location.reload();
@@ -254,7 +254,7 @@ class ExportRuns extends Component {
                           console.warn(err);
                         }
                       }}>
-                        <FormattedMessage id="ui.stop_run" defaultMessage="Mark Run as Failed" />
+                        <FormattedMessage id="ui.stop_run" defaultMessage="Force Stop Run" />
                       </Button>
                       </td>
                     </tr>
