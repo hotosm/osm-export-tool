@@ -103,7 +103,7 @@ class ExportTaskRunner(object):
         else:
             # run_task_remote(run_uid)
             # db.close_old_connections()
-            run_task_async_scheduled.send(run_uid)
+            send_task=run_task_async_scheduled.send(run_uid)
             run.worker_message_id=send_task.message_id
             run.save()
             LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
