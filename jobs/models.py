@@ -11,6 +11,7 @@ import os
 import math
 import time
 from hurry.filesize import size
+from django.contrib.humanize.templatetags import humanize
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
@@ -236,10 +237,6 @@ class RegionMixin:
         if self.job.runs.count() > 0:
             return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
-    @property
-    def last_export_size(self):
-        if self.job.runs.count() > 0:
-            return size(self.job.runs.all()[self.job.runs.count() - 1].size)
 
     @property
     def last_run_status(self):
@@ -256,6 +253,18 @@ class RegionMixin:
     def last_size(self):
         if self.job.runs.count() > 0:
             return self.job.runs.all()[self.job.runs.count() - 1].size
+
+    @property
+    def last_export_size(self):
+        if self.last_size:
+            return size(self.last_size)
+
+    @property
+    def next_run_hum(self):
+        return humanize.naturaltime(self.next_run)
+    @property
+    def last_run_hum(self):
+        return humanize.naturaltime(self.last_run)
 
 
     @property
