@@ -9,7 +9,7 @@ import uuid
 import re
 import os
 import math
-
+import time
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
@@ -244,6 +244,11 @@ class RegionMixin:
     def last_run_status(self):
         if self.job.runs.count() > 0:
             return self.job.runs.all()[self.job.runs.count() - 1].status
+
+    @property
+    def last_run_duration(self):
+        if self.job.runs.count() > 0:
+            return time.strftime('%H:%M:%S', time.gmtime((self.job.runs.all()[self.job.runs.count() - 1].duration)))
 
 
     @property
