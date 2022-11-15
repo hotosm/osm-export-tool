@@ -237,7 +237,6 @@ class RegionMixin:
         if self.job.runs.count() > 0:
             return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
-
     @property
     def last_run_status(self):
         if self.job.runs.count() > 0:
@@ -262,6 +261,7 @@ class RegionMixin:
     @property
     def next_run_hum(self):
         return humanize.naturaltime(self.next_run)
+
     @property
     def last_run_hum(self):
         return humanize.naturaltime(self.last_run)
