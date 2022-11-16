@@ -40,7 +40,14 @@ class SelectFeatures extends Component {
 
 
       <Row style={{ height: "auto" }}>
-
+         <Row>
+        <Field
+            name="unfiltered"
+            description="Download all OSM Data - Unfiltered files (Avoid for mbtiles)"
+            component={renderCheckbox}
+            type="checkbox"
+          />
+      </Row>
 
         {requiresFeatureSelection &&
           <ButtonGroup justified>
@@ -77,14 +84,6 @@ class SelectFeatures extends Component {
                 />
               </NavLink>}
           </ButtonGroup>}
-        <Row>
-        <Field
-            name="unfiltered"
-            description="Download all OSM Data - Unfiltered files (Avoid for mbtiles)"
-            component={renderCheckbox}
-            type="checkbox"
-          />
-      </Row>
 
         <Row>
           <Switch>
