@@ -10,23 +10,24 @@ mercantile~=0.10.0
 gitdb==4.0.9
 gevent==21.12.0
 psycopg2==2.8.3
-# hdx-python-utilities==3.4.7 it has issues manual requirement required
+hdx-python-utilities==3.4.7
 python3-openid
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 pytz
 pyyaml==5.4
 raven~=6.1.0
-requests==2.22.0
+requests==2.26.0
+urllib3==1.26.12
 requests_oauthlib==0.8.0
 pyparsing>=2.2.0
 oauthlib==2.0.7
 gunicorn==19.9.0
 osmium~=2.15.2
 dramatiq[redis,watch]~=1.13.0
-boto3~=1.9.238 # needed for cloudwatch
+boto3~=1.23.10 # needed for cloudwatch
 rasterio~=1.0.25
-osm-export-tool==0.0.25 #manual setup is needed for now
+# osm-export-tool==0.0.25 #manual setup is needed for now
 rtree==0.9.1
 validators==0.20.0
 geonamescache==1.5.0
