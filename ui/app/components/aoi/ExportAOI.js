@@ -136,7 +136,7 @@ export class ExportAOI extends Component {
 
   handleSearch = result => {
     var geojson;
-    if (result.adminName2 == 'TM') {
+    if (result.adminName2 == 'TM' || result.adminName2 == 'OSM') {
       this._clearDraw();
       geojson = result.bbox;
     }

@@ -501,12 +501,33 @@ def request_geonames(request):
 
     geonames_url = getattr(settings, 'GEONAMES_API_URL')
     tm_url = getattr(settings, 'TASKING_MANAGER_API_URL')
+    export_tool_api_url = getattr(settings, 'EXPORT_TOOL_API_URL')
+
 
 
     if geonames_url:
         response = requests.get(geonames_url, params=payload).json()
         assert (isinstance(response, dict))
-        # print(response)
+        keyword = request.GET.get('q')
+        if export_tool_api_url :
+            headers = {'accept': "application/json","Content-Type": "application/json"}
+            pay_load = { "where":[{"key":"boundary","value":["administrative"]},{"key":"admin_level","value":["2"]},{"key":"name:en","value":[keyword]}],"select": ["name:en"],"geometryType":"polygon","joinBy":"AND","lookIn":["relations"]}
+            res = requests.post(f"{export_tool_api_url}v1/raw-data/current-snapshot/raw-query/", data=json.dumps(pay_load),headers=headers,timeout=120)
+            if res.ok:
+                if len(res.json()['features']) >= 1:
+                    print("greater than 1")
+                    add_resp={
+                        "bbox":res.json(),
+                        "adminName2":"OSM",
+                        "name":keyword,
+                        "countryName":"Country",
+                        "adminName1":"Boundary"
+                    }
+                    if 'geonames' in response:
+                        print('geonames is in response')
+                        response['geonames'].append(add_resp)
+                        response['totalResultsCount']=response['totalResultsCount']+1
+
         if request.GET.get('q').isdigit():
             if tm_url:
                 tm_res = requests.get(f"{tm_url}/{int(request.GET.get('q'))}/").json()
@@ -531,7 +552,7 @@ def request_geonames(request):
                         "countryName":"Boundary",
                         "adminName1":"Project"
                     }
-                    print(add_resp)
+                    # print(add_resp)
                     if 'geonames' in response:
                         response['geonames'].append(add_resp)
 
