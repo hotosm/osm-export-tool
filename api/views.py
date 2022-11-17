@@ -515,7 +515,6 @@ def request_geonames(request):
             res = requests.post(f"{export_tool_api_url}v1/raw-data/current-snapshot/raw-query/", data=json.dumps(pay_load),headers=headers,timeout=120)
             if res.ok:
                 if len(res.json()['features']) >= 1:
-                    print("greater than 1")
                     add_resp={
                         "bbox":res.json(),
                         "adminName2":"OSM",
@@ -524,7 +523,6 @@ def request_geonames(request):
                         "adminName1":"Boundary"
                     }
                     if 'geonames' in response:
-                        print('geonames is in response')
                         response['geonames'].append(add_resp)
                         response['totalResultsCount']=response['totalResultsCount']+1
 
