@@ -22,10 +22,6 @@ const messages = defineMessages({
   publishedDescription: {
     id: "export.published.description",
     defaultMessage: "Publish this Export"
-  },
-  unfilteredPBF: {
-    id: "export.unfiltered_pbf.description",
-    defaultMessage: "Download all OSM Data - Unfiltered files (Avoid for mbtiles)"
   }
 });
 
@@ -79,12 +75,6 @@ export default injectIntl(
         <Field
           name="published"
           description={formatMessage(messages.publishedDescription)}
-          component={renderCheckbox}
-          type="checkbox"
-        />
-        <Field
-          name="unfiltered"
-          description={formatMessage(messages.unfilteredPBF)}
           component={renderCheckbox}
           type="checkbox"
         />
