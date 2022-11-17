@@ -135,21 +135,29 @@ export class ExportAOI extends Component {
       );
 
   handleSearch = result => {
-    const unformattedBbox = result.bbox;
-    const formattedBbox = [
-      unformattedBbox.west,
-      unformattedBbox.south,
-      unformattedBbox.east,
-      unformattedBbox.north
-    ];
-    this._clearDraw();
-    const bbox = formattedBbox.map(truncate);
-    const mercBbox = proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
-    const geom = Polygon.fromExtent(mercBbox);
-    const geojson = createGeoJSON(geom);
-    const bboxFeature = new Feature({
-      geometry: geom
-    });
+    var geojson;
+    if (result.adminName2 == 'TM') {
+      this._clearDraw();
+      geojson = result.bbox;
+    }
+    else {
+      const unformattedBbox = result.bbox;
+      const formattedBbox = [
+        unformattedBbox.west,
+        unformattedBbox.south,
+        unformattedBbox.east,
+        unformattedBbox.north
+      ];
+      this._clearDraw();
+      const bbox = formattedBbox.map(truncate);
+      const mercBbox = proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
+      const geom = Polygon.fromExtent(mercBbox);
+      geojson = createGeoJSON(geom);
+      const bboxFeature = new Feature({
+        geometry: geom
+      });
+
+    }
     //this._drawLayer.getSource().addFeature(bboxFeature);
     let description = "";
     description += result.countryName ? result.countryName : "";

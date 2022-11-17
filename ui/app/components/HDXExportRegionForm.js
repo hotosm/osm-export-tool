@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import "react-select/dist/react-select.css";
 import yaml from "js-yaml";
+import moment from "moment";
 
 import ExportAOIField from "./ExportAOIField";
 import { getRuns } from "../actions/exports";
@@ -58,8 +59,10 @@ const HDX_EXPORT_FORMATS = {
   geojson:AVAILABLE_EXPORT_FORMATS.geojson,
   shp: AVAILABLE_EXPORT_FORMATS.shp,
   geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
+  kml: AVAILABLE_EXPORT_FORMATS.kml,
+  csv: AVAILABLE_EXPORT_FORMATS.csv,
   garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
-  kml: AVAILABLE_EXPORT_FORMATS.kml
+
 };
 
 const form = reduxForm({
@@ -365,7 +368,8 @@ export class HDXExportRegionForm extends Component {
           {run.status}
         </td>
         <td>
-          {`00${Math.floor(run.elapsed_time / 60)}`.slice(-2)}:{`00${Math.round(run.elapsed_time % 60)}`.slice(-2)}
+          {moment.duration(run.duration, "seconds").humanize()}
+
         </td>
         <td>
           {prettyBytes(run.size)}
@@ -562,13 +566,16 @@ export class HDXExportRegionForm extends Component {
                     component={renderSelect}
                   >
                     <option value="daily">Daily</option>
+                    <option value="6hrs">Every 6 hours</option>
                     <option value="weekly">Weekly (Sunday)</option>
                     <option value="2wks">Every two weeks</option>
                     <option value="3wks">Every three weeks</option>
                     <option value="monthly">Monthly (1st of month)</option>
-                    <option value="6hrs">Every 6 hours</option>
+                    <option value="quarterly">Every Quarter</option>
+                    <option value="semiyearly">Every 6 months</option>
+                    <option value="yearly">Every Year</option>
                     <option value="disabled">
-                      Don't automatically schedule
+                      Don't automatically schedule , Run as needed
                     </option>
                   </Field>
                 </Col>

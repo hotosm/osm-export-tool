@@ -63,6 +63,8 @@ export const cloneExport = e => (dispatch, getState) => {
           mbtiles_source: e.mbtiles_source,
           name: e.name,
           published: e.published,
+          unfiltered: e.unfiltered,
+          preserve_geom: e.preserve_geom,
           the_geom: rsp.data.the_geom,
           aoi: {
             description: "Cloned Area",
@@ -277,5 +279,21 @@ export const getCsv = (filters) => (dispatch, getState) => {
   }).then(rsp => {
     console.log(rsp.data)
     fileDownload(rsp.data,'exports.csv');
+  });
+};
+
+export const getrunCsv = (filters) => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+  filters.csv = true;
+  return axios({
+    baseURL: window.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/run_stats`,
+    params: filters
+  }).then(rsp => {
+    console.log(rsp.data)
+    fileDownload(rsp.data,'exports_run.csv');
   });
 };

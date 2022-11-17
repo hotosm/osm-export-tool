@@ -284,7 +284,7 @@ export class ExportForm extends Component {
             <Panel style={{ marginTop: "20px" }}>
               <FormattedMessage
                 id="ui.overpass_last_updated"
-                defaultMessage="Geojson/shp updated (hr:min:sec) {galaxyLastUpdated}, Rest of other formats updated {overpassLastUpdated} "
+                defaultMessage="Img/pbf/mwm/obf/mbtiles updated  {overpassLastUpdated}, Rest of other formats updated {galaxyLastUpdated} "
                 values={{ overpassLastUpdated, galaxyLastUpdated }}
               />
             </Panel>

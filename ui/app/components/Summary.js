@@ -15,13 +15,17 @@ const messages = defineMessages({
     id: "export.bundle_for_posm.description",
     defaultMessage: "Bundle for POSM"
   },
+  preserveGeometry: {
+    id: "export.preserve_geom.description",
+    defaultMessage: "Preserve Geometry - Don't Simply Geom ( Query could be slower )"
+  },
   publishedDescription: {
     id: "export.published.description",
     defaultMessage: "Publish this Export"
   },
   unfilteredPBF: {
     id: "export.unfiltered_pbf.description",
-    defaultMessage: "Unfiltered files - all OSM data for PBF, MWM, OBF, IMG formats. Use only for small areas."
+    defaultMessage: "Download all OSM Data - Unfiltered files (Avoid for mbtiles)"
   }
 });
 
@@ -87,6 +91,12 @@ export default injectIntl(
         <Field
           name="bundle"
           description={formatMessage(messages.bundleForPOSM)}
+          component={renderCheckbox}
+          type="checkbox"
+        />
+        <Field
+          name="preserve_geom"
+          description={formatMessage(messages.preserveGeometry)}
           component={renderCheckbox}
           type="checkbox"
         />

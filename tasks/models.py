@@ -17,6 +17,46 @@ from django.core.urlresolvers import reverse
 import validators
 import requests
 
+import csv
+from django.http import HttpResponse
+
+def export_as_csv(self, request, queryset):
+
+    meta = self.model._meta
+    field_names = [field.name for field in meta.fields]
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+    writer = csv.writer(response)
+
+    writer.writerow(field_names)
+    for obj in queryset:
+        row = writer.writerow([getattr(obj, field) for field in field_names])
+
+    return response
+
+class ExportCsvMixin:
+    def export_as_csv(self, request, queryset):
+
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+        property_names = [name for name in dir(self.model) if isinstance(getattr(self.model, name), property)]
+        field_names.extend(property_names)
+        exclude_fileds=['feature_selection','the_geom','simplified_geom','osma_link']
+        for field in exclude_fileds:
+            if field in field_names:
+                field_names.remove(field)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            row = writer.writerow([getattr(obj, field) for field in field_names])
+
+        return response
+
+    export_as_csv.short_description = "Export Selected"
 
 class ExportRun(models.Model):
     """
@@ -41,18 +81,34 @@ class ExportRun(models.Model):
 
     def __str__(self):
         return '{0}'.format(self.uid)
-
+    @property
     def export_formats(self):
         return self.job.export_formats
 
     @property
+    def name(self):
+        return self.job.name
+
+    @property
+    def is_hdx(self):
+        if HDXExportRegion.objects.filter(job_id=self.job.id).exists():
+            return True
+        return False
+
+    @property
     def duration(self):
+        if self.started_at :
+            return ((self.finished_at or timezone.now()) - self.started_at).total_seconds()
+        return None
+
+    @property
+    def duration_min(self):
         if self.started_at and self.finished_at:
             return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
         return None
 
     @property
-    def total_time(self):
+    def total_time_min(self):
         if  self.finished_at and self.created_at:
             return "{:.1f}".format((self.finished_at - self.created_at).total_seconds()/60)
         return None
@@ -66,6 +122,10 @@ class ExportRun(models.Model):
         return sum(map(
             lambda task: task.filesize_bytes or 0, self.tasks.all()))
 
+    @property
+    def size_mb(self):
+        return "{:.1f}".format((sum(map(
+            lambda task: task.filesize_bytes or 0, self.tasks.all())))*0.000001)
 
 class ExportTask(models.Model):
     """
@@ -80,7 +140,7 @@ class ExportTask(models.Model):
 
     started_at = models.DateTimeField(editable=False, null=True)
     finished_at = models.DateTimeField(editable=False, null=True)
-    filesize_bytes = models.IntegerField(null=True)
+    filesize_bytes = models.BigIntegerField(null=True)
     filenames = ArrayField(models.TextField(null=True),default=list)
 
     class Meta:
@@ -95,6 +155,13 @@ class ExportTask(models.Model):
 
     @property
     def duration(self):
+        if self.started_at and self.finished_at:
+            return (self.finished_at  or timezone.now() - self.started_at).total_seconds()
+        return None
+
+
+    @property
+    def duration_min(self):
         if self.started_at and self.finished_at:
             return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
         return None
@@ -115,8 +182,8 @@ class ExportTask(models.Model):
                 try :
                     value = download_url.split('/')
                     name=value[-1]
-                    split_name=name.split('_')
-                    download_name=f"{split_name[0]}_{split_name[-1]}"  # getting human redable name ignoring unique id
+                    split_name=name.split('_uid_')
+                    download_name=f"{split_name[0]}.zip"  # getting human redable name ignoring unique id
                     fname=download_name
                 except:
                     fname=f"""{self.run.job.name}_{self.name}.zip"""
@@ -144,20 +211,27 @@ class ExportTask(models.Model):
 
 
 
-class ExportRunAdmin(admin.ModelAdmin):
+class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
 
     def start(self, request, queryset):
         from tasks.task_runners import run_task_async_ondemand
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job','status','export_formats','user','created_at','duration','total_time']
+    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','duration_min','total_time_min','size_mb']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
     search_fields = ['uid']
     actions = [start]
+    date_hierarchy = 'created_at'
     ordering = ('-created_at',)
+    actions = ["export_as_csv"]
+
+    def job_ui_link(self, obj):
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}" target="_blank">UI Job Link</a>""")
+
+
 
     def job_link(self, obj):
         return mark_safe('<a href="%s">Link to Job</a>' % \
@@ -165,9 +239,10 @@ class ExportRunAdmin(admin.ModelAdmin):
                         args=(obj.job.id,)))
 
 class ExportTaskAdmin(admin.ModelAdmin):
-    list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration']
+    list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration_min']
     search_fields = ['uid','run__uid']
     list_filter = ('name','status')
+    date_hierarchy = 'created_at'
     ordering = ('-created_at',)
 
 class ExportRunsInline(admin.TabularInline):
@@ -182,7 +257,7 @@ class ExportRunsInline(admin.TabularInline):
 
 
 
-class JobAdmin(GeoModelAdmin):
+class JobAdmin(GeoModelAdmin,ExportCsvMixin):
     """
     Admin model for editing Jobs in the admin interface.
     """
@@ -190,15 +265,30 @@ class JobAdmin(GeoModelAdmin):
         return obj.simplified_geom.json
 
     search_fields = ['uid', 'name', 'user__username']
-    list_display = ['uid', 'name', 'user']
+    list_display = ['uid', 'name', 'user','is_hdx','export_formats','last_run_date','last_run_status','created_at', 'updated_at','area']
     list_filter = ('pinned',)
     exclude = ['the_geom']
     raw_id_fields = ("user",)
     readonly_fields=('simplified_geom_raw',)
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
     inlines = [ExportRunsInline]
+    actions = ["export_as_csv"]
 
-class HDXExportRegionAdmin(admin.ModelAdmin):
+
+class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
+    list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','next_run','next_run_hum','last_export_size',"last_run_duration",'export_formats','schedule_hour','is_private','locations']
+    list_filter = ('schedule_period','schedule_hour','is_private','locations')
     raw_id_fields = ("job",)
+    actions = ["export_as_csv"]
+
+    def job_link(self, obj):
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/exports/{obj.job.uid}" target="_blank">UI Job Link</a>""")
+
+    def edit_link(self, obj):
+        return mark_safe(f"""<a href="https://{settings.HOSTNAME}/en/v3/hdx/edit/{obj.id}" target="_blank">Edit HDX Job</a>""")
+
+
 
 class PartnerExportRegionAdmin(admin.ModelAdmin):
     raw_id_fields = ('job',)

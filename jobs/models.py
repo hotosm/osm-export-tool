@@ -9,7 +9,9 @@ import uuid
 import re
 import os
 import math
-
+import time
+from hurry.filesize import size
+from django.contrib.humanize.templatetags import humanize
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
@@ -83,7 +85,7 @@ def validate_export_formats(value):
         )
 
     for format_name in value:
-        if format_name not in ['shp','geojson','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
+        if format_name not in ['shp','geojson','fgb','csv','sql','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
             raise ValidationError(
                 "Bad format name: %(format_name)s",
                 params={'format_name': format_name},
@@ -96,10 +98,11 @@ def validate_feature_selection(value):
         raise ValidationError(errors)
 
 def validate_aoi(aoi):
+    print(aoi)
     result = check_extent(aoi,settings.OVERPASS_API_URL)
     if not result.valid:
         raise ValidationError(result.message,params=result.params)
-    
+
 def validate_mbtiles(job):
     if "mbtiles" in job["export_formats"]:
         if job.get("mbtiles_source") is None:
@@ -127,7 +130,7 @@ def validate_mbtiles(job):
             )
 
 class Job(models.Model):
-    """ 
+    """
     Database model for an 'Export'.
     Immutable, except in the case of HDX Export Regions.
     """
@@ -156,10 +159,28 @@ class Job(models.Model):
     expire_old_runs = models.BooleanField(default=True)
     pinned = models.BooleanField(default=False)
     unfiltered = models.BooleanField(default=False)
+    preserve_geom = models.BooleanField(default=False)
 
     class Meta:  # pragma: no cover
         managed = True
         db_table = 'jobs'
+
+    @property
+    def last_run_status(self):
+        if self.runs.count() > 0:
+            return self.runs.all()[self.runs.count() - 1].status
+
+    @property
+    def last_run_date(self):
+        if self.runs.count() > 0:
+            return self.runs.all()[self.runs.count() - 1].started_at
+
+
+    @property
+    def is_hdx(self):
+        if HDXExportRegion.objects.filter(job_id=self.id).exists():
+            return True
+        return False
 
     @property
     def osma_link(self):
@@ -172,7 +193,8 @@ class Job(models.Model):
 
     def save(self, *args, **kwargs):
         self.the_geom = force2d(self.the_geom)
-        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi)
+
+        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi,preserve_geom=self.preserve_geom)
         super(Job, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -196,12 +218,15 @@ class SavedFeatureSelection(models.Model):
         return str(self.name)
 
 PERIOD_CHOICES = (
-    ('6hrs', 'Every 6 hours'),
+    ('6hrs', 'Every 6 hours check'),
     ('daily', 'Every day'),
     ('weekly', 'Every Sunday'),
     ('2wks', 'Every two weeks'),
     ('3wks', 'Every three weeks'),
     ('monthly', 'The 1st of every month'),
+    ('quarterly', 'Every quarter (90 days)'),
+    ('semiyearly', 'Every 6 months'),
+    ('yearly', 'Every year'),
     ('disabled', 'Disabled'),
 )
 HOUR_CHOICES = zip(range(0, 24), range(0, 24))
@@ -213,9 +238,34 @@ class RegionMixin:
             return self.job.runs.all()[self.job.runs.count() - 1].finished_at
 
     @property
+    def last_run_status(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].status
+
+    @property
+    def last_run_duration(self):
+        if self.job.runs.count() > 0:
+            return time.strftime('%H:%M:%S', time.gmtime((self.job.runs.all()[self.job.runs.count() - 1].duration)))
+
+
+    @property
     def last_size(self):
         if self.job.runs.count() > 0:
             return self.job.runs.all()[self.job.runs.count() - 1].size
+
+    @property
+    def last_export_size(self):
+        if self.last_size:
+            return size(self.last_size)
+
+    @property
+    def next_run_hum(self):
+        return humanize.naturaltime(self.next_run)
+
+    @property
+    def last_run_hum(self):
+        return humanize.naturaltime(self.last_run)
+
 
     @property
     def next_run(self): # noqa
@@ -245,6 +295,24 @@ class RegionMixin:
 
             return anchor + timedelta(days=7)
 
+        if self.schedule_period == '2wks':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=14)
+
+        if self.schedule_period == '3wks':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=21)
+
         if self.schedule_period == 'monthly':
             (_, num_days) = calendar.monthrange(now.year, now.month)
             anchor = now.replace(day=1)
@@ -253,6 +321,33 @@ class RegionMixin:
                 return anchor
 
             return anchor + timedelta(days=num_days)
+
+        if self.schedule_period == 'quarterly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=90)
+
+        if self.schedule_period == 'semiyearly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=180)
+
+        if self.schedule_period == 'yearly':
+            # adjust so the week starts on Sunday
+            anchor = now - timedelta((now.weekday() + 1) % 7)
+
+            if timezone.now() < anchor:
+                return anchor
+
+            return anchor + timedelta(days=365)
 
     @property
     def delta(self): # noqa
@@ -265,8 +360,23 @@ class RegionMixin:
         if self.schedule_period == 'weekly':
             return timedelta(days=7)
 
+        if self.schedule_period == '2wks':
+            return timedelta(days=14)
+
+        if self.schedule_period == '3wks':
+            return timedelta(days=21)
+
         if self.schedule_period == 'monthly':
             return timedelta(days=31)
+
+        if self.schedule_period == 'quarterly':
+            return timedelta(days=90)
+
+        if self.schedule_period == 'semiyearly':
+            return timedelta(days=189)
+
+        if self.schedule_period == 'yearly':
+            return timedelta(days=365)
 
     @property
     def feature_selection(self): # noqa
@@ -372,6 +482,39 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
     @property
     def update_frequency(self):
         """Update frequencies in HDX form."""
+        # hdx requirements
+        # "-2": "As needed",
+        # "-1": "Never",
+        # "0": "Live",
+        # "1": "Every day",
+        # "7": "Every week",
+        # "14": "Every two weeks",
+        # "30": "Every month",
+        # "90": "Every three months",
+        # "180": "Every six months",
+        # "365": "Every year",
+        # "as needed": "-2",
+        # "adhoc": "-2",
+        # "never": "-1",
+        # "live": "0",
+        # "every day": "1",
+        # "every week": "7",
+        # "every two weeks": "14",
+        # "every month": "30",
+        # "every three months": "90",
+        # "every quarter": "90",
+        # "every six months": "180",
+        # "every year": "365",
+        # "daily": "1",
+        # "weekly": "7",
+        # "fortnightly": "14",
+        # "every other week": "14",
+        # "monthly": "30",
+        # "quarterly": "90",
+        # "semiannually": "180",
+        # "semiyearly": "180",
+        # "annually": "365",
+        # "yearly": "365",
         if self.schedule_period == '6hrs':
             return 1
 
@@ -381,7 +524,22 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
         if self.schedule_period == 'weekly':
             return 7
 
+        if self.schedule_period == '2wks':
+            return 14
+
+        if self.schedule_period == '3wks':
+            return 30
+
         if self.schedule_period == 'monthly':
             return 30
 
-        return 0
+        if self.schedule_period == 'quarterly':
+            return 90
+
+        if self.schedule_period == 'semiyearly':
+            return 180
+
+        if self.schedule_period == 'yearly':
+            return 365
+
+        return -2  # returning as needed as default instead of live

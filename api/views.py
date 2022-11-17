@@ -8,7 +8,6 @@ import json
 from django.utils import timezone
 from datetime import datetime, timedelta
 from collections import Counter
-
 import os
 import io
 import csv
@@ -36,7 +35,7 @@ from api.serializers import (ConfigurationSerializer, ExportRunSerializer, Expor
                          HDXExportRegionSerializer, JobGeomSerializer,
                          PartnerExportRegionListSerializer, PartnerExportRegionSerializer,
                          JobSerializer)
-from tasks.models import ExportRun
+from tasks.models import ExportRun, ExportTask
 from tasks.task_runners import ExportTaskRunner
 
 from .permissions import IsHDXAdmin, IsOwnerOrReadOnly, IsMemberOfGroup
@@ -349,6 +348,79 @@ def stats(request):
     else:
         return HttpResponse(json.dumps({'periods':periods,'geoms':geoms}))
 
+@require_http_methods(['GET'])
+def run_stats(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    before = request.GET.get('before',timezone.now())
+    after = request.GET.get('after',timezone.now() - timedelta(days=1))
+    period = request.GET.get('period','day')
+    is_csv = (request.GET.get('csv',False) == 'true')
+
+    def toWeek(dt):
+        sunday = dt.strftime('%Y-%U-0')
+        return datetime.strptime(sunday, '%Y-%U-%w').strftime('%Y-%m-%d')
+
+    def toDay(dt):
+        return dt.strftime('%Y-%m-%d')
+
+    def toMonth(dt):
+        return dt.strftime('%Y-%m')
+
+    if period == 'day':
+        period_fn = toDay
+    elif period == 'week':
+        period_fn = toWeek
+    elif period == 'month':
+        period_fn = toMonth
+
+    run_queryset=ExportRun.objects.only('started_at','status').order_by('-started_at')
+
+
+    if before:
+        run_queryset = run_queryset.filter(Q(started_at__lte=before))
+    if after:
+        run_queryset = run_queryset.filter(Q(started_at__gte=after))
+
+    grouped_runs = itertools.groupby(run_queryset,lambda j:period_fn(j.started_at))
+
+    periods = []
+    for x in grouped_runs:
+        run_types = Counter()
+        export_formats = Counter()
+        hdx_run_status = Counter()
+        normal_run_status = Counter()
+        runs_in_group = list(x[1])
+        for j in runs_in_group:
+            result = j.is_hdx
+            if result is True:
+                result='hdx_run'
+                hdx_status=j.status
+                hdx_run_status[hdx_status.lower()] += 1
+            else:
+                result='on_demand'
+                normal_status=j.status
+                normal_run_status[normal_status.lower()] += 1
+            run_types[result] += 1
+            export_format = j.export_formats
+            for f in export_format:
+                export_formats[str(f)] += 1
+        run_types_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in run_types.most_common(5)])
+        export_formats_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in export_formats.most_common(10)])
+        hdx_run_status_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in hdx_run_status.most_common(4)])
+        normal_run_status_string = ','.join(["{0}:{1}".format(x[0],x[1]) for x in normal_run_status.most_common(4)])
+
+        periods.append({'start_date':x[0],'runs_count':len(runs_in_group),'run_types':run_types_string,'hdx_run_status':hdx_run_status_string,'normal_run_status':normal_run_status_string, 'export_formats':export_formats_string} )
+
+    if is_csv:
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['start_date','runs_count','run_types','hdx_run_status','normal_run_status','export_formats'])
+        for period in periods:
+            writer.writerow([period['start_date'],period['runs_count'],period['run_types'],period['hdx_run_status'],period['normal_run_status'],period['export_formats']])
+        return HttpResponse(output.getvalue())
+    else:
+        return HttpResponse(json.dumps({'periods':periods}))
 
 @require_http_methods(['GET'])
 @login_required()
@@ -428,10 +500,41 @@ def request_geonames(request):
     }
 
     geonames_url = getattr(settings, 'GEONAMES_API_URL')
+    tm_url = getattr(settings, 'TASKING_MANAGER_API_URL')
+
 
     if geonames_url:
         response = requests.get(geonames_url, params=payload).json()
         assert (isinstance(response, dict))
+        # print(response)
+        if request.GET.get('q').isdigit():
+            if tm_url:
+                tm_res = requests.get(f"{tm_url}/{int(request.GET.get('q'))}/").json()
+                if 'areaOfInterest' in tm_res:
+                    print('TM Project found')
+                    geom=tm_res['areaOfInterest']
+                    geojson ={
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                            "type": "Feature",
+                            "properties": {},
+                            "geometry": geom
+                            }
+                        ]
+                        }
+
+                    add_resp={
+                        "bbox":geojson,
+                        "adminName2":"TM",
+                        "name":request.GET.get('q'),
+                        "countryName":"Boundary",
+                        "adminName1":"Project"
+                    }
+                    print(add_resp)
+                    if 'geonames' in response:
+                        response['geonames'].append(add_resp)
+
         return JsonResponse(response)
     else:
         return JsonResponse(
@@ -490,8 +593,8 @@ def get_groups(request):
 
 @require_http_methods(['GET'])
 def machine_status(request):
-    # if not request.user.is_superuser:
-    #     return HttpResponseForbidden()
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
     CPU_use = psutil.cpu_percent(3)
     date_from = datetime.now() - timedelta(days=1)
     hdx_jobs=HDXExportRegion.objects.all()
@@ -504,8 +607,8 @@ def machine_status(request):
         last_run_timestamp="N/A"
         last_run_running_from="N/A"
     overpass = requests.get('{}timestamp'.format(settings.OVERPASS_API_URL))
-    galaxy = requests.get('{}v1/raw-data/status/'.format(settings.GALAXY_API_URL))
+    galaxy = requests.get('{}v1/raw-data/status/'.format(settings.EXPORT_TOOL_API_URL))
 
     overpass_timestamp=str(datetime.now(timezone.utc)-dateutil.parser.parse(overpass.content))
-    galaxy_timestamp = galaxy.json()['last_updated']
-    return JsonResponse({'system':{'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'overpass_timestamp':overpass_timestamp,'galaxy_timestamp':galaxy_timestamp},'runs':{'submitted':Runs_since_day.filter(status="SUBMITTED").count(),'running':Runs_since_day.filter(status="RUNNING").count(),'last_running_from':last_run_running_from,'failed':Runs_since_day.filter(status="FAILED").count(),'completed':Runs_since_day.filter(status="COMPLETED").count()},"hdx":{'total_jobs':hdx_jobs.count(),'Running_daily':hdx_jobs.filter(schedule_period='daily').count()}})
+    galaxy_timestamp=str(datetime.now(timezone.utc)-dateutil.parser.parse(galaxy.json()['last_updated']))
+    return JsonResponse({'system':{'current_time':datetime.now(),'cpu_usage_%':int(CPU_use),'ram_used_%':(psutil.virtual_memory()[2]),'overpass_behind_by':overpass_timestamp,'rawdata_api_behind_by':galaxy_timestamp},'runs_since_a_day':{'submitted':Runs_since_day.filter(status="SUBMITTED").count(),'running':Runs_since_day.filter(status="RUNNING").count(),'last_running_from':last_run_running_from,'failed':Runs_since_day.filter(status="FAILED").count(),'completed':Runs_since_day.filter(status="COMPLETED").count()},"hdx":{'total_jobs':hdx_jobs.count(),'Running_daily':hdx_jobs.filter(schedule_period='daily').count(),'Running_weekly':hdx_jobs.filter(schedule_period='weekly').count(),'Running_monthly':hdx_jobs.filter(schedule_period='monthly').count(),'Running_every_2_weeks':hdx_jobs.filter(schedule_period='2wks').count(),'Running_every_3_weeks':hdx_jobs.filter(schedule_period='3wks').count(),'Running_every_6hrs':hdx_jobs.filter(schedule_period='6hrs').count(),'Disabled':hdx_jobs.filter(schedule_period='disabled').count()}})

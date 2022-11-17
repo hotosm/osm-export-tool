@@ -11,7 +11,7 @@ from dramatiq.brokers.redis import RedisBroker
 from .base import *
 from .contrib import *
 from .utils import ABS_PATH
-from hdx.hdx_configuration import Configuration
+from hdx.api.configuration import Configuration
 
 # Project apps
 INSTALLED_APPS += (
@@ -68,7 +68,7 @@ GARMIN_MKGMAP = os.getenv('GARMIN_MKGMAP', '/usr/local/mkgmap/mkgmap.jar')
 OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'http://overpass-api.de/api/')
 
 #url to galaxy api endpoint
-GALAXY_API_URL = os.getenv('GALAXY_API_URL', 'https://galaxy-api.hotosm.org/')
+EXPORT_TOOL_API_URL = os.getenv('EXPORT_TOOL_API_URL', 'http://52.203.15.233:8000/')
 
 GENERATE_MWM = os.getenv('GENERATE_MWM','/usr/local/bin/generate_mwm.sh')
 GENERATOR_TOOL = os.getenv('GENERATOR_TOOL','/usr/local/bin/generator_tool')
@@ -209,12 +209,14 @@ REPLY_TO_EMAIL = os.getenv('REPLY_TO_EMAIL')
 SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
 
 SYNC_TO_HDX = bool(os.getenv('SYNC_TO_HDX'))
-USE_GALAXY_FOR_HDX = bool(os.getenv('USE_GALAXY_FOR_HDX',False))
+USE_RAW_DATA_API_FOR_HDX = bool(os.getenv('USE_RAW_DATA_API_FOR_HDX',True))
 HDX_API_KEY = os.getenv('HDX_API_KEY')
 HDX_NOTIFICATION_EMAIL = os.getenv('HDX_NOTIFICATION_EMAIL')
 HDX_SITE = os.getenv('HDX_SITE', 'demo')
 
 GEONAMES_API_URL = os.getenv('GEONAMES_API_URL', 'http://api.geonames.org/searchJSON')
+TASKING_MANAGER_API_URL = os.getenv('TASKING_MANAGER_API_URL', 'https://tasking-manager-tm4-production-api.hotosm.org/api/v2/projects')
+
 
 NOMINATIM_API_URL = os.getenv('NOMINATIM_API_URL', 'https://nominatim.openstreetmap.org/search.php')
 
@@ -223,5 +225,5 @@ MATOMO_SITEID = os.getenv('MATOMO_SITEID')
 HDX_URL_PREFIX = Configuration.create(
     hdx_site=os.getenv('HDX_SITE', 'demo'),
     hdx_key=os.getenv('HDX_API_KEY'),
-    user_agent="HOT Export Tool"
+    user_agent="HDXPythonLibrary/5.9.2-HOT Export Tool"
 )

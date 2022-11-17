@@ -32,10 +32,10 @@ def sync_datasets(datasets,update_dataset_date=False):
         exists = Dataset.read_from_hdx(dataset['name'])
         if exists:
             if update_dataset_date:
-                dataset.set_dataset_date_from_datetime(datetime.now())
+                dataset.set_date_of_dataset(datetime.now())
             dataset.update_in_hdx()
         else:
-            dataset.set_dataset_date_from_datetime(datetime.now())
+            dataset.set_date_of_dataset(datetime.now())
             dataset.create_in_hdx(allow_no_resources=True)
 
 def sync_region(region,files=[],public_dir=''):
@@ -66,7 +66,7 @@ class HDXExportSet(object):
     def dataset_links(self,hdx_prefix_url):
         return [{
             'name': '{}_{}'.format(self._dataset_prefix, slugify(theme.name)),
-            'url': '{}dataset/{}_{}'.format(
+            'url': '{}/dataset/{}_{}'.format(
                 hdx_prefix_url, self._dataset_prefix, slugify(theme.name)),
         } for theme in self._mapping.themes]
 
@@ -87,19 +87,23 @@ class HDXExportSet(object):
 
     def datasets(self,is_private,subnational,data_update_frequency,locations,files,public_dir):
         HDX_FORMATS = {
-            'GeoJSON':'geojson',
+            'geojson':'geojson',
             'shp': 'SHP',
             'geopackage': 'Geopackage',
+            'gpkg': 'Geopackage',
             'garmin_img': 'Garmin IMG',
-            'kml': 'KML'
+            'kml': 'KML',
+            'csv': 'CSV'
         }
 
         HDX_DESCRIPTIONS = {
-            'GeoJSON': 'geojson',
+            'geojson': 'geojson',
             'shp':'ESRI Shapefile',
             'geopackage':'Geopackage, SQLite compatible',
+            'gpkg':'Geopackage, SQLite compatible',
             'garmin_img':'.IMG for Garmin GPS Devices (All OSM layers for area)',
-            'kml':'Google Earth .KML'
+            'kml':'Google Earth .KML',
+            'csv' : 'CSV Output along with centroid of feature'
         }
 
         d = []
@@ -140,16 +144,16 @@ class HDXExportSet(object):
                     if f['theme'] == theme.name:
                         file_name = f['file_name'] # only one part: the zip file
                         resources.append({
-                        'name': file_name, 
+                        'name': f"{file_name}.zip",
                         'format': HDX_FORMATS[f['output_name']],
                         'description': HDX_DESCRIPTIONS[f['output_name']],
                         'url': f['download_url']
-                        }) 
-                else: 
+                        })
+                else:
                     if 'theme' not in f.extra or f.extra['theme'] == theme.name:
                         file_name = os.path.basename(f.parts[0]) # only one part: the zip file
                         resources.append({
-                        'name': file_name, 
+                        'name': file_name,
                         'format': HDX_FORMATS[f.output_name],
                         'description': HDX_DESCRIPTIONS[f.output_name],
                         'url': os.path.join(public_dir,file_name)
