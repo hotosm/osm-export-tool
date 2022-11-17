@@ -591,6 +591,40 @@ def get_groups(request):
     groups = [{'id':g.id,'name':g.name} for g in Group.objects.filter(is_partner=True)]
     return JsonResponse({'groups':groups})
 
+from dramatiq_abort import abort
+@require_http_methods(['GET'])
+def cancel_run(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    run_uid=request.GET.get('run_uid')
+    if run_uid :
+        try:
+            run = ExportRun.objects.get(uid=run_uid)
+            message_id= run.worker_message_id
+            if message_id :
+                LOG.debug("Canceling task_message_id:{0} ".format(message_id))
+                if run.status == 'SUBMITTED' :
+                    abort(message_id, mode='cancel')
+                elif run.status == 'RUNNING':
+                    abort(message_id) # cancel if its in queue or in progress
+
+            run.status = 'FAILED'
+            run.worker_message_id = None # set back message id
+            run.save()
+        except (Job.DoesNotExist,ExportRun.DoesNotExist,ExportTask.DoesNotExist):
+            LOG.warn('ExportRun doesnot exist . Exiting')
+            return JsonResponse(
+            {
+                'error': 'Run does not exist'
+            },
+            status=500, )
+    return JsonResponse(
+            {
+                'Sucess': 'Run Cancelled successfully'
+            })
+
+
+
 @require_http_methods(['GET'])
 def machine_status(request):
     if not request.user.is_superuser:

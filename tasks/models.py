@@ -67,6 +67,7 @@ class ExportRun(models.Model):
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     job = models.ForeignKey(Job, related_name='runs')
     user = models.ForeignKey(User, related_name="runs", default=0)
+    worker_message_id = models.CharField(max_length=50,null=True,blank=True, editable=False) # used to store worker message id for run to abort
 
     status = models.CharField(
         blank=True, max_length=20,

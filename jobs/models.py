@@ -193,8 +193,7 @@ class Job(models.Model):
 
     def save(self, *args, **kwargs):
         self.the_geom = force2d(self.the_geom)
-
-        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi,preserve_geom=self.preserve_geom)
+        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi)
         super(Job, self).save(*args, **kwargs)
 
     def __str__(self):
