@@ -231,6 +231,8 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
     if is_hdx_export:
         planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
+        country_export = HDXExportRegion.objects.get(job_id=run.job_id).country_export
+
     if is_partner_export:
         export_region = PartnerExportRegion.objects.get(job_id=run.job_id)
         planet_file = export_region.planet_file
@@ -286,12 +288,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         tabular_outputs = []
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             start_task('geojson')
 
         if 'geopackage' in export_formats:
             if settings.USE_RAW_DATA_API_FOR_HDX:
-                geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+                geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             else:
                 geopackage = tabular.MultiGeopackage(join(stage_dir,valid_name),mapping)
                 tabular_outputs.append(geopackage)
@@ -299,7 +301,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'shp' in export_formats:
             if settings.USE_RAW_DATA_API_FOR_HDX:
-                shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+                shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             else:
                 shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
                 tabular_outputs.append(shp)
@@ -307,14 +309,14 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'kml' in export_formats:
             if settings.USE_RAW_DATA_API_FOR_HDX:
-                kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+                kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             else:
                 kml = tabular.Kml(join(stage_dir,valid_name),mapping)
                 tabular_outputs.append(kml)
             start_task('kml')
 
         if 'csv' in export_formats:
-            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             start_task('csv')
 
         if planet_file:

@@ -236,7 +236,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
                   'locations', 'name', 'last_run', 'next_run',
                   'simplified_geom', 'dataset_prefix', 'job_uid', 'license',
                   'subnational', 'extra_notes', 'is_private', 'buffer_aoi',
-                  'the_geom','planet_file')
+                  'the_geom','planet_file','country_export')
         extra_kwargs = {
             'simplified_geom': {
                 'read_only': True
@@ -259,7 +259,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
 
         region_dict = slice_dict(validated_data, [
             'extra_notes', 'is_private', 'locations', 'license',
-            'schedule_period', 'schedule_hour', 'subnational','planet_file'
+            'schedule_period', 'schedule_hour', 'subnational','planet_file','country_export'
         ])
         job = Job(**job_dict)
         job.hidden = True
@@ -289,7 +289,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         validate_model(job)
         update_attrs(instance, validated_data, [
             'extra_notes', 'is_private', 'locations', 'license',
-            'schedule_period', 'schedule_hour', 'subnational', 'planet_file'
+            'schedule_period', 'schedule_hour', 'subnational', 'planet_file','country_export'
         ])
         validate_model(instance)
         with transaction.atomic():

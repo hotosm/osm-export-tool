@@ -445,6 +445,7 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
     subnational = models.BooleanField(default=True)
     extra_notes = models.TextField(null=True,blank=True)
     planet_file = models.BooleanField(default=False)
+    country_export = models.BooleanField(default=False)
 
     class Meta: # noqa
         db_table = 'hdx_export_regions'
