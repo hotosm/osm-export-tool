@@ -228,6 +228,16 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
     the_geom = geo_serializers.GeometryField()
     name = serializers.CharField()
     buffer_aoi = serializers.BooleanField()
+    def validate(self, data):
+        """
+        Check for export formats for country exports.
+        """
+        if data['country_export']:
+            if(len(data['export_formats'])) >1 :
+                raise serializers.ValidationError("Multiple Export formats for country export , Only One Accepted")
+        if HDXExportRegion.objects.filter(schedule_period='daily').count() > 6:
+            raise serializers.ValidationError("Maximum daily run limit of 6 for hdx job exceeded. Please change the frequency")
+        return data
 
     class Meta:  # noqa
         model = HDXExportRegion

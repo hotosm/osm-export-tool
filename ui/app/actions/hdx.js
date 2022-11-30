@@ -207,7 +207,10 @@ export const createExportRegion = (data, form) => (dispatch, getState) => {
       if (err.response) {
         var msg =
           "Your export region is invalid. Please check the fields above.";
-        if ("the_geom" in err.response.data) {
+        if ("non_field_errors" in err.response.data) {
+          msg = err.response.data['non_field_errors'][0]
+        }
+          if ("the_geom" in err.response.data) {
           msg += " Choose an area to the right.";
         }
         return dispatch(

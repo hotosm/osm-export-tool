@@ -237,6 +237,7 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         return HDXExportRegionSerializer
 
     def perform_create(self, serializer):
+
         serializer.save()
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
