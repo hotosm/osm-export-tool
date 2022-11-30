@@ -234,14 +234,11 @@ class RegionMixin:
     @property
     def last_run(self): # noqa
         if self.job.runs.count() > 0:
-            i=1
-            last_run_time = None
-            
-            while (last_run_time is None):  # get previous run time if current is running/submitted
-                if i >= self.job.runs.count() and i != 1: 
-                    break
-                last_run_time = self.job.runs.all()[self.job.runs.count() - i].finished_at
-                i+=1
+
+            last_run_time = self.job.runs.all()[self.job.runs.count() - 1].finished_at
+            if not last_run_time:
+                last_run_time = self.job.runs.all()[self.job.runs.count() - 1].started_at
+
             return last_run_time
 
     @property
@@ -272,7 +269,6 @@ class RegionMixin:
                     break
                 last_run_size = self.job.runs.all()[self.job.runs.count() - i].size
                 i+=1
-            print(last_run_size)
             return last_run_size
 
     @property
