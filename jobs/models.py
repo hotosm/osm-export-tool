@@ -236,10 +236,10 @@ class RegionMixin:
         if self.job.runs.count() > 0:
             i=1
             last_run_time = None
-            while (self.job.runs.all()[self.job.runs.count() - i].finished_at is not None):  # get previous run time if current is running/submitted
+            while (last_run_time is None):  # get previous run time if current is running/submitted
                 if i >= self.job.runs.count(): 
                     break
-                last_run_time = self.job.runs.all()[self.job.runs.count() - 1].finished_at
+                last_run_time = self.job.runs.all()[self.job.runs.count() - i].finished_at
                 i+=1
 
             return last_run_time
