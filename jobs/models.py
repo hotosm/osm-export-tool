@@ -252,13 +252,27 @@ class RegionMixin:
     @property
     def last_run_duration(self):
         if self.job.runs.count() > 0:
-            return time.strftime('%H:%M:%S', time.gmtime((self.job.runs.all()[self.job.runs.count() - 1].duration)))
+            i=1
+            last_run_duration = None
+            while (last_run_duration is None):  # get previous run size if current is running/submitted
+                if i >= self.job.runs.count() and i != 1: 
+                    break
+                last_run_duration = self.job.runs.all()[self.job.runs.count() - i].duration
+                i+=1
+            return time.strftime('%H:%M:%S', time.gmtime(last_run_duration))
 
 
     @property
     def last_size(self):
         if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].size
+            i=1
+            last_run_size = None
+            while (last_run_size is None):  # get previous run size if current is running/submitted
+                if i >= self.job.runs.count() and i != 1: 
+                    break
+                last_run_size = self.job.runs.all()[self.job.runs.count() - i].size
+                i+=1
+            return last_run_size
 
     @property
     def last_export_size(self):
