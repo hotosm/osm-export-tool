@@ -98,7 +98,7 @@ class ExportRun(models.Model):
 
     @property
     def duration(self):
-        if self.started_at and self.status != 'FAILED':
+        if self.started_at and self.finished_at :
             return ((self.finished_at or timezone.now()) - self.started_at).total_seconds()
         return None
 
