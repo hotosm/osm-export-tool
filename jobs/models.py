@@ -266,12 +266,13 @@ class RegionMixin:
     def last_size(self):
         if self.job.runs.count() > 0:
             i=1
-            last_run_size = None
-            while (last_run_size is None):  # get previous run size if current is running/submitted
+            last_run_size = 0
+            while (last_run_size == 0):  # get previous run size if current is running/submitted
                 if i >= self.job.runs.count() and i != 1: 
                     break
                 last_run_size = self.job.runs.all()[self.job.runs.count() - i].size
                 i+=1
+            print(last_run_size)
             return last_run_size
 
     @property
