@@ -275,6 +275,10 @@ class RegionMixin:
     def last_export_size(self):
         if self.last_size:
             return size(self.last_size)
+    @property
+    def last_run_hdx_sync(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].hdx_sync_status
 
     @property
     def next_run_hum(self):
