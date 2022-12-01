@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import uuid
 import os
+from hurry.filesize import size
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -118,9 +119,9 @@ class ExportRun(models.Model):
             lambda task: task.filesize_bytes or 0, self.tasks.all()))
 
     @property
-    def size_mb(self):
-        return "{:.1f}".format((sum(map(
-            lambda task: task.filesize_bytes or 0, self.tasks.all())))*0.000001)
+    def run_size(self):
+        if self.size:
+            return size(self.size)
 
 class ExportTask(models.Model):
     """
@@ -213,7 +214,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','run_duration','started_at','size_mb']
+    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','run_duration','started_at','run_size']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
