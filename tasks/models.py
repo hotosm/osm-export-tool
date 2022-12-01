@@ -15,7 +15,7 @@ from django.contrib.gis.admin import GeoModelAdmin
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 import validators
-import requests
+import time
 
 import csv
 from django.http import HttpResponse
@@ -103,15 +103,9 @@ class ExportRun(models.Model):
         return None
 
     @property
-    def duration_min(self):
+    def run_duration(self):
         if self.started_at and self.finished_at:
-            return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
-        return None
-
-    @property
-    def total_time_min(self):
-        if  self.finished_at and self.created_at:
-            return "{:.1f}".format((self.finished_at - self.created_at).total_seconds()/60)
+            return time.strftime('%H:%M:%S', time.gmtime((self.finished_at - self.started_at).total_seconds()))
         return None
 
     @property
@@ -219,7 +213,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','duration_min','total_time_min','size_mb']
+    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','run_duration','started_at','size_mb']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
