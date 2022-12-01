@@ -111,7 +111,7 @@ class ExportRun(models.Model):
 
     @property
     def elapsed_time(self):
-        return (self.finished_at or timezone.now() - self.started_at)
+        return ((self.finished_at or timezone.now()) - (self.started_at or self.created_at))
 
     @property
     def size(self):
