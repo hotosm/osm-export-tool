@@ -273,8 +273,8 @@ class JobAdmin(GeoModelAdmin,ExportCsvMixin):
 
 
 class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
-    list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','next_run','next_run_hum','last_export_size',"last_run_duration",'export_formats','country_export','schedule_hour','is_private','locations','created_by']
-    list_filter = ('schedule_period','schedule_hour','country_export','is_private','locations')
+    list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','sync_status','next_run','next_run_hum','last_export_size',"last_run_duration",'export_formats','country_export','schedule_hour','is_private','locations','created_by']
+    list_filter = ('sync_status','schedule_period','schedule_hour','country_export','is_private','locations')
     raw_id_fields = ("job",)
     actions = ["export_as_csv"]
 

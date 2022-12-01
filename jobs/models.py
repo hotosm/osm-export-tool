@@ -469,13 +469,16 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
     extra_notes = models.TextField(null=True,blank=True)
     planet_file = models.BooleanField(default=False)
     country_export = models.BooleanField(default=False)
+    sync_status =  models.BooleanField(default=False)
 
     class Meta: # noqa
         db_table = 'hdx_export_regions'
+    
 
     def __str__(self):
         return self.name + " (prefix: " + self.dataset_prefix + ")"
 
+    
     def clean(self):
         if self.job and not re.match(r'^[a-z0-9-_]+$',self.job.name):
             raise ValidationError({'dataset_prefix':"Invalid dataset_prefix: {0}".format(self.job.name)})

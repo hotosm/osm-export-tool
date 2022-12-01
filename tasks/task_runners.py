@@ -485,8 +485,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if settings.SYNC_TO_HDX:
             LOG.debug('Syncing to HDX for run: {0}'.format(run_uid))
             region = HDXExportRegion.objects.get(job_id=run.job_id)
-            public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
-            sync_region(region,all_zips,public_dir)
+            try:
+                public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
+                sync_region(region,all_zips,public_dir)
+                region.sync_status = True
+            except Exception as ex:
+                region.sync_status = False
+                LOG.error(ex)
         send_hdx_completion_notification(run, run.job.hdx_export_region_set.first())
     else:
         geopackage = None
