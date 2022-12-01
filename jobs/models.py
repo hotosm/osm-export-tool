@@ -413,6 +413,10 @@ class RegionMixin:
         return self.job.uid
 
     @property
+    def created_by(self):
+        return self.job.user
+
+    @property
     def export_formats(self): # noqa
         return self.job.export_formats
 

@@ -157,16 +157,16 @@ class ExportTask(models.Model):
 
 
     @property
-    def duration_min(self):
+    def task_duration(self):
         if self.started_at and self.finished_at:
-            return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
+            return time.strftime('%H:%M:%S', time.gmtime((self.finished_at - self.started_at).total_seconds()))
         return None
 
+    
     @property
-    def filesize_mb(self):
+    def task_size(self):
         if self.filesize_bytes:
-            return "{:.1f}".format((self.filesize_bytes)*0.000001)
-        return None
+            return size(self.filesize_bytes)
 
     @property
     def download_urls(self):
@@ -235,7 +235,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
                         args=(obj.job.id,)))
 
 class ExportTaskAdmin(admin.ModelAdmin):
-    list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration_min']
+    list_display = ['uid','run','name','status','created_at','username','task_size','task_duration']
     search_fields = ['uid','run__uid']
     list_filter = ('name','status')
     date_hierarchy = 'created_at'
@@ -273,7 +273,7 @@ class JobAdmin(GeoModelAdmin,ExportCsvMixin):
 
 
 class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
-    list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','next_run','next_run_hum','last_export_size',"last_run_duration",'export_formats','schedule_hour','is_private','locations']
+    list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','next_run','next_run_hum','last_export_size',"last_run_duration",'export_formats','schedule_hour','is_private','locations','created_by']
     list_filter = ('schedule_period','schedule_hour','is_private','locations')
     raw_id_fields = ("job",)
     actions = ["export_as_csv"]
