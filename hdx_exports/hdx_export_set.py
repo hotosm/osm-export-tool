@@ -53,7 +53,7 @@ def sync_region(region,files=[],public_dir=''):
         files,
         public_dir
     )
-    sync_datasets(datasets,len(files) > 0)
+    sync_datasets(datasets,True)
 
 class HDXExportSet(object):
     def __init__(self,mapping,dataset_prefix,name,extra_notes=''):
