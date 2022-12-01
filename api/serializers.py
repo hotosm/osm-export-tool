@@ -42,7 +42,7 @@ class ExportRunSerializer(serializers.ModelSerializer):
         model = ExportRun
         lookup_field = 'uid'
         fields = ('uid', 'started_at', 'finished_at', 'duration',
-                  'elapsed_time', 'user', 'size', 'status', 'tasks')
+                  'elapsed_time', 'user', 'size','hdx_sync_status', 'status', 'tasks')
 
 
 class ConfigurationSerializer(serializers.ModelSerializer):

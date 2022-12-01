@@ -260,6 +260,25 @@ class ExportRuns extends Component {
                     </tr>
                   </RequirePermission>
                   ):(console.log('Normal'))}
+                  <RequirePermission required={[
+          "jobs.add_hdxexportregion",
+          "jobs.change_hdxexportregion",
+          "jobs.delete_hdxexportregion",
+        ]}>
+                    <tr>
+                      <td>
+                        <FormattedMessage
+                          id="ui.exports.hdx_sync_status"
+                          defaultMessage="HDX Sync Status:"
+                        />
+                      </td>
+                      <td colSpan="3">
+                      {run.hdx_sync_status ? "Uploaded" : "Not Uploaded"}
+                      </td>
+                    </tr>
+                  </RequirePermission>
+                  
+                  
                   <tr>
                     <td>
                       <FormattedMessage
