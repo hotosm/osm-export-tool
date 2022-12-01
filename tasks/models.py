@@ -73,7 +73,7 @@ class ExportRun(models.Model):
         blank=True, max_length=20,
         db_index=True, default=''
     )
-    started_at = models.DateTimeField(default=timezone.now, editable=False)
+    started_at = models.DateTimeField(null=True, editable=False)
     finished_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
