@@ -78,37 +78,41 @@ class ExportTaskRunner(object):
         job = Job.objects.get(uid=job_uid)
         if not user:
             user = job.user
-        run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED')
-        run.save()
-        run_uid = str(run.uid)
-        LOG.debug('Saved run with id: {0}'.format(run_uid))
-
-        for format_name in job.export_formats:
-            ExportTask.objects.create(
-                run=run,
-                status='PENDING',
-                name=format_name
-            )
-            LOG.debug('Saved task: {0}'.format(format_name))
-
-        if HDXExportRegion.objects.filter(job=job).exists():
-            ondemand=False # move hdx jobs to scheduled even though triggered from run now , so that they won't block ondemand queue
-        if ondemand:
-            # run_task_remote(run_uid)
-            # db.close_old_connections()
-            send_task=run_task_async_ondemand.send(run_uid)
-            run.worker_message_id=send_task.message_id
+        if job.last_run_status != 'SUBMITTED' or job.last_run_status != 'RUNNING': 
+            run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED')
             run.save()
-            LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
-        else:
-            # run_task_remote(run_uid)
-            # db.close_old_connections()
-            send_task=run_task_async_scheduled.send(run_uid)
-            run.worker_message_id=send_task.message_id
-            run.save()
-            LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
+            run_uid = str(run.uid)
+            LOG.debug('Saved run with id: {0}'.format(run_uid))
 
-        return run
+            for format_name in job.export_formats:
+                ExportTask.objects.create(
+                    run=run,
+                    status='PENDING',
+                    name=format_name
+                )
+                LOG.debug('Saved task: {0}'.format(format_name))
+
+            if HDXExportRegion.objects.filter(job=job).exists():
+                ondemand=False # move hdx jobs to scheduled even though triggered from run now , so that they won't block ondemand queue
+            if ondemand:
+                # run_task_remote(run_uid)
+                # db.close_old_connections()
+                send_task=run_task_async_ondemand.send(run_uid)
+                run.worker_message_id=send_task.message_id
+                run.save()
+                LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
+            else:
+                # run_task_remote(run_uid)
+                # db.close_old_connections()
+                send_task=run_task_async_scheduled.send(run_uid)
+                run.worker_message_id=send_task.message_id
+                run.save()
+                LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
+
+            return run
+        else : 
+            LOG.warn('Previous run is on operation already for job: {0}'.format(job_uid))
+            return None
 
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*4) # 4 hour
 def run_task_async_ondemand(run_uid):
