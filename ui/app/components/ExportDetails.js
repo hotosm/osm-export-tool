@@ -209,7 +209,7 @@ class ExportRuns extends Component {
       <div>
         {runs.map((run, i) => {
           return (
-            <Panel header={formatDate(run.started_at)} key={i}>
+            <Panel header={formatDate(run.created_at)} key={i}>
               <Table responsive>
                 <tbody>
                   <tr>
@@ -288,6 +288,17 @@ class ExportRuns extends Component {
                     </td>
                     <td colSpan="3">
                       {run.uid}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <FormattedMessage
+                        id="ui.exports.started"
+                        defaultMessage="Started:"
+                      />
+                    </td>
+                    <td colSpan="3">
+                      {run.started_at ? formatDate(run.started_at) : ""}
                     </td>
                   </tr>
                   <tr>
