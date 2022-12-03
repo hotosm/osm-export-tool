@@ -179,6 +179,10 @@ class ExportTask(models.Model):
                     value = download_url.split('/')
                     name=value[-1]
                     split_name=name.split('_uid_')
+                    file_name=split_name[0]
+                    
+                    if file_name[-len(self.name):] == self.name:  # from api it comes export format embeeded  
+                        file_name[:-(len(self.name)-1)]
                     download_name=f"{split_name[0]}.zip"  # getting human redable name ignoring unique id
                     fname=download_name
                 except:
