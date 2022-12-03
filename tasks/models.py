@@ -183,7 +183,7 @@ class ExportTask(models.Model):
                     
                     if file_name[-(2*len(self.name)+1):] == f"{self.name}_{self.name}":  
                         # filename has duplicated export formats
-                        file_name=file_name[:-(len(self.name)-1)]
+                        file_name=file_name[:-(len(self.name)+1)]
                     download_name=f"{file_name}.zip"  # getting human redable name ignoring unique id
                     fname=download_name
                 except:
