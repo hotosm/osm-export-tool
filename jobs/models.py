@@ -235,10 +235,7 @@ class RegionMixin:
     def last_run(self): # noqa
         if self.job.runs.count() > 0:
 
-            last_run_time = self.job.runs.all()[self.job.runs.count() - 1].finished_at
-            if not last_run_time:
-                last_run_time = self.job.runs.all()[self.job.runs.count() - 1].started_at
-
+            last_run_time = self.job.runs.all()[self.job.runs.count() - 1].finished_at or self.job.runs.all()[self.job.runs.count() - 1].started_at or self.job.runs.all()[self.job.runs.count() - 1].created_at
             return last_run_time
 
     @property
