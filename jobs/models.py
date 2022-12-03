@@ -217,7 +217,7 @@ class SavedFeatureSelection(models.Model):
         return str(self.name)
 
 PERIOD_CHOICES = (
-    ('6hrs', 'Every 6 hours check'),
+    ('6hrs', 'Every 6 hours'),
     ('daily', 'Every day'),
     ('weekly', 'Every Sunday'),
     ('2wks', 'Every two weeks'),
