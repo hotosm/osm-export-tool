@@ -293,17 +293,6 @@ class ExportRuns extends Component {
                   <tr>
                     <td>
                       <FormattedMessage
-                        id="ui.exports.started"
-                        defaultMessage="Started:"
-                      />
-                    </td>
-                    <td colSpan="3">
-                      {run.started_at ? formatDate(run.started_at) : ""}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <FormattedMessage
                         id="ui.exports.finished"
                         defaultMessage="Finished:"
                       />
