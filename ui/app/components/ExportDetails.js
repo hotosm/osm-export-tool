@@ -290,6 +290,23 @@ class ExportRuns extends Component {
                       {run.uid}
                     </td>
                   </tr>
+                  <RequirePermission required={[
+          "jobs.add_hdxexportregion",
+          "jobs.change_hdxexportregion",
+          "jobs.delete_hdxexportregion",
+        ]}>
+                  <tr>
+                    <td>
+                      <FormattedMessage
+                        id="ui.exports.started"
+                        defaultMessage="Started:"
+                      />
+                    </td>
+                    <td colSpan="3">
+                      {run.started_at ? formatDate(run.started_at) : ""}
+                    </td>
+                  </tr>
+                  </RequirePermission>
                   <tr>
                     <td>
                       <FormattedMessage
