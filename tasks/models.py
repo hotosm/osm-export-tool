@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import uuid
 import os
+from hurry.filesize import size
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -15,7 +16,7 @@ from django.contrib.gis.admin import GeoModelAdmin
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 import validators
-import requests
+import time
 
 import csv
 from django.http import HttpResponse
@@ -68,12 +69,12 @@ class ExportRun(models.Model):
     job = models.ForeignKey(Job, related_name='runs')
     user = models.ForeignKey(User, related_name="runs", default=0)
     worker_message_id = models.CharField(max_length=50,null=True,blank=True, editable=False) # used to store worker message id for run to abort
-
+    hdx_sync_status =  models.BooleanField(default=False)
     status = models.CharField(
         blank=True, max_length=20,
         db_index=True, default=''
     )
-    started_at = models.DateTimeField(default=timezone.now, editable=False)
+    started_at = models.DateTimeField(null=True, editable=False)
     finished_at = models.DateTimeField(editable=False, null=True)
 
     class Meta:
@@ -98,25 +99,19 @@ class ExportRun(models.Model):
 
     @property
     def duration(self):
-        if self.started_at :
+        if self.started_at and self.finished_at :
             return ((self.finished_at or timezone.now()) - self.started_at).total_seconds()
         return None
 
     @property
-    def duration_min(self):
+    def run_duration(self):
         if self.started_at and self.finished_at:
-            return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
-        return None
-
-    @property
-    def total_time_min(self):
-        if  self.finished_at and self.created_at:
-            return "{:.1f}".format((self.finished_at - self.created_at).total_seconds()/60)
+            return time.strftime('%H:%M:%S', time.gmtime((self.finished_at - self.started_at).total_seconds()))
         return None
 
     @property
     def elapsed_time(self):
-        return (self.finished_at or timezone.now()) - self.started_at
+        return ((self.finished_at or timezone.now()) - (self.started_at or self.created_at))
 
     @property
     def size(self):
@@ -124,9 +119,9 @@ class ExportRun(models.Model):
             lambda task: task.filesize_bytes or 0, self.tasks.all()))
 
     @property
-    def size_mb(self):
-        return "{:.1f}".format((sum(map(
-            lambda task: task.filesize_bytes or 0, self.tasks.all())))*0.000001)
+    def run_size(self):
+        if self.size:
+            return size(self.size)
 
 class ExportTask(models.Model):
     """
@@ -162,16 +157,16 @@ class ExportTask(models.Model):
 
 
     @property
-    def duration_min(self):
+    def task_duration(self):
         if self.started_at and self.finished_at:
-            return "{:.1f}".format((self.finished_at - self.started_at).total_seconds()/60)
+            return time.strftime('%H:%M:%S', time.gmtime((self.finished_at - self.started_at).total_seconds()))
         return None
 
+    
     @property
-    def filesize_mb(self):
+    def task_size(self):
         if self.filesize_bytes:
-            return "{:.1f}".format((self.filesize_bytes)*0.000001)
-        return None
+            return size(self.filesize_bytes)
 
     @property
     def download_urls(self):
@@ -184,7 +179,12 @@ class ExportTask(models.Model):
                     value = download_url.split('/')
                     name=value[-1]
                     split_name=name.split('_uid_')
-                    download_name=f"{split_name[0]}.zip"  # getting human redable name ignoring unique id
+                    file_name=split_name[0]
+                    
+                    if file_name[-(2*len(self.name)+1):] == f"{self.name}_{self.name}":  
+                        # filename has duplicated export formats
+                        file_name=file_name[:-(2*len(self.name)+2)]
+                    download_name=f"{file_name}.zip"  # getting human redable name ignoring unique id
                     fname=download_name
                 except:
                     fname=f"""{self.run.job.name}_{self.name}.zip"""
@@ -219,7 +219,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','duration_min','total_time_min','size_mb']
+    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','run_duration','started_at','run_size']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
@@ -240,7 +240,7 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
                         args=(obj.job.id,)))
 
 class ExportTaskAdmin(admin.ModelAdmin):
-    list_display = ['uid','run','name','status','created_at','username','filesize_mb','duration_min']
+    list_display = ['uid','run','name','status','created_at','username','task_size','task_duration']
     search_fields = ['uid','run__uid']
     list_filter = ('name','status')
     date_hierarchy = 'created_at'
@@ -278,8 +278,8 @@ class JobAdmin(GeoModelAdmin,ExportCsvMixin):
 
 
 class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
-    list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','next_run','next_run_hum','last_export_size',"last_run_duration",'export_formats','schedule_hour','is_private','locations']
-    list_filter = ('schedule_period','schedule_hour','is_private','locations')
+    list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','last_run_hdx_sync','next_run_hum','last_export_size',"last_run_duration",'export_formats','country_export','schedule_hour','is_private','locations','created_by']
+    list_filter = ('schedule_period','schedule_hour','country_export','is_private','locations')
     raw_id_fields = ("job",)
     actions = ["export_as_csv"]
 

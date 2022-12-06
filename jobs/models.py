@@ -217,7 +217,7 @@ class SavedFeatureSelection(models.Model):
         return str(self.name)
 
 PERIOD_CHOICES = (
-    ('6hrs', 'Every 6 hours check'),
+    ('6hrs', 'Every 6 hours'),
     ('daily', 'Every day'),
     ('weekly', 'Every Sunday'),
     ('2wks', 'Every two weeks'),
@@ -234,7 +234,9 @@ class RegionMixin:
     @property
     def last_run(self): # noqa
         if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].finished_at
+
+            last_run_time = self.job.runs.all()[self.job.runs.count() - 1].finished_at or self.job.runs.all()[self.job.runs.count() - 1].started_at or self.job.runs.all()[self.job.runs.count() - 1].created_at
+            return last_run_time
 
     @property
     def last_run_status(self):
@@ -244,18 +246,36 @@ class RegionMixin:
     @property
     def last_run_duration(self):
         if self.job.runs.count() > 0:
-            return time.strftime('%H:%M:%S', time.gmtime((self.job.runs.all()[self.job.runs.count() - 1].duration)))
+            i=1
+            last_run_duration = None
+            while (last_run_duration is None):  # get previous run size if current is running/submitted
+                if i >= self.job.runs.count() and i != 1: 
+                    break
+                last_run_duration = self.job.runs.all()[self.job.runs.count() - i].duration
+                i+=1
+            return time.strftime('%H:%M:%S', time.gmtime(last_run_duration))
 
 
     @property
     def last_size(self):
         if self.job.runs.count() > 0:
-            return self.job.runs.all()[self.job.runs.count() - 1].size
+            i=1
+            last_run_size = 0
+            while (last_run_size == 0):  # get previous run size if current is running/submitted
+                if i >= self.job.runs.count() and i != 1: 
+                    break
+                last_run_size = self.job.runs.all()[self.job.runs.count() - i].size
+                i+=1
+            return last_run_size
 
     @property
     def last_export_size(self):
         if self.last_size:
             return size(self.last_size)
+    @property
+    def last_run_hdx_sync(self):
+        if self.job.runs.count() > 0:
+            return self.job.runs.all()[self.job.runs.count() - 1].hdx_sync_status
 
     @property
     def next_run_hum(self):
@@ -394,6 +414,10 @@ class RegionMixin:
         return self.job.uid
 
     @property
+    def created_by(self):
+        return self.job.user
+
+    @property
     def export_formats(self): # noqa
         return self.job.export_formats
 
@@ -445,13 +469,16 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
     subnational = models.BooleanField(default=True)
     extra_notes = models.TextField(null=True,blank=True)
     planet_file = models.BooleanField(default=False)
+    country_export = models.BooleanField(default=False)
 
     class Meta: # noqa
         db_table = 'hdx_export_regions'
+    
 
     def __str__(self):
         return self.name + " (prefix: " + self.dataset_prefix + ")"
 
+    
     def clean(self):
         if self.job and not re.match(r'^[a-z0-9-_]+$',self.job.name):
             raise ValidationError({'dataset_prefix':"Invalid dataset_prefix: {0}".format(self.job.name)})

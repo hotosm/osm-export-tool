@@ -78,37 +78,41 @@ class ExportTaskRunner(object):
         job = Job.objects.get(uid=job_uid)
         if not user:
             user = job.user
-        run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED')
-        run.save()
-        run_uid = str(run.uid)
-        LOG.debug('Saved run with id: {0}'.format(run_uid))
-
-        for format_name in job.export_formats:
-            ExportTask.objects.create(
-                run=run,
-                status='PENDING',
-                name=format_name
-            )
-            LOG.debug('Saved task: {0}'.format(format_name))
-
-        if HDXExportRegion.objects.filter(job=job).exists():
-            ondemand=False # move hdx jobs to scheduled even though triggered from run now , so that they won't block ondemand queue
-        if ondemand:
-            # run_task_remote(run_uid)
-            # db.close_old_connections()
-            send_task=run_task_async_ondemand.send(run_uid)
-            run.worker_message_id=send_task.message_id
+        if job.last_run_status != 'SUBMITTED' or job.last_run_status != 'RUNNING': 
+            run = ExportRun.objects.create(job=job, user=user, status='SUBMITTED')
             run.save()
-            LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
-        else:
-            # run_task_remote(run_uid)
-            # db.close_old_connections()
-            send_task=run_task_async_scheduled.send(run_uid)
-            run.worker_message_id=send_task.message_id
-            run.save()
-            LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
+            run_uid = str(run.uid)
+            LOG.debug('Saved run with id: {0}'.format(run_uid))
 
-        return run
+            for format_name in job.export_formats:
+                ExportTask.objects.create(
+                    run=run,
+                    status='PENDING',
+                    name=format_name
+                )
+                LOG.debug('Saved task: {0}'.format(format_name))
+
+            if HDXExportRegion.objects.filter(job=job).exists():
+                ondemand=False # move hdx jobs to scheduled even though triggered from run now , so that they won't block ondemand queue
+            if ondemand:
+                # run_task_remote(run_uid)
+                # db.close_old_connections()
+                send_task=run_task_async_ondemand.send(run_uid)
+                run.worker_message_id=send_task.message_id
+                run.save()
+                LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
+            else:
+                # run_task_remote(run_uid)
+                # db.close_old_connections()
+                send_task=run_task_async_scheduled.send(run_uid)
+                run.worker_message_id=send_task.message_id
+                run.save()
+                LOG.debug("Worker message saved with task_message_id:{0} ".format(run.worker_message_id))
+
+            return run
+        else : 
+            LOG.warn('Previous run is on operation already for job: {0}'.format(job_uid))
+            return None
 
 @dramatiq.actor(max_retries=0,queue_name='default',time_limit=1000*60*60*4) # 4 hour
 def run_task_async_ondemand(run_uid):
@@ -231,6 +235,8 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
     if is_hdx_export:
         planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
+        country_export = HDXExportRegion.objects.get(job_id=run.job_id).country_export
+
     if is_partner_export:
         export_region = PartnerExportRegion.objects.get(job_id=run.job_id)
         planet_file = export_region.planet_file
@@ -286,12 +292,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         tabular_outputs = []
         if 'geojson' in export_formats:
-            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            geojson = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             start_task('geojson')
 
         if 'geopackage' in export_formats:
             if settings.USE_RAW_DATA_API_FOR_HDX:
-                geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+                geopackage = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             else:
                 geopackage = tabular.MultiGeopackage(join(stage_dir,valid_name),mapping)
                 tabular_outputs.append(geopackage)
@@ -299,7 +305,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'shp' in export_formats:
             if settings.USE_RAW_DATA_API_FOR_HDX:
-                shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+                shp = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             else:
                 shp = tabular.Shapefile(join(stage_dir,valid_name),mapping)
                 tabular_outputs.append(shp)
@@ -307,14 +313,14 @@ def run_task(run_uid,run,stage_dir,download_dir):
 
         if 'kml' in export_formats:
             if settings.USE_RAW_DATA_API_FOR_HDX:
-                kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+                kml = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             else:
                 kml = tabular.Kml(join(stage_dir,valid_name),mapping)
                 tabular_outputs.append(kml)
             start_task('kml')
 
         if 'csv' in export_formats:
-            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name)
+            csv = Galaxy(settings.EXPORT_TOOL_API_URL,geom,mapping=mapping,file_name=valid_name,country_export=country_export)
             start_task('csv')
 
         if planet_file:
@@ -483,8 +489,13 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if settings.SYNC_TO_HDX:
             LOG.debug('Syncing to HDX for run: {0}'.format(run_uid))
             region = HDXExportRegion.objects.get(job_id=run.job_id)
-            public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
-            sync_region(region,all_zips,public_dir)
+            try:
+                public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
+                sync_region(region,all_zips,public_dir)
+                run.hdx_sync_status = True
+            except Exception as ex:
+                run.sync_status = False
+                LOG.error(ex)
         send_hdx_completion_notification(run, run.job.hdx_export_region_set.first())
     else:
         geopackage = None

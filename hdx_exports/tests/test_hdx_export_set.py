@@ -3,7 +3,7 @@
 import json
 import unittest
 from hdx_exports.hdx_export_set import HDXExportSet
-from hdx.hdx_configuration import Configuration
+from hdx.api.configuration import Configuration
 from django.contrib.gis.geos import GEOSGeometry
 
 from hdx.data.hdxobject import HDXError

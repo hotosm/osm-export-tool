@@ -134,7 +134,19 @@ export const runExport = jobUid => (dispatch, getState) => {
     url: `/api/runs?job_uid=${jobUid}`,
     method: "POST"
   }).then(rsp => dispatch(getRuns(jobUid)))
-  .catch(err => alert("Please wait - there is a limit of one run created per minute."));
+  .catch(function (error) {
+    if (error.response) {
+      if(error.response.data.status == "PREVIOUS_RUN_IN_QUEUE"){
+        alert("Please wait to complete previous RUN");
+      }
+      else{
+        alert("Please wait : There is limit of one RUN per Minute");
+      }
+    }
+    else {
+      alert("Please wait : There is limit of one RUN per Minute");
+    }
+  });
 };
 
 export const getOverpassTimestamp = () => (dispatch, getState) => {

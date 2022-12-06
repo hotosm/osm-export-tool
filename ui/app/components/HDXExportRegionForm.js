@@ -534,6 +534,14 @@ export class HDXExportRegionForm extends Component {
                     type="checkbox"
                   />
                 </Col>
+                <Col xs={6}>
+                  <Field
+                    name="country_export"
+                    description="Country Export (Use for exporting countries): Get's intersecting country and uses country boundary"
+                    component={renderCheckbox}
+                    type="checkbox"
+                  />
+                </Col>
               </Row>
               <Field
                 name="locations"
@@ -771,7 +779,6 @@ Roads:
     caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
   types:
     - lines
-    - polygons
   select:
     - name
     - highway
@@ -947,7 +954,6 @@ Railways:
     caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
   types:
     - lines
-    - polygons
   select:
     - name
     - railway
@@ -962,12 +968,13 @@ Railways:
     is_private: true,
     license: "hdx-odc-by",
     license_human_readable: "Open Database License (ODC-ODbL)",
-    schedule_period: "daily",
+    schedule_period: "monthly",
     schedule_hour: 0,
     subnational: true,
-    export_formats: ["geojson","shp"],
+    export_formats: ["geojson"],
     buffer_aoi: false,
-    planet_file: false
+    planet_file: false,
+    country_export: true,
   },
   locationOptions: selectLocationOptions(state),
   name: formValueSelector(FORM_NAME)(state, "name"),

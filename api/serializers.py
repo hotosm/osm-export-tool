@@ -41,8 +41,8 @@ class ExportRunSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportRun
         lookup_field = 'uid'
-        fields = ('uid', 'started_at', 'finished_at', 'duration',
-                  'elapsed_time', 'user', 'size', 'status', 'tasks')
+        fields = ('uid','created_at', 'started_at', 'finished_at', 'duration',
+                  'elapsed_time', 'user', 'size','hdx_sync_status', 'status', 'tasks')
 
 
 class ConfigurationSerializer(serializers.ModelSerializer):
@@ -228,6 +228,16 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
     the_geom = geo_serializers.GeometryField()
     name = serializers.CharField()
     buffer_aoi = serializers.BooleanField()
+    def validate(self, data):
+        """
+        Check for export formats for country exports.
+        """
+        if data['country_export']:
+            if(len(data['export_formats'])) >1 :
+                raise serializers.ValidationError("Multiple Export formats for country export , Only One Accepted")
+        if HDXExportRegion.objects.filter(schedule_period='daily').count() > 6:
+            raise serializers.ValidationError("Maximum daily run limit of 6 for hdx job exceeded. Please change the frequency")
+        return data
 
     class Meta:  # noqa
         model = HDXExportRegion
@@ -236,7 +246,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
                   'locations', 'name', 'last_run', 'next_run',
                   'simplified_geom', 'dataset_prefix', 'job_uid', 'license',
                   'subnational', 'extra_notes', 'is_private', 'buffer_aoi',
-                  'the_geom','planet_file')
+                  'the_geom','planet_file','country_export')
         extra_kwargs = {
             'simplified_geom': {
                 'read_only': True
@@ -259,7 +269,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
 
         region_dict = slice_dict(validated_data, [
             'extra_notes', 'is_private', 'locations', 'license',
-            'schedule_period', 'schedule_hour', 'subnational','planet_file'
+            'schedule_period', 'schedule_hour', 'subnational','planet_file','country_export'
         ])
         job = Job(**job_dict)
         job.hidden = True
@@ -289,7 +299,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         validate_model(job)
         update_attrs(instance, validated_data, [
             'extra_notes', 'is_private', 'locations', 'license',
-            'schedule_period', 'schedule_hour', 'subnational', 'planet_file'
+            'schedule_period', 'schedule_hour', 'subnational', 'planet_file','country_export'
         ])
         validate_model(instance)
         with transaction.atomic():

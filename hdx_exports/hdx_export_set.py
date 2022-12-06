@@ -36,7 +36,7 @@ def sync_datasets(datasets,update_dataset_date=False):
             dataset.update_in_hdx()
         else:
             dataset.set_date_of_dataset(datetime.now())
-            dataset.create_in_hdx(allow_no_resources=True)
+            dataset.c(allow_no_resources=True)
 
 def sync_region(region,files=[],public_dir=''):
     export_set = HDXExportSet(
@@ -147,7 +147,8 @@ class HDXExportSet(object):
                         'name': f"{file_name}.zip",
                         'format': HDX_FORMATS[f['output_name']],
                         'description': HDX_DESCRIPTIONS[f['output_name']],
-                        'url': f['download_url']
+                        'url': f['download_url'],
+                        'last_modified':datetime.now().isoformat()
                         })
                 else:
                     if 'theme' not in f.extra or f.extra['theme'] == theme.name:
@@ -156,7 +157,8 @@ class HDXExportSet(object):
                         'name': file_name,
                         'format': HDX_FORMATS[f.output_name],
                         'description': HDX_DESCRIPTIONS[f.output_name],
-                        'url': os.path.join(public_dir,file_name)
+                        'url': os.path.join(public_dir,file_name),
+                        'last_modified':datetime.now().isoformat()
                         })
             # stable sort, but put shapefiles first for Geopreview to pick up correctly
             resources.sort(key=lambda x: 0 if x['format'] == 'zipped shapefile' else 1)
