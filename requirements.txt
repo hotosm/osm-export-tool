@@ -23,7 +23,7 @@ requests_oauthlib==0.8.0
 pyparsing>=2.2.0
 oauthlib==2.0.7
 gunicorn==19.9.0
-osmium~=2.15.2
+osmium~=3.5.0
 dramatiq[redis,watch]~=1.13.0
 boto3~=1.23.10 # needed for cloudwatch
 rasterio~=1.0.25
