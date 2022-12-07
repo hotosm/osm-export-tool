@@ -90,6 +90,10 @@ class ExportRun(models.Model):
     @property
     def name(self):
         return self.job.name
+    
+    @property
+    def description(self):
+        return self.job.description
 
     @property
     def is_hdx(self):
@@ -219,11 +223,11 @@ class ExportRunAdmin(admin.ModelAdmin,ExportCsvMixin):
         for run in queryset:
             run_task_async_ondemand.send(str(run.uid))
 
-    list_display = ['uid','job_ui_link','name','status','export_formats','is_hdx','user','created_at','run_duration','started_at','run_size']
+    list_display = ['uid','job_ui_link','name','description','status','export_formats','is_hdx','user','created_at','run_duration','started_at','run_size']
     list_filter = ('status',)
     readonly_fields = ('uid','user','created_at')
     raw_id_fields = ('job',)
-    search_fields = ['uid']
+    search_fields = ['uid','job__name','job__description']
     actions = [start]
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
@@ -279,7 +283,7 @@ class JobAdmin(GeoModelAdmin,ExportCsvMixin):
 
 class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','last_run_hdx_sync','next_run_hum','last_export_size',"last_run_duration",'export_formats','country_export','schedule_hour','is_private','locations','created_by']
-    list_filter = ('schedule_period','schedule_hour','country_export','is_private')
+    list_filter = ('schedule_period','country_export','is_private','schedule_hour','job__user')
     raw_id_fields = ("job",)
     search_fields = ['job__name','job__description', 'job__uid']
     date_hierarchy = 'job__updated_at'
