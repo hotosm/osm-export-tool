@@ -795,8 +795,7 @@ def machine_status(request):
         datetime.now(timezone.utc) - dateutil.parser.parse(overpass.content)
     )
     galaxy_timestamp = str(
-        datetime.now(timezone.utc)
-        - dateutil.parser.parse(galaxy.json()["last_updated"])
+        datetime.now(timezone.utc) - dateutil.parser.parse(galaxy.json()["lastUpdated"])
     )
     return JsonResponse(
         {
