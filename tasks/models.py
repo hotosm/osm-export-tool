@@ -266,7 +266,7 @@ class JobAdmin(GeoModelAdmin,ExportCsvMixin):
         return obj.simplified_geom.json
 
     search_fields = ['uid', 'name', 'user__username']
-    list_display = ['uid', 'name', 'user','is_hdx','export_formats','last_run_date','last_run_status','created_at', 'updated_at','area']
+    list_display = ['uid', 'name','description', 'user','is_hdx','export_formats','last_run_date','last_run_status','created_at', 'updated_at','area']
     list_filter = ('pinned',)
     exclude = ['the_geom']
     raw_id_fields = ("user",)
@@ -279,8 +279,11 @@ class JobAdmin(GeoModelAdmin,ExportCsvMixin):
 
 class HDXExportRegionAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ['name','job_link','edit_link','schedule_period','last_run_hum','last_run_status','last_run_hdx_sync','next_run_hum','last_export_size',"last_run_duration",'export_formats','country_export','schedule_hour','is_private','locations','created_by']
-    list_filter = ('schedule_period','schedule_hour','country_export','is_private','locations')
+    list_filter = ('schedule_period','schedule_hour','country_export','is_private')
     raw_id_fields = ("job",)
+    search_fields = ['job__name','job__description', 'job__uid']
+    date_hierarchy = 'job__updated_at'
+    ordering = ('job__updated_at',)
     actions = ["export_as_csv"]
 
     def job_link(self, obj):
