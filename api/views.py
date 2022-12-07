@@ -789,7 +789,7 @@ def machine_status(request):
         last_run_timestamp = "N/A"
         last_run_running_from = "N/A"
     overpass = requests.get("{}timestamp".format(settings.OVERPASS_API_URL))
-    galaxy = requests.get("{}v1/raw-data/status/".format(settings.EXPORT_TOOL_API_URL))
+    galaxy = requests.get("{}v1/status/".format(settings.EXPORT_TOOL_API_URL))
 
     overpass_timestamp = str(
         datetime.now(timezone.utc) - dateutil.parser.parse(overpass.content)
