@@ -616,66 +616,96 @@ def request_geonames(request):
     export_tool_api_url = getattr(settings, "EXPORT_TOOL_API_URL")
 
     if geonames_url:
-        response = requests.get(geonames_url, params=payload).json()
-        assert isinstance(response, dict)
         keyword = request.GET.get("q")
+        response = {'totalResultsCount': 0, 'geonames': []}
+        if not (str(keyword).lower().startswith('country') or str(keyword).lower().startswith('osm') or str(keyword).lower().startswith('tm')):
+            response = requests.get(geonames_url, params=payload).json()
+        assert isinstance(response, dict)
         if export_tool_api_url:
-            headers = {"accept": "application/json", "Content-Type": "application/json"}
-            pay_load = {
-                "where": [
-                    {"key": "boundary", "value": ["administrative"]},
-                    {"key": "admin_level", "value": ["2"]},
-                    {"key": "name:en", "value": [keyword]},
-                ],
-                "select": ["name:en"],
-                "geometryType": "polygon",
-                "joinBy": "AND",
-                "lookIn": ["relations"],
-            }
-            res = requests.post(
-                f"{export_tool_api_url}v1/snapshot/plain/",
-                data=json.dumps(pay_load),
-                headers=headers,
-                timeout=120,
-            )
-            if res.ok:
-                if len(res.json()["features"]) >= 1:
-                    add_resp = {
-                        "bbox": res.json(),
-                        "adminName2": "OSM",
-                        "name": keyword,
-                        "countryName": "Country",
-                        "adminName1": "Boundary",
-                    }
-                    if "geonames" in response:
-                        response["geonames"].append(add_resp)
-                        response["totalResultsCount"] = (
-                            response["totalResultsCount"] + 1
-                        )
+            if str(keyword).lower().startswith('country'):
+                lst=keyword.split(" ")
+                if len(lst)>=1:
+                    keyword=lst[1]
+                    res = requests.get(f"{export_tool_api_url}v1/countries/?q={keyword}")
+                    if res.ok:
+                        if len(res.json()["features"]) >= 1:
+                            for feature in res.json()["features"]:
+                                geojson = {
+                                        "type": "FeatureCollection",
+                                        "features": [
+                                            {"type": "Feature", "properties": {}, "geometry": feature["geometry"]}
+                                        ],
+                                    }
+                                add_resp = {
+                                    "bbox": geojson,
+                                    "adminName2": "OSM",
+                                    "name": f"""{request.GET.get("q")} : {feature["properties"]["name"]}""",
+                                    "countryName": "Country",
+                                    "adminName1": "Boundary",
+                                }
+                
+                                if "geonames" in response:
+                                    response["geonames"].append(add_resp)
 
-        if request.GET.get("q").isdigit():
-            if tm_url:
-                tm_res = requests.get(f"{tm_url}/{int(request.GET.get('q'))}/").json()
-                if "areaOfInterest" in tm_res:
-                    print("TM Project found")
-                    geom = tm_res["areaOfInterest"]
-                    geojson = {
-                        "type": "FeatureCollection",
-                        "features": [
-                            {"type": "Feature", "properties": {}, "geometry": geom}
-                        ],
-                    }
+            if str(keyword).lower().startswith('osm'):
+                lst=keyword.split(" ")
+                if len(lst)>=1:
+                    keyword=lst[1]
+                    try : 
+                        osm_id= int(keyword) 
+                        res = requests.get(f"{export_tool_api_url}v1/osm_id/?osm_id={osm_id}")
+                        if res.ok:
+                            if len(res.json()["features"]) >= 1:
+                                for feature in res.json()["features"]:
+                                    geojson = {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {"type": "Feature", "properties": {}, "geometry": feature["geometry"]}
+                                            ],
+                                        }
+                                    add_resp = {
+                                        "bbox": geojson,
+                                        "adminName2": "OSM",
+                                        "name": request.GET.get("q"),
+                                        "countryName": osm_id,
+                                        "adminName1": "Element",
+                                    }
+                    
+                                    if "geonames" in response:
+                                        response["geonames"].append(add_resp)
+                    except :
+                        pass
 
-                    add_resp = {
-                        "bbox": geojson,
-                        "adminName2": "TM",
-                        "name": request.GET.get("q"),
-                        "countryName": "Boundary",
-                        "adminName1": "Project",
-                    }
-                    # print(add_resp)
-                    if "geonames" in response:
-                        response["geonames"].append(add_resp)
+
+        if str(keyword).lower().startswith('tm'):
+                lst=keyword.split(" ")
+                if len(lst)>=1:
+
+                    keyword=lst[1]
+                    if tm_url:
+                        tm_res = requests.get(f"{tm_url}/{int(keyword)}/")
+                        if tm_res.ok:
+                            tm_res=tm_res.json()
+                            if "areaOfInterest" in tm_res:
+                                print("TM Project found")
+                                geom = tm_res["areaOfInterest"]
+                                geojson = {
+                                    "type": "FeatureCollection",
+                                    "features": [
+                                        {"type": "Feature", "properties": {}, "geometry": geom}
+                                    ],
+                                }
+
+                                add_resp = {
+                                    "bbox": geojson,
+                                    "adminName2": "TM",
+                                    "name": request.GET.get("q"),
+                                    "countryName": "Boundary",
+                                    "adminName1": "Project",
+                                }
+                                # print(add_resp)
+                                if "geonames" in response:
+                                    response["geonames"].append(add_resp)
 
         return JsonResponse(response)
     else:
