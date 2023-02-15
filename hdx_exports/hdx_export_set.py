@@ -36,7 +36,7 @@ def sync_datasets(datasets,update_dataset_date=False):
             dataset.update_in_hdx()
         else:
             dataset.set_date_of_dataset(datetime.now())
-            dataset.c(allow_no_resources=True)
+            dataset.create_in_hdx(allow_no_resources=True)
 
 def sync_region(region,files=[],public_dir=''):
     export_set = HDXExportSet(
