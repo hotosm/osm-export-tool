@@ -613,7 +613,7 @@ def request_geonames(request):
 
     geonames_url = getattr(settings, "GEONAMES_API_URL")
     tm_url = getattr(settings, "TASKING_MANAGER_API_URL")
-    export_tool_api_url = getattr(settings, "EXPORT_TOOL_API_URL")
+    RAW_DATA_API_URL = getattr(settings, "RAW_DATA_API_URL")
 
     if geonames_url:
         keyword = request.GET.get("q")
@@ -621,12 +621,12 @@ def request_geonames(request):
         if not (str(keyword).lower().startswith('country') or str(keyword).lower().startswith('osm') or str(keyword).lower().startswith('tm')):
             response = requests.get(geonames_url, params=payload).json()
         assert isinstance(response, dict)
-        if export_tool_api_url:
+        if RAW_DATA_API_URL:
             if str(keyword).lower().startswith('country'):
                 lst=keyword.split(" ")
                 if len(lst)>=1:
                     keyword=lst[1]
-                    res = requests.get(f"{export_tool_api_url}v1/countries/?q={keyword}")
+                    res = requests.get(f"{RAW_DATA_API_URL}v1/countries/?q={keyword}")
                     if res.ok:
                         if len(res.json()["features"]) >= 1:
                             for feature in res.json()["features"]:
@@ -653,7 +653,7 @@ def request_geonames(request):
                     keyword=lst[1]
                     try : 
                         osm_id= int(keyword) 
-                        res = requests.get(f"{export_tool_api_url}v1/osm_id/?osm_id={osm_id}")
+                        res = requests.get(f"{RAW_DATA_API_URL}v1/osm_id/?osm_id={osm_id}")
                         if res.ok:
                             if len(res.json()["features"]) >= 1:
                                 for feature in res.json()["features"]:
@@ -819,7 +819,7 @@ def machine_status(request):
         last_run_timestamp = "N/A"
         last_run_running_from = "N/A"
     overpass = requests.get("{}timestamp".format(settings.OVERPASS_API_URL))
-    galaxy = requests.get("{}v1/status/".format(settings.EXPORT_TOOL_API_URL))
+    galaxy = requests.get("{}v1/status/".format(settings.RAW_DATA_API_URL))
 
     overpass_timestamp = str(
         datetime.now(timezone.utc) - dateutil.parser.parse(overpass.content)
