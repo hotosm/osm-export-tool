@@ -17,11 +17,12 @@ We have included below a reference to the HOT Export Tool Product Roadmap [subje
 ![image](https://user-images.githubusercontent.com/98902727/218762337-b3155e6b-4df3-4ac0-9938-1a300efa9b8a.png)
 
 
-## How to report a problem or bug
+## How to Contribute
 
-* Please include a link to the export's download page. This will be a URL that looks like this: [export.hotosm.org/en/v3/exports/cb709d41-6f78-4ee5-8e9a-9eae7b63177c](https://export.hotosm.org/en/v3/exports/cb709d41-6f78-4ee5-8e9a-9eae7b63177c)
+* To report a problem or bug, please include a link to the export's download page. This will be a URL that looks like this: [export.hotosm.org/en/v3/exports/cb709d41-6f78-4ee5-8e9a-9eae7b63177c](https://export.hotosm.org/en/v3/exports/cb709d41-6f78-4ee5-8e9a-9eae7b63177c)
 * Include the GIS program you are using and the version: for example, QGIS 3.8.
 * Screenshots of the web interface or the data within your GIS program are always helpful!
+* See detailed contributor guidelines [here](https://github.com/hotosm/osm-export-tool/blob/master/CONTRIBUTING.md).
 
 ## For Developers
 
