@@ -1,0 +1,11 @@
+[Unit]
+Description=Backup the database at 08:00am every day
+Requires=database_backup.service
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+Persistent=true
+Unit=database_backup.service
+
+[Install]
+WantedBy=timers.target

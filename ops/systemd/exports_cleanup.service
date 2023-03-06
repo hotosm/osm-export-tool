@@ -1,0 +1,13 @@
+[Unit]
+Description=Exports Cleanup
+Documentation=https://github.com/hotosm/osm-export-tool.git
+After=syslog.target
+
+[Service]
+Type=oneshot
+User=exports
+Environment=EXPORT_STAGING_ROOT=/mnt/data/staging
+Environment=EXPORT_DOWNLOAD_ROOT=/mnt/data/downloads
+WorkingDirectory=/opt/osm-export-tool/
+ExecStart=/opt/osm-export-tool/venv/bin/python /opt/osm-export-tool/manage.py cleanup
+
