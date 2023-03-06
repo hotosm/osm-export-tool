@@ -57,21 +57,24 @@ Attic data is necessary for augmented diff support. :warning: This clone can tak
 7. Either run database migrations on the empty `exports` db: `python manage.py migrate` or restore a database backup.
 Examples of how to backup and restore the database:
 
+```
+	pg_dump -Fc -U exports exports > export_tool_$(date -I).pgdump
+	psql exports < export_tool_2023-03-06.pgdump
+```
 
-	pg_dump -U exports exports > backup_091319.pgdump
-	psql exports < backup_091319.pgdump
-
-8. Modify the OAuth2 application with your hostname's `redirect_uris`
+8. Modify the OAuth1 application with your hostname's `redirect_uris`
 
 ### Storage and Environment Variables
 
 Provision a large (>300GB) disk for scratch space and downloads. [Azure Instructions](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/attach-disk-portal)
 
+```
 	sudo fdisk /dev/sdc # assuming disk is /dev/sdc, choose: n,p defaults, w
 	sudo mkfs -t ext4 /dev/sdc1
 	sudo mkdir /mnt/data
 	sudo mount /dev/sdc1 /mnt/data
 	sudo chown exports:exports /mnt/data
+```
 
 Determine the disk UUID with `sudo -i blkid` and add it to fstab to mount on boot:
 
@@ -91,6 +94,14 @@ Systemd's `journalctl` should be used to view logs. To view worker logs, run: `j
 worker-ondemand` or `worker-scheduled`.
 
 ### Backups
+
+Use the `database_backup.service` and `database_backup.timer` to setup scheduled daily backups for the PostgreSQL database.
+
+```
+sudo cp ${EXPORT_TOOL_ROOT}/ops/systemd/database_backup.{service,timer} /etc/systemd/system
+sudo systemctl enable database_backup.timer
+sudo systemctl start database_backup.timer
+```
 
 TODO `docker.postgresql-backup.{service,timer}` define a unit that runs daily to back the database up to
 S3. To check its schedule, run `systemctl list-timers`.
