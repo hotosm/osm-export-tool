@@ -71,13 +71,22 @@ class ExportRegionPanel extends Component {
           >
             <i className="fa fa-globe" />
           </Button>
+          
         </h4>
         <Col lg={5}>
           {getRegionInfo(region)}
+          {region.job_uid &&
+              <small>
+              <Link to={`/exports/${exportRegion.job_uid}`}>
+                view export details
+              </Link>
+            </small>}
           {region.last_size &&
             <span>
               <br />Size: <strong>{prettyBytes(region.last_size)}</strong>
             </span>}
+
+
           {region.is_private &&
             <span>
               <br />
