@@ -101,6 +101,150 @@ export default () =>
               </ul>
             </div>
             <div>
+              <h2 id="gpkg">GeoJSON  .geojson</h2>
+              <p>
+              GeoJSON is an open standard geospatial data interchange format that represents simple geographic features and their nonspatial attributes. Based on JavaScript Object Notation (JSON), GeoJSON is a format for encoding a variety of geographic data structures. It uses a geographic coordinate reference system, World Geodetic System 1984, and units of decimal degrees.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li>QGIS</li>
+                <li>ArcGIS</li>
+                <li>Mapbox</li>
+                <li>Leaflet</li>
+              </ul>
+              <strong>Limitations</strong>
+              <ul>
+                <li>Size limit is dependent on the capabilities of the software being used
+</li>
+                <li>Not suitable for large datasets or complex spatial analyses due to its lack of indexing and projection information.</li>
+              </ul>
+              <h4>
+                <strong>Further Information</strong>
+              </h4>
+              <ul>
+                <li>
+                  <a href="https://en.wikipedia.org/wiki/GeoJSON" target="_blank">
+                  GeoJSON Wiki
+                  </a>
+                </li>
+                <li>
+                  <a href="https://datatracker.ietf.org/doc/html/rfc7946" target="_blank">
+                  GeoJSON Specification
+                  </a>
+                </li>
+                <li>
+                  <a href="http://geojsonlint.com/" target="_blank">
+                  GeoJSONLint
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h2 id="gpkg">FlatGeobuf .fgb</h2>
+              <p>
+              FlatGeobuf is a binary file format for storing geospatial vector data in a compact and efficient manner. It uses a hierarchical structure to organize features into layers, and stores attribute data in a separate file.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li>QGIS</li>
+                <li>Mapbox</li>
+                <li>Leaflet</li>
+                <li>PostGIS</li>
+              </ul>
+              <strong>Limitations</strong>
+              <ul>
+                <li>Not all GIS software supports FlatGeobuf natively, which may require additional tools or plugins to use.</li>
+                <li>Lacks support for complex geometry types and some spatial operations.</li>
+                <li>Requires additional processing to work with other non-binary formats, such as CSV or GeoJSON.</li>
+              </ul>
+              <h4>
+                <strong>Further Information</strong>
+              </h4>
+              <ul>
+                <li>
+                  <a href="https://flatgeobuf.org/docs/" target="_blank">
+                  FlatGeobuf documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="https://flatgeobuf.org/spec/" target="_blank">
+                  FlatGeobuf specification
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/flatgeobuf/flatgeobuf" target="_blank">
+                  FlatGeobuf on GitHub
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h2 id="gpkg">CSV .csv</h2>
+              <p>
+              CSV is a file format for storing tabular data in plain text format. Each row of data represents a record, and each column represents a field of that record. CSV files are widely used because they are simple and easy to create and manipulate, making them a popular choice for data exchange.              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li>Microsoft Excel</li>
+                <li>OpenOffice Calc</li>
+                <li>Google Sheets</li>
+                <li>R or Python programming languages</li>
+              </ul>
+              <strong>Limitations</strong>
+              <ul>
+                <li>Does not support hierarchical data structures</li>
+                <li>Does not support data typing, meaning that all values are treated as strings</li>
+                <li>Does not include any metadata or schema information</li>
+                </ul>
+            </div>
+            <div>
+              <h2 id="gpkg">SQL .sql</h2>
+              <p>
+              SQL files are plain text files that contain SQL commands to create, modify or interact with a relational database. They can be used to define database schemas, constraints, and indexes, as well as to insert, update, and query data.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li>MySQL</li>
+                <li>Oracle Database</li>
+                <li>Microsoft SQL Server</li>
+                <li>PostgreSQL</li>
+                <li>SQLite</li>
+              </ul>
+              <strong>Limitations</strong>
+              <ul>
+                <li>SQL files do not contain data themselves, but rather commands to manipulate data in a database</li>
+                <li>May require additional tools or plugins to visualise or work with data in other software or file formats</li>
+                <li>Performance can be impacted by the complexity and size of the data being queried</li>
+              </ul>
+              <h4>
+                <strong>Further Information</strong>
+              </h4>
+              <ul>
+                <li>
+                  <a href="https://www.w3schools.com/sql/" target="_blank">
+                  W3Schools SQL documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="https://dev.mysql.com/doc/" target="_blank">
+                  MySQL documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.postgresql.org/docs/" target="_blank">
+                  PostgreSQL documentation
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
               <h2 id="img">Garmin .img</h2>
               <p>
                 A .IMG file contains all information needed to render a map on a
