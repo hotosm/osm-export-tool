@@ -21,7 +21,7 @@ This is a guide to the source code - useful if you'd like to contribute to the E
 The Export Tool queries an instance of the Overpass API for source data. Overpass:
 
 - can efficiently perform spatial queries over large quantities of OSM data, including members of ways and relations.
-- has built in facilities to ingest minutely diffs from OpenStreetMap.org.
+- has built-in facilities to ingest minute diffs from OpenStreetMap.org.
 - can create lossless PBF-format exports, which are necessary for some file formats such as OSMand and Garmin .IMG mobile device maps.
 
 Instructions on installing Overpass are available at https://github.com/drolbr/Overpass-API . Alternatively, Overpass can be run via Docker - see `ops/docker-overpass-api`.
@@ -90,7 +90,7 @@ See `core/settings/project.py` for environment variables to configure other opti
 
 #### Garmin .IMG
 
-Creating .IMG files requires the `mkgmap` and `splitter` tools.
+Creating .IMG files require the `mkgmap` and `splitter` tools.
 
 [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
 
@@ -107,7 +107,7 @@ Most of these environment variables have reasonable default settings.
 - `EXPORT_STAGING_ROOT` path to a directory for staging export jobs
 - `EXPORT_DOWNLOAD_ROOT`'path to a directory for storing export downloads
 - `EXPORT_MEDIA_ROOT` map this url in your webserver to `EXPORT_DOWNLOAD_ROOT` to serve the exported files
-- `OSMAND_MAP_CREATOR_DIR` path to directory where OsmAndMapCreator is installed
+- `OSMAND_MAP_CREATOR_DIR` path to the directory where OsmAndMapCreator is installed
 - `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
 - `OVERPASS_API_URL` url of Overpass api endpoint
 
@@ -115,7 +115,7 @@ Most of these environment variables have reasonable default settings.
 
 - `DATABASE_URL` Database URL. Defaults to `postgres:///exports`
 - `DEBUG` Whether to enable debug mode. Defaults to `False` (production).
-- `DJANGO_ENV` Django environment. Set to `development` to enable development tools and email logging to console.
+- `DJANGO_ENV` Django environment. Set to `development` to enable development tools and email logging to the console.
 - `EMAIL_HOST_USER` SMTP username.
 - `EMAIL_HOST_PASSWORD` SMTP password.
 - `EMAIL_USE_TLS` Whether to use TLS when sending mail. Optional.
@@ -150,7 +150,7 @@ To update source language (English) for Django templates run:
 python manage.py makemessages -l en
 ```
 
-To update source language for JavaScript files run:
+To update the source language for JavaScript files run:
 
 ```bash
 python manage.py makemessages -d djangojs -l en
@@ -162,9 +162,9 @@ then, push the new source files to the Transifex service, it will overwrite the 
 tx push -s
 ```
 
-### Pulling latest changes from Transifex
+### Pulling the latest changes from Transifex
 
-When adding a new language, it's resource file does not exist in the project,
+When adding a new language, its resource file does not exist in the project,
 but it's ok as it will be automatically created when pulling new translations from the service. To add a local mapping:
 
 ```bash
@@ -217,4 +217,4 @@ yarn run pack
 yarn run tx:push
 ```
 
-If / when UI translations pass the 5% complete threshold (defined in `ui/.tx/config` as `minimum_perc`), new JSON files will appear in `ui/app/i18n/locales`. To enable these translations for use, add `react-intl` locale data to `ui/app/app.js` (for date / number formatting) and add options to `ui/app/components/LocaleSelector.js`.
+If / when UI translations pass the 5% complete threshold (defined in `ui/.tx/config` as `minimum_perc`), new JSON files will appear in `ui/app/i18n/locales`. To enable these translations for use, add `react-intl` locale data to `ui/app/app.js` (for date/number formatting) and add options to `ui/app/components/LocaleSelector.js`.
