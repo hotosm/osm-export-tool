@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import Attribution from "ol/control/attribution";
 import Draw from "ol/interaction/draw";
 import Feature from "ol/feature";
+import { feature, featureCollection, polygon } from "@turf/helpers";
 import Fill from "ol/style/fill";
 import GeoJSONFormat from "ol/format/geojson";
 import interaction from "ol/interaction";
@@ -136,7 +137,24 @@ export class ExportAOI extends Component {
 
   handleSearch = result => {
     var geojson;
-    if (result.adminName2 == 'TM' || result.adminName2 == 'OSM') {
+    if (result.adminName2.startsWith('HOTOSM')){
+      try {
+        geojson = JSON.parse(JSON.stringify(result.bbox));
+      } catch (e) {
+        alert(e);
+      }
+      // extract single feature geometry from collection
+      if (geojson.type === "FeatureCollection") {
+              if (geojson.features.length === 1) {
+                geojson = geojson.features[0].geometry;
+              }
+            }
+      if (["Polygon", "MultiPolygon"].includes(geojson.type)) {
+              geojson = featureCollection([feature(geojson)]);
+            }
+
+    }
+    else if (result.adminName2 == 'TM' || result.adminName2 == 'OSM') {
       this._clearDraw();
       geojson = result.bbox;
     }
