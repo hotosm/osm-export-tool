@@ -534,14 +534,6 @@ export class HDXExportRegionForm extends Component {
                     type="checkbox"
                   />
                 </Col>
-                <Col xs={6}>
-                  <Field
-                    name="country_export"
-                    description="Country Export (Use for exporting countries): Get's intersecting country and uses country boundary"
-                    component={renderCheckbox}
-                    type="checkbox"
-                  />
-                </Col>
               </Row>
               <Field
                 name="locations"
@@ -974,7 +966,6 @@ Railways:
     export_formats: ["geojson"],
     buffer_aoi: false,
     planet_file: false,
-    country_export: true,
   },
   locationOptions: selectLocationOptions(state),
   name: formValueSelector(FORM_NAME)(state, "name"),

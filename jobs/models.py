@@ -98,7 +98,6 @@ def validate_feature_selection(value):
         raise ValidationError(errors)
 
 def validate_aoi(aoi):
-    print(aoi)
     result = check_extent(aoi,settings.OVERPASS_API_URL)
     if not result.valid:
         raise ValidationError(result.message,params=result.params)
@@ -469,7 +468,6 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
     subnational = models.BooleanField(default=True)
     extra_notes = models.TextField(null=True,blank=True)
     planet_file = models.BooleanField(default=False)
-    country_export = models.BooleanField(default=False)
 
     class Meta: # noqa
         db_table = 'hdx_export_regions'
