@@ -4,7 +4,11 @@
 
 [![CircleCI](https://circleci.com/gh/hotosm/osm-export-tool.svg?style=svg)](https://circleci.com/gh/hotosm/osm-export-tool)
 
-The **Export Tool** creates OpenStreetMap exports for GIS programs and mobile devices. It outputs files in various tabular formats based on an input area of interest polygon and a selection of OpenStreetMap tags. It is synchronized minutely with the main OSM database, so exports can be created to accompany real-time humanitarian mapping efforts.
+The **Export Tool** is a web service that generates exports of OpenStreetMap (OSM) data for use in Geographic Information System (GIS) programs and mobile devices. The tool allows users to define an area of interest using a polygon and select OSM tags to include in the export. The tool then generates tabular files in various formats, such as CSV or GeoJSON, containing the OSM data within the specified area and tags.
+
+One of the most important features of the Export Tool is its synchronization with the main OSM database. The tool is updated minutely, which means that it reflects changes made to the OSM database in near-real time. This makes the Export Tool a valuable resource for humanitarian mapping efforts that require up-to-date OSM data.
+
+In addition to creating GIS files, the Export Tool also includes features such as periodic exports for humanitarian organizations and email notifications for when exports are complete. The tool also includes a user-friendly interface with error reporting and geometry drawing/uploading, built on OpenLayers.
 
 ![screenshot](doc/screenshot.png)
 
