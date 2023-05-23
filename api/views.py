@@ -784,7 +784,7 @@ def sync_to_hdx_api(request):
     if run_uid:
         LOG.debug('Syncing to HDX for run: {0}'.format(run_uid))
         try:
-            run = ExportRun.objects.get(id=run_uid)
+            run = ExportRun.objects.get(uid=run_uid)
         except ExportRun.DoesNotExist:
             return JsonResponse({"error": "Invalid run UID"}, status=404)
         
