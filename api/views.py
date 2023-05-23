@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from collections import Counter
 import os
 import io
+import pickle
 import csv
 import dateutil.parser
 import requests
@@ -21,6 +22,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import (
     JsonResponse,
     HttpResponse,
@@ -770,6 +772,45 @@ def get_groups(request):
         {"id": g.id, "name": g.name} for g in Group.objects.filter(is_partner=True)
     ]
     return JsonResponse({"groups": groups})
+
+
+@require_http_methods(["GET"])
+def sync_to_hdx_api(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    
+    run_uid = request.GET.get("run_uid")
+    if run_uid:
+        LOG.debug('Syncing to HDX for run: {0}'.format(run_uid))
+        try:
+            run = ExportRun.objects.get(id=run_uid)
+        except ExportRun.DoesNotExist:
+            return JsonResponse({"error": "Invalid run UID"}, status=404)
+        
+        try:
+            region = HDXExportRegion.objects.get(job_id=run.job_id)
+        except HDXExportRegion.DoesNotExist:
+            return JsonResponse({"error": "HDXExportRegion not found"}, status=404)
+
+        public_dir = settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT, run_uid)
+        pickle_file_path = os.path.join(public_dir, 'all_zips.pkl')
+
+        if os.path.exists(pickle_file_path):
+            try:
+                with open(pickle_file_path, 'rb') as file:
+                    all_zips_data = file.read()
+                all_zips = pickle.loads(all_zips_data)
+                sync_region(region, all_zips, public_dir)
+                run.hdx_sync_status = True
+            except Exception as ex:
+                run.sync_status = False
+                LOG.error(ex)
+                return JsonResponse({"error": "Sync failed"}, status=500)
+        
+        run.save()
+        return JsonResponse({"success": "Sync to HDX completed successfully"})
+    
+    return JsonResponse({"error": "Missing run UID"}, status=400)
 
 
 from dramatiq_abort import abort
