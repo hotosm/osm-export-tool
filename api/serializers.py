@@ -232,9 +232,6 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         """
         Check for export formats for country exports.
         """
-        if data['country_export']:
-            if(len(data['export_formats'])) >1 :
-                raise serializers.ValidationError("Multiple Export formats for country export , Only One Accepted")
         if HDXExportRegion.objects.filter(schedule_period='daily').count() > 6:
             raise serializers.ValidationError("Maximum daily run limit of 6 for hdx job exceeded. Please change the frequency")
         return data
@@ -246,7 +243,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
                   'locations', 'name', 'last_run', 'next_run',
                   'simplified_geom', 'dataset_prefix', 'job_uid', 'license',
                   'subnational', 'extra_notes', 'is_private', 'buffer_aoi',
-                  'the_geom','planet_file','country_export')
+                  'the_geom','planet_file')
         extra_kwargs = {
             'simplified_geom': {
                 'read_only': True
@@ -269,7 +266,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
 
         region_dict = slice_dict(validated_data, [
             'extra_notes', 'is_private', 'locations', 'license',
-            'schedule_period', 'schedule_hour', 'subnational','planet_file','country_export'
+            'schedule_period', 'schedule_hour', 'subnational','planet_file'
         ])
         job = Job(**job_dict)
         job.hidden = True
@@ -299,7 +296,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         validate_model(job)
         update_attrs(instance, validated_data, [
             'extra_notes', 'is_private', 'locations', 'license',
-            'schedule_period', 'schedule_hour', 'subnational', 'planet_file','country_export'
+            'schedule_period', 'schedule_hour', 'subnational', 'planet_file'
         ])
         validate_model(instance)
         with transaction.atomic():

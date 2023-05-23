@@ -620,13 +620,14 @@ def request_geonames(request):
     if geonames_url:
         keyword = request.GET.get("q")
         response = {'totalResultsCount': 0, 'geonames': []}
-        if not (str(keyword).lower().startswith('country') or str(keyword).lower().startswith('osm') or str(keyword).lower().startswith('tm')):
+        if not (str(keyword).lower().startswith('boundary') or str(keyword).lower().startswith('osm') or str(keyword).lower().startswith('tm')):
             response = requests.get(geonames_url, params=payload).json()
+            print(response)
         assert isinstance(response, dict)
         if RAW_DATA_API_URL:
-            if str(keyword).lower().startswith('country'):
+            if str(keyword).lower().startswith('boundary'):
                 lst=keyword.split(" ")
-                if len(lst)>=1:
+                if len(lst)>1:
                     keyword=lst[1]
                     res = requests.get(f"{RAW_DATA_API_URL}v1/countries/?q={keyword}")
                     if res.ok:
@@ -635,15 +636,15 @@ def request_geonames(request):
                                 geojson = {
                                         "type": "FeatureCollection",
                                         "features": [
-                                            {"type": "Feature", "properties": {}, "geometry": feature["geometry"]}
+                                            {"type": "Feature", "properties": {}, "geometry":feature["geometry"]}
                                         ],
                                     }
                                 add_resp = {
                                     "bbox": geojson,
-                                    "adminName2": "OSM",
-                                    "name": f"""{request.GET.get("q")} : {feature["properties"]["name"]}""",
-                                    "countryName": "Country",
-                                    "adminName1": "Boundary",
+                                    "adminName2": feature["properties"]["description"],
+                                    "name": f'{request.GET.get("q")} -> {feature["properties"]["name"]}',
+                                    "countryName": feature["properties"]["dataset_name"],
+                                    "adminName1": feature["properties"]["id"],
                                 }
                 
                                 if "geonames" in response:
