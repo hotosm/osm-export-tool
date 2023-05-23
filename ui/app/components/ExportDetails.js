@@ -274,30 +274,33 @@ class ExportRuns extends Component {
                       </td>
                       <td colSpan="3">
                       {run.hdx_sync_status ? "Uploaded " : "Not Uploaded "}
-                      {run.status === "COMPLETED" && (
-                      <Button bsStyle="success" onClick={() => {
-                        try {
-                          const token = selectAuthToken(this.props.state_token);
-                           axios({
-                            baseURL: window.EXPORTS_API_URL,
-                            headers: {
-                              Authorization: `Bearer ${token}`
-                            },
-                            method: "GET",
-                            url: `/api/sync_to_hdx_api`,
-                            params: {
-                              run_uid: run.uid
+                      {run.status === "COMPLETED" || run.status == "FAILED" && (
+                        <Button
+                          bsStyle="success"
+                          onClick={async () => {
+                            try {
+                              const token = selectAuthToken(this.props.state_token);
+                              const response = await axios({
+                                baseURL: window.EXPORTS_API_URL,
+                                headers: {
+                                  Authorization: `Bearer ${token}`
+                                },
+                                method: "GET",
+                                url: `/api/sync_to_hdx_api`,
+                                params: {
+                                  run_uid: run.uid
+                                }
+                              });
+                              alert(response.data.message);
+                            } catch (err) {
+                              console.warn(err);
+                              alert(err);
                             }
-                          });
-                          alert(response.data.message);
-                        } catch (err) {
-                          console.warn(err);
-                          alert(err);
+                          }}
+                        >
+                          <FormattedMessage id="ui.resync_hdx" defaultMessage="Resync" />
+                        </Button>
 
-                        }
-                      }}>
-                        <FormattedMessage id="ui.resync_hdx" defaultMessage="Resync" />
-                      </Button>
                       )}
                       </td>
                     </tr>
