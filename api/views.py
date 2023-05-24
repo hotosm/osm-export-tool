@@ -794,6 +794,7 @@ def sync_to_hdx_api(request):
             return JsonResponse({"error": "HDXExportRegion not found"}, status=404)
 
         public_dir = settings.HOSTNAME + os.path.join(settings.EXPORT_MEDIA_ROOT, run_uid)
+        LOG.debug(public_dir)
         pickle_file_path = os.path.join(public_dir, 'all_zips.pkl')
 
         if os.path.exists(pickle_file_path):
