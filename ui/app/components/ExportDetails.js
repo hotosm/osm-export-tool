@@ -277,6 +277,7 @@ class ExportRuns extends Component {
 
                         <Button
                           bsStyle="success"
+                          disabled={run.hdx_sync_status}
                           onClick={async () => {
                             try {
                               const token = selectAuthToken(this.props.state_token);
