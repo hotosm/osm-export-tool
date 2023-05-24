@@ -274,7 +274,7 @@ class ExportRuns extends Component {
                       </td>
                       <td colSpan="3">
                       {run.hdx_sync_status ? "Uploaded " : "Not Uploaded "}
-                      {run.status === "COMPLETED" || run.status === "FAILED" && (
+
                         <Button
                           bsStyle="success"
                           onClick={async () => {
@@ -300,8 +300,6 @@ class ExportRuns extends Component {
                         >
                           <FormattedMessage id="ui.resync_hdx" defaultMessage="Resync" />
                         </Button>
-
-                      )}
                       </td>
                     </tr>
                   </RequirePermission>
