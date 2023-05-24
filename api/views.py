@@ -652,7 +652,7 @@ def request_geonames(request):
 
             if str(keyword).lower().startswith('osm'):
                 lst=keyword.split(" ")
-                if len(lst)>=1:
+                if len(lst)>1:
                     keyword=lst[1]
                     try : 
                         osm_id= int(keyword) 
@@ -682,7 +682,7 @@ def request_geonames(request):
 
         if str(keyword).lower().startswith('tm'):
                 lst=keyword.split(" ")
-                if len(lst)>=1:
+                if len(lst)>1:
 
                     keyword=lst[1]
                     if tm_url:
@@ -801,18 +801,22 @@ def sync_to_hdx_api(request):
                 with open(pickle_file_path, 'rb') as file:
                     all_zips_data = file.read()
                 all_zips = pickle.loads(all_zips_data)
+                LOG.debug("Calling hdx API")
                 sync_region(region, all_zips, public_dir)
                 run.hdx_sync_status = True
             except Exception as ex:
                 run.sync_status = False
                 LOG.error(ex)
                 return JsonResponse({"error": "Sync failed"}, status=500)
+        else:
+            return JsonResponse({"error": "No exports available"}, status=404)
         
         run.save()
-        return JsonResponse({"success": "Sync to HDX completed successfully"})
-    
-    return JsonResponse({"error": "Missing run UID"}, status=400)
+        LOG.debug('Sync Success to HDX for run: {0}'.format(run_uid))
 
+        return JsonResponse({"success": "Sync to HDX completed successfully"}, status=200)
+
+    return JsonResponse({"error": "Missing run UID"}, status=400)
 
 from dramatiq_abort import abort
 
