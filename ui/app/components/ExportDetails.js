@@ -225,7 +225,7 @@ class ExportRuns extends Component {
                       </Alert>
                     </td>
                   </tr>
-                  { (run.status === "SUBMITTED" || run.status == "RUNNING") ?(
+                  { (run.status === "SUBMITTED" || run.status === "RUNNING") ?(
                   <RequirePermission required={["auth.add_user"]}>
                     <tr>
                       <td>
@@ -274,7 +274,7 @@ class ExportRuns extends Component {
                       </td>
                       <td colSpan="3">
                       {run.hdx_sync_status ? "Uploaded " : "Not Uploaded "}
-                      {run.status === "COMPLETED" || run.status == "FAILED" && (
+                      {run.status === "COMPLETED" || run.status === "FAILED" && (
                         <Button
                           bsStyle="success"
                           onClick={async () => {
