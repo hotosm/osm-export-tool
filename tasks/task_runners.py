@@ -491,7 +491,7 @@ def run_task(run_uid,run,stage_dir,download_dir):
             region = HDXExportRegion.objects.get(job_id=run.job_id)
             all_zips_data = pickle.dumps(all_zips)
             public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
-            pickle_file_path = os.path.join(download_dir,'all_zips.pkl')
+            pickle_file_path = join(settings.EXPORT_MEDIA_ROOT, run_uid,'all_zips.pkl')
             with open(pickle_file_path, 'wb') as file:
                 file.write(all_zips_data)
             try:
