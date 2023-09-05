@@ -159,7 +159,7 @@ export default class MapListView extends Component {
               OSM.ATTRIBUTION
             ],
             url:
-              "http://tile.osm.org/{z}/{x}/{y}.png"
+              "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           })
         })
       ],
