@@ -822,7 +822,7 @@ def sync_to_hdx_api(request):
     run_uid = request.GET.get("run_uid")
     if run_uid:
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(sync_to_hdx_api_async(run_uid))
+        loop.create_task(sync_to_hdx_api_async(run_uid))
         # asyncio.run(sync_to_hdx_api_async(run_uid))
         return JsonResponse({"message": "Sync request received and is being processed in the background."}, status=202)
 
