@@ -57,7 +57,7 @@ from .renderers import HOTExportApiRenderer
 from hdx_exports.hdx_export_set import sync_region
 from rtree import index
 import psutil
-
+from asgiref.sync import async_to_sync
 import asyncio
 
 # Get an instance of a logger
@@ -815,14 +815,16 @@ async def sync_to_hdx_api_async(run_uid):
 
 
 @require_http_methods(["GET"])
-def sync_to_hdx_api(request):
+@async_to_sync
+async def sync_to_hdx_api(request):
     if not request.user.is_superuser:
         return JsonResponse({"error": "Permission denied"}, status=403)
     
     run_uid = request.GET.get("run_uid")
     if run_uid:
-        loop = asyncio.get_event_loop()
-        loop.create_task(sync_to_hdx_api_async(run_uid))
+        # loop = asyncio.get_event_loop()
+        # loop.create_task(sync_to_hdx_api_async(run_uid))
+        await sync_to_hdx_api_async(run_uid)
         # asyncio.run(sync_to_hdx_api_async(run_uid))
         return JsonResponse({"message": "Sync request received and is being processed in the background."}, status=202)
 
