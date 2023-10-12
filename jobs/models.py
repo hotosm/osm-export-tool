@@ -201,7 +201,7 @@ class Job(models.Model):
 
 class SavedFeatureSelection(models.Model):
     """ Mutable database record for a saved YAML configuration."""
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    created_at = models.DateTimeField(default=timezone.now,db_index=True, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
     user = models.ForeignKey(User)
     name = models.CharField(max_length=100,db_index=True,blank=False)
