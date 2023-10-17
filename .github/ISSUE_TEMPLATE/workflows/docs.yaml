@@ -1,0 +1,15 @@
+name: Publish Docs
+
+on:
+  push:
+    paths:
+      - docs/**
+      - api/**
+      - mkdocs.yml
+    branches: [master]
+  # Allow manual trigger (workflow_dispatch)
+  workflow_dispatch:
+
+jobs:
+  publish_docs:
+    uses: hotosm/gh-workflows/.github/workflows/mkdocs_build.yml@main
