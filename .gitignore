@@ -58,8 +58,10 @@ cover/
 # Django stuff:
 *.log
 
-# Sphinx documentation
+# Docs
 docs/_build/
+site
+build
 
 # PyBuilder
 target/

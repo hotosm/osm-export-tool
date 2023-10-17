@@ -1,0 +1,60 @@
+site_name: OSM Export Tool
+site_description: Web service to download customised OSM data in various file formats.
+# strict: true
+site_url: "https://www.hotosm.org"
+
+repo_name: "hotosm/osm-export-tool"
+repo_url: "https://github.com/hotosm/osm-export-tool/"
+edit_uri: "edit/master/docs/"
+
+extra:
+  social:
+    - icon: "fontawesome/brands/github"
+      link: "https://github.com/hotosm/"
+    - icon: "fontawesome/brands/twitter"
+      link: "https://twitter.com/hotosm"
+    - icon: "fontawesome/solid/globe"
+      link: "https://www.hotosm.org"
+  copyright: Copyright &copy; 2010 HOTOSM
+  generator: false
+
+theme:
+  name: material
+  palette:
+    primary: custom
+  favicon: images/favicon.png
+  logo: images/hot_logo.png
+  # custom_dir: docs/overrides
+
+extra_css:
+  - css/extra.css
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+      title: Page contents
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.extra
+  - pymdownx.emoji:
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+  - exclude:
+      glob:
+        - plugins/*
+        - __pycache__/*
+
+nav:
+  - Home: index.md
+  - Setup: setup-development.md
+  - Diagram: diagram.md
+  # Replace with built api docs once set up
+  - API: https://export.hotosm.org/api/
+  - Contributing: CONTRIBUTING.md
+  - Code of Conduct: CODE_OF_CONDUCT.md

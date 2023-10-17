@@ -10,7 +10,7 @@ One of the most important features of the Export Tool is its synchronization wit
 
 In addition to creating GIS files, the Export Tool also includes features such as periodic exports for humanitarian organizations and email notifications for when exports are complete. The tool also includes a user-friendly interface with error reporting and geometry drawing/uploading, built on OpenLayers.
 
-![screenshot](docs/screenshot.png)
+![screenshot](images/screenshot.png)
 
 # Get involved!
 
