@@ -10,7 +10,7 @@ One of the most important features of the Export Tool is its synchronization wit
 
 In addition to creating GIS files, the Export Tool also includes features such as periodic exports for humanitarian organizations and email notifications for when exports are complete. The tool also includes a user-friendly interface with error reporting and geometry drawing/uploading, built on OpenLayers.
 
-![screenshot](doc/screenshot.png)
+![screenshot](docs/screenshot.png)
 
 # Get involved!
 
@@ -39,4 +39,4 @@ The code in this repository powers the export tool web service and includes a nu
 
 If you would like to host the Export Tool yourself, see the `ops` folder, which includes instructions for setting up both an Overpass Instance and the Export tool web app on Ubuntu. 
 
-If you would like to enhance the code of the Export Tool web app, a guide to installing it in a local development environment is at [docs/setup-development.md](doc/setup-development.md).
+If you would like to enhance the code of the Export Tool web app, a guide to installing it in a local development environment is at [docs/setup-development.md](docs/setup-development.md).
