@@ -18,10 +18,19 @@ requests==2.20.0
 requests_oauthlib==0.8.0
 pyparsing==2.2.0
 oauthlib==3.1.0
+
 gunicorn==19.9.0
-osmium~=2.15.2
-dramatiq[redis,watch]~=1.7.0
-boto3~=1.9.238 # needed for cloudwatch
+osmium~=3.5.0
+dramatiq[redis,watch]~=1.13.0
+boto3~=1.23.10 # needed for cloudwatch
 rasterio~=1.0.25
-osm-export-tool==0.0.24
+# osm-export-tool==0.0.25 #manual setup is needed for now
+osm-export-tool-python == 2.0.7
 rtree==0.9.1
+validators==0.20.0
+geonamescache==1.5.0
+psutil==5.9.1
+dramatiq-dashboard==0.4.0
+deepdiff==5.7.0
+hurry.filesize==0.9
+dramatiq-abort==1.0

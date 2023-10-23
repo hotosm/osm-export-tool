@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import "react-select/dist/react-select.css";
 import yaml from "js-yaml";
+import moment from "moment";
 
 import ExportAOIField from "./ExportAOIField";
 import { getRuns } from "../actions/exports";
@@ -55,10 +56,13 @@ import {
 const FORM_NAME = "HDXExportRegionForm";
 
 const HDX_EXPORT_FORMATS = {
+  geojson:AVAILABLE_EXPORT_FORMATS.geojson,
   shp: AVAILABLE_EXPORT_FORMATS.shp,
   geopackage: AVAILABLE_EXPORT_FORMATS.geopackage,
+  kml: AVAILABLE_EXPORT_FORMATS.kml,
+  csv: AVAILABLE_EXPORT_FORMATS.csv,
   garmin_img: AVAILABLE_EXPORT_FORMATS.garmin_img,
-  kml: AVAILABLE_EXPORT_FORMATS.kml
+
 };
 
 const form = reduxForm({
@@ -364,7 +368,8 @@ export class HDXExportRegionForm extends Component {
           {run.status}
         </td>
         <td>
-          {`00${Math.floor(run.elapsed_time / 60)}`.slice(-2)}:{`00${Math.round(run.elapsed_time % 60)}`.slice(-2)}
+          {moment.duration(run.duration, "seconds").humanize()}
+
         </td>
         <td>
           {prettyBytes(run.size)}
@@ -561,11 +566,16 @@ export class HDXExportRegionForm extends Component {
                     component={renderSelect}
                   >
                     <option value="daily">Daily</option>
-                    <option value="weekly">Weekly (Sunday)</option>
-                    <option value="monthly">Monthly (1st of month)</option>
                     <option value="6hrs">Every 6 hours</option>
+                    <option value="weekly">Weekly (Sunday)</option>
+                    <option value="2wks">Every two weeks</option>
+                    <option value="3wks">Every three weeks</option>
+                    <option value="monthly">Monthly (1st of month)</option>
+                    <option value="quarterly">Every Quarter</option>
+                    <option value="semiyearly">Every 6 months</option>
+                    <option value="yearly">Every Year</option>
                     <option value="disabled">
-                      Don't automatically schedule
+                      Don't automatically schedule , Run as needed
                     </option>
                   </Field>
                 </Col>
@@ -761,7 +771,6 @@ Roads:
     caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
   types:
     - lines
-    - polygons
   select:
     - name
     - highway
@@ -937,7 +946,6 @@ Railways:
     caveats: "OpenStreetMap data is crowd sourced and cannot be considered to be exhaustive"
   types:
     - lines
-    - polygons
   select:
     - name
     - railway
@@ -952,12 +960,12 @@ Railways:
     is_private: true,
     license: "hdx-odc-by",
     license_human_readable: "Open Database License (ODC-ODbL)",
-    schedule_period: "daily",
+    schedule_period: "monthly",
     schedule_hour: 0,
     subnational: true,
-    export_formats: ["shp", "geopackage", "kml", "garmin_img"],
+    export_formats: ["geojson"],
     buffer_aoi: false,
-    planet_file: false
+    planet_file: false,
   },
   locationOptions: selectLocationOptions(state),
   name: formValueSelector(FORM_NAME)(state, "name"),

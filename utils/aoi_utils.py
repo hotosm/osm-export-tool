@@ -16,14 +16,17 @@ def force2d(geom):
     wkt = wkt_w(dim=2).write(geom).decode()
     return GEOSGeometry(wkt)
 
-def simplify_geom(geom,force_buffer=False):
-    if geom.num_coords > 10000:
-        geom = geom.simplify(0.01)
-    if geom.num_coords > 500 or force_buffer:
-        geom = geom.buffer(0.02)
-    param = 0.01
-    while geom.num_coords > 500:
-        geom = geom.simplify(param, preserve_topology=True)
-        param = param * 2
+def simplify_geom(geom,force_buffer=False, preserve_geom=False):
+    if preserve_geom is False:
+        if geom.num_coords > 10000:
+            geom = geom.simplify(0.01)
+        if geom.num_coords > 500:
+            geom = geom.buffer(0.02)
+        param = 0.01
+        while geom.num_coords > 500:
+            geom = geom.simplify(param, preserve_topology=True)
+            param = param * 2
+    if force_buffer:
+            geom = geom.buffer(0.02)
     return geom
 

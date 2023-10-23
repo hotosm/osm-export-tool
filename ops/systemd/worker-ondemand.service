@@ -1,0 +1,15 @@
+[Unit]
+Description=Celery task worker
+After=syslog.target
+
+[Service]
+EnvironmentFile=/opt/osm-export-tool/ops/systemd/export_workers.env
+User=exports
+WorkingDirectory=/opt/osm-export-tool/
+ExecStart=/opt/osm-export-tool/venv/bin/dramatiq tasks.task_runners --processes 3 --threads 1 --queues default
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+

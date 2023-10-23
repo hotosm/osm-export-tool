@@ -1,0 +1,11 @@
+[Unit]
+Description=HDX Exports
+Documentation=https://github.com/hotosm/osm-export-tool.git
+
+[Service]
+Type=oneshot
+User=exports
+Environment=HDX_API_KEY=.
+WorkingDirectory=/opt/osm-export-tool/
+ExecStart=/opt/osm-export-tool/venv/bin/python /opt/osm-export-tool/manage.py schedule
+

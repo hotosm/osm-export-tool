@@ -6,6 +6,12 @@ export const TAGTREE = {
             "Materials and Condition": {}
         }
     },
+    "Administrative Boundaries":{
+        "children":{
+            "Boundaries":{}
+        }
+
+    },
     "Commercial": {
         "children": {
             "Shop": {},
@@ -71,7 +77,7 @@ export const TAGTREE = {
     "Land Use": {
         "children": {
             "Parks": {},
-            "Cemetary": {},
+            "Cemetery": {},
             "Residential": {},
             "Agriculture": {},
             "Solid Waste": {}
@@ -180,6 +186,24 @@ export const TAGLOOKUP = {
             "building"
         ],
         "where": "building IS NOT NULL"
+    },
+    "Administrative Boundaries" :{
+        "geom_types": [
+            "polygon"
+        ],
+        "keys": [
+            "name"
+        ],
+        "where": "boundary='administrative'"
+    },
+    "Boundaries": {
+        "geom_types": [
+            "polygon"
+        ],
+        "keys": [
+            "name"
+        ],
+        "where": "boundary='administrative'"
     },
     "Addresses": {
         "geom_types": [
@@ -736,7 +760,7 @@ export const TAGLOOKUP = {
         ],
         "where": "leisure='park'"
     },
-    "Cemetary": {
+    "Cemetery": {
         "geom_types": [
             "polygon"
         ],

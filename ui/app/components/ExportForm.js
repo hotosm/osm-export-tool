@@ -15,7 +15,7 @@ import ExportAOIField from "./ExportAOIField";
 import SelectFeatures from "./SelectFeatures";
 import Summary from "./Summary";
 import { getConfigurations } from "../actions/configurations";
-import { createExport, getOverpassTimestamp } from "../actions/exports";
+import { createExport, getOverpassTimestamp, getGalaxyTimestamp} from "../actions/exports";
 import {
   PresetParser,
   REQUIRES_FEATURE_SELECTION,
@@ -129,12 +129,13 @@ export class ExportForm extends Component {
   }
 
   componentWillMount() {
-    const { getConfigurations, getOverpassTimestamp } = this.props;
+    const { getConfigurations, getOverpassTimestamp, getGalaxyTimestamp} = this.props;
 
     getConfigurations({
       all: true
     });
     getOverpassTimestamp();
+    getGalaxyTimestamp();
   }
 
   onTreeNodeCollapseChange = node => {
@@ -182,6 +183,7 @@ export class ExportForm extends Component {
       formValues: { export_formats: exportFormats, isClone },
       handleSubmit,
       overpassLastUpdated,
+      galaxyLastUpdated,
       submitting
     } = this.props;
 
@@ -282,8 +284,8 @@ export class ExportForm extends Component {
             <Panel style={{ marginTop: "20px" }}>
               <FormattedMessage
                 id="ui.overpass_last_updated"
-                defaultMessage="OpenStreetMap database last updated {overpassLastUpdated}"
-                values={{ overpassLastUpdated }}
+                defaultMessage="Img/pbf/mwm/obf/mbtiles updated  {overpassLastUpdated}, Rest of other formats updated {galaxyLastUpdated} "
+                values={{ overpassLastUpdated, galaxyLastUpdated }}
               />
             </Panel>
           </Col>
@@ -317,6 +319,7 @@ const mapStateToProps = state => {
       "the_geom"
     ),
     overpassLastUpdated: state.overpassLastUpdated,
+    galaxyLastUpdated: state.galaxyLastUpdated,
     initialValues: {
       published: true,
       feature_selection: `
@@ -329,7 +332,7 @@ buildings:
         - building
     where: building IS NOT NULL
       `.trim(),
-      export_formats: ["geopackage"]
+      export_formats: ["geojson"]
     }
   };
 };
@@ -337,5 +340,6 @@ buildings:
 export default connect(mapStateToProps, {
   createExport,
   getConfigurations,
-  getOverpassTimestamp
+  getOverpassTimestamp,
+  getGalaxyTimestamp
 })(form(ExportForm));

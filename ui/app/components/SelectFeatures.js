@@ -4,15 +4,15 @@ import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router";
 import { Link, NavLink } from "react-router-dom";
-import { Fields } from "redux-form";
-
+import { Fields, Field } from "redux-form";
 import { selectConfigurations } from "../selectors";
-
 import TileSourceField from "./TileSourceField";
 import StoredConfigurations from "./StoredConfigurations";
 import TreeTagUI from "./TreeTagUI";
 import YamlUI from "./YamlUI";
 import { REQUIRES_FEATURE_SELECTION, REQUIRES_TILE_SOURCE } from "./utils";
+import { renderCheckbox } from "./utils";
+
 
 class SelectFeatures extends Component {
   render() {
@@ -37,9 +37,21 @@ class SelectFeatures extends Component {
       .some(x => REQUIRES_TILE_SOURCE[x]);
 
     return (
+
+
       <Row style={{ height: "auto" }}>
+         <Row>
+        <Field
+            name="unfiltered"
+            description="Download all OSM Data - Unfiltered files (Avoid for mbtiles)"
+            component={renderCheckbox}
+            type="checkbox"
+          />
+      </Row>
+
         {requiresFeatureSelection &&
           <ButtonGroup justified>
+
             <NavLink
               className="btn btn-default"
               to="/exports/new/select/treetag"
@@ -72,6 +84,7 @@ class SelectFeatures extends Component {
                 />
               </NavLink>}
           </ButtonGroup>}
+
         <Row>
           <Switch>
             <Route

@@ -92,12 +92,17 @@ class ExportSearchForm extends Component {
             component={renderSelect}
           >
             <option value="any">Any</option>
+            <option value="6hrs">Every 6 hours</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly (Sunday)</option>
+            <option value="2wks">Every two weeks</option>
+            <option value="3wks">Every three weeks</option>
             <option value="monthly">Monthly (1st of month)</option>
-            <option value="6hrs">Every 6 hours</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="semiyearly">Every 6 Months</option>
+            <option value="yearly">Yearly</option>
             <option value="disabled">
-              Don't automatically schedule
+              Don't automatically schedule : Run as needed
             </option>
           </Field>
         </Row>

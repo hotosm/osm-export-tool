@@ -12,7 +12,7 @@ import {
 import { connect } from "react-redux";
 import { DateRangeInput } from "@blueprintjs/datetime";
 import { Field, Fields, propTypes, reduxForm, formValueSelector } from "redux-form";
-import { getStats, getCsv } from "../actions/exports";
+import { getStats, getCsv,getrunCsv } from "../actions/exports";
 import { renderSelect } from "./utils";
 import moment from "moment";
 
@@ -49,15 +49,18 @@ class Stats extends Component {
   }
 
   componentDidMount() {
-    return this.props.getStats(this.props.initialValues) 
+    return this.props.getStats(this.props.initialValues)
   }
 
   fetch = () => {
-    return this.props.getStats(this.props.formValues) 
+    return this.props.getStats(this.props.formValues)
   }
 
   fetchCsv = () => {
     return this.props.getCsv(this.props.formValues)
+  }
+  fetchrunCsv = () => {
+    return this.props.getrunCsv(this.props.formValues)
   }
 
   render() {
@@ -84,6 +87,8 @@ class Stats extends Component {
         <FormattedMessage id="ui.search" defaultMessage="Get stats" />
         </Button>
         <Button style={{marginLeft:"16px"}} onClick={this.fetchCsv}>Download CSV</Button>
+        <Button style={{marginLeft:"16px"}} onClick={this.fetchrunCsv}>Download Run Stats CSV</Button>
+
         <Table>
           <thead>
             <tr>
@@ -146,4 +151,4 @@ const mapStateToProps = state => {
   }
 };
 
-export default connect(mapStateToProps,{getStats,getCsv})(form(Stats));
+export default connect(mapStateToProps,{getStats,getCsv,getrunCsv})(form(Stats));

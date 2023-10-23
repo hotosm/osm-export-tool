@@ -63,6 +63,8 @@ export const cloneExport = e => (dispatch, getState) => {
           mbtiles_source: e.mbtiles_source,
           name: e.name,
           published: e.published,
+          unfiltered: e.unfiltered,
+          preserve_geom: e.preserve_geom,
           the_geom: rsp.data.the_geom,
           aoi: {
             description: "Cloned Area",
@@ -132,7 +134,19 @@ export const runExport = jobUid => (dispatch, getState) => {
     url: `/api/runs?job_uid=${jobUid}`,
     method: "POST"
   }).then(rsp => dispatch(getRuns(jobUid)))
-  .catch(err => alert("Please wait - there is a limit of one run created per minute."));
+  .catch(function (error) {
+    if (error.response) {
+      if(error.response.data.status == "PREVIOUS_RUN_IN_QUEUE"){
+        alert("Please wait to complete previous RUN");
+      }
+      else{
+        alert("Please wait : There is limit of one RUN per Minute");
+      }
+    }
+    else {
+      alert("Please wait : There is limit of one RUN per Minute");
+    }
+  });
 };
 
 export const getOverpassTimestamp = () => (dispatch, getState) => {
@@ -149,6 +163,22 @@ export const getOverpassTimestamp = () => (dispatch, getState) => {
       dispatch({
         type: types.RECEIVED_OVERPASS_TIMESTAMP,
         lastUpdated: moment(rsp.data.timestamp).fromNow()
+      })
+    )
+    .catch(err => console.warn(err));
+};
+
+export const getGalaxyTimestamp = () => (dispatch, getState) => {
+  return axios({
+    baseURL: "https://galaxy-api.hotosm.org/v1",
+    url: "/raw-data/status/"
+  })
+    .then(response =>
+      dispatch({
+        type: types.RECEIVED_GALAXY_TIMESTAMP,
+        lastUpdated: response.data.last_updated
+        // lastUpdated: moment(response.data.last_updated).fromNow()
+
       })
     )
     .catch(err => console.warn(err));
@@ -261,5 +291,21 @@ export const getCsv = (filters) => (dispatch, getState) => {
   }).then(rsp => {
     console.log(rsp.data)
     fileDownload(rsp.data,'exports.csv');
+  });
+};
+
+export const getrunCsv = (filters) => (dispatch, getState) => {
+  const token = selectAuthToken(getState());
+  filters.csv = true;
+  return axios({
+    baseURL: window.EXPORTS_API_URL,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    url: `/api/run_stats`,
+    params: filters
+  }).then(rsp => {
+    console.log(rsp.data)
+    fileDownload(rsp.data,'exports_run.csv');
   });
 };

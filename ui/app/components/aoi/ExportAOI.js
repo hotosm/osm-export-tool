@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import Attribution from "ol/control/attribution";
 import Draw from "ol/interaction/draw";
 import Feature from "ol/feature";
+import { feature, featureCollection, polygon } from "@turf/helpers";
 import Fill from "ol/style/fill";
 import GeoJSONFormat from "ol/format/geojson";
 import interaction from "ol/interaction";
@@ -54,7 +55,7 @@ export class ExportAOI extends Component {
     importGeom: PropTypes.object,
     updateMode: PropTypes.func,
     updateAoiInfo: PropTypes.func,
-    clearAoiInfo: PropTypes.func
+    clearAoiInfo: PropTypes.func,
   };
 
   getFeature(geojson) {
@@ -135,22 +136,47 @@ export class ExportAOI extends Component {
       );
 
   handleSearch = result => {
-    const unformattedBbox = result.bbox;
-    const formattedBbox = [
-      unformattedBbox.west,
-      unformattedBbox.south,
-      unformattedBbox.east,
-      unformattedBbox.north
-    ];
-    this._clearDraw();
-    const bbox = formattedBbox.map(truncate);
-    const mercBbox = proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
-    const geom = Polygon.fromExtent(mercBbox);
-    const geojson = createGeoJSON(geom);
-    const bboxFeature = new Feature({
-      geometry: geom
-    });
-    this._drawLayer.getSource().addFeature(bboxFeature);
+    var geojson;
+    if (result.adminName2.startsWith('HOTOSM')){
+      try {
+        geojson = JSON.parse(JSON.stringify(result.bbox));
+      } catch (e) {
+        alert(e);
+      }
+      // extract single feature geometry from collection
+      if (geojson.type === "FeatureCollection") {
+              if (geojson.features.length === 1) {
+                geojson = geojson.features[0].geometry;
+              }
+            }
+      if (["Polygon", "MultiPolygon"].includes(geojson.type)) {
+              geojson = featureCollection([feature(geojson)]);
+            }
+
+    }
+    else if (result.adminName2 == 'TM' || result.adminName2 == 'OSM') {
+      this._clearDraw();
+      geojson = result.bbox;
+    }
+    else {
+      const unformattedBbox = result.bbox;
+      const formattedBbox = [
+        unformattedBbox.west,
+        unformattedBbox.south,
+        unformattedBbox.east,
+        unformattedBbox.north
+      ];
+      this._clearDraw();
+      const bbox = formattedBbox.map(truncate);
+      const mercBbox = proj.transformExtent(bbox, WGS84, WEB_MERCATOR);
+      const geom = Polygon.fromExtent(mercBbox);
+      geojson = createGeoJSON(geom);
+      const bboxFeature = new Feature({
+        geometry: geom
+      });
+
+    }
+    //this._drawLayer.getSource().addFeature(bboxFeature);
     let description = "";
     description += result.countryName ? result.countryName : "";
     description += result.adminName1 ? ", " + result.adminName1 : "";
@@ -159,6 +185,10 @@ export class ExportAOI extends Component {
     this.props.updateAoiInfo(geojson, "Polygon", result.name, description);
     this.handleZoomToSelection(bbox);
   };
+
+  handleSearchNominatim = result => {
+    this.props.updateAoiInfo(result.geojson, "Polygon", result.name, result.description);
+  }
 
   handleGeoJSONUpload = geojson =>
     this.props.updateAoiInfo(geojson, "Polygon", "Custom Polygon", "Import");
@@ -241,15 +271,14 @@ export class ExportAOI extends Component {
         // Order matters here
         new Tile({
           source: new OSM({
-            wrapX: false,
             attributions: [
               new LayerAttribution({
-                html: `© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>`
+                html: `© <a href="https://osm.org/">OSM</a>`
               }),
               OSM.ATTRIBUTION
             ],
             url:
-              "https://{a-c}.tiles.mapbox.com/styles/v1/openaerialmap/ciyx269by002w2rldex1768f5/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib3BlbmFlcmlhbG1hcCIsImEiOiJjaXl4MjM5c20wMDBmMzNucnZtbnYwZTcxIn0.IKG5flWCS6QfpO3iOdRveg"
+              "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           })
         })
       ],
@@ -284,6 +313,7 @@ export class ExportAOI extends Component {
             <AoiInfobar aoi={aoi} zoomToSelection={this.zoomToSelection} />}
           <SearchAOIToolbar
             handleSearch={this.handleSearch}
+            handleSearchNominatim={this.handleSearchNominatim}
             handleCancel={this.handleCancel}
           />
           <DrawAOIToolbar
@@ -326,7 +356,7 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  updateMode
+  updateMode,
 })(ExportAOI);
 
 function generateDrawLayer() {

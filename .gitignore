@@ -15,6 +15,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.vscode
 .Python
 env/
 venv/
@@ -57,8 +58,10 @@ cover/
 # Django stuff:
 *.log
 
-# Sphinx documentation
+# Docs
 docs/_build/
+site
+build
 
 # PyBuilder
 target/
@@ -83,6 +86,6 @@ celerybeat-schedule
 core/settings/secret.py
 .env
 node_modules
-ui/static/ui/js/bundle.js
+ui/static/ui/js/*
 *.js.map
 secrets

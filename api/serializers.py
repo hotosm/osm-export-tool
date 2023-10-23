@@ -41,8 +41,8 @@ class ExportRunSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportRun
         lookup_field = 'uid'
-        fields = ('uid', 'started_at', 'finished_at', 'duration',
-                  'elapsed_time', 'user', 'size', 'status', 'tasks')
+        fields = ('uid','created_at', 'started_at', 'finished_at', 'duration',
+                  'elapsed_time', 'user', 'size','hdx_sync_status', 'status', 'tasks')
 
 
 class ConfigurationSerializer(serializers.ModelSerializer):
@@ -70,7 +70,7 @@ class JobSerializer(serializers.ModelSerializer):
         fields = ('id', 'uid', 'user', 'name', 'description', 'event',
                   'export_formats', 'published', 'feature_selection',
                   'buffer_aoi', 'osma_link', 'created_at', 'area', 'the_geom',
-                  'simplified_geom', 'mbtiles_source', 'mbtiles_minzoom', 'mbtiles_maxzoom','pinned','unfiltered')
+                  'simplified_geom', 'mbtiles_source', 'mbtiles_minzoom', 'mbtiles_maxzoom','pinned','unfiltered','preserve_geom')
         extra_kwargs = {
             'the_geom': {
                 'write_only': True
@@ -127,7 +127,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
                   'schedule_period', 'schedule_hour', 'export_formats',
                   'name', 'event', 'description', 'last_run', 'next_run',
                   'simplified_geom', 'job_uid',
-                  'the_geom','group','planet_file')
+                  'the_geom','group','planet_file', 'polygon_centroid')
         extra_kwargs = {
             'simplified_geom': {
                 'read_only': True
@@ -150,7 +150,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job_dict['description'] = validated_data.get('description') or ""
 
         region_dict = slice_dict(validated_data, [
-            'schedule_period', 'schedule_hour','group','planet_file'
+            'schedule_period', 'schedule_hour','group','planet_file', 'polygon_centroid'
         ])
         job = Job(**job_dict)
         job.hidden = True
@@ -189,7 +189,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
 
         validate_model(job)
         update_attrs(instance, validated_data, [
-            'schedule_period', 'schedule_hour', 'group','planet_file'
+            'schedule_period', 'schedule_hour', 'group','planet_file', 'polygon_centroid'
         ])
         validate_model(instance)
         with transaction.atomic():
@@ -227,6 +227,13 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
     the_geom = geo_serializers.GeometryField()
     name = serializers.CharField()
     buffer_aoi = serializers.BooleanField()
+    def validate(self, data):
+        """
+        Check for export formats for country exports.
+        """
+        if HDXExportRegion.objects.filter(schedule_period='daily').count() > 6:
+            raise serializers.ValidationError("Maximum daily run limit of 6 for hdx job exceeded. Please change the frequency")
+        return data
 
     class Meta:  # noqa
         model = HDXExportRegion

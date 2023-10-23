@@ -1,0 +1,9 @@
+[Unit]
+Description=Run cleanup every minute
+
+[Timer]
+OnCalendar=minutely
+Persistent=true
+
+[Install]
+WantedBy=timers.target

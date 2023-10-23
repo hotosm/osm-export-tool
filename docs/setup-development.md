@@ -1,4 +1,3 @@
-
 ## Project Structure
 
 This is a guide to the source code - useful if you'd like to contribute to the Export Tool, deploy the project on your own server, or re-use parts of the project.
@@ -9,27 +8,27 @@ This is a guide to the source code - useful if you'd like to contribute to the E
 
 ## Development Prerequisites
 
-* Python 3.6 or later, `virtualenv`, `pip`
-* PostgreSQL 10+ and PostGIS
-  * Recommend [Postgres.app](https://postgresapp.com) which includes PostGIS. 
-* GDAL/OGR
-  * Recommend at least version 2.4 - newer versions available in `ubuntugis` PPAs or Homebrew on Mac
-* RabbitMQ, a message queue
-* Node.js and [Yarn](https://yarnpkg.com/)
+- Python 3.6 or later, `virtualenv`, `pip`
+- PostgreSQL 10+ and PostGIS
+  - Recommend [Postgres.app](https://postgresapp.com) which includes PostGIS.
+- GDAL/OGR
+  - Recommend at least version 2.4 - newer versions available in `ubuntugis` PPAs or Homebrew on Mac
+- RabbitMQ, a message queue
+- Node.js and [Yarn](https://yarnpkg.com/)
 
 ## Overpass API
 
 The Export Tool queries an instance of the Overpass API for source data. Overpass:
 
-* can efficiently perform spatial queries over large quantities of OSM data, including members of ways and relations.
-* has built in facilities to ingest minutely diffs from OpenStreetMap.org.
-* can create lossless PBF-format exports, which are necessary for some file formats such as OSMand and Garmin .IMG mobile device maps.
+- can efficiently perform spatial queries over large quantities of OSM data, including members of ways and relations.
+- has built-in facilities to ingest minute diffs from OpenStreetMap.org.
+- can create lossless PBF-format exports, which are necessary for some file formats such as OSMand and Garmin .IMG mobile device maps.
 
 Instructions on installing Overpass are available at https://github.com/drolbr/Overpass-API . Alternatively, Overpass can be run via Docker - see `ops/docker-overpass-api`.
 
-* The export tool is configured with an Overpass URL via the environment variable `OVERPASS_API_URL`. This can be a public Overpass instance, a remote instance you manage yourself, or a local instance on your own computer. Public instances may have strict rate limits, so please use them lightly.
-* To set up a local Overpass instance, start with a .pbf file. This can be the full planet .pbf from http://planet.openstreetmap.org or a region, e.g. pbfs available from http://download.geofabrik.de/ .
-* Optionally, configure Overpass to update itself minutely.
+- The export tool is configured with an Overpass URL via the environment variable `OVERPASS_API_URL`. This can be a public Overpass instance, a remote instance you manage yourself, or a local instance on your own computer. Public instances may have strict rate limits, so please use them lightly.
+- To set up a local Overpass instance, start with a .pbf file. This can be the full planet .pbf from http://planet.openstreetmap.org or a region, e.g. pbfs available from http://download.geofabrik.de/ .
+- Optionally, configure Overpass to update itself minutely.
 
 ## Development Step-By-Step Guide
 
@@ -51,8 +50,8 @@ pip install -r requirements-dev.txt
 
 ### Database, database schema, and message queue
 
-* PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions. 
-* RabbitMQ should be running and listening on the default port, 5672.
+- PostgreSQL should be running and listening on the default port, 5432, with the shell user having administrative permissions.
+- RabbitMQ should be running and listening on the default port, 5672.
 
 Create and populate a PostgreSQL database named `exports`:
 
@@ -68,6 +67,7 @@ python manage.py migrate
 ```bash
 cd ui/
 yarn install
+yarn run dist # for production
 yarn start  # will watch for changes and re-compile as necessary
 ```
 
@@ -78,7 +78,7 @@ DEBUG=True python manage.py runserver
 
 # in a different shell
 DEBUG=True DJANGO_SETTINGS_MODULE=core.settings.project dramatiq tasks.task_runners -p 1
-  ```
+```
 
 [`direnv`](https://direnv.net/) is a useful tool for managing environment variables using a `.env` file.
 
@@ -90,7 +90,7 @@ See `core/settings/project.py` for environment variables to configure other opti
 
 #### Garmin .IMG
 
-Creating .IMG files requires the `mkgmap` and `splitter` tools.
+Creating .IMG files require the `mkgmap` and `splitter` tools.
 
 [http://www.mkgmap.org.uk/download/mkgmap.html](http://www.mkgmap.org.uk/download/mkgmap.html)
 
@@ -104,20 +104,23 @@ For details and download links to the OSMAnd Map Creator utilities, see [http://
 
 Most of these environment variables have reasonable default settings.
 
-* `EXPORT_STAGING_ROOT`  path to a directory for staging export jobs
-* `EXPORT_DOWNLOAD_ROOT`'path to a directory for storing export downloads
-* `EXPORT_MEDIA_ROOT` map this url in your webserver to `EXPORT_DOWNLOAD_ROOT` to serve the exported files
-* `OSMAND_MAP_CREATOR_DIR` path to directory where OsmAndMapCreator is installed
-* `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
-* `OVERPASS_API_URL` url of Overpass api endpoint
-* `DATABASE_URL`  Database URL. Defaults to `postgres:///exports`
-* `DEBUG`  Whether to enable debug mode. Defaults to `False` (production).
-* `DJANGO_ENV`  Django environment. Set to `development` to enable development tools and email logging to console.
-* `EMAIL_HOST_USER`  SMTP username. 
-* `EMAIL_HOST_PASSWORD` SMTP password. 
-* `EMAIL_USE_TLS`  Whether to use TLS when sending mail. Optional.
-* `HOSTNAME` Publicly-addressable hostname. Defaults to `export.hotosm.org`
-* `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`
+- `EXPORT_STAGING_ROOT` path to a directory for staging export jobs
+- `EXPORT_DOWNLOAD_ROOT`'path to a directory for storing export downloads
+- `EXPORT_MEDIA_ROOT` map this url in your webserver to `EXPORT_DOWNLOAD_ROOT` to serve the exported files
+- `OSMAND_MAP_CREATOR_DIR` path to the directory where OsmAndMapCreator is installed
+- `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
+- `OVERPASS_API_URL` url of Overpass api endpoint
+
+- `RAW_DATA_API_URL` url of Galaxy api endpoint
+
+- `DATABASE_URL` Database URL. Defaults to `postgres:///exports`
+- `DEBUG` Whether to enable debug mode. Defaults to `False` (production).
+- `DJANGO_ENV` Django environment. Set to `development` to enable development tools and email logging to the console.
+- `EMAIL_HOST_USER` SMTP username.
+- `EMAIL_HOST_PASSWORD` SMTP password.
+- `EMAIL_USE_TLS` Whether to use TLS when sending mail. Optional.
+- `HOSTNAME` Publicly-addressable hostname. Defaults to `export.hotosm.org`
+- `USE_X_FORWARDED_HOST` - Whether Django is running behind a proxy. Defaults to `False`
 
 ## Using the Transifex service
 
@@ -130,7 +133,6 @@ chmod 600 ~/.transifexrc
 ```
 
 Example `.transifexrc` file:
-
 
 ```ini
 [https://www.transifex.com]
@@ -148,7 +150,7 @@ To update source language (English) for Django templates run:
 python manage.py makemessages -l en
 ```
 
-To update source language for JavaScript files run:
+To update the source language for JavaScript files run:
 
 ```bash
 python manage.py makemessages -d djangojs -l en
@@ -160,9 +162,9 @@ then, push the new source files to the Transifex service, it will overwrite the 
 tx push -s
 ```
 
-### Pulling latest changes from Transifex
+### Pulling the latest changes from Transifex
 
-When adding a new language, it's resource file does not exist in the project,
+When adding a new language, its resource file does not exist in the project,
 but it's ok as it will be automatically created when pulling new translations from the service. To add a local mapping:
 
 ```bash
@@ -174,7 +176,6 @@ or for JavaScript files:
 ```bash
 tx set -r osm-export-tool2.djangojs -l hr locales/hr/LC_MESSAGES/djangojs.po
 ```
-
 
 Once there are some translation updates, pull the latest changes for mapped resources.
 
@@ -216,4 +217,4 @@ yarn run pack
 yarn run tx:push
 ```
 
-If / when UI translations pass the 5% complete threshold (defined in `ui/.tx/config` as `minimum_perc`), new JSON files will appear in `ui/app/i18n/locales`. To enable these translations for use, add `react-intl` locale data to `ui/app/app.js` (for date / number formatting) and add options to `ui/app/components/LocaleSelector.js`.
+If / when UI translations pass the 5% complete threshold (defined in `ui/.tx/config` as `minimum_perc`), new JSON files will appear in `ui/app/i18n/locales`. To enable these translations for use, add `react-intl` locale data to `ui/app/app.js` (for date/number formatting) and add options to `ui/app/components/LocaleSelector.js`.

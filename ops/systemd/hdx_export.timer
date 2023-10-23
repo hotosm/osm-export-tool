@@ -1,0 +1,11 @@
+[Unit]
+Description=HDX export every minute
+Requires=hdx_export.service
+
+[Timer]
+OnCalendar=minutely
+Persistent=true
+Unit=hdx_export.service
+
+[Install]
+WantedBy=timers.target
