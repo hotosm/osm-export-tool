@@ -1,66 +1,46 @@
-# -*- coding: utf-8 -*-
-"""
-HOT Export Tool URL Configuration
-"""
+from django.urls import path, include, re_path
 from django.conf import settings
-from django.urls import include, re_path
-from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView, RedirectView
 from django.views.i18n import JavaScriptCatalog
 
-from ui.views import (authorized, login, logout,
-                      redirect_to_v3, v3, worker_dashboard)
-urlpatterns = []
+from ui.views import authorized, login, logout, redirect_to_v3, v3, worker_dashboard
 
-urlpatterns += i18n_patterns(
-    url(r'^$', redirect_to_v3, name='index'),
-    url(r'^v3/', v3, name="v3"),
-    url(r'^worker-dashboard/$', worker_dashboard),
-    url(r'^login/$', login, name="login"),
-    url(r'^logout$', logout, name='logout'),
-    url(r'^email/$', TemplateView.as_view(template_name='osm/email.html'),
-        name='require_email'),
-)
-
-urlpatterns += [
-    re_path(r'^authorized', authorized, name="authorized"),
-]
-
-urlpatterns += i18n_patterns(
-    re_path(r'^admin/login/', RedirectView.as_view(pattern_name='login', permanent=False)),
-    re_path(r'^admin/', admin.site.urls),
-)
-
-# OAuth client urls
-urlpatterns += i18n_patterns(
-    re_path('^osm/', include('social_django.urls', namespace='osm')),
-    re_path('^osm/email_verify_sent/$', TemplateView.as_view(
-        template_name='osm/email_verify_sent.html'), name='email_verify_sent'),
-    re_path('^osm/error$', TemplateView.as_view(template_name='osm/error.html'),
-        name='login_error')
-)
-
-# OAuth provider urls
-urlpatterns += [
-    re_path(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-]
-
-# don't apply i18n patterns here.. api uses Accept-Language header
-urlpatterns += [
-    re_path(r'^api/', include('api.urls', namespace='api')),
-    re_path(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
-]
-
-# i18n for js
-js_info_dict = {
-    'packages': ('hot_osm',),
-}
-
-urlpatterns += [
-    re_path(r'^jsi18n/$', JavaScriptCatalog.as_view(packages=['hot_osm']), name='javascript-catalog'),
-    re_path(r'^i18n/', include('django.conf.urls.i18n')),
+urlpatterns = [
+    path("", redirect_to_v3, name="index"),
+    path("v3/", v3, name="v3"),
+    path("worker-dashboard/", worker_dashboard, name="worker_dashboard"),
+    path("login/", login, name="login"),
+    path("logout/", logout, name="logout"),
+    path(
+        "email/",
+        TemplateView.as_view(template_name="osm/email.html"),
+        name="require_email",
+    ),
+    re_path(r"^authorized", authorized, name="authorized"),
+    path("admin/login/", RedirectView.as_view(pattern_name="login", permanent=False)),
+    path("admin/", admin.site.urls),
+    path("osm/", include("social_django.urls", namespace="osm")),
+    path(
+        "osm/email_verify_sent/",
+        TemplateView.as_view(template_name="osm/email_verify_sent.html"),
+        name="email_verify_sent",
+    ),
+    path(
+        "osm/error",
+        TemplateView.as_view(template_name="osm/error.html"),
+        name="login_error",
+    ),
+    path("o/", include("oauth2_provider.urls", namespace="oauth2_provider")),
+    path("api/", include("api.urls", namespace="api")),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path(
+        "jsi18n/",
+        JavaScriptCatalog.as_view(packages=["hot_osm"]),
+        name="javascript-catalog",
+    ),
+    path("i18n/", include("django.conf.urls.i18n")),
 ]
 
 if settings.DEBUG:

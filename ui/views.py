@@ -8,7 +8,14 @@ from oauth2_provider.models import Application
 from django.contrib import admin
 from django.contrib.auth.admin import User, UserAdmin
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseNotFound, HttpResponseForbidden
+from django.http import (
+    JsonResponse,
+    HttpResponseRedirect,
+    HttpResponse,
+    HttpResponseNotFound,
+    HttpResponseForbidden,
+)
+from django.views.decorators.http import require_http_methods
 
 
 def authorized(request):
@@ -23,50 +30,52 @@ def login(request):
     if not request.user.is_authenticated:
         # preserve redirects ("next" in request.GET)
         return redirect(
-            reverse('osm:begin', args=['openstreetmap']) + '?' + request.GET.urlencode())
+            reverse("osm:begin", args=["openstreetmap"]) + "?" + request.GET.urlencode()
+        )
     else:
-        return redirect('/v3/')
+        return redirect("/v3/")
 
 
 def logout(request):
     """Logs out user"""
     auth_logout(request)
-    return redirect('/v3/')
+    return redirect("/v3/")
 
 
 def v3(request):
     try:
-        ui_app = Application.objects.get(name='OSM Export Tool UI')
+        ui_app = Application.objects.get(name="OSM Export Tool UI")
     except Application.DoesNotExist:
         ui_app = Application.objects.create(
             name="OSM Export Tool UI",
             redirect_uris="http://localhost/authorized http://localhost:8080/authorized http://localhost:8000/authorized",
             client_type=Application.CLIENT_PUBLIC,
             authorization_grant_type=Application.GRANT_IMPLICIT,
-            skip_authorization=True
+            skip_authorization=True,
         )
 
     context = dict(client_id=ui_app.client_id)
     if settings.MATOMO_URL is not None and settings.MATOMO_SITEID is not None:
-        context.update({
-            'MATOMO_URL': settings.MATOMO_URL,
-            'MATOMO_SITEID': settings.MATOMO_SITEID
-        })
-    return render(request, 'ui/v3.html', context)
+        context.update(
+            {"MATOMO_URL": settings.MATOMO_URL, "MATOMO_SITEID": settings.MATOMO_SITEID}
+        )
+    return render(request, "ui/v3.html", context)
 
 
 def redirect_to_v3(request):
-    return redirect('/v3/')
+    return redirect("/v3/")
 
-@require_http_methods(['GET'])
+
+@require_http_methods(["GET"])
 def worker_dashboard(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden()
     # return HttpResponse('test')
     return HttpResponseRedirect(f"/{settings.WORKER_SECRET_KEY}/")
 
+
 class ApplicationAdmin(admin.ModelAdmin):
-    raw_id_fields = ("user", )
+    raw_id_fields = ("user",)
 
 
 admin.site.register(Application, ApplicationAdmin)
