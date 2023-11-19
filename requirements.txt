@@ -1,4 +1,4 @@
-Django~=3.0.8
+Django~=3.2.22
 cachetools
 dj_database_url
 django-oauth-toolkit==1.3.2
@@ -10,8 +10,8 @@ hdx-python-utilities==3.6.2
 mercantile~=0.10.0
 psycopg2
 python3-openid==3.2.0
-social-auth-app-django==4.0.0
-social-auth-core==3.3.3
+social-auth-app-django==5.4.0
+social-auth-core==4.4.2
 pytz
 pyyaml>=5.3
 raven
