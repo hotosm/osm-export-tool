@@ -74,7 +74,9 @@ GARMIN_MKGMAP = os.getenv("GARMIN_MKGMAP", "/usr/local/mkgmap/mkgmap.jar")
 OVERPASS_API_URL = os.getenv("OVERPASS_API_URL", "http://overpass-api.de/api/")
 
 # url to galaxy api endpoint
-RAW_DATA_API_URL = os.getenv("RAW_DATA_API_URL", "https://raw-data-api0.hotosm.org/")
+RAW_DATA_API_URL = os.getenv(
+    "RAW_DATA_API_URL", "https://api-stage.raw-data.hotosm.org/"
+)
 
 RAW_DATA_ACCESS_TOKEN = os.getenv("RAW_DATA_ACCESS_TOKEN")
 
