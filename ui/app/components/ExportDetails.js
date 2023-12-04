@@ -225,7 +225,7 @@ class ExportRuns extends Component {
                       </Alert>
                     </td>
                   </tr>
-                  { (run.status === "SUBMITTED" || run.status == "RUNNING") ?(
+                  { (run.status === "SUBMITTED" || run.status === "RUNNING") ?(
                   <RequirePermission required={["auth.add_user"]}>
                     <tr>
                       <td>
@@ -273,7 +273,34 @@ class ExportRuns extends Component {
                         />
                       </td>
                       <td colSpan="3">
-                      {run.hdx_sync_status ? "Uploaded" : "Not Uploaded"}
+                      {run.hdx_sync_status ? "Uploaded " : "Not Uploaded "}
+
+                        <Button
+                          bsStyle="success"
+                          disabled={run.hdx_sync_status}
+                          onClick={async () => {
+                            try {
+                              const token = selectAuthToken(this.props.state_token);
+                              const response = await axios({
+                                baseURL: window.EXPORTS_API_URL,
+                                headers: {
+                                  Authorization: `Bearer ${token}`
+                                },
+                                method: "GET",
+                                url: `/api/sync_to_hdx_api`,
+                                params: {
+                                  run_uid: run.uid
+                                }
+                              });
+                              alert(response.data.message);
+                            } catch (err) {
+                              console.warn(err);
+                              alert(err);
+                            }
+                          }}
+                        >
+                          <FormattedMessage id="ui.resync_hdx" defaultMessage="Resync" />
+                        </Button>
                       </td>
                     </tr>
                   </RequirePermission>

@@ -8,6 +8,7 @@ import json
 import shutil
 import zipfile
 import traceback
+import pickle
 
 import django
 from dramatiq.middleware import TimeLimitExceeded
@@ -488,8 +489,12 @@ def run_task(run_uid,run,stage_dir,download_dir):
         if settings.SYNC_TO_HDX:
             LOG.debug('Syncing to HDX for run: {0}'.format(run_uid))
             region = HDXExportRegion.objects.get(job_id=run.job_id)
+            all_zips_data = pickle.dumps(all_zips)
+            public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
+            pickle_file_path = os.path.join(download_dir,'all_zips.pkl')
+            with open(pickle_file_path, 'wb') as file:
+                file.write(all_zips_data)
             try:
-                public_dir = settings.HOSTNAME + join(settings.EXPORT_MEDIA_ROOT, run_uid)
                 sync_region(region,all_zips,public_dir)
                 run.hdx_sync_status = True
             except Exception as ex:

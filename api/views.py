@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from collections import Counter
 import os
 import io
+import pickle
 import csv
 import dateutil.parser
 import requests
@@ -21,6 +22,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import (
     JsonResponse,
     HttpResponse,
@@ -55,6 +57,8 @@ from .renderers import HOTExportApiRenderer
 from hdx_exports.hdx_export_set import sync_region
 from rtree import index
 import psutil
+from asgiref.sync import async_to_sync
+import asyncio
 
 # Get an instance of a logger
 LOG = logging.getLogger(__name__)
@@ -650,7 +654,7 @@ def request_geonames(request):
 
             if str(keyword).lower().startswith('osm'):
                 lst=keyword.split(" ")
-                if len(lst)>=1:
+                if len(lst)>1:
                     keyword=lst[1]
                     try : 
                         osm_id= int(keyword) 
@@ -680,7 +684,7 @@ def request_geonames(request):
 
         if str(keyword).lower().startswith('tm'):
                 lst=keyword.split(" ")
-                if len(lst)>=1:
+                if len(lst)>1:
 
                     keyword=lst[1]
                     if tm_url:
@@ -771,6 +775,105 @@ def get_groups(request):
         {"id": g.id, "name": g.name} for g in Group.objects.filter(is_partner=True)
     ]
     return JsonResponse({"groups": groups})
+
+
+async def sync_to_hdx_api_async(run_uid):
+    try:
+        run = ExportRun.objects.get(uid=run_uid)
+    except ExportRun.DoesNotExist:
+        return {"error": "Invalid run UID"}
+
+    try:
+        region = HDXExportRegion.objects.get(job_id=run.job_id)
+    except HDXExportRegion.DoesNotExist:
+        return JsonResponse({"error": "HDXExportRegion not found"}, status=404)
+
+    public_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
+    LOG.debug(public_dir)
+    pickle_file_path = os.path.join(public_dir, 'all_zips.pkl')
+
+    if os.path.exists(pickle_file_path):
+        try:
+            with open(pickle_file_path, 'rb') as file:
+                all_zips_data = file.read()
+            all_zips = pickle.loads(all_zips_data)
+            LOG.debug("Calling hdx API")
+            sync_region(region, all_zips, public_dir)
+            run.hdx_sync_status = True
+        except Exception as ex:
+            run.sync_status = False
+            LOG.error(ex)
+            return JsonResponse({"error": "Sync failed"}, status=500)
+    else:
+        return JsonResponse({"error": "No exports available"}, status=404)
+    
+    run.save()
+    LOG.debug('Sync Success to HDX for run: {0}'.format(run_uid))
+
+
+    return {"success": "Sync to HDX completed successfully"}
+
+
+@require_http_methods(["GET"])
+@async_to_sync
+async def sync_to_hdx_api(request):
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "Permission denied"}, status=403)
+    
+    run_uid = request.GET.get("run_uid")
+    if run_uid:
+        # loop = asyncio.get_event_loop()
+        # loop.create_task(sync_to_hdx_api_async(run_uid))
+        await sync_to_hdx_api_async(run_uid)
+        # asyncio.run(sync_to_hdx_api_async(run_uid))
+        return JsonResponse({"message": "Sync request received and is being processed in the background."}, status=202)
+
+    return JsonResponse({"error": "Missing run UID"}, status=400)
+
+# @require_http_methods(["GET"])
+# def sync_to_hdx_api(request):
+#     if not request.user.is_superuser:
+#         return HttpResponseForbidden()
+    
+#     run_uid = request.GET.get("run_uid")
+#     if run_uid:
+#         LOG.debug('Syncing to HDX for run: {0}'.format(run_uid))
+#         try:
+#             run = ExportRun.objects.get(uid=run_uid)
+#         except ExportRun.DoesNotExist:
+#             return JsonResponse({"error": "Invalid run UID"}, status=404)
+        
+#         try:
+#             region = HDXExportRegion.objects.get(job_id=run.job_id)
+#         except HDXExportRegion.DoesNotExist:
+#             return JsonResponse({"error": "HDXExportRegion not found"}, status=404)
+
+#         public_dir = os.path.join(settings.EXPORT_DOWNLOAD_ROOT, run_uid)
+#         LOG.debug(public_dir)
+#         pickle_file_path = os.path.join(public_dir, 'all_zips.pkl')
+
+#         if os.path.exists(pickle_file_path):
+#             try:
+#                 with open(pickle_file_path, 'rb') as file:
+#                     all_zips_data = file.read()
+#                 all_zips = pickle.loads(all_zips_data)
+#                 LOG.debug("Calling hdx API")
+#                 sync_region(region, all_zips, public_dir)
+#                 run.hdx_sync_status = True
+#             except Exception as ex:
+#                 run.sync_status = False
+#                 LOG.error(ex)
+#                 return JsonResponse({"error": "Sync failed"}, status=500)
+#         else:
+#             return JsonResponse({"error": "No exports available"}, status=404)
+        
+#         run.save()
+#         LOG.debug('Sync Success to HDX for run: {0}'.format(run_uid))
+
+#         return JsonResponse({"success": "Sync to HDX completed successfully"}, status=200)
+
+#     return JsonResponse({"error": "Missing run UID"}, status=400)
+
 
 
 from dramatiq_abort import abort

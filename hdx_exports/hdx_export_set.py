@@ -3,6 +3,7 @@ from datetime import datetime
 import django.utils.text
 from hdx.data.dataset import Dataset
 from osm_export_tool.mapping import Mapping
+import logging 
 
 FILTER_CRITERIA = """
 This theme includes all OpenStreetMap features in this area matching:
@@ -27,16 +28,21 @@ def slugify(str):
     s = django.utils.text.slugify(str)
     return s.replace('-','_')
 
-def sync_datasets(datasets,update_dataset_date=False):
+def sync_datasets(datasets, update_dataset_date=False):
     for dataset in datasets:
-        exists = Dataset.read_from_hdx(dataset['name'])
-        if exists:
-            if update_dataset_date:
+        try:
+            exists = Dataset.read_from_hdx(dataset['name'])
+            if exists:
+                if update_dataset_date:
+                    dataset.set_date_of_dataset(datetime.now())
+                dataset.update_in_hdx()
+            else:
                 dataset.set_date_of_dataset(datetime.now())
-            dataset.update_in_hdx()
-        else:
-            dataset.set_date_of_dataset(datetime.now())
-            dataset.create_in_hdx(allow_no_resources=True)
+                dataset.create_in_hdx(allow_no_resources=True)
+        except Exception as e:
+            # Log the error and continue with the next dataset
+            logging.error(f"Error syncing dataset {dataset['name']}: {str(e)}")
+
 
 def sync_region(region,files=[],public_dir=''):
     export_set = HDXExportSet(
