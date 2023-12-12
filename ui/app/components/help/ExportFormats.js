@@ -389,7 +389,7 @@ export default () =>
                 </li>
               </ul>
             </div>
-            <div>
+            {/* <div>
               <h2 id="mwm">MAPS.ME .mwm</h2>
               <p>
                 Maps.me is a GPS Navigation and map application for Android and
@@ -432,7 +432,7 @@ export default () =>
                   </a>
                 </li>
               </ul>
-            </div>
+            </div> */}
             <div>
               <h2 id="mbtiles">MBTiles .mbtiles</h2>
               <p>

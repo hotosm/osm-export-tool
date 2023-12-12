@@ -249,7 +249,8 @@ class ExportRuns extends Component {
                               run_uid: run.uid
                             }
                           });
-                          window.location.reload();
+                          
+                          // window.location.reload();
                         } catch (err) {
                           console.warn(err);
                         }

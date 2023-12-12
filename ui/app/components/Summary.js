@@ -11,10 +11,10 @@ const messages = defineMessages({
     id: "export.buffer_aoi.description",
     defaultMessage: "Buffer AOI - expand an uploaded boundary by 0.02 degrees"
   },
-  bundleForPOSM: {
-    id: "export.bundle_for_posm.description",
-    defaultMessage: "Bundle for POSM"
-  },
+  // bundleForPOSM: {
+  //   id: "export.bundle_for_posm.description",
+  //   defaultMessage: "Bundle for POSM"
+  // },
   preserveGeometry: {
     id: "export.preserve_geom.description",
     defaultMessage: "Preserve Geometry - Avoid simplify ( Only supports for geojson )"
@@ -78,12 +78,12 @@ export default injectIntl(
           component={renderCheckbox}
           type="checkbox"
         />
-        <Field
+        {/* <Field
           name="bundle"
           description={formatMessage(messages.bundleForPOSM)}
           component={renderCheckbox}
           type="checkbox"
-        />
+        /> */}
         {/* <Field
           name="preserve_geom"
           description={formatMessage(messages.preserveGeometry)}

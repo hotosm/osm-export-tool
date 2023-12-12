@@ -142,7 +142,6 @@ class JobViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-
         if (
             Job.objects.filter(
                 created_at__gt=timezone.now() - timedelta(minutes=60),
@@ -806,13 +805,15 @@ def cancel_run(request):
             if message_id:
                 LOG.debug("Canceling task_message_id:{0} ".format(message_id))
                 if run.status == "SUBMITTED":
+                    run.status = "FAILED"
+                    run.save()
                     abort(message_id, mode="cancel")
                 elif run.status == "RUNNING":
-                    abort(message_id)  # cancel if its in queue or in progress
-
-            run.status = "FAILED"
-            run.worker_message_id = None  # set back message id
-            run.save()
+                    run.status = "FAILED"
+                    run.save()
+                    abort(message_id)
+                run.worker_message_id = None
+                run.save()
         except (Job.DoesNotExist, ExportRun.DoesNotExist, ExportTask.DoesNotExist):
             LOG.warn("ExportRun doesnot exist . Exiting")
             return JsonResponse(

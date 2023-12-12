@@ -43,7 +43,7 @@ class SelectFeatures extends Component {
          <Row>
         <Field
             name="unfiltered"
-            description="Download all OSM Data - Unfiltered files (Avoid for mbtiles)"
+            description="Download all OSM Data - Unfiltered files"
             component={renderCheckbox}
             type="checkbox"
           />
