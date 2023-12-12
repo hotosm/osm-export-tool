@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import uuid
+import configparser
 import os
 from hurry.filesize import size
 
@@ -222,15 +223,15 @@ class ExportTask(models.Model):
                 except:
                     fname = f"""{self.run.job.name}_{self.name}.zip"""
                 try:
-                    with open(
+                    config = configparser.ConfigParser()
+                    config.read(
                         os.path.join(
                             settings.EXPORT_DOWNLOAD_ROOT,
                             str(self.run.uid),
-                            f"{name}_size.txt",
+                            f"{name}_size.ini",
                         )
-                    ) as f:
-                        size = f.readline()
-                    filesize_bytes = int(size)
+                    )
+                    filesize_bytes = int(config["FileInfo"]["FileSize"])
                 except:
                     filesize_bytes = 0
 
@@ -329,7 +330,6 @@ class ExportRunsInline(admin.TabularInline):
 
 
 class JobAdmin(GeoModelAdmin, ExportCsvMixin):
-
     """
     Admin model for editing Jobs in the admin interface.
     """
