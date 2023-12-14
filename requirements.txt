@@ -27,7 +27,7 @@ boto3~=1.23.10 # needed for cloudwatch
 rasterio
 # osm-export-tool==0.0.25 #manual setup is needed for now
 osm-export-tool-python == 2.0.10
-rtree==0.9.1
+rtree==1.1.0
 validators==0.20.0
 geonamescache==1.5.0
 psutil==5.9.1
@@ -37,3 +37,6 @@ hurry.filesize==0.9
 dramatiq-abort==1.0
 
 python3-openid
+
+##testing
+pytest==7.4.3
