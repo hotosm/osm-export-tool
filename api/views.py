@@ -623,7 +623,6 @@ def request_geonames(request):
             or str(keyword).lower().startswith("tm")
         ):
             response = requests.get(geonames_url, params=payload).json()
-            print(response)
         assert isinstance(response, dict)
         if RAW_DATA_API_URL:
             if str(keyword).lower().startswith("boundary"):
@@ -646,7 +645,7 @@ def request_geonames(request):
                                 }
                                 add_resp = {
                                     "bbox": geojson,
-                                    "adminName2": feature["properties"]["iso_3"],
+                                    "adminName2": f'ISO3 : {feature["properties"]["iso_3"]}',
                                     "name": f'{request.GET.get("q")} -> {feature["properties"]["description"]}',
                                     "countryName": feature["properties"][
                                         "dataset_name"
@@ -656,6 +655,7 @@ def request_geonames(request):
 
                                 if "geonames" in response:
                                     response["geonames"].append(add_resp)
+                                response["totalResultsCount"] += 1
 
             if str(keyword).lower().startswith("osm"):
                 lst = keyword.split(" ")
