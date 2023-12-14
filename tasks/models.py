@@ -211,14 +211,9 @@ class ExportTask(models.Model):
                     name = value[-1]
                     split_name = name.split("_uid_")
                     file_name = split_name[0]
-
-                    if (
-                        file_name[-(2 * len(self.name) + 1) :]
-                        == f"{self.name}_{self.name}"
-                    ):
-                        # filename has duplicated export formats
-                        file_name = file_name[: -(2 * len(self.name) + 2)]
-                    download_name = f"{file_name}.zip"  # getting human redable name ignoring unique id
+                    download_name = (
+                        f"{file_name}.zip" if ".zip" not in file_name else file_name
+                    )  # getting human redable name
                     fname = download_name
                 except:
                     fname = f"""{self.run.job.name}_{self.name}.zip"""

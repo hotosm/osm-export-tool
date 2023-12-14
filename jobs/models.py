@@ -34,9 +34,9 @@ LOG = logging.getLogger(__name__)
 MAX_TILE_COUNT = 10000
 
 DIR = os.path.dirname(os.path.abspath(__file__))
-RASTER = rasterio.open(os.path.join(DIR, 'osm_nodes.tif'))
+RASTER = rasterio.open(os.path.join(DIR, "osm_nodes.tif"))
 
-Group.add_to_class('is_partner', models.BooleanField(null=False, default=False))
+Group.add_to_class("is_partner", models.BooleanField(null=False, default=False))
 
 
 def get_geodesic_area(geom):
@@ -57,59 +57,88 @@ def get_geodesic_area(geom):
     if length > 2:
         for x in range(length - 1):
             p1 = coords[x]
-            p2 = coords[x+1]
-            area += math.radians(p2[0] - p1[0]) * (2 + math.sin(math.radians(p1[1]))
-                                                   + math.sin(math.radians(p2[1])))
+            p2 = coords[x + 1]
+            area += math.radians(p2[0] - p1[0]) * (
+                2 + math.sin(math.radians(p1[1])) + math.sin(math.radians(p2[1]))
+            )
         area = abs(int(area * 6378137 * 6378137 / 2.0 / 1000 / 1000))
     return area
 
-MAX_NODES = 10000000
-ValidateResult = namedtuple('ValidateResult',['valid','message','params'])
 
-def check_extent(aoi,url):
+MAX_NODES = 10000000
+ValidateResult = namedtuple("ValidateResult", ["valid", "message", "params"])
+
+
+def check_extent(aoi, url):
     if not aoi.valid:
-        return ValidateResult(False,aoi.valid_reason,None)
+        return ValidateResult(False, aoi.valid_reason, None)
     aoi.srid = 4326
-    transformed = aoi.transform(3857,clone=True)
-    masked = mask.mask(RASTER,[json.loads(transformed.json)],all_touched=False)
+    transformed = aoi.transform(3857, clone=True)
+    masked = mask.mask(RASTER, [json.loads(transformed.json)], all_touched=False)
     nodes = masked[0].sum() * 1000
     if nodes > MAX_NODES:
-        return ValidateResult(False, "The selected area's bounding box contains about %(nodes)s nodes.\
+        return ValidateResult(
+            False,
+            "The selected area's bounding box contains about %(nodes)s nodes.\
             The maximum is %(maxnodes)s. Please choose a smaller area.",
-            {'nodes':nodes,'maxnodes':MAX_NODES})
-    return ValidateResult(True,None,None)
+            {"nodes": nodes, "maxnodes": MAX_NODES},
+        )
+    return ValidateResult(True, None, None)
+
 
 def validate_export_formats(value):
     if not value:
-        raise ValidationError(
-            "Must choose at least one export format."
-        )
+        raise ValidationError("Must choose at least one export format.")
 
     for format_name in value:
-        if format_name not in ['shp','geojson','fgb','csv','sql','geopackage','garmin_img','kml','mwm','osmand_obf','osm_pbf','osm_xml','bundle','mbtiles','full_pbf']:
+        if format_name not in [
+            "shp",
+            "geojson",
+            "fgb",
+            "csv",
+            "sql",
+            "geopackage",
+            "garmin_img",
+            "kml",
+            "mwm",
+            "osmand_obf",
+            "osm_pbf",
+            "osm_xml",
+            "bundle",
+            "mbtiles",
+            "full_pbf",
+        ]:
             raise ValidationError(
                 "Bad format name: %(format_name)s",
-                params={'format_name': format_name},
+                params={"format_name": format_name},
             )
+
 
 def validate_feature_selection(value):
     from osm_export_tool.mapping import Mapping
+
     m, errors = Mapping.validate(value)
     if not m:
         raise ValidationError(errors)
 
+
 def validate_aoi(aoi):
-    result = check_extent(aoi,settings.OVERPASS_API_URL)
+    result = check_extent(aoi, settings.OVERPASS_API_URL)
     if not result.valid:
-        raise ValidationError(result.message,params=result.params)
+        raise ValidationError(result.message, params=result.params)
+
 
 def validate_mbtiles(job):
     if "mbtiles" in job["export_formats"]:
         if job.get("mbtiles_source") is None:
-            raise ValidationError("A source is required when generating an MBTiles archive.")
+            raise ValidationError(
+                "A source is required when generating an MBTiles archive."
+            )
 
         if job.get("mbtiles_maxzoom") is None or job.get("mbtiles_minzoom") is None:
-            raise ValidationError("A zoom range must be provided when generating an MBTiles archive.")
+            raise ValidationError(
+                "A zoom range must be provided when generating an MBTiles archive."
+            )
 
         bounds = job["the_geom"].extent
         tile_count = 0
@@ -126,35 +155,51 @@ def validate_mbtiles(job):
         if tile_count > MAX_TILE_COUNT:
             raise ValidationError(
                 "%(tile_count)s tiles would be rendered; please reduce the zoom range, the size of your AOI, or split the export into pieces covering specific areas in order to render fewer than %(max_tile_count)s in each.",
-                params={'tile_count': tile_count, 'max_tile_count': MAX_TILE_COUNT},
+                params={"tile_count": tile_count, "max_tile_count": MAX_TILE_COUNT},
             )
+
 
 class Job(models.Model):
     """
     Database model for an 'Export'.
     Immutable, except in the case of HDX Export Regions.
     """
+
     id = models.AutoField(primary_key=True, editable=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
-    user = models.ForeignKey(User, related_name='owner', on_delete=models.CASCADE)
+    uid = models.UUIDField(
+        unique=True, default=uuid.uuid4, editable=False, db_index=True
+    )
+    user = models.ForeignKey(User, related_name="owner", on_delete=models.CASCADE)
     name = models.CharField(max_length=100, db_index=True, blank=False)
-    description = models.CharField(max_length=1000, db_index=True, default='', blank=True)
-    event = models.CharField(max_length=100, db_index=True, default='', blank=True)
-    export_formats = ArrayField(models.CharField(max_length=10),validators=[validate_export_formats],blank=False)
+    description = models.CharField(
+        max_length=1000, db_index=True, default="", blank=True
+    )
+    event = models.CharField(max_length=100, db_index=True, default="", blank=True)
+    export_formats = ArrayField(
+        models.CharField(max_length=10),
+        validators=[validate_export_formats],
+        blank=False,
+    )
     published = models.BooleanField(default=False, db_index=True)
-    the_geom = models.GeometryField(verbose_name='Uploaded geometry', srid=4326, blank=False)
-    simplified_geom = models.GeometryField(verbose_name='Simplified geometry', srid=4326, blank=True, null=True)
-    feature_selection = models.TextField(blank=False,validators=[validate_feature_selection])
+    the_geom = models.GeometryField(
+        verbose_name="Uploaded geometry", srid=4326, blank=False
+    )
+    simplified_geom = models.GeometryField(
+        verbose_name="Simplified geometry", srid=4326, blank=True, null=True
+    )
+    feature_selection = models.TextField(
+        blank=False, validators=[validate_feature_selection]
+    )
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
-    mbtiles_maxzoom = models.IntegerField(null=True,blank=True)
-    mbtiles_minzoom = models.IntegerField(null=True,blank=True)
-    mbtiles_source = models.TextField(null=True,blank=True)
+    mbtiles_maxzoom = models.IntegerField(null=True, blank=True)
+    mbtiles_minzoom = models.IntegerField(null=True, blank=True)
+    mbtiles_source = models.TextField(null=True, blank=True)
 
     # flags
     buffer_aoi = models.BooleanField(default=False)
     unlimited_extent = models.BooleanField(default=False)
-    hidden = models.BooleanField(default=False) # hidden from the list page
+    hidden = models.BooleanField(default=False)  # hidden from the list page
     expire_old_runs = models.BooleanField(default=True)
     pinned = models.BooleanField(default=False)
     unfiltered = models.BooleanField(default=False)
@@ -162,7 +207,7 @@ class Job(models.Model):
 
     class Meta:  # pragma: no cover
         managed = True
-        db_table = 'jobs'
+        db_table = "jobs"
 
     @property
     def last_run_status(self):
@@ -174,7 +219,6 @@ class Job(models.Model):
         if self.runs.count() > 0:
             return self.runs.all()[self.runs.count() - 1].started_at
 
-
     @property
     def is_hdx(self):
         if HDXExportRegion.objects.filter(job_id=self.id).exists():
@@ -184,7 +228,9 @@ class Job(models.Model):
     @property
     def osma_link(self):
         bounds = self.the_geom.extent
-        return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/buildings/recency".format(*bounds)
+        return "http://osm-analytics.org/#/show/bbox:{0},{1},{2},{3}/buildings/recency".format(
+            *bounds
+        )
 
     @property
     def area(self):
@@ -192,7 +238,9 @@ class Job(models.Model):
 
     def save(self, *args, **kwargs):
         self.the_geom = force2d(self.the_geom)
-        self.simplified_geom = simplify_geom(self.the_geom,force_buffer=self.buffer_aoi)
+        self.simplified_geom = simplify_geom(
+            self.the_geom, force_buffer=self.buffer_aoi
+        )
         super(Job, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -200,16 +248,23 @@ class Job(models.Model):
 
 
 class SavedFeatureSelection(models.Model):
-    """ Mutable database record for a saved YAML configuration."""
-    created_at = models.DateTimeField(default=timezone.now,db_index=True, editable=False)
+    """Mutable database record for a saved YAML configuration."""
+
+    created_at = models.DateTimeField(
+        default=timezone.now, db_index=True, editable=False
+    )
     updated_at = models.DateTimeField(default=timezone.now, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, db_index=True, blank=False)
-    description = models.CharField(max_length=1000, db_index=True, default='', blank=True)
+    description = models.CharField(
+        max_length=1000, db_index=True, default="", blank=True
+    )
     yaml = models.TextField(blank=False, validators=[validate_feature_selection])
     public = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_index=True)
+    uid = models.UUIDField(
+        unique=True, default=uuid.uuid4, editable=False, db_index=True
+    )
     pinned = models.BooleanField(default=False)
 
     def __str__(self):
@@ -217,26 +272,29 @@ class SavedFeatureSelection(models.Model):
 
 
 PERIOD_CHOICES = (
-    ('6hrs', 'Every 6 hours'),
-    ('daily', 'Every day'),
-    ('weekly', 'Every Sunday'),
-    ('2wks', 'Every two weeks'),
-    ('3wks', 'Every three weeks'),
-    ('monthly', 'The 1st of every month'),
-    ('quarterly', 'Every quarter (90 days)'),
-    ('semiyearly', 'Every 6 months'),
-    ('yearly', 'Every year'),
-    ('disabled', 'Disabled'),
+    ("6hrs", "Every 6 hours"),
+    ("daily", "Every day"),
+    ("weekly", "Every Sunday"),
+    ("2wks", "Every two weeks"),
+    ("3wks", "Every three weeks"),
+    ("monthly", "The 1st of every month"),
+    ("quarterly", "Every quarter (90 days)"),
+    ("semiyearly", "Every 6 months"),
+    ("yearly", "Every year"),
+    ("disabled", "Disabled"),
 )
-HOUR_CHOICES = zip(range(0, 24), range(0, 24))
+HOUR_CHOICES = list(zip(range(0, 24), range(0, 24)))
 
 
 class RegionMixin:
     @property
-    def last_run(self): # noqa
+    def last_run(self):  # noqa
         if self.job.runs.count() > 0:
-
-            last_run_time = self.job.runs.all()[self.job.runs.count() - 1].finished_at or self.job.runs.all()[self.job.runs.count() - 1].started_at or self.job.runs.all()[self.job.runs.count() - 1].created_at
+            last_run_time = (
+                self.job.runs.all()[self.job.runs.count() - 1].finished_at
+                or self.job.runs.all()[self.job.runs.count() - 1].started_at
+                or self.job.runs.all()[self.job.runs.count() - 1].created_at
+            )
             return last_run_time
 
     @property
@@ -247,32 +305,38 @@ class RegionMixin:
     @property
     def last_run_duration(self):
         if self.job.runs.count() > 0:
-            i=1
+            i = 1
             last_run_duration = None
-            while (last_run_duration is None):  # get previous run size if current is running/submitted
-                if i >= self.job.runs.count() and i != 1: 
+            while (
+                last_run_duration is None
+            ):  # get previous run size if current is running/submitted
+                if i >= self.job.runs.count() and i != 1:
                     break
-                last_run_duration = self.job.runs.all()[self.job.runs.count() - i].duration
-                i+=1
-            return time.strftime('%H:%M:%S', time.gmtime(last_run_duration))
-
+                last_run_duration = self.job.runs.all()[
+                    self.job.runs.count() - i
+                ].duration
+                i += 1
+            return time.strftime("%H:%M:%S", time.gmtime(last_run_duration))
 
     @property
     def last_size(self):
         if self.job.runs.count() > 0:
-            i=1
+            i = 1
             last_run_size = 0
-            while (last_run_size == 0):  # get previous run size if current is running/submitted
-                if i >= self.job.runs.count() and i != 1: 
+            while (
+                last_run_size == 0
+            ):  # get previous run size if current is running/submitted
+                if i >= self.job.runs.count() and i != 1:
                     break
                 last_run_size = self.job.runs.all()[self.job.runs.count() - i].size
-                i+=1
+                i += 1
             return last_run_size
 
     @property
     def last_export_size(self):
         if self.last_size:
             return size(self.last_size)
+
     @property
     def last_run_hdx_sync(self):
         if self.job.runs.count() > 0:
@@ -286,19 +350,18 @@ class RegionMixin:
     def last_run_hum(self):
         return humanize.naturaltime(self.last_run)
 
-
     @property
-    def next_run(self): # noqa
+    def next_run(self):  # noqa
         now = timezone.now().replace(minute=0, second=0, microsecond=0)
 
-        if self.schedule_period == '6hrs':
+        if self.schedule_period == "6hrs":
             delta = 6 - (self.schedule_hour + now.hour % 6)
 
             return now + timedelta(hours=delta)
 
         now = now.replace(hour=self.schedule_hour)
 
-        if self.schedule_period == 'daily':
+        if self.schedule_period == "daily":
             anchor = now
 
             if timezone.now() < anchor:
@@ -306,7 +369,7 @@ class RegionMixin:
 
             return anchor + timedelta(days=1)
 
-        if self.schedule_period == 'weekly':
+        if self.schedule_period == "weekly":
             # adjust so the week starts on Sunday
             anchor = now - timedelta((now.weekday() + 1) % 7)
 
@@ -315,7 +378,7 @@ class RegionMixin:
 
             return anchor + timedelta(days=7)
 
-        if self.schedule_period == '2wks':
+        if self.schedule_period == "2wks":
             # adjust so the week starts on Sunday
             anchor = now - timedelta((now.weekday() + 1) % 7)
 
@@ -324,7 +387,7 @@ class RegionMixin:
 
             return anchor + timedelta(days=14)
 
-        if self.schedule_period == '3wks':
+        if self.schedule_period == "3wks":
             # adjust so the week starts on Sunday
             anchor = now - timedelta((now.weekday() + 1) % 7)
 
@@ -333,7 +396,7 @@ class RegionMixin:
 
             return anchor + timedelta(days=21)
 
-        if self.schedule_period == 'monthly':
+        if self.schedule_period == "monthly":
             (_, num_days) = calendar.monthrange(now.year, now.month)
             anchor = now.replace(day=1)
 
@@ -342,7 +405,7 @@ class RegionMixin:
 
             return anchor + timedelta(days=num_days)
 
-        if self.schedule_period == 'quarterly':
+        if self.schedule_period == "quarterly":
             # adjust so the week starts on Sunday
             anchor = now - timedelta((now.weekday() + 1) % 7)
 
@@ -351,7 +414,7 @@ class RegionMixin:
 
             return anchor + timedelta(days=90)
 
-        if self.schedule_period == 'semiyearly':
+        if self.schedule_period == "semiyearly":
             # adjust so the week starts on Sunday
             anchor = now - timedelta((now.weekday() + 1) % 7)
 
@@ -360,7 +423,7 @@ class RegionMixin:
 
             return anchor + timedelta(days=180)
 
-        if self.schedule_period == 'yearly':
+        if self.schedule_period == "yearly":
             # adjust so the week starts on Sunday
             anchor = now - timedelta((now.weekday() + 1) % 7)
 
@@ -370,36 +433,36 @@ class RegionMixin:
             return anchor + timedelta(days=365)
 
     @property
-    def delta(self): # noqa
-        if self.schedule_period == '6hrs':
+    def delta(self):  # noqa
+        if self.schedule_period == "6hrs":
             return timedelta(hours=6)
 
-        if self.schedule_period == 'daily':
+        if self.schedule_period == "daily":
             return timedelta(days=1)
 
-        if self.schedule_period == 'weekly':
+        if self.schedule_period == "weekly":
             return timedelta(days=7)
 
-        if self.schedule_period == '2wks':
+        if self.schedule_period == "2wks":
             return timedelta(days=14)
 
-        if self.schedule_period == '3wks':
+        if self.schedule_period == "3wks":
             return timedelta(days=21)
 
-        if self.schedule_period == 'monthly':
+        if self.schedule_period == "monthly":
             return timedelta(days=31)
 
-        if self.schedule_period == 'quarterly':
+        if self.schedule_period == "quarterly":
             return timedelta(days=90)
 
-        if self.schedule_period == 'semiyearly':
+        if self.schedule_period == "semiyearly":
             return timedelta(days=189)
 
-        if self.schedule_period == 'yearly':
+        if self.schedule_period == "yearly":
             return timedelta(days=365)
 
     @property
-    def feature_selection(self): # noqa
+    def feature_selection(self):  # noqa
         return self.job.feature_selection
 
     @property
@@ -407,7 +470,7 @@ class RegionMixin:
         return self.job.the_geom
 
     @property
-    def simplified_geom(self): # noqa
+    def simplified_geom(self):  # noqa
         return self.job.simplified_geom
 
     @property
@@ -419,15 +482,15 @@ class RegionMixin:
         return self.job.user
 
     @property
-    def export_formats(self): # noqa
+    def export_formats(self):  # noqa
         return self.job.export_formats
 
 
 class PartnerExportRegion(models.Model, RegionMixin):
     schedule_period = models.CharField(
-        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
-    schedule_hour = models.IntegerField(
-        blank=False, choices=HOUR_CHOICES, default=0)
+        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES
+    )
+    schedule_hour = models.IntegerField(blank=False, choices=HOUR_CHOICES, default=0)
     job = models.ForeignKey(Job, null=True, on_delete=models.SET_NULL)
     # the owning group, which determines access control.
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
@@ -436,11 +499,11 @@ class PartnerExportRegion(models.Model, RegionMixin):
     polygon_centroid = models.BooleanField(default=False)
 
     @property
-    def export_formats(self): # noqa
+    def export_formats(self):  # noqa
         return self.job.export_formats
 
     @property
-    def name(self): # noqa
+    def name(self):  # noqa
         return self.job.name
 
     @property
@@ -455,56 +518,57 @@ class PartnerExportRegion(models.Model, RegionMixin):
     def group_name(self):
         return self.group.name
 
-class HDXExportRegion(models.Model, RegionMixin): # noqa
-    """ Mutable database table for hdx - additional attributes on a Job."""
+
+class HDXExportRegion(models.Model, RegionMixin):  # noqa
+    """Mutable database table for hdx - additional attributes on a Job."""
+
     schedule_period = models.CharField(
-        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES)
-    schedule_hour = models.IntegerField(
-        blank=False, choices=HOUR_CHOICES, default=0)
+        blank=False, max_length=10, default="disabled", choices=PERIOD_CHOICES
+    )
+    schedule_hour = models.IntegerField(blank=False, choices=HOUR_CHOICES, default=0)
     deleted = models.BooleanField(default=False)
     # a job should really be required, but that interferes with DRF validation lifecycle.
-    job = models.ForeignKey(Job, null=True, related_name='hdx_export_region_set', on_delete=models.SET_NULL)
+    job = models.ForeignKey(
+        Job, null=True, related_name="hdx_export_region_set", on_delete=models.SET_NULL
+    )
     is_private = models.BooleanField(default=False)
-    locations = ArrayField(
-        models.CharField(blank=False, max_length=32), null=True)
+    locations = ArrayField(models.CharField(blank=False, max_length=32), null=True)
     license = models.CharField(max_length=32, null=True, blank=True)
     subnational = models.BooleanField(default=True)
     extra_notes = models.TextField(null=True, blank=True)
     planet_file = models.BooleanField(default=False)
 
-    class Meta: # noqa
-        db_table = 'hdx_export_regions'
-    
+    class Meta:  # noqa
+        db_table = "hdx_export_regions"
 
     def __str__(self):
         return self.name + " (prefix: " + self.dataset_prefix + ")"
 
-    
     def clean(self):
-        if self.job and not re.match(r'^[a-z0-9-_]+$', self.job.name):
+        if self.job and not re.match(r"^[a-z0-9-_]+$", self.job.name):
             raise ValidationError(
-                {'dataset_prefix': "Invalid dataset_prefix: {0}".format(self.job.name)}
+                {"dataset_prefix": "Invalid dataset_prefix: {0}".format(self.job.name)}
             )
 
     @property
-    def buffer_aoi(self): # noqa
+    def buffer_aoi(self):  # noqa
         return self.job.buffer_aoi
 
     @property
-    def name(self): # noqa
+    def name(self):  # noqa
         return self.job.description
 
     @property
-    def dataset_prefix(self): # noqa
+    def dataset_prefix(self):  # noqa
         return self.job.name
 
     @property
-    def datasets(self): # noqa
+    def datasets(self):  # noqa
         export_set = HDXExportSet(
             Mapping(self.feature_selection),
             self.dataset_prefix,
             self.name,
-            self.extra_notes
+            self.extra_notes,
         )
         return export_set.dataset_links(settings.HDX_URL_PREFIX)
 
@@ -544,31 +608,31 @@ class HDXExportRegion(models.Model, RegionMixin): # noqa
         # "semiyearly": "180",
         # "annually": "365",
         # "yearly": "365",
-        if self.schedule_period == '6hrs':
+        if self.schedule_period == "6hrs":
             return 1
 
-        if self.schedule_period == 'daily':
+        if self.schedule_period == "daily":
             return 1
 
-        if self.schedule_period == 'weekly':
+        if self.schedule_period == "weekly":
             return 7
 
-        if self.schedule_period == '2wks':
+        if self.schedule_period == "2wks":
             return 14
 
-        if self.schedule_period == '3wks':
+        if self.schedule_period == "3wks":
             return 30
 
-        if self.schedule_period == 'monthly':
+        if self.schedule_period == "monthly":
             return 30
 
-        if self.schedule_period == 'quarterly':
+        if self.schedule_period == "quarterly":
             return 90
 
-        if self.schedule_period == 'semiyearly':
+        if self.schedule_period == "semiyearly":
             return 180
 
-        if self.schedule_period == 'yearly':
+        if self.schedule_period == "yearly":
             return 365
 
         return -2  # returning as needed as default instead of live

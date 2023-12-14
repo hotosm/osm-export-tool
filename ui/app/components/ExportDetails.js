@@ -151,7 +151,7 @@ const Details = ({ exportInfo }) => {
             </ul>
           </td>
         </tr>
-        <tr>
+        {/* <tr>
           <td>
             <FormattedMessage
               id="export.osma.label"
@@ -166,7 +166,7 @@ const Details = ({ exportInfo }) => {
               />
             </a>
           </td>
-        </tr>
+        </tr> */}
       </tbody>
     </Table>
   );
