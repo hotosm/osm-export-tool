@@ -618,14 +618,14 @@ def request_geonames(request):
         keyword = request.GET.get("q")
         response = {"totalResultsCount": 0, "geonames": []}
         if not (
-            str(keyword).lower().startswith("boundary")
+            str(keyword).lower().startswith("hdx")
             or str(keyword).lower().startswith("osm")
             or str(keyword).lower().startswith("tm")
         ):
             response = requests.get(geonames_url, params=payload).json()
         assert isinstance(response, dict)
         if RAW_DATA_API_URL:
-            if str(keyword).lower().startswith("boundary"):
+            if str(keyword).lower().startswith("hdx"):
                 lst = keyword.split(" ")
                 if len(lst) > 1:
                     keyword = lst[1]
