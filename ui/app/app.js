@@ -10,7 +10,7 @@ import it from "react-intl/locale-data/it";
 import pt from "react-intl/locale-data/pt";
 import nl from "react-intl/locale-data/nl";
 import { IntlProvider } from "react-intl";
-import { Route, Switch } from "react-router";
+import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "react-router-redux";
 
 import Auth from "./components/Auth";

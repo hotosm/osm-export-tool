@@ -42,7 +42,7 @@ def logout(request):
     return redirect("/v3/")
 
 
-def v3(request):
+def v3(request, *args, **kwargs):
     try:
         ui_app = Application.objects.get(name="OSM Export Tool UI")
     except Application.DoesNotExist:
