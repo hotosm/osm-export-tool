@@ -41,7 +41,7 @@ urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
     path("v3/", v3, name="v3"),
     path("", redirect_to_v3, name="index"),
-    re_path(r"^(?!(o/|osm/)).*$", v3),
+    re_path(r"^(?!(o/|osm/|admin|api|worker)).*$", v3),
 ]
 
 if settings.DEBUG:
