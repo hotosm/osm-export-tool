@@ -10,6 +10,7 @@ from ui.views import authorized, login, logout, redirect_to_v3, v3, worker_dashb
 urlpatterns = [
     path("", redirect_to_v3, name="index"),
     path("v3/", v3, name="v3"),
+    re_path(r"^(?:.*)/?$", v3),
     path("worker-dashboard/", worker_dashboard, name="worker_dashboard"),
     path("login/", login, name="login"),
     path("logout/", logout, name="logout"),
