@@ -249,6 +249,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
         "fgb",
         "csv",
         "sql",
+        "mbtiles",
     ]
     if galaxy_supported_outputs == list(export_formats) or set(export_formats).issubset(
         set(galaxy_supported_outputs)
@@ -954,6 +955,42 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 stop_task("kml")
                 raise ex
 
+        if "mbtiles" in export_formats:
+            try:
+                mbtiles = Galaxy(
+                    settings.RAW_DATA_API_URL,
+                    geom,
+                    mapping=mapping_filter,
+                    file_name=valid_name,
+                    access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                )
+                start_task("mbtiles")
+                LOG.debug("Galaxy fetch started for mbtiles run: {0}".format(run_uid))
+                all_feature_filter_json = join(
+                    os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
+                )
+                response_back = mbtiles.fetch(
+                    "mbtiles",
+                    all_feature_filter_json=all_feature_filter_json,
+                    min_zoom=job.mbtiles_minzoom,
+                    max_zoom=job.mbtiles_maxzoom,
+                )
+                for r in response_back:
+                    config = configparser.ConfigParser()
+                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
+                    size_path = join(
+                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
+                    )
+                    with open(size_path, "w") as configfile:
+                        config.write(configfile)
+
+                LOG.debug("Galaxy fetch ended for mbtiles run: {0}".format(run_uid))
+                finish_task("mbtiles", response_back=response_back)
+
+            except Exception as ex:
+                stop_task("mbtiles")
+                raise ex
+
         if "garmin_img" in export_formats:
             start_task("garmin_img")
             try:
@@ -1009,27 +1046,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 finish_task("osmand_obf", [zipped])
             except Exception as ex:
                 stop_task("osmand_obf")
-                raise ex
-
-        if "mbtiles" in export_formats:
-            start_task("mbtiles")
-            try:
-                mbtiles_files = nontabular.mbtiles(
-                    geom,
-                    join(stage_dir, valid_name + ".mbtiles"),
-                    job.mbtiles_source,
-                    job.mbtiles_minzoom,
-                    job.mbtiles_maxzoom,
-                )
-                bundle_files += mbtiles_files
-                zipped = create_package(
-                    join(download_dir, valid_name + "_mbtiles.zip"),
-                    mbtiles_files,
-                    boundary_geom=geom,
-                )
-                finish_task("mbtiles", [zipped])
-            except Exception as ex:
-                stop_task("mbtiles")
                 raise ex
 
         if "osm_pbf" in export_formats:

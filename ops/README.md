@@ -106,7 +106,7 @@ sudo systemctl start database_backup.timer
 TODO `docker.postgresql-backup.{service,timer}` define a unit that runs daily to back the database up to
 S3. To check its schedule, run `systemctl list-timers`.
 
-### Pre-compiled libraries
+<!-- ### Pre-compiled libraries
 
 The Maps.ME generator_tool must be built for the target OS (Ubuntu 18.04 LTS).
 
@@ -118,4 +118,4 @@ git clone --recursive --depth 1 https://github.com/mapsme/omim.git
 ./configure
 omim/tools/unix/build_omim.sh -sr generator_tool
 tar -cvzf omim-build-release.tgz ../omim-build-release
-```
+``` -->

@@ -121,7 +121,7 @@ export class SearchAOIToolbar extends Component {
             disabled={this.props.toolbarIcons.search === "INACTIVE"}
             options={this.state.suggestions}
             onChange={this.handleEnter}
-            placeholder={"Search for location or TM Project as TM id or bbox as 'minX, minY, maxX, maxY'"}
+            placeholder={"Search Location or TM pid or osm id or bbox as 'minX, minY, maxX, maxY'"}
             onInputChange={this.debouncer}
             labelKey={"name"}
             paginate={false}

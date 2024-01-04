@@ -73,11 +73,11 @@ export const AVAILABLE_EXPORT_FORMATS = {
       OSM <code>.pbf</code>
     </span>
   ),
-  mwm: (
-    <span key="mwm">
-      MAPS.ME <code>.mwm</code>
-    </span>
-  ),
+  // mwm: (
+  //   <span key="mwm">
+  //     MAPS.ME <code>.mwm</code>
+  //   </span>
+  // ),
   osmand_obf: (
     <span key="osmand_obf">
       OsmAnd <code>.obf</code>

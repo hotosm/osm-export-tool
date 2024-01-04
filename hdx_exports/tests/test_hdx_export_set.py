@@ -2,39 +2,45 @@
 
 import json
 import unittest
-from hdx_exports.hdx_export_set import HDXExportSet
+from ..hdx_export_set import HDXExportSet
 from hdx.api.configuration import Configuration
 from django.contrib.gis.geos import GEOSGeometry
 
 from hdx.data.hdxobject import HDXError
 
-DAKAR_GEOJSON_POLYGON = json.dumps({
+DAKAR_GEOJSON_POLYGON = json.dumps(
+    {
         "type": "Polygon",
         "coordinates": [
-          [
-            [-17.465,14.719],
-            [-17.442,14.719],
-            [-17.442,14.741],
-            [-17.465,14.741],
-            [-17.465,14.719]
-          ]
-        ]
-      })
+            [
+                [-17.465, 14.719],
+                [-17.442, 14.719],
+                [-17.442, 14.741],
+                [-17.465, 14.741],
+                [-17.465, 14.719],
+            ]
+        ],
+    }
+)
 
-DAKAR_GEOJSON_MULTIPOLYGON = json.dumps({
+DAKAR_GEOJSON_MULTIPOLYGON = json.dumps(
+    {
         "type": "MultiPolygon",
-        "coordinates": [[
-          [
-            [-17.465,14.719],
-            [-17.442,14.719],
-            [-17.442,14.741],
-            [-17.465,14.741],
-            [-17.465,14.719]
-          ]]
-        ]
-      })
+        "coordinates": [
+            [
+                [
+                    [-17.465, 14.719],
+                    [-17.442, 14.719],
+                    [-17.442, 14.741],
+                    [-17.465, 14.741],
+                    [-17.465, 14.719],
+                ]
+            ]
+        ],
+    }
+)
 
-yaml = '''
+yaml = """
 Some Buildings:
     types:
         - polygons
@@ -49,8 +55,8 @@ waterways:
     select:
         - natural
     where: natural in ('waterway')
-'''
-#BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
+"""
+# BASIC_FEATURE_SELECTION = FeatureSelection(yaml)
 
 SINGLE_THEME_NOTE = """
 OpenStreetMap exports for use in GIS applications.
@@ -86,58 +92,59 @@ See the [Humanitarian OpenStreetMap Team](http://hotosm.org/) website for more
 information.
 """
 
+
 @unittest.skip("HDX Configuration requires network access")
 class TestHDXExportSet(unittest.TestCase):
     maxDiff = None
 
     def test_minimal_export_set(self):
-
         h = HDXExportSet(
             dataset_prefix="hot_dakar",
             name="Dakar Urban Area",
             extent=DAKAR_GEOJSON_POLYGON,
-            feature_selection=BASIC_FEATURE_SELECTION
+            feature_selection=BASIC_FEATURE_SELECTION,
         )
         datasets = h.datasets
-        self.assertEquals(len(datasets),2)
-        self.assertEquals(datasets['Some Buildings']['name'],'hot_dakar_some_buildings')
-        self.assertEquals(datasets['waterways']['name'],'hot_dakar_waterways')
+        self.assertEquals(len(datasets), 2)
+        self.assertEquals(
+            datasets["Some Buildings"]["name"], "hot_dakar_some_buildings"
+        )
+        self.assertEquals(datasets["waterways"]["name"], "hot_dakar_waterways")
 
     def test_extent_not_polygon_or_multipolygon(self):
         with self.assertRaises(AssertionError):
             h = HDXExportSet(
-            dataset_prefix="hot_dakar",
-            name="Dakar Urban Area",
-            extent=GEOSGeometry("{'type':'LineString','coordinates':[]}"),
-            feature_selection=BASIC_FEATURE_SELECTION
+                dataset_prefix="hot_dakar",
+                name="Dakar Urban Area",
+                extent=GEOSGeometry("{'type':'LineString','coordinates':[]}"),
+                feature_selection=BASIC_FEATURE_SELECTION,
             )
 
-
     def test_single_theme_note(self):
-        yaml = '''
+        yaml = """
         all:
             select:
                 - name
-        '''
+        """
         h = HDXExportSet(
             dataset_prefix="hot_dakar",
             name="Dakar Urban Area",
             extent=DAKAR_GEOJSON_POLYGON,
-            feature_selection=FeatureSelection(yaml)
+            feature_selection=FeatureSelection(yaml),
         )
-        self.assertMultiLineEqual(h.hdx_note('all'),SINGLE_THEME_NOTE)
+        self.assertMultiLineEqual(h.hdx_note("all"), SINGLE_THEME_NOTE)
 
     def test_filtered_note(self):
-        yaml = '''
+        yaml = """
         some:
             select:
                 - name
             where: highway IS NOT NULL
-        '''
+        """
         h = HDXExportSet(
             dataset_prefix="hot_dakar",
             name="Dakar Urban Area",
             extent=DAKAR_GEOJSON_POLYGON,
-            feature_selection=FeatureSelection(yaml)
+            feature_selection=FeatureSelection(yaml),
         )
-        self.assertMultiLineEqual(h.hdx_note('some'),SINGLE_FILTER_NOTE)
+        self.assertMultiLineEqual(h.hdx_note("some"), SINGLE_FILTER_NOTE)

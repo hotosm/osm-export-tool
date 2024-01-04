@@ -15,7 +15,8 @@ from jobs.models import Job, HDXExportRegion, SavedFeatureSelection, PartnerExpo
 from django.contrib import admin
 from django.contrib.gis.admin import GeoModelAdmin
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+
+from django.urls import reverse
 import validators
 import time
 
@@ -78,8 +79,11 @@ class ExportRun(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
-    job = models.ForeignKey(Job, related_name="runs")
-    user = models.ForeignKey(User, related_name="runs", default=0)
+
+    job = models.ForeignKey(Job, related_name="runs", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, related_name="runs", default=0, on_delete=models.SET_DEFAULT
+    )
     worker_message_id = models.CharField(
         max_length=50, null=True, blank=True, editable=False
     )  # used to store worker message id for run to abort
@@ -154,7 +158,7 @@ class ExportTask(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50)
-    run = models.ForeignKey(ExportRun, related_name="tasks")
+    run = models.ForeignKey(ExportRun, related_name="tasks", on_delete=models.CASCADE)
     status = models.CharField(blank=True, max_length=20, db_index=True)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
 
@@ -207,14 +211,9 @@ class ExportTask(models.Model):
                     name = value[-1]
                     split_name = name.split("_uid_")
                     file_name = split_name[0]
-
-                    if (
-                        file_name[-(2 * len(self.name) + 1) :]
-                        == f"{self.name}_{self.name}"
-                    ):
-                        # filename has duplicated export formats
-                        file_name = file_name[: -(2 * len(self.name) + 2)]
-                    download_name = f"{file_name}.zip"  # getting human redable name ignoring unique id
+                    download_name = (
+                        f"{file_name}.zip" if ".zip" not in file_name else file_name
+                    )  # getting human redable name
                     fname = download_name
                 except:
                     fname = f"""{self.run.job.name}_{self.name}.zip"""

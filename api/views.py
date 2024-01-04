@@ -31,7 +31,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError as DjangoValidationError
 from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
@@ -156,7 +156,7 @@ class JobViewSet(viewsets.ModelViewSet):
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
 
-    @detail_route()
+    @action(detail=True)
     def geom(self, request, uid=None):
         job = Job.objects.get(uid=uid)
         geom_serializer = JobGeomSerializer(job)
@@ -618,15 +618,14 @@ def request_geonames(request):
         keyword = request.GET.get("q")
         response = {"totalResultsCount": 0, "geonames": []}
         if not (
-            str(keyword).lower().startswith("boundary")
+            str(keyword).lower().startswith("hdx")
             or str(keyword).lower().startswith("osm")
             or str(keyword).lower().startswith("tm")
         ):
             response = requests.get(geonames_url, params=payload).json()
-            print(response)
         assert isinstance(response, dict)
         if RAW_DATA_API_URL:
-            if str(keyword).lower().startswith("boundary"):
+            if str(keyword).lower().startswith("hdx"):
                 lst = keyword.split(" ")
                 if len(lst) > 1:
                     keyword = lst[1]
@@ -646,7 +645,7 @@ def request_geonames(request):
                                 }
                                 add_resp = {
                                     "bbox": geojson,
-                                    "adminName2": feature["properties"]["iso_3"],
+                                    "adminName2": f'ISO3 : {feature["properties"]["iso_3"]}',
                                     "name": f'{request.GET.get("q")} -> {feature["properties"]["description"]}',
                                     "countryName": feature["properties"][
                                         "dataset_name"
@@ -656,6 +655,7 @@ def request_geonames(request):
 
                                 if "geonames" in response:
                                     response["geonames"].append(add_resp)
+                                response["totalResultsCount"] += 1
 
             if str(keyword).lower().startswith("osm"):
                 lst = keyword.split(" ")
@@ -805,13 +805,15 @@ def cancel_run(request):
             if message_id:
                 LOG.debug("Canceling task_message_id:{0} ".format(message_id))
                 if run.status == "SUBMITTED":
+                    run.status = "FAILED"
+                    run.save()
                     abort(message_id, mode="cancel")
                 elif run.status == "RUNNING":
-                    abort(message_id)  # cancel if its in queue or in progress
-
-            run.status = "FAILED"
-            run.worker_message_id = None  # set back message id
-            run.save()
+                    run.status = "FAILED"
+                    run.save()
+                    abort(message_id)
+                run.worker_message_id = None
+                run.save()
         except (Job.DoesNotExist, ExportRun.DoesNotExist, ExportTask.DoesNotExist):
             LOG.warn("ExportRun doesnot exist . Exiting")
             return JsonResponse(
