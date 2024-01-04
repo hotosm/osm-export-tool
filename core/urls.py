@@ -41,7 +41,6 @@ urlpatterns = [
         name="javascript-catalog",
     ),
     path("i18n/", include("django.conf.urls.i18n")),
-    re_path(r".*", v3),
 ]
 
 if settings.DEBUG:
