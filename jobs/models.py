@@ -65,7 +65,7 @@ def get_geodesic_area(geom):
     return area
 
 
-MAX_NODES = 20000000
+MAX_NODES = 15000000
 ValidateResult = namedtuple("ValidateResult", ["valid", "message", "params"])
 
 
