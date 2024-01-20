@@ -646,9 +646,9 @@ def request_geonames(request):
                                 add_resp = {
                                     "bbox": geojson,
                                     "adminName2": f'ISO3 : {feature["properties"]["iso_3"]}',
-                                    "name": f'{request.GET.get("q")} -> {feature["properties"]["description"]}',
+                                    "name": request.GET.get("q"),
                                     "countryName": feature["properties"][
-                                        "dataset_name"
+                                        "name"
                                     ],
                                     "adminName1": feature["properties"]["cid"],
                                 }
