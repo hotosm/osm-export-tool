@@ -208,6 +208,19 @@ def run_task(run_uid, run, stage_dir, download_dir):
         task.finished_at = timezone.now()
         task.save()
 
+    def write_file_size(response):
+        if response:
+            LOG.debug(response)
+            for item in response:
+                if item:
+                    config = configparser.ConfigParser()
+                    config["FileInfo"] = {"FileSize": str(item["zip_file_size_bytes"])}
+                    size_path = join(
+                        download_dir, f"{item['download_url'].split('/')[-1]}_size.ini"
+                    )
+                    with open([size_path], "w") as configfile:
+                        config.write(configfile)
+
     def finish_task(name, created_files=None, response_back=None, planet_file=False):
         LOG.debug("Task Finish: {0} for run: {1}".format(name, run_uid))
         task = ExportTask.objects.get(run__uid=run_uid, name=name)
@@ -437,18 +450,14 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if geojson:
             try:
-                LOG.debug("Galaxy fetch started geojson for run: {0}".format(run_uid))
+                LOG.debug(
+                    "Raw Data API fetch started geojson for run: {0}".format(run_uid)
+                )
                 response_back = geojson.fetch("geojson", is_hdx_export=True)
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for geojson run: {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug(
+                    "Raw Data API fetch ended for geojson run: {0}".format(run_uid)
+                )
                 finish_task("geojson", response_back=response_back)
                 all_zips += response_back
             except Exception as ex:
@@ -457,7 +466,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if csv:
             try:
-                LOG.debug("Galaxy fetch started for csv run: {0}".format(run_uid))
+                LOG.debug("Raw Data API fetch started for csv run: {0}".format(run_uid))
                 response_back = csv.fetch("csv", is_hdx_export=True)
                 for r in response_back:
                     config = configparser.ConfigParser()
@@ -468,7 +477,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     with open(size_path, "w") as configfile:
                         config.write(configfile)
 
-                LOG.debug("Galaxy fetch ended for csv run: {0}".format(run_uid))
+                LOG.debug("Raw Data API fetch ended for csv run: {0}".format(run_uid))
                 finish_task("csv", response_back=response_back)
                 all_zips += response_back
 
@@ -480,20 +489,16 @@ def run_task(run_uid, run, stage_dir, download_dir):
             try:
                 if settings.USE_RAW_DATA_API_FOR_HDX:
                     LOG.debug(
-                        "Galaxy fetch started for geopackage run: {0}".format(run_uid)
+                        "Raw Data API fetch started for geopackage run: {0}".format(
+                            run_uid
+                        )
                     )
                     response_back = geopackage.fetch("gpkg", is_hdx_export=True)
-                    for r in response_back:
-                        config = configparser.ConfigParser()
-                        config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                        size_path = join(
-                            download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                        )
-                        with open(size_path, "w") as configfile:
-                            config.write(configfile)
-
+                    write_file_size(response_back)
                     LOG.debug(
-                        "Galaxy fetch ended for geopackage run: {0}".format(run_uid)
+                        "Raw Data API fetch ended for geopackage run: {0}".format(
+                            run_uid
+                        )
                     )
                     finish_task("geopackage", response_back=response_back)
                     all_zips += response_back
@@ -532,19 +537,15 @@ def run_task(run_uid, run, stage_dir, download_dir):
         if shp:
             try:
                 if settings.USE_RAW_DATA_API_FOR_HDX:
-                    LOG.debug("Galaxy fetch started for shp run: {0}".format(run_uid))
+                    LOG.debug(
+                        "Raw Data API fetch started for shp run: {0}".format(run_uid)
+                    )
 
                     response_back = shp.fetch("shp", is_hdx_export=True)
-                    for r in response_back:
-                        config = configparser.ConfigParser()
-                        config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                        size_path = join(
-                            download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                        )
-                        with open(size_path, "w") as configfile:
-                            config.write(configfile)
-
-                    LOG.debug("Galaxy fetch ended  for shp run: {0}".format(run_uid))
+                    write_file_size(response_back)
+                    LOG.debug(
+                        "Raw Data API fetch ended  for shp run: {0}".format(run_uid)
+                    )
                     finish_task("shp", response_back=response_back)
                     all_zips += response_back
                 else:
@@ -582,18 +583,14 @@ def run_task(run_uid, run, stage_dir, download_dir):
         if kml:
             try:
                 if settings.USE_RAW_DATA_API_FOR_HDX:
-                    LOG.debug("Galaxy fetch started for kml run: {0}".format(run_uid))
+                    LOG.debug(
+                        "Raw Data API fetch started for kml run: {0}".format(run_uid)
+                    )
                     response_back = kml.fetch("kml", is_hdx_export=True)
-                    for r in response_back:
-                        config = configparser.ConfigParser()
-                        config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                        size_path = join(
-                            download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                        )
-                        with open(size_path, "w") as configfile:
-                            config.write(configfile)
-
-                    LOG.debug("Galaxy fetch ended for kml run: {0}".format(run_uid))
+                    write_file_size(response_back)
+                    LOG.debug(
+                        "Raw Data API fetch ended for kml run: {0}".format(run_uid)
+                    )
                     finish_task("kml", response_back=response_back)
                     all_zips += response_back
 
@@ -789,23 +786,20 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if geojson:
             try:
-                LOG.debug("Galaxy fetch started for geojson run: {0}".format(run_uid))
+                LOG.debug(
+                    "Raw Data API fetch started for geojson run: {0}".format(run_uid)
+                )
                 all_feature_filter_json = join(
                     os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
                 )
                 response_back = geojson.fetch(
                     "geojson", all_feature_filter_json=all_feature_filter_json
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
+                write_file_size(response_back)
 
-                LOG.debug("Galaxy fetch ended for geojson run: {0}".format(run_uid))
+                LOG.debug(
+                    "Raw Data API fetch ended for geojson run: {0}".format(run_uid)
+                )
                 finish_task("geojson", response_back=response_back)
             except Exception as ex:
                 stop_task("geojson")
@@ -813,23 +807,15 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if fgb:
             try:
-                LOG.debug("Galaxy fetch started for fgb run: {0}".format(run_uid))
+                LOG.debug("Raw Data API fetch started for fgb run: {0}".format(run_uid))
                 all_feature_filter_json = join(
                     os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
                 )
                 response_back = fgb.fetch(
                     "fgb", all_feature_filter_json=all_feature_filter_json
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for fgb run: {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug("Raw Data API fetch ended for fgb run: {0}".format(run_uid))
                 finish_task("fgb", response_back=response_back)
             except Exception as ex:
                 stop_task("fgb")
@@ -837,23 +823,15 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if csv:
             try:
-                LOG.debug("Galaxy fetch started for csv run: {0}".format(run_uid))
+                LOG.debug("Raw Data API fetch started for csv run: {0}".format(run_uid))
                 all_feature_filter_json = join(
                     os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
                 )
                 response_back = csv.fetch(
                     "csv", all_feature_filter_json=all_feature_filter_json
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for csv run: {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug("Raw Data API fetch ended for csv run: {0}".format(run_uid))
                 finish_task("csv", response_back=response_back)
             except Exception as ex:
                 stop_task("csv")
@@ -861,23 +839,15 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if sql:
             try:
-                LOG.debug("Galaxy fetch started for sql run: {0}".format(run_uid))
+                LOG.debug("Raw Data API fetch started for sql run: {0}".format(run_uid))
                 all_feature_filter_json = join(
                     os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
                 )
                 response_back = sql.fetch(
                     "sql", all_feature_filter_json=all_feature_filter_json
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for sql run: {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug("Raw Data API fetch ended for sql run: {0}".format(run_uid))
                 finish_task("sql", response_back=response_back)
             except Exception as ex:
                 stop_task("sql")
@@ -886,7 +856,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
         if geopackage:
             try:
                 LOG.debug(
-                    "Galaxy fetch started for geopackage run: {0}".format(run_uid)
+                    "Raw Data API fetch started for geopackage run: {0}".format(run_uid)
                 )
                 all_feature_filter_json = join(
                     os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
@@ -894,16 +864,10 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = geopackage.fetch(
                     "gpkg", all_feature_filter_json=all_feature_filter_json
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for geopackage run: {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug(
+                    "Raw Data API fetch ended for geopackage run: {0}".format(run_uid)
+                )
                 finish_task("geopackage", response_back=response_back)
             except Exception as ex:
                 stop_task("geopackage")
@@ -911,20 +875,14 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if shp:
             try:
-                LOG.debug("Galaxy fetch started for shp run:  {0}".format(run_uid))
+                LOG.debug(
+                    "Raw Data API fetch started for shp run:  {0}".format(run_uid)
+                )
                 response_back = shp.fetch(
                     "shp", all_feature_filter_json=all_feature_filter_json
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for shp run:  {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug("Raw Data API fetch ended for shp run:  {0}".format(run_uid))
                 finish_task("shp", response_back=response_back)
             except Exception as ex:
                 stop_task("shp")
@@ -932,23 +890,15 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
         if kml:
             try:
-                LOG.debug("Galaxy fetch started for kml run: {0}".format(run_uid))
+                LOG.debug("Raw Data API fetch started for kml run: {0}".format(run_uid))
                 all_feature_filter_json = join(
                     os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
                 )
                 response_back = kml.fetch(
                     "kml", all_feature_filter_json=all_feature_filter_json
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for kml run: {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug("Raw Data API fetch ended for kml run: {0}".format(run_uid))
                 finish_task("kml", response_back=response_back)
 
             except Exception as ex:
@@ -965,7 +915,9 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
                 )
                 start_task("mbtiles")
-                LOG.debug("Galaxy fetch started for mbtiles run: {0}".format(run_uid))
+                LOG.debug(
+                    "Raw Data API fetch started for mbtiles run: {0}".format(run_uid)
+                )
                 all_feature_filter_json = join(
                     os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
                 )
@@ -975,16 +927,10 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     min_zoom=job.mbtiles_minzoom,
                     max_zoom=job.mbtiles_maxzoom,
                 )
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
-                LOG.debug("Galaxy fetch ended for mbtiles run: {0}".format(run_uid))
+                write_file_size(response_back)
+                LOG.debug(
+                    "Raw Data API fetch ended for mbtiles run: {0}".format(run_uid)
+                )
                 finish_task("mbtiles", response_back=response_back)
 
             except Exception as ex:
