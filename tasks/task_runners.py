@@ -218,7 +218,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     size_path = join(
                         download_dir, f"{item['download_url'].split('/')[-1]}_size.ini"
                     )
-                    with open([size_path], "w") as configfile:
+                    with open(size_path, "w") as configfile:
                         config.write(configfile)
 
     def finish_task(name, created_files=None, response_back=None, planet_file=False):
