@@ -5,6 +5,7 @@ import logging
 import os
 from os.path import join, exists, basename
 import json
+import ast
 import shutil
 import zipfile
 import traceback
@@ -208,19 +209,23 @@ def run_task(run_uid, run, stage_dir, download_dir):
         task.finished_at = timezone.now()
         task.save()
 
-    def write_file_size(response):
-        LOG.debug("Logging response %s",response)
+    def format_response(res_item):
+        if isinstance(res_item, str):
+            return ast.literal_eval(res_item)
+        return res_item
 
+    def write_file_size(response):
+        LOG.debug("Logging response %s", response)
         if response:
             for item in response:
-                if item:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(item["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{item['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
+                item = format_response(item)
+                config = configparser.ConfigParser()
+                config["FileInfo"] = {"FileSize": str(item["zip_file_size_bytes"])}
+                size_path = join(
+                    download_dir, f"{item['download_url'].split('/')[-1]}_size.ini"
+                )
+                with open(size_path, "w") as configfile:
+                    config.write(configfile)
 
     def finish_task(name, created_files=None, response_back=None, planet_file=False):
         LOG.debug("Task Finish: {0} for run: {1}".format(name, run_uid))
@@ -229,15 +234,18 @@ def run_task(run_uid, run, stage_dir, download_dir):
         task.finished_at = timezone.now()
         # assumes each file only has one part (all are zips or PBFs)
         if response_back:
-            task.filenames = [r["download_url"] for r in response_back]
+            task.filenames = [
+                format_response(item)["download_url"] for item in response_back
+            ]
         else:
             task.filenames = [basename(file.parts[0]) for file in created_files]
         if planet_file is False:
             if response_back:
                 total_bytes = 0
-                for r in response_back:
+                for item in response_back:
+                    item = format_response(item)
                     total_bytes += int(
-                        str(r["zip_file_size_bytes"])
+                        str(item["zip_file_size_bytes"])
                     )  # getting filesize bytes
                 task.filesize_bytes = total_bytes
             else:
@@ -269,7 +277,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
         set(galaxy_supported_outputs)
     ):
         use_only_galaxy = True
-        LOG.debug("Using Only galaxy to Perform Request")
+        LOG.debug("Using Only Raw Data API to Perform Request")
 
     if is_hdx_export:
         planet_file = HDXExportRegion.objects.get(job_id=run.job_id).planet_file
@@ -469,15 +477,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
             try:
                 LOG.debug("Raw Data API fetch started for csv run: {0}".format(run_uid))
                 response_back = csv.fetch("csv", is_hdx_export=True)
-                for r in response_back:
-                    config = configparser.ConfigParser()
-                    config["FileInfo"] = {"FileSize": str(r["zip_file_size_bytes"])}
-                    size_path = join(
-                        download_dir, f"{r['download_url'].split('/')[-1]}_size.ini"
-                    )
-                    with open(size_path, "w") as configfile:
-                        config.write(configfile)
-
+                write_file_size(response_back)
                 LOG.debug("Raw Data API fetch ended for csv run: {0}".format(run_uid))
                 finish_task("csv", response_back=response_back)
                 all_zips += response_back
