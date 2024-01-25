@@ -209,8 +209,9 @@ def run_task(run_uid, run, stage_dir, download_dir):
         task.save()
 
     def write_file_size(response):
+        LOG.debug("Logging response %s",response)
+
         if response:
-            LOG.debug(response)
             for item in response:
                 if item:
                     config = configparser.ConfigParser()
