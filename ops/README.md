@@ -62,7 +62,7 @@ Examples of how to backup and restore the database:
 	psql exports < export_tool_2023-03-06.pgdump
 ```
 
-8. Modify the OAuth1 application with your hostname's `redirect_uris`
+8. Modify the OAuth2 application with your hostname's `redirect_uris`
 
 ### Storage and Environment Variables
 
