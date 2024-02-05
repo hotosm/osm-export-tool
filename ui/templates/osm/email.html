@@ -14,7 +14,7 @@
                     {% blocktrans %}Please provide a valid email address. This email address will be used to notifiy you when your exports are ready.
                     A verification link will be sent to the email address you provide.{% endblocktrans %}
                 <br/><br/>
-                <form method="post" action="{% url 'osm:complete' 'openstreetmap' %}" id="registerEmail">
+                <form method="post" action="{% url 'osm:complete' 'openstreetmap-oauth2' %}" id="registerEmail">
                     {% csrf_token %}
                     <div class="form-group row" id="form-group-email">
                         <div class="col-md-12">

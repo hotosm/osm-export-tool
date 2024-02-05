@@ -27,6 +27,7 @@ if (window.OAUTH_CLIENT_ID == null) {
 }
 
 const oauthConfig = {
+  // url: window.EXPORTS_API_URL + "/o/openstreetmap_oauth2",
   url: window.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
   client: window.OAUTH_CLIENT_ID,
   redirect: `${window.location.protocol}//${hostname}/authorized`
