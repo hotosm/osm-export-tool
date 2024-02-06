@@ -1,4 +1,5 @@
 """Provides classes for handling API requests."""
+
 # -*- coding: utf-8 -*-
 from distutils.util import strtobool
 import itertools
@@ -647,9 +648,7 @@ def request_geonames(request):
                                     "bbox": geojson,
                                     "adminName2": f'ISO3 : {feature["properties"]["iso_3"]}',
                                     "name": request.GET.get("q"),
-                                    "countryName": feature["properties"][
-                                        "name"
-                                    ],
+                                    "countryName": feature["properties"]["name"],
                                     "adminName1": feature["properties"]["cid"],
                                 }
 
@@ -697,7 +696,10 @@ def request_geonames(request):
             if len(lst) >= 1:
                 keyword = lst[1]
                 if tm_url:
-                    tm_res = requests.get(f"{tm_url}/{int(keyword)}/")
+                    try:
+                        tm_res = requests.get(f"{tm_url}/{int(keyword)}/")
+                    except Exception as ex:
+                        pass
                     if tm_res.ok:
                         tm_res = tm_res.json()
                         if "areaOfInterest" in tm_res:
