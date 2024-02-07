@@ -30,7 +30,9 @@ def login(request):
     if not request.user.is_authenticated:
         # preserve redirects ("next" in request.GET)
         return redirect(
-            reverse("osm:begin", args=["openstreetmap"]) + "?" + request.GET.urlencode()
+            reverse("osm:begin", args=["openstreetmap-oauth2"])
+            + "?"
+            + request.GET.urlencode()
         )
     else:
         return redirect("/v3/")
@@ -48,7 +50,7 @@ def v3(request, *args, **kwargs):
     except Application.DoesNotExist:
         ui_app = Application.objects.create(
             name="OSM Export Tool UI",
-            redirect_uris="http://localhost/authorized http://localhost:8080/authorized http://localhost:8000/authorized",
+            redirect_uris="http://localhost/authorized http://127.0.0.1:8000/authorized http://localhost:8080/authorized http://localhost:8000/authorized",
             client_type=Application.CLIENT_PUBLIC,
             authorization_grant_type=Application.GRANT_IMPLICIT,
             skip_authorization=True,
@@ -70,7 +72,6 @@ def redirect_to_v3(request):
 def worker_dashboard(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden()
-    # return HttpResponse('test')
     return HttpResponseRedirect(f"/{settings.WORKER_SECRET_KEY}/")
 
 

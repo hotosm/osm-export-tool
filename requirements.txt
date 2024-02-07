@@ -11,7 +11,7 @@ mercantile~=0.10.0
 psycopg2
 python3-openid==3.2.0
 social-auth-app-django==5.4.0
-social-auth-core==4.4.2
+social-auth-core==4.4.2 ### Upgrade this to include oauth2 
 pytz
 pyyaml>=5.3
 raven

@@ -123,7 +123,8 @@ STATICFILES_FINDERS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    "social_core.backends.openstreetmap.OpenStreetMapOAuth",
+    # "social_core.backends.openstreetmap.OpenStreetMapOAuth",
+    "social_core.backends.openstreetmap_oauth2.OpenStreetMapOAuth2",
     "oauth2_provider.backends.OAuth2Backend",
     "social_core.backends.email.EmailAuth",
     "social_core.backends.username.UsernameAuth",

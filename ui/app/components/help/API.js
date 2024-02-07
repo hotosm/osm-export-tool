@@ -33,7 +33,7 @@ export default () =>
               <p>User authentication and authorization is a two-step process.</p>
               <p>
                 The Export Tool requires that users log into OpenStreetMap using{" "}
-                <a href="https://oauth.net/1/">OAuth 1.0a</a> (you don't need to know
+                <a href="https://oauth.net/2/">OAuth 2.0a</a> (you don't need to know
                 this). This provides user identity, specifically an OSM username to
                 associate with exports. You generally don't need to care about this,
                 except to know that usernames are the same as on OSM.
