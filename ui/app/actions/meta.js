@@ -10,6 +10,10 @@ if (window.location.port) {
   hostname += `:${window.location.port}`;
 }
 
+if (window.RAW_DATA_API_URL == null) {
+  window.RAW_DATA_API_URL = process.env.RAW_DATA_API_URL;
+}
+
 if (window.EXPORTS_API_URL == null) {
   window.EXPORTS_API_URL = process.env.EXPORTS_API_URL;
 

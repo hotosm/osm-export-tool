@@ -93,7 +93,8 @@ const config = {
   plugins: [new webpack.DefinePlugin({
     "process.env": {
       CLIENT_ID: JSON.stringify(process.env.CLIENT_ID),
-      EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL)
+      EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL),
+      RAW_DATA_API_URL: JSON.stringify(process.env.RAW_DATA_API_URL)
     }
   }), new webpack.NamedModulesPlugin(), new WriteFilePlugin()],
   resolve: {
@@ -110,6 +111,7 @@ if (process.env.NODE_ENV === "production") {
       "process.env": {
         CLIENT_ID: JSON.stringify(process.env.CLIENT_ID),
         EXPORTS_API_URL: JSON.stringify(process.env.EXPORTS_API_URL),
+        RAW_DATA_API_URL: JSON.stringify(process.env.RAW_DATA_API_URL),
         NODE_ENV: JSON.stringify("production")
       }
     }),

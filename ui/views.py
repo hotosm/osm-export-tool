@@ -56,7 +56,9 @@ def v3(request, *args, **kwargs):
             skip_authorization=True,
         )
 
-    context = dict(client_id=ui_app.client_id)
+    context = dict(
+        client_id=ui_app.client_id, RAW_DATA_API_URL=settings.RAW_DATA_API_URL
+    )
     if settings.MATOMO_URL is not None and settings.MATOMO_SITEID is not None:
         context.update(
             {"MATOMO_URL": settings.MATOMO_URL, "MATOMO_SITEID": settings.MATOMO_SITEID}

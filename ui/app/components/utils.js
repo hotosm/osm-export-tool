@@ -58,6 +58,11 @@ export const AVAILABLE_EXPORT_FORMATS = {
       SQL <code>.sql</code>
     </span>
   ),
+  mbtiles: (
+    <span key="mbtiles">
+      MBTiles <code>.mbtiles</code>
+    </span>
+  ),
   garmin_img: (
     <span key="garmin_img">
       Garmin <code>.img</code>
@@ -81,11 +86,6 @@ export const AVAILABLE_EXPORT_FORMATS = {
   osmand_obf: (
     <span key="osmand_obf">
       OsmAnd <code>.obf</code>
-    </span>
-  ),
-  mbtiles: (
-    <span key="osmand_obf">
-      MBTiles <code>.mbtiles</code>
     </span>
   ),
   bundle: (

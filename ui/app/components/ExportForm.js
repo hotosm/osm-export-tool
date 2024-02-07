@@ -129,7 +129,7 @@ export class ExportForm extends Component {
   }
 
   async fetchData(geometry) {
-    const url = "https://api-prod.raw-data.hotosm.org/v1/stats/polygon/";
+    const url = window.RAW_DATA_API_URL + "v1/stats/polygon/";
     try {
       const response = await axios.post(url, {
         geometry: geometry
@@ -155,7 +155,7 @@ export class ExportForm extends Component {
 
   renderFetchedInfo() {
     const { fetchedInfo } = this.state;
-  
+    if (!this.props.formValues.the_geom) return null;
     if (!fetchedInfo) return null;
   
     // Function to trigger the download of the raw data as a JSON file
@@ -172,7 +172,7 @@ export class ExportForm extends Component {
     };
   
     return (
-      <Panel style={{ marginTop: "5px" }}> 
+      <Panel style={{ marginTop: "10px" }}> 
         <div>
           <div>
             <strong style={{ fontSize: "smaller" }}>Buildings:</strong>
@@ -365,7 +365,7 @@ export class ExportForm extends Component {
             <Panel style={{ marginTop: "20px" }}>
               <FormattedMessage
                 id="ui.overpass_last_updated"
-                defaultMessage="Img/pbf/obf/ updated  {overpassLastUpdated}, Rest of other formats updated {galaxyLastUpdated} "
+                defaultMessage="Img/pbf/obf updated  {overpassLastUpdated}, Rest of other formats updated {galaxyLastUpdated} "
                 values={{ overpassLastUpdated, galaxyLastUpdated }}
               />
             </Panel>

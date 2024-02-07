@@ -111,7 +111,7 @@ Most of these environment variables have reasonable default settings.
 - `GARMIN_CONFIG`, `GARMIN_MKGMAP` absolute paths to garmin JARs
 - `OVERPASS_API_URL` url of Overpass api endpoint
 
-- `RAW_DATA_API_URL` url of Galaxy api endpoint
+- `RAW_DATA_API_URL` url of Raw data api endpoint
 
 - `DATABASE_URL` Database URL. Defaults to `postgres:///exports`
 - `DEBUG` Whether to enable debug mode. Defaults to `False` (production).
