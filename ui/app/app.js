@@ -25,6 +25,7 @@ import Home from "./components/Home";
 import NavBar from "./components/NavBar";
 import Stats from "./components/Stats";
 import Banner from "./components/Banner";
+import Message from "./components/Message.js";
 import { requireAuth } from "./components/utils";
 
 import "@blueprintjs/core/dist/blueprint.css";
@@ -49,6 +50,7 @@ export default ({ history }) => {
         <div style={{ height: "100%" }}>
           <Auth />
           <NavBar />
+          <Message/>
           <Banner />
           <Switch>
             <Route path="/authorized" component={Authorized} />

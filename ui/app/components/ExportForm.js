@@ -1,4 +1,5 @@
 import area from "@turf/area";
+import axios from "axios";
 import bbox from "@turf/bbox";
 import React, { Component } from "react";
 import { Col, Nav, Panel, Row } from "react-bootstrap";
@@ -8,7 +9,6 @@ import { Redirect, Route, Switch } from "react-router";
 import { NavLink } from "react-router-dom";
 import { Fields, formValueSelector, reduxForm } from "redux-form";
 import { pointToTile } from "tilebelt";
-
 import ChooseFormats from "./ChooseFormats";
 import DescribeExport from "./DescribeExport";
 import ExportAOIField from "./ExportAOIField";
@@ -127,6 +127,86 @@ export class ExportForm extends Component {
       searchQuery: ""
     };
   }
+
+  async fetchData(geometry) {
+    const url = window.RAW_DATA_API_URL + "v1/stats/polygon/";
+    try {
+      const response = await axios.post(url, {
+        geometry: geometry
+      }, {
+        headers: {"Content-Type": "application/json"}
+      });
+  
+      if (response.data) {
+
+        this.setState({ fetchedInfo: response.data });
+      }
+    } catch (error) {
+      console.error("Failed to fetch summary data", error);
+     
+    }
+  }
+  
+  componentDidUpdate(prevProps) {
+    if (this.props.formValues.the_geom !== prevProps.formValues.the_geom) {
+      this.fetchData(this.props.formValues.the_geom);
+    }
+  }
+
+  renderFetchedInfo() {
+    const { fetchedInfo } = this.state;
+    if (!this.props.formValues.the_geom) return null;
+    if (!fetchedInfo) return null;
+  
+    // Function to trigger the download of the raw data as a JSON file
+    const downloadRawData = () => {
+      const filename = "raw_region_summary.json";
+      const jsonStr = JSON.stringify(fetchedInfo, null, 4);
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonStr));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    };
+  
+    return (
+      <Panel style={{ marginTop: "10px" }}> 
+        <div>
+          <div>
+            <strong style={{ fontSize: "smaller" }}>Buildings:</strong>
+            <p style={{ fontSize: "smaller", textAlign: "justify", margin: "10px 0" }}>
+              <FormattedMessage 
+                id="export.dc.stats.buildings" 
+                defaultMessage="{buildings}" 
+                values={{ buildings: fetchedInfo.summary.buildings }}
+              />
+            </p>
+          </div>
+          <div>
+            <strong style={{ fontSize: "smaller" }}>Roads:</strong>
+            <p style={{ fontSize: "smaller", textAlign: "justify", margin: "10px 0" }}>
+              <FormattedMessage 
+                id="export.dc.stats.roads" 
+                defaultMessage="{roads}" 
+                values={{ roads: fetchedInfo.summary.roads }}
+              />
+            </p>
+          </div>
+          <div style={{ fontSize: "smaller", marginTop: "10px" }}>
+            More info: 
+            <a href="#" onClick={downloadRawData} style={{ marginLeft: "5px" }}>Download</a>,
+            <a href={fetchedInfo.meta.indicators} target="_blank" rel="noopener noreferrer" style={{ marginLeft: "5px" }}>Indicators</a>,
+            <a href={fetchedInfo.meta.metrics} target="_blank" rel="noopener noreferrer" style={{ marginLeft: "5px" }}>Metrics</a>
+          </div>
+        </div>
+      </Panel>
+    );
+  }
+  
+  
+  
 
   componentWillMount() {
     const { getConfigurations, getOverpassTimestamp, getGalaxyTimestamp} = this.props;
@@ -281,10 +361,11 @@ export class ExportForm extends Component {
                   />}
               />
             </Switch>
+            {this.renderFetchedInfo()}
             <Panel style={{ marginTop: "20px" }}>
               <FormattedMessage
                 id="ui.overpass_last_updated"
-                defaultMessage="Img/pbf/obf/ updated  {overpassLastUpdated}, Rest of other formats updated {galaxyLastUpdated} "
+                defaultMessage="Img/pbf/obf updated  {overpassLastUpdated}, Rest of other formats updated {galaxyLastUpdated} "
                 values={{ overpassLastUpdated, galaxyLastUpdated }}
               />
             </Panel>

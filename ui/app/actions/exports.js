@@ -170,8 +170,8 @@ export const getOverpassTimestamp = () => (dispatch, getState) => {
 
 export const getGalaxyTimestamp = () => (dispatch, getState) => {
   return axios({
-    baseURL: "https://api-prod.raw-data.hotosm.org/v1",
-    url: "/status/"
+    baseURL: window.RAW_DATA_API_URL,
+    url: "v1/status/"
   })
     .then(response =>
       dispatch({
