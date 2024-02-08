@@ -776,12 +776,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     use_curl=True,
                     mapping=mapping_filter,
                 )
-        if use_only_galaxy == False:
-            LOG.debug("Source start for run: {0}".format(run_uid))
-            source_path = source.path()
-            LOG.debug("Source end for run: {0}".format(run_uid))
-
-            h.apply_file(source_path, locations=True, idx="sparse_file_array")
 
         bundle_files = []
 
@@ -937,6 +931,13 @@ def run_task(run_uid, run, stage_dir, download_dir):
             except Exception as ex:
                 stop_task("mbtiles")
                 raise ex
+
+        if use_only_galaxy == False:
+            LOG.debug("Source start for run: {0}".format(run_uid))
+            source_path = source.path()
+            LOG.debug("Source end for run: {0}".format(run_uid))
+
+            h.apply_file(source_path, locations=True, idx="sparse_file_array")
 
         if "garmin_img" in export_formats:
             start_task("garmin_img")
