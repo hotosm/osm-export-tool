@@ -137,7 +137,7 @@ export class ExportAOI extends Component {
 
   handleSearch = result => {
     var geojson;
-    if (result.adminName2.startsWith('ISO3')){
+    if (result.adminName2?.startsWith('ISO3')){
       try {
         geojson = JSON.parse(JSON.stringify(result.bbox));
       } catch (e) {
