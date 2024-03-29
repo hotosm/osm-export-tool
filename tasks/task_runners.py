@@ -253,6 +253,8 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 for file in created_files:
                     total_bytes += file.size()
                 task.filesize_bytes = total_bytes
+            LOG.debug(total_bytes)
+            
         task.save()
 
     is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
