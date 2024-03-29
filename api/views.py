@@ -213,21 +213,24 @@ class ExportRunViewSet(viewsets.ModelViewSet):
         """
         runs the job.
         """
-        if (
-            ExportRun.objects.filter(
-                created_at__gt=timezone.now() - timedelta(minutes=1), user=request.user
-            ).count()
-            >= 1
-        ):
-            return Response(
-                {"status": "RATE_LIMITED"}, status=status.HTTP_400_BAD_REQUEST
-            )
+        if not request.user.is_superuser:
+            if (
+                ExportRun.objects.filter(
+                    created_at__gt=timezone.now() - timedelta(minutes=1),
+                    user=request.user,
+                ).count()
+                >= 1
+            ):
+                return Response(
+                    {"status": "RATE_LIMITED"}, status=status.HTTP_400_BAD_REQUEST
+                )
 
         job_uid = request.query_params.get("job_uid", None)
-        if Job.objects.get(uid=job_uid).last_run_status == "SUBMITTED":
-            return Response(
-                {"status": "PREVIOUS_RUN_IN_QUEUE"}, status=status.HTTP_400_BAD_REQUEST
-            )
+        if not request.user.is_superuser:
+            if Job.objects.get(uid=job_uid).last_run_status == "SUBMITTED":
+                return Response(
+                    {"status": "PREVIOUS_RUN_IN_QUEUE"}, status=status.HTTP_400_BAD_REQUEST
+                )
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=job_uid, user=request.user)
         return Response({"status": "OK"}, status=status.HTTP_201_CREATED)
