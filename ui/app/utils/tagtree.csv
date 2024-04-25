@@ -72,7 +72,8 @@ Sport  ,Stadium,,arena,polygon,"name, building, leisure",leisure='stadium',,
 Sport  ,Swimming Pool,,,"point, polygon","name, leisure",leisure='swimming_pool',,
 Sport  ,Pitch,,"field,court",polygon,"name, leisure",leisure='pitch',,
 Sport  ,Sport Centre,,,"point, polygon","name, building, leisure",leisure='sport_centre',,
-Transportation,Transportation,yes,,,,"aeroway IS NOT NULL OR highway IS NOT NULL OR railway IS NOT NULL OR building IN ('aerodrome','ferry_terminal','train_station') OR amenity IN ('ferry_terminal','bus_station')",,http://wiki.openstreetmap.org/wiki/Map_Features#Transportation
+Transportation,Transportation,yes,,,,"aeroway IS NOT NULL OR highway IS NOT NULL OR railway IS NOT NULL OR aerialway IS NOT NULL OR building IN ('aerodrome','ferry_terminal','train_station') OR amenity IN ('ferry_terminal','bus_station')",,http://wiki.openstreetmap.org/wiki/Map_Features#Transportation
+Transportation,Aerialway,,,"point, line, polygon","name, building, aerialway",aerialway IS NOT NULL,,
 Transportation,Airport,,,"point, line, polygon","name, building, aeroway",aeroway IS NOT NULL OR building='aerodrome',,
 Transportation,Ferry Terminal,,boat,"point, polygon","name, amenity, building",amenity='ferry_terminal' OR building='ferry_terminal',,
 Transportation,Train Station,,train,polygon,"railway, name, layer",building='train_station',,
