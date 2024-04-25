@@ -4,7 +4,6 @@ Buildings,Building Names and Geometries,,,"point, polygon","name, building",buil
 Buildings,Addresses,,,"point, polygon","addr:housenumber,addr:street",building IS NOT NULL,,
 Buildings,Materials and Condition,,,polygon,"building:material,roof:material,access:roof",building IS NOT NULL,,
 Buildings,Materials and Condition,,,polygon,"building:material,roof:material,access:roof",building IS NOT NULL,,
-Administrative Boundaries,Boundaries,,,polygon,"name",boundary='administrative',,
 Commercial,Commercial,yes,,,,"shop IS NOT NULL OR tourism IS NOT NULL OR amenity IN ('marketplace','restaurant','fast_food','cafe','bar','pub') OR office IS NOT NULL",,http://wiki.openstreetmap.org/wiki/Map_Features#Tourism
 Commercial,Shop,,,"point, polygon","name, opening_hours, shop",shop IS NOT NULL,,
 Commercial,Supermarket,,,"point, polygon","name, opening_hours, shop",amenity='marketplace' OR shop='convenience' OR shop='supermarket',,
@@ -39,10 +38,6 @@ Healthcare,Clinic,,,"point, polygon","medical_system:western,operator,operator:t
 Healthcare,Hospital,,"clinic,doctor,pharmacy,hospital,dentist","point, polygon","medical_system:western,operator,operator:type,health_facility:bed,health_facility:level,health_facility:type,status,staff_count:doctors,staff_count:nurses,opening_hours,toilets:disposal,toilets:handwashing,access",amenity='hospital',,
 Healthcare,Pharmacy,,,"point, polygon","name,amenity",amenity='pharmacy',,
 Healthcare,Alternative ,,,"point, polygon","name, healthcare, shop","healthcare='alternative' OR shop IN ('herbalist','nutrition_supplements')",,
-Humanitarian,Humanitarian,yes,,,,social_facility IS NOT NULL or wheelchair IS NOT NULL OR  building='warehouse' OR industrial='warehouse',,
-Humanitarian,Wheelchair Access,,,"point, line, polygon",wheelchair,wheelchair IS NOT NULL,,
-Humanitarian,Refugee Facility,,,"point, polygon","name, amenity, social_facility",social_facility IS NOT NULL,,
-Humanitarian,Storage Warehouse,,,"point, polygon","name,building,industrial",building='warehouse' OR industrial='warehouse',,
 Land Use,Land Use,yes,,,,landuse IS NOT NULL OR leisure='park' OR amenity='grave_yard',,http://wiki.openstreetmap.org/wiki/Map_Features#LandUse
 Land Use,Parks,,,polygon,"name, leisure",leisure='park',,
 Land Use,Cemetery,,graveyard,polygon,"name,amenity",amenity='grave_yard' OR landuse='cemetery',,
