@@ -95,6 +95,8 @@ def validate_export_formats(value):
             "shp",
             "geojson",
             "fgb",
+            "mvt",
+            "pmtiles",
             "csv",
             "sql",
             "geopackage",

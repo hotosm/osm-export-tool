@@ -63,6 +63,16 @@ export const AVAILABLE_EXPORT_FORMATS = {
       MBTiles <code>.mbtiles</code>
     </span>
   ),
+  pmtiles: (
+    <span key="pmtiles">
+      Pmtiles <code>.pmtiles</code>
+    </span>
+  ),
+  mvt: (
+    <span key="mvt">
+      Mapbox Vector Tiles <code>.mvt</code>
+    </span>
+  ),
   garmin_img: (
     <span key="garmin_img">
       Garmin <code>.img</code>
@@ -99,6 +109,8 @@ export const REQUIRES_FEATURE_SELECTION = {
   shp: true,
   geojson:true,
   fgb:true,
+  mvt:true,
+  pmtiles:true,
   sql:true,
   csv:true,
   geopackage: true,
@@ -110,12 +122,14 @@ export const REQUIRES_FEATURE_SELECTION = {
 };
 
 export const REQUIRES_TILE_SOURCE = {
-  mbtiles: true
+  mbtiles: true,
+  pmtiles:true,
+  mvt:true,
 };
 
 export const OMIT_FROM_FORMAT_OPTIONS = {
   osm_xml: true,
-  bundle: true
+  bundle: true 
 };
 
 export const getRootUrl = () => {
