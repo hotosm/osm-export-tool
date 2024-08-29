@@ -675,17 +675,16 @@ def run_task(run_uid, run, stage_dir, download_dir):
         mapping_filter = mapping
         if job.unfiltered:
             mapping_filter = None
+        userinfo = job.userinfo
 
         if "geojson" in export_formats:
-            preserved_geom = geom
-            if job.preserve_geom:
-                preserved_geom = load_geometry(job.the_geom.json)
             geojson = Galaxy(
                 settings.RAW_DATA_API_URL,
-                preserved_geom,
+                geom,
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("geojson")
 
@@ -696,6 +695,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("fgb")
 
@@ -716,6 +716,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("sql")
 
@@ -726,6 +727,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             # geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(geopackage)
@@ -738,6 +740,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("shp")
 
@@ -748,6 +751,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             # kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(kml)
@@ -912,6 +916,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                    userinfo=userinfo,
                 )
                 start_task("mbtiles")
                 LOG.debug(
@@ -944,6 +949,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                    userinfo=userinfo,
                 )
                 start_task("pmtiles")
                 LOG.debug(
@@ -976,6 +982,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                    userinfo=userinfo,
                 )
                 start_task("mvt")
                 LOG.debug("Raw Data API fetch started for mvt run: {0}".format(run_uid))

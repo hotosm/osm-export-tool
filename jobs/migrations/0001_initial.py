@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                 ("expire_old_runs", models.BooleanField(default=True)),
                 ("pinned", models.BooleanField(default=False)),
                 ("unfiltered", models.BooleanField(default=False)),
-                ("preserve_geom", models.BooleanField(default=False)),
+                ("userinfo", models.BooleanField(default=False)),
                 (
                     "user",
                     models.ForeignKey(

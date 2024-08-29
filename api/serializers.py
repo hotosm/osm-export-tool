@@ -5,6 +5,7 @@ See `DRF serializer documentation  <http://www.django-rest-framework.org/api-gui
 Used by the View classes api/views.py to serialize API responses as JSON or HTML.
 See DEFAULT_RENDERER_CLASSES setting in core.settings.contrib for the enabled renderers.
 """
+
 # -*- coding: utf-8 -*-
 import logging
 
@@ -113,7 +114,7 @@ class JobSerializer(serializers.ModelSerializer):
             "mbtiles_maxzoom",
             "pinned",
             "unfiltered",
-            "preserve_geom",
+            "userinfo",
         )
         extra_kwargs = {
             "the_geom": {"write_only": True},
