@@ -49,7 +49,7 @@ export default class TileSourceField extends Component {
     return (
       <div>
         <Row>
-          <h3 style={{ marginTop: 15 }}>MBTiles Source</h3>
+          <h3 style={{ marginTop: 15 }}>Tiles Source</h3>
         </Row>
         {error &&
           <Row>
