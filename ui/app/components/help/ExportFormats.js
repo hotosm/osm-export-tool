@@ -101,7 +101,7 @@ export default () =>
               </ul>
             </div>
             <div>
-              <h2 id="gpkg">GeoJSON  .geojson</h2>
+              <h2 id="geojson">GeoJSON  .geojson</h2>
               <p>
               GeoJSON is an open standard geospatial data interchange format that represents simple geographic features and their nonspatial attributes. Based on JavaScript Object Notation (JSON), GeoJSON is a format for encoding a variety of geographic data structures. It uses a geographic coordinate reference system, World Geodetic System 1984, and units of decimal degrees.
               </p>
@@ -142,7 +142,7 @@ export default () =>
               </ul>
             </div>
             <div>
-              <h2 id="gpkg">FlatGeobuf .fgb</h2>
+              <h2 id="fgb">FlatGeobuf .fgb</h2>
               <p>
               FlatGeobuf is a binary file format for storing geospatial vector data in a compact and efficient manner. It uses a hierarchical structure to organize features into layers, and stores attribute data in a separate file.
               </p>
@@ -183,7 +183,7 @@ export default () =>
               </ul>
             </div>
             <div>
-              <h2 id="gpkg">CSV .csv</h2>
+              <h2 id="csv">CSV .csv</h2>
               <p>
               CSV is a file format for storing tabular data in plain text format. Each row of data represents a record, and each column represents a field of that record. CSV files are widely used because they are simple and easy to create and manipulate, making them a popular choice for data exchange.              </p>
               <h4>
@@ -203,7 +203,7 @@ export default () =>
                 </ul>
             </div>
             <div>
-              <h2 id="gpkg">SQL .sql</h2>
+              <h2 id="sql">SQL .sql</h2>
               <p>
               SQL files are plain text files that contain SQL commands to create, modify or interact with a relational database. They can be used to define database schemas, constraints, and indexes, as well as to insert, update, and query data.
               </p>

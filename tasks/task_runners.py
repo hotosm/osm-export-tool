@@ -254,7 +254,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     total_bytes += file.size()
                 task.filesize_bytes = total_bytes
             LOG.debug(total_bytes)
-            
+
         task.save()
 
     is_hdx_export = HDXExportRegion.objects.filter(job_id=run.job_id).exists()
@@ -271,6 +271,8 @@ def run_task(run_uid, run, stage_dir, download_dir):
         "kml",
         "shp",
         "fgb",
+        "mvt",
+        "pmtiles",
         "csv",
         "sql",
         "mbtiles",
@@ -673,17 +675,16 @@ def run_task(run_uid, run, stage_dir, download_dir):
         mapping_filter = mapping
         if job.unfiltered:
             mapping_filter = None
+        userinfo = job.userinfo
 
         if "geojson" in export_formats:
-            preserved_geom = geom
-            if job.preserve_geom:
-                preserved_geom = load_geometry(job.the_geom.json)
             geojson = Galaxy(
                 settings.RAW_DATA_API_URL,
-                preserved_geom,
+                geom,
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("geojson")
 
@@ -694,6 +695,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("fgb")
 
@@ -714,6 +716,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("sql")
 
@@ -724,6 +727,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             # geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(geopackage)
@@ -736,6 +740,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             start_task("shp")
 
@@ -746,6 +751,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                userinfo=userinfo,
             )
             # kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(kml)
@@ -910,6 +916,7 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                    userinfo=userinfo,
                 )
                 start_task("mbtiles")
                 LOG.debug(
@@ -932,6 +939,68 @@ def run_task(run_uid, run, stage_dir, download_dir):
 
             except Exception as ex:
                 stop_task("mbtiles")
+                raise ex
+
+        if "pmtiles" in export_formats:
+            try:
+                pmtiles = Galaxy(
+                    settings.RAW_DATA_API_URL,
+                    geom,
+                    mapping=mapping_filter,
+                    file_name=valid_name,
+                    access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                    userinfo=userinfo,
+                )
+                start_task("pmtiles")
+                LOG.debug(
+                    "Raw Data API fetch started for pmtiles run: {0}".format(run_uid)
+                )
+                all_feature_filter_json = join(
+                    os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
+                )
+                response_back = pmtiles.fetch(
+                    "pmtiles",
+                    all_feature_filter_json=all_feature_filter_json,
+                    min_zoom=job.mbtiles_minzoom,
+                    max_zoom=job.mbtiles_maxzoom,
+                )
+                write_file_size(response_back)
+                LOG.debug(
+                    "Raw Data API fetch ended for mbtiles run: {0}".format(run_uid)
+                )
+                finish_task("pmtiles", response_back=response_back)
+
+            except Exception as ex:
+                stop_task("pmtiles")
+                raise ex
+
+        if "mvt" in export_formats:
+            try:
+                mvt = Galaxy(
+                    settings.RAW_DATA_API_URL,
+                    geom,
+                    mapping=mapping_filter,
+                    file_name=valid_name,
+                    access_token=settings.RAW_DATA_ACCESS_TOKEN,
+                    userinfo=userinfo,
+                )
+                start_task("mvt")
+                LOG.debug("Raw Data API fetch started for mvt run: {0}".format(run_uid))
+                all_feature_filter_json = join(
+                    os.getcwd(), "tasks/tests/fixtures/all_features_filters.json"
+                )
+                response_back = mvt.fetch(
+                    "mvt",
+                    all_feature_filter_json=all_feature_filter_json,
+                    min_zoom=job.mbtiles_minzoom,
+                    max_zoom=job.mbtiles_maxzoom,
+                )
+                write_file_size(response_back)
+                LOG.debug("Raw Data API fetch ended for mvt run: {0}".format(run_uid))
+                finish_task("mvt", response_back=response_back)
+
+            except Exception as ex:
+                stop_task("mvt")
                 raise ex
 
         if use_only_galaxy == False:

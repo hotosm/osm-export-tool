@@ -15,9 +15,9 @@ const messages = defineMessages({
   //   id: "export.bundle_for_posm.description",
   //   defaultMessage: "Bundle for POSM"
   // },
-  preserveGeometry: {
-    id: "export.preserve_geom.description",
-    defaultMessage: "Preserve Geometry - Avoid simplify ( Only supports for geojson )"
+  userinfo: {
+    id: "export.userinfo.description",
+    defaultMessage: "Include user info on exports"
   },
   publishedDescription: {
     id: "export.published.description",
@@ -84,12 +84,12 @@ export default injectIntl(
           component={renderCheckbox}
           type="checkbox"
         /> */}
-        {/* <Field
-          name="preserve_geom"
-          description={formatMessage(messages.preserveGeometry)}
+        <Field
+          name="userinfo"
+          description={formatMessage(messages.userinfo)}
           component={renderCheckbox}
           type="checkbox"
-        /> */}
+        /> 
         <Button
           bsStyle="danger"
           disabled={submitting}

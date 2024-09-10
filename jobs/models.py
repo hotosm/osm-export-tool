@@ -95,6 +95,8 @@ def validate_export_formats(value):
             "shp",
             "geojson",
             "fgb",
+            "mvt",
+            "pmtiles",
             "csv",
             "sql",
             "geopackage",
@@ -203,7 +205,7 @@ class Job(models.Model):
     expire_old_runs = models.BooleanField(default=True)
     pinned = models.BooleanField(default=False)
     unfiltered = models.BooleanField(default=False)
-    preserve_geom = models.BooleanField(default=False)
+    userinfo = models.BooleanField(default=False)
 
     class Meta:  # pragma: no cover
         managed = True
