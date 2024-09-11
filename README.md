@@ -16,9 +16,19 @@ In addition to creating GIS files, the Export Tool also includes features such a
 
 This is the source code for the web service available at [export.hotosm.org](https://export.hotosm.org). If you would like to export OSM data offline without using the website, you can access the separate command line tool and Python Library. This repository is at [github.com/osm-export-tool-python](https://github.com/hotosm/osm-export-tool-python). 
 
-# Product Roadmap
-You can find Roadmap here to know what we are working on and will be working in upcoming days 
-https://github.com/orgs/hotosm/projects/29
+## Product Roadmap
+
+<!-- prettier-ignore-start -->
+| Status | Feature |
+|:--:| :-- |
+|✅| Connection with raw-data-api |
+|✅| Vector tile support |
+|✅| Stable Country exports support |
+|✅| Upgrade python and django version |
+|✅| Admin methods to control queues and manage exports |
+|⚙️| Connect HDX exports with custom yaml endpoint in raw-data-api |
+| | Upgrade Frontend of export tool ( Ideation ) |
+
 
 
 ## How to Contribute
