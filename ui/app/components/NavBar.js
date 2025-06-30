@@ -16,6 +16,7 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
       <Navbar.Brand>
         <Link to="/exports/new">
           <img className="logo" src={hotLogo} role="presentation" />
+          <span>Export Tool</span>
         </Link>
       </Navbar.Brand>
     </Navbar.Header>
