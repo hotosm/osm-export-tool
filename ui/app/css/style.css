@@ -22,6 +22,13 @@
   }
 }
 
+@font-face {
+    font-family: "Barlow";
+    src: url("./Barlow-Bold.ttf");
+    font-display: swap;
+    font-weight: 700;
+}
+
 html,
 body {
   width: 100%;
@@ -46,6 +53,9 @@ a {
 
 .navbar-brand {
   padding: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
 }
 
 .navbar-default {
@@ -55,7 +65,15 @@ a {
 .navbar-brand .logo {
   margin-left: 20px;
   margin-top: 10px;
-  height: 42px;
+  height: 35px;
+}
+
+.navbar-brand span {
+  line-height: 40px;
+  font-family: "Barlow"; /* hot-font-sans-variant */
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #2C3038; /* hot-color-neutral-950 */
 }
 
 .navbar-default .navbar-nav > li > a {
