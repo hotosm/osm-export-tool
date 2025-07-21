@@ -23,7 +23,7 @@ class Authorized extends React.Component {
       window.location.hash = "";
       this.props.history.replace("/");
     } else {
-      // no token? bounce back to login/start
+      // no token then bounce back .. 
       this.props.history.replace("/");
     }
   }

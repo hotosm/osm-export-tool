@@ -21,11 +21,9 @@ class Auth extends React.Component {
         ? Date.now() + parseInt(expires_in, 10) * 1000
         : null;
 
-
       loginSuccess(access_token, expiresAt);
       localStorage.setItem("access_token", access_token);
       if (expiresAt) localStorage.setItem("expires_at", expiresAt);
-
 
       fetchPermissions();
 
@@ -34,7 +32,7 @@ class Auth extends React.Component {
       return;
     }
 
- 
+
     if (!isLoggedIn) {
       const storedToken = localStorage.getItem("access_token");
       const storedExpiry = localStorage.getItem("expires_at");
@@ -45,14 +43,12 @@ class Auth extends React.Component {
         if (!storedExpiresAt || storedExpiresAt > Date.now()) {
           loginSuccess(storedToken, storedExpiresAt);
         } else {
-          // expired → clear out
+          // expired
           localStorage.removeItem("access_token");
           localStorage.removeItem("expires_at");
         }
       }
     }
-
-
     if (isLoggedIn) {
       fetchPermissions();
     }
@@ -71,8 +67,8 @@ class Auth extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  hash: selectLocationHash(state),    
-  isLoggedIn: selectIsLoggedIn(state)  
+  hash: selectLocationHash(state),
+  isLoggedIn: selectIsLoggedIn(state)
 });
 
 export default withRouter(
