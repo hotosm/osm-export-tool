@@ -1,33 +1,63 @@
-import { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 
 import { fetchPermissions, loginSuccess } from "../actions/meta";
 import { selectIsLoggedIn, selectLocationHash } from "../selectors";
-import { history } from "../config/store";
 
-class Auth extends Component {
+class Auth extends React.Component {
   componentDidMount() {
     const {
-      fetchPermissions,
       hash: { access_token, expires_in },
       isLoggedIn,
-      loginSuccess
+      loginSuccess,
+      fetchPermissions,
+      history,
+      location
     } = this.props;
 
+    if (access_token) {
+      const expiresAt = expires_in
+        ? Date.now() + parseInt(expires_in, 10) * 1000
+        : null;
+
+      loginSuccess(access_token, expiresAt);
+      localStorage.setItem("access_token", access_token);
+      if (expiresAt) localStorage.setItem("expires_at", expiresAt);
+
+      fetchPermissions();
+
+      window.location.hash = "";
+      history.replace(location.pathname);
+      return;
+    }
+
+
+    if (!isLoggedIn) {
+      const storedToken = localStorage.getItem("access_token");
+      const storedExpiry = localStorage.getItem("expires_at");
+      if (storedToken) {
+        const storedExpiresAt = storedExpiry
+          ? parseInt(storedExpiry, 10)
+          : null;
+        if (!storedExpiresAt || storedExpiresAt > Date.now()) {
+          loginSuccess(storedToken, storedExpiresAt);
+        } else {
+          // expired
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("expires_at");
+        }
+      }
+    }
     if (isLoggedIn) {
       fetchPermissions();
-    } else if (access_token != null) {
-      loginSuccess(access_token, expires_in);
-      history.replace("/");
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    const { fetchPermissions, isLoggedIn: wasLoggedIn } = this.props;
-    const { isLoggedIn } = nextProps;
+  componentDidUpdate(prevProps) {
 
-    if (!wasLoggedIn && isLoggedIn) {
-      fetchPermissions();
+    if (!prevProps.isLoggedIn && this.props.isLoggedIn) {
+      this.props.fetchPermissions();
     }
   }
 
@@ -41,6 +71,9 @@ const mapStateToProps = state => ({
   isLoggedIn: selectIsLoggedIn(state)
 });
 
-export default connect(mapStateToProps, { fetchPermissions, loginSuccess })(
-  Auth
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { fetchPermissions, loginSuccess }
+  )(Auth)
 );

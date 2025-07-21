@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_SUCCESS, login as _login, logout } from "redux-implicit-oauth2";
+import { LOGIN_SUCCESS, logout as _logout } from "redux-implicit-oauth2";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
@@ -32,7 +32,7 @@ if (window.OAUTH_CLIENT_ID == null) {
 
 const oauthConfig = {
   // url: window.EXPORTS_API_URL + "/o/openstreetmap_oauth2",
-  url: window.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto",
+  url: window.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto&response_type=token",
   client: window.OAUTH_CLIENT_ID,
   redirect: `${window.location.protocol}//${hostname}/authorized`
 };
@@ -95,7 +95,13 @@ export const fetchGroups = () => (dispatch, getState) => {
     );
 };
 
-export const login = () => _login(oauthConfig);
+export const login = () => {
+  const { url, client, redirect } = oauthConfig;
+  window.location.href =
+    url +
+    `&client_id=${client}` +
+    `&redirect_uri=${encodeURIComponent(redirect)}`;
+};
 
 export const loginSuccess = (token, expiresAt) => dispatch =>
   dispatch({
@@ -104,4 +110,8 @@ export const loginSuccess = (token, expiresAt) => dispatch =>
     expiresAt
   });
 
-export { logout };
+export const logout = () => dispatch => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("expires_at");
+  dispatch(_logout());
+};
