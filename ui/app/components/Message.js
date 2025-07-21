@@ -22,7 +22,7 @@ class Message extends Component {
     }
     return (
         <div className="banner" style={{ backgroundColor: "#ffcc00", color: "black", textAlign: "center", padding: "10px", position: "relative" }}>
-          <p>We have recently upgraded from OAuth 1.0 to 2.0. Please Logout and Login again before use!</p>
+          <p>We are aware that you are not being able to login , We are actively working on it and will provide fix soon</p>
           <button onClick={this.handleClose} style={{ position: "absolute", top: "5px", right: "10px", cursor: "pointer" }}>
             ×
           </button>
