@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_SUCCESS, login as _login, logout } from "redux-implicit-oauth2";
+import { LOGIN_SUCCESS, login as _login, logout as _logout } from "redux-implicit-oauth2";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
@@ -110,4 +110,8 @@ export const loginSuccess = (token, expiresAt) => dispatch =>
     expiresAt
   });
 
-export { logout };
+export const logout = () => dispatch => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("expires_at");
+  dispatch(_logout());
+};
