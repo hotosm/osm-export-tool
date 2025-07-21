@@ -21,13 +21,13 @@ class Message extends Component {
       return null;
     }
     return (
-        <div className="banner" style={{ backgroundColor: "#ffcc00", color: "black", textAlign: "center", padding: "10px", position: "relative" }}>
-          <p>We are aware that you are not being able to login , We are actively working on it and will provide fix soon</p>
-          <button onClick={this.handleClose} style={{ position: "absolute", top: "5px", right: "10px", cursor: "pointer" }}>
-            ×
-          </button>
-        </div>
-      );
+      <div className="banner" style={{ backgroundColor: "#ffcc00", color: "black", textAlign: "center", padding: "10px", position: "relative" }}>
+        <p>If you are experiencing issues logging in after our fixes, please logout and login again to resolve the issue.</p>
+        <button onClick={this.handleClose} style={{ position: "absolute", top: "5px", right: "10px", cursor: "pointer" }}>
+          ×
+        </button>
+      </div>
+    );
   }
 }
 

@@ -24,8 +24,6 @@ def authorized(request):
     # "logging out" of the UI just drops the auth token)
     auth_logout(request)
     return v3(request)
-    # return render(request, "ui/authorized.html")
-
 
 def login(request):
     if not request.user.is_authenticated:

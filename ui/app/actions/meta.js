@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_SUCCESS, login as _login, logout as _logout } from "redux-implicit-oauth2";
+import { LOGIN_SUCCESS, logout as _logout } from "redux-implicit-oauth2";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
