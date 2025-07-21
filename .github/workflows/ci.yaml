@@ -21,7 +21,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y osmium-tool
-          sudo apt-get install libgdal-dev osmctools gdal-bin libspatialindex-dev
+          sudo apt-get install python3-dev build-essential cmake libboost-dev \
+                     libexpat1-dev zlib1g-dev libbz2-dev libgdal-dev gdal-bin libspatialindex-dev osmctools
 
       - name: Install Dependencies
         run: |
