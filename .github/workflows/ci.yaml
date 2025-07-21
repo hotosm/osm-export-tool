@@ -19,7 +19,6 @@ jobs:
 
       - name: Install gdal
         run: |
-          sudo apt-add-repository ppa:ubuntugis/ubuntugis-stable
           sudo apt-get update
           sudo apt-get install -y osmium-tool
           sudo apt-get install libgdal-dev osmctools gdal-bin libspatialindex-dev
