@@ -15,7 +15,7 @@ The [issue queue](https://github.com/hotosm/osm-export-tool/issues) is the best 
 
 ## Testing
 
-Test a bug fix or new feature. Once an issue has been addressed and Pull Request (PR) change deployed to the [Export Tool Staging site](https://export-staging.hotosm.org/en/v3/), you will be able to view and test the change on the staging site. A PR would then be made from develop to master branch, which would require two reviews. If you notice any issues while testing, please comment on the PR directly.
+Test a bug fix or new feature. Once an issue has been addressed and Pull Request (PR) change deployed to the [Export Tool Staging site](https://export-staging.hotosm.org/en/v3/), you will be able to view and test the change on the staging site. A PR would then be made from develop to main branch, which would require two reviews. If you notice any issues while testing, please comment on the PR directly.
 
 
 ## Code contributions
@@ -24,7 +24,7 @@ Create pull requests (PRs) for changes that you think are needed. We would reall
 
 ## Documentation
 
-We really welcome your input in updating the documentation pages for using the ExportTool [here](https://github.com/hotosm/osm-export-tool/tree/master/ui/app/components/help)
+We really welcome your input in updating the documentation pages for using the ExportTool [here](https://github.com/hotosm/osm-export-tool/tree/main/ui/app/components/help)
 
 
 ## Thank you!

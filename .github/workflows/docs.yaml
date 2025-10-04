@@ -6,7 +6,7 @@ on:
       - docs/**
       - api/**
       - mkdocs.yml
-    branches: [master]
+    branches: [main]
   # Allow manual trigger (workflow_dispatch)
   workflow_dispatch:
 

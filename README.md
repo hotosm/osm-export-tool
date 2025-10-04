@@ -37,7 +37,7 @@ This is the source code for the web service available at [export.hotosm.org](htt
 * To report a problem or bug, please include a link to the export's download page. This will be a URL that looks like this: [export.hotosm.org/en/v3/exports/cb709d41-6f78-4ee5-8e9a-9eae7b63177c](https://export.hotosm.org/en/v3/exports/cb709d41-6f78-4ee5-8e9a-9eae7b63177c)
 * Include the GIS program you are using and the version: for example, QGIS 3.8.
 * Screenshots of the web interface or the data within your GIS program are always helpful!
-* See detailed contributor guidelines [here](https://github.com/hotosm/osm-export-tool/blob/master/CONTRIBUTING.md).
+* See detailed contributor guidelines [here](https://github.com/hotosm/osm-export-tool/blob/main/CONTRIBUTING.md).
 
 ## For Developers
 

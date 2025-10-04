@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[osm-export-tool2.master]
+[osm-export-tool2.main]
 source_file = locales/en/LC_MESSAGES/django.po
 source_lang = en
 trans.de = locales/de/LC_MESSAGES/django.po
