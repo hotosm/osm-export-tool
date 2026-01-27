@@ -1,7 +1,8 @@
 # OSM Export Tool - Development Dockerfile
 # Django + React application for exporting OSM data
 
-FROM ghcr.io/osgeo/gdal:ubuntu-small-3.8.4 AS base
+# Force linux/amd64 for Mac M1/M2/M3 compatibility (GDAL image lacks ARM64 support)
+FROM --platform=linux/amd64 ghcr.io/osgeo/gdal:ubuntu-small-3.8.4 AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
