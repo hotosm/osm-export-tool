@@ -30,6 +30,8 @@ from django.http import (
 )
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError as DjangoValidationError
+
+from ui.hanko_helpers import is_hanko_authenticated, require_hanko_auth
 from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -345,9 +347,20 @@ def permalink(request, uid):
         return HttpResponseNotFound()
 
 
+def _is_superuser(request):
+    """Check if the current user is a superuser (works with both auth providers)."""
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        if not is_hanko_authenticated(request):
+            return False
+        admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
+        admin_emails = [email.strip() for email in admin_emails if email.strip()]
+        return request.hotosm.user.email in admin_emails
+    return request.user.is_superuser
+
+
 @require_http_methods(["GET"])
 def stats(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     before = request.GET.get("before", timezone.now())
     after = request.GET.get("after", timezone.now() - timedelta(days=1))
@@ -434,7 +447,7 @@ def stats(request):
 
 @require_http_methods(["GET"])
 def run_stats(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     before = request.GET.get("before", timezone.now())
     after = request.GET.get("after", timezone.now() - timedelta(days=1))
@@ -543,10 +556,18 @@ def run_stats(request):
         return HttpResponse(json.dumps({"periods": periods}))
 
 
+def _require_auth(request):
+    """Check if user is authenticated (works with both auth providers)."""
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        return is_hanko_authenticated(request)
+    return request.user.is_authenticated
+
+
 @require_http_methods(["GET"])
-@login_required()
 def request_nominatim(request):
     """Country boundaries using nominatim"""
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
 
     nominatim_url = getattr(settings, "NOMINATIM_API_URL")
     if nominatim_url is None:
@@ -604,9 +625,11 @@ def request_nominatim(request):
 
 
 @require_http_methods(["GET"])
-@login_required()
 def request_geonames(request):
     """Geocode with GeoNames."""
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
     payload = {
         "maxRows": 20,
         "username": "osm_export_tool",
@@ -740,55 +763,109 @@ def request_geonames(request):
 
 @ttl_cache(ttl=60)
 @require_http_methods(["GET"])
-@login_required()
 def get_overpass_timestamp(request):
     """
     Endpoint to show the last OSM update timestamp on the Create page.
     this sometimes fails, returning a HTTP 200 but empty content.
     """
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
     r = requests.get("{}timestamp".format(settings.OVERPASS_API_URL))
     return JsonResponse({"timestamp": dateutil.parser.parse(r.content)})
 
 
-@login_required()
 def get_overpass_status(request):
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
     r = requests.get("{}status".format(settings.OVERPASS_API_URL))
     return HttpResponse(r.content)
 
 
 @require_http_methods(["GET"])
-@login_required()
 def get_user_permissions(request):
-    user = request.user
-    permissions = []
+    """
+    Get user permissions.
+    Works with both legacy and Hanko authentication.
+    """
+    # Check authentication based on provider
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        if not is_hanko_authenticated(request):
+            return JsonResponse({"error": "Not authenticated"}, status=401)
 
-    if user.is_superuser:
-        permissions = Permission.objects.all().values_list(
-            "content_type__app_label", "codename"
+        hanko_user = request.hotosm.user
+
+        # For Hanko users, check admin status via ADMIN_EMAILS
+        admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
+        admin_emails = [email.strip() for email in admin_emails if email.strip()]
+        is_admin = hanko_user.email in admin_emails
+
+        if is_admin:
+            permissions = Permission.objects.all().values_list(
+                "content_type__app_label", "codename"
+            )
+        else:
+            permissions = []
+
+        username = hanko_user.email.split('@')[0] if hanko_user.email else 'unknown'
+        if hasattr(request.hotosm, 'osm') and request.hotosm.osm:
+            username = request.hotosm.osm.osm_username
+
+        return JsonResponse(
+            {
+                "username": username,
+                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
+                "is_superuser": is_admin,
+            }
         )
     else:
-        permissions = chain(
-            user.user_permissions.all().values_list(
-                "content_type__app_label", "codename"
-            ),
-            Permission.objects.filter(group__user=user).values_list(
-                "content_type__app_label", "codename"
-            ),
-        )
+        # Legacy authentication
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Not authenticated"}, status=401)
 
-    return JsonResponse(
-        {
-            "username": user.username,
-            "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
-        }
-    )
+        user = request.user
+        permissions = []
+
+        if user.is_superuser:
+            permissions = Permission.objects.all().values_list(
+                "content_type__app_label", "codename"
+            )
+        else:
+            permissions = chain(
+                user.user_permissions.all().values_list(
+                    "content_type__app_label", "codename"
+                ),
+                Permission.objects.filter(group__user=user).values_list(
+                    "content_type__app_label", "codename"
+                ),
+            )
+
+        return JsonResponse(
+            {
+                "username": user.username,
+                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
+                "is_superuser": user.is_superuser,
+            }
+        )
 
 
 # get a list of partner organizations and their numeric IDs.
 # this can be exposed to the public.
 @require_http_methods(["GET"])
-@login_required()
 def get_groups(request):
+    """
+    Get partner groups.
+    Works with both legacy and Hanko authentication.
+    """
+    # Check authentication based on provider
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        if not is_hanko_authenticated(request):
+            return JsonResponse({"error": "Not authenticated"}, status=401)
+    else:
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Not authenticated"}, status=401)
+
     groups = [
         {"id": g.id, "name": g.name} for g in Group.objects.filter(is_partner=True)
     ]
@@ -800,7 +877,7 @@ from dramatiq_abort import abort
 
 @require_http_methods(["GET"])
 def cancel_run(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     run_uid = request.GET.get("run_uid")
     if run_uid:
@@ -830,7 +907,7 @@ def cancel_run(request):
 
 @require_http_methods(["GET"])
 def machine_status(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     CPU_use = psutil.cpu_percent(3)
     date_from = datetime.now() - timedelta(days=1)

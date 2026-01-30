@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
-import { fetchPermissions, loginSuccess } from "../actions/meta";
+import { fetchPermissions, loginSuccess, logout, checkHankoAuth, authConfig } from "../actions/meta";
 import { selectIsLoggedIn, selectLocationHash } from "../selectors";
 
 class Auth extends React.Component {
@@ -12,10 +12,28 @@ class Auth extends React.Component {
       isLoggedIn,
       loginSuccess,
       fetchPermissions,
+      checkHankoAuth,
       history,
       location
     } = this.props;
 
+    // Hanko cookie-based auth: check session via /api/auth/me/
+    if (authConfig.isHankoAuth) {
+      checkHankoAuth();
+
+      // Listen for web component events
+      this._onHankoLogin = () => {
+        checkHankoAuth();
+      };
+      this._onLogout = () => {
+        this.props.logout();
+      };
+      document.addEventListener("hanko-login", this._onHankoLogin);
+      document.addEventListener("logout", this._onLogout);
+      return;
+    }
+
+    // Legacy OAuth2 flow
     if (access_token) {
       const expiresAt = expires_in
         ? Date.now() + parseInt(expires_in, 10) * 1000
@@ -31,7 +49,6 @@ class Auth extends React.Component {
       history.replace(location.pathname);
       return;
     }
-
 
     if (!isLoggedIn) {
       const storedToken = localStorage.getItem("access_token");
@@ -54,8 +71,16 @@ class Auth extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentWillUnmount() {
+    if (this._onHankoLogin) {
+      document.removeEventListener("hanko-login", this._onHankoLogin);
+    }
+    if (this._onLogout) {
+      document.removeEventListener("logout", this._onLogout);
+    }
+  }
 
+  componentDidUpdate(prevProps) {
     if (!prevProps.isLoggedIn && this.props.isLoggedIn) {
       this.props.fetchPermissions();
     }
@@ -74,6 +99,6 @@ const mapStateToProps = state => ({
 export default withRouter(
   connect(
     mapStateToProps,
-    { fetchPermissions, loginSuccess }
+    { fetchPermissions, loginSuccess, logout, checkHankoAuth }
   )(Auth)
 );

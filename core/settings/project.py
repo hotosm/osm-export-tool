@@ -14,13 +14,13 @@ from .utils import ABS_PATH
 from hdx.api.configuration import Configuration
 
 # Project apps
-INSTALLED_APPS += (
+INSTALLED_APPS += [
     "jobs",
     "tasks",
     "api",
     "ui",
     "utils",
-)
+]
 
 dramatiq.set_broker(RedisBroker(host="localhost", port=6379))
 
@@ -123,7 +123,7 @@ http://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL#timeout
 OVERPASS_TIMEOUT = 1600  # query timeout in seconds
 
 if os.getenv("DJANGO_ENV") == "development":
-    INSTALLED_APPS += ("django_extensions",)
+    INSTALLED_APPS += ["django_extensions"]
 
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 

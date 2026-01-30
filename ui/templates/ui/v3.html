@@ -9,6 +9,43 @@
     <title>HOT Export Tool</title>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
     <link rel="icon" href="{% static 'ui/images/favicon.ico' %}">
+    {% if AUTH_PROVIDER == "hanko" %}
+    <!-- WebAwesome CSS + individual components needed by hotosm-auth dropdown -->
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/styles/webawesome.css">
+    <script type="module">
+      // Import individual Web Awesome components (same as fAIr/Portal main.tsx)
+      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/dropdown/dropdown.js';
+      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/dropdown-item/dropdown-item.js';
+      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/button/button.js';
+      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/icon/icon.js';
+      // Register Bootstrap Icons (needed for wa-icon in the dropdown)
+      import { registerIconLibrary } from 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/webawesome.js';
+      registerIconLibrary('bootstrap', {
+        resolver: name => `https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/${name}.svg`
+      });
+    </script>
+    <!-- HOTOSM Auth Web Component (uses wa-dropdown, wa-button, wa-icon as peer deps) -->
+    <script type="module" src="https://unpkg.com/@hotosm/hanko-auth@0.3.5/dist/hanko-auth.esm.js"></script>
+    <style>
+      /* Hide legacy login/logout button */
+      #root .btn-danger {
+        display: none !important;
+      }
+      /* Hide React-rendered hotosm-auth (inside NavItem wrapper) */
+      #root .navbar-nav li[role="presentation"]:has(hotosm-auth) {
+        display: none !important;
+      }
+      /* Hide admin-only nav items (CSS is immune to React re-renders) */
+      #root .navbar-nav li:has(> a[href$="/partners"]),
+      #root .navbar-nav li:has(> a[href$="/hdx"]),
+      #root .navbar-nav li:has(> a[href="/admin"]),
+      #root .navbar-nav li:has(> a[href="/worker-dashboard/"]),
+      #root .navbar-nav li:has(> a[href="/api/status"]),
+      #root .navbar-nav li:has(> a[href$="/stats"]) {
+        display: none !important;
+      }
+    </style>
+    {% endif %}
     {% if MATOMO_URL and MATOMO_SITEID %}
       <script type="text/javascript">
         var _paq = window._paq = window._paq || [];
@@ -31,7 +68,48 @@
       var EXPORTS_API_URL = "{{ request.scheme }}://{{ request.get_host }}";
       var OAUTH_CLIENT_ID = "{{ client_id }}";
       var RAW_DATA_API_URL = "{{ RAW_DATA_API_URL }}";
+      var AUTH_PROVIDER = "{{ AUTH_PROVIDER }}";
+      {% if AUTH_PROVIDER == "hanko" %}
+      var HANKO_URL = "{{ HANKO_PUBLIC_URL }}";
+      {% endif %}
     </script>
     <script src="{% static 'ui/js/bundle.js' %}"></script>
+    {% if AUTH_PROVIDER == "hanko" %}
+    <script>
+      // Inject <hotosm-auth> into navbar after React renders
+      (function() {
+        function injectHankoAuth() {
+          var nav = document.querySelector('.navbar-nav.pull-right');
+          if (!nav) {
+            setTimeout(injectHankoAuth, 100);
+            return;
+          }
+          // Don't inject twice
+          if (document.getElementById('hanko-nav-auth')) return;
+
+          // Inject <hotosm-auth> web component as last item
+          var li = document.createElement('li');
+          li.id = 'hanko-nav-auth';
+          li.style.padding = '8px 8px';
+          var el = document.createElement('hotosm-auth');
+          el.setAttribute('hanko-url', HANKO_URL);
+          el.setAttribute('base-path', HANKO_URL);
+          el.setAttribute('redirect-after-login', window.location.origin + '/v3/');
+          el.setAttribute('redirect-after-logout', window.location.origin + '/v3/');
+          li.appendChild(el);
+          nav.appendChild(li);
+        }
+        injectHankoAuth();
+
+        // Re-inject if React re-renders and removes our element
+        var observer = new MutationObserver(function() {
+          if (!document.getElementById('hanko-nav-auth')) {
+            injectHankoAuth();
+          }
+        });
+        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
+      })();
+    </script>
+    {% endif %}
   </body>
 </html>

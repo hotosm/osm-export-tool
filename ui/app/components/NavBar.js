@@ -4,11 +4,12 @@ import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 
-import { login, logout } from "../actions/meta";
+import { login, logout, authConfig } from "../actions/meta";
 import hotLogo from "../images/hot-logo.svg";
 import { selectIsLoggedIn } from "../selectors";
 import LocaleSelector from "./LocaleSelector";
 import RequirePermission from "./RequirePermission";
+import HankoAuthButton from "./HankoAuthButton";
 
 const NavBar = ({ isLoggedIn, login, logout }) => (
   <Navbar>
@@ -118,18 +119,27 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
       <NavItem>
         <LocaleSelector />
       </NavItem>
-      <NavItem>
-        {!isLoggedIn && (
-          <Button bsStyle="danger" onClick={login}>
-            <FormattedMessage id="ui.log_in" defaultMessage="Log In" />
-          </Button>
-        )}
-        {isLoggedIn && (
-          <Button bsStyle="danger" onClick={logout}>
-            <FormattedMessage id="ui.log_out" defaultMessage="Log Out" />
-          </Button>
-        )}
-      </NavItem>
+      {authConfig.isHankoAuth ? (
+        <NavItem>
+          <HankoAuthButton
+            hankoUrl={authConfig.hankoUrl}
+            redirectAfterLogin={window.location.origin + "/v3/"}
+          />
+        </NavItem>
+      ) : (
+        <NavItem>
+          {!isLoggedIn && (
+            <Button bsStyle="danger" onClick={login}>
+              <FormattedMessage id="ui.log_in" defaultMessage="Log In" />
+            </Button>
+          )}
+          {isLoggedIn && (
+            <Button bsStyle="danger" onClick={logout}>
+              <FormattedMessage id="ui.log_out" defaultMessage="Log Out" />
+            </Button>
+          )}
+        </NavItem>
+      )}
     </Nav>
   </Navbar>
 );
