@@ -44,3 +44,6 @@ hotosm-auth[django] @ git+https://github.com/hotosm/login.git@auth-libs-v0.2.2#s
 
 ##testing
 pytest==7.4.3
+
+# Timezone data (required for Python 3.9+ on minimal images)
+tzdata
