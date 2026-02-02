@@ -1,0 +1,113 @@
+name: Deploy login-hanko to testlogin.export.hotosm.org
+
+on:
+  push:
+    branches:
+      - login_hanko
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: hotosm/osm-export-tool
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push app
+        run: |
+          docker build -t ghcr.io/${{ env.IMAGE_PREFIX }}/app:login-hanko .
+          docker push ghcr.io/${{ env.IMAGE_PREFIX }}/app:login-hanko
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testlogin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Add host to known_hosts
+        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+          AUTH_PROVIDER: ${{ vars.AUTH_PROVIDER || 'hanko' }}
+        run: |
+          ssh $EC2_USER@$EC2_HOST << ENDSSH
+            set -e
+
+            # Ensure Traefik is running
+            if ! docker ps | grep -q traefik; then
+              echo "ERROR: Traefik not running. Run setup-test-server.sh first."
+              exit 1
+            fi
+
+            APP_DIR="/opt/export-tool-test"
+
+            # Setup inicial si no existe
+            if [ ! -d "\$APP_DIR" ]; then
+              sudo mkdir -p \$APP_DIR
+              sudo chown \$USER:\$USER \$APP_DIR
+              git clone -b login_hanko https://github.com/hotosm/osm-export-tool.git \$APP_DIR
+              echo "Cloned repository"
+            fi
+
+            cd \$APP_DIR
+
+            # Pull latest changes
+            git fetch origin login_hanko
+            git reset --hard origin/login_hanko
+
+            # Create .env with secrets
+            cat > .env << EOF
+          POSTGRES_USER=exports
+          POSTGRES_PASSWORD=exports
+          POSTGRES_DB=exports
+          SECRET_KEY=test-secret-key-for-testing-only-min-32-chars
+          COOKIE_SECRET=${COOKIE_SECRET}
+          AUTH_PROVIDER=${AUTH_PROVIDER}
+          EOF
+            echo "Created .env"
+
+            # Login to GHCR
+            echo "${GH_TOKEN}" | docker login ghcr.io -u ${GH_ACTOR} --password-stdin
+
+            # Stop app containers to ensure clean recreate
+            docker compose -f compose.login-hanko.yaml stop app worker nginx || true
+
+            # Pull new images
+            docker compose -f compose.login-hanko.yaml pull
+
+            # Remove old app containers
+            docker compose -f compose.login-hanko.yaml rm -f app worker nginx || true
+
+            # Ensure db is running
+            docker compose -f compose.login-hanko.yaml up -d --no-recreate db redis
+
+            # Start fresh app containers
+            docker compose -f compose.login-hanko.yaml up -d
+
+            # Cleanup
+            docker image prune -af
+
+            echo "Deployment complete"
+          ENDSSH
