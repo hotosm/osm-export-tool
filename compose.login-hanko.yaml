@@ -20,6 +20,7 @@ services:
       - ALLOWED_HOSTS=testlogin.export.hotosm.org,localhost,app,nginx
       - CSRF_TRUSTED_ORIGINS=https://testlogin.export.hotosm.org,https://dev.login.hotosm.org
       - USE_X_FORWARDED_HOST=true
+      - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
       - SECRET_KEY=${SECRET_KEY}
       # Redis for Dramatiq
       - REDIS_HOST=redis
@@ -50,8 +51,8 @@ services:
         gunicorn --bind 0.0.0.0:8000 --workers 2 core.wsgi:application
       "
     volumes:
-      - static-files:/app/static
-      - export-downloads:/app/export_downloads
+      - static-files:/static
+      - export-downloads:/export_downloads
     networks:
       - internal
 
@@ -62,8 +63,8 @@ services:
       - app
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - static-files:/app/static:ro
-      - export-downloads:/app/export_downloads:ro
+      - static-files:/static:ro
+      - export-downloads:/export_downloads:ro
     networks:
       - hotosm-test
       - internal
