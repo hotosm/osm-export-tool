@@ -40,7 +40,7 @@ dramatiq-abort==1.0
 python3-openid
 
 # Hanko SSO Authentication
-hotosm-auth[django] @ git+https://github.com/hotosm/login.git@main#subdirectory=auth-libs/python
+hotosm-auth[django]==0.2.6
 
 ##testing
 pytest==7.4.3
