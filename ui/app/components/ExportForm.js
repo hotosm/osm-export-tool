@@ -129,21 +129,26 @@ export class ExportForm extends Component {
   }
 
   async fetchData(geometry) {
+    // Skip if RAW_DATA_API_URL is not configured (e.g., in local dev)
+    if (!window.RAW_DATA_API_URL || window.RAW_DATA_API_URL === 'undefined') {
+      console.log("RAW_DATA_API_URL not configured, skipping stats fetch");
+      return;
+    }
+
     const url = window.RAW_DATA_API_URL + "v1/stats/polygon/";
     try {
       const response = await axios.post(url, {
         geometry: geometry
       }, {
-        headers: {"Content-Type": "application/json"}
+        headers: {"Content-Type": "application/json"},
+        timeout: 5000 // 5 second timeout
       });
-  
-      if (response.data) {
 
+      if (response.data) {
         this.setState({ fetchedInfo: response.data });
       }
     } catch (error) {
-      console.error("Failed to fetch summary data", error);
-     
+      console.warn("RAW_DATA_API not available (expected in local dev):", error.message);
     }
   }
   

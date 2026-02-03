@@ -146,8 +146,8 @@ export const checkHankoAuth = () => (dispatch) => {
 
 export const login = () => {
   if (isHankoAuth) {
-    // Redirect to Hanko login with return URL
-    const returnUrl = encodeURIComponent(window.location.href);
+    // Redirect to Hanko login, return to home page to avoid infinite loops
+    const returnUrl = encodeURIComponent(window.location.origin + '/v3/');
     window.location.href = `${hankoUrl}/app?return_to=${returnUrl}`;
   } else {
     // Legacy OAuth2 login
