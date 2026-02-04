@@ -35,12 +35,17 @@ RUN pip3 install --no-cache-dir -r requirements-dev.txt || pip3 install --no-cac
 # Force numpy<2.0 for deepdiff compatibility (must be after requirements)
 RUN pip3 install --no-cache-dir --force-reinstall "numpy<2.0"
 
-# Copy application code
-COPY . .
-
-# Install frontend dependencies and build
+# Install frontend dependencies (cached independently from source code)
+COPY ui/package.json ui/yarn.lock* ./ui/
 WORKDIR /app/ui
 RUN yarn install --frozen-lockfile || yarn install
+
+# Copy application code
+WORKDIR /app
+COPY . .
+
+# Build frontend
+WORKDIR /app/ui
 RUN yarn run dist || yarn run build || echo "Frontend build skipped"
 
 WORKDIR /app
