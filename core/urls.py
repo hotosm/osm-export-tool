@@ -13,7 +13,8 @@ from ui.views import (
     v3,
     worker_dashboard,
     auth_me,
-    auth_osm_status,
+    auth_status,
+    onboarding_callback,
 )
 
 # Hanko admin mapping routes
@@ -36,7 +37,9 @@ urlpatterns = [
     path("login/", login, name="login"),
     path("logout/", logout, name="logout"),
     path("api/auth/me/", auth_me, name="auth_me"),
-    path("api/auth/osm/status/", auth_osm_status, name="auth_osm_status"),
+    # Hanko auth endpoints (v1 convention matches Login service)
+    path("api/v1/auth/status/", auth_status, name="auth_status"),
+    path("api/v1/auth/onboarding/", onboarding_callback, name="onboarding_callback"),
     path("admin/login/", RedirectView.as_view(pattern_name="login", permanent=False)),
     path("admin/", admin.site.urls),
     path("api/", include("api.urls", namespace="api")),

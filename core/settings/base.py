@@ -108,7 +108,13 @@ if AUTH_PROVIDER == "hanko":
     MIDDLEWARE.insert(auth_middleware_index, "hotosm_auth_django.HankoAuthMiddleware")
 
 # django-cors-headers configuration
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.hotosm\.test$",
+    r"^https://.*\.hotosm\.org$",
+    r"^http://localhost(:\d+)?$",
+    r"^http://127\.0\.0\.1(:\d+)?$",
+]
 
 ROOT_URLCONF = "core.urls"
 

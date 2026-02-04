@@ -32,10 +32,6 @@
       #root .btn-danger {
         display: none !important;
       }
-      /* Hide React-rendered hotosm-auth (inside NavItem wrapper) */
-      #root .navbar-nav li[role="presentation"]:has(hotosm-auth) {
-        display: none !important;
-      }
       /* Hide admin-only nav items (CSS is immune to React re-renders) */
       #root .navbar-nav li:has(> a[href$="/partners"]),
       #root .navbar-nav li:has(> a[href$="/hdx"]),
@@ -75,42 +71,5 @@
       {% endif %}
     </script>
     <script src="{% static 'ui/js/bundle.js' %}"></script>
-    {% if AUTH_PROVIDER == "hanko" %}
-    <script>
-      // Inject <hotosm-auth> into navbar after React renders
-      (function() {
-        function injectHankoAuth() {
-          var nav = document.querySelector('.navbar-nav.pull-right');
-          if (!nav) {
-            setTimeout(injectHankoAuth, 100);
-            return;
-          }
-          // Don't inject twice
-          if (document.getElementById('hanko-nav-auth')) return;
-
-          // Inject <hotosm-auth> web component as last item
-          var li = document.createElement('li');
-          li.id = 'hanko-nav-auth';
-          li.style.padding = '8px 8px';
-          var el = document.createElement('hotosm-auth');
-          el.setAttribute('hanko-url', HANKO_URL);
-          el.setAttribute('base-path', HANKO_URL);
-          el.setAttribute('redirect-after-login', window.location.origin + '/v3/');
-          el.setAttribute('redirect-after-logout', window.location.origin + '/v3/');
-          li.appendChild(el);
-          nav.appendChild(li);
-        }
-        injectHankoAuth();
-
-        // Re-inject if React re-renders and removes our element
-        var observer = new MutationObserver(function() {
-          if (!document.getElementById('hanko-nav-auth')) {
-            injectHankoAuth();
-          }
-        });
-        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
-      })();
-    </script>
-    {% endif %}
   </body>
 </html>

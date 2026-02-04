@@ -1,12 +1,24 @@
 # -*- coding: utf-8 -*-
-"""Hanko authentication helper utilities for osm-export-tool."""
+"""Hanko authentication helper utilities for osm-export-tool.
+
+These helpers implement the user mapping flow for osm-export-tool:
+1. Check if mapping exists (hanko_id → user_id)
+2. If not, redirect to onboarding
+3. Legacy user → Connect OSM to recover account (lookup by OSM ID)
+4. New user → Create new Django user
+
+This follows the same pattern as uMap.
+"""
 
 import logging
+from typing import Optional
 from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.authentication import BaseAuthentication
 
 LOG = logging.getLogger(__name__)
+
+APP_NAME = "osm-export-tool"
 
 
 class HankoAuthentication(BaseAuthentication):
@@ -16,6 +28,9 @@ class HankoAuthentication(BaseAuthentication):
     The HankoAuthMiddleware sets request.hotosm.user for every request.
     This class makes DRF aware of that authentication so that
     DRF's IsAuthenticated permission and request.user work correctly.
+
+    IMPORTANT: This does NOT auto-create users or mappings. If no mapping
+    exists, the user needs to complete onboarding first.
     """
 
     def authenticate(self, request):
@@ -25,40 +40,33 @@ class HankoAuthentication(BaseAuthentication):
         if not hasattr(request, 'hotosm') or not request._request.hotosm.user:
             return None
 
-        # Map the Hanko user to a Django User
+        # Only return user if mapping exists - no auto-creation
         hanko_user = request._request.hotosm.user
-        osm_connection = getattr(request._request.hotosm, 'osm', None)
-        django_user = get_or_create_mapped_user(hanko_user, osm_connection)
+        django_user = get_mapped_django_user_by_hanko(hanko_user)
 
-        return (django_user, None)
+        if django_user:
+            return (django_user, None)
+
+        # No mapping - user needs onboarding
+        # Return None so DRF treats as unauthenticated
+        return None
 
 
-def get_or_create_mapped_user(hanko_user, osm_connection=None):
+def get_mapped_django_user_by_hanko(hanko_user) -> Optional[User]:
     """
-    Get or create a Django User mapped to a Hanko user.
+    Get the Django User mapped to a Hanko user.
 
-    Uses the hanko_user_mappings table (via hotosm_auth_django) to persist
-    the relationship between Hanko user IDs and Django user IDs.
-
-    Flow:
-    1. Check hanko_user_mappings table for existing mapping
-    2. If mapped, load the Django User by ID
-    3. If not mapped, find existing Django user by email or OSM username
-    4. If found, create a mapping in hanko_user_mappings
-    5. If not found, create a new Django user and then create a mapping
+    Only returns a user if a mapping already exists. Does NOT auto-create
+    mappings or users. The onboarding flow handles user/mapping creation.
 
     Args:
         hanko_user: The Hanko user object (with .id and .email)
-        osm_connection: Optional OSM connection (with .osm_username)
 
     Returns:
-        User: The Django User object
+        User or None: The mapped Django User or None if no mapping exists
     """
-    from hotosm_auth_django.middleware import get_mapped_user_id, create_user_mapping
+    from hotosm_auth_django import get_mapped_user_id
 
-    APP_NAME = "osm-export-tool"
-
-    # 1. Check hanko_user_mappings for existing mapping
     mapped_user_id = get_mapped_user_id(hanko_user, app_name=APP_NAME)
     if mapped_user_id:
         try:
@@ -68,63 +76,91 @@ def get_or_create_mapped_user(hanko_user, osm_connection=None):
         except (User.DoesNotExist, ValueError):
             LOG.warning(f"Mapping exists but user not found: {mapped_user_id}")
 
-    # 2. No mapping yet — try to find existing Django user by email
-    user = None
-    email = hanko_user.email if hanko_user else None
+    return None
 
-    if email:
-        try:
-            user = User.objects.get(email__iexact=email)
-            LOG.debug(f"Found user by email: {email}")
-        except User.DoesNotExist:
-            pass
-        except User.MultipleObjectsReturned:
-            user = User.objects.filter(email__iexact=email).first()
-            LOG.warning(f"Multiple users found with email: {email}")
 
-    # 3. Try to find by OSM username
-    if not user and osm_connection:
-        osm_username = getattr(osm_connection, 'osm_username', None)
-        if osm_username:
-            try:
-                user = User.objects.get(username__iexact=osm_username)
-                LOG.debug(f"Found user by OSM username: {osm_username}")
-            except User.DoesNotExist:
-                pass
+def find_legacy_user_by_osm_id(osm_id: int) -> Optional[User]:
+    """Find existing user by OSM ID via social_auth.
 
-    # 4. Create new Django user if not found
-    if not user:
-        username = email.split('@')[0] if email else f"hanko_{hanko_user.id[:8]}"
-        base_username = username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_username}_{counter}"
-            counter += 1
+    Used after OSM connect to check if this OSM ID already exists
+    in the database (legacy user). This is more reliable than username
+    because OSM allows username changes.
 
-        user = User.objects.create_user(
-            username=username,
-            email=email or "",
-        )
-        LOG.info(f"Created new Django user for Hanko user: {username}")
+    Args:
+        osm_id: OSM user ID from OAuth
 
-    # 5. Create mapping in hanko_user_mappings table
+    Returns:
+        User if found, None otherwise
+    """
     try:
-        create_user_mapping(
-            hanko_user_id=hanko_user.id,
-            app_user_id=str(user.pk),
-            app_name=APP_NAME,
+        from social_django.models import UserSocialAuth
+        social_auth = UserSocialAuth.objects.get(
+            provider='openstreetmap-oauth2',
+            uid=str(osm_id)
         )
-        LOG.info(f"Created user mapping: hanko={hanko_user.id} -> django={user.pk}")
-    except Exception as e:
-        # Mapping may already exist (race condition) — that's fine
-        LOG.debug(f"Could not create mapping (may already exist): {e}")
+        return social_auth.user
+    except Exception:
+        return None
 
+
+def find_legacy_user_by_email(email: str) -> Optional[User]:
+    """Find existing user by email.
+
+    Used as fallback when OSM ID lookup fails. More reliable than username
+    because email is unique and doesn't change as often.
+
+    Note: Legacy users from OSM OAuth typically don't have email set
+    (OSM OAuth returns email=""). This only works if user manually
+    configured their email in export tool.
+
+    Args:
+        email: Email address to search for
+
+    Returns:
+        User if found, None otherwise
+    """
+    if not email:
+        return None
+    try:
+        return User.objects.get(email=email)
+    except User.DoesNotExist:
+        return None
+
+
+def create_export_tool_user(
+    username: str,
+    email: Optional[str] = None,
+) -> User:
+    """Create a new Django User for export tool.
+
+    Args:
+        username: Display username
+        email: Email address (optional)
+
+    Returns:
+        User: Created user instance
+    """
+    # Handle username conflicts by appending suffix
+    final_username = username
+    suffix = 1
+    while User.objects.filter(username=final_username).exists():
+        final_username = f"{username}_{suffix}"
+        suffix += 1
+
+    user = User.objects.create_user(
+        username=final_username,
+        email=email or "",
+    )
+
+    LOG.info(f"Created User: id={user.id}, username={final_username}")
     return user
 
 
-def get_mapped_django_user(request):
+def get_mapped_django_user(request) -> Optional[User]:
     """
     Get the Django User mapped to the current Hanko user.
+
+    Only returns a user if a mapping already exists. Does NOT auto-create.
 
     Args:
         request: Django request object with hotosm attribute
@@ -136,9 +172,7 @@ def get_mapped_django_user(request):
         return None
 
     hanko_user = request.hotosm.user
-    osm_connection = getattr(request.hotosm, 'osm', None)
-
-    return get_or_create_mapped_user(hanko_user, osm_connection)
+    return get_mapped_django_user_by_hanko(hanko_user)
 
 
 class HankoUserFilterMixin:
@@ -165,7 +199,7 @@ class HankoUserFilterMixin:
             from hotosm_auth_django import get_mapped_user_id
             app_user_id = get_mapped_user_id(
                 self.request.hotosm.user,
-                app_name="osm-export-tool"
+                app_name=APP_NAME
             )
             if app_user_id:
                 # Filter by user_id field (used in Job and SavedFeatureSelection models)

@@ -36,6 +36,15 @@ class HankoAuthButton extends React.Component {
       el.setAttribute("redirect-after-login", redirectAfterLogin);
       el.setAttribute("redirect-after-logout", redirectAfterLogin);
     }
+
+    // Set mapping-check-url for onboarding flow
+    const { mappingCheckUrl, appId } = this.props;
+    if (mappingCheckUrl) {
+      el.setAttribute("mapping-check-url", mappingCheckUrl);
+    }
+    if (appId) {
+      el.setAttribute("app-id", appId);
+    }
   }
 
   componentWillUnmount() {
