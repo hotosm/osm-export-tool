@@ -7,21 +7,39 @@ import fileDownload from "js-file-download";
 
 import { selectAuthToken } from "../selectors";
 
+// Auth provider detection
+const isHankoAuth = window.AUTH_PROVIDER === "hanko";
+
+// Helper to build axios config with proper auth headers/credentials
+const buildAuthConfig = (token, config = {}) => {
+  const requestConfig = {
+    ...config,
+    withCredentials: isHankoAuth // Send cookies for Hanko auth
+  };
+
+  // Only add Authorization header for legacy auth
+  if (!isHankoAuth && token) {
+    requestConfig.headers = {
+      ...requestConfig.headers,
+      Authorization: `Bearer ${token}`
+    };
+  }
+
+  return requestConfig;
+};
+
 export const createExport = (data, formName) => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   dispatch(startSubmit(formName));
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: "/api/jobs",
     method: "POST",
     contentType: "application/json; version=1.0",
     data
-  })
+  }))
     .then(rsp => {
       dispatch(stopSubmit(formName));
       dispatch(push(`/exports/${rsp.data.uid}`));
@@ -42,13 +60,10 @@ export const cloneExport = e => (dispatch, getState) => {
 
   dispatch(push("/exports/new"));
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/jobs/${e.uid}/geom`
-  })
+  }))
     .then(rsp =>
       dispatch(
         initialize("ExportForm", {
@@ -81,14 +96,11 @@ export const deleteExport = e => async (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   try {
-    await axios({
+    await axios(buildAuthConfig(token, {
       baseURL: window.EXPORTS_API_URL,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       method: "DELETE",
       url: `/api/jobs/${e.uid}`
-    });
+    }));
 
     dispatch({
       type: types.EXPORT_DELETED,
@@ -103,13 +115,10 @@ export const deleteExport = e => async (dispatch, getState) => {
 export const getRuns = jobUid => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/runs?job_uid=${jobUid}`
-  }).then(rsp =>
+  })).then(rsp =>
     dispatch({
       type: types.RECEIVED_RUNS,
       id: jobUid,
@@ -126,14 +135,11 @@ export const runExport = jobUid => (dispatch, getState) => {
     id: jobUid
   });
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/runs?job_uid=${jobUid}`,
     method: "POST"
-  }).then(rsp => dispatch(getRuns(jobUid)))
+  })).then(rsp => dispatch(getRuns(jobUid)))
   .catch(function (error) {
     if (error.response) {
       if(error.response.data.status == "PREVIOUS_RUN_IN_QUEUE"){
@@ -152,13 +158,10 @@ export const runExport = jobUid => (dispatch, getState) => {
 export const getOverpassTimestamp = () => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: "/api/overpass_timestamp"
-  })
+  }))
     .then(rsp =>
       dispatch({
         type: types.RECEIVED_OVERPASS_TIMESTAMP,
@@ -169,18 +172,24 @@ export const getOverpassTimestamp = () => (dispatch, getState) => {
 };
 
 export const getGalaxyTimestamp = () => (dispatch, getState) => {
+  // Skip if RAW_DATA_API_URL is not configured (e.g., in local dev)
+  if (!window.RAW_DATA_API_URL || window.RAW_DATA_API_URL === 'undefined') {
+    console.log("RAW_DATA_API_URL not configured, skipping Galaxy timestamp");
+    return Promise.resolve();
+  }
+
   return axios({
     baseURL: window.RAW_DATA_API_URL,
-    url: "v1/status/"
+    url: "v1/status/",
+    timeout: 5000 // 5 second timeout
   })
     .then(response =>
       dispatch({
         type: types.RECEIVED_GALAXY_TIMESTAMP,
         lastUpdated: moment(response.data.lastUpdated).fromNow()
-
       })
     )
-    .catch(err => console.warn(err));
+    .catch(err => console.warn("RAW_DATA_API not available (expected in local dev):", err.message));
 };
 
 export const getExport = id => (dispatch, getState) => {
@@ -190,13 +199,10 @@ export const getExport = id => (dispatch, getState) => {
     type: types.FETCHING_EXPORT
   });
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/jobs/${id}`
-  })
+  }))
     .then(rsp =>
       dispatch({
         type: types.RECEIVED_EXPORT,
@@ -221,11 +227,8 @@ export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {
     type: types.FETCHING_EXPORT_LIST
   });
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     params: {
       ...filters,
       all: filters.all || (token == null),
@@ -233,7 +236,7 @@ export const getExports = (filters = {}, page = 1) => (dispatch, getState) => {
       offset: Math.max(0, (page - 1) * itemsPerPage)
     },
     url: "/api/jobs"
-  })
+  }))
     .then(({ data: response }) =>
       dispatch({
         type: types.RECEIVED_EXPORT_LIST,
@@ -262,14 +265,11 @@ export function updateMode(mode) {
 export const getStats = (filters) => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/stats`,
     params: filters
-  }).then(rsp =>
+  })).then(rsp =>
     dispatch({
       type: types.RECEIVED_STATS,
       data: rsp.data
@@ -280,14 +280,11 @@ export const getStats = (filters) => (dispatch, getState) => {
 export const getCsv = (filters) => (dispatch, getState) => {
   const token = selectAuthToken(getState());
   filters.csv = true;
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/stats`,
     params: filters
-  }).then(rsp => {
+  })).then(rsp => {
     console.log(rsp.data)
     fileDownload(rsp.data,'exports.csv');
   });
@@ -296,14 +293,11 @@ export const getCsv = (filters) => (dispatch, getState) => {
 export const getrunCsv = (filters) => (dispatch, getState) => {
   const token = selectAuthToken(getState());
   filters.csv = true;
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/run_stats`,
     params: filters
-  }).then(rsp => {
+  })).then(rsp => {
     console.log(rsp.data)
     fileDownload(rsp.data,'exports_run.csv');
   });

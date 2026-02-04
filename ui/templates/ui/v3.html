@@ -25,8 +25,8 @@
       });
     </script>
     <!-- HOTOSM Auth Web Component (uses wa-dropdown, wa-button, wa-icon as peer deps) -->
-    <!-- Using 0.4.2 as requested (use @latest for auto-updates) -->
-    <script type="module" src="https://unpkg.com/@hotosm/hanko-auth@0.4.2/dist/hanko-auth.esm.js"></script>
+    <!-- Using local build for development -->
+    <script type="module" src="{% static 'ui/js/hanko-auth.esm.js' %}"></script>
     <style>
       /* Hide legacy login/logout button */
       #root .btn-danger {
