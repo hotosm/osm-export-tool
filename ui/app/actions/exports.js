@@ -44,15 +44,19 @@ export const createExport = (data, formName) => (dispatch, getState) => {
       dispatch(stopSubmit(formName));
       dispatch(push(`/exports/${rsp.data.uid}`));
     })
-    .catch(err =>
+    .catch(err => {
+      console.error("Export creation failed:", err);
+      const errorData = err.response ? err.response.data : {};
+      const errorMessage = err.response
+        ? "Your export is invalid. Please check each page of the form for errors."
+        : "Network error: could not reach the server. Please try again.";
       dispatch(
         stopSubmit(formName, {
-          ...err.response.data,
-          _error:
-            "Your export is invalid. Please check each page of the form for errors."
+          ...errorData,
+          _error: errorMessage
         })
-      )
-    );
+      );
+    });
 };
 
 export const cloneExport = e => (dispatch, getState) => {

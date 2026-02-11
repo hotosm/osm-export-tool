@@ -80,7 +80,7 @@ def v3(request, *args, **kwargs):
 
     context = dict(
         client_id=ui_app.client_id,
-        RAW_DATA_API_URL=settings.RAW_DATA_API_URL,
+        RAW_DATA_API_URL=getattr(settings, 'RAW_DATA_API_PUBLIC_URL', settings.RAW_DATA_API_URL),
         AUTH_PROVIDER=getattr(settings, 'AUTH_PROVIDER', 'legacy'),
     )
 

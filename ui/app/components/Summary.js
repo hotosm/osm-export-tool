@@ -95,7 +95,6 @@ export default injectIntl(
           disabled={submitting}
           type="submit"
           style={{ width: "100%" }}
-          onClick={handleSubmit}
         >
           <FormattedMessage
             id="ui.exports.create_export"

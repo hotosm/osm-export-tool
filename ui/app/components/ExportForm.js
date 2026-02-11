@@ -276,7 +276,7 @@ export class ExportForm extends Component {
 
     return (
       <Row style={{ height: "100%" }}>
-        <form style={{ height: "100%" }}>
+        <form onSubmit={handleSubmit} style={{ height: "100%" }}>
           <Col
             xs={6}
             style={{ height: "100%", overflowY: "scroll", padding: "20px" }}
