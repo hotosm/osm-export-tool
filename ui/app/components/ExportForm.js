@@ -30,8 +30,6 @@ const MAX_TILE_COUNT = 5000;
 const form = reduxForm({
   form: "ExportForm",
   onSubmit: (values, dispatch, { createExport }) => {
-    console.log("Submitting form. Values:", values);
-
     if (values.bundle && !values.export_formats.includes("bundle")) {
       // only add bundle format if it wasn't already included
       values.export_formats.push("bundle");
@@ -276,7 +274,7 @@ export class ExportForm extends Component {
 
     return (
       <Row style={{ height: "100%" }}>
-        <form onSubmit={handleSubmit} style={{ height: "100%" }}>
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} style={{ height: "100%" }}>
           <Col
             xs={6}
             style={{ height: "100%", overflowY: "scroll", padding: "20px" }}

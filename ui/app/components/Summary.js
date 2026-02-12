@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { FormattedMessage, defineMessages, injectIntl } from "react-intl";
 import { Field } from "redux-form";
 
@@ -26,8 +26,8 @@ const messages = defineMessages({
 });
 
 export default injectIntl(
-  ({ error, formValues, handleSubmit, intl: { formatMessage }, submitting }) =>
-    <Row>
+  ({ error, formValues, handleSubmit, intl: { formatMessage }, submitting }) => {
+    return <Row>
       <Col xs={6}>
         <strong>
           <FormattedMessage id="export.name.label" defaultMessage="Name" />:
@@ -90,17 +90,28 @@ export default injectIntl(
           component={renderCheckbox}
           type="checkbox"
         /> 
-        <Button
-          bsStyle="danger"
+        <button
           disabled={submitting}
-          type="submit"
-          style={{ width: "100%" }}
+          type="button"
+          style={{
+            width: "100%",
+            backgroundColor: "#d9534f",
+            color: "white",
+            padding: "12px 20px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            border: "2px solid #d43f3a",
+            borderRadius: "4px",
+            cursor: submitting ? "not-allowed" : "pointer",
+            marginTop: "15px"
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            handleSubmit(e);
+          }}
         >
-          <FormattedMessage
-            id="ui.exports.create_export"
-            defaultMessage="Create Export"
-          />
-        </Button>
+          {submitting ? "Creating..." : "Create Export"}
+        </button>
         {error &&
           <p className={styles.error}>
             <strong>
@@ -108,5 +119,5 @@ export default injectIntl(
             </strong>
           </p>}
       </Col>
-    </Row>
-);
+    </Row>;
+  });
