@@ -69,7 +69,7 @@
     "write-file-webpack-plugin": "^4.1.0"
   },
   "scripts": {
-    "copy-auth": "cp node_modules/@hotosm/hanko-auth/dist/hanko-auth.esm.js static/ui/js/",
+    "copy-auth": "mkdir -p static/ui/js && cp node_modules/@hotosm/hanko-auth/dist/hanko-auth.esm.js static/ui/js/",
     "dist": "npm run copy-auth && NODE_ENV=production webpack -p --progress --display-optimization-bailout --config webpack.config.js",
     "pack": "webpack --progress --display-optimization-bailout --config webpack.config.js",
     "start": "webpack-dev-server --hot --history-api-fallback --content-base public/",
