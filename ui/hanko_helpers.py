@@ -175,39 +175,6 @@ def get_mapped_django_user(request) -> Optional[User]:
     return get_mapped_django_user_by_hanko(hanko_user)
 
 
-class HankoUserFilterMixin:
-    """
-    Mixin that filters querysets by the mapped Hanko user.
-
-    Use this mixin in ViewSets that need to filter data by the current
-    authenticated user when using Hanko SSO.
-
-    Example:
-        class JobViewSet(HankoUserFilterMixin, viewsets.ModelViewSet):
-            queryset = Job.objects.all()
-            serializer_class = JobSerializer
-    """
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-
-        # Only filter if using Hanko authentication
-        if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
-            return qs
-
-        if hasattr(self.request, 'hotosm') and self.request.hotosm.user:
-            from hotosm_auth_django import get_mapped_user_id
-            app_user_id = get_mapped_user_id(
-                self.request.hotosm.user,
-                app_name=APP_NAME
-            )
-            if app_user_id:
-                # Filter by user_id field (used in Job and SavedFeatureSelection models)
-                return qs.filter(user_id=app_user_id)
-
-        return qs
-
-
 def is_hanko_authenticated(request):
     """
     Check if the request is authenticated via Hanko SSO.
@@ -221,36 +188,6 @@ def is_hanko_authenticated(request):
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
         return False
     return hasattr(request, 'hotosm') and request.hotosm.user is not None
-
-
-def get_hanko_user(request):
-    """
-    Get the Hanko user from the request.
-
-    Args:
-        request: Django request object
-
-    Returns:
-        HankoUser or None: The authenticated Hanko user or None
-    """
-    if is_hanko_authenticated(request):
-        return request.hotosm.user
-    return None
-
-
-def get_osm_connection(request):
-    """
-    Get the OSM connection from the request (if available).
-
-    Args:
-        request: Django request object
-
-    Returns:
-        OSMConnection or None: The OSM connection or None
-    """
-    if is_hanko_authenticated(request) and hasattr(request.hotosm, 'osm'):
-        return request.hotosm.osm
-    return None
 
 
 def require_hanko_auth(view_func):
@@ -275,46 +212,6 @@ def require_hanko_auth(view_func):
                 return JsonResponse(
                     {"error": "Not authenticated"},
                     status=401
-                )
-        else:
-            # Fall back to Django's built-in authentication
-            if not request.user.is_authenticated:
-                return JsonResponse(
-                    {"error": "Not authenticated"},
-                    status=401
-                )
-        return view_func(request, *args, **kwargs)
-    return wrapper
-
-
-def require_osm_connection(view_func):
-    """
-    Decorator that requires both Hanko authentication and OSM connection.
-
-    Use this decorator on function-based views that require OSM connection
-    (e.g., for creating exports that need OSM credentials).
-
-    Example:
-        @require_osm_connection
-        def my_osm_view(request):
-            osm = request.hotosm.osm
-            ...
-    """
-    from functools import wraps
-    from django.http import JsonResponse
-
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-            if not is_hanko_authenticated(request):
-                return JsonResponse(
-                    {"error": "Not authenticated"},
-                    status=401
-                )
-            if not get_osm_connection(request):
-                return JsonResponse(
-                    {"error": "OSM connection required"},
-                    status=403
                 )
         else:
             # Fall back to Django's built-in authentication

@@ -10,6 +10,7 @@ import { selectIsLoggedIn } from "../selectors";
 import LocaleSelector from "./LocaleSelector";
 import RequirePermission from "./RequirePermission";
 import HankoAuthButton from "./HankoAuthButton";
+import ToolMenu from "./ToolMenu";
 
 const NavBar = ({ isLoggedIn, login, logout }) => (
   <Navbar>
@@ -128,7 +129,13 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
             appId="osm-export-tool"
           />
         </NavItem>
-      ) : (
+      ) : null}
+      {authConfig.isHankoAuth && (
+        <NavItem>
+          <ToolMenu />
+        </NavItem>
+      )}
+      {!authConfig.isHankoAuth && (
         <NavItem>
           {!isLoggedIn && (
             <Button bsStyle="danger" onClick={login}>

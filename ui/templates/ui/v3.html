@@ -10,23 +10,16 @@
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
     <link rel="icon" href="{% static 'ui/images/favicon.ico' %}">
     {% if AUTH_PROVIDER == "hanko" %}
-    <!-- WebAwesome CSS + individual components needed by hotosm-auth dropdown -->
-    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/styles/webawesome.css">
-    <script type="module">
-      // Import individual Web Awesome components (same as fAIr/Portal main.tsx)
-      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/dropdown/dropdown.js';
-      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/dropdown-item/dropdown-item.js';
-      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/button/button.js';
-      import 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/components/icon/icon.js';
-      // Register Bootstrap Icons (needed for wa-icon in the dropdown)
-      import { registerIconLibrary } from 'https://early.webawesome.com/webawesome@3.0.0-beta.1/dist/webawesome.js';
-      registerIconLibrary('bootstrap', {
-        resolver: name => `https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/${name}.svg`
-      });
+    <script type="importmap">
+      {
+        "imports": {
+          "lit": "https://esm.sh/lit@3",
+          "lit/decorators.js": "https://esm.sh/lit@3/decorators"
+        }
+      }
     </script>
-    <!-- HOTOSM Auth Web Component (uses wa-dropdown, wa-button, wa-icon as peer deps) -->
-    <!-- Using local build for development -->
-    <script type="module" src="{% static 'ui/js/hanko-auth.esm.js' %}"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/hanko-auth@0.4.8/dist/hanko-auth.esm.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/tool-menu@0.2.6/dist/tool-menu.esm.js"></script>
     <style>
       /* Hide legacy login/logout button */
       #root .btn-danger {
