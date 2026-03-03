@@ -121,19 +121,24 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
         <LocaleSelector />
       </NavItem>
       {authConfig.isHankoAuth ? (
-        <NavItem>
-          <HankoAuthButton
-            hankoUrl={authConfig.hankoUrl}
-            redirectAfterLogin={window.location.origin + "/v3/"}
-            mappingCheckUrl={window.location.origin + "/api/v1/auth/status/"}
-            appId="osm-export-tool"
-            button-variant="filled"
-          />
-        </NavItem>
+        <li>
+          <a className="hotosm-auth">
+            <HankoAuthButton
+              hankoUrl={authConfig.hankoUrl}
+              redirectAfterLogin={window.location.origin + "/v3/"}
+              mappingCheckUrl={window.location.origin + "/api/v1/auth/status/"}
+              appId="osm-export-tool"
+              button-variant="filled"
+              button-color="danger"
+            />
+          </a>
+        </li>
       ) : null}
-      <NavItem>
-        <ToolMenu />
-      </NavItem>
+      <li>
+        <a className="hotosm-tool-menu">
+          <ToolMenu />
+        </a>
+      </li>
       {!authConfig.isHankoAuth && (
         <NavItem>
           {!isLoggedIn && (
