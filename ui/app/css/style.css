@@ -1479,6 +1479,9 @@ p {
   margin-top: 16px;
 }
 /* hanko auth and tool menu */
+hotosm-auth {
+  --login-btn-margin: 3px 0;
+}
 .navbar-nav > li > a.hotosm-tool-menu {
   display: none;
   padding-top: 8px;
@@ -1496,8 +1499,8 @@ p {
 }
 @media (min-width: 992px) {
   .navbar-nav > li > a.hotosm-auth {
-    padding-top: 7px;
-    padding-bottom: 7px;
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 }
       
