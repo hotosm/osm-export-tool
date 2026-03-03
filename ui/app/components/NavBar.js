@@ -21,7 +21,9 @@ const NavBar = ({ isLoggedIn, login, logout, locale }) => (
           <span>Export Tool</span>
         </Link>
       </Navbar.Brand>
+      <Navbar.Toggle />
     </Navbar.Header>
+    <Navbar.Collapse>
     <Nav className="pull-right">
       <RequirePermission>
         <li>
@@ -155,6 +157,7 @@ const NavBar = ({ isLoggedIn, login, logout, locale }) => (
         </NavItem>
       )}
     </Nav>
+    </Navbar.Collapse>
   </Navbar>
 );
 
