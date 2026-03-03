@@ -34,6 +34,17 @@ class HankoAuthButton extends React.Component {
     }
   }
 
+  _bindCacheListeners() {
+    this._onLogin = (e) => {
+      localStorage.setItem("hotosm-auth-user", JSON.stringify(e.detail.user));
+    };
+    this._onLogout = () => {
+      localStorage.removeItem("hotosm-auth-user");
+    };
+    this._element.addEventListener("hanko-login", this._onLogin);
+    this._element.addEventListener("logout", this._onLogout);
+  }
+
   _renderWebComponent() {
     if (!this._container) return;
 
@@ -41,6 +52,7 @@ class HankoAuthButton extends React.Component {
     if (!this._element) {
       this._element = document.createElement("hotosm-auth");
       this._container.appendChild(this._element);
+      this._bindCacheListeners();
     }
 
     const el = this._element;
@@ -83,8 +95,12 @@ class HankoAuthButton extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", this._handleResize);
-    if (this._element && this._container) {
-      this._container.removeChild(this._element);
+    if (this._element) {
+      this._element.removeEventListener("hanko-login", this._onLogin);
+      this._element.removeEventListener("logout", this._onLogout);
+      if (this._container) {
+        this._container.removeChild(this._element);
+      }
       this._element = null;
     }
   }
