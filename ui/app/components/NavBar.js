@@ -12,7 +12,7 @@ import RequirePermission from "./RequirePermission";
 import HankoAuthButton from "./HankoAuthButton";
 import ToolMenu from "./ToolMenu";
 
-const NavBar = ({ isLoggedIn, login, logout }) => (
+const NavBar = ({ isLoggedIn, login, logout, locale }) => (
   <Navbar>
     <Navbar.Header>
       <Navbar.Brand>
@@ -130,13 +130,14 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
               appId="osm-export-tool"
               button-variant="filled"
               button-color="danger"
+              lang={locale}
             />
           </a>
         </li>
       ) : null}
       <li>
         <a className="hotosm-tool-menu">
-          <ToolMenu />
+          <ToolMenu lang={locale} />
         </a>
       </li>
       {!authConfig.isHankoAuth && (
@@ -159,6 +160,7 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
 
 const mapStateToProps = (state) => ({
   isLoggedIn: selectIsLoggedIn(state),
+  locale: state.intl.locale,
 });
 
 export default connect(mapStateToProps, { login, logout })(NavBar);

@@ -1466,11 +1466,17 @@ p {
   justify-content: space-between;
 }
 /* hanko auth and tool menu */
-.navbar-nav > li > a.hotosm-tool-menu   {
+.navbar-nav > li > a.hotosm-tool-menu {
+  display: none;
   padding-top: 7px;
   padding-bottom: 7px;
   padding-left: 0;
   padding-right: 0;
+}
+@media (min-width: 992px) {
+  .navbar-nav > li > a.hotosm-tool-menu {
+    display: block;
+  }
 }
 .navbar-nav > li > a.hotosm-auth {
   padding-top: 7px;

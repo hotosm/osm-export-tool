@@ -54,6 +54,11 @@ class HankoAuthButton extends React.Component {
     if (buttonColor) {
       el.setAttribute("button-color", buttonColor);
     }
+
+    const { lang } = this.props;
+    if (lang) {
+      el.setAttribute("lang", lang);
+    }
   }
 
   componentWillUnmount() {
