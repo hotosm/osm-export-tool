@@ -127,14 +127,13 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
             redirectAfterLogin={window.location.origin + "/v3/"}
             mappingCheckUrl={window.location.origin + "/api/v1/auth/status/"}
             appId="osm-export-tool"
+            button-variant="filled"
           />
         </NavItem>
       ) : null}
-      {authConfig.isHankoAuth && (
-        <NavItem>
-          <ToolMenu />
-        </NavItem>
-      )}
+      <NavItem>
+        <ToolMenu />
+      </NavItem>
       {!authConfig.isHankoAuth && (
         <NavItem>
           {!isLoggedIn && (
