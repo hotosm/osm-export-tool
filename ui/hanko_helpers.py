@@ -6,8 +6,6 @@ These helpers implement the user mapping flow for osm-export-tool:
 2. If not, redirect to onboarding
 3. Legacy user → Connect OSM to recover account (lookup by OSM ID)
 4. New user → Create new Django user
-
-This follows the same pattern as uMap.
 """
 
 import logging

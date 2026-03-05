@@ -2,6 +2,7 @@
 """UI view definitions."""
 
 from django.contrib.auth import logout as auth_logout
+from django.db import IntegrityError
 from django.urls import reverse
 from django.shortcuts import redirect, render
 from oauth2_provider.models import Application
@@ -265,7 +266,8 @@ def onboarding_callback(request):
 
     Only works when AUTH_PROVIDER=hanko.
     """
-    from hotosm_auth_django import create_user_mapping
+    from hotosm_auth_django import create_user_mapping, get_mapped_user_id
+    from urllib.parse import urlencode
 
     # Only for Hanko auth
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
@@ -283,70 +285,88 @@ def onboarding_callback(request):
 
     hanko_user = request.hotosm.user
     is_new_user = request.GET.get('new_user') == 'true'
+    login_url = getattr(settings, 'HANKO_PUBLIC_URL', '') or getattr(settings, 'HANKO_API_URL', 'https://login.hotosm.org')
 
     if is_new_user:
-        # New user - create Django user with email as username base
-        username = hanko_user.email.split('@')[0]
+        # If a valid mapping already exists, skip creation and go home
+        existing_mapped_id = get_mapped_user_id(hanko_user, app_name=APP_NAME)
+        if existing_mapped_id:
+            try:
+                User.objects.get(id=int(existing_mapped_id))
+                return HttpResponseRedirect("/v3/")
+            except (User.DoesNotExist, ValueError):
+                # Stale mapping — fall through to re-create
+                pass
 
-        # Create User
+        # If user already has an OSM connection, check for an existing account
+        # (avoids creating a duplicate when user connected OSM but chose "new")
+        osm_connection = getattr(request.hotosm, 'osm', None)
+        if osm_connection and osm_connection.osm_user_id:
+            existing_by_osm = find_legacy_user_by_osm_id(osm_connection.osm_user_id)
+            if existing_by_osm:
+                try:
+                    create_user_mapping(
+                        hanko_user_id=hanko_user.id,
+                        app_user_id=str(existing_by_osm.id),
+                        app_name=APP_NAME,
+                    )
+                except IntegrityError:
+                    pass  # Mapping already exists, that's fine
+                return HttpResponseRedirect("/v3/")
+
+        # Truly new user - create Django user with email as username base
         user = create_export_tool_user(
-            username=username,
+            username=hanko_user.email.split('@')[0],
             email=hanko_user.email,
         )
 
-        # Create mapping
-        create_user_mapping(
-            hanko_user_id=hanko_user.id,
-            app_user_id=str(user.id),
-            app_name=APP_NAME,
-        )
+        try:
+            create_user_mapping(
+                hanko_user_id=hanko_user.id,
+                app_user_id=str(user.id),
+                app_name=APP_NAME,
+            )
+        except IntegrityError:
+            pass  # Race condition or duplicate call, mapping already exists
 
-        # Redirect to export tool homepage
         return HttpResponseRedirect("/v3/")
 
     else:
-        # Legacy user - should have osm_connection cookie
+        # Legacy user - need OSM connection cookie to look up their account
         osm_connection = getattr(request.hotosm, 'osm', None)
 
         if not osm_connection:
-            from urllib.parse import urlencode
-            login_url = getattr(settings, 'HANKO_PUBLIC_URL', '') or getattr(settings, 'HANKO_API_URL', 'https://login.hotosm.org')
-            params = urlencode({
-                'onboarding': 'osm-export-tool',
-                'return_to': request.build_absolute_uri('/v3/'),
-                'error': 'OSM connection failed. Please try connecting your OSM account again.',
-            })
-            return HttpResponseRedirect(f"{login_url}/app?{params}")
+            # No OSM cookie yet — initiate OSM OAuth directly on this app so
+            # the cookie is set with our own COOKIE_SECRET. The callback uses
+            # HTTP_REFERER to redirect back here after OAuth completes.
+            return HttpResponseRedirect('/api/v1/auth/osm/login/')
 
         osm_id = osm_connection.osm_user_id
-        osm_username = osm_connection.osm_username
 
         # Check if User already exists (true legacy)
         # Priority: 1) OSM ID (via social_auth), 2) Email (Hanko email)
         existing_user = find_legacy_user_by_osm_id(osm_id) if osm_id else None
         if not existing_user:
-            # Fallback to email - use Hanko user's email
             existing_user = find_legacy_user_by_email(hanko_user.email)
 
         if not existing_user:
             # No existing export tool account with this OSM ID or email
-            # Redirect back to Login with error message
-            from urllib.parse import urlencode
-            login_url = getattr(settings, 'HANKO_PUBLIC_URL', '') or getattr(settings, 'HANKO_API_URL', 'https://login.hotosm.org')
-            error_msg = f"No existing account found for OSM user '{osm_username}' (osm_id={osm_id}). Please select 'No, I'm new' to create a new account."
+            error_msg = "No existing account found for your OSM user. Please select 'No, I\u2019m new' to create a new account."
             params = urlencode({
-                'onboarding': 'osm-export-tool',
+                'onboarding': APP_NAME,
                 'return_to': request.build_absolute_uri('/v3/'),
                 'error': error_msg,
             })
             return HttpResponseRedirect(f"{login_url}/app?{params}")
 
         # True legacy user - create mapping
-        create_user_mapping(
-            hanko_user_id=hanko_user.id,
-            app_user_id=str(existing_user.id),
-            app_name=APP_NAME,
-        )
+        try:
+            create_user_mapping(
+                hanko_user_id=hanko_user.id,
+                app_user_id=str(existing_user.id),
+                app_name=APP_NAME,
+            )
+        except IntegrityError:
+            pass  # Mapping already exists (duplicate call), that's fine
 
-        # Redirect to export tool homepage
         return HttpResponseRedirect("/v3/")

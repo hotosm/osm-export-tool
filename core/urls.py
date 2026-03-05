@@ -19,6 +19,7 @@ from ui.views import (
 
 # Hanko admin mapping routes
 admin_mapping_patterns = []
+hanko_osm_patterns = []
 if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
     try:
         from hotosm_auth_django.admin_routes import create_admin_urlpatterns
@@ -29,6 +30,11 @@ if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
             user_name_column="username",
             user_email_column="email",
         )
+    except ImportError:
+        pass
+    try:
+        from hotosm_auth_django.osm_views import urlpatterns as _osm_urlpatterns
+        hanko_osm_patterns = _osm_urlpatterns
     except ImportError:
         pass
 
@@ -45,6 +51,7 @@ urlpatterns = [
     path("api/", include("api.urls", namespace="api")),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/admin/", include(admin_mapping_patterns)),  # Hanko admin mappings
+    path("api/v1/", include(hanko_osm_patterns)),  # Hanko OSM OAuth routes
     path(
         "jsi18n/",
         JavaScriptCatalog.as_view(packages=["hot_osm"]),
