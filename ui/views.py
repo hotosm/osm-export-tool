@@ -308,10 +308,14 @@ def onboarding_callback(request):
         osm_connection = getattr(request.hotosm, 'osm', None)
 
         if not osm_connection:
-            return JsonResponse(
-                {"error": "OSM connection required for legacy users"},
-                status=400
-            )
+            from urllib.parse import urlencode
+            login_url = getattr(settings, 'HANKO_PUBLIC_URL', '') or getattr(settings, 'HANKO_API_URL', 'https://login.hotosm.org')
+            params = urlencode({
+                'onboarding': 'osm-export-tool',
+                'return_to': request.build_absolute_uri('/v3/'),
+                'error': 'OSM connection failed. Please try connecting your OSM account again.',
+            })
+            return HttpResponseRedirect(f"{login_url}/app?{params}")
 
         osm_id = osm_connection.osm_user_id
         osm_username = osm_connection.osm_username
