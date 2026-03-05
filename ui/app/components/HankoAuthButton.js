@@ -1,5 +1,7 @@
 import React from "react";
 
+const MOBILE_BREAKPOINT = 768;
+
 /**
  * React 15 wrapper for the <hotosm-auth> web component.
  *
@@ -8,12 +10,39 @@ import React from "react";
  * and configure the web component imperatively via a ref.
  */
 class HankoAuthButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isMobile: window.innerWidth < MOBILE_BREAKPOINT,
+    };
+    this._handleResize = this._handleResize.bind(this);
+  }
+
   componentDidMount() {
+    window.addEventListener("resize", this._handleResize);
     this._renderWebComponent();
   }
 
   componentDidUpdate() {
     this._renderWebComponent();
+  }
+
+  _handleResize() {
+    const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+    if (isMobile !== this.state.isMobile) {
+      this.setState({ isMobile });
+    }
+  }
+
+  _bindCacheListeners() {
+    this._onLogin = (e) => {
+      localStorage.setItem("hotosm-auth-user", JSON.stringify(e.detail.user));
+    };
+    this._onLogout = () => {
+      localStorage.removeItem("hotosm-auth-user");
+    };
+    this._element.addEventListener("hanko-login", this._onLogin);
+    this._element.addEventListener("logout", this._onLogout);
   }
 
   _renderWebComponent() {
@@ -23,6 +52,7 @@ class HankoAuthButton extends React.Component {
     if (!this._element) {
       this._element = document.createElement("hotosm-auth");
       this._container.appendChild(this._element);
+      this._bindCacheListeners();
     }
 
     const el = this._element;
@@ -45,11 +75,32 @@ class HankoAuthButton extends React.Component {
     if (appId) {
       el.setAttribute("app-id", appId);
     }
+
+    const buttonVariant = this.props["button-variant"];
+    const buttonColor = this.props["button-color"];
+    if (buttonVariant) {
+      el.setAttribute("button-variant", buttonVariant);
+    }
+    if (buttonColor) {
+      el.setAttribute("button-color", buttonColor);
+    }
+
+    const { lang } = this.props;
+    if (lang) {
+      el.setAttribute("lang", lang);
+    }
+
+    el.setAttribute("display", this.state.isMobile ? "bar" : "default");
   }
 
   componentWillUnmount() {
-    if (this._element && this._container) {
-      this._container.removeChild(this._element);
+    window.removeEventListener("resize", this._handleResize);
+    if (this._element) {
+      this._element.removeEventListener("hanko-login", this._onLogin);
+      this._element.removeEventListener("logout", this._onLogout);
+      if (this._container) {
+        this._container.removeChild(this._element);
+      }
       this._element = null;
     }
   }

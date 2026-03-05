@@ -9,7 +9,6 @@
     <title>HOT Export Tool</title>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
     <link rel="icon" href="{% static 'ui/images/favicon.ico' %}">
-    {% if AUTH_PROVIDER == "hanko" %}
     <script type="importmap">
       {
         "imports": {
@@ -18,8 +17,9 @@
         }
       }
     </script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/hanko-auth@0.4.8/dist/hanko-auth.esm.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/tool-menu@0.2.6/dist/tool-menu.esm.js"></script>
+    {% if AUTH_PROVIDER == "hanko" %}
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/hanko-auth@0.4.10/dist/hanko-auth.esm.js"></script>
     <style>
       /* Hide legacy login/logout button */
       #root .btn-danger {

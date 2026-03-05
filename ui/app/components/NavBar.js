@@ -12,7 +12,7 @@ import RequirePermission from "./RequirePermission";
 import HankoAuthButton from "./HankoAuthButton";
 import ToolMenu from "./ToolMenu";
 
-const NavBar = ({ isLoggedIn, login, logout }) => (
+const NavBar = ({ isLoggedIn, login, logout, locale }) => (
   <Navbar>
     <Navbar.Header>
       <Navbar.Brand>
@@ -21,7 +21,9 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
           <span>Export Tool</span>
         </Link>
       </Navbar.Brand>
+      <Navbar.Toggle />
     </Navbar.Header>
+    <Navbar.Collapse>
     <Nav className="pull-right">
       <RequirePermission>
         <li>
@@ -121,20 +123,25 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
         <LocaleSelector />
       </NavItem>
       {authConfig.isHankoAuth ? (
-        <NavItem>
-          <HankoAuthButton
-            hankoUrl={authConfig.hankoUrl}
-            redirectAfterLogin={window.location.origin + "/v3/"}
-            mappingCheckUrl={window.location.origin + "/api/v1/auth/status/"}
-            appId="osm-export-tool"
-          />
-        </NavItem>
+        <li>
+          <a className="hotosm-auth">
+            <HankoAuthButton
+              hankoUrl={authConfig.hankoUrl}
+              redirectAfterLogin={window.location.origin + "/v3/"}
+              mappingCheckUrl={window.location.origin + "/api/v1/auth/status/"}
+              appId="osm-export-tool"
+              button-variant="filled"
+              button-color="danger"
+              lang={locale}
+            />
+          </a>
+        </li>
       ) : null}
-      {authConfig.isHankoAuth && (
-        <NavItem>
-          <ToolMenu />
-        </NavItem>
-      )}
+      <li>
+        <a className="hotosm-tool-menu">
+          <ToolMenu lang={locale} />
+        </a>
+      </li>
       {!authConfig.isHankoAuth && (
         <NavItem>
           {!isLoggedIn && (
@@ -150,11 +157,13 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
         </NavItem>
       )}
     </Nav>
+    </Navbar.Collapse>
   </Navbar>
 );
 
 const mapStateToProps = (state) => ({
   isLoggedIn: selectIsLoggedIn(state),
+  locale: state.intl.locale,
 });
 
 export default connect(mapStateToProps, { login, logout })(NavBar);
