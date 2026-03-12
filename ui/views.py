@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-"""UI view definitions."""
-
 from django.contrib.auth import logout as auth_logout
 from django.db import IntegrityError
 from django.urls import reverse
@@ -38,21 +35,14 @@ def authorized(request):
 
 
 def login(request):
-    """
-    Handle login - redirects to Hanko or OSM OAuth2 based on AUTH_PROVIDER.
-    """
-    # Check for Hanko authentication
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
         if is_hanko_authenticated(request):
             return redirect("/v3/")
-        # Redirect to Hanko login with return URL
         hanko_url = getattr(settings, 'HANKO_PUBLIC_URL', '')
         next_url = request.GET.get('next', '/v3/')
         return redirect(f"{hanko_url}/app?return_to={request.build_absolute_uri(next_url)}")
 
-    # Legacy OSM OAuth2 authentication
     if not request.user.is_authenticated:
-        # preserve redirects ("next" in request.GET)
         return redirect(
             reverse("osm:begin", args=["openstreetmap-oauth2"])
             + "?"
@@ -86,7 +76,6 @@ def v3(request, *args, **kwargs):
         AUTH_PROVIDER=getattr(settings, 'AUTH_PROVIDER', 'legacy'),
     )
 
-    # Add Hanko public URL when using Hanko authentication
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
         context['HANKO_PUBLIC_URL'] = getattr(settings, 'HANKO_PUBLIC_URL', '')
 
@@ -103,7 +92,6 @@ def redirect_to_v3(request):
 
 @require_http_methods(["GET"])
 def worker_dashboard(request):
-    # Check for superuser access based on auth provider
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
         if not is_hanko_authenticated(request):
             return HttpResponseForbidden()
@@ -124,15 +112,9 @@ class ApplicationAdmin(admin.ModelAdmin):
 admin.site.register(Application, ApplicationAdmin)
 
 
-# Hanko-specific views
 @require_http_methods(["GET"])
 def auth_me(request):
-    """
-    Get current user information.
-    Works with both legacy and Hanko authentication.
-    """
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-        # Hanko authentication
         if not is_hanko_authenticated(request):
             return JsonResponse(
                 {"error": "Not authenticated"},
@@ -140,8 +122,6 @@ def auth_me(request):
             )
 
         hanko_user = request.hotosm.user
-
-        # Get or create mapped Django user
         django_user = get_mapped_django_user(request)
 
         response_data = {
@@ -150,14 +130,12 @@ def auth_me(request):
             "auth_provider": "hanko",
         }
 
-        # Add mapped Django user info
         if django_user:
             response_data.update({
                 "user_id": django_user.id,
                 "username": django_user.username,
             })
 
-        # Add OSM connection info if available
         if hasattr(request.hotosm, 'osm') and request.hotosm.osm:
             osm = request.hotosm.osm
             response_data.update({
@@ -167,7 +145,6 @@ def auth_me(request):
 
         return JsonResponse(response_data)
     else:
-        # Legacy authentication
         if not request.user.is_authenticated:
             return JsonResponse(
                 {"error": "Not authenticated"},
@@ -184,27 +161,14 @@ def auth_me(request):
 
 @require_http_methods(["GET"])
 def auth_status(request):
-    """
-    Check authentication status for Hanko users.
-
-    Returns:
-    - authenticated: true if user has valid mapping
-    - needs_onboarding: true if user needs to complete onboarding
-    - hanko_user: Hanko user info if authenticated with Hanko
-
-    This endpoint is used by the hotosm-auth web component's mapping-check-url.
-    Only works when AUTH_PROVIDER=hanko.
-    """
     from hotosm_auth_django import get_mapped_user_id
 
-    # Only for Hanko auth
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
         return JsonResponse({
             "auth_provider": "legacy",
             "authenticated": request.user.is_authenticated if hasattr(request, 'user') else False,
         })
 
-    # Check Hanko user
     if not is_hanko_authenticated(request):
         return JsonResponse({
             "auth_provider": "hanko",
@@ -213,12 +177,9 @@ def auth_status(request):
         })
 
     hanko_user = request.hotosm.user
-
-    # Check mapping
     mapped_user_id = get_mapped_user_id(hanko_user, app_name=APP_NAME)
 
     if mapped_user_id is not None:
-        # Has mapping - fully authenticated
         try:
             django_user_id = int(mapped_user_id)
             user = User.objects.get(id=django_user_id)
@@ -237,9 +198,8 @@ def auth_status(request):
                 }
             })
         except User.DoesNotExist:
-            pass  # Fall through to needs_onboarding
+            pass
 
-    # No mapping - needs onboarding
     return JsonResponse({
         "auth_provider": "hanko",
         "authenticated": False,
@@ -254,29 +214,15 @@ def auth_status(request):
 
 @require_http_methods(["GET"])
 def onboarding_callback(request):
-    """
-    Handle onboarding callback from login service.
-
-    This endpoint is called after the user completes onboarding in login.hotosm.org.
-    It creates the Django User and mapping based on whether the user is new or legacy.
-
-    Query params:
-    - new_user=true: User is new, create new Django user
-    - (no param): User is legacy, osm_connection cookie should be set
-
-    Only works when AUTH_PROVIDER=hanko.
-    """
     from hotosm_auth_django import create_user_mapping, get_mapped_user_id
     from urllib.parse import urlencode
 
-    # Only for Hanko auth
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
         return JsonResponse(
             {"error": "Onboarding only available with Hanko auth"},
             status=400
         )
 
-    # Need Hanko user from middleware
     if not is_hanko_authenticated(request):
         return JsonResponse(
             {"error": "Not authenticated with Hanko"},

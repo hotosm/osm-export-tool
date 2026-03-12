@@ -16,11 +16,7 @@ import SelectFeatures from "./SelectFeatures";
 import Summary from "./Summary";
 import { getConfigurations } from "../actions/configurations";
 import { createExport, getOverpassTimestamp, getGalaxyTimestamp} from "../actions/exports";
-import {
-  PresetParser,
-  REQUIRES_FEATURE_SELECTION,
-  REQUIRES_TILE_SOURCE
-} from "./utils";
+import { PresetParser } from "./utils";
 import { TreeTag, TreeTagYAML } from "../utils/TreeTag";
 import { TAGTREE, TAGLOOKUP } from "../utils/TreeTagSettings";
 
@@ -45,9 +41,28 @@ const form = reduxForm({
     mbtiles_maxzoom,
     mbtiles_minzoom,
     mbtiles_source,
+    name,
     the_geom
   }) => {
     const errors = {};
+
+    if (!name || !name.trim()) {
+      errors.name = (
+        <FormattedMessage
+          id="export.errors.name.required"
+          defaultMessage="A name is required."
+        />
+      );
+    }
+
+    if (the_geom == null) {
+      errors.the_geom = (
+        <FormattedMessage
+          id="export.errors.the_geom.required"
+          defaultMessage="An area of interest is required."
+        />
+      );
+    }
 
     if (the_geom != null) {
       const areaSqkm = Math.round(area(the_geom) / (1000 * 1000));
@@ -127,9 +142,7 @@ export class ExportForm extends Component {
   }
 
   async fetchData(geometry) {
-    // Skip if RAW_DATA_API_URL is not configured (e.g., in local dev)
     if (!window.RAW_DATA_API_URL || window.RAW_DATA_API_URL === 'undefined') {
-      console.log("RAW_DATA_API_URL not configured, skipping stats fetch");
       return;
     }
 
@@ -139,7 +152,7 @@ export class ExportForm extends Component {
         geometry: geometry
       }, {
         headers: {"Content-Type": "application/json"},
-        timeout: 5000 // 5 second timeout
+        timeout: 5000
       });
 
       if (response.data) {
@@ -161,7 +174,6 @@ export class ExportForm extends Component {
     if (!this.props.formValues.the_geom) return null;
     if (!fetchedInfo) return null;
   
-    // Function to trigger the download of the raw data as a JSON file
     const downloadRawData = () => {
       const filename = "raw_region_summary.json";
       const jsonStr = JSON.stringify(fetchedInfo, null, 4);

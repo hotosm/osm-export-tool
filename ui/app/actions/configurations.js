@@ -5,17 +5,14 @@ import { initialize, startSubmit, stopSubmit } from "redux-form";
 import { selectAuthToken } from "../selectors";
 import types from ".";
 
-// Auth provider detection
 const isHankoAuth = window.AUTH_PROVIDER === "hanko";
 
-// Helper to build axios config with proper auth headers/credentials
 const buildAuthConfig = (token, config = {}) => {
   const requestConfig = {
     ...config,
-    withCredentials: isHankoAuth // Send cookies for Hanko auth
+    withCredentials: isHankoAuth
   };
 
-  // Only add Authorization header for legacy auth
   if (!isHankoAuth && token) {
     requestConfig.headers = {
       ...requestConfig.headers,
@@ -72,11 +69,9 @@ export const createConfiguration = (data, formName) => async (
       data
     }));
 
-    dispatch({
-      type: types.CONFIGURATION_CREATED
-    });
-
+    dispatch({ type: types.CONFIGURATION_CREATED });
     dispatch(getConfigurations());
+    dispatch(push("/configurations"));
   } catch (err) {
     return dispatch(
       stopSubmit(formName, {
@@ -104,12 +99,9 @@ export const updateConfiguration = (uid, data, formName) => async (
       data
     }));
 
-    dispatch({
-      type: types.CONFIGURATION_CREATED,
-      id: uid
-    });
-
-    dispatch(getConfigurations())
+    dispatch({ type: types.CONFIGURATION_CREATED, id: uid });
+    dispatch(getConfigurations());
+    dispatch(push("/configurations"));
   } catch (err) {
     return dispatch(
       stopSubmit(formName, {

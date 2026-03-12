@@ -195,6 +195,9 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
 
         return queryset.filter(Q(user_id=user.id) | Q(public=True))
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class ExportRunViewSet(viewsets.ModelViewSet):
     """
