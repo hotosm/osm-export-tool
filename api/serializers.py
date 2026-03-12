@@ -1,12 +1,3 @@
-"""
-Provides serialization for API responses.
-
-See `DRF serializer documentation  <http://www.django-rest-framework.org/api-guide/serializers/>`_
-Used by the View classes api/views.py to serialize API responses as JSON or HTML.
-See DEFAULT_RENDERER_CLASSES setting in core.settings.contrib for the enabled renderers.
-"""
-
-# -*- coding: utf-8 -*-
 import logging
 
 import django.core.exceptions
@@ -24,8 +15,17 @@ from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from tasks.models import ExportRun, ExportTask
 
-# Get an instance of a logger
 LOG = logging.getLogger(__name__)
+
+
+def _slice_dict(in_dict, wanted_keys):
+    return {k: in_dict[k] for k in wanted_keys if k in in_dict}
+
+
+def _update_attrs(model, v_data, keys):
+    for key in keys:
+        if key in v_data:
+            setattr(model, key, v_data[key])
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -201,10 +201,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         }
 
     def create(self, validated_data):  # noqa
-        def slice_dict(in_dict, wanted_keys):
-            return dict((k, in_dict[k]) for k in wanted_keys if k in in_dict)
-
-        job_dict = slice_dict(
+        job_dict = _slice_dict(
             validated_data,
             [
                 "the_geom",
@@ -217,7 +214,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job_dict["event"] = validated_data.get("event") or ""
         job_dict["description"] = validated_data.get("description") or ""
 
-        region_dict = slice_dict(
+        region_dict = _slice_dict(
             validated_data,
             [
                 "schedule_period",
@@ -251,12 +248,6 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         return region
 
     def update(self, instance, validated_data):  # noqa
-        def update_attrs(model, v_data, keys):
-            for key in keys:
-                if key in v_data:
-                    setattr(model, key, v_data[key])
-
-        # if re-assigning, check group membership
         if (
             not self.context["request"]
             .user.groups.filter(name=validated_data["group"].name)
@@ -267,7 +258,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
             )
 
         job = instance.job
-        update_attrs(
+        _update_attrs(
             job, validated_data, ["the_geom", "export_formats", "feature_selection"]
         )
         job.name = validated_data.get("name")
@@ -275,7 +266,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job.description = validated_data.get("description") or ""
 
         validate_model(job)
-        update_attrs(
+        _update_attrs(
             instance,
             validated_data,
             [
@@ -382,10 +373,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         }
 
     def create(self, validated_data):  # noqa
-        def slice_dict(in_dict, wanted_keys):
-            return dict((k, in_dict[k]) for k in wanted_keys if k in in_dict)
-
-        job_dict = slice_dict(
+        job_dict = _slice_dict(
             validated_data,
             ["the_geom", "export_formats", "feature_selection", "buffer_aoi"],
         )
@@ -393,7 +381,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job_dict["name"] = validated_data.get("dataset_prefix")
         job_dict["description"] = validated_data.get("name")
 
-        region_dict = slice_dict(
+        region_dict = _slice_dict(
             validated_data,
             [
                 "extra_notes",
@@ -419,13 +407,8 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         return region
 
     def update(self, instance, validated_data):  # noqa
-        def update_attrs(model, v_data, keys):
-            for key in keys:
-                if key in v_data:
-                    setattr(model, key, v_data[key])
-
         job = instance.job
-        update_attrs(
+        _update_attrs(
             job,
             validated_data,
             ["the_geom", "export_formats", "feature_selection", "buffer_aoi"],
@@ -434,7 +417,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job.description = validated_data.get("name")
 
         validate_model(job)
-        update_attrs(
+        _update_attrs(
             instance,
             validated_data,
             [

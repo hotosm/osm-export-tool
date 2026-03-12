@@ -38,17 +38,17 @@
     react-day-picker "^5.3.0"
     tslib "^1.5.0"
 
-"@denysvuika/preact-translate@^0.5.0":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@denysvuika/preact-translate/-/preact-translate-0.5.1.tgz#53e2dbc01ba66f9183818a32207eb29ccb1e0674"
-  integrity sha512-qqKkpjzR8E55nlLA+H3gP9Q99mCCWiTtRupVQBh8YRZljX+Q8YbsaJtV3F+TX4DR4lV8NLgvv2+sSUcHoWvNtQ==
+"@denysvuika/preact-translate@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@denysvuika/preact-translate/-/preact-translate-0.6.0.tgz#301eaf3f847943e7c0c514f4970420be3cd46640"
+  integrity sha512-LPzcbCc9PD+HghgZe4rjWB3wQm05ibQ37Zvh0K8MwIwbPtMZIz9iBe9+9z9uu8yVFNiuswABvUZKaNrDngqmPw==
 
-"@hotosm/hanko-auth@0.4.6":
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/@hotosm/hanko-auth/-/hanko-auth-0.4.6.tgz#02203f956545b82fafcd0d81731c5c615d81c30f"
-  integrity sha512-nsMrgxVunc++Y6qm+W9gD6gUd6Qvgp8dip/5C4vTUBU9KFx9aSdwkgQnzoVuUEL6VUmMtQJvYas2C76k9V8uWQ==
+"@hotosm/hanko-auth@0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@hotosm/hanko-auth/-/hanko-auth-0.5.1.tgz#cae5a14f49f8a09eded32bb56ee18573cff7e7c3"
+  integrity sha512-EOR5yT9Mg/eHqIva1X4/EWc9iwh+u35/94IEhFmTTDT/kwJNM+Yd8eSFOQRby5wzYUnhhKwVvkb5MDmxjHHs7Q==
   dependencies:
-    "@teamhanko/hanko-elements" "^1.0.0"
+    "@teamhanko/hanko-elements" "^2.5.0"
     lit "^3.3.1"
 
 "@hotosm/iso-countries-languages@^1.0.2":
@@ -76,21 +76,21 @@
   dependencies:
     wgs84 "0.0.0"
 
-"@teamhanko/hanko-elements@^1.0.0":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@teamhanko/hanko-elements/-/hanko-elements-1.5.2.tgz#37e6437f80ccba90d01e1b41d8abc0140bb10843"
-  integrity sha512-RrOgSoKwHbysDOOffOHn3p8s/zXxY2qvWwZFQdMeEP8Qp/C/RQBwGOzax0Y2gySWflDHM2uu4+tW8dXB+mZfQg==
+"@teamhanko/hanko-elements@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@teamhanko/hanko-elements/-/hanko-elements-2.5.0.tgz#31aa9642c7703d28c3a0337ea70ca170331880ac"
+  integrity sha512-lWh9kWp5+ANIjRdxC/ZbNfLHp42GR6zi6wJol0eyLmlMq2yiWyzdXA2MSEh30KtT256qHRhvu+phYx8UFtpO4A==
   dependencies:
-    "@denysvuika/preact-translate" "^0.5.0"
-    "@teamhanko/hanko-frontend-sdk" "^1.5.2"
+    "@denysvuika/preact-translate" "^0.6.0"
+    "@teamhanko/hanko-frontend-sdk" "^2.5.0"
     "@teamhanko/preact-custom-element" "^4.2.2"
     classnames "^2.3.2"
-    preact "^10.13.1"
+    preact "^10.28.2"
 
-"@teamhanko/hanko-frontend-sdk@^1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@teamhanko/hanko-frontend-sdk/-/hanko-frontend-sdk-1.5.2.tgz#2c03bc5db6eb1cc3d6eab236f7bd86eba0df9fc6"
-  integrity sha512-sSY2NGsJRndrC4HwxBIdog9gOGUzJ3EGKmEn7p+rzXzJaLik3ywJb25DloegPekMZQ8hwOzliF0uJh7kNxFgTA==
+"@teamhanko/hanko-frontend-sdk@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@teamhanko/hanko-frontend-sdk/-/hanko-frontend-sdk-2.5.0.tgz#a6a16aa8240bb553f5c3071ef700175e30887e27"
+  integrity sha512-JFgQa/FDZZsRPQ4qVKpFWfSbtsiaOtePITXpnQdK8XngKNU+bLnf/9J+TWq1cOADZHdDD2r/dDWdngku7t2JKw==
   dependencies:
     "@types/js-cookie" "^3.0.3"
 
@@ -4511,7 +4511,7 @@ postcss@^6.0.1:
     source-map "^0.5.6"
     supports-color "^4.1.0"
 
-preact@^10.13.1:
+preact@^10.28.2:
   version "10.28.4"
   resolved "https://registry.yarnpkg.com/preact/-/preact-10.28.4.tgz#8ffab01c5c0590535bdaecdd548801f44c6e483a"
   integrity sha512-uKFfOHWuSNpRFVTnljsCluEFq57OKT+0QdOiQo8XWnQ/pSvg7OpX5eNOejELXJMWy+BwM2nobz0FkvzmnpCNsQ==

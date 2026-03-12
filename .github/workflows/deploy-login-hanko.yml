@@ -63,7 +63,7 @@ jobs:
 
             APP_DIR="/opt/export-tool-test"
 
-            # Setup inicial si no existe
+            # Initial setup if directory does not exist
             if [ ! -d "\$APP_DIR" ]; then
               sudo mkdir -p \$APP_DIR
               sudo chown \$USER:\$USER \$APP_DIR

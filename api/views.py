@@ -1,6 +1,5 @@
 """Provides classes for handling API requests."""
 
-# -*- coding: utf-8 -*-
 from distutils.util import strtobool
 import itertools
 from itertools import chain
@@ -17,7 +16,6 @@ import requests
 from cachetools.func import ttl_cache
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
@@ -31,7 +29,7 @@ from django.http import (
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError as DjangoValidationError
 
-from ui.hanko_helpers import is_hanko_authenticated, require_hanko_auth
+from ui.hanko_helpers import is_hanko_authenticated
 from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -59,10 +57,8 @@ from hdx_exports.hdx_export_set import sync_region
 from rtree import index
 import psutil
 
-# Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
-# controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -296,18 +292,17 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            print("Stubbing interaction with HDX API.")
+            LOG.debug("Stubbing interaction with HDX API.")
 
     def perform_update(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            print("Stubbing interaction with HDX API.")
+            LOG.debug("Stubbing interaction with HDX API.")
 
 
 class PartnerExportRegionViewSet(viewsets.ModelViewSet):
-    # get only Regions that belong to the user's Groups.
     ordering_fields = "__all__"
     ordering = ("job__description",)
     filter_backends = (
@@ -347,6 +342,19 @@ def permalink(request, uid):
         return HttpResponseNotFound()
 
 
+def _period_week(dt):
+    sunday = dt.strftime("%Y-%U-0")
+    return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
+
+
+def _period_day(dt):
+    return dt.strftime("%Y-%m-%d")
+
+
+def _period_month(dt):
+    return dt.strftime("%Y-%m")
+
+
 def _is_superuser(request):
     """Check if the current user is a superuser (works with both auth providers)."""
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
@@ -367,22 +375,12 @@ def stats(request):
     period = request.GET.get("period", "day")
     is_csv = request.GET.get("csv", False) == "true"
 
-    def toWeek(dt):
-        sunday = dt.strftime("%Y-%U-0")
-        return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
-
-    def toDay(dt):
-        return dt.strftime("%Y-%m-%d")
-
-    def toMonth(dt):
-        return dt.strftime("%Y-%m")
-
     if period == "day":
-        period_fn = toDay
+        period_fn = _period_day
     elif period == "week":
-        period_fn = toWeek
+        period_fn = _period_week
     elif period == "month":
-        period_fn = toMonth
+        period_fn = _period_month
 
     users = (
         User.objects.only("date_joined")
@@ -454,22 +452,12 @@ def run_stats(request):
     period = request.GET.get("period", "day")
     is_csv = request.GET.get("csv", False) == "true"
 
-    def toWeek(dt):
-        sunday = dt.strftime("%Y-%U-0")
-        return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
-
-    def toDay(dt):
-        return dt.strftime("%Y-%m-%d")
-
-    def toMonth(dt):
-        return dt.strftime("%Y-%m")
-
     if period == "day":
-        period_fn = toDay
+        period_fn = _period_day
     elif period == "week":
-        period_fn = toWeek
+        period_fn = _period_week
     elif period == "month":
-        period_fn = toMonth
+        period_fn = _period_month
 
     run_queryset = ExportRun.objects.only("started_at", "status").order_by(
         "-started_at"
@@ -729,7 +717,6 @@ def request_geonames(request):
                     if tm_res.ok:
                         tm_res = tm_res.json()
                         if "areaOfInterest" in tm_res:
-                            print("TM Project found")
                             geom = tm_res["areaOfInterest"]
                             geojson = {
                                 "type": "FeatureCollection",
@@ -749,7 +736,6 @@ def request_geonames(request):
                                 "countryName": "Boundary",
                                 "adminName1": "Project",
                             }
-                            # print(add_resp)
                             if "geonames" in response:
                                 response["geonames"].append(add_resp)
 
@@ -785,18 +771,12 @@ def get_overpass_status(request):
 
 @require_http_methods(["GET"])
 def get_user_permissions(request):
-    """
-    Get user permissions.
-    Works with both legacy and Hanko authentication.
-    """
-    # Check authentication based on provider
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
         if not is_hanko_authenticated(request):
             return JsonResponse({"error": "Not authenticated"}, status=401)
 
         hanko_user = request.hotosm.user
 
-        # For Hanko users, check admin status via ADMIN_EMAILS
         admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
         admin_emails = [email.strip() for email in admin_emails if email.strip()]
         is_admin = hanko_user.email in admin_emails
@@ -820,7 +800,6 @@ def get_user_permissions(request):
             }
         )
     else:
-        # Legacy authentication
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Not authenticated"}, status=401)
 
@@ -850,15 +829,8 @@ def get_user_permissions(request):
         )
 
 
-# get a list of partner organizations and their numeric IDs.
-# this can be exposed to the public.
 @require_http_methods(["GET"])
 def get_groups(request):
-    """
-    Get partner groups.
-    Works with both legacy and Hanko authentication.
-    """
-    # Check authentication based on provider
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
         if not is_hanko_authenticated(request):
             return JsonResponse({"error": "Not authenticated"}, status=401)

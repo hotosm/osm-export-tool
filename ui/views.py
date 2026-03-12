@@ -336,10 +336,21 @@ def onboarding_callback(request):
         osm_connection = getattr(request.hotosm, 'osm', None)
 
         if not osm_connection:
-            # No OSM cookie yet — initiate OSM OAuth directly on this app so
-            # the cookie is set with our own COOKIE_SECRET. The callback uses
-            # HTTP_REFERER to redirect back here after OAuth completes.
-            return HttpResponseRedirect('/api/v1/auth/osm/login/')
+            from hotosm_auth_django import get_auth_config
+            config = get_auth_config()
+            if config.osm_enabled:
+                # OSM credentials configured locally — initiate OAuth on this app so
+                # the cookie is set with our own COOKIE_SECRET.
+                return HttpResponseRedirect('/api/v1/auth/osm/login/')
+            else:
+                # No local OSM credentials — send back to Login service to connect OSM.
+                # Requires COOKIE_SECRET to be shared between Login service and this app.
+                params = urlencode({
+                    'onboarding': APP_NAME,
+                    'return_to': request.build_absolute_uri('/v3/'),
+                    'error': 'OSM connection required. Please connect your OSM account.',
+                })
+                return HttpResponseRedirect(f"{login_url}/app?{params}")
 
         osm_id = osm_connection.osm_user_id
 
