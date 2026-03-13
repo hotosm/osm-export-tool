@@ -462,10 +462,10 @@ export const requireAuth = Component =>
 
       componentDidUpdate(prevProps) {
         const { isLoggedIn, login } = this.props;
-        const { hankoChecked } = this.state;
 
-        // After Hanko check completes, if still not logged in, redirect
-        if (authConfig.isHankoAuth && hankoChecked && !isLoggedIn && !prevProps.isLoggedIn) {
+        // Legacy OAuth2 only: redirect to login when auth state changes to logged-out.
+        // For Hanko, the web component (HankoAuthButton) handles redirects and onboarding.
+        if (!authConfig.isHankoAuth && !isLoggedIn && prevProps.isLoggedIn) {
           login();
         }
       }
