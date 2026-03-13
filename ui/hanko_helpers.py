@@ -1,6 +1,5 @@
 import logging
 from typing import Optional
-from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework.authentication import BaseAuthentication
 
@@ -11,9 +10,6 @@ APP_NAME = "osm-export-tool"
 
 class HankoAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
-            return None
-
         if not hasattr(request, 'hotosm') or not request._request.hotosm.user:
             return None
 
@@ -57,10 +53,7 @@ def find_legacy_user_by_osm_id(osm_id: int) -> Optional[User]:
 def find_legacy_user_by_email(email: str) -> Optional[User]:
     if not email:
         return None
-    try:
-        return User.objects.get(email=email)
-    except User.DoesNotExist:
-        return None
+    return User.objects.filter(email=email).order_by('id').first()
 
 
 def create_export_tool_user(
@@ -91,28 +84,4 @@ def get_mapped_django_user(request) -> Optional[User]:
 
 
 def is_hanko_authenticated(request):
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
-        return False
     return hasattr(request, 'hotosm') and request.hotosm.user is not None
-
-
-def require_hanko_auth(view_func):
-    from functools import wraps
-    from django.http import JsonResponse
-
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-            if not is_hanko_authenticated(request):
-                return JsonResponse(
-                    {"error": "Not authenticated"},
-                    status=401
-                )
-        else:
-            if not request.user.is_authenticated:
-                return JsonResponse(
-                    {"error": "Not authenticated"},
-                    status=401
-                )
-        return view_func(request, *args, **kwargs)
-    return wrapper

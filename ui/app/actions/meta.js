@@ -129,8 +129,7 @@ export const checkHankoAuth = () => (dispatch) => {
     withCredentials: true
   })
     .then(rsp => {
-      if (rsp.data && rsp.data.auth_provider === "hanko") {
-        // Set isLoggedIn = true by dispatching LOGIN_SUCCESS with a placeholder token
+      if (rsp.data && rsp.data.user_id) {
         dispatch({
           type: LOGIN_SUCCESS,
           token: "hanko-cookie-auth",

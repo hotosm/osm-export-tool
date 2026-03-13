@@ -40,7 +40,7 @@ dramatiq-abort==1.0
 python3-openid
 
 # Hanko SSO Authentication
-hotosm-auth[django]==0.2.9
+hotosm-auth[django]==0.2.10
 
 ##testing
 pytest==7.4.3

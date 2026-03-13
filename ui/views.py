@@ -114,27 +114,16 @@ admin.site.register(Application, ApplicationAdmin)
 
 @require_http_methods(["GET"])
 def auth_me(request):
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-        if not is_hanko_authenticated(request):
-            return JsonResponse(
-                {"error": "Not authenticated"},
-                status=401
-            )
-
-        hanko_user = request.hotosm.user
+    if is_hanko_authenticated(request):
         django_user = get_mapped_django_user(request)
+        if not django_user:
+            return JsonResponse({"error": "Not authenticated"}, status=401)
 
         response_data = {
-            "hanko_user_id": hanko_user.id,
-            "email": hanko_user.email,
-            "auth_provider": "hanko",
+            "user_id": django_user.id,
+            "username": django_user.username,
+            "email": django_user.email,
         }
-
-        if django_user:
-            response_data.update({
-                "user_id": django_user.id,
-                "username": django_user.username,
-            })
 
         if hasattr(request.hotosm, 'osm') and request.hotosm.osm:
             osm = request.hotosm.osm
@@ -144,36 +133,26 @@ def auth_me(request):
             })
 
         return JsonResponse(response_data)
-    else:
-        if not request.user.is_authenticated:
-            return JsonResponse(
-                {"error": "Not authenticated"},
-                status=401
-            )
 
-        return JsonResponse({
-            "user_id": request.user.id,
-            "username": request.user.username,
-            "email": request.user.email,
-            "auth_provider": "legacy",
-        })
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
+    return JsonResponse({
+        "user_id": request.user.id,
+        "username": request.user.username,
+        "email": request.user.email,
+    })
 
 
 @require_http_methods(["GET"])
 def auth_status(request):
     from hotosm_auth_django import get_mapped_user_id
 
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
-        return JsonResponse({
-            "auth_provider": "legacy",
-            "authenticated": request.user.is_authenticated if hasattr(request, 'user') else False,
-        })
-
     if not is_hanko_authenticated(request):
         return JsonResponse({
-            "auth_provider": "hanko",
-            "authenticated": False,
+            "authenticated": request.user.is_authenticated if hasattr(request, 'user') else False,
             "hanko_authenticated": False,
+            "needs_onboarding": False,
         })
 
     hanko_user = request.hotosm.user
@@ -181,34 +160,28 @@ def auth_status(request):
 
     if mapped_user_id is not None:
         try:
-            django_user_id = int(mapped_user_id)
-            user = User.objects.get(id=django_user_id)
+            user = User.objects.get(id=int(mapped_user_id))
             return JsonResponse({
-                "auth_provider": "hanko",
                 "authenticated": True,
+                "hanko_authenticated": True,
                 "needs_onboarding": False,
                 "user": {
                     "id": user.id,
                     "username": user.username,
                     "email": user.email,
                 },
-                "hanko_user": {
-                    "id": hanko_user.id,
-                    "email": hanko_user.email,
-                }
             })
         except User.DoesNotExist:
             pass
 
     return JsonResponse({
-        "auth_provider": "hanko",
         "authenticated": False,
-        "needs_onboarding": True,
         "hanko_authenticated": True,
+        "needs_onboarding": True,
         "hanko_user": {
             "id": hanko_user.id,
             "email": hanko_user.email,
-        }
+        },
     })
 
 

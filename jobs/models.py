@@ -116,10 +116,24 @@ def validate_export_formats(value):
             )
 
 
+def normalize_not_in(yaml_text):
+    """Rewrite NOT IN (...) clauses to chained != conditions.
+
+    The osm-export-tool-python SQL parser does not support NOT IN.
+    Example: highway NOT IN ('footway', 'path') -> highway != 'footway' AND highway != 'path'
+    """
+    def expand(match):
+        col = match.group(1)
+        values = [v.strip().strip("'\"") for v in match.group(2).split(",")]
+        return " AND ".join(f"{col} != '{v}'" for v in values)
+
+    return re.sub(r"([\w:]+)\s+NOT\s+IN\s*\(([^)]+)\)", expand, yaml_text, flags=re.IGNORECASE)
+
+
 def validate_feature_selection(value):
     from osm_export_tool.mapping import Mapping
 
-    m, errors = Mapping.validate(value)
+    m, errors = Mapping.validate(normalize_not_in(value))
     if not m:
         raise ValidationError(errors)
 

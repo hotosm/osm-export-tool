@@ -9,6 +9,7 @@ from jobs.models import (
     SavedFeatureSelection,
     validate_aoi,
     validate_mbtiles,
+    normalize_not_in,
     PartnerExportRegion,
 )
 from rest_framework import serializers
@@ -73,10 +74,22 @@ class ExportRunSerializer(serializers.ModelSerializer):
 
 class ConfigurationSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
+    # Override to bypass model-level validators; normalization + validation run in validate_yaml.
+    yaml = serializers.CharField(validators=[])
 
     class Meta:
         model = SavedFeatureSelection
         fields = ("uid", "name", "description", "yaml", "public", "user", "pinned")
+
+    def validate_yaml(self, value):
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from jobs.models import validate_feature_selection
+        normalized = normalize_not_in(value)
+        try:
+            validate_feature_selection(normalized)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.messages)
+        return normalized
 
 
 class JobGeomSerializer(serializers.ModelSerializer):
@@ -89,7 +102,8 @@ class JobGeomSerializer(serializers.ModelSerializer):
 
 
 class JobSerializer(serializers.ModelSerializer):
-    user = UserSerializer(default=serializers.CurrentUserDefault())
+    user = UserSerializer(read_only=True)
+    feature_selection = serializers.CharField(validators=[])
 
     class Meta:
         model = Job
@@ -121,6 +135,9 @@ class JobSerializer(serializers.ModelSerializer):
             "simplified_geom": {"read_only": True},
         }
 
+    def validate_feature_selection(self, value):
+        return _validate_and_normalize_feature_selection(value)
+
     def validate(self, data):
         try:
             validate_aoi(data["the_geom"])
@@ -140,6 +157,17 @@ def validate_model(model):
         model.full_clean()
     except django.core.exceptions.ValidationError as e:
         raise serializers.ValidationError(e.message_dict)
+
+
+def _validate_and_normalize_feature_selection(value):
+    from django.core.exceptions import ValidationError as DjangoValidationError
+    from jobs.models import validate_feature_selection as _validate_fs
+    normalized = normalize_not_in(value)
+    try:
+        _validate_fs(normalized)
+    except DjangoValidationError as e:
+        raise serializers.ValidationError(e.messages)
+    return normalized
 
 
 class PartnerExportRegionListSerializer(serializers.ModelSerializer):
@@ -174,6 +202,9 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
     name = serializers.CharField()
     event = serializers.CharField()
     description = serializers.CharField()
+
+    def validate_feature_selection(self, value):
+        return _validate_and_normalize_feature_selection(value)
 
     class Meta:  # noqa
         model = PartnerExportRegion
@@ -331,6 +362,9 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
     the_geom = geo_serializers.GeometryField()
     name = serializers.CharField()
     buffer_aoi = serializers.BooleanField()
+
+    def validate_feature_selection(self, value):
+        return _validate_and_normalize_feature_selection(value)
 
     def validate(self, data):
         """

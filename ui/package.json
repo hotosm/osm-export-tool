@@ -4,7 +4,6 @@
   "dependencies": {
     "@blueprintjs/core": "^1.24.0",
     "@blueprintjs/datetime": "^1.19.0",
-    "@hotosm/hanko-auth": "0.5.1",
     "@hotosm/iso-countries-languages": "^1.0.2",
     "@turf/area": "^4.6.0",
     "@turf/bbox": "^4.6.0",

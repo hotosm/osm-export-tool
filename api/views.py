@@ -151,7 +151,7 @@ class JobViewSet(viewsets.ModelViewSet):
             raise ValidationError(
                 {"the_geom": ["You are rate limited to 5 exports per hour."]}
             )
-        job = serializer.save()
+        job = serializer.save(user=self.request.user)
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
 
