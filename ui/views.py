@@ -25,7 +25,6 @@ from .hanko_helpers import (
 )
 
 
-
 def authorized(request):
     # the user has now authorized a client application; they no longer need to
     # be logged into the site (and it will be confusing if they are, since
