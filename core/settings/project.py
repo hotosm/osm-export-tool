@@ -22,7 +22,9 @@ INSTALLED_APPS += [
     "utils",
 ]
 
-dramatiq.set_broker(RedisBroker(host="localhost", port=6379))
+_REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+_REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+dramatiq.set_broker(RedisBroker(host=_REDIS_HOST, port=_REDIS_PORT))
 
 DATABASES = {}
 

@@ -67,7 +67,9 @@ This theme includes the following OpenStreetMap keys:
 (c) OpenStreetMap contributors.
 This file is made available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in individual contents of the database are licensed under the Database Contents License: http://opendatacommons.org/licenses/dbcl/1.0/
 """
-redis_client = redis.Redis.from_url("redis://localhost:6379/0")
+_redis_host = os.getenv("REDIS_HOST", "localhost")
+_redis_port = int(os.getenv("REDIS_PORT", "6379"))
+redis_client = redis.Redis(host=_redis_host, port=_redis_port, db=0)
 abortable = Abortable(backend=backends.RedisBackend(client=redis_client))
 dramatiq.get_broker().add_middleware(abortable)
 
