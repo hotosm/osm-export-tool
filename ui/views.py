@@ -149,8 +149,8 @@ def auth_status(request):
 
     if not is_hanko_authenticated(request):
         return JsonResponse({
+            "auth_provider": "legacy",
             "authenticated": request.user.is_authenticated if hasattr(request, 'user') else False,
-            "hanko_authenticated": False,
             "needs_onboarding": False,
         })
 
@@ -160,22 +160,28 @@ def auth_status(request):
     if mapped_user_id is not None:
         try:
             user = User.objects.get(id=int(mapped_user_id))
+            osm = getattr(request.hotosm, 'osm', None)
+            osm_id = osm.osm_user_id if osm and osm.osm_user_id else 0
             return JsonResponse({
+                "auth_provider": "hanko",
                 "authenticated": True,
-                "hanko_authenticated": True,
                 "needs_onboarding": False,
                 "user": {
-                    "id": user.id,
+                    "osm_id": osm_id,
                     "username": user.username,
-                    "email": user.email,
+                    "is_real_osm": bool(osm_id),
+                },
+                "hanko_user": {
+                    "id": hanko_user.id,
+                    "email": hanko_user.email,
                 },
             })
         except User.DoesNotExist:
             pass
 
     return JsonResponse({
+        "auth_provider": "hanko",
         "authenticated": False,
-        "hanko_authenticated": True,
         "needs_onboarding": True,
         "hanko_user": {
             "id": hanko_user.id,
