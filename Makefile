@@ -1,6 +1,9 @@
 django_test:
 	python manage.py test api.tests jobs.tests tasks.tests
 
+test_auth:
+	docker exec hotosm-export-tool-app python manage.py test ui.tests.test_auth_status -v 2
+
 test:
 	pytest hdx_exports/tests/test_hdx_export_set.py
 
