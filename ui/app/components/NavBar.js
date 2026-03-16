@@ -12,6 +12,14 @@ import RequirePermission from "./RequirePermission";
 import HankoAuthButton from "./HankoAuthButton";
 import ToolMenu from "./ToolMenu";
 
+const collapseNavbar = () => {
+  const toggle = document.querySelector(".navbar-toggle");
+  const collapse = document.querySelector(".navbar-collapse");
+  if (toggle && collapse && collapse.classList.contains("in")) {
+    toggle.click();
+  }
+};
+
 const NavBar = ({ isLoggedIn, login, logout, locale }) => (
   <Navbar>
     <Navbar.Header>
@@ -23,7 +31,7 @@ const NavBar = ({ isLoggedIn, login, logout, locale }) => (
       </Navbar.Brand>
       <Navbar.Toggle />
     </Navbar.Header>
-    <Navbar.Collapse>
+    <Navbar.Collapse onClick={collapseNavbar}>
     <Nav className="pull-right">
       <RequirePermission>
         <li>

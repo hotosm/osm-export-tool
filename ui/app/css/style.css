@@ -1479,6 +1479,11 @@ p {
   margin-top: 16px;
 }
 /* hanko auth and tool menu */
+@media (max-width: 767px) {
+  .navbar-collapse {
+    -webkit-overflow-scrolling: auto;
+  }
+}
 hotosm-auth {
   --login-btn-margin: 3px 0;
 }
