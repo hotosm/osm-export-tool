@@ -34,6 +34,11 @@ const form = reduxForm({
       values.export_formats = values.export_formats.filter(x => x !== "bundle");
     }
 
+    // Remove mbtiles if no source URL was configured (avoids 400 from backend)
+    if (values.export_formats.includes("mbtiles") && !values.mbtiles_source) {
+      values.export_formats = values.export_formats.filter(x => x !== "mbtiles");
+    }
+
     createExport(values, "ExportForm");
   },
   validate: ({
