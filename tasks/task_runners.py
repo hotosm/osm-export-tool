@@ -78,9 +78,8 @@ class ExportTaskRunner(object):
         job = Job.objects.get(uid=job_uid)
         if not user:
             user = job.user
-        if job.last_run_status != "SUBMITTED" or job.last_run_status != "RUNNING":
+        if job.last_run_status != "SUBMITTED" and job.last_run_status != "RUNNING":
             run = ExportRun.objects.create(job=job, user=user, status="SUBMITTED")
-            run.save()
             run_uid = str(run.uid)
             LOG.debug("Saved run with id: {0}".format(run_uid))
 

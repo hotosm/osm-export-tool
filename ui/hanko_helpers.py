@@ -39,14 +39,14 @@ def get_mapped_django_user_by_hanko(hanko_user) -> Optional[User]:
 
 
 def find_legacy_user_by_osm_id(osm_id: int) -> Optional[User]:
+    from social_django.models import UserSocialAuth
     try:
-        from social_django.models import UserSocialAuth
         social_auth = UserSocialAuth.objects.get(
             provider='openstreetmap-oauth2',
             uid=str(osm_id)
         )
         return social_auth.user
-    except Exception:
+    except UserSocialAuth.DoesNotExist:
         return None
 
 

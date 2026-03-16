@@ -4,24 +4,7 @@ import { initialize, startSubmit, stopSubmit } from "redux-form";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
-
-const isHankoAuth = window.AUTH_PROVIDER === "hanko";
-
-const buildAuthConfig = (token, config = {}) => {
-  const requestConfig = {
-    ...config,
-    withCredentials: isHankoAuth
-  };
-
-  if (!isHankoAuth && token) {
-    requestConfig.headers = {
-      ...requestConfig.headers,
-      Authorization: `Bearer ${token}`
-    };
-  }
-
-  return requestConfig;
-};
+import { buildAuthConfig } from "./meta";
 
 export const getConfigurations = (filters = {}, page = 1) => (
   dispatch,

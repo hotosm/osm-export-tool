@@ -1,11 +1,5 @@
 import React from "react";
 
-/**
- * React 15 wrapper for the <tool-menu> web component.
- *
- * Uses imperative DOM creation because React 15 doesn't handle
- * hyphenated custom element attributes (show-logos) properly.
- */
 class ToolMenu extends React.Component {
   componentDidMount() {
     this._renderWebComponent();

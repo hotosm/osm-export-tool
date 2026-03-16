@@ -6,27 +6,7 @@ import moment from "moment";
 import fileDownload from "js-file-download";
 
 import { selectAuthToken } from "../selectors";
-
-// Auth provider detection
-const isHankoAuth = window.AUTH_PROVIDER === "hanko";
-
-// Helper to build axios config with proper auth headers/credentials
-const buildAuthConfig = (token, config = {}) => {
-  const requestConfig = {
-    ...config,
-    withCredentials: isHankoAuth // Send cookies for Hanko auth
-  };
-
-  // Only add Authorization header for legacy auth
-  if (!isHankoAuth && token) {
-    requestConfig.headers = {
-      ...requestConfig.headers,
-      Authorization: `Bearer ${token}`
-    };
-  }
-
-  return requestConfig;
-};
+import { buildAuthConfig } from "./meta";
 
 export const createExport = (data, formName) => (dispatch, getState) => {
   const token = selectAuthToken(getState());

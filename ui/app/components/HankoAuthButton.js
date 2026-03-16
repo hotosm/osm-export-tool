@@ -2,13 +2,6 @@ import React from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
-/**
- * React 15 wrapper for the <hotosm-auth> web component.
- *
- * React 15 doesn't properly handle custom element attributes (especially
- * hyphenated ones like hanko-url). This component uses DOM APIs to create
- * and configure the web component imperatively via a ref.
- */
 class HankoAuthButton extends React.Component {
   constructor(props) {
     super(props);
@@ -48,7 +41,6 @@ class HankoAuthButton extends React.Component {
   _renderWebComponent() {
     if (!this._container) return;
 
-    // Only create the element once
     if (!this._element) {
       this._element = document.createElement("hotosm-auth");
       this._container.appendChild(this._element);
@@ -67,7 +59,6 @@ class HankoAuthButton extends React.Component {
       el.setAttribute("redirect-after-logout", redirectAfterLogin);
     }
 
-    // Set mapping-check-url for onboarding flow
     const { mappingCheckUrl, appId } = this.props;
     if (mappingCheckUrl) {
       el.setAttribute("mapping-check-url", mappingCheckUrl);

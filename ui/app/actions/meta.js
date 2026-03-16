@@ -30,45 +30,32 @@ if (window.OAUTH_CLIENT_ID == null) {
   }
 }
 
-// Auth provider detection
 const isHankoAuth = window.AUTH_PROVIDER === "hanko";
 const hankoUrl = window.HANKO_URL || "";
 
-const oauthConfig = {
-  // url: window.EXPORTS_API_URL + "/o/openstreetmap_oauth2",
-  url: window.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto&response_type=token",
-  client: window.OAUTH_CLIENT_ID,
-  redirect: `${window.location.protocol}//${hostname}/authorized`
-};
-
-// Export auth config for components
 export const authConfig = {
   isHankoAuth,
   hankoUrl
 };
 
+export const buildAuthConfig = (token, config = {}) => {
+  const requestConfig = { ...config, withCredentials: isHankoAuth };
+  if (!isHankoAuth && token) {
+    requestConfig.headers = { ...requestConfig.headers, Authorization: `Bearer ${token}` };
+  }
+  return requestConfig;
+};
+
+const oauthConfig = {
+  url: window.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto&response_type=token",
+  client: window.OAUTH_CLIENT_ID,
+  redirect: `${window.location.protocol}//${hostname}/authorized`
+};
+
 export const fetchPermissions = () => (dispatch, getState) => {
   const token = selectAuthToken(getState());
-
-  dispatch({
-    type: types.FETCHING_PERMISSIONS
-  });
-
-  // Configure request based on auth provider
-  const requestConfig = {
-    baseURL: window.EXPORTS_API_URL,
-    url: "/api/permissions",
-    withCredentials: isHankoAuth // Send cookies for Hanko auth
-  };
-
-  // Only add Authorization header for legacy auth
-  if (!isHankoAuth && token) {
-    requestConfig.headers = {
-      Authorization: `Bearer ${token}`
-    };
-  }
-
-  return axios(requestConfig)
+  dispatch({ type: types.FETCHING_PERMISSIONS });
+  return axios(buildAuthConfig(token, { baseURL: window.EXPORTS_API_URL, url: "/api/permissions" }))
     .then(rsp =>
       dispatch({
         type: types.RECEIVED_PERMISSIONS,
@@ -76,48 +63,20 @@ export const fetchPermissions = () => (dispatch, getState) => {
         username: rsp.data.username
       })
     )
-    .catch(error =>
-      dispatch({
-        type: types.FETCHING_PERMISSIONS_FAILED,
-        error
-      })
-    );
+    .catch(error => dispatch({ type: types.FETCHING_PERMISSIONS_FAILED, error }));
 };
 
 export const fetchGroups = () => (dispatch, getState) => {
   const token = selectAuthToken(getState());
-
-  dispatch({
-    type: types.FETCHING_GROUPS
-  });
-
-  // Configure request based on auth provider
-  const requestConfig = {
-    baseURL: window.EXPORTS_API_URL,
-    url: "/api/groups",
-    withCredentials: isHankoAuth // Send cookies for Hanko auth
-  };
-
-  // Only add Authorization header for legacy auth
-  if (!isHankoAuth && token) {
-    requestConfig.headers = {
-      Authorization: `Bearer ${token}`
-    };
-  }
-
-  return axios(requestConfig)
+  dispatch({ type: types.FETCHING_GROUPS });
+  return axios(buildAuthConfig(token, { baseURL: window.EXPORTS_API_URL, url: "/api/groups" }))
     .then(rsp =>
       dispatch({
         type: types.RECEIVED_GROUPS,
         groups: rsp.data.groups
       })
     )
-    .catch(error =>
-      dispatch({
-        type: types.FETCHING_GROUPS_FAILED,
-        error
-      })
-    );
+    .catch(error => dispatch({ type: types.FETCHING_GROUPS_FAILED, error }));
 };
 
 export const checkHankoAuth = () => (dispatch) => {
@@ -145,16 +104,11 @@ export const checkHankoAuth = () => (dispatch) => {
 
 export const login = () => {
   if (isHankoAuth) {
-    // Redirect to Hanko login, return to home page to avoid infinite loops
     const returnUrl = encodeURIComponent(window.location.origin + '/v3/');
     window.location.href = `${hankoUrl}/app?return_to=${returnUrl}`;
   } else {
-    // Legacy OAuth2 login
     const { url, client, redirect } = oauthConfig;
-    window.location.href =
-      url +
-      `&client_id=${client}` +
-      `&redirect_uri=${encodeURIComponent(redirect)}`;
+    window.location.href = url + `&client_id=${client}` + `&redirect_uri=${encodeURIComponent(redirect)}`;
   }
 };
 
@@ -168,14 +122,5 @@ export const loginSuccess = (token, expiresAt) => dispatch =>
 export const logout = () => dispatch => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("expires_at");
-
-  if (isHankoAuth) {
-    // For Hanko, clear cookies and redirect to logout
-    // The hotosm-auth component handles the actual logout
-    document.cookie.split(";").forEach(c => {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-  }
-
   dispatch(_logout());
 };
