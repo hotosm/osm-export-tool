@@ -286,7 +286,7 @@ def onboarding_callback(request):
 
         if not existing_user:
             # No existing export tool account with this OSM ID or email
-            error_msg = "No existing account found for your OSM user. Please select 'No, I\u2019m new' to create a new account."
+            error_msg = "no_existing_osm_account"
             params = urlencode({
                 'onboarding': APP_NAME,
                 'return_to': request.build_absolute_uri('/v3/'),
