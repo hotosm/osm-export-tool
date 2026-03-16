@@ -12,7 +12,9 @@ import RequirePermission from "./RequirePermission";
 import HankoAuthButton from "./HankoAuthButton";
 import ToolMenu from "./ToolMenu";
 
-const collapseNavbar = () => {
+const collapseNavbar = (e) => {
+  if (e.target.closest && e.target.closest(".dropdown-toggle")) return;
+  if (e.target.tagName && e.target.tagName.toLowerCase() === "hotosm-auth") return;
   const toggle = document.querySelector(".navbar-toggle");
   const collapse = document.querySelector(".navbar-collapse");
   if (toggle && collapse && collapse.classList.contains("in")) {

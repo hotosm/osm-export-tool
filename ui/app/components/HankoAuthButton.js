@@ -45,6 +45,14 @@ class HankoAuthButton extends React.Component {
       this._element = document.createElement("hotosm-auth");
       this._container.appendChild(this._element);
       this._bindCacheListeners();
+      requestAnimationFrame(() => {
+        const root = this._element.shadowRoot;
+        if (root) {
+          const style = document.createElement("style");
+          style.textContent = ".dropdown-content { background-color: white !important; -webkit-transform: translateZ(0); }";
+          root.appendChild(style);
+        }
+      });
     }
 
     const el = this._element;
