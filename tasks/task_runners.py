@@ -676,8 +676,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
         mapping_filter = mapping
         if job.unfiltered:
             mapping_filter = None
-        userinfo = job.userinfo
-
         if "geojson" in export_formats:
             geojson = Galaxy(
                 settings.RAW_DATA_API_URL,
@@ -685,7 +683,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("geojson")
 
@@ -696,7 +693,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("fgb")
 
@@ -717,7 +713,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("sql")
 
@@ -728,7 +723,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             # geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(geopackage)
@@ -741,7 +735,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("shp")
 
@@ -752,7 +745,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             # kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(kml)
@@ -917,7 +909,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                    userinfo=userinfo,
                 )
                 start_task("mbtiles")
                 LOG.debug(
@@ -929,8 +920,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = mbtiles.fetch(
                     "mbtiles",
                     all_feature_filter_json=all_feature_filter_json,
-                    min_zoom=job.mbtiles_minzoom,
-                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug(
@@ -950,7 +939,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                    userinfo=userinfo,
                 )
                 start_task("pmtiles")
                 LOG.debug(
@@ -962,8 +950,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = pmtiles.fetch(
                     "pmtiles",
                     all_feature_filter_json=all_feature_filter_json,
-                    min_zoom=job.mbtiles_minzoom,
-                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug(
@@ -983,7 +969,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                    userinfo=userinfo,
                 )
                 start_task("mvt")
                 LOG.debug("Raw Data API fetch started for mvt run: {0}".format(run_uid))
@@ -993,8 +978,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = mvt.fetch(
                     "mvt",
                     all_feature_filter_json=all_feature_filter_json,
-                    min_zoom=job.mbtiles_minzoom,
-                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug("Raw Data API fetch ended for mvt run: {0}".format(run_uid))
