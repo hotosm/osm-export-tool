@@ -68,8 +68,6 @@ const HDX_EXPORT_FORMATS = {
 const form = reduxForm({
   form: FORM_NAME,
   onSubmit: (values, dispatch, { createExportRegion, updateExportRegion }) => {
-    console.log("Submitting form. Values:", values);
-
     const formData = {
       ...values,
       locations: (values.locations || []).map(x => x.value || x)

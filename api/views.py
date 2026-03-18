@@ -1,6 +1,5 @@
 """Provides classes for handling API requests."""
 
-# -*- coding: utf-8 -*-
 from distutils.util import strtobool
 import itertools
 from itertools import chain
@@ -17,7 +16,6 @@ import requests
 from cachetools.func import ttl_cache
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import GEOSGeometry, Polygon
@@ -30,6 +28,8 @@ from django.http import (
 )
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError as DjangoValidationError
+
+from ui.hanko_helpers import is_hanko_authenticated
 from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -57,10 +57,8 @@ from hdx_exports.hdx_export_set import sync_region
 from rtree import index
 import psutil
 
-# Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
-# controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -153,7 +151,7 @@ class JobViewSet(viewsets.ModelViewSet):
             raise ValidationError(
                 {"the_geom": ["You are rate limited to 5 exports per hour."]}
             )
-        job = serializer.save()
+        job = serializer.save(user=self.request.user)
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
 
@@ -196,6 +194,9 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(pinned=True))
 
         return queryset.filter(Q(user_id=user.id) | Q(public=True))
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ExportRunViewSet(viewsets.ModelViewSet):
@@ -294,18 +295,17 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            print("Stubbing interaction with HDX API.")
+            LOG.debug("Stubbing interaction with HDX API.")
 
     def perform_update(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            print("Stubbing interaction with HDX API.")
+            LOG.debug("Stubbing interaction with HDX API.")
 
 
 class PartnerExportRegionViewSet(viewsets.ModelViewSet):
-    # get only Regions that belong to the user's Groups.
     ordering_fields = "__all__"
     ordering = ("job__description",)
     filter_backends = (
@@ -345,31 +345,45 @@ def permalink(request, uid):
         return HttpResponseNotFound()
 
 
+def _period_week(dt):
+    sunday = dt.strftime("%Y-%U-0")
+    return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
+
+
+def _period_day(dt):
+    return dt.strftime("%Y-%m-%d")
+
+
+def _period_month(dt):
+    return dt.strftime("%Y-%m")
+
+
+def _is_superuser(request):
+    """Check if the current user is a superuser (works with both auth providers)."""
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        if not is_hanko_authenticated(request):
+            return False
+        admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
+        admin_emails = [email.strip() for email in admin_emails if email.strip()]
+        return request.hotosm.user.email in admin_emails
+    return request.user.is_superuser
+
+
 @require_http_methods(["GET"])
 def stats(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     before = request.GET.get("before", timezone.now())
     after = request.GET.get("after", timezone.now() - timedelta(days=1))
     period = request.GET.get("period", "day")
     is_csv = request.GET.get("csv", False) == "true"
 
-    def toWeek(dt):
-        sunday = dt.strftime("%Y-%U-0")
-        return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
-
-    def toDay(dt):
-        return dt.strftime("%Y-%m-%d")
-
-    def toMonth(dt):
-        return dt.strftime("%Y-%m")
-
     if period == "day":
-        period_fn = toDay
+        period_fn = _period_day
     elif period == "week":
-        period_fn = toWeek
+        period_fn = _period_week
     elif period == "month":
-        period_fn = toMonth
+        period_fn = _period_month
 
     users = (
         User.objects.only("date_joined")
@@ -434,29 +448,19 @@ def stats(request):
 
 @require_http_methods(["GET"])
 def run_stats(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     before = request.GET.get("before", timezone.now())
     after = request.GET.get("after", timezone.now() - timedelta(days=1))
     period = request.GET.get("period", "day")
     is_csv = request.GET.get("csv", False) == "true"
 
-    def toWeek(dt):
-        sunday = dt.strftime("%Y-%U-0")
-        return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
-
-    def toDay(dt):
-        return dt.strftime("%Y-%m-%d")
-
-    def toMonth(dt):
-        return dt.strftime("%Y-%m")
-
     if period == "day":
-        period_fn = toDay
+        period_fn = _period_day
     elif period == "week":
-        period_fn = toWeek
+        period_fn = _period_week
     elif period == "month":
-        period_fn = toMonth
+        period_fn = _period_month
 
     run_queryset = ExportRun.objects.only("started_at", "status").order_by(
         "-started_at"
@@ -543,10 +547,18 @@ def run_stats(request):
         return HttpResponse(json.dumps({"periods": periods}))
 
 
+def _require_auth(request):
+    """Check if user is authenticated (works with both auth providers)."""
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        return is_hanko_authenticated(request)
+    return request.user.is_authenticated
+
+
 @require_http_methods(["GET"])
-@login_required()
 def request_nominatim(request):
     """Country boundaries using nominatim"""
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
 
     nominatim_url = getattr(settings, "NOMINATIM_API_URL")
     if nominatim_url is None:
@@ -604,9 +616,11 @@ def request_nominatim(request):
 
 
 @require_http_methods(["GET"])
-@login_required()
 def request_geonames(request):
     """Geocode with GeoNames."""
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
     payload = {
         "maxRows": 20,
         "username": "osm_export_tool",
@@ -706,7 +720,6 @@ def request_geonames(request):
                     if tm_res.ok:
                         tm_res = tm_res.json()
                         if "areaOfInterest" in tm_res:
-                            print("TM Project found")
                             geom = tm_res["areaOfInterest"]
                             geojson = {
                                 "type": "FeatureCollection",
@@ -726,7 +739,6 @@ def request_geonames(request):
                                 "countryName": "Boundary",
                                 "adminName1": "Project",
                             }
-                            # print(add_resp)
                             if "geonames" in response:
                                 response["geonames"].append(add_resp)
 
@@ -740,55 +752,95 @@ def request_geonames(request):
 
 @ttl_cache(ttl=60)
 @require_http_methods(["GET"])
-@login_required()
 def get_overpass_timestamp(request):
     """
     Endpoint to show the last OSM update timestamp on the Create page.
     this sometimes fails, returning a HTTP 200 but empty content.
     """
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
     r = requests.get("{}timestamp".format(settings.OVERPASS_API_URL))
     return JsonResponse({"timestamp": dateutil.parser.parse(r.content)})
 
 
-@login_required()
 def get_overpass_status(request):
+    if not _require_auth(request):
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
     r = requests.get("{}status".format(settings.OVERPASS_API_URL))
     return HttpResponse(r.content)
 
 
 @require_http_methods(["GET"])
-@login_required()
 def get_user_permissions(request):
-    user = request.user
-    permissions = []
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        if not is_hanko_authenticated(request):
+            return JsonResponse({"error": "Not authenticated"}, status=401)
 
-    if user.is_superuser:
-        permissions = Permission.objects.all().values_list(
-            "content_type__app_label", "codename"
+        hanko_user = request.hotosm.user
+
+        admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
+        admin_emails = [email.strip() for email in admin_emails if email.strip()]
+        is_admin = hanko_user.email in admin_emails
+
+        if is_admin:
+            permissions = Permission.objects.all().values_list(
+                "content_type__app_label", "codename"
+            )
+        else:
+            permissions = []
+
+        username = hanko_user.email.split('@')[0] if hanko_user.email else 'unknown'
+        if hasattr(request.hotosm, 'osm') and request.hotosm.osm:
+            username = request.hotosm.osm.osm_username
+
+        return JsonResponse(
+            {
+                "username": username,
+                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
+                "is_superuser": is_admin,
+            }
         )
     else:
-        permissions = chain(
-            user.user_permissions.all().values_list(
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Not authenticated"}, status=401)
+
+        user = request.user
+        permissions = []
+
+        if user.is_superuser:
+            permissions = Permission.objects.all().values_list(
                 "content_type__app_label", "codename"
-            ),
-            Permission.objects.filter(group__user=user).values_list(
-                "content_type__app_label", "codename"
-            ),
+            )
+        else:
+            permissions = chain(
+                user.user_permissions.all().values_list(
+                    "content_type__app_label", "codename"
+                ),
+                Permission.objects.filter(group__user=user).values_list(
+                    "content_type__app_label", "codename"
+                ),
+            )
+
+        return JsonResponse(
+            {
+                "username": user.username,
+                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
+                "is_superuser": user.is_superuser,
+            }
         )
 
-    return JsonResponse(
-        {
-            "username": user.username,
-            "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
-        }
-    )
 
-
-# get a list of partner organizations and their numeric IDs.
-# this can be exposed to the public.
 @require_http_methods(["GET"])
-@login_required()
 def get_groups(request):
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        if not is_hanko_authenticated(request):
+            return JsonResponse({"error": "Not authenticated"}, status=401)
+    else:
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Not authenticated"}, status=401)
+
     groups = [
         {"id": g.id, "name": g.name} for g in Group.objects.filter(is_partner=True)
     ]
@@ -800,7 +852,7 @@ from dramatiq_abort import abort
 
 @require_http_methods(["GET"])
 def cancel_run(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     run_uid = request.GET.get("run_uid")
     if run_uid:
@@ -830,7 +882,7 @@ def cancel_run(request):
 
 @require_http_methods(["GET"])
 def machine_status(request):
-    if not request.user.is_superuser:
+    if not _is_superuser(request):
         return HttpResponseForbidden()
     CPU_use = psutil.cpu_percent(3)
     date_from = datetime.now() - timedelta(days=1)

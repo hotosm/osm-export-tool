@@ -1,7 +1,7 @@
 # We add a label `repo:repo-name` to each new issue,
 # for easier tracking in external systems
 
-name: 🏷️ Issue Label
+name: Issue Label
 
 on:
   issues:
