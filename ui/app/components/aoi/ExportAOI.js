@@ -277,7 +277,6 @@ export class ExportAOI extends Component {
               }),
               OSM.ATTRIBUTION
             ],
-            crossOrigin: null,
             url:
               "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           })

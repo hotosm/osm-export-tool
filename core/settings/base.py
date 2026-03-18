@@ -75,11 +75,6 @@ STATICFILES_DIRS = (
     # ABS_PATH('core', 'base_static'),
 )
 
-# Allow OSM tile servers to receive a Referer header (required by OSM tile policy).
-# Django's SecurityMiddleware defaults to "same-origin", which strips the Referer
-# on cross-origin requests, causing OSM tiles to return 403 "Access blocked".
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-
 
 # default middleware classes
 MIDDLEWARE = [
