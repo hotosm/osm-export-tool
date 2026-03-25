@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.renderers import BrowsableAPIRenderer
 
+
 class HOTExportApiRenderer(BrowsableAPIRenderer):
     """Custom APIRenderer to remove editing forms from Browsable API."""
 

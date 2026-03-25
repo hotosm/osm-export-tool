@@ -1,5 +1,6 @@
 """Provides classes for handling API requests."""
 
+# -*- coding: utf-8 -*-
 from distutils.util import strtobool
 import itertools
 from itertools import chain
@@ -57,8 +58,10 @@ from hdx_exports.hdx_export_set import sync_region
 from rtree import index
 import psutil
 
+# Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
+# controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -295,17 +298,18 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            LOG.debug("Stubbing interaction with HDX API.")
+            print("Stubbing interaction with HDX API.")
 
     def perform_update(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            LOG.debug("Stubbing interaction with HDX API.")
+            print("Stubbing interaction with HDX API.")
 
 
 class PartnerExportRegionViewSet(viewsets.ModelViewSet):
+    # get only Regions that belong to the user's Groups.
     ordering_fields = "__all__"
     ordering = ("job__description",)
     filter_backends = (
@@ -720,6 +724,7 @@ def request_geonames(request):
                     if tm_res.ok:
                         tm_res = tm_res.json()
                         if "areaOfInterest" in tm_res:
+                            print("TM Project found")
                             geom = tm_res["areaOfInterest"]
                             geojson = {
                                 "type": "FeatureCollection",
@@ -739,6 +744,7 @@ def request_geonames(request):
                                 "countryName": "Boundary",
                                 "adminName1": "Project",
                             }
+                            # print(add_resp)
                             if "geonames" in response:
                                 response["geonames"].append(add_resp)
 
@@ -832,6 +838,8 @@ def get_user_permissions(request):
         )
 
 
+# get a list of partner organizations and their numeric IDs.
+# this can be exposed to the public.
 @require_http_methods(["GET"])
 def get_groups(request):
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
