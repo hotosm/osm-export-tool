@@ -1,5 +1,6 @@
 """Provides classes for handling API requests."""
 
+# -*- coding: utf-8 -*-
 from distutils.util import strtobool
 import itertools
 from itertools import chain
@@ -297,14 +298,14 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            LOG.debug("Stubbing interaction with HDX API.")
+            print("Stubbing interaction with HDX API.")
 
     def perform_update(self, serializer):
         serializer.save()
         if settings.SYNC_TO_HDX:
             sync_region(serializer.instance)
         else:
-            LOG.debug("Stubbing interaction with HDX API.")
+            print("Stubbing interaction with HDX API.")
 
 
 class PartnerExportRegionViewSet(viewsets.ModelViewSet):
@@ -347,19 +348,6 @@ def permalink(request, uid):
         return HttpResponseNotFound()
 
 
-def _period_week(dt):
-    sunday = dt.strftime("%Y-%U-0")
-    return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
-
-
-def _period_day(dt):
-    return dt.strftime("%Y-%m-%d")
-
-
-def _period_month(dt):
-    return dt.strftime("%Y-%m")
-
-
 def _is_superuser(request):
     """Check if the current user is a superuser (works with both auth providers)."""
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
@@ -380,12 +368,22 @@ def stats(request):
     period = request.GET.get("period", "day")
     is_csv = request.GET.get("csv", False) == "true"
 
+    def toWeek(dt):
+        sunday = dt.strftime("%Y-%U-0")
+        return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
+
+    def toDay(dt):
+        return dt.strftime("%Y-%m-%d")
+
+    def toMonth(dt):
+        return dt.strftime("%Y-%m")
+
     if period == "day":
-        period_fn = _period_day
+        period_fn = toDay
     elif period == "week":
-        period_fn = _period_week
+        period_fn = toWeek
     elif period == "month":
-        period_fn = _period_month
+        period_fn = toMonth
 
     users = (
         User.objects.only("date_joined")
@@ -457,12 +455,22 @@ def run_stats(request):
     period = request.GET.get("period", "day")
     is_csv = request.GET.get("csv", False) == "true"
 
+    def toWeek(dt):
+        sunday = dt.strftime("%Y-%U-0")
+        return datetime.strptime(sunday, "%Y-%U-%w").strftime("%Y-%m-%d")
+
+    def toDay(dt):
+        return dt.strftime("%Y-%m-%d")
+
+    def toMonth(dt):
+        return dt.strftime("%Y-%m")
+
     if period == "day":
-        period_fn = _period_day
+        period_fn = toDay
     elif period == "week":
-        period_fn = _period_week
+        period_fn = toWeek
     elif period == "month":
-        period_fn = _period_month
+        period_fn = toMonth
 
     run_queryset = ExportRun.objects.only("started_at", "status").order_by(
         "-started_at"

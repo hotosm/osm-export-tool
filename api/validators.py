@@ -34,3 +34,49 @@ def validate_search_bbox(extents):
             raise serializers.ValidationError(detail)
     except GEOSException:
         raise serializers.ValidationError(detail)
+
+
+def validate_bbox_params(data):
+    """
+    Validates the bounding box parameters supplied during form sumission.
+
+    Args:
+        the data supplied during form submission.
+
+    Returns:
+        a tuple containing the validated extents in the form (xmin,ymin,xmax,ymax).
+
+    Raises:
+        ValidationError: if the extents are invalid.
+    """
+    detail = OrderedDict()
+
+    # test for number
+    lon_coords = [float(data['xmin']), float(data['xmax'])]
+    lat_coords = [float(data['ymin']), float(data['ymax'])]
+    # test lat long value order
+    if ((lon_coords[0] >= 0 and lon_coords[0] > lon_coords[1]) or
+            (lon_coords[0] < 0 and lon_coords[0] > lon_coords[1])):
+        detail['id'] = _('inverted_coordinates')
+        detail['message'] = _('xmin greater than xmax.')
+        raise serializers.ValidationError(detail)
+
+    if ((lat_coords[0] >= 0 and lat_coords[0] > lat_coords[1]) or
+            (lat_coords[0] < 0 and lat_coords[0] > lat_coords[1])):
+        detail['id'] = _('inverted_coordinates')
+        detail['message'] = _('ymin greater than ymax.')
+        raise serializers.ValidationError(detail)
+
+    # test lat long extents
+    for lon in lon_coords:
+        if (lon < -180 or lon > 180):
+            detail['id'] = _('invalid_longitude')
+            detail['message'] = _('Invalid longitude coordinate: %(lon)s') % {'lon': lon}
+            raise serializers.ValidationError(detail)
+    for lat in lat_coords:
+        if (lat < -90 and lat > 90):
+            detail['id'] = _('invalid_latitude')
+            detail['message'] = _('Invalid latitude coordinate: %(lat)s') % {'lat': lat}
+            raise serializers.ValidationError(detail)
+
+    return (data['xmin'], data['ymin'], data['xmax'], data['ymax'])
