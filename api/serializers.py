@@ -1,12 +1,3 @@
-"""
-Provides serialization for API responses.
-
-See `DRF serializer documentation  <http://www.django-rest-framework.org/api-guide/serializers/>`_
-Used by the View classes api/views.py to serialize API responses as JSON or HTML.
-See DEFAULT_RENDERER_CLASSES setting in core.settings.contrib for the enabled renderers.
-"""
-
-# -*- coding: utf-8 -*-
 import logging
 
 import django.core.exceptions
@@ -18,14 +9,24 @@ from jobs.models import (
     SavedFeatureSelection,
     validate_aoi,
     validate_mbtiles,
+    normalize_not_in,
     PartnerExportRegion,
 )
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from tasks.models import ExportRun, ExportTask
 
-# Get an instance of a logger
 LOG = logging.getLogger(__name__)
+
+
+def _slice_dict(in_dict, wanted_keys):
+    return {k: in_dict[k] for k in wanted_keys if k in in_dict}
+
+
+def _update_attrs(model, v_data, keys):
+    for key in keys:
+        if key in v_data:
+            setattr(model, key, v_data[key])
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -73,10 +74,22 @@ class ExportRunSerializer(serializers.ModelSerializer):
 
 class ConfigurationSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True, default=serializers.CurrentUserDefault())
+    # Override to bypass model-level validators; normalization + validation run in validate_yaml.
+    yaml = serializers.CharField(validators=[])
 
     class Meta:
         model = SavedFeatureSelection
         fields = ("uid", "name", "description", "yaml", "public", "user", "pinned")
+
+    def validate_yaml(self, value):
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        from jobs.models import validate_feature_selection
+        normalized = normalize_not_in(value)
+        try:
+            validate_feature_selection(normalized)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.messages)
+        return normalized
 
 
 class JobGeomSerializer(serializers.ModelSerializer):
@@ -89,7 +102,8 @@ class JobGeomSerializer(serializers.ModelSerializer):
 
 
 class JobSerializer(serializers.ModelSerializer):
-    user = UserSerializer(default=serializers.CurrentUserDefault())
+    user = UserSerializer(read_only=True)
+    feature_selection = serializers.CharField(validators=[])
 
     class Meta:
         model = Job
@@ -121,6 +135,9 @@ class JobSerializer(serializers.ModelSerializer):
             "simplified_geom": {"read_only": True},
         }
 
+    def validate_feature_selection(self, value):
+        return _validate_and_normalize_feature_selection(value)
+
     def validate(self, data):
         try:
             validate_aoi(data["the_geom"])
@@ -140,6 +157,17 @@ def validate_model(model):
         model.full_clean()
     except django.core.exceptions.ValidationError as e:
         raise serializers.ValidationError(e.message_dict)
+
+
+def _validate_and_normalize_feature_selection(value):
+    from django.core.exceptions import ValidationError as DjangoValidationError
+    from jobs.models import validate_feature_selection as _validate_fs
+    normalized = normalize_not_in(value)
+    try:
+        _validate_fs(normalized)
+    except DjangoValidationError as e:
+        raise serializers.ValidationError(e.messages)
+    return normalized
 
 
 class PartnerExportRegionListSerializer(serializers.ModelSerializer):
@@ -175,6 +203,9 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
     event = serializers.CharField()
     description = serializers.CharField()
 
+    def validate_feature_selection(self, value):
+        return _validate_and_normalize_feature_selection(value)
+
     class Meta:  # noqa
         model = PartnerExportRegion
         fields = (
@@ -201,10 +232,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         }
 
     def create(self, validated_data):  # noqa
-        def slice_dict(in_dict, wanted_keys):
-            return dict((k, in_dict[k]) for k in wanted_keys if k in in_dict)
-
-        job_dict = slice_dict(
+        job_dict = _slice_dict(
             validated_data,
             [
                 "the_geom",
@@ -217,7 +245,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job_dict["event"] = validated_data.get("event") or ""
         job_dict["description"] = validated_data.get("description") or ""
 
-        region_dict = slice_dict(
+        region_dict = _slice_dict(
             validated_data,
             [
                 "schedule_period",
@@ -251,12 +279,6 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         return region
 
     def update(self, instance, validated_data):  # noqa
-        def update_attrs(model, v_data, keys):
-            for key in keys:
-                if key in v_data:
-                    setattr(model, key, v_data[key])
-
-        # if re-assigning, check group membership
         if (
             not self.context["request"]
             .user.groups.filter(name=validated_data["group"].name)
@@ -267,7 +289,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
             )
 
         job = instance.job
-        update_attrs(
+        _update_attrs(
             job, validated_data, ["the_geom", "export_formats", "feature_selection"]
         )
         job.name = validated_data.get("name")
@@ -275,7 +297,7 @@ class PartnerExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job.description = validated_data.get("description") or ""
 
         validate_model(job)
-        update_attrs(
+        _update_attrs(
             instance,
             validated_data,
             [
@@ -341,6 +363,9 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
     name = serializers.CharField()
     buffer_aoi = serializers.BooleanField()
 
+    def validate_feature_selection(self, value):
+        return _validate_and_normalize_feature_selection(value)
+
     def validate(self, data):
         """
         Check for export formats for country exports.
@@ -382,10 +407,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         }
 
     def create(self, validated_data):  # noqa
-        def slice_dict(in_dict, wanted_keys):
-            return dict((k, in_dict[k]) for k in wanted_keys if k in in_dict)
-
-        job_dict = slice_dict(
+        job_dict = _slice_dict(
             validated_data,
             ["the_geom", "export_formats", "feature_selection", "buffer_aoi"],
         )
@@ -393,7 +415,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job_dict["name"] = validated_data.get("dataset_prefix")
         job_dict["description"] = validated_data.get("name")
 
-        region_dict = slice_dict(
+        region_dict = _slice_dict(
             validated_data,
             [
                 "extra_notes",
@@ -419,13 +441,8 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         return region
 
     def update(self, instance, validated_data):  # noqa
-        def update_attrs(model, v_data, keys):
-            for key in keys:
-                if key in v_data:
-                    setattr(model, key, v_data[key])
-
         job = instance.job
-        update_attrs(
+        _update_attrs(
             job,
             validated_data,
             ["the_geom", "export_formats", "feature_selection", "buffer_aoi"],
@@ -434,7 +451,7 @@ class HDXExportRegionSerializer(serializers.ModelSerializer):  # noqa
         job.description = validated_data.get("name")
 
         validate_model(job)
-        update_attrs(
+        _update_attrs(
             instance,
             validated_data,
             [
