@@ -1,10 +1,11 @@
-Django~=3.2.22
+# Django 4.2 LTS (required for hotosm-auth)
+Django~=4.2
 cachetools
 dj_database_url
-django-oauth-toolkit==1.3.2
-django-cors-middleware
-djangorestframework-gis~=0.15
-djangorestframework~=3.11.0
+django-oauth-toolkit>=2.0.0
+django-cors-headers
+djangorestframework-gis>=1.0
+djangorestframework>=3.14.0
 hdx-python-api==5.9.2
 hdx-python-utilities==3.6.2
 mercantile~=0.10.0
@@ -16,11 +17,11 @@ pytz
 pyyaml>=5.3
 raven
 requests~=2.26
-requests_oauthlib==0.8.0
+requests_oauthlib>=1.3.0
 pyparsing~=2.4
-oauthlib==3.1.0
+oauthlib>=3.2.0
 
-gunicorn==19.9.0
+gunicorn>=21.0.0
 osmium~=3.5.0
 dramatiq[redis,watch]~=1.13.0
 boto3~=1.23.10 # needed for cloudwatch
@@ -38,5 +39,8 @@ dramatiq-abort==1.0
 
 python3-openid
 
-##testing
-pytest==7.4.3
+# Hanko SSO Authentication
+hotosm-auth[django]==0.2.10
+
+# Timezone data (required for Python 3.9+ on minimal images)
+tzdata

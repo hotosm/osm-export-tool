@@ -1,20 +1,13 @@
 """Provides validation for API operations."""
 
 # -*- coding: utf-8 -*-
-import logging
-import math
-import os
 from collections import OrderedDict
-from StringIO import StringIO
 
-from django.conf import settings
-from django.contrib.gis.geos import GEOSException, GEOSGeometry, Polygon
-from django.utils.translation import ugettext as _
+from django.contrib.gis.geos import GEOSException, Polygon
+from django.utils.translation import gettext as _
 
 from rest_framework import serializers
 
-# Get an instance of a logger
-LOG = logging.getLogger(__name__)
 
 def validate_search_bbox(extents):
     """
@@ -24,12 +17,11 @@ def validate_search_bbox(extents):
         extents: a tuple of export extents (xmin, ymin, xmax, ymax)
 
     Returns:
-        a a valid GEOSGeometry.
+        a valid GEOSGeometry.
 
     Raises:
-        ValidationError:    if its not possible
-            to create a GEOSGeometry from the provided extents or
-            if the resulting GEOSGeometry is invalid.
+        ValidationError: if a GEOSGeometry cannot be created from the extents
+            or the resulting geometry is invalid.
     """
     detail = OrderedDict()
     detail['id'] = _('invalid_bounds')
@@ -88,10 +80,3 @@ def validate_bbox_params(data):
             raise serializers.ValidationError(detail)
 
     return (data['xmin'], data['ymin'], data['xmax'], data['ymax'])
-
-
-
-
-
-
-

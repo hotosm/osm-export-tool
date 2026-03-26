@@ -6,13 +6,16 @@ import os
 from .base import *  # NOQA
 
 # Extra installed apps
-INSTALLED_APPS += (
+INSTALLED_APPS += [
     # any 3rd party apps
     "rest_framework",
     "rest_framework_gis",
     "rest_framework.authtoken",
     "social_django",
-)
+]
+
+# Admin emails for Hanko SSO (comma-separated list)
+ADMIN_EMAILS = os.getenv("ADMIN_EMAILS", "")
 
 # 3rd party specific app settings
 OAUTH2_PROVIDER = {
@@ -25,9 +28,9 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "ui.hanko_helpers.HankoAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_RENDERER_CLASSES": (

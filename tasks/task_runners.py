@@ -67,7 +67,9 @@ This theme includes the following OpenStreetMap keys:
 (c) OpenStreetMap contributors.
 This file is made available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in individual contents of the database are licensed under the Database Contents License: http://opendatacommons.org/licenses/dbcl/1.0/
 """
-redis_client = redis.Redis.from_url("redis://localhost:6379/0")
+_redis_host = os.getenv("REDIS_HOST", "localhost")
+_redis_port = int(os.getenv("REDIS_PORT", "6379"))
+redis_client = redis.Redis(host=_redis_host, port=_redis_port, db=0)
 abortable = Abortable(backend=backends.RedisBackend(client=redis_client))
 dramatiq.get_broker().add_middleware(abortable)
 
@@ -78,9 +80,8 @@ class ExportTaskRunner(object):
         job = Job.objects.get(uid=job_uid)
         if not user:
             user = job.user
-        if job.last_run_status != "SUBMITTED" or job.last_run_status != "RUNNING":
+        if job.last_run_status != "SUBMITTED" and job.last_run_status != "RUNNING":
             run = ExportRun.objects.create(job=job, user=user, status="SUBMITTED")
-            run.save()
             run_uid = str(run.uid)
             LOG.debug("Saved run with id: {0}".format(run_uid))
 
@@ -675,8 +676,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
         mapping_filter = mapping
         if job.unfiltered:
             mapping_filter = None
-        userinfo = job.userinfo
-
         if "geojson" in export_formats:
             geojson = Galaxy(
                 settings.RAW_DATA_API_URL,
@@ -684,7 +683,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("geojson")
 
@@ -695,7 +693,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("fgb")
 
@@ -716,7 +713,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("sql")
 
@@ -727,7 +723,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             # geopackage = tabular.Geopackage(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(geopackage)
@@ -740,7 +735,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             start_task("shp")
 
@@ -751,7 +745,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 mapping=mapping_filter,
                 file_name=valid_name,
                 access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                userinfo=userinfo,
             )
             # kml = tabular.Kml(join(stage_dir,valid_name),mapping)
             # tabular_outputs.append(kml)
@@ -916,7 +909,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                    userinfo=userinfo,
                 )
                 start_task("mbtiles")
                 LOG.debug(
@@ -928,8 +920,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = mbtiles.fetch(
                     "mbtiles",
                     all_feature_filter_json=all_feature_filter_json,
-                    min_zoom=job.mbtiles_minzoom,
-                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug(
@@ -949,7 +939,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                    userinfo=userinfo,
                 )
                 start_task("pmtiles")
                 LOG.debug(
@@ -961,8 +950,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = pmtiles.fetch(
                     "pmtiles",
                     all_feature_filter_json=all_feature_filter_json,
-                    min_zoom=job.mbtiles_minzoom,
-                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug(
@@ -982,7 +969,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                     mapping=mapping_filter,
                     file_name=valid_name,
                     access_token=settings.RAW_DATA_ACCESS_TOKEN,
-                    userinfo=userinfo,
                 )
                 start_task("mvt")
                 LOG.debug("Raw Data API fetch started for mvt run: {0}".format(run_uid))
@@ -992,8 +978,6 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = mvt.fetch(
                     "mvt",
                     all_feature_filter_json=all_feature_filter_json,
-                    min_zoom=job.mbtiles_minzoom,
-                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug("Raw Data API fetch ended for mvt run: {0}".format(run_uid))

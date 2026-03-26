@@ -181,7 +181,7 @@ class ExportTask(models.Model):
     def duration(self):
         if self.started_at and self.finished_at:
             return (
-                self.finished_at or timezone.now() - self.started_at
+                (self.finished_at or timezone.now()) - self.started_at
             ).total_seconds()
         return None
 

@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 
 import os
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from .utils import ABS_PATH
 
 # Local time zone for this installation. Choices can be found here:
@@ -17,10 +17,19 @@ DEBUG = bool(os.getenv("DEBUG"))
 
 # from django.utils.crypto import get_random_string
 # secret_key = get_random_string(50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+AUTH_PROVIDER = os.getenv("AUTH_PROVIDER", "legacy")
+
+# Hanko SSO Configuration
+if AUTH_PROVIDER == "hanko":
+    HANKO_API_URL = os.getenv("HANKO_API_URL")
+    HANKO_PUBLIC_URL = os.getenv("HANKO_PUBLIC_URL", HANKO_API_URL)
+    COOKIE_SECRET = os.getenv("COOKIE_SECRET")
+    COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN", None)
+    COOKIE_SECURE = not DEBUG if os.getenv("COOKIE_SECURE") is None else os.getenv("COOKIE_SECURE", "").lower() in ("true", "1", "yes")
+
 if "SECRET_KEY" not in os.environ:
     print("WARNING: secret key not set - setting a default for development.")
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_key")
-
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -47,6 +56,7 @@ USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
@@ -75,9 +85,14 @@ STATICFILES_DIRS = (
     # ABS_PATH('core', 'base_static'),
 )
 
+# Allow OSM tile servers to receive a Referer header (required by OSM tile policy).
+# Django's SecurityMiddleware defaults to "same-origin", which strips the Referer
+# on cross-origin requests, causing OSM tiles to return 403 "Access blocked".
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 # default middleware classes
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -87,19 +102,26 @@ MIDDLEWARE = [
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+if AUTH_PROVIDER == "hanko":
+    auth_middleware_index = MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware")
+    MIDDLEWARE.insert(auth_middleware_index, "hotosm_auth_django.HankoAuthMiddleware")
 
-ROOT_URLCONF = "core.urls"
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.hotosm\.test$",
+    r"^https://.*\.hotosm\.org$",
+    r"^http://localhost(:\d+)?$",
+    r"^http://127\.0\.0\.1(:\d+)?$",
+]
 
 # Python dotted path to the WSGI application used by Django's runserver.
+ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     "django.contrib.admin.apps.SimpleAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -111,8 +133,10 @@ INSTALLED_APPS = (
     "raven.contrib.django.raven_compat",
     "oauth2_provider",
     "corsheaders",
-)
+]
 
+if AUTH_PROVIDER == "hanko":
+    INSTALLED_APPS.append("hotosm_auth_django")
 
 # enable cached storage
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
