@@ -807,33 +807,6 @@ def get_user_permissions(request):
     else:
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Not authenticated"}, status=401)
-<<<<<<< HEAD
-
-        user = request.user
-        permissions = []
-
-        if user.is_superuser:
-            permissions = Permission.objects.all().values_list(
-                "content_type__app_label", "codename"
-            )
-        else:
-            permissions = chain(
-                user.user_permissions.all().values_list(
-                    "content_type__app_label", "codename"
-                ),
-                Permission.objects.filter(group__user=user).values_list(
-                    "content_type__app_label", "codename"
-                ),
-            )
-
-        return JsonResponse(
-            {
-                "username": user.username,
-                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
-                "is_superuser": user.is_superuser,
-            }
-        )
-=======
 
         user = request.user
         permissions = []
@@ -860,7 +833,6 @@ def get_user_permissions(request):
             }
         )
 
->>>>>>> 3573fa9567027ccca045748a5241d2b977b6e578
 
 @require_http_methods(["GET"])
 def get_groups(request):

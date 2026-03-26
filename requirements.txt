@@ -42,8 +42,5 @@ python3-openid
 # Hanko SSO Authentication
 hotosm-auth[django]==0.2.10
 
-##testing
-pytest==7.4.3
-
 # Timezone data (required for Python 3.9+ on minimal images)
 tzdata
