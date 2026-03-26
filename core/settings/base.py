@@ -49,20 +49,6 @@ STATICFILES_DIRS = ()
 # Django's SecurityMiddleware defaults to "same-origin", which strips the Referer
 # on cross-origin requests, causing OSM tiles to return 403 "Access blocked".
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-<<<<<<< HEAD
-
-# Allow OSM tile servers to receive a Referer header (required by OSM tile policy).
-# Django's SecurityMiddleware defaults to "same-origin", which strips the Referer
-# on cross-origin requests, causing OSM tiles to return 403 "Access blocked".
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-=======
->>>>>>> 3573fa9567027ccca045748a5241d2b977b6e578
-
-# Allow OSM tile servers to receive a Referer header (required by OSM tile policy).
-# Django's SecurityMiddleware defaults to "same-origin", which strips the Referer
-# on cross-origin requests, causing OSM tiles to return 403 "Access blocked".
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
