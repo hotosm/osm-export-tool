@@ -90,6 +90,7 @@ STATICFILES_DIRS = (
 # on cross-origin requests, causing OSM tiles to return 403 "Access blocked".
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
+
 # default middleware classes
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
