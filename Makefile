@@ -5,7 +5,9 @@ test_auth:
 	docker exec hotosm-export-tool-app python manage.py test ui.tests.test_auth_status -v 2
 
 test:
-	docker exec hotosm-export-tool-app pytest hdx_exports/tests/test_hdx_export_set.py
+	docker compose -f compose.test.yaml up -d --build
+	docker exec hotosm-export-tool-app python manage.py test api.tests jobs.tests tasks.tests ui.tests hdx_exports.tests -v 2
+	docker compose -f compose.test.yaml down
 
 test_all:
 	docker exec hotosm-export-tool-app python manage.py test api.tests jobs.tests tasks.tests ui.tests -v 2

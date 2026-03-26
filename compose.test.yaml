@@ -1,0 +1,49 @@
+services:
+  app:
+    build: .
+    container_name: hotosm-export-tool-app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgis://exports:exports@db:5432/exports
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=core.settings.project
+      - SECRET_KEY=test-secret-key-for-testing-only-min-32-chars
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - HDX_API_KEY=disabled
+      - HDX_SITE=demo
+      - SYNC_TO_HDX=false
+    command: sleep infinity
+    networks:
+      - internal
+
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      - POSTGRES_USER=exports
+      - POSTGRES_PASSWORD=exports
+      - POSTGRES_DB=exports
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exports"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  internal:
