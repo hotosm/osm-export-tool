@@ -8,9 +8,10 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from jobs.models import Job, HDXExportRegion
-from feature_selection.feature_selection import FeatureSelection
 
 LOG = logging.getLogger(__name__)
+
+SIMPLE_FEATURE_SELECTION = "buildings:\n  types:\n    - polygons\n  select:\n    - building\n"
 
 class TestJob(TestCase):
     def setUp(self,):
@@ -24,7 +25,7 @@ class TestJob(TestCase):
             'user': user,
             'the_geom': the_geom,
             'export_formats': ['shp'],
-            'feature_selection':FeatureSelection.example('simple')
+            'feature_selection': SIMPLE_FEATURE_SELECTION
         }
 
     def test_job_creation(self):
@@ -76,7 +77,7 @@ class TestJob(TestCase):
         with self.assertRaises(ValidationError) as e:
             job.full_clean()
         self.assertTrue('feature_selection' in e.exception.message_dict)
-        self.assertEqual(e.exception.message_dict['feature_selection'],[u'YAML must be dict, not list'])
+        self.assertEqual(e.exception.message_dict['feature_selection'],[u'YAML must be dict'])
         
 
 class TestHDXExportRegion(TestCase):
@@ -91,7 +92,7 @@ class TestHDXExportRegion(TestCase):
             'user': user,
             'the_geom': the_geom,
             'export_formats': ['shp'],
-            'feature_selection':FeatureSelection.example('simple')
+            'feature_selection': SIMPLE_FEATURE_SELECTION
         }
         self.job = Job.objects.create(**self.job_fixture)
         self.fixture = {

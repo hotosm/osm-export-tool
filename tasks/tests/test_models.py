@@ -9,9 +9,10 @@ from django.utils import timezone
 import datetime
 
 from jobs.models import Job
-from feature_selection.feature_selection import FeatureSelection
 
 from ..models import ExportRun, ExportTask
+
+SIMPLE_FEATURE_SELECTION = "buildings:\n  types:\n    - polygons\n  select:\n    - building\n"
 
 class TestExportRunAndTask(TestCase):
     """
@@ -30,7 +31,7 @@ class TestExportRunAndTask(TestCase):
             user=self.user1,
             the_geom=the_geom,
             export_formats=['shp'],
-            feature_selection=FeatureSelection.example('simple')
+            feature_selection=SIMPLE_FEATURE_SELECTION
         )
 
     def test_export_run_duration(self, ):

@@ -19,7 +19,8 @@ import unittest
 
 from jobs.models import Job, HDXExportRegion
 from tasks.models import ExportRun, ExportTask
-from feature_selection.feature_selection import FeatureSelection
+
+SIMPLE_FEATURE_SELECTION = "buildings:\n  types:\n    - polygons\n  select:\n    - building\n"
 
 class TestJobViewSet(APITestCase):
 
@@ -39,7 +40,7 @@ class TestJobViewSet(APITestCase):
             'export_formats': ["shp"],
             'published': True,
             'the_geom':{'type':'Polygon','coordinates':[[[-17.464,14.727],[-17.449,14.727],[-17.449,14.740],[-17.464,14.740],[-17.464,14.727]]]},
-            'feature_selection':FeatureSelection.example_raw("simple")
+            'feature_selection':SIMPLE_FEATURE_SELECTION
         }
 
 
@@ -148,7 +149,7 @@ class TestConfigurationViewSet(APITestCase):
         self.request_data = {
             'name':'My Configuration',
             'description':'Configuration for Health and Sanitation',
-            'yaml':FeatureSelection.example_raw("simple") ,
+            'yaml':SIMPLE_FEATURE_SELECTION ,
             'public':True
         }
 
@@ -170,7 +171,7 @@ class TestConfigurationViewSet(APITestCase):
         url = reverse('api:configurations-list')
         response = self.client.post(url,self.request_data, format="json")
         self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(response.data['yaml'],[u"YAML must be dict, not list"])
+        self.assertEquals(response.data['yaml'],[u"YAML must be dict"])
 
 
 class TestExportRunViewSet(APITestCase):
@@ -179,7 +180,7 @@ class TestExportRunViewSet(APITestCase):
     """
 
     def setUp(self, ):
-        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo')
+        self.user = User.objects.create(username='demo', email='demo@demo.com', password='demo', is_superuser=True)
         token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key,
                                 HTTP_ACCEPT='application/json; version=1.0',
@@ -192,7 +193,7 @@ class TestExportRunViewSet(APITestCase):
             user=self.user,
             the_geom=the_geom,
             export_formats=['shp'],
-            feature_selection=FeatureSelection.example('simple')
+            feature_selection=SIMPLE_FEATURE_SELECTION
         )
         run = ExportRun.objects.create(
             job=self.job,
@@ -234,7 +235,7 @@ class TestHDXExportRegionViewSet(APITestCase):
             'name': 'TestHDXRegion',
             'export_formats': ["shp"],
             'the_geom':{'type':'Polygon','coordinates':[[[-17.464,14.727],[-17.449,14.727],[-17.449,14.740],[-17.464,14.740],[-17.464,14.727]]]},
-            'feature_selection':FeatureSelection.example_raw("simple"),
+            'feature_selection':SIMPLE_FEATURE_SELECTION,
             'dataset_prefix':'hdx_test_',
             'locations':['SEN'],
             'is_private':True,

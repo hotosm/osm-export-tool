@@ -137,9 +137,11 @@ class JobViewSet(viewsets.ModelViewSet):
 
         if not all:
             queryset = queryset.filter(Q(user_id=user.id))
-
-        if user.is_superuser:
-            return queryset
+        else:
+            if not user.is_authenticated:
+                queryset = queryset.filter(Q(published=True))
+            elif not user.is_superuser:
+                queryset = queryset.filter(Q(published=True) | Q(user_id=user.id))
 
         return queryset
 
