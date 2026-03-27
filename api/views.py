@@ -309,6 +309,7 @@ class HDXExportRegionViewSet(viewsets.ModelViewSet):
 
 
 class PartnerExportRegionViewSet(viewsets.ModelViewSet):
+    # get only Regions that belong to the user's Groups.
     ordering_fields = "__all__"
     ordering = ("job__description",)
     filter_backends = (
