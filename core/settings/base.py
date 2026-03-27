@@ -109,6 +109,8 @@ MIDDLEWARE = [
 if AUTH_PROVIDER == "hanko":
     auth_middleware_index = MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware")
     MIDDLEWARE.insert(auth_middleware_index, "hotosm_auth_django.HankoAuthMiddleware")
+    # Map Hanko user -> Django User -> request.user so @login_required() works
+    MIDDLEWARE.insert(auth_middleware_index + 2, "ui.middleware.HankoUserMapMiddleware")
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -122,7 +124,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 ROOT_URLCONF = "core.urls"
 WSGI_APPLICATION = "core.wsgi.application"
 
-INSTALLED_APPS = [
+INSTALLED_APPS = (
     "django.contrib.admin.apps.SimpleAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -134,7 +136,7 @@ INSTALLED_APPS = [
     "raven.contrib.django.raven_compat",
     "oauth2_provider",
     "corsheaders",
-]
+)
 
 if AUTH_PROVIDER == "hanko":
     INSTALLED_APPS.append("hotosm_auth_django")

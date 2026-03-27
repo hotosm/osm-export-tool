@@ -6,13 +6,13 @@ import os
 from .base import *  # NOQA
 
 # Extra installed apps
-INSTALLED_APPS += [
+INSTALLED_APPS += (
     # any 3rd party apps
     "rest_framework",
     "rest_framework_gis",
     "rest_framework.authtoken",
     "social_django",
-]
+)
 
 # Admin emails for Hanko SSO (comma-separated list)
 ADMIN_EMAILS = os.getenv("ADMIN_EMAILS", "")

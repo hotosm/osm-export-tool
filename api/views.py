@@ -27,6 +27,7 @@ from django.http import (
     HttpResponseNotFound,
     HttpResponseForbidden,
 )
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError as DjangoValidationError
 
@@ -58,8 +59,10 @@ from hdx_exports.hdx_export_set import sync_region
 from rtree import index
 import psutil
 
+# Get an instance of a logger
 LOG = logging.getLogger(__name__)
 
+# controls how api responses are rendered
 renderer_classes = (JSONRenderer, HOTExportApiRenderer)
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -558,19 +561,10 @@ def run_stats(request):
         return HttpResponse(json.dumps({"periods": periods}))
 
 
-def _require_auth(request):
-    """Check if user is authenticated (works with both auth providers)."""
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-        return is_hanko_authenticated(request)
-    return request.user.is_authenticated
-
-
+@login_required()
 @require_http_methods(["GET"])
 def request_nominatim(request):
     """Country boundaries using nominatim"""
-    if not _require_auth(request):
-        return JsonResponse({"error": "Not authenticated"}, status=401)
-
     nominatim_url = getattr(settings, "NOMINATIM_API_URL")
     if nominatim_url is None:
         error_dict = {
@@ -626,12 +620,10 @@ def request_nominatim(request):
     return JsonResponse(feature_collection)
 
 
+@login_required()
 @require_http_methods(["GET"])
 def request_geonames(request):
     """Geocode with GeoNames."""
-    if not _require_auth(request):
-        return JsonResponse({"error": "Not authenticated"}, status=401)
-
     payload = {
         "maxRows": 20,
         "username": "osm_export_tool",
@@ -731,6 +723,7 @@ def request_geonames(request):
                     if tm_res.ok:
                         tm_res = tm_res.json()
                         if "areaOfInterest" in tm_res:
+                            print("TM Project found")
                             geom = tm_res["areaOfInterest"]
                             geojson = {
                                 "type": "FeatureCollection",
@@ -750,6 +743,7 @@ def request_geonames(request):
                                 "countryName": "Boundary",
                                 "adminName1": "Project",
                             }
+                            # print(add_resp)
                             if "geonames" in response:
                                 response["geonames"].append(add_resp)
 
@@ -761,6 +755,7 @@ def request_geonames(request):
         )
 
 
+@login_required()
 @ttl_cache(ttl=60)
 @require_http_methods(["GET"])
 def get_overpass_timestamp(request):
@@ -768,27 +763,20 @@ def get_overpass_timestamp(request):
     Endpoint to show the last OSM update timestamp on the Create page.
     this sometimes fails, returning a HTTP 200 but empty content.
     """
-    if not _require_auth(request):
-        return JsonResponse({"error": "Not authenticated"}, status=401)
-
     r = requests.get("{}timestamp".format(settings.OVERPASS_API_URL))
     return JsonResponse({"timestamp": dateutil.parser.parse(r.content)})
 
 
+@login_required()
 def get_overpass_status(request):
-    if not _require_auth(request):
-        return JsonResponse({"error": "Not authenticated"}, status=401)
-
     r = requests.get("{}status".format(settings.OVERPASS_API_URL))
     return HttpResponse(r.content)
 
 
+@login_required()
 @require_http_methods(["GET"])
 def get_user_permissions(request):
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-        if not is_hanko_authenticated(request):
-            return JsonResponse({"error": "Not authenticated"}, status=401)
-
         hanko_user = request.hotosm.user
 
         admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
@@ -814,9 +802,6 @@ def get_user_permissions(request):
             }
         )
     else:
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "Not authenticated"}, status=401)
-
         user = request.user
         permissions = []
 
@@ -843,15 +828,9 @@ def get_user_permissions(request):
         )
 
 
+@login_required()
 @require_http_methods(["GET"])
 def get_groups(request):
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-        if not is_hanko_authenticated(request):
-            return JsonResponse({"error": "Not authenticated"}, status=401)
-    else:
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "Not authenticated"}, status=401)
-
     groups = [
         {"id": g.id, "name": g.name} for g in Group.objects.filter(is_partner=True)
     ]
