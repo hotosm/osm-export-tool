@@ -139,7 +139,7 @@ INSTALLED_APPS = (
 )
 
 if AUTH_PROVIDER == "hanko":
-    INSTALLED_APPS.append("hotosm_auth_django")
+    INSTALLED_APPS += ("hotosm_auth_django",)
 
 # enable cached storage
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
