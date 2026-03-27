@@ -61,7 +61,7 @@ const form = reduxForm({
   form: FORM_NAME,
   onSubmit: (values, dispatch, { createExportRegion, updateExportRegion }) => {
     console.log("Submitting form. Values:", values);
-    
+
     const formData = {
       ...values
     };

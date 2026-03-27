@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Row, Button } from "react-bootstrap";
 import { FormattedMessage, defineMessages, injectIntl } from "react-intl";
 import { connect } from "react-redux";
+import { push } from "react-router-redux";
 import { Field, propTypes, reduxForm } from "redux-form";
 
 import {
@@ -22,16 +23,8 @@ const form = reduxForm({
     } else {
       dispatch(createConfiguration(values, FORM_NAME));
     }
-  },
-  validate: ({ name, yaml }) => {
-    const errors = {};
-    if (!name || !name.trim()) {
-      errors.name = "A name is required.";
-    }
-    if (!yaml || !yaml.trim()) {
-      errors.yaml = "Feature selection YAML is required.";
-    }
-    return errors;
+
+    dispatch(push("/configurations"));
   }
 });
 
@@ -141,9 +134,13 @@ export class ConfigurationForm extends Component {
   }
 }
 
-const mapStateToProps = () => ({
-  initialValues: { public: true }
-});
+const mapStateToProps = state => {
+  return {
+    initialValues: {
+      public: true
+    }
+  };
+};
 
 export default connect(mapStateToProps, { handleDelete: deleteConfiguration })(
   form(injectIntl(ConfigurationForm))

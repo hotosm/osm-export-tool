@@ -16,7 +16,11 @@ import SelectFeatures from "./SelectFeatures";
 import Summary from "./Summary";
 import { getConfigurations } from "../actions/configurations";
 import { createExport, getOverpassTimestamp, getGalaxyTimestamp} from "../actions/exports";
-import { PresetParser } from "./utils";
+import {
+  PresetParser,
+  REQUIRES_FEATURE_SELECTION,
+  REQUIRES_TILE_SOURCE
+} from "./utils";
 import { TreeTag, TreeTagYAML } from "../utils/TreeTag";
 import { TAGTREE, TAGLOOKUP } from "../utils/TreeTagSettings";
 
@@ -26,17 +30,14 @@ const MAX_TILE_COUNT = 5000;
 const form = reduxForm({
   form: "ExportForm",
   onSubmit: (values, dispatch, { createExport }) => {
+    console.log("Submitting form. Values:", values);
+
     if (values.bundle && !values.export_formats.includes("bundle")) {
       // only add bundle format if it wasn't already included
       values.export_formats.push("bundle");
     } else {
       // remove bundle format
       values.export_formats = values.export_formats.filter(x => x !== "bundle");
-    }
-
-    // Remove mbtiles if no source URL was configured (avoids 400 from backend)
-    if (values.export_formats.includes("mbtiles") && !values.mbtiles_source) {
-      values.export_formats = values.export_formats.filter(x => x !== "mbtiles");
     }
 
     createExport(values, "ExportForm");
@@ -46,28 +47,9 @@ const form = reduxForm({
     mbtiles_maxzoom,
     mbtiles_minzoom,
     mbtiles_source,
-    name,
     the_geom
   }) => {
     const errors = {};
-
-    if (!name || !name.trim()) {
-      errors.name = (
-        <FormattedMessage
-          id="export.errors.name.required"
-          defaultMessage="A name is required."
-        />
-      );
-    }
-
-    if (the_geom == null) {
-      errors.the_geom = (
-        <FormattedMessage
-          id="export.errors.the_geom.required"
-          defaultMessage="An area of interest is required."
-        />
-      );
-    }
 
     if (the_geom != null) {
       const areaSqkm = Math.round(area(the_geom) / (1000 * 1000));
@@ -147,24 +129,21 @@ export class ExportForm extends Component {
   }
 
   async fetchData(geometry) {
-    if (!window.RAW_DATA_API_URL || window.RAW_DATA_API_URL === 'undefined') {
-      return;
-    }
-
     const url = window.RAW_DATA_API_URL + "v1/stats/polygon/";
     try {
       const response = await axios.post(url, {
         geometry: geometry
       }, {
-        headers: {"Content-Type": "application/json"},
-        timeout: 5000
+        headers: {"Content-Type": "application/json"}
       });
-
+  
       if (response.data) {
+
         this.setState({ fetchedInfo: response.data });
       }
     } catch (error) {
-      console.warn("RAW_DATA_API not available (expected in local dev):", error.message);
+      console.error("Failed to fetch summary data", error);
+     
     }
   }
   
@@ -179,6 +158,7 @@ export class ExportForm extends Component {
     if (!this.props.formValues.the_geom) return null;
     if (!fetchedInfo) return null;
   
+    // Function to trigger the download of the raw data as a JSON file
     const downloadRawData = () => {
       const filename = "raw_region_summary.json";
       const jsonStr = JSON.stringify(fetchedInfo, null, 4);
@@ -291,7 +271,7 @@ export class ExportForm extends Component {
 
     return (
       <Row style={{ height: "100%" }}>
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} style={{ height: "100%" }}>
+        <form style={{ height: "100%" }}>
           <Col
             xs={6}
             style={{ height: "100%", overflowY: "scroll", padding: "20px" }}

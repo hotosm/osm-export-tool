@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""UI view definitions."""
+
 from django.contrib.auth import logout as auth_logout
 from django.db import IntegrityError
 from django.urls import reverse
