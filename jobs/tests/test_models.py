@@ -11,7 +11,7 @@ from jobs.models import Job, HDXExportRegion
 
 LOG = logging.getLogger(__name__)
 
-SIMPLE_FEATURE_SELECTION = "buildings:\n  types:\n    - polygons\n  select:\n    - building\n"
+from conftest import SIMPLE_FEATURE_SELECTION
 
 class TestJob(TestCase):
     def setUp(self,):

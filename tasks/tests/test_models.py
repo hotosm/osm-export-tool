@@ -12,7 +12,7 @@ from jobs.models import Job
 
 from ..models import ExportRun, ExportTask
 
-SIMPLE_FEATURE_SELECTION = "buildings:\n  types:\n    - polygons\n  select:\n    - building\n"
+from conftest import SIMPLE_FEATURE_SELECTION
 
 class TestExportRunAndTask(TestCase):
     """
