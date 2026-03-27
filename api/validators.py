@@ -88,3 +88,10 @@ def validate_bbox_params(data):
             raise serializers.ValidationError(detail)
 
     return (data['xmin'], data['ymin'], data['xmax'], data['ymax'])
+
+
+
+
+
+
+
