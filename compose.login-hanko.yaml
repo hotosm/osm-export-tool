@@ -1,5 +1,5 @@
 # compose.login-hanko.yaml - Test environment for login_hanko branch
-# Deploy to: testlogin.export.hotosm.org
+# Deploy to: https://export.testlogin.hotosm.org/
 # Requires: Traefik running in /opt/traefik with hotosm-test network
 
 services:
@@ -16,9 +16,9 @@ services:
       - DEBUG=False
       - DJANGO_ENV=production
       - DJANGO_SETTINGS_MODULE=core.settings.project
-      - HOSTNAME=testlogin.export.hotosm.org
-      - ALLOWED_HOSTS=testlogin.export.hotosm.org,localhost,app,nginx
-      - CSRF_TRUSTED_ORIGINS=https://testlogin.export.hotosm.org,https://dev.login.hotosm.org
+      - HOSTNAME=https://export.testlogin.hotosm.org
+      - ALLOWED_HOSTS=https://export.testlogin.hotosm.org/,localhost,app,nginx
+      - CSRF_TRUSTED_ORIGINS=https://export.testlogin.hotosm.org/,https://dev.login.hotosm.org
       - USE_X_FORWARDED_HOST=true
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
       - SECRET_KEY=${SECRET_KEY}
@@ -70,7 +70,7 @@ services:
       - internal
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.export-tool.rule=Host(`testlogin.export.hotosm.org`)"
+      - "traefik.http.routers.export-tool.rule=Host(`https://export.testlogin.hotosm.org`)"
       - "traefik.http.routers.export-tool.entrypoints=websecure"
       - "traefik.http.routers.export-tool.tls.certresolver=letsencrypt"
       - "traefik.http.services.export-tool.loadbalancer.server.port=80"

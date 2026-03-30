@@ -1,4 +1,4 @@
-name: Deploy login-hanko to testlogin.export.hotosm.org
+name: Deploy login-hanko to https://export.testlogin.hotosm.org
 
 on:
   push:
