@@ -90,12 +90,22 @@ def is_hanko_authenticated(request):
     return hasattr(request, 'hotosm') and request.hotosm.user is not None
 
 
+def is_hanko_admin(email):
+    """Return True if the given email is in the ADMIN_EMAILS setting."""
+    admin_emails = [
+        e.strip()
+        for e in getattr(settings, 'ADMIN_EMAILS', '').split(',')
+        if e.strip()
+    ]
+    return email in admin_emails
+
+
 def api_login_required(view_func):
     """Like @login_required but returns 401 JSON instead of redirecting.
     Works with both AUTH_PROVIDER='hanko' and AUTH_PROVIDER='legacy'."""
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
-        if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        if settings.AUTH_PROVIDER == 'hanko':
             authenticated = is_hanko_authenticated(request)
         else:
             authenticated = request.user.is_authenticated

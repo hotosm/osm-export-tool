@@ -137,12 +137,7 @@ class JobViewSet(viewsets.ModelViewSet):
 
         if not all:
             queryset = queryset.filter(Q(user_id=user.id))
-        else:
-            if not user.is_authenticated:
-                queryset = queryset.filter(Q(published=True))
-            elif not user.is_superuser:
-                queryset = queryset.filter(Q(published=True) | Q(user_id=user.id))
-
+            
         return queryset
 
     def perform_create(self, serializer):
@@ -353,25 +348,15 @@ def permalink(request, uid):
 
 def _require_auth(request):
     """Check if user is authenticated (works with both auth providers)."""
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+    if settings.AUTH_PROVIDER == 'hanko':
         return is_hanko_authenticated(request)
     return request.user.is_authenticated
 
 
-def _is_superuser(request):
-    """Check if the current user is a superuser (works with both auth providers)."""
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-        if not is_hanko_authenticated(request):
-            return False
-        admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
-        admin_emails = [email.strip() for email in admin_emails if email.strip()]
-        return request.hotosm.user.email in admin_emails
-    return request.user.is_superuser
-
 
 @require_http_methods(["GET"])
 def stats(request):
-    if not _is_superuser(request):
+    if not request.user.is_superuser:
         return HttpResponseForbidden()
     before = request.GET.get("before", timezone.now())
     after = request.GET.get("after", timezone.now() - timedelta(days=1))
@@ -458,7 +443,7 @@ def stats(request):
 
 @require_http_methods(["GET"])
 def run_stats(request):
-    if not _is_superuser(request):
+    if not request.user.is_superuser:
         return HttpResponseForbidden()
     before = request.GET.get("before", timezone.now())
     after = request.GET.get("after", timezone.now() - timedelta(days=1))
@@ -782,14 +767,10 @@ def get_overpass_status(request):
 @api_login_required
 @require_http_methods(["GET"])
 def get_user_permissions(request):
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+    if settings.AUTH_PROVIDER == 'hanko':
         hanko_user = request.hotosm.user
 
-        admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
-        admin_emails = [email.strip() for email in admin_emails if email.strip()]
-        is_admin = hanko_user.email in admin_emails
-
-        if is_admin:
+        if request.user.is_superuser:
             permissions = Permission.objects.all().values_list(
                 "content_type__app_label", "codename"
             )
@@ -804,7 +785,7 @@ def get_user_permissions(request):
             {
                 "username": username,
                 "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
-                "is_superuser": is_admin,
+                "is_superuser": request.user.is_superuser,
             }
         )
     else:
@@ -848,7 +829,7 @@ from dramatiq_abort import abort
 
 @require_http_methods(["GET"])
 def cancel_run(request):
-    if not _is_superuser(request):
+    if not request.user.is_superuser:
         return HttpResponseForbidden()
     run_uid = request.GET.get("run_uid")
     if run_uid:
@@ -878,7 +859,7 @@ def cancel_run(request):
 
 @require_http_methods(["GET"])
 def machine_status(request):
-    if not _is_superuser(request):
+    if not request.user.is_superuser:
         return HttpResponseForbidden()
     CPU_use = psutil.cpu_percent(3)
     date_from = datetime.now() - timedelta(days=1)

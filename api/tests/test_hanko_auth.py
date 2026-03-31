@@ -2,52 +2,50 @@ import json
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
 
-from api.views import _is_superuser, _require_auth, get_groups, get_user_permissions
+from api.views import _require_auth, get_groups, get_user_permissions
+from ui.hanko_helpers import is_hanko_admin
+from ui.middleware import HankoUserMapMiddleware
 
 
-class TestIsSuperuser(TestCase):
+class TestHankoUserMapMiddleware(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.middleware = HankoUserMapMiddleware(
+            get_response=lambda request: HttpResponse()
+        )
 
-    def _make_hanko_request(self, email):
+    @patch("ui.middleware.get_mapped_django_user_by_hanko")
+    @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org,other@hotosm.org")
+    def test_admin_email_sets_is_superuser_true(self, mock_get_user):
+        mock_get_user.return_value = MagicMock()
         request = self.factory.get("/")
         request.hotosm = MagicMock()
         request.hotosm.user = MagicMock()
-        request.hotosm.user.email = email
-        return request
+        request.hotosm.user.email = "admin@hotosm.org"
+        self.middleware(request)
+        self.assertTrue(request.user.is_superuser)
 
-    @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org,other@hotosm.org")
-    def test_hanko_admin_email_returns_true(self):
-        request = self._make_hanko_request("admin@hotosm.org")
-        self.assertTrue(_is_superuser(request))
-
+    @patch("ui.middleware.get_mapped_django_user_by_hanko")
     @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org")
-    def test_hanko_non_admin_email_returns_false(self):
-        request = self._make_hanko_request("regular@hotosm.org")
-        self.assertFalse(_is_superuser(request))
+    def test_non_admin_email_sets_is_superuser_false(self, mock_get_user):
+        mock_get_user.return_value = MagicMock()
+        request = self.factory.get("/")
+        request.hotosm = MagicMock()
+        request.hotosm.user = MagicMock()
+        request.hotosm.user.email = "regular@hotosm.org"
+        self.middleware(request)
+        self.assertFalse(request.user.is_superuser)
 
     @override_settings(AUTH_PROVIDER="hanko")
-    def test_hanko_unauthenticated_returns_false(self):
+    def test_unauthenticated_does_not_set_request_user(self):
         request = self.factory.get("/")
         request.hotosm = MagicMock()
         request.hotosm.user = None
-        self.assertFalse(_is_superuser(request))
-
-    @override_settings(AUTH_PROVIDER="legacy")
-    def test_legacy_superuser_returns_true(self):
-        request = self.factory.get("/")
-        request.user = MagicMock()
-        request.user.is_superuser = True
-        self.assertTrue(_is_superuser(request))
-
-    @override_settings(AUTH_PROVIDER="legacy")
-    def test_legacy_regular_user_returns_false(self):
-        request = self.factory.get("/")
-        request.user = MagicMock()
-        request.user.is_superuser = False
-        self.assertFalse(_is_superuser(request))
+        self.middleware(request)
+        self.assertFalse(hasattr(request, "user"))
 
 
 class TestRequireAuth(TestCase):
@@ -97,6 +95,10 @@ class TestGetUserPermissionsHanko(TestCase):
             request.hotosm.osm.osm_username = "osmmapper"
         else:
             request.hotosm.osm = None
+        # Simulate what HankoUserMapMiddleware sets on request.user
+        request.user = MagicMock()
+        request.user.is_superuser = is_hanko_admin(email)
+        request.user.is_authenticated = True
         return request
 
     @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org")

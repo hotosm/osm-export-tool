@@ -37,10 +37,10 @@ def authorized(request):
 
 
 def login(request):
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+    if settings.AUTH_PROVIDER == 'hanko':
         if is_hanko_authenticated(request):
             return redirect("/v3/")
-        hanko_url = getattr(settings, 'HANKO_PUBLIC_URL', '')
+        hanko_url = settings.HANKO_PUBLIC_URL
         next_url = request.GET.get('next', '/v3/')
         return redirect(f"{hanko_url}/app?return_to={request.build_absolute_uri(next_url)}")
 
@@ -74,12 +74,12 @@ def v3(request, *args, **kwargs):
 
     context = dict(
         client_id=ui_app.client_id,
-        RAW_DATA_API_URL=getattr(settings, 'RAW_DATA_API_PUBLIC_URL', settings.RAW_DATA_API_URL),
-        AUTH_PROVIDER=getattr(settings, 'AUTH_PROVIDER', 'legacy'),
+        RAW_DATA_API_URL=settings.RAW_DATA_API_PUBLIC_URL,
+        AUTH_PROVIDER=settings.AUTH_PROVIDER,
     )
 
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
-        context['HANKO_PUBLIC_URL'] = getattr(settings, 'HANKO_PUBLIC_URL', '')
+    if settings.AUTH_PROVIDER == 'hanko':
+        context['HANKO_PUBLIC_URL'] = settings.HANKO_PUBLIC_URL
 
     if settings.MATOMO_URL is not None and settings.MATOMO_SITEID is not None:
         context.update(
@@ -94,7 +94,7 @@ def redirect_to_v3(request):
 
 @require_http_methods(["GET"])
 def worker_dashboard(request):
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+    if settings.AUTH_PROVIDER == 'hanko':
         if not is_hanko_authenticated(request):
             return HttpResponseForbidden()
         admin_emails = getattr(settings, 'ADMIN_EMAILS', '').split(',')
@@ -198,7 +198,7 @@ def onboarding_callback(request):
     from hotosm_auth_django import create_user_mapping, get_mapped_user_id
     from urllib.parse import urlencode
 
-    if getattr(settings, 'AUTH_PROVIDER', 'legacy') != 'hanko':
+    if settings.AUTH_PROVIDER != 'hanko':
         return JsonResponse(
             {"error": "Onboarding only available with Hanko auth"},
             status=400
@@ -212,7 +212,7 @@ def onboarding_callback(request):
 
     hanko_user = request.hotosm.user
     is_new_user = request.GET.get('new_user') == 'true'
-    login_url = getattr(settings, 'HANKO_PUBLIC_URL', '') or getattr(settings, 'HANKO_API_URL', 'https://login.hotosm.org')
+    login_url = settings.HANKO_PUBLIC_URL or getattr(settings, 'HANKO_API_URL', 'https://login.hotosm.org')
 
     if is_new_user:
         # If a valid mapping already exists, skip creation and go home
