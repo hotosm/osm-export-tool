@@ -19,6 +19,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
+from ui.hanko_helpers import is_hanko_authenticated, api_login_required
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import (
@@ -27,11 +29,8 @@ from django.http import (
     HttpResponseNotFound,
     HttpResponseForbidden,
 )
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError as DjangoValidationError
-
-from ui.hanko_helpers import is_hanko_authenticated
 from jobs.models import HDXExportRegion, PartnerExportRegion, Job, SavedFeatureSelection
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -350,6 +349,13 @@ def permalink(request, uid):
         return HttpResponse(JSONRenderer().render({}))
     except DjangoValidationError:
         return HttpResponseNotFound()
+
+
+def _require_auth(request):
+    """Check if user is authenticated (works with both auth providers)."""
+    if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+        return is_hanko_authenticated(request)
+    return request.user.is_authenticated
 
 
 def _is_superuser(request):
@@ -773,7 +779,7 @@ def get_overpass_status(request):
     return HttpResponse(r.content)
 
 
-@login_required()
+@api_login_required
 @require_http_methods(["GET"])
 def get_user_permissions(request):
     if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
@@ -828,7 +834,7 @@ def get_user_permissions(request):
         )
 
 
-@login_required()
+@api_login_required
 @require_http_methods(["GET"])
 def get_groups(request):
     groups = [

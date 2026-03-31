@@ -1,6 +1,9 @@
 import logging
+from functools import wraps
 from typing import Optional
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from rest_framework.authentication import BaseAuthentication
 
 LOG = logging.getLogger(__name__)
@@ -85,3 +88,18 @@ def get_mapped_django_user(request) -> Optional[User]:
 
 def is_hanko_authenticated(request):
     return hasattr(request, 'hotosm') and request.hotosm.user is not None
+
+
+def api_login_required(view_func):
+    """Like @login_required but returns 401 JSON instead of redirecting.
+    Works with both AUTH_PROVIDER='hanko' and AUTH_PROVIDER='legacy'."""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if getattr(settings, 'AUTH_PROVIDER', 'legacy') == 'hanko':
+            authenticated = is_hanko_authenticated(request)
+        else:
+            authenticated = request.user.is_authenticated
+        if not authenticated:
+            return JsonResponse({"error": "Not authenticated"}, status=401)
+        return view_func(request, *args, **kwargs)
+    return wrapper
