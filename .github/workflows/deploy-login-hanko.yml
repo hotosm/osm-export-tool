@@ -27,7 +27,7 @@ jobs:
 
       - name: Build and push app
         run: |
-          docker build -t ghcr.io/${{ env.IMAGE_PREFIX }}/app:login-hanko .
+          docker build -f docker/Dockerfile.dev -t ghcr.io/${{ env.IMAGE_PREFIX }}/app:login-hanko .
           docker push ghcr.io/${{ env.IMAGE_PREFIX }}/app:login-hanko
 
   deploy:
