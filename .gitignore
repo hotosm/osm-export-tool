@@ -89,5 +89,5 @@ node_modules
 ui/static/ui/js/*
 *.js.map
 secrets
-nginx.conf
-Dockerfile
+/nginx.conf
+/Dockerfile

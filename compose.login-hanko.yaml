@@ -62,7 +62,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - static-files:/static:ro
       - export-downloads:/export_downloads:ro
     networks:
