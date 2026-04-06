@@ -45,6 +45,7 @@ def login(request):
         return redirect(f"{hanko_url}/app?return_to={request.build_absolute_uri(next_url)}")
 
     if not request.user.is_authenticated:
+        # preserve redirects ("next" in request.GET)
         return redirect(
             reverse("osm:begin", args=["openstreetmap-oauth2"])
             + "?"

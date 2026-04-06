@@ -54,7 +54,11 @@ const oauthConfig = {
 
 export const fetchPermissions = () => (dispatch, getState) => {
   const token = selectAuthToken(getState());
-  dispatch({ type: types.FETCHING_PERMISSIONS });
+
+  dispatch({
+    type: types.FETCHING_PERMISSIONS
+  });
+
   return axios(buildAuthConfig(token, { baseURL: window.EXPORTS_API_URL, url: "/api/permissions" }))
     .then(rsp =>
       dispatch({
@@ -63,12 +67,21 @@ export const fetchPermissions = () => (dispatch, getState) => {
         username: rsp.data.username
       })
     )
-    .catch(error => dispatch({ type: types.FETCHING_PERMISSIONS_FAILED, error }));
+    .catch(error =>
+      dispatch({
+        type: types.FETCHING_PERMISSIONS_FAILED,
+        error
+      })
+    );
 };
 
 export const fetchGroups = () => (dispatch, getState) => {
   const token = selectAuthToken(getState());
-  dispatch({ type: types.FETCHING_GROUPS });
+
+  dispatch({
+    type: types.FETCHING_GROUPS
+  });
+
   return axios(buildAuthConfig(token, { baseURL: window.EXPORTS_API_URL, url: "/api/groups" }))
     .then(rsp =>
       dispatch({
@@ -76,7 +89,12 @@ export const fetchGroups = () => (dispatch, getState) => {
         groups: rsp.data.groups
       })
     )
-    .catch(error => dispatch({ type: types.FETCHING_GROUPS_FAILED, error }));
+    .catch(error =>
+      dispatch({
+        type: types.FETCHING_GROUPS_FAILED,
+        error
+      })
+    );
 };
 
 export const checkHankoAuth = () => (dispatch) => {
@@ -108,7 +126,10 @@ export const login = () => {
     window.location.href = `${hankoUrl}/app?return_to=${returnUrl}`;
   } else {
     const { url, client, redirect } = oauthConfig;
-    window.location.href = url + `&client_id=${client}` + `&redirect_uri=${encodeURIComponent(redirect)}`;
+    window.location.href =
+      url +
+      `&client_id=${client}` +
+      `&redirect_uri=${encodeURIComponent(redirect)}`;
   }
 };
 
