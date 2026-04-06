@@ -77,7 +77,7 @@ class TestJob(TestCase):
         with self.assertRaises(ValidationError) as e:
             job.full_clean()
         self.assertTrue('feature_selection' in e.exception.message_dict)
-        self.assertEqual(e.exception.message_dict['feature_selection'],[u'YAML must be dict'])
+        self.assertEqual(e.exception.message_dict['feature_selection'],[u'YAML must be dict, not list'])
         
 
 class TestHDXExportRegion(TestCase):

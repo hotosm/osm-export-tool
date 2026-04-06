@@ -809,8 +809,7 @@ def get_user_permissions(request):
         return JsonResponse(
             {
                 "username": user.username,
-                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
-                "is_superuser": user.is_superuser,
+                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions))))
             }
         )
 

@@ -67,10 +67,10 @@ This theme includes the following OpenStreetMap keys:
 (c) OpenStreetMap contributors.
 This file is made available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in individual contents of the database are licensed under the Database Contents License: http://opendatacommons.org/licenses/dbcl/1.0/
 """
-_redis_host = os.getenv("REDIS_HOST", "localhost")
-_redis_port = int(os.getenv("REDIS_PORT", "6379"))
-redis_client = redis.Redis(host=_redis_host, port=_redis_port, db=0)
-abortable = Abortable(backend=backends.RedisBackend(client=redis_client))
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_CLIENT = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
+abortable = Abortable(backend=backends.RedisBackend(client=REDIS_CLIENT))
 dramatiq.get_broker().add_middleware(abortable)
 
 
@@ -920,6 +920,8 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = mbtiles.fetch(
                     "mbtiles",
                     all_feature_filter_json=all_feature_filter_json,
+                    min_zoom=job.mbtiles_minzoom,
+                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug(
@@ -950,6 +952,8 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = pmtiles.fetch(
                     "pmtiles",
                     all_feature_filter_json=all_feature_filter_json,
+                    min_zoom=job.mbtiles_minzoom,
+                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug(
@@ -978,6 +982,8 @@ def run_task(run_uid, run, stage_dir, download_dir):
                 response_back = mvt.fetch(
                     "mvt",
                     all_feature_filter_json=all_feature_filter_json,
+                    min_zoom=job.mbtiles_minzoom,
+                    max_zoom=job.mbtiles_maxzoom,
                 )
                 write_file_size(response_back)
                 LOG.debug("Raw Data API fetch ended for mvt run: {0}".format(run_uid))
