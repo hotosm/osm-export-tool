@@ -22,9 +22,9 @@ INSTALLED_APPS += (
     "utils",
 )
 
-_REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-_REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
-dramatiq.set_broker(RedisBroker(host=_REDIS_HOST, port=_REDIS_PORT))
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+dramatiq.set_broker(RedisBroker(host=REDIS_HOST, port=REDIS_PORT))
 
 DATABASES = {}
 
@@ -75,7 +75,7 @@ GARMIN_MKGMAP = os.getenv("GARMIN_MKGMAP", "/usr/local/mkgmap/mkgmap.jar")
 # url to overpass api endpoint
 OVERPASS_API_URL = os.getenv("OVERPASS_API_URL", "http://overpass-api.de/api/")
 
-# url to galaxy api endpoint (used by backend/worker for server-side processing)
+# url to galaxy api endpoint
 RAW_DATA_API_URL = os.getenv(
     "RAW_DATA_API_URL", "https://api-stage.raw-data.hotosm.org/"
 )

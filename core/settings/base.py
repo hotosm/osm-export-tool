@@ -56,6 +56,8 @@ USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
+# Prevents Django 3.2+ warnings and ensures new models use 64-bit integer PKs,
+# avoiding overflow issues with high-volume tables (exports, tasks, runs).
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.

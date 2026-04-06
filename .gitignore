@@ -91,3 +91,6 @@ ui/static/ui/js/*
 secrets
 /nginx.conf
 /Dockerfile
+
+# Local-only: Hanko deploy workflow and docker config
+.github/workflows/deploy-login-hanko.yml
