@@ -9,10 +9,9 @@ from django.utils import timezone
 import datetime
 
 from jobs.models import Job
+from conftest import SIMPLE_FEATURE_SELECTION
 
 from ..models import ExportRun, ExportTask
-
-from conftest import SIMPLE_FEATURE_SELECTION
 
 class TestExportRunAndTask(TestCase):
     """
