@@ -19,8 +19,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import login_required
-from ui.hanko_helpers import is_hanko_authenticated, api_login_required
+from hotosm_auth_django import login_required
+from ui.hanko_helpers import is_hanko_authenticated
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import (
@@ -552,7 +552,7 @@ def run_stats(request):
         return HttpResponse(json.dumps({"periods": periods}))
 
 
-@login_required()
+@login_required
 @require_http_methods(["GET"])
 def request_nominatim(request):
     """Country boundaries using nominatim"""
@@ -611,7 +611,7 @@ def request_nominatim(request):
     return JsonResponse(feature_collection)
 
 
-@login_required()
+@login_required
 @require_http_methods(["GET"])
 def request_geonames(request):
     """Geocode with GeoNames."""
@@ -746,7 +746,7 @@ def request_geonames(request):
         )
 
 
-@login_required()
+@login_required
 @ttl_cache(ttl=60)
 @require_http_methods(["GET"])
 def get_overpass_timestamp(request):
@@ -758,13 +758,13 @@ def get_overpass_timestamp(request):
     return JsonResponse({"timestamp": dateutil.parser.parse(r.content)})
 
 
-@login_required()
+@login_required
 def get_overpass_status(request):
     r = requests.get("{}status".format(settings.OVERPASS_API_URL))
     return HttpResponse(r.content)
 
 
-@api_login_required
+@login_required
 @require_http_methods(["GET"])
 def get_user_permissions(request):
     if settings.AUTH_PROVIDER == 'hanko':
@@ -814,7 +814,7 @@ def get_user_permissions(request):
         )
 
 
-@api_login_required
+@login_required
 @require_http_methods(["GET"])
 def get_groups(request):
     groups = [
