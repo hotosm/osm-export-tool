@@ -20,7 +20,6 @@ from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
 from hotosm_auth_django import login_required
-from ui.hanko_helpers import is_hanko_authenticated
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import (
@@ -344,14 +343,6 @@ def permalink(request, uid):
         return HttpResponse(JSONRenderer().render({}))
     except DjangoValidationError:
         return HttpResponseNotFound()
-
-
-def _require_auth(request):
-    """Check if user is authenticated (works with both auth providers)."""
-    if settings.AUTH_PROVIDER == 'hanko':
-        return is_hanko_authenticated(request)
-    return request.user.is_authenticated
-
 
 
 @require_http_methods(["GET"])

@@ -109,10 +109,16 @@ MIDDLEWARE = [
 ]
 
 if AUTH_PROVIDER == "hanko":
-    auth_middleware_index = MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware")
-    MIDDLEWARE.insert(auth_middleware_index, "hotosm_auth_django.HankoAuthMiddleware")
+    # HankoAuthMiddleware runs before AuthenticationMiddleware so request.hotosm is populated first
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware"),
+        "hotosm_auth_django.HankoAuthMiddleware",
+    )
     # Map Hanko user -> Django User -> request.user so @login_required() works
-    MIDDLEWARE.insert(auth_middleware_index + 2, "ui.middleware.HankoUserMapMiddleware")
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware") + 1,
+        "ui.middleware.HankoUserMapMiddleware",
+    )
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
 
-from api.views import _require_auth, get_groups, get_user_permissions
+from api.views import get_groups, get_user_permissions
 from ui.hanko_helpers import is_hanko_admin
 from ui.middleware import HankoUserMapMiddleware
 
@@ -46,39 +46,6 @@ class TestHankoUserMapMiddleware(TestCase):
         request.hotosm.user = None
         self.middleware(request)
         self.assertFalse(hasattr(request, "user"))
-
-
-class TestRequireAuth(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-
-    @override_settings(AUTH_PROVIDER="hanko")
-    def test_hanko_authenticated_returns_true(self):
-        request = self.factory.get("/")
-        request.hotosm = MagicMock()
-        request.hotosm.user = MagicMock()
-        self.assertTrue(_require_auth(request))
-
-    @override_settings(AUTH_PROVIDER="hanko")
-    def test_hanko_unauthenticated_returns_false(self):
-        request = self.factory.get("/")
-        request.hotosm = MagicMock()
-        request.hotosm.user = None
-        self.assertFalse(_require_auth(request))
-
-    @override_settings(AUTH_PROVIDER="legacy")
-    def test_legacy_authenticated_returns_true(self):
-        request = self.factory.get("/")
-        request.user = MagicMock()
-        request.user.is_authenticated = True
-        self.assertTrue(_require_auth(request))
-
-    @override_settings(AUTH_PROVIDER="legacy")
-    def test_legacy_unauthenticated_returns_false(self):
-        request = self.factory.get("/")
-        request.user = MagicMock()
-        request.user.is_authenticated = False
-        self.assertFalse(_require_auth(request))
 
 
 class TestGetUserPermissionsHanko(TestCase):
