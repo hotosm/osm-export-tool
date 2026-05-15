@@ -9,3 +9,4 @@ flake8
 isort
 autopep8
 django_extensions
+pytest

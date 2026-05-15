@@ -14,6 +14,9 @@ INSTALLED_APPS += (
     "social_django",
 )
 
+# Admin emails for Hanko SSO (comma-separated list)
+ADMIN_EMAILS = os.getenv("ADMIN_EMAILS", "")
+
 # 3rd party specific app settings
 OAUTH2_PROVIDER = {
     "ACCESS_TOKEN_EXPIRE_SECONDS": 10 * 365 * 24 * 60 * 60,
@@ -25,6 +28,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "ui.hanko_helpers.HankoAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ),

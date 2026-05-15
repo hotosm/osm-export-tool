@@ -37,6 +37,8 @@ import "./css/style.css";
 import "./css/ol.css";
 
 const AuthorizedHDX = requireAuth(HDX);
+const AuthorizedConfigurations = requireAuth(Configurations);
+const AuthorizedExports = requireAuth(Exports);
 
 // add locale data for formatting purposes
 addLocaleData([...de, ...en, ...es, ...fr, ...id, ...it, ...pt, ...nl]);
@@ -54,8 +56,8 @@ export default ({ history }) => {
           <Banner />
           <Switch>
             <Route path="/authorized" component={Authorized} />
-            <Route path="/configurations" component={Configurations} />
-            <Route path="/exports" component={Exports} />
+            <Route path="/configurations" component={AuthorizedConfigurations} />
+            <Route path="/exports" component={AuthorizedExports} />
             <Route path="/hdx" component={AuthorizedHDX} />
             <Route path="/partners" component={Partner} />
             <Route path="/stats" component={Stats} />

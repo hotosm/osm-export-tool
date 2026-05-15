@@ -17,9 +17,9 @@ import requests
 from cachetools.func import ttl_cache
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
+from hotosm_auth_django import login_required
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import (
@@ -153,7 +153,7 @@ class JobViewSet(viewsets.ModelViewSet):
             raise ValidationError(
                 {"the_geom": ["You are rate limited to 5 exports per hour."]}
             )
-        job = serializer.save()
+        job = serializer.save(user=self.request.user)
         task_runner = ExportTaskRunner()
         task_runner.run_task(job_uid=str(job.uid))
 
@@ -196,6 +196,9 @@ class ConfigurationViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(pinned=True))
 
         return queryset.filter(Q(user_id=user.id) | Q(public=True))
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ExportRunViewSet(viewsets.ModelViewSet):
@@ -543,11 +546,10 @@ def run_stats(request):
         return HttpResponse(json.dumps({"periods": periods}))
 
 
+@login_required
 @require_http_methods(["GET"])
-@login_required()
 def request_nominatim(request):
     """Country boundaries using nominatim"""
-
     nominatim_url = getattr(settings, "NOMINATIM_API_URL")
     if nominatim_url is None:
         error_dict = {
@@ -603,8 +605,8 @@ def request_nominatim(request):
     return JsonResponse(feature_collection)
 
 
+@login_required
 @require_http_methods(["GET"])
-@login_required()
 def request_geonames(request):
     """Geocode with GeoNames."""
     payload = {
@@ -738,9 +740,9 @@ def request_geonames(request):
         )
 
 
+@login_required
 @ttl_cache(ttl=60)
 @require_http_methods(["GET"])
-@login_required()
 def get_overpass_timestamp(request):
     """
     Endpoint to show the last OSM update timestamp on the Create page.
@@ -750,44 +752,64 @@ def get_overpass_timestamp(request):
     return JsonResponse({"timestamp": dateutil.parser.parse(r.content)})
 
 
-@login_required()
+@login_required
 def get_overpass_status(request):
     r = requests.get("{}status".format(settings.OVERPASS_API_URL))
     return HttpResponse(r.content)
 
 
+@login_required
 @require_http_methods(["GET"])
-@login_required()
 def get_user_permissions(request):
-    user = request.user
-    permissions = []
+    if settings.AUTH_PROVIDER == 'hanko':
+        hanko_user = request.hotosm.user
 
-    if user.is_superuser:
-        permissions = Permission.objects.all().values_list(
-            "content_type__app_label", "codename"
+        if request.user.is_superuser:
+            permissions = Permission.objects.all().values_list(
+                "content_type__app_label", "codename"
+            )
+        else:
+            permissions = []
+
+        username = hanko_user.email.split('@')[0] if hanko_user.email else 'unknown'
+        if hasattr(request.hotosm, 'osm') and request.hotosm.osm:
+            username = request.hotosm.osm.osm_username
+
+        return JsonResponse(
+            {
+                "username": username,
+                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
+                "is_superuser": request.user.is_superuser,
+            }
         )
     else:
-        permissions = chain(
-            user.user_permissions.all().values_list(
+        user = request.user
+        permissions = []
+
+        if user.is_superuser:
+            permissions = Permission.objects.all().values_list(
                 "content_type__app_label", "codename"
-            ),
-            Permission.objects.filter(group__user=user).values_list(
-                "content_type__app_label", "codename"
-            ),
+            )
+        else:
+            permissions = chain(
+                user.user_permissions.all().values_list(
+                    "content_type__app_label", "codename"
+                ),
+                Permission.objects.filter(group__user=user).values_list(
+                    "content_type__app_label", "codename"
+                ),
+            )
+
+        return JsonResponse(
+            {
+                "username": user.username,
+                "permissions": list(map(lambda pair: ".".join(pair), (set(permissions))))
+            }
         )
 
-    return JsonResponse(
-        {
-            "username": user.username,
-            "permissions": list(map(lambda pair: ".".join(pair), (set(permissions)))),
-        }
-    )
 
-
-# get a list of partner organizations and their numeric IDs.
-# this can be exposed to the public.
+@login_required
 @require_http_methods(["GET"])
-@login_required()
 def get_groups(request):
     groups = [
         {"id": g.id, "name": g.name} for g in Group.objects.filter(is_partner=True)

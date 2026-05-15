@@ -25,13 +25,28 @@ if (window.EXPORTS_API_URL == null) {
 if (window.OAUTH_CLIENT_ID == null) {
   window.OAUTH_CLIENT_ID = process.env.CLIENT_ID;
 
-  if (window.OAUTH_CLIENT_ID == null) {
+  if (window.OAUTH_CLIENT_ID == null && window.AUTH_PROVIDER !== "hanko") {
     console.error("OAUTH_CLIENT_ID is undefined; logging in will not work.")
   }
 }
 
+const isHankoAuth = window.AUTH_PROVIDER === "hanko";
+const hankoUrl = window.HANKO_URL || "";
+
+export const authConfig = {
+  isHankoAuth,
+  hankoUrl
+};
+
+export const buildAuthConfig = (token, config = {}) => {
+  const requestConfig = { ...config, withCredentials: isHankoAuth };
+  if (!isHankoAuth && token) {
+    requestConfig.headers = { ...requestConfig.headers, Authorization: `Bearer ${token}` };
+  }
+  return requestConfig;
+};
+
 const oauthConfig = {
-  // url: window.EXPORTS_API_URL + "/o/openstreetmap_oauth2",
   url: window.EXPORTS_API_URL + "/o/authorize?approval_prompt=auto&response_type=token",
   client: window.OAUTH_CLIENT_ID,
   redirect: `${window.location.protocol}//${hostname}/authorized`
@@ -44,14 +59,7 @@ export const fetchPermissions = () => (dispatch, getState) => {
     type: types.FETCHING_PERMISSIONS
   });
 
-  // TODO export an instance configured with axios.create
-  return axios({
-    baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    url: "/api/permissions"
-  })
+  return axios(buildAuthConfig(token, { baseURL: window.EXPORTS_API_URL, url: "/api/permissions" }))
     .then(rsp =>
       dispatch({
         type: types.RECEIVED_PERMISSIONS,
@@ -74,13 +82,7 @@ export const fetchGroups = () => (dispatch, getState) => {
     type: types.FETCHING_GROUPS
   });
 
-  return axios({
-    baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    url: "/api/groups"
-  })
+  return axios(buildAuthConfig(token, { baseURL: window.EXPORTS_API_URL, url: "/api/groups" }))
     .then(rsp =>
       dispatch({
         type: types.RECEIVED_GROUPS,
@@ -95,12 +97,40 @@ export const fetchGroups = () => (dispatch, getState) => {
     );
 };
 
+export const checkHankoAuth = () => (dispatch) => {
+  if (!isHankoAuth) return;
+
+  return axios({
+    baseURL: window.EXPORTS_API_URL,
+    url: "/api/auth/me/",
+    withCredentials: true
+  })
+    .then(rsp => {
+      if (rsp.data && rsp.data.user_id) {
+        dispatch({
+          type: LOGIN_SUCCESS,
+          token: "hanko-cookie-auth",
+          expiresAt: null
+        });
+        dispatch(fetchPermissions());
+      }
+    })
+    .catch(() => {
+      // Not authenticated — nothing to do
+    });
+};
+
 export const login = () => {
-  const { url, client, redirect } = oauthConfig;
-  window.location.href =
-    url +
-    `&client_id=${client}` +
-    `&redirect_uri=${encodeURIComponent(redirect)}`;
+  if (isHankoAuth) {
+    const returnUrl = encodeURIComponent(window.location.origin + '/v3/');
+    window.location.href = `${hankoUrl}/app?return_to=${returnUrl}`;
+  } else {
+    const { url, client, redirect } = oauthConfig;
+    window.location.href =
+      url +
+      `&client_id=${client}` +
+      `&redirect_uri=${encodeURIComponent(redirect)}`;
+  }
 };
 
 export const loginSuccess = (token, expiresAt) => dispatch =>

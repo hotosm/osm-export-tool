@@ -9,6 +9,29 @@
     <title>HOT Export Tool</title>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
     <link rel="icon" href="{% static 'ui/images/favicon.ico' %}">
+    <script type="importmap">
+      {
+        "imports": {
+          "lit": "https://esm.sh/lit@3",
+          "lit/decorators.js": "https://esm.sh/lit@3/decorators"
+        }
+      }
+    </script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/tool-menu@0.2.6/dist/tool-menu.esm.js"></script>
+    {% if AUTH_PROVIDER == "hanko" %}
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/hanko-auth@0.5.2/dist/hanko-auth.esm.js"></script>
+    <style>
+      /* Hide admin-only nav items (CSS is immune to React re-renders) */
+      #root .navbar-nav li:has(> a[href$="/partners"]),
+      #root .navbar-nav li:has(> a[href$="/hdx"]),
+      #root .navbar-nav li:has(> a[href="/admin"]),
+      #root .navbar-nav li:has(> a[href="/worker-dashboard/"]),
+      #root .navbar-nav li:has(> a[href="/api/status"]),
+      #root .navbar-nav li:has(> a[href$="/stats"]) {
+        display: none !important;
+      }
+    </style>
+    {% endif %}
     {% if MATOMO_URL and MATOMO_SITEID %}
       <script type="text/javascript">
         var _paq = window._paq = window._paq || [];
@@ -31,6 +54,10 @@
       var EXPORTS_API_URL = "{{ request.scheme }}://{{ request.get_host }}";
       var OAUTH_CLIENT_ID = "{{ client_id }}";
       var RAW_DATA_API_URL = "{{ RAW_DATA_API_URL }}";
+      var AUTH_PROVIDER = "{{ AUTH_PROVIDER }}";
+      {% if AUTH_PROVIDER == "hanko" %}
+      var HANKO_URL = "{{ HANKO_PUBLIC_URL }}";
+      {% endif %}
     </script>
     <script src="{% static 'ui/js/bundle.js' %}"></script>
   </body>
