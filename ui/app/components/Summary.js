@@ -89,7 +89,7 @@ export default injectIntl(
           description={formatMessage(messages.userinfo)}
           component={renderCheckbox}
           type="checkbox"
-        />
+        /> 
         <Button
           bsStyle="danger"
           disabled={submitting}
