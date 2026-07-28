@@ -29,5 +29,5 @@ We really welcome your input in updating the documentation pages for using the E
 
 ## Thank you!
 Thank you very much in advance for your contributions!! Please ensure you refer to our [Code of Conduct].
-If you've read the guidelines, but you are still not sure how to contribute on Github, please reach out to us via our [ HOT Tech Support page]([https://hotosm.atlassian.net/servicedesk/customer/portal/4](https://hotosm.atlassian.net/servicedesk/customer/portal/4) and we will be happy to help!
+If you've read the guidelines, but you are still not sure how to contribute on Github, please reach out to us via our [ HOT Tech Support page]([https://roadmap.hotosm.org/#tech-request](https://roadmap.hotosm.org/#tech-request) and we will be happy to help!
 
