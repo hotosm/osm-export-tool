@@ -106,7 +106,7 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
       </li>
       <li>
         <a
-          href="https://hotosm.atlassian.net/servicedesk/customer/portal/4"
+          href="https://roadmap.hotosm.org/#tech-request"
           target="_blank"
           rel="noopener noreferrer"
         >
