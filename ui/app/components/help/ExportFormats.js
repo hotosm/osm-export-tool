@@ -297,6 +297,38 @@ export default () =>
               </ul>
             </div>
             <div>
+              <h2 id="obf">OsmAnd .obf</h2>
+              <p>
+                OsmAnd Binary Format (.obf) is a compact, indexed file format used by the
+                OsmAnd offline navigation app for Android and iOS. An .obf file bundles
+                the map, point-of-interest, address, and routing data needed to render,
+                search, and navigate an area without an internet connection.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li>OsmAnd (Android)</li>
+                <li>OsmAnd (iOS)</li>
+                <li>OsmAndMapCreator (for inspecting or regenerating .obf files)</li>
+              </ul>
+              <h4>
+                <strong>Further Information</strong>
+              </h4>
+              <ul>
+                <li>
+                  <a href="https://osmand.net/docs/technical/osmand-file-formats/osmand-obf/" target="_blank">
+                    OsmAnd Documentation - OsmAnd Binary Maps (.obf)
+                  </a>
+                </li>
+                <li>
+                  <a href="https://wiki.openstreetmap.org/wiki/OsmAndMapCreator" target="_blank">
+                    OpenStreetMap Wiki - OsmAndMapCreator
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
               <h2 id="kmz">Google Earth .kml</h2>
               <p>
                 The KMZ file is a compressed version of a KML file. KML is an
@@ -467,6 +499,66 @@ export default () =>
               </ul>
             </div>
             <div>
+              <h2 id="pmtiles">PMTiles .pmtiles</h2>
+              <p>
+                PMTiles is a single-file archive format for storing pyramids of map tiles.
+                Unlike MBTiles, which is designed to be read from local disk or a running
+                server process, a PMTiles archive can be hosted on commodity cloud storage
+                (such as S3) and read directly over HTTP range requests, without needing
+                a dedicated tile server.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li>MapLibre GL JS</li>
+                <li>Leaflet (via PMTiles plugin)</li>
+                <li>QGIS</li>
+              </ul>
+              <h4>
+                <strong>Further Information</strong>
+              </h4>
+              <ul>
+                <li>
+                  <a href="https://docs.protomaps.com/pmtiles/" target="_blank">
+                    Protomaps Documentation - PMTiles
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/protomaps/PMTiles" target="_blank">
+                    PMTiles on GitHub
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h2 id="mvt">Mapbox Vector Tiles .mvt</h2>
+              <p>
+                Mapbox Vector Tiles (MVT) encode map data as tiled vector geometries and
+                attributes using Protocol Buffers, rather than pre-rendered images. This
+                allows client applications to filter and style features dynamically, and
+                keeps file sizes small compared to raster tiles.
+              </p>
+              <h4>
+                <strong>Compatible Software</strong>
+              </h4>
+              <ul>
+                <li>Mapbox GL JS</li>
+                <li>MapLibre GL JS</li>
+                <li>QGIS</li>
+              </ul>
+              <h4>
+                <strong>Further Information</strong>
+              </h4>
+              <ul>
+                <li>
+                  <a href="https://github.com/mapbox/vector-tile-spec" target="_blank">
+                    Mapbox Vector Tile Specification
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
               <h2 id="bundle">POSM bundle</h2>
               <p>
                 POSM bundles are intended for bootstrapping <a
@@ -486,33 +578,20 @@ export default () =>
           <Col sm={3} smOffset={1} className="helpToc">
             <h3>IN THIS AREA</h3>
             <ul>
-              <li>
-                <a href="#shp">Shapefile .shp</a>
-              </li>
-              <li>
-                <a href="#gpkg">Geopackage .gpkg</a>
-              </li>
-              <li>
-                <a href="#img">Garmin .img</a>
-              </li>
-              <li>
-                <a href="#kmz">Google Earth .kml</a>
-              </li>
-              <li>
-                <a href="#pbf">OSM .pbf</a>
-              </li>
-              <li>
-                <a href="#obf">OSMAnd .obf</a>
-              </li>
-              <li>
-                <a href="#mwm">MAPS.ME .mwm</a>
-              </li>
-              <li>
-                <a href="#mtiles">MBTiles .mbtiles</a>
-              </li>
-              <li>
-                <a href="#bundle">POSM bundle</a>
-              </li>
+              <li><a href="#shp">Shapefile .shp</a></li>
+              <li><a href="#gpkg">Geopackage .gpkg</a></li>
+              <li><a href="#geojson">GeoJSON .geojson</a></li>
+              <li><a href="#fgb">FlatGeobuf .fgb</a></li>
+              <li><a href="#csv">CSV .csv</a></li>
+              <li><a href="#sql">SQL .sql</a></li>
+              <li><a href="#img">Garmin .img</a></li>
+              <li><a href="#obf">OsmAnd .obf</a></li>
+              <li><a href="#kmz">Google Earth .kml</a></li>
+              <li><a href="#pbf">OSM .pbf</a></li>
+              <li><a href="#mbtiles">MBTiles .mbtiles</a></li>
+              <li><a href="#pmtiles">PMTiles .pmtiles</a></li>
+              <li><a href="#mvt">Mapbox Vector Tiles .mvt</a></li>
+              <li><a href="#bundle">POSM bundle</a></li>
             </ul>
           </Col>
         </Row>
