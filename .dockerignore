@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+ui/node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build artifacts (rebuilt inside Docker)
+ui/static/
+
+# Version control
+.git/
+.gitignore
+.github/
+
+# Development
+.env
+.env.*
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Documentation
+docs/
+*.md
+LICENSE*
+
+# Tests
+**/test/
+**/tests/
+coverage/
+.pytest_cache/
+
+# Misc
+.DS_Store
+*.log
+tmp/

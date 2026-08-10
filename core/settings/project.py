@@ -22,7 +22,9 @@ INSTALLED_APPS += (
     "utils",
 )
 
-dramatiq.set_broker(RedisBroker(host="localhost", port=6379))
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+dramatiq.set_broker(RedisBroker(host=REDIS_HOST, port=REDIS_PORT))
 
 DATABASES = {}
 
@@ -77,6 +79,10 @@ OVERPASS_API_URL = os.getenv("OVERPASS_API_URL", "http://overpass-api.de/api/")
 RAW_DATA_API_URL = os.getenv(
     "RAW_DATA_API_URL", "https://api-stage.raw-data.hotosm.org/"
 )
+
+# Public URL for raw-data-api (used by browser JS for client-side requests)
+# Falls back to RAW_DATA_API_URL if not set (works when backend URL is publicly reachable)
+RAW_DATA_API_PUBLIC_URL = os.getenv("RAW_DATA_API_PUBLIC_URL", RAW_DATA_API_URL)
 
 RAW_DATA_ACCESS_TOKEN = os.getenv("RAW_DATA_ACCESS_TOKEN")
 
