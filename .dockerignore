@@ -30,9 +30,11 @@ docs/
 *.md
 LICENSE*
 
-# Tests
-**/test/
-**/tests/
+# Tests are kept in the image: this is the development Dockerfile, so the
+# suite should be runnable inside the container (make test_all). Excluding
+# them also dropped tasks/tests/fixtures/all_features_filters.json, which
+# osm_export_tool reads at runtime — not a test fixture despite the path —
+# and every Raw Data API export failed with FileNotFoundError.
 coverage/
 .pytest_cache/
 
