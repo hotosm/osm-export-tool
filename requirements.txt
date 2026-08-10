@@ -29,7 +29,11 @@ dramatiq[redis,watch]~=1.13.0
 boto3~=1.23.10 # needed for cloudwatch
 rasterio
 # osm-export-tool==0.0.25 #manual setup is needed for now
-osm-export-tool-python == 2.0.10
+# 2.0.17 is the first published release whose Galaxy source accepts the
+# userinfo argument (includeUserMetadata), which task_runners has been passing
+# since Aug 2024 — the pin was never moved, so exports through the Raw Data API
+# fail with a TypeError on any earlier version.
+osm-export-tool-python == 2.0.17
 rtree==1.1.0
 validators==0.20.0
 geonamescache==1.5.0
