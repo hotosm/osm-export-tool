@@ -4,13 +4,25 @@ import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 
-import { login, logout } from "../actions/meta";
+import { login, logout, authConfig } from "../actions/meta";
 import hotLogo from "../images/hot-logo.svg";
 import { selectIsLoggedIn } from "../selectors";
 import LocaleSelector from "./LocaleSelector";
 import RequirePermission from "./RequirePermission";
+import HankoAuthButton from "./HankoAuthButton";
+import ToolMenu from "./ToolMenu";
 
-const NavBar = ({ isLoggedIn, login, logout }) => (
+const collapseNavbar = (e) => {
+  if (e.target.closest && e.target.closest(".dropdown-toggle")) return;
+  if (e.target.tagName && e.target.tagName.toLowerCase() === "hotosm-auth") return;
+  const toggle = document.querySelector(".navbar-toggle");
+  const collapse = document.querySelector(".navbar-collapse");
+  if (toggle && collapse && collapse.classList.contains("in")) {
+    toggle.click();
+  }
+};
+
+const NavBar = ({ isLoggedIn, login, logout, locale }) => (
   <Navbar>
     <Navbar.Header>
       <Navbar.Brand>
@@ -19,7 +31,9 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
           <span>Export Tool</span>
         </Link>
       </Navbar.Brand>
+      <Navbar.Toggle />
     </Navbar.Header>
+    <Navbar.Collapse onClick={collapseNavbar}>
     <Nav className="pull-right">
       <RequirePermission>
         <li>
@@ -118,24 +132,48 @@ const NavBar = ({ isLoggedIn, login, logout }) => (
       <NavItem>
         <LocaleSelector />
       </NavItem>
-      <NavItem>
-        {!isLoggedIn && (
-          <Button bsStyle="danger" onClick={login}>
-            <FormattedMessage id="ui.log_in" defaultMessage="Log In" />
-          </Button>
-        )}
-        {isLoggedIn && (
-          <Button bsStyle="danger" onClick={logout}>
-            <FormattedMessage id="ui.log_out" defaultMessage="Log Out" />
-          </Button>
-        )}
-      </NavItem>
+      {authConfig.isHankoAuth ? (
+        <li>
+          <a className="hotosm-auth">
+            <HankoAuthButton
+              hankoUrl={authConfig.hankoUrl}
+              redirectAfterLogin={window.location.origin + "/v3/"}
+              mappingCheckUrl={window.location.origin + "/api/v1/auth/status/"}
+              appId="osm-export-tool"
+              button-variant="filled"
+              button-color="danger"
+              lang={locale}
+            />
+          </a>
+        </li>
+      ) : null}
+      <li>
+        <a className="hotosm-tool-menu">
+          <ToolMenu lang={locale} />
+        </a>
+      </li>
+      {!authConfig.isHankoAuth && (
+        <NavItem>
+          {!isLoggedIn && (
+            <Button bsStyle="danger" onClick={login}>
+              <FormattedMessage id="ui.log_in" defaultMessage="Log In" />
+            </Button>
+          )}
+          {isLoggedIn && (
+            <Button bsStyle="danger" onClick={logout}>
+              <FormattedMessage id="ui.log_out" defaultMessage="Log Out" />
+            </Button>
+          )}
+        </NavItem>
+      )}
     </Nav>
+    </Navbar.Collapse>
   </Navbar>
 );
 
 const mapStateToProps = (state) => ({
   isLoggedIn: selectIsLoggedIn(state),
+  locale: state.intl.locale,
 });
 
 export default connect(mapStateToProps, { login, logout })(NavBar);

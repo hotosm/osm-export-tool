@@ -3,6 +3,8 @@ import isEqual from "lodash/isEqual";
 
 import { selectAuthToken } from "../../selectors";
 
+const isHankoAuth = token => token === "hanko-cookie-auth";
+
 export const getGeonames = query => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
@@ -10,9 +12,8 @@ export const getGeonames = query => (dispatch, getState) => {
 
   return axios({
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
+    headers: isHankoAuth(token) ? {} : { Authorization: `Bearer ${token}` },
+    withCredentials: isHankoAuth(token),
     params: {
       q: query
     },
@@ -44,9 +45,8 @@ export const getNominatim = params => (dispatch, getState) => {
 
   return axios({
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
+    headers: isHankoAuth(token) ? {} : { Authorization: `Bearer ${token}` },
+    withCredentials: isHankoAuth(token),
     params: params,
     url: "/api/request_nominatim"
   })

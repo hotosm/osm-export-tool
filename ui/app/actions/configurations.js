@@ -4,6 +4,7 @@ import { initialize, startSubmit, stopSubmit } from "redux-form";
 
 import { selectAuthToken } from "../selectors";
 import types from ".";
+import { buildAuthConfig } from "./meta";
 
 export const getConfigurations = (filters = {}, page = 1) => (
   dispatch,
@@ -16,18 +17,15 @@ export const getConfigurations = (filters = {}, page = 1) => (
     type: types.FETCHING_CONFIGURATIONS
   })
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     params: {
       ...filters,
       limit: itemsPerPage,
       offset: Math.max(0, (page - 1) * itemsPerPage)
     },
     url: "/api/configurations"
-  }).then(({ data: response }) =>
+  })).then(({ data: response }) =>
     dispatch({
       type: types.RECEIVED_CONFIGURATIONS_LIST,
       activePage: page,
@@ -46,21 +44,15 @@ export const createConfiguration = (data, formName) => async (
   dispatch(startSubmit(formName));
 
   try {
-    await axios({
+    await axios(buildAuthConfig(token, {
       baseURL: window.EXPORTS_API_URL,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       url: "/api/configurations",
       method: "POST",
       contentType: "application/json; version=1.0",
       data
-    });
+    }));
 
-    dispatch({
-      type: types.CONFIGURATION_CREATED
-    });
-
+    dispatch({ type: types.CONFIGURATION_CREATED });
     dispatch(getConfigurations());
   } catch (err) {
     return dispatch(
@@ -81,23 +73,16 @@ export const updateConfiguration = (uid, data, formName) => async (
   dispatch(startSubmit(formName));
 
   try {
-    await axios({
+    await axios(buildAuthConfig(token, {
       baseURL: window.EXPORTS_API_URL,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       url: `/api/configurations/${uid}`,
       method: "PUT",
       contentType: "application/json; version=1.0",
       data
-    });
+    }));
 
-    dispatch({
-      type: types.CONFIGURATION_CREATED,
-      id: uid
-    });
-
-    dispatch(getConfigurations())
+    dispatch({ type: types.CONFIGURATION_CREATED, id: uid });
+    dispatch(getConfigurations());
   } catch (err) {
     return dispatch(
       stopSubmit(formName, {
@@ -111,13 +96,10 @@ export const updateConfiguration = (uid, data, formName) => async (
 export const getConfiguration = uid => (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
-  return axios({
+  return axios(buildAuthConfig(token, {
     baseURL: window.EXPORTS_API_URL,
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
     url: `/api/configurations/${uid}`
-  }).then(rsp => {
+  })).then(rsp => {
     dispatch({
       type: types.RECEIVED_CONFIGURATION,
       configuration: rsp.data
@@ -131,14 +113,11 @@ export const deleteConfiguration = uid => async (dispatch, getState) => {
   const token = selectAuthToken(getState());
 
   try {
-    await axios({
+    await axios(buildAuthConfig(token, {
       baseURL: window.EXPORTS_API_URL,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       url: `/api/configurations/${uid}`,
       method: "DELETE"
-    });
+    }));
 
     dispatch({
       type: types.CONFIGURATION_DELETED,
