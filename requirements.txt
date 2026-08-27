@@ -2,10 +2,9 @@ Django~=3.2.22
 cachetools
 dj_database_url
 django-oauth-toolkit==1.3.2
-# django-cors-headers replaces the unmaintained django-cors-middleware fork:
-# Hanko needs credentialed CORS, and CORS_ALLOWED_ORIGIN_REGEXES +
-# CORS_ALLOW_CREDENTIALS only exist in the upstream package.
-django-cors-headers
+# django-cors-headers replaces the unmaintained django-cors-middleware fork,
+# which has had no release since 2018 and is not tested past Django 2.x.
+django-cors-headers == 4.5.0
 djangorestframework-gis~=0.15
 djangorestframework~=3.11.0
 hdx-python-api==5.9.2

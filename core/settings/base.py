@@ -117,13 +117,13 @@ if AUTH_PROVIDER == "hanko":
         "ui.middleware.HankoUserMapMiddleware",
     )
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.*\.hotosm\.test$",
-    r"^https://.*\.hotosm\.org$",
-    r"^http://localhost(:\d+)?$",
-    r"^http://127\.0\.0\.1(:\d+)?$",
-]
+# Open CORS, as it has been since the OAuth2 provider was added in 2017: the
+# public API is meant to be called from third-party browser apps, and a Bearer
+# token set by their JS is not a CORS credential, so "*" serves them.
+# Hanko does not need this narrowed. The frontend calls its own origin
+# (EXPORTS_API_URL is request.get_host), so its cookies never cross an origin
+# and CORS is not involved — verified end to end on export.testlogin.hotosm.org.
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Python dotted path to the WSGI application used by Django's runserver.
 ROOT_URLCONF = "core.urls"
