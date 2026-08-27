@@ -32,6 +32,13 @@ DATABASES["default"] = dj_database_url.config(
     default="postgis:///exports", conn_max_age=500
 )
 
+# Django 3.2 serialises the whole database when building the test database, and
+# does it through a server-side cursor that CONN_MAX_AGE above invalidates
+# mid-iteration ("cursor _django_curs_... does not exist"), so `manage.py test`
+# aborts before running anything. Nothing here uses serialized_rollback.
+# Django 4.1 flipped this default for the same reason.
+DATABASES["default"]["TEST"] = {"SERIALIZE": False}
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
