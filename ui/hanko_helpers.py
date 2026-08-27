@@ -64,16 +64,42 @@ def get_mapped_django_user_by_hanko(hanko_user) -> Optional[User]:
     return None
 
 
+# Both names mean "this Django user is connected to this OSM account", and the
+# uid is the OSM user id either way. `openstreetmap` is the OAuth1-era provider;
+# `openstreetmap-oauth2` is what the current login writes. Production carries
+# 55k accounts under the old name and 43k under the new one, so matching only
+# the new one leaves 55% of users to the email fallback.
+OSM_SOCIAL_AUTH_PROVIDERS = ("openstreetmap-oauth2", "openstreetmap")
+
+
 def find_legacy_user_by_osm_id(osm_id: int) -> Optional[User]:
+    """Return the Django user connected to this OSM account, or None.
+
+    A uid can appear under both providers, and 630 uids in production point at
+    two different users (duplicate accounts for one OSM identity), so the pick
+    has to be deterministic rather than blowing up on MultipleObjectsReturned:
+    prefer the modern provider, then the oldest account.
+    """
+    from django.db.models import Case, IntegerField, When
     from social_django.models import UserSocialAuth
-    try:
-        social_auth = UserSocialAuth.objects.get(
-            provider='openstreetmap-oauth2',
-            uid=str(osm_id)
+
+    social_auth = (
+        UserSocialAuth.objects.filter(
+            provider__in=OSM_SOCIAL_AUTH_PROVIDERS,
+            uid=str(osm_id),
         )
-        return social_auth.user
-    except UserSocialAuth.DoesNotExist:
-        return None
+        .order_by(
+            Case(
+                When(provider="openstreetmap-oauth2", then=0),
+                default=1,
+                output_field=IntegerField(),
+            ),
+            "user_id",
+        )
+        .first()
+    )
+
+    return social_auth.user if social_auth else None
 
 
 def find_legacy_user_by_email(email: str) -> Optional[User]:
