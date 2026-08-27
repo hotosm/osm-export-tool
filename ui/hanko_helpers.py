@@ -1,12 +1,37 @@
 import logging
+from functools import wraps
 from typing import Optional
 from django.conf import settings
+from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib.auth.models import User
 from rest_framework.authentication import BaseAuthentication
 
 LOG = logging.getLogger(__name__)
 
 APP_NAME = "osm-export-tool"
+
+
+def login_required(view_func):
+    """Require an authenticated user under either auth provider.
+
+    hotosm_auth_django's decorator checks request.hanko_user, which only exists
+    when HankoAuthMiddleware is installed — under AUTH_PROVIDER=legacy it is
+    never set, so every decorated view would answer 401 regardless of the
+    session. Fall back to Django's decorator there, keeping the redirect to
+    LOGIN_URL these views have always returned.
+
+    The provider is read per request so tests can flip it with override_settings.
+    """
+
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if getattr(settings, "AUTH_PROVIDER", "legacy") == "hanko":
+            from hotosm_auth_django import login_required as hanko_login_required
+
+            return hanko_login_required(view_func)(request, *args, **kwargs)
+        return django_login_required(view_func)(request, *args, **kwargs)
+
+    return wrapper
 
 
 class HankoAuthentication(BaseAuthentication):

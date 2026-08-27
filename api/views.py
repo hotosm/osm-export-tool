@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import Group
-from hotosm_auth_django import login_required
+from ui.hanko_helpers import login_required
 from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.db.models import Q
 from django.http import (

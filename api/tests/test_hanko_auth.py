@@ -1,6 +1,7 @@
 import json
 from unittest.mock import MagicMock, patch
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
@@ -51,6 +52,9 @@ class TestHankoUserMapMiddleware(TestCase):
 class TestGetUserPermissionsHanko(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        # A real user: the non-superuser branch of the view queries Permission
+        # against request.user, which a MagicMock cannot stand in for.
+        self.user = User.objects.create_user(username="hankomapper")
 
     def _make_hanko_request(self, email, with_osm=False):
         request = self.factory.get("/api/user-permissions/")
@@ -62,10 +66,12 @@ class TestGetUserPermissionsHanko(TestCase):
             request.hotosm.osm.osm_username = "osmmapper"
         else:
             request.hotosm.osm = None
-        # Simulate what HankoUserMapMiddleware sets on request.user
-        request.user = MagicMock()
+        # Simulate what the middlewares set: HankoAuthMiddleware exposes
+        # request.hanko_user (what login_required checks), HankoUserMapMiddleware
+        # maps it onto request.user.
+        request.hanko_user = request.hotosm.user
+        request.user = self.user
         request.user.is_superuser = is_hanko_admin(email)
-        request.user.is_authenticated = True
         return request
 
     @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org")
@@ -73,6 +79,7 @@ class TestGetUserPermissionsHanko(TestCase):
         request = self.factory.get("/api/user-permissions/")
         request.hotosm = MagicMock()
         request.hotosm.user = None
+        request.hanko_user = None
         response = get_user_permissions(request)
         self.assertEqual(response.status_code, 401)
 
@@ -118,12 +125,13 @@ class TestGetUserPermissionsLegacy(TestCase):
         self.user = User.objects.create_user(username="legacymapper")
 
     @override_settings(AUTH_PROVIDER="legacy")
-    def test_unauthenticated_returns_401(self):
+    def test_unauthenticated_redirects_to_login(self):
         request = self.factory.get("/api/user-permissions/")
         request.user = MagicMock()
         request.user.is_authenticated = False
         response = get_user_permissions(request)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
 
     @override_settings(AUTH_PROVIDER="legacy")
     def test_superuser_is_superuser_true(self):
@@ -153,6 +161,7 @@ class TestGetGroups(TestCase):
         request = self.factory.get("/api/groups/")
         request.hotosm = MagicMock()
         request.hotosm.user = None
+        request.hanko_user = None
         response = get_groups(request)
         self.assertEqual(response.status_code, 401)
 
@@ -163,17 +172,19 @@ class TestGetGroups(TestCase):
         request = self.factory.get("/api/groups/")
         request.hotosm = MagicMock()
         request.hotosm.user = MagicMock()
+        request.hanko_user = request.hotosm.user
         response = get_groups(request)
         data = json.loads(response.content)
         self.assertIn("groups", data)
 
     @override_settings(AUTH_PROVIDER="legacy")
-    def test_legacy_unauthenticated_returns_401(self):
+    def test_legacy_unauthenticated_redirects_to_login(self):
         request = self.factory.get("/api/groups/")
         request.user = MagicMock()
         request.user.is_authenticated = False
         response = get_groups(request)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
 
     @override_settings(AUTH_PROVIDER="legacy")
     @patch("api.views.Group")
@@ -185,3 +196,58 @@ class TestGetGroups(TestCase):
         response = get_groups(request)
         data = json.loads(response.content)
         self.assertIn("groups", data)
+
+
+class TestLoginRequiredPerProvider(TestCase):
+    """The decorator on api.views must honour the session under legacy.
+
+    hotosm_auth_django's login_required only knows about request.hanko_user,
+    which HankoAuthMiddleware sets and which does not exist under legacy — using
+    it unconditionally locked every decorated view to 401 for logged-in users.
+    """
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    @override_settings(AUTH_PROVIDER="legacy")
+    @patch("api.views.Group")
+    def test_legacy_session_user_is_let_through(self, mock_group):
+        mock_group.objects.filter.return_value = []
+        request = self.factory.get("/api/groups/")
+        request.user = MagicMock()
+        request.user.is_authenticated = True
+        # no request.hanko_user: the Hanko middleware is not installed here
+        response = get_groups(request)
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(AUTH_PROVIDER="hanko")
+    @patch("api.views.Group")
+    def test_hanko_ignores_the_django_session(self, mock_group):
+        """A Django session alone must not authenticate once Hanko is on."""
+        mock_group.objects.filter.return_value = []
+        request = self.factory.get("/api/groups/")
+        request.user = MagicMock()
+        request.user.is_authenticated = True
+        request.hanko_user = None
+        response = get_groups(request)
+        self.assertEqual(response.status_code, 401)
+
+
+class TestRestFrameworkAuthenticators(TestCase):
+    """Session auth is the only thing that authenticates the browser under
+    legacy; it must stay in the DRF stack there and stay out under Hanko.
+
+    Asserts against the provider the suite is actually running with, so run it
+    both ways (AUTH_PROVIDER=legacy and AUTH_PROVIDER=hanko) to cover both.
+    """
+
+    def test_authenticators_match_the_configured_provider(self):
+        classes = settings.REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]
+        session = "rest_framework.authentication.SessionAuthentication"
+        hanko = "ui.hanko_helpers.HankoAuthentication"
+        if settings.AUTH_PROVIDER == "hanko":
+            self.assertIn(hanko, classes)
+            self.assertNotIn(session, classes)
+        else:
+            self.assertIn(session, classes)
+            self.assertNotIn(hanko, classes)
