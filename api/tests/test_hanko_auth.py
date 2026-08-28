@@ -2,6 +2,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 from django.conf import settings
+from django.contrib.admin.sites import site as admin_site
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
@@ -47,6 +48,83 @@ class TestHankoUserMapMiddleware(TestCase):
         request.hotosm.user = None
         self.middleware(request)
         self.assertFalse(hasattr(request, "user"))
+
+
+class TestHankoAdminAccess(TestCase):
+    """ADMIN_EMAILS has to grant access to Django's admin, not just permissions.
+
+    The admin gates on is_staff; the navbar gates on auth.add_user, which
+    is_superuser satisfies on its own. Granting only is_superuser therefore
+    showed the Admin entry and then bounced the user
+    /admin/ -> /admin/login/ -> /login/ -> /v3/ with nothing explaining why.
+    """
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.middleware = HankoUserMapMiddleware(
+            get_response=lambda request: HttpResponse()
+        )
+
+    def run_middleware_for(self, user, email):
+        request = self.factory.get("/")
+        request.hotosm = MagicMock()
+        request.hotosm.user = MagicMock()
+        request.hotosm.user.email = email
+        with patch("ui.middleware.get_mapped_django_user_by_hanko", return_value=user):
+            self.middleware(request)
+        return request
+
+    @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org")
+    def test_admin_email_can_actually_reach_the_django_admin(self):
+        user = User.objects.create_user(username="listed", email="admin@hotosm.org")
+        self.assertFalse(user.is_staff)
+
+        request = self.run_middleware_for(user, "admin@hotosm.org")
+
+        self.assertTrue(request.user.is_superuser)
+        self.assertTrue(request.user.is_staff)
+        admin_request = self.factory.get("/admin/")
+        admin_request.user = request.user
+        self.assertTrue(admin_site.has_permission(admin_request))
+
+    @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org")
+    def test_staff_in_the_database_keeps_admin_access(self):
+        """Five production users have is_staff without being superusers. The
+        list must add to that, never replace it."""
+        user = User.objects.create_user(username="dbstaff", email="staff@hotosm.org")
+        user.is_staff = True
+        user.save()
+
+        request = self.run_middleware_for(user, "staff@hotosm.org")
+
+        self.assertFalse(request.user.is_superuser)
+        self.assertTrue(request.user.is_staff)
+        admin_request = self.factory.get("/admin/")
+        admin_request.user = request.user
+        self.assertTrue(admin_site.has_permission(admin_request))
+
+    @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org")
+    def test_regular_user_gets_neither(self):
+        user = User.objects.create_user(username="regular", email="regular@hotosm.org")
+
+        request = self.run_middleware_for(user, "regular@hotosm.org")
+
+        self.assertFalse(request.user.is_superuser)
+        self.assertFalse(request.user.is_staff)
+        admin_request = self.factory.get("/admin/")
+        admin_request.user = request.user
+        self.assertFalse(admin_site.has_permission(admin_request))
+
+    @override_settings(AUTH_PROVIDER="hanko", ADMIN_EMAILS="admin@hotosm.org")
+    def test_admin_rights_are_not_persisted(self):
+        """ADMIN_EMAILS grants per request; the database row stays untouched."""
+        user = User.objects.create_user(username="ephemeral", email="admin@hotosm.org")
+
+        self.run_middleware_for(user, "admin@hotosm.org")
+
+        stored = User.objects.get(pk=user.pk)
+        self.assertFalse(stored.is_superuser)
+        self.assertFalse(stored.is_staff)
 
 
 class TestGetUserPermissionsHanko(TestCase):
