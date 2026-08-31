@@ -1,0 +1,44 @@
+# Node.js
+node_modules/
+ui/node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build artifacts (rebuilt inside Docker)
+ui/static/
+
+# Version control
+.git/
+.gitignore
+.github/
+
+# Development
+.env
+.env.*
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Documentation
+docs/
+*.md
+LICENSE*
+
+# Tests are kept in the image: this is the development Dockerfile, so the
+# suite should be runnable inside the container (make test_all). Excluding
+# them also dropped tasks/tests/fixtures/all_features_filters.json, which
+# osm_export_tool reads at runtime — not a test fixture despite the path —
+# and every Raw Data API export failed with FileNotFoundError.
+coverage/
+.pytest_cache/
+
+# Misc
+.DS_Store
+*.log
+tmp/

@@ -67,8 +67,10 @@ This theme includes the following OpenStreetMap keys:
 (c) OpenStreetMap contributors.
 This file is made available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in individual contents of the database are licensed under the Database Contents License: http://opendatacommons.org/licenses/dbcl/1.0/
 """
-redis_client = redis.Redis.from_url("redis://localhost:6379/0")
-abortable = Abortable(backend=backends.RedisBackend(client=redis_client))
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_CLIENT = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
+abortable = Abortable(backend=backends.RedisBackend(client=REDIS_CLIENT))
 dramatiq.get_broker().add_middleware(abortable)
 
 
@@ -78,9 +80,8 @@ class ExportTaskRunner(object):
         job = Job.objects.get(uid=job_uid)
         if not user:
             user = job.user
-        if job.last_run_status != "SUBMITTED" or job.last_run_status != "RUNNING":
+        if job.last_run_status != "SUBMITTED" and job.last_run_status != "RUNNING":
             run = ExportRun.objects.create(job=job, user=user, status="SUBMITTED")
-            run.save()
             run_uid = str(run.uid)
             LOG.debug("Saved run with id: {0}".format(run_uid))
 

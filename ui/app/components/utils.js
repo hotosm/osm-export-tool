@@ -18,7 +18,7 @@ import {
   FormattedRelative
 } from "react-intl";
 
-import { login } from "../actions/meta";
+import { login, authConfig, checkHankoAuth } from "../actions/meta";
 import { selectIsLoggedIn, selectIsLoggingIn } from "../selectors";
 import styles from "../styles/utilsStyles.css";
 
@@ -432,13 +432,40 @@ export const requireAuth = Component =>
       isLoggedIn: selectIsLoggedIn(state),
       isLoggingIn: selectIsLoggingIn(state)
     }),
-    { login }
+    { login, checkHankoAuth }
   )(
     class extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hankoChecked: false };
+      }
+
       componentDidMount() {
-        const { isLoggedIn, login } = this.props;
+        const { isLoggedIn, login, checkHankoAuth } = this.props;
 
         if (!isLoggedIn) {
+          if (authConfig.isHankoAuth) {
+            // Wait for Hanko auth check before redirecting
+            const result = checkHankoAuth();
+            if (result && result.then) {
+              result.then(() => {
+                this.setState({ hankoChecked: true });
+              });
+            } else {
+              this.setState({ hankoChecked: true });
+            }
+          } else {
+            login();
+          }
+        }
+      }
+
+      componentDidUpdate(prevProps) {
+        const { isLoggedIn, login } = this.props;
+
+        // Legacy OAuth2 only: redirect to login when auth state changes to logged-out.
+        // For Hanko, the web component (HankoAuthButton) handles redirects and onboarding.
+        if (!authConfig.isHankoAuth && !isLoggedIn && prevProps.isLoggedIn) {
           login();
         }
       }
@@ -453,7 +480,7 @@ export const requireAuth = Component =>
         return (
           <NonIdealState
             description={
-              isLoggingIn ||
+              isLoggingIn || (authConfig.isHankoAuth && !this.state.hankoChecked) ||
               <button type="button" className="btn btn-link" onClick={login}>
                 Please click here to log in
               </button>

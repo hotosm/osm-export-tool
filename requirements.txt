@@ -2,7 +2,9 @@ Django~=3.2.22
 cachetools
 dj_database_url
 django-oauth-toolkit==1.3.2
-django-cors-middleware
+# django-cors-headers replaces the unmaintained django-cors-middleware fork,
+# which has had no release since 2018 and is not tested past Django 2.x.
+django-cors-headers == 4.5.0
 djangorestframework-gis~=0.15
 djangorestframework~=3.11.0
 hdx-python-api==5.9.2
@@ -26,7 +28,11 @@ dramatiq[redis,watch]~=1.13.0
 boto3~=1.23.10 # needed for cloudwatch
 rasterio
 # osm-export-tool==0.0.25 #manual setup is needed for now
-osm-export-tool-python == 2.0.10
+# 2.0.17 is the first published release whose Galaxy source accepts the
+# userinfo argument (includeUserMetadata), which task_runners has been passing
+# since Aug 2024 — the pin was never moved, so exports through the Raw Data API
+# fail with a TypeError on any earlier version.
+osm-export-tool-python == 2.0.17
 rtree==1.1.0
 validators==0.20.0
 geonamescache==1.5.0
@@ -37,6 +43,14 @@ hurry.filesize==0.9
 dramatiq-abort==1.0
 
 python3-openid
+
+# Hanko SSO authentication.
+# Installed WITHOUT the [django] extra on purpose: that extra only pins
+# django>=4.2 and djangorestframework>=3.14, which this project already
+# provides at its own versions. The hotosm_auth_django module ships in the
+# same wheel either way and only uses APIs present in Django 3.2, so pulling
+# the extra would force an unrelated framework upgrade.
+hotosm-auth==0.2.12
 
 ##testing
 pytest==7.4.3

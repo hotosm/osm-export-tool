@@ -14,6 +14,25 @@ INSTALLED_APPS += (
     "social_django",
 )
 
+# Admin emails for Hanko SSO (comma-separated list)
+ADMIN_EMAILS = os.getenv("ADMIN_EMAILS", "")
+
+if AUTH_PROVIDER == "hanko":
+    _AUTHENTICATION_CLASSES = (
+        "ui.hanko_helpers.HankoAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+    )
+else:
+    # Session auth is what logs the browser into the API under legacy: it is how
+    # the frontend authenticates once the OSM login has set a session cookie.
+    # Without it every write from the browser arrives anonymous.
+    _AUTHENTICATION_CLASSES = (
+        "rest_framework.authentication.TokenAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",
+    )
+
 # 3rd party specific app settings
 OAUTH2_PROVIDER = {
     "ACCESS_TOKEN_EXPIRE_SECONDS": 10 * 365 * 24 * 60 * 60,
@@ -24,10 +43,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ),
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.TokenAuthentication",
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": _AUTHENTICATION_CLASSES,
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",
