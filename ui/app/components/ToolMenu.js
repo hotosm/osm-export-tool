@@ -18,16 +18,12 @@ class ToolMenu extends React.Component {
     }
 
     const el = this._element;
-    const { showLogos, lang } = this.props;
+    const { showLogos } = this.props;
 
     if (showLogos) {
       el.setAttribute("show-logos", "");
     } else {
       el.removeAttribute("show-logos");
-    }
-
-    if (lang) {
-      el.setAttribute("lang", lang);
     }
   }
 

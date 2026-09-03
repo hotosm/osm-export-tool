@@ -149,7 +149,7 @@ const NavBar = ({ isLoggedIn, login, logout, locale }) => (
       ) : null}
       <li>
         <a className="hotosm-tool-menu">
-          <ToolMenu lang={locale} />
+          <ToolMenu />
         </a>
       </li>
       {!authConfig.isHankoAuth && (
