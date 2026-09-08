@@ -27,6 +27,21 @@ Create pull requests (PRs) for changes that you think are needed. We would reall
 We really welcome your input in updating the documentation pages for using the ExportTool [here](https://github.com/hotosm/osm-export-tool/tree/main/ui/app/components/help)
 
 
+## AI Tool Usage
+
+You may use AI tools to assist your contributions. You are fully responsible
+for everything you submit.
+
+- **Understand it**: You must be able to explain every line of your code.
+- **Test it**: AI-generated code must pass all tests and security checks.
+- **Disclose it**: Pick an AI assistance level (0-5) in the PR template.
+- **Own it**: You are the author. If a reviewer asks "why?", you answer - not the AI.
+
+AI tools must not be used to fix issues labelled `good first issue`.
+These exist for human learning.
+
+For full policy details, see: [AI-assisted coding guide](https://responsibleai.guide/ai-assisted-coding-guide/)
+
 ## Thank you!
 Thank you very much in advance for your contributions!! Please ensure you refer to our [Code of Conduct].
 If you've read the guidelines, but you are still not sure how to contribute on Github, please reach out to us via our [ HOT Tech Support page]([https://roadmap.hotosm.org/#tech-request](https://roadmap.hotosm.org/#tech-request) and we will be happy to help!
