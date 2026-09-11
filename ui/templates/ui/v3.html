@@ -1,6 +1,6 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="en" class="wa-theme-default wa-palette-hotosm">
   <head>
     <!-- <base href="/v3/" /> -->
     <meta charset="utf-8">
@@ -9,15 +9,28 @@
     <title>HOT Export Tool</title>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
     <link rel="icon" href="{% static 'ui/images/favicon.ico' %}">
+    <!-- WebAwesome theme tokens + utilities, then the HOT palette on top.
+         native.css is left out on purpose: it restyles native form controls
+         globally and would clash with this app's Bootstrap 3 styles. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.11.0/dist/styles/themes/default.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.11.0/dist/styles/utilities.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@hotosm/ui@2.1.2/dist/style-core.css">
     <script type="importmap">
       {
         "imports": {
-          "lit": "https://esm.sh/lit@3",
-          "lit/decorators.js": "https://esm.sh/lit@3/decorators"
+          "@awesome.me/webawesome/dist/components/": "https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.11.0/dist-cdn/components/"
         }
       }
     </script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/tool-menu@0.2.6/dist/tool-menu.esm.js"></script>
+    <!-- The WebAwesome elements <hot-tool-menu> renders, then the menu itself.
+         Static imports run in order, so the wa-* tags are defined first. -->
+    <script type="module">
+      import "@awesome.me/webawesome/dist/components/button/button.js";
+      import "@awesome.me/webawesome/dist/components/dropdown/dropdown.js";
+      import "@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js";
+      import "@awesome.me/webawesome/dist/components/icon/icon.js";
+      import "https://cdn.jsdelivr.net/npm/@hotosm/ui@2.1.2/dist/components/tool-menu/tool-menu.js";
+    </script>
     {% if AUTH_PROVIDER == "hanko" %}
     <script type="module" src="https://cdn.jsdelivr.net/npm/@hotosm/hanko-auth@0.5.2/dist/hanko-auth.esm.js"></script>
     {% endif %}

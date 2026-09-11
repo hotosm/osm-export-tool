@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Nav, NavItem, Navbar } from "react-bootstrap";
+import { Button, MenuItem, Nav, NavDropdown, NavItem, Navbar } from "react-bootstrap";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
@@ -78,41 +78,6 @@ const NavBar = ({ isLoggedIn, login, logout, locale }) => (
           </NavLink>
         </li>
       </RequirePermission>
-      <RequirePermission required={["auth.add_user"]}>
-        <li>
-          <a href="/admin">
-            <FormattedMessage id="ui.admin" defaultMessage="Admin" />
-          </a>
-        </li>
-      </RequirePermission>
-      <RequirePermission required={["auth.add_user"]}>
-        <li>
-          <a href="/worker-dashboard/" target="_blank">
-            <FormattedMessage id="ui.workers" defaultMessage="Workers" />
-          </a>
-        </li>
-
-      </RequirePermission>
-      <RequirePermission required={["auth.add_user"]}>
-        <li>
-          <a href="/api/status" target="_blank">
-            <FormattedMessage id="ui.machine_status" defaultMessage="Status" />
-          </a>
-        </li>
-
-      </RequirePermission>
-      <RequirePermission required={["auth.add_user"]}>
-        <li>
-          <NavLink to="/stats">
-            <FormattedMessage id="ui.stats" defaultMessage="Stats" />
-          </NavLink>
-        </li>
-      </RequirePermission>
-      <li>
-        <NavLink to="/">
-          <FormattedMessage id="ui.about" defaultMessage="About" />
-        </NavLink>
-      </li>
       <li>
         <NavLink to="/learn">
           <FormattedMessage id="ui.help" defaultMessage="Learn" />
@@ -129,6 +94,25 @@ const NavBar = ({ isLoggedIn, login, logout, locale }) => (
           </span>
         </a>
       </li>
+      <RequirePermission required={["auth.add_user"]}>
+        <NavDropdown
+          id="admin-nav-dropdown"
+          title={<FormattedMessage id="ui.admin_menu" defaultMessage="Admin" />}
+        >
+          <MenuItem href="/admin">
+            <FormattedMessage id="ui.admin" defaultMessage="Django Admin" />
+          </MenuItem>
+          <MenuItem href="/worker-dashboard/" target="_blank">
+            <FormattedMessage id="ui.workers" defaultMessage="Workers" />
+          </MenuItem>
+          <MenuItem href="/api/status" target="_blank">
+            <FormattedMessage id="ui.machine_status" defaultMessage="Status" />
+          </MenuItem>
+          <MenuItem componentClass={Link} href="/stats" to="/stats">
+            <FormattedMessage id="ui.stats" defaultMessage="Stats" />
+          </MenuItem>
+        </NavDropdown>
+      </RequirePermission>
       <NavItem>
         <LocaleSelector />
       </NavItem>
@@ -149,7 +133,7 @@ const NavBar = ({ isLoggedIn, login, logout, locale }) => (
       ) : null}
       <li>
         <a className="hotosm-tool-menu">
-          <ToolMenu lang={locale} />
+          <ToolMenu />
         </a>
       </li>
       {!authConfig.isHankoAuth && (
