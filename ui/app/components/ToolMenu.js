@@ -13,7 +13,7 @@ class ToolMenu extends React.Component {
     if (!this._container) return;
 
     if (!this._element) {
-      this._element = document.createElement("hotosm-tool-menu");
+      this._element = document.createElement("hot-tool-menu");
       this._container.appendChild(this._element);
     }
 
