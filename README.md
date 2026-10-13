@@ -27,6 +27,7 @@ This is the source code for the web service available at [export.hotosm.org](htt
 |✅| Upgrade python and django version |
 |✅| Admin methods to control queues and manage exports |
 |✅| Migration of cloud env |
+|✅| Log in with your HOT account |
 |⚙️| Connect HDX exports with custom yaml endpoint in raw-data-api |
 | | Upgrade Frontend of export tool ( Ideation ) |
 
